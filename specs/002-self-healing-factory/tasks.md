@@ -14,8 +14,8 @@
 
 ## M1 — Every AI agent has a SKILL; enforce roles
 
-- [ ] **T005 [P0]** Implement `agents.yaml` loader and JSON/Pydantic schema validator: unique role, `SKILL.md` path/hash, model, grants, caps, outputs. **[FR-001,FR-002]** Test: invalid/missing/duplicate SKILL fails preflight.
-- [ ] **T006 [P0] [P]** Complete all 20 `.fabro/skills/<role>/SKILL.md` from starter contracts; verify Fabro discovery and YAML frontmatter. **[FR-001,FR-002,FR-027]** Test: every role loaded; no unbound agent declared by workflows.
+- [X] **T005 [P0]** Implement `agents.yaml` loader and JSON/Pydantic schema validator: unique role, `SKILL.md` path/hash, model, grants, caps, outputs. **[FR-001,FR-002]** Test: invalid/missing/duplicate SKILL fails preflight. ✅ Evidence: `evidence/v0.4/runs/T005/latest.json`
+- [X] **T006 [P0] [P]** Complete all 20 `.fabro/skills/<role>/SKILL.md` from starter contracts; verify Fabro discovery and YAML frontmatter. **[FR-001,FR-002,FR-027]** Test: every role loaded; no unbound agent declared by workflows. ✅ Evidence: `evidence/v0.4/runs/T006/latest.json`
 - [ ] **T007 [P0]** Build role- and phase-aware tool authorization at MCP gateway and in the execution sandbox (independent of prompt), including prevention of bypass by Fabro built-in shell and filesystem tools. **[FR-003,FR-006]** Test: inspector cannot edit workproducts, Release Manager cannot waive a finding, Repair Agent cannot access product baselines, and attempted native-tool bypass is denied.
 - [ ] **T008 [P0]** Implement compact agent result schema/parser (`status, artifacts, issues, next_action`) and block freeform status prose in lifecycle controls. **[FR-027,FR-028]** Test: invalid/unbounded response rejected, findings preserved.
 - [ ] **T009 [P0]** Wire author/inspector role separation, frozen baseline, checklist evidence and reinspection after changes into Fabro, preserving all six SWE process loops. **[FR-003,FR-038]** Test: stale inspector hash rejects pass; blocked finding loops or packages.

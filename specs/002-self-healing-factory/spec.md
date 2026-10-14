@@ -11,6 +11,12 @@
 
 Forge-C develops ultra-low-footprint C HAL and low-level drivers and autonomously generates SWE.1–SWE.6 workproducts, safety-oriented evidence, formal independent-agent inspections, deterministic verification, and a complete offline handover package. It must self-monitor, recover from infrastructure faults within defined policy, learn only from *validated* repairs, and expose selectable, privacy-controlled trace channels. No AI agent, supervisor, or automatic recovery action may claim ISO 26262 ASIL B approval or weaken safety verification gates.
 
+## Clarifications
+
+### Session 2026-10-14
+
+- Q: Which syntax must SWE.1 software requirements use, and how is it inspected? → A: Every SWE.1 software requirement statement MUST use **EARS** (Easy Approach to Requirements Syntax: ubiquitous, state-driven `While`, event-driven `When`, optional-feature `Where`, unwanted-behaviour `If … then`, or complex combinations), with exactly one `shall` and the specified system named. The SWE.1 inspection checklist v0.4 overlay adds mandatory item **SWE1-07**, decided by the deterministic EARS checker (`forge_factory.inspection.ears`, exposed via `forge-docs-mcp.validate_artifact`); a non-conformant requirement is a major finding that loops back to `swe1-author`. The baselined v0.3 checklist is extended, not modified. (Applies to FR-002, FR-003.)
+
 ## Clarified boundaries and invariants
 
 1. **Dark operation:** no LLM-driven action during a healthy supervisory poll; no interactive human gates from intake to packaged result; human oversight via read-only dashboard and after-run offline review.

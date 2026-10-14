@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t005_t006_agents_skills.py",
+    "factory/python/tests/test_ears.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 0.822,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "f4a1674e2efee1ac67d9f1e4492fd063d32b18f7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T006/20261014T210918.log",
+  "log_sha256": "691eedcfc0993a516251d979755a7f57978d1d1b3ea7d7ea29accffb1a64d236",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T006",
+  "ts_utc": "2026-10-14T21:09:18.291046Z"
+}

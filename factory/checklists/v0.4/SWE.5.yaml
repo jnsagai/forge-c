@@ -1,0 +1,8 @@
+schema: forge-c/inspection-checklist/v0.4
+phase: SWE.5
+version: '0.4'
+extends:
+  path: factory/release-manager/checklists/SWE.5.yaml
+  sha256: 87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba
+policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
+additional_checks: []

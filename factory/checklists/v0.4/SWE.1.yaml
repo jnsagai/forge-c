@@ -1,0 +1,21 @@
+schema: forge-c/inspection-checklist/v0.4
+phase: SWE.1
+version: '0.4'
+extends:
+  path: factory/release-manager/checklists/SWE.1.yaml
+  sha256: c2fb3cf54a927b399f6b5d7f74d9142f55530b49b6611281b57e8eb321fa75c9
+policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
+additional_checks:
+- id: SWE1-07
+  required: true
+  severity_if_failed: major
+  criterion: Every software requirement statement is written in EARS syntax (ubiquitous, state-driven,
+    event-driven, optional-feature, unwanted-behaviour or complex), is atomic (exactly one "shall")
+    and names the specified system.
+  deterministic_check: ears_conformance
+  tool: forge-docs-mcp.validate_artifact
+  source: user clarification 2026-10-14 (spec.md Clarifications)
+  evidence:
+  - workproduct_reference
+  - ears_report_reference
+  - recorded_verdict
