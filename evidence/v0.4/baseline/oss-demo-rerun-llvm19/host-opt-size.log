@@ -1,0 +1,114 @@
+HOST ONLY optimization comparison, not MCU footprint proof
+clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)
+======= HOST -Os =======
+-- The C compiler identification is Clang 17.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/local/swift/usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Os
+[1/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Os
+Test project /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Os
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Os/libforge_rcc_demo.a):
+section           size   addr
+.text              128      0
+.comment           111      0
+.note.GNU-stack      0      0
+.eh_frame           88      0
+.llvm_addrsig        0      0
+Total              327
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	0	static
+======= HOST -O2 =======
+-- The C compiler identification is Clang 17.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/local/swift/usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-O2
+[1/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-O2
+Test project /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-O2
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-O2/libforge_rcc_demo.a):
+section           size   addr
+.text              142      0
+.comment           111      0
+.note.GNU-stack      0      0
+.eh_frame           88      0
+.llvm_addrsig        0      0
+Total              341
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	0	static
+======= HOST -Oz =======
+-- The C compiler identification is Clang 17.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/local/swift/usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Oz
+[1/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Oz
+Test project /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Oz
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/host-Oz/libforge_rcc_demo.a):
+section           size   addr
+.text              140      0
+.comment           111      0
+.note.GNU-stack      0      0
+.eh_frame          168      0
+.llvm_addrsig        0      0
+Total              419
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	24	static
+drivers/demo_rcc/src/forge_rcc_demo.c:3:validate_bits	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	24	static

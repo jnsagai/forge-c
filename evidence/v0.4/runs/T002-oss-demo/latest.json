@@ -1,0 +1,20 @@
+{
+  "command": [
+    "./scripts/run_oss_demo.sh"
+  ],
+  "duration_s": 0.115,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "1cc26fd398dec481fbebc6ea4ec4a0e2dac93ccf",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T002-oss-demo/20261014T210138.log",
+  "log_sha256": "a348700e5929de5b62c4c001417a7c6b041ff5c9ec52ce27e38366b32b2ccc86",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T002-oss-demo",
+  "ts_utc": "2026-10-14T21:01:38.129322Z"
+}

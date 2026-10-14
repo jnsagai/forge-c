@@ -1,0 +1,9 @@
+BOOTSTRAP PASS 0.4.0
+......                                                                   [100%]
+All checks passed!
+Success: no issues found in 7 source files
+
+--- stderr ---
+Using CPython 3.13.13 interpreter at: /home/jefferson/.pyenv/versions/3.13.13/bin/python3.13
+Creating virtual environment at: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/bootstrap-test
+Activate with: source /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/bootstrap-test/bin/activate

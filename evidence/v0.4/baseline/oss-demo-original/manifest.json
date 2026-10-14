@@ -1,0 +1,18 @@
+{
+  "scope": "host-only-educational-demo",
+  "safety_status": "NOT_ASIL_B_EVIDENCE",
+  "misra_status": "NOT_ASSESSED",
+  "target_hardware_test": false,
+  "recorded_at_utc": "2026-10-14T20:38:28.460609+00:00",
+  "compiler": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)",
+  "artifacts": [
+    {
+      "path": "evidence/oss-demo/llvm-host.log",
+      "sha256": "65bdf51073eeff55012d1c207b2349bf7a72f6b0beba0d475ab781d7a65734da"
+    },
+    {
+      "path": "evidence/oss-demo/test.profdata",
+      "sha256": "009d63394e892ff1df9f53549ae25e1b35a9e962276178d0f57b9a6b311d8b7e"
+    }
+  ]
+}

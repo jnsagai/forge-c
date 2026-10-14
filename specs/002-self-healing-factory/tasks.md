@@ -7,10 +7,10 @@
 
 ## M0 — Establish reproducible baseline
 
-- [ ] **T001 [P0]** Pin Fabro, Ollama/Qwen, Python/MCP SDK, LLVM/GCC, Cppcheck, CBMC and dashboard dependencies with OSS licence inventory and tool matrix. Check versions actually installed. **[FR-039]** Test: recorded lockfile/SBOM; no hardcoded proprietary dependencies.
-- [ ] **T002 [P0]** Run current OSS v0.1 host RCC tests/LLVM coverage and the v0.3 reference packager tests unchanged. Preserve original reports and source hashes. **[FR-031,FR-032]** Test: baseline reports stored with tool/host provenance.
-- [ ] **T003 [P0]** Create versioned `factory/` Python packages (not new source overlay hacks), lint/type-check/pytest coverage and reproducible Dev Container/Ubuntu setup. **[FR-039]** Test: clean environment bootstrap, no paid services.
-- [ ] **T004 [P0]** Audit actual Fabro version's run API/events, MCP config, skills discovery, DOT loops, recovery hooks and known limitations. Document in ADRs before coding unsupported assumptions. **[FR-001,FR-004,FR-034]** Test: CLI/API smoke tests where available, mocked fallback elsewhere.
+- [X] **T001 [P0]** Pin Fabro, Ollama/Qwen, Python/MCP SDK, LLVM/GCC, Cppcheck, CBMC and dashboard dependencies with OSS licence inventory and tool matrix. Check versions actually installed. **[FR-039]** Test: recorded lockfile/SBOM; no hardcoded proprietary dependencies. ✅ Evidence: `evidence/v0.4/runs/T001/latest.json`
+- [X] **T002 [P0]** Run current OSS v0.1 host RCC tests/LLVM coverage and the v0.3 reference packager tests unchanged. Preserve original reports and source hashes. **[FR-031,FR-032]** Test: baseline reports stored with tool/host provenance. ✅ Evidence: `evidence/v0.4/runs/T002-v01-gates/latest.json`, `evidence/v0.4/runs/T002-v03-packager/latest.json`, `evidence/v0.4/runs/T002-design/latest.json`, `evidence/v0.4/runs/T002-oss-demo/latest.json`, `evidence/v0.4/runs/T002-clang-analyzer/latest.json`, `evidence/v0.4/runs/T002-host-size/latest.json`
+- [X] **T003 [P0]** Create versioned `factory/` Python packages (not new source overlay hacks), lint/type-check/pytest coverage and reproducible Dev Container/Ubuntu setup. **[FR-039]** Test: clean environment bootstrap, no paid services. ✅ Evidence: `evidence/v0.4/runs/T003/latest.json`
+- [X] **T004 [P0]** Audit actual Fabro version's run API/events, MCP config, skills discovery, DOT loops, recovery hooks and known limitations. Document in ADRs before coding unsupported assumptions. **[FR-001,FR-004,FR-034]** Test: CLI/API smoke tests where available, mocked fallback elsewhere. ✅ Evidence: `evidence/v0.4/runs/T004/latest.json`
 
 ## M1 — Every AI agent has a SKILL; enforce roles
 

@@ -1,0 +1,3 @@
+{"event":"pre_tool_use","run_id":"01M4Y3G729G75FJC15RT4K585C","workflow_name":"ForgeT004Probe","node_id":"probe","tool_name":"use_skill","tool_input":{"skill_name":"swe1-inspector"}}
+{"event":"pre_tool_use","run_id":"01M4Y3G729G75FJC15RT4K585C","workflow_name":"ForgeT004Probe","node_id":"probe","tool_name":"mcp__forge_probe__ping","tool_input":{"text":"T004"}}
+{"event":"pre_tool_use","run_id":"01M4Y3G729G75FJC15RT4K585C","workflow_name":"ForgeT004Probe","node_id":"probe","tool_name":"shell","tool_input":{"command":"echo native-shell-attempt","description":"Echo command execution for native-shell-attempt"}}

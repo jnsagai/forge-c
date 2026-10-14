@@ -1,0 +1,148 @@
+## Build
+-- The C compiler identification is Clang 17.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/local/swift/usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/oss-demo
+Change Dir: '/mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/oss-demo'
+
+Run Build Command(s): /usr/bin/ninja -v
+[1/4] /usr/local/swift/usr/bin/clang  -I/mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/drivers/demo_rcc/include -g -std=c11 -fprofile-instr-generate -fcoverage-mapping -fcoverage-mcdc -Wall -Wextra -Werror -Wconversion -Wsign-conversion -Wshadow -Wstrict-prototypes -fstack-usage -MD -MT CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o -MF CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o.d -o CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o -c /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/drivers/demo_rcc/src/forge_rcc_demo.c
+[2/4] /usr/local/swift/usr/bin/clang  -I/mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/drivers/demo_rcc/include -g -std=c11 -fprofile-instr-generate -fcoverage-mapping -fcoverage-mcdc -Wall -Wextra -Werror -Wconversion -Wsign-conversion -Wshadow -Wstrict-prototypes -UNDEBUG -MD -MT CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o -MF CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o.d -o CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o -c /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/tests/c/test_forge_rcc_demo.c
+[3/4] : && /usr/bin/cmake -E rm -f libforge_rcc_demo.a && /usr/local/swift/usr/bin/llvm-ar qc libforge_rcc_demo.a  CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o && /usr/local/swift/usr/bin/llvm-ranlib libforge_rcc_demo.a && :
+[4/4] : && /usr/local/swift/usr/bin/clang -g -fprofile-instr-generate -fcoverage-mapping -fcoverage-mcdc -Xlinker --dependency-file=CMakeFiles/test_forge_rcc_demo.dir/link.d CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o -o test_forge_rcc_demo  libforge_rcc_demo.a && :
+
+## Tests
+Internal ctest changing into directory: /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/oss-demo
+Test project /mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/build/oss-demo
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+## MC/DC coverage
+Filename                                                                                    Regions    Missed Regions     Cover   Functions  Missed Functions  Executed       Lines      Missed Lines     Cover    Branches   Missed Branches     Cover    MC/DC Conditions    Missed Conditions     Cover
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/mnt/data/forge-c-repack/forge-c-darkfactory-v0.5/drivers/demo_rcc/src/forge_rcc_demo.c          34                 0   100.00%           4                 0   100.00%          43                 0   100.00%          18                 0   100.00%                   6                    0   100.00%
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                            34                 0   100.00%           4                 0   100.00%          43                 0   100.00%          18                 0   100.00%                   6                    0   100.00%
+    1|       |#include "forge_rcc_demo.h"
+    2|       |
+    3|       |static forge_rcc_demo_status_t validate_bits(const forge_rcc_demo_t *context,
+    4|       |                                              uint32_t bits)
+    5|     11|{
+    6|     11|    if ((context == (void *)0) || (context->registers == (void *)0))
+  ------------------
+  |---> MC/DC Decision Region (6:9) to (6:68)
+  |
+  |  Number of Conditions: 2
+  |     Condition C1 --> (6:9)
+  |     Condition C2 --> (6:35)
+  |
+  |  Executed MC/DC Test Vectors:
+  |
+  |     C1, C2    Result
+  |  1 { F,  F  = F      }
+  |  2 { F,  T  = T      }
+  |  3 { T,  -  = T      }
+  |
+  |  C1-Pair: covered: (1,3)
+  |  C2-Pair: covered: (1,2)
+  |  MC/DC Coverage for Decision: 100.00%
+  |
+  ------------------
+    7|      4|    {
+    8|      4|        return FORGE_RCC_DEMO_INVALID_ARGUMENT;
+    9|      4|    }
+   10|      7|    if ((bits == UINT32_C(0)) || ((bits & ~context->allowed_bits) != UINT32_C(0)))
+  ------------------
+  |---> MC/DC Decision Region (10:9) to (10:82)
+  |
+  |  Number of Conditions: 2
+  |     Condition C1 --> (10:9)
+  |     Condition C2 --> (10:34)
+  |
+  |  Executed MC/DC Test Vectors:
+  |
+  |     C1, C2    Result
+  |  1 { F,  F  = F      }
+  |  2 { F,  T  = T      }
+  |  3 { T,  -  = T      }
+  |
+  |  C1-Pair: covered: (1,3)
+  |  C2-Pair: covered: (1,2)
+  |  MC/DC Coverage for Decision: 100.00%
+  |
+  ------------------
+   11|      4|    {
+   12|      4|        return FORGE_RCC_DEMO_INVALID_MASK;
+   13|      4|    }
+   14|      3|    return FORGE_RCC_DEMO_OK;
+   15|      7|}
+   16|       |
+   17|       |forge_rcc_demo_status_t forge_rcc_demo_init(forge_rcc_demo_t *context,
+   18|       |                                            forge_rcc_demo_registers_t *registers,
+   19|       |                                            uint32_t allowed_bits)
+   20|      4|{
+   21|      4|    if ((context == (void *)0) || (registers == (void *)0))
+  ------------------
+  |---> MC/DC Decision Region (21:9) to (21:59)
+  |
+  |  Number of Conditions: 2
+  |     Condition C1 --> (21:9)
+  |     Condition C2 --> (21:35)
+  |
+  |  Executed MC/DC Test Vectors:
+  |
+  |     C1, C2    Result
+  |  1 { F,  F  = F      }
+  |  2 { F,  T  = T      }
+  |  3 { T,  -  = T      }
+  |
+  |  C1-Pair: covered: (1,3)
+  |  C2-Pair: covered: (1,2)
+  |  MC/DC Coverage for Decision: 100.00%
+  |
+  ------------------
+   22|      2|    {
+   23|      2|        return FORGE_RCC_DEMO_INVALID_ARGUMENT;
+   24|      2|    }
+   25|      2|    if (allowed_bits == UINT32_C(0))
+   26|      1|    {
+   27|      1|        return FORGE_RCC_DEMO_INVALID_MASK;
+   28|      1|    }
+   29|      1|    context->registers = registers;
+   30|      1|    context->allowed_bits = allowed_bits;
+   31|      1|    return FORGE_RCC_DEMO_OK;
+   32|      2|}
+   33|       |
+   34|       |forge_rcc_demo_status_t forge_rcc_demo_enable_clock(forge_rcc_demo_t *context,
+   35|       |                                                    uint32_t bits)
+   36|      6|{
+   37|      6|    const forge_rcc_demo_status_t status = validate_bits(context, bits);
+   38|      6|    if (status != FORGE_RCC_DEMO_OK)
+   39|      4|    {
+   40|      4|        return status;
+   41|      4|    }
+   42|      2|    context->registers->clock_enable |= bits;
+   43|      2|    return FORGE_RCC_DEMO_OK;
+   44|      6|}
+   45|       |
+   46|       |forge_rcc_demo_status_t forge_rcc_demo_reset_pulse(forge_rcc_demo_t *context,
+   47|       |                                                   uint32_t bits)
+   48|      5|{
+   49|      5|    const forge_rcc_demo_status_t status = validate_bits(context, bits);
+   50|      5|    if (status != FORGE_RCC_DEMO_OK)
+   51|      4|    {
+   52|      4|        return status;
+   53|      4|    }
+   54|      1|    context->registers->reset_assert = bits;
+   55|      1|    context->registers->reset_release = bits;
+   56|      1|    return FORGE_RCC_DEMO_OK;
+   57|      5|}
+

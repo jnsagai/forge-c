@@ -1,0 +1,104 @@
+{
+  "host": {
+    "node": "master",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "notes": [
+    "Host-only demonstration; NOT_ASIL_B_EVIDENCE",
+    "Original bundle demo used Clang 17 per docs; rerun uses pinned LLVM 19.1.7"
+  ],
+  "original_evidence": "evidence/v0.4/baseline/oss-demo-original (verified against bundle SHA256SUMS.txt)",
+  "rerun_evidence": "evidence/v0.4/baseline/oss-demo-rerun-llvm19",
+  "schema": "forge-c/baseline-provenance/0.4",
+  "source_hashes": {
+    "CMakeLists.txt": "72b617def306e3dce345daae93214acaab7a25c62582f90aa75dfa23360c40b7",
+    "config/oss-tools.json": "bd2d2226ee04999c0a5fa2554ef0e7666775bdd497c6946988f39998148d5c20",
+    "drivers/demo_rcc/include/forge_rcc_demo.h": "d1196cd7892c99eff05d4387fa0e048f544ea616e9c1565d0ad262e93112e181",
+    "drivers/demo_rcc/src/forge_rcc_demo.c": "320a828716c961fec45838e088e12687a9f481d78a32b86cd51fd8a14a457c6d",
+    "factory/release-manager/OFFLINE_REVIEW_CHECKLIST.md": "2b7c5d1cca5ee357b7781749119db0cc80996384061d59021d0b6749ce966ecb",
+    "factory/release-manager/README.md": "88a3a0c572b0520ac2bfe2a7686b76a2beb4bc961f6dd20a916509390fe75128",
+    "factory/release-manager/RELEASE_MANAGER_SPEC.md": "cdcc729ce8307694bdd169c5d6c72a6291b4c6e6cfee0365bdbe55b3a3923e38",
+    "factory/release-manager/checklists/SWE.1.yaml": "c2fb3cf54a927b399f6b5d7f74d9142f55530b49b6611281b57e8eb321fa75c9",
+    "factory/release-manager/checklists/SWE.2.yaml": "3522b34a4574ab72d29061a8a3c4bb6cbedd3dfbcf7e59244f38ad36f01d6404",
+    "factory/release-manager/checklists/SWE.3.yaml": "58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af",
+    "factory/release-manager/checklists/SWE.4.yaml": "b6b0e53563c84415a5ca6e663c55ec8b1617ce402ad9da05dc0f64b29c8cd9e7",
+    "factory/release-manager/checklists/SWE.5.yaml": "87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba",
+    "factory/release-manager/checklists/SWE.6.yaml": "78f19b6e0df8efed7190d9d6a16397708d3874636843f6eac87c49be8b8c28bb",
+    "factory/release-manager/policies/release-package-policy.json": "9dc8953d1b52e6e5f126d31038e85d2412778146a2c8f9e1abef9de97c97094e",
+    "factory/release-manager/prompts/release-manager.md": "c246b3a8ecbe80bb28b372d3d3e8c73596c0c2cf056fbb5559de4cf7d401f5b2",
+    "factory/release-manager/schemas/quality-gates.schema.json": "6a359d2a9ac08229f1be09104d60c6de7b4b92a6708516453e60df4a0854f2f8",
+    "factory/release-manager/schemas/release-manifest.schema.json": "471118625d700ae43a233e1c49fdb8cbef2d19dd2b507790402eea5d9f9178f1",
+    "factory/release-manager/scripts/build_review_package.py": "eb5ee1edf67201ec59dfefa8f681e816fca3f54a37f70d797dfe53c1e0874c4a",
+    "factory/release-manager/tests/test_packager.py": "236c45204a8cc3d5c1d58ad1545c386995afafe15aafce34908f7640ef810f3c",
+    "profiles/mcu-template.json": "aabb499beeb4e7a8902759547a29f1a975116e3304fbc467b5bdf4bdb69dd03e",
+    "profiles/stm32n6-rcc-pilot.json": "a963b7070288329e0667cb660de7ce280c6c875fd097b58d4741311012dd6929",
+    "scripts/compare_host_size.sh": "f0cf1080f58e1724f683cc614dd802a798614f22d49e3511e897c3ddafed24ba",
+    "scripts/forge-env.sh": "5c1486e4ec64aa3ad3c5d21756f8bad3dd23839ee58993c374c1087fe1aafc68",
+    "scripts/oss_preflight.py": "94338103196526475507dec98d77604f0fc8e75cfb087d0b3ee1dc36a6043d1f",
+    "scripts/preflight.sh": "a8f4d698716b2d7ed070c68dc83699f32519f5e61330fadba1043a8e803322cd",
+    "scripts/run_oss_cbmc.sh": "552ce5f148d0c4a6ee6a0112df1337a66bafa5ee20f7d9bcb2bcd67b20f844f7",
+    "scripts/run_oss_clang_analyzer.sh": "ae0cf6aae748736efcbe6c874c2ec6f9983df446e318cb60fe37b03c71fea6ba",
+    "scripts/run_oss_demo.sh": "1338779480353d945c0782b330befa130d56e6f2cad3eef160a04f0a4b8341f0",
+    "scripts/run_oss_misra_subset.sh": "609d5cad24aafb5897ee523da3a7d07226a29b757d6e33b6cd41d9cbf1bb54af",
+    "scripts/run_oss_static.sh": "ff17fa56dcf67510beff26312ac41c194d4593e5d19326c774b3a9b4f03ba69e",
+    "scripts/verify_bundle.py": "0f9ec85913266ddab099662b20609b0fc7618baa5ef67a2656160b7d653e7c17",
+    "tests/c/test_forge_rcc_demo.c": "9b77b4d9019428db15c22b39b3b78daa49ea628fa93238722b0518ee481ac52b",
+    "tests/formal/cbmc_rcc_harness.c": "4d4c535e3a5c091f0dd71f450289667c199d4df28e20a64ddc55ea993e9fcbee",
+    "tools/check_oss_policy.py": "63b94298d5f528a2ed302def8bfb431bee6fb143c7e960142eac0ff61b3c6b18",
+    "tools/checks_gate.py": "4b71542578a2d305f724819cf1e90fe4a1f2ee156ce582b0b287d5251a4e3f7b",
+    "tools/footprint_gate.py": "142805dfb7cfb8fb0c02d3dd1f681a4f259bada8642a19a8b161759ce437a2a0",
+    "tools/gate_common.py": "b530ec8d92fc27e72496457f8ca92f4f74116d8674f364af9559f7209c671588",
+    "tools/oss_demo_manifest.py": "fae15121efb0fdcfd119b8d03fa57592878cb4d8ac165dacf6b6db77980a766c",
+    "tools/quality_gate.py": "f25b4230534d4165f5ecf81342f28bcda9d8a28d682def0a51c0ebc0e9d5026d",
+    "tools/trace_gate.py": "3c2ddd270b87376cbb875f9e404504583b37dca46606179ce81860a9f3ffe392",
+    "tools/validate_profile.py": "4c4ea5f9f5cee5df03398abe9e8786dd19216ac9edd5dd1bd6b2bcf8b1e09cba",
+    "tools/verify_oss_demo.py": "2e91bfd9ceea60360afff3a7d45e093a9bad7d1278d5cf2ee392f884798ed802"
+  },
+  "suite_results": {
+    "T002-clang-analyzer": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-clang-analyzer/20261014T210138.log",
+      "log_sha256": "de1dc224200443a9ac712f12e5c0d73ed922a0fd34b14aa7d67b0b9ebe637649",
+      "status": "PASS"
+    },
+    "T002-design": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-design/20261014T210137.log",
+      "log_sha256": "8219f46e70957dfa5fb7ca6ce7f1d9d4259ab67a43807c70ff833d30e799c0f9",
+      "status": "PASS"
+    },
+    "T002-host-size": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-host-size/20261014T210138.log",
+      "log_sha256": "3e75a9322a5fc53fd8ed55ffa307a9d7cf084df3b3155978b3b3264dc10fedea",
+      "status": "PASS"
+    },
+    "T002-oss-demo": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-oss-demo/20261014T210138.log",
+      "log_sha256": "a348700e5929de5b62c4c001417a7c6b041ff5c9ec52ce27e38366b32b2ccc86",
+      "status": "PASS"
+    },
+    "T002-v01-gates": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-v01-gates/20261014T210137.log",
+      "log_sha256": "3bc365f027386467b791b4638c2557ea990452a06f1e097923a99d5a812989ef",
+      "status": "PASS"
+    },
+    "T002-v03-packager": {
+      "exit_code": 0,
+      "log": "evidence/v0.4/runs/T002-v03-packager/20261014T210137.log",
+      "log_sha256": "b89d5e682797ee9cdbecbd930a9c4a0939dcc8d20e758f34c2548a4844c43d5e",
+      "status": "PASS"
+    }
+  },
+  "task": "T002",
+  "tools": {
+    "clang": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)",
+    "cmake": "cmake version 3.22.1",
+    "llvm-cov": "LLVM (http://llvm.org/):",
+    "ninja": "1.10.1",
+    "python3": "Python 3.13.13"
+  },
+  "ts_utc": "2026-10-14T21:01:50.597818Z"
+}

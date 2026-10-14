@@ -1,0 +1,14 @@
+
+--- stderr ---
+test_empty_workspace_still_delivers_blocked_package (test_packager.ReviewPackageTests.test_empty_workspace_still_delivers_blocked_package) ... ok
+test_failed_quality_gate_blocks (test_packager.ReviewPackageTests.test_failed_quality_gate_blocks) ... ok
+test_open_finding_remains_blocked (test_packager.ReviewPackageTests.test_open_finding_remains_blocked) ... ok
+test_output_must_not_be_inside_workspace (test_packager.ReviewPackageTests.test_output_must_not_be_inside_workspace) ... ok
+test_reproducible_package_bytes_for_same_input (test_packager.ReviewPackageTests.test_reproducible_package_bytes_for_same_input) ... ok
+test_symlink_is_marked_blocking_not_followed (test_packager.ReviewPackageTests.test_symlink_is_marked_blocking_not_followed) ... ok
+test_synthetic_complete_fixture_passes_mechanical_check (test_packager.ReviewPackageTests.test_synthetic_complete_fixture_passes_mechanical_check) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.067s
+
+OK

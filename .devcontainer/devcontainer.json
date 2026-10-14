@@ -1,0 +1,7 @@
+{
+  "name": "forge-c-v0.4",
+  "build": {"dockerfile": "Dockerfile"},
+  "postCreateCommand": "FORGE_VENV=/workspace/.venv ./scripts/bootstrap_factory.sh",
+  "containerEnv": {"FORGE_DATA_ROOT": "/workspace/.forge-data"},
+  "runArgs": ["--network=host"]
+}

@@ -1,0 +1,116 @@
+HOST ONLY optimization comparison, not MCU footprint proof
+clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+======= HOST -Os =======
+-- The C compiler identification is Clang 19.1.7
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jefferson/forge-c/build/host-Os
+[1/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /home/jefferson/forge-c/build/host-Os
+Test project /home/jefferson/forge-c/build/host-Os
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /home/jefferson/forge-c/build/host-Os/libforge_rcc_demo.a):
+section           size   addr
+.text              128      0
+.comment           115      0
+.note.GNU-stack      0      0
+.eh_frame           88      0
+.llvm_addrsig        0      0
+Total              331
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	0	static
+======= HOST -O2 =======
+-- The C compiler identification is Clang 19.1.7
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jefferson/forge-c/build/host-O2
+[1/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /home/jefferson/forge-c/build/host-O2
+Test project /home/jefferson/forge-c/build/host-O2
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /home/jefferson/forge-c/build/host-O2/libforge_rcc_demo.a):
+section           size   addr
+.text              142      0
+.comment           115      0
+.note.GNU-stack      0      0
+.eh_frame           88      0
+.llvm_addrsig        0      0
+Total              345
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	0	static
+======= HOST -Oz =======
+-- The C compiler identification is Clang 19.1.7
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jefferson/forge-c/build/host-Oz
+[1/4] Building C object CMakeFiles/test_forge_rcc_demo.dir/tests/c/test_forge_rcc_demo.c.o
+[2/4] Building C object CMakeFiles/forge_rcc_demo.dir/drivers/demo_rcc/src/forge_rcc_demo.c.o
+[3/4] Linking C static library libforge_rcc_demo.a
+[4/4] Linking C executable test_forge_rcc_demo
+Internal ctest changing into directory: /home/jefferson/forge-c/build/host-Oz
+Test project /home/jefferson/forge-c/build/host-Oz
+    Start 1: forge_rcc_demo_native
+1/1 Test #1: forge_rcc_demo_native ............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+Host archive section sizes:
+forge_rcc_demo.c.o   (ex /home/jefferson/forge-c/build/host-Oz/libforge_rcc_demo.a):
+section           size   addr
+.text              140      0
+.comment           115      0
+.note.GNU-stack      0      0
+.eh_frame          168      0
+.llvm_addrsig        0      0
+Total              423
+
+
+Host compiler stack-usage estimates (NOT interrupt-inclusive):
+drivers/demo_rcc/src/forge_rcc_demo.c:17:forge_rcc_demo_init	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:34:forge_rcc_demo_enable_clock	24	static
+drivers/demo_rcc/src/forge_rcc_demo.c:3:validate_bits	0	static
+drivers/demo_rcc/src/forge_rcc_demo.c:46:forge_rcc_demo_reset_pulse	24	static
+
+--- stderr ---
