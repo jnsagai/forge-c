@@ -13,3 +13,6 @@ secrets/
 # OSS demonstration artifacts (generated locally)
 /build/
 /evidence/oss-demo/
+# Spec Kit / Claude local state
+.specify/feature.json
+*.egg-info/
