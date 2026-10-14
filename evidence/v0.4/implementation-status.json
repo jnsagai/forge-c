@@ -1,0 +1,1733 @@
+{
+  "acceptance_tests": {
+    "AT-01": "T005–T006",
+    "AT-02": "T007",
+    "AT-03": "T010–T018",
+    "AT-04": "T011–T012",
+    "AT-05": "T011,T043",
+    "AT-06": "T005,T009",
+    "AT-07": "T009,T047",
+    "AT-08": "T009,T044",
+    "AT-09": "T020",
+    "AT-10": "T021,T023",
+    "AT-11": "T021–T022",
+    "AT-12": "T026–T027",
+    "AT-13": "T027–T030",
+    "AT-14": "T022,T027–T028",
+    "AT-15": "T030–T032",
+    "AT-16": "T032",
+    "AT-17": "T033",
+    "AT-18": "T035,T039",
+    "AT-19": "T035–T036",
+    "AT-20": "T036",
+    "AT-21": "T036,T041",
+    "AT-22": "T042",
+    "AT-23": "T045–T048",
+    "AT-24": "T045–T047",
+    "AT-25": "T045",
+    "AT-26": "T001,T050"
+  },
+  "fr_matrix": [
+    {
+      "fr": "FR-001",
+      "passing_tasks": [
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T004",
+        "T005",
+        "T006",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-002",
+      "passing_tasks": [
+        "T005",
+        "T006"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T005",
+        "T006",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-003",
+      "passing_tasks": [
+        "T007",
+        "T009",
+        "T044",
+        "T047"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T007",
+        "T009",
+        "T044",
+        "T047",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-004",
+      "passing_tasks": [
+        "T004",
+        "T010",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T017"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T004",
+        "T010",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T017",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-005",
+      "passing_tasks": [
+        "T010",
+        "T018"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T010",
+        "T018",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-006",
+      "passing_tasks": [
+        "T007",
+        "T011",
+        "T012",
+        "T016",
+        "T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T007",
+        "T011",
+        "T012",
+        "T016",
+        "T048",
+        "T049",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-007",
+      "passing_tasks": [
+        "T020",
+        "T024"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T020",
+        "T024",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-008",
+      "passing_tasks": [
+        "T020"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T020",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-009",
+      "passing_tasks": [
+        "T021"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T021",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-010",
+      "passing_tasks": [
+        "T019",
+        "T022"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T019",
+        "T022",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-011",
+      "passing_tasks": [
+        "T022",
+        "T023",
+        "T025"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T022",
+        "T023",
+        "T025",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-012",
+      "passing_tasks": [
+        "T025",
+        "T026"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T025",
+        "T026",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-013",
+      "passing_tasks": [
+        "T026",
+        "T029",
+        "T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T026",
+        "T029",
+        "T048",
+        "T049",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-014",
+      "passing_tasks": [
+        "T027"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T027",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-015",
+      "passing_tasks": [
+        "T022",
+        "T047"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T022",
+        "T047",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-016",
+      "passing_tasks": [
+        "T028"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T028",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-017",
+      "passing_tasks": [
+        "T030"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T030",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-018",
+      "passing_tasks": [
+        "T030",
+        "T031",
+        "T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T030",
+        "T031",
+        "T048",
+        "T049",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-019",
+      "passing_tasks": [
+        "T017",
+        "T031",
+        "T032"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T017",
+        "T031",
+        "T032",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-020",
+      "passing_tasks": [
+        "T037",
+        "T038",
+        "T041"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T037",
+        "T038",
+        "T041",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-021",
+      "passing_tasks": [
+        "T037",
+        "T039"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T037",
+        "T039",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-022",
+      "passing_tasks": [
+        "T035",
+        "T039"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T035",
+        "T039",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-023",
+      "passing_tasks": [
+        "T035"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T035",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-024",
+      "passing_tasks": [
+        "T035",
+        "T039"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T035",
+        "T039",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-025",
+      "passing_tasks": [
+        "T036",
+        "T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T036",
+        "T048",
+        "T049",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-026",
+      "passing_tasks": [
+        "T034"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T034",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-027",
+      "passing_tasks": [
+        "T006",
+        "T008",
+        "T025",
+        "T043"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T006",
+        "T008",
+        "T025",
+        "T043",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-028",
+      "passing_tasks": [
+        "T008",
+        "T011",
+        "T025",
+        "T032",
+        "T036",
+        "T043"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T008",
+        "T011",
+        "T025",
+        "T032",
+        "T036",
+        "T043",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-029",
+      "passing_tasks": [
+        "T032",
+        "T041",
+        "T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T032",
+        "T041",
+        "T042",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-030",
+      "passing_tasks": [
+        "T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T042",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-031",
+      "passing_tasks": [
+        "T002",
+        "T016",
+        "T028",
+        "T045",
+        "T046"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T002",
+        "T016",
+        "T028",
+        "T045",
+        "T046",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-032",
+      "passing_tasks": [
+        "T002",
+        "T045",
+        "T046"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T002",
+        "T045",
+        "T046",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-033",
+      "passing_tasks": [
+        "T045",
+        "T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T045",
+        "T048",
+        "T049",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-034",
+      "passing_tasks": [
+        "T004",
+        "T020",
+        "T023",
+        "T024"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T004",
+        "T020",
+        "T023",
+        "T024",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-035",
+      "passing_tasks": [
+        "T033"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "T033",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-036",
+      "passing_tasks": [
+        "T044"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "T044",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-037",
+      "passing_tasks": [
+        "T040"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "T040",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-038",
+      "passing_tasks": [
+        "T009",
+        "T029",
+        "T047"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T009",
+        "T029",
+        "T047",
+        "T048",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-039",
+      "passing_tasks": [
+        "T001",
+        "T003"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T001",
+        "T003",
+        "T048",
+        "T050",
+        "T051"
+      ]
+    },
+    {
+      "fr": "FR-040",
+      "passing_tasks": [
+        "T010",
+        "T013",
+        "T015",
+        "T018"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "T010",
+        "T013",
+        "T015",
+        "T018",
+        "T048",
+        "T051"
+      ]
+    }
+  ],
+  "generated_at": "2026-10-14T22:16:21.056966Z",
+  "git_head": "37287e25323d1b77e685c41ec04e6c4a93d96401",
+  "p0_gaps": [],
+  "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
+  "schema": "forge-c/implementation-status/0.4",
+  "summary": {
+    "002_pass": 48,
+    "002_total": 51,
+    "003_pass": 0,
+    "003_total": 20,
+    "fr_covered": 40,
+    "fr_total": 40
+  },
+  "tasks_002": [
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T001/latest.json"
+      ],
+      "frs": [
+        "FR-039"
+      ],
+      "line": "- [X] **T001 [P0]** Pin Fabro, Ollama/Qwen, Python/MCP SDK, LLVM/GCC, Cppcheck, CBMC and dashboard dependencies with OSS licence inventory and tool matrix. Check versions actually installed. **[FR-039",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T001"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T002-v01-gates/latest.json",
+        "evidence/v0.4/runs/T002-v03-packager/latest.json",
+        "evidence/v0.4/runs/T002-design/latest.json",
+        "evidence/v0.4/runs/T002-oss-demo/latest.json",
+        "evidence/v0.4/runs/T002-clang-analyzer/latest.json",
+        "evidence/v0.4/runs/T002-host-size/latest.json"
+      ],
+      "frs": [
+        "FR-031",
+        "FR-032"
+      ],
+      "line": "- [X] **T002 [P0]** Run current OSS v0.1 host RCC tests/LLVM coverage and the v0.3 reference packager tests unchanged. Preserve original reports and source hashes. **[FR-031,FR-032]** Test: baseline r",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T002"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T003/latest.json"
+      ],
+      "frs": [
+        "FR-039"
+      ],
+      "line": "- [X] **T003 [P0]** Create versioned `factory/` Python packages (not new source overlay hacks), lint/type-check/pytest coverage and reproducible Dev Container/Ubuntu setup. **[FR-039]** Test: clean en",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T003"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T004/latest.json"
+      ],
+      "frs": [
+        "FR-001",
+        "FR-004",
+        "FR-034"
+      ],
+      "line": "- [X] **T004 [P0]** Audit actual Fabro version's run API/events, MCP config, skills discovery, DOT loops, recovery hooks and known limitations. Document in ADRs before coding unsupported assumptions. ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T004"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T005/latest.json"
+      ],
+      "frs": [
+        "FR-001",
+        "FR-002"
+      ],
+      "line": "- [X] **T005 [P0]** Implement `agents.yaml` loader and JSON/Pydantic schema validator: unique role, `SKILL.md` path/hash, model, grants, caps, outputs. **[FR-001,FR-002]** Test: invalid/missing/duplic",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T005"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T006/latest.json"
+      ],
+      "frs": [
+        "FR-001",
+        "FR-002",
+        "FR-027"
+      ],
+      "line": "- [X] **T006 [P0] [P]** Complete all 20 `.fabro/skills/<role>/SKILL.md` from starter contracts; verify Fabro discovery and YAML frontmatter. **[FR-001,FR-002,FR-027]** Test: every role loaded; no unbo",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T006"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T007/latest.json"
+      ],
+      "frs": [
+        "FR-003",
+        "FR-006"
+      ],
+      "line": "- [X] **T007 [P0]** Build role- and phase-aware tool authorization at MCP gateway and in the execution sandbox (independent of prompt), including prevention of bypass by Fabro built-in shell and files",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T007"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T008/latest.json"
+      ],
+      "frs": [
+        "FR-027",
+        "FR-028"
+      ],
+      "line": "- [X] **T008 [P0]** Implement compact agent result schema/parser (`status, artifacts, issues, next_action`) and block freeform status prose in lifecycle controls. **[FR-027,FR-028]** Test: invalid/unb",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T008"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T009/latest.json"
+      ],
+      "frs": [
+        "FR-003",
+        "FR-038"
+      ],
+      "line": "- [X] **T009 [P0]** Wire author/inspector role separation, frozen baseline, checklist evidence and reinspection after changes into Fabro, preserving all six SWE process loops. **[FR-003,FR-038]** Test",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T009"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T010/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-005",
+        "FR-040"
+      ],
+      "line": "- [X] **T010 [P0]** Implement `mcp-registry.yaml` loader: logical tool, server, operation, mandatory flag, expected schema, timeout, version/availability and permissions. **[FR-004,FR-005,FR-040]** Te",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T010"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T011/latest.json"
+      ],
+      "frs": [
+        "FR-006",
+        "FR-028"
+      ],
+      "line": "- [X] **T011 [P0]** Implement shared MCP wrapper SDK: JSON input validation, canonical restricted paths, `subprocess` with argv arrays/no shell, resource limits, stdout/stderr evidence hashing, bounde",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T011"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T012/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-006"
+      ],
+      "line": "- [X] **T012 [P0] [P]** Build `forge-build-mcp` adapters for CMake/Ninja/Clang/GCC/binutils, size/map/stack; target flag allowlist and pinned tool provenance. **[FR-004,FR-006]** Tests: native RCC com",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T012"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T013/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-040"
+      ],
+      "line": "- [X] **T013 [P0] [P]** Build `forge-analysis-mcp` for Clang analyzer, Cppcheck MISRA **subset**; plug CBMC/Frama-C/Clang-Tidy only when verified and installed. **[FR-004,FR-040]** Tests: clean defect",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T013"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T014/latest.json"
+      ],
+      "frs": [
+        "FR-004"
+      ],
+      "line": "- [X] **T014 [P0] [P]** Build `forge-tests-mcp` for Unity/CMock/CTest and LLVM-Cov/llvm-profdata; gcovr optional; distinguish host/target. **[FR-004]** Tests: negative unit, branch and MC/DC fixture, ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T014"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T015/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-040"
+      ],
+      "line": "- [X] **T015 [P0] [P]** Build `forge-sim-mcp` for Renode and HwSim with optional dependency checks and deterministic fault injection interface. **[FR-004,FR-040]** Tests: mocked device model, unavaila",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T015"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T016/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-006",
+        "FR-031"
+      ],
+      "line": "- [X] **T016 [P0] [P]** Build `forge-evidence-mcp` wrapping trace/gate/inspection tools and existing immutable release packager; `forge-repo-mcp` exposing tightly scoped Git operations. **[FR-004,FR-0",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T016"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T017/latest.json"
+      ],
+      "frs": [
+        "FR-004",
+        "FR-019"
+      ],
+      "line": "- [X] **T017 [P0] [P]** Build `forge-observer-mcp`, `forge-knowledge-mcp`, `forge-docs-mcp` for status, lessons and documentation validation. **[FR-004,FR-019]** Tests: reads bound, unsafe lesson prom",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T017"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T018/latest.json"
+      ],
+      "frs": [
+        "FR-005",
+        "FR-040"
+      ],
+      "line": "- [X] **T018 [P0]** Integrate Fabro MCP configuration via documented settings/run-config paths; perform `tools/list`, health and permission preflight. **[FR-005,FR-040]** Test: full required-tool disc",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T018"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T019/latest.json"
+      ],
+      "frs": [
+        "FR-010"
+      ],
+      "line": "- [X] **T019 [P0]** Implement persisted incident DB and state transitions from `data-model.md` and `contracts/incident.schema.json`. **[FR-010]** Tests: transactional transition guards, power loss/res",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T019"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T020/latest.json"
+      ],
+      "frs": [
+        "FR-007",
+        "FR-008",
+        "FR-034"
+      ],
+      "line": "- [X] **T020 [P0]** Build non-LLM scheduler/service with interval config validation, jitter, independent progress checkpoints and OS/service-manager watchdog. **[FR-007,FR-008,FR-034]** Test: 100 heal",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T020"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T021/latest.json"
+      ],
+      "frs": [
+        "FR-009"
+      ],
+      "line": "- [X] **T021 [P0] [P]** Add health probes for Fabro liveness, run deadlines, stalls, MCP handshake, queue, storage, dashboard and resource pressure with unknown-data states. **[FR-009]** Tests: inject",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T021"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T022/latest.json"
+      ],
+      "frs": [
+        "FR-010",
+        "FR-011",
+        "FR-015"
+      ],
+      "line": "- [X] **T022 [P0]** Implement incident routing, active incident leases, backoff, cooldown, max attempts and repair dispatch queue. **[FR-010,FR-011,FR-015]** Test: only one repair for duplicate root-c",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T022"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T023/latest.json"
+      ],
+      "frs": [
+        "FR-011",
+        "FR-034"
+      ],
+      "line": "- [X] **T023 [P0]** Implement Fabro-independent repair launch path for Fabro-down condition (isolated local repair worker), plus Fabro child-run pathway for healthy engine; test both. **[FR-011,FR-034",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T023"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T024/latest.json"
+      ],
+      "frs": [
+        "FR-007",
+        "FR-034"
+      ],
+      "line": "- [X] **T024 [P0]** Persist heartbeat/watchdog and reboot resume procedures with systemd services; document container-only fallback. **[FR-007,FR-034]** Tests: supervisor SIGKILL -> OS restarts, incid",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T024"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T025/latest.json"
+      ],
+      "frs": [
+        "FR-011",
+        "FR-012",
+        "FR-027",
+        "FR-028"
+      ],
+      "line": "- [X] **T025 [P0]** Instantiate `fabric-repair` SKILL with incident-only context and bounded MCP grants; avoid copying broad run context into model. **[FR-011,FR-012,FR-027,FR-028]** Test: input token",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T025"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T026/latest.json"
+      ],
+      "frs": [
+        "FR-012",
+        "FR-013"
+      ],
+      "line": "- [X] **T026 [P0]** Create restricted repair worktree/process sandbox and protected path denylist; prefer OS permissions and a syscall/process policy over prompt restrictions. **[FR-012,FR-013]** Test",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T026"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T027/latest.json"
+      ],
+      "frs": [
+        "FR-014"
+      ],
+      "line": "- [X] **T027 [P0]** Implement deterministic repair promotion controller: patch hash, tests, health stability, atomic switch and rollback; no agent self-approval. **[FR-014]** Test: successful induced ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T027"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T028/latest.json"
+      ],
+      "frs": [
+        "FR-016",
+        "FR-031"
+      ],
+      "line": "- [X] **T028 [P0]** Record repair outcomes, restored health, elapsed time, token consumption, and unresolved failures into incident ledger and downstream release evidence. **[FR-016,FR-031]** Tests: u",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T028"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T029/latest.json"
+      ],
+      "frs": [
+        "FR-013",
+        "FR-038"
+      ],
+      "line": "- [X] **T029 [P0]** Ensure repairing factory infrastructure never silently repairs/changes product requirements, safety allocations or completed workproduct baselines. **[FR-013,FR-038]** Test: source",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T029"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T030/latest.json"
+      ],
+      "frs": [
+        "FR-017",
+        "FR-018"
+      ],
+      "line": "- [X] **T030 [P0]** Implement lesson candidate schema, SQLite store and validation state machine with provenance, expirations and affected versions. **[FR-017,FR-018]** Tests: unverified repair cannot",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T030"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T031/latest.json"
+      ],
+      "frs": [
+        "FR-018",
+        "FR-019"
+      ],
+      "line": "- [X] **T031 [P0]** Implement `lessons-curator` process and deterministic validators for secrets, unsafe policy edits, duplicate/unsupported prescriptions and regression check references. **[FR-018,FR",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T031"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T032/latest.json"
+      ],
+      "frs": [
+        "FR-019",
+        "FR-028",
+        "FR-029"
+      ],
+      "line": "- [X] **T032 [P0]** Implement scoped top-K retrieval (FTS5 first), tool/error/version relevance and token-size budgets, injecting only trusted lessons. **[FR-019,FR-028,FR-029]** Test: next workflow r",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T032"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T033/latest.json"
+      ],
+      "frs": [
+        "FR-035"
+      ],
+      "line": "- [X] **T033 [P1]** Implement lesson retraction, impact list of consuming runs, and dependency invalidation on tool/version regression. **[FR-035]** Test: revoked lesson no longer retrieved. ✅ Evidenc",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "T033"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T034/latest.json"
+      ],
+      "frs": [
+        "FR-026"
+      ],
+      "line": "- [X] **T034 [P0]** Implement normalized event collector for Fabro native run events + factory events with idempotent offsets and `event.schema.json` validation. **[FR-026]** Test: replay identical st",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T034"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T035/latest.json"
+      ],
+      "frs": [
+        "FR-022",
+        "FR-023",
+        "FR-024"
+      ],
+      "line": "- [X] **T035 [P0]** Implement channel/severity capture policy validation and live reload with hard minimum audit/security capture. **[FR-022,FR-023,FR-024]** Test: turning audit OFF is rejected, dashb",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T035"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T036/latest.json"
+      ],
+      "frs": [
+        "FR-025",
+        "FR-028"
+      ],
+      "line": "- [X] **T036 [P0]** Implement secret redactor, raw AI capture opt-in, immutable artifact-backed tool logs and configurable per-channel retention. **[FR-025,FR-028]** Test: credentials never persisted ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T036"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T037/latest.json"
+      ],
+      "frs": [
+        "FR-020",
+        "FR-021"
+      ],
+      "line": "- [X] **T037 [P0]** Implement API queries for health/runs/inspections/agents/MCP/incidents/lessons/packages/tokens and event filters. **[FR-020,FR-021]** Test: role-limited read endpoints and paginati",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T037"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T038/latest.json"
+      ],
+      "frs": [
+        "FR-020"
+      ],
+      "line": "- [X] **T038 [P0]** Build responsive UI with health badge, run stage view, incident/repair panel, MCP status, inspection findings, release status, resource and token charts. **[FR-020]** Test: browser",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T038"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T039/latest.json"
+      ],
+      "frs": [
+        "FR-021",
+        "FR-022",
+        "FR-024"
+      ],
+      "line": "- [X] **T039 [P0]** Implement per-user display controls (channels/severity/run/agent/search), independent from capture policy; minimal default HUMAN view. **[FR-021,FR-022,FR-024]** Test: hidden chann",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T039"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T040/latest.json"
+      ],
+      "frs": [
+        "FR-037"
+      ],
+      "line": "- [X] **T040 [P1]** Add SSE with polling fallback, stored offset/reconnect and no direct DB exposure to browser. **[FR-037]** Test: interrupted client reconnects without duplicate display or event los",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "T040"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T041/latest.json"
+      ],
+      "frs": [
+        "FR-020",
+        "FR-029"
+      ],
+      "line": "- [X] **T041 [P0]** Implement tool/AI/phase token and output-size metrics with unknown/estimated flag; never silently invent provider token counts. **[FR-020,FR-029]** Tests: input/output budgets and ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T041"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T042/latest.json"
+      ],
+      "frs": [
+        "FR-029",
+        "FR-030"
+      ],
+      "line": "- [X] **T042 [P0]** Implement stage budget governor (turns, total tokens, MCP bytes, retries, lesson K) and `TOKEN_BUDGET_EXHAUSTED` behavior. **[FR-029,FR-030]** Test: forced budget exhaustion -> saf",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T042"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T043/latest.json"
+      ],
+      "frs": [
+        "FR-027",
+        "FR-028"
+      ],
+      "line": "- [X] **T043 [P0]** Enforce compact JSON agent result, short human status <=160 chars, evidence-by-reference and bounded MCP return payload. **[FR-027,FR-028]** Test: 5 MB compiler log returned as sma",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T043"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T044/latest.json"
+      ],
+      "frs": [
+        "FR-003",
+        "FR-036"
+      ],
+      "line": "- [X] **T044 [P1]** Implement resumable idempotent Fabro stage boundaries and change-impact reinspection mapping, conditional on verified Fabro capabilities. **[FR-036,FR-003]** Test: interrupted stag",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "T044"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T045/latest.json"
+      ],
+      "frs": [
+        "FR-031",
+        "FR-032",
+        "FR-033"
+      ],
+      "line": "- [X] **T045 [P0]** Extend existing v0.3 packager through versioned v0.4 operational inventory and strict gap report; preserve all previous ASIL-oriented checks. **[FR-031,FR-032,FR-033]** Test: every",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T045"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T046/latest.json"
+      ],
+      "frs": [
+        "FR-031",
+        "FR-032"
+      ],
+      "line": "- [X] **T046 [P0]** Ensure **every** Fabro terminal path, including crashed/exhausted/blocked, invokes the final Release Manager or safe external finalizer. **[FR-031,FR-032]** Test: inject failing SW",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T046"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T047/latest.json"
+      ],
+      "frs": [
+        "FR-003",
+        "FR-015",
+        "FR-038"
+      ],
+      "line": "- [X] **T047 [P0]** Prove inspector-review loops and infrastructure repair loops are separated and bounded. **[FR-003,FR-015,FR-038]** Test: driver defect routes SWE loop; Fabro process defect routes ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T047"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-016",
+        "FR-017",
+        "FR-018",
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-022",
+        "FR-023",
+        "FR-024",
+        "FR-025",
+        "FR-026",
+        "FR-027",
+        "FR-028",
+        "FR-029",
+        "FR-030",
+        "FR-031",
+        "FR-032",
+        "FR-033",
+        "FR-034",
+        "FR-035",
+        "FR-036",
+        "FR-037",
+        "FR-038",
+        "FR-039",
+        "FR-040"
+      ],
+      "line": "- [ ] **T048 [P0]** Execute offline generic RCC end-to-end on local Qwen using real Fabro: full workproducts, inspections, tests, footprint, coverage, health/trace reports and review archive. **[FR-00",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "T048"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T049/latest.json"
+      ],
+      "frs": [
+        "FR-006",
+        "FR-013",
+        "FR-018",
+        "FR-025",
+        "FR-033"
+      ],
+      "line": "- [X] **T049 [P0]** Perform threat-model/security tests: prompt injection in lessons, path traversal in MCP, malicious repair patch, secrets in traces, forged AI PASS and archive tampering. **[FR-006,",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "T049"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "FR-039"
+      ],
+      "line": "- [ ] **T050 [P0]** Document Ubuntu setup, service lifecycle, backup/restore, trace retention, dashboard auth, upgrade/rollback, failure runbook, review instructions and known safety-tool gaps. **[FR-",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "T050"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008",
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-013",
+        "FR-014",
+        "FR-015",
+        "FR-016",
+        "FR-017",
+        "FR-018",
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-022",
+        "FR-023",
+        "FR-024",
+        "FR-025",
+        "FR-026",
+        "FR-027",
+        "FR-028",
+        "FR-029",
+        "FR-030",
+        "FR-031",
+        "FR-032",
+        "FR-033",
+        "FR-034",
+        "FR-035",
+        "FR-036",
+        "FR-037",
+        "FR-038",
+        "FR-039",
+        "FR-040"
+      ],
+      "line": "- [ ] **T051 [P0]** Generate final FR→task→test coverage matrix, run all contract/acceptance suites, stamp evidence/commit hashes and produce a self-contained implementation status report (PASS/FAIL/N",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "T051"
+    }
+  ],
+  "tasks_003": [
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-005",
+        "KPI-FR-009"
+      ],
+      "line": "- [ ] **KPI-T001 [P0]** Validate and freeze `contracts/kpi-catalog.json` (IDs K01–K20, formulas, eligibility, dimensions, quality flags), reviewed examples; **KPI-FR-005, KPI-FR-009**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T001"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-001",
+        "KPI-FR-003"
+      ],
+      "line": "- [ ] **KPI-T002 [P0]** Extend 002 typed event schema with versioned KPI source-event payloads and conversion tests; **KPI-FR-001, KPI-FR-003**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T002"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-001",
+        "KPI-FR-004",
+        "KPI-FR-007"
+      ],
+      "line": "- [ ] **KPI-T003 [P0]** Define work order lifecycle, unique driver order vs attempt, classification policy, clock semantics and append-only first-inspection result; **KPI-FR-001, KPI-FR-004, KPI-FR-00",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T003"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-006",
+        "KPI-FR-008",
+        "KPI-FR-017"
+      ],
+      "line": "- [ ] **KPI-T004 [P0]** Add versioned `config/factory/kpi-policy.yaml`: windows, inclusion, pilot targets, baseline minimum, data quality and safety non-negotiables; **KPI-FR-006, KPI-FR-008, KPI-FR-0",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T004"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-002",
+        "KPI-FR-003",
+        "KPI-FR-015"
+      ],
+      "line": "- [ ] **KPI-T005 [P0]** Implement model-free replay-safe aggregation with event idempotency, timestamp ordering, formula hash and test event fixtures; **KPI-FR-002, KPI-FR-003, KPI-FR-015**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T005"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-004",
+        "KPI-FR-007",
+        "KPI-FR-009"
+      ],
+      "line": "- [ ] **KPI-T006 [P0]** Implement FPY, RTY, READY/BLOCKED throughput, WIP, lead/stage cycle time and rework; test duplicate retries and six-step SWE histories; **KPI-FR-004, KPI-FR-007, KPI-FR-009**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T006"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-003",
+        "KPI-FR-008",
+        "KPI-FR-009"
+      ],
+      "line": "- [ ] **KPI-T007 [P0]** Implement evidence/requirements/traceability/MISRA/coverage/footprint dimensions from verified tool records; test N/A, unsupported rules, unverified objectives; **KPI-FR-003, K",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T007"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-002",
+        "KPI-FR-013"
+      ],
+      "line": "- [ ] **KPI-T008 [P0]** Implement supervisor availability, incident/repair recovery, recurrence, token/resource consumption and provenance quality; assert zero supervisor model calls; **KPI-FR-002, KP",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T008"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-006",
+        "KPI-FR-017"
+      ],
+      "line": "- [ ] **KPI-T009 [P0]** Implement guarded SFOEE A×P×Q, immutable complexity-class reference baseline, invalid/sparse baseline no-value; **KPI-FR-006, KPI-FR-017**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T009"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-003",
+        "KPI-FR-009",
+        "KPI-FR-015"
+      ],
+      "line": "- [ ] **KPI-T010 [P0]** Implement snapshot schema validation and deterministic checksum-ready serialization, with number/numerator/denominator/sample counts/formula hash; **KPI-FR-003, KPI-FR-009, KPI",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T010"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-010",
+        "KPI-FR-011"
+      ],
+      "line": "- [ ] **KPI-T011 [P1]** Extend existing dashboard with production overview, SWE station quality, rework Pareto, footprint/coverage, infrastructure and AI-cost tabs. Real data only, N/A clearly visible",
+      "priority": "P1",
+      "status": "NOT_RUN",
+      "task": "KPI-T011"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-012"
+      ],
+      "line": "- [ ] **KPI-T012 [P0]** Add read-only `forge-observer-mcp.get_kpis` and `get_kpi_evidence`, schema/permission tests; MCP output bounded and never direct SQL arbitrary access; **KPI-FR-012**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T012"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-003",
+        "KPI-FR-011"
+      ],
+      "line": "- [ ] **KPI-T013 [P0]** Correlate KPI values to event IDs and immutable evidence hash via existing trace filters, preserving capture/view isolation; **KPI-FR-003, KPI-FR-011**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T013"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-018"
+      ],
+      "line": "- [ ] **KPI-T014 [P1]** Control series cardinality, aggregation latency and report accuracy when live SSE reconnects; **KPI-FR-018**.",
+      "priority": "P1",
+      "status": "NOT_RUN",
+      "task": "KPI-T014"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-014"
+      ],
+      "line": "- [ ] **KPI-T015 [P0]** Include versioned catalog/snapshot/baseline and exact status/quality flags in deterministic Release Manager packager for READY and BLOCKED; **KPI-FR-014**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T015"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-007",
+        "KPI-FR-008",
+        "KPI-FR-014"
+      ],
+      "line": "- [ ] **KPI-T016 [P0]** Cross-check archive metrics against event evidence, package status and no safety approval; **KPI-FR-007, KPI-FR-008, KPI-FR-014**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T016"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-002",
+        "KPI-FR-004",
+        "KPI-FR-015"
+      ],
+      "line": "- [ ] **KPI-T017 [P0]** Replay exactly-once tests (duplicate event IDs, retransmission, order retries, crashes, replay snapshot parity); **KPI-FR-002, KPI-FR-004, KPI-FR-015**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T017"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-006",
+        "KPI-FR-008",
+        "KPI-FR-009",
+        "KPI-FR-016"
+      ],
+      "line": "- [ ] **KPI-T018 [P0]** Test no completed order, N/A baseline, missing inspector, false AI PASS, unit/cpu target mismatch, offline feedback, faults/repairs and metric alert cannot bypass gates; **KPI-",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T018"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-017"
+      ],
+      "line": "- [ ] **KPI-T019 [P1]** Establish measurement-only calibration dataset split by driver class/target/compilation profile; do not invent SLA or throughput benchmark; **KPI-FR-017**.",
+      "priority": "P1",
+      "status": "NOT_RUN",
+      "task": "KPI-T019"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "KPI-FR-ALL"
+      ],
+      "line": "- [ ] **KPI-T020 [P0]** Run pilot work order end-to-end, reconcile dashboard/snapshot with raw evidence, document blocked runs and known limitations; **all KPI-FR**.",
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "task": "KPI-T020"
+    }
+  ]
+}

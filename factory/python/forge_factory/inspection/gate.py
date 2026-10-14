@@ -41,12 +41,37 @@ def _state(ws: Path, phase: str, payload: dict) -> None:
         f.write(json.dumps({"ts": utc_now(), "phase": phase, **payload}, sort_keys=True) + "\n")
 
 
+def _last_gate_ts(ws: Path, phase: str) -> str:
+    log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
+    ts = ""
+    if log.is_file():
+        for x in log.read_text().splitlines():
+            if f'"phase": "{phase}"' in x:
+                ts = json.loads(x).get("ts", ts)
+    return ts
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
-    if not res.ok or res.status != "PASS":
-        _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "errors": res.errors,
-                                        "status": res.status, "issues": res.issues})
+    if res.ok and res.status != "PASS":  # the author itself reports it could not complete: honour it (rework)
+        _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": res.status,
+                                        "issues": res.issues})
         return fail_code(store.workspace, phase, "author")
+    if not res.ok:
+        # Agent messages are never evidence. An empty/prose reply is a recorded contract violation; progress then
+        # depends ONLY on deterministic evidence: a baseline frozen during this stage that still matches the files.
+        bl = store.latest_baseline(phase)
+        fresh = bl is not None and bl["frozen_at"] > _last_gate_ts(store.workspace, phase) \
+            and store.stale_reason(phase, bl) is None
+        if not fresh:
+            _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "errors": res.errors,
+                                            "status": res.status, "issues": res.issues})
+            return fail_code(store.workspace, phase, "author")
+        _state(store.workspace, phase, {"step": "author", "result": "FROZEN_BY_TOOL_EVIDENCE",
+                                        "baseline_id": bl["baseline_id"],
+                                        "finding": "AGENT_OUTPUT_CONTRACT_VIOLATION", "errors": res.errors})
+        print(json.dumps({"baseline_id": bl["baseline_id"], "agent_output": "CONTRACT_VIOLATION_RECORDED"}))
+        return 0
     try:
         bl = store.freeze(phase, f"swe{phase[-1]}-author")
     except InspectionError as exc:

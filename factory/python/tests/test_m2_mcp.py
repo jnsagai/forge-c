@@ -70,6 +70,9 @@ def test_t011_path_traversal_absolute_symlink_and_metachar_rejected(ws, tmp_path
         with pytest.raises(sdk.ToolDenied):
             ctx.path(bad, must_exist=False)
     assert ctx.path("software/src", kind="dir") == (ws / "software/src").resolve()
+    assert ctx.path(str(ws / "software/src"), kind="dir") == (ws / "software/src").resolve()  # absolute inside ws ok
+    with pytest.raises(sdk.ToolDenied):
+        ctx.path(str(ws) + "/../escape", must_exist=False)
 
 
 def test_t011_argv_allowlist_no_shell_timeout_and_limits(ws):

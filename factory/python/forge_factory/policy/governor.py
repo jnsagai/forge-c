@@ -67,17 +67,22 @@ def check_run(run_id: str, nodes: dict, workspace: Path | None = None, client=No
     except Exception as exc:  # noqa: BLE001
         return {"run_id": run_id, "status": "UNKNOWN", "reason": type(exc).__name__}
     per_node: dict[str, int] = {}
+    cached: dict[str, int] = {}
     for s in usage.get("stages", []):
         node = s["stage"]["id"]
         t = s["usage"]["tokens"]
+        # basis: newly processed tokens = uncached input + output (cache_read reported separately, ADR-0006)
         per_node[node] = per_node.get(node, 0) + int(t.get("input", 0)) + int(t.get("output", 0))
+        cached[node] = cached.get(node, 0) + int(t.get("cache_read", 0))
     exceeded = []
     for node, used in per_node.items():
         role = (nodes.get(node) or {}).get("role")
         if role and used > budgets[role] * 4:  # budget is per visit; MAX_VISITS (4) visits per node
             exceeded.append({"node": node, "role": role, "tokens": used, "budget_total": budgets[role] * 4})
     out = {"run_id": run_id, "status": "TOKEN_BUDGET_EXHAUSTED" if exceeded else "WITHIN_BUDGET",
-           "per_node_tokens": per_node, "exceeded": exceeded, "basis": "reported", "checked_at": utc_now()}
+           "per_node_tokens": per_node, "per_node_cache_read": cached, "exceeded": exceeded, "basis": "reported",
+           "accounting": "uncached_input+output per node across visits (cap = max_stage_tokens x 4 visits)",
+           "checked_at": utc_now()}
     if exceeded:
         emit("ai", "ERROR", f"TOKEN_BUDGET_EXHAUSTED run={run_id} nodes={','.join(e['node'] for e in exceeded)}",
              correlation_id=run_id, run_id=run_id)

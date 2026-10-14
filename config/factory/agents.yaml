@@ -8,7 +8,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 4500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -28,7 +28,7 @@ agents:
   phase: SWE.1
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 8000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -48,7 +48,7 @@ agents:
   phase: SWE.1
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -69,7 +69,7 @@ agents:
   phase: SWE.2
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 8000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -89,7 +89,7 @@ agents:
   phase: SWE.2
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -110,7 +110,7 @@ agents:
   phase: SWE.3
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 12000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -139,7 +139,7 @@ agents:
   phase: SWE.3
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -164,7 +164,7 @@ agents:
   phase: SWE.4
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 12000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -193,7 +193,7 @@ agents:
   phase: SWE.4
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -218,7 +218,7 @@ agents:
   phase: SWE.5
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 12000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -249,7 +249,7 @@ agents:
   phase: SWE.5
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -274,7 +274,7 @@ agents:
   phase: SWE.6
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 12000
+  max_stage_tokens: 32000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -305,7 +305,7 @@ agents:
   phase: SWE.6
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -329,7 +329,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 5000
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -349,7 +349,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 8500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -373,7 +373,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 4000
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -392,7 +392,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 4200
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -413,7 +413,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 10000
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -437,7 +437,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 3500
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:
@@ -455,7 +455,7 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 9000
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
   allowed_tools:

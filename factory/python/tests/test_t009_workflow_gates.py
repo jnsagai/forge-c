@@ -92,3 +92,17 @@ def test_installed_fabro_validates_generated_workflow(tmp_path):
                        env={**os.environ, "HOME": os.environ["FORGE_FABRO_HOME"], "FABRO_NO_UPGRADE_CHECK": "1"},
                        capture_output=True, text=True)
     assert "Validation: OK" in r.stdout + r.stderr, r.stdout + r.stderr
+
+
+def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
+    (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    assert gate(tmp_path, "SWE.1", "author", "").returncode >= 10  # nothing frozen: empty reply rejected
+    from forge_factory.inspection.engine import Store
+    Store(tmp_path).freeze("SWE.1", "swe1-author")  # frozen via MCP during the stage
+    ok = gate(tmp_path, "SWE.1", "author", "")
+    assert ok.returncode == 0 and "CONTRACT_VIOLATION_RECORDED" in ok.stdout.decode()
+    assert "AGENT_OUTPUT_CONTRACT_VIOLATION" in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    bad = gate(tmp_path, "SWE.1", "author", '{"status":"BLOCKED","artifacts":[],"issues":["x"],"next_action":"halt"}')
+    assert bad.returncode >= 10  # explicit agent BLOCKED is honoured

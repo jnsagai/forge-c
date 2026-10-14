@@ -9,7 +9,7 @@ metadata:
   readonly: false
   output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
   model: qwen3:8b
-  max_stage_tokens: 10000
+  max_stage_tokens: 16000
   max_turns: 20
   max_mcp_output_bytes: 2048
 ---
@@ -46,7 +46,7 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 2. Edit only factory infrastructure in the isolated repair worktree; protected paths are immutable. Promotion is decided by the deterministic controller, never by you.
 
 ## Constraints
-Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 10000-token / 20-turn budget is near.
+Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 16000-token / 20-turn budget is near.
 
 ## Mandatory compact exit format
 Output only valid JSON matching `specs/002-self-healing-factory/contracts/agent-output.schema.json`:

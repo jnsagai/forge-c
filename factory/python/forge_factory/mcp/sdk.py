@@ -140,6 +140,9 @@ class ToolContext:
     def path(self, raw: str, must_exist: bool = True, kind: str = "any") -> Path:
         if not isinstance(raw, str) or not raw or "\x00" in raw or len(raw) > 400:
             raise ToolDenied("PATH_INVALID", str(raw)[:60])
+        ws_prefix = str(self.workspace).rstrip("/") + "/"
+        if raw.startswith(ws_prefix):  # absolute path inside the workspace (Fabro native tools use absolute paths)
+            raw = raw[len(ws_prefix):] or "."
         if raw.startswith("/") or "\\" in raw or not SAFE_REL.match(raw):
             raise ToolDenied("PATH_INVALID", raw[:60])
         parts = PurePosixPath(raw).parts

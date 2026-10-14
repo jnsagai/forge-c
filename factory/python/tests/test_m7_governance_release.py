@@ -66,7 +66,7 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
 def test_t042_token_exhaustion_cancels_and_blocks_never_false_pass(env, tmp_path):
     ws = tmp_path / "ws"
     (ws / ".forge-run").mkdir(parents=True)
-    fake = FakeFabro([("swe3_author", 50_000, 2_000), ("swe1_author", 1000, 100)])
+    fake = FakeFabro([("swe3_author", 150_000, 2_000), ("swe1_author", 1000, 100)])
     out = G.check_run("RUN-X", {"swe3_author": {"role": "swe3-author"}, "swe1_author": {"role": "swe1-author"}}, ws, fake)
     assert out["status"] == "TOKEN_BUDGET_EXHAUSTED" and fake.cancelled and out["basis"] == "reported"
     assert [e["node"] for e in out["exceeded"]] == ["swe3_author"]
