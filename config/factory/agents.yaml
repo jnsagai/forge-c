@@ -1,0 +1,473 @@
+schema: forge-c/agent-registry/0.4
+version: 0.4.0
+status: PROPOSED_NOT_DEPLOYED
+agents:
+- id: intake-analyst
+  skill: .fabro/skills/intake-analyst/SKILL.md
+  description: Validate intake requirements, hardware documents and process tailoring.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 4500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-docs-mcp.validate_artifact
+  - forge-knowledge-mcp.find_lessons
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Check approved MCU profiles and allocation and produce input completeness
+    inventory.
+- id: swe1-author
+  skill: .fabro/skills/swe1-author/SKILL.md
+  description: 'SWE.1 author: Software requirements: states, fault handling, interface
+    contracts, safety allocation and trace links.'
+  phase: SWE.1
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 8000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Author requirements and analyses from immutable stakeholder and safety inputs;
+    no device-register assumptions.
+- id: swe1-inspector
+  skill: .fabro/skills/swe1-inspector/SKILL.md
+  description: Independent SWE.1 inspector, checklist against frozen workproduct revision.
+  phase: SWE.1
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.1.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: swe2-author
+  skill: .fabro/skills/swe2-author/SKILL.md
+  description: 'SWE.2 author: Software architecture: modules, state machines, HAL
+    boundaries, HW/SW interfaces, timing and memory budgets.'
+  phase: SWE.2
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 8000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Design interfaces and static allocation; show clock/reset dependencies and
+    freedom-from-interference assumptions.
+- id: swe2-inspector
+  skill: .fabro/skills/swe2-inspector/SKILL.md
+  description: Independent SWE.2 inspector, checklist against frozen workproduct revision.
+  phase: SWE.2
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.2.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: swe3-author
+  skill: .fabro/skills/swe3-author/SKILL.md
+  description: 'SWE.3 author: Detailed design, C/H source, generated interface maps,
+    compile flags, unit-to-requirement allocation.'
+  phase: SWE.3
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 12000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  - forge-build-mcp.configure
+  - forge-build-mcp.compile
+  - forge-build-mcp.measure_elf
+  - forge-build-mcp.stack_usage
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.run_integration
+  - forge-tests-mcp.llvm_coverage
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Generate lean MISRA-oriented C, avoid heap/unbounded recursion, prove register
+    mask/side-effect semantics.
+- id: swe3-inspector
+  skill: .fabro/skills/swe3-inspector/SKILL.md
+  description: Independent SWE.3 inspector, checklist against frozen workproduct revision.
+  phase: SWE.3
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.llvm_coverage
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.3.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: swe4-author
+  skill: .fabro/skills/swe4-author/SKILL.md
+  description: 'SWE.4 author: Unit verification: unit tests, mocks, failure injection,
+    structural coverage and findings.'
+  phase: SWE.4
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 12000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  - forge-build-mcp.configure
+  - forge-build-mcp.compile
+  - forge-build-mcp.measure_elf
+  - forge-build-mcp.stack_usage
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.run_integration
+  - forge-tests-mcp.llvm_coverage
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Create adversarial Unity/CTest test cases, bind each to requirement/unit and
+    preserve raw logs.
+- id: swe4-inspector
+  skill: .fabro/skills/swe4-inspector/SKILL.md
+  description: Independent SWE.4 inspector, checklist against frozen workproduct revision.
+  phase: SWE.4
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.llvm_coverage
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.4.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: swe5-author
+  skill: .fabro/skills/swe5-author/SKILL.md
+  description: 'SWE.5 author: Component and integration verification: sequences, results,
+    interface/fault tests.'
+  phase: SWE.5
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 12000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  - forge-build-mcp.configure
+  - forge-build-mcp.compile
+  - forge-build-mcp.measure_elf
+  - forge-build-mcp.stack_usage
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.run_integration
+  - forge-tests-mcp.llvm_coverage
+  - forge-sim-mcp.run_renode
+  - forge-sim-mcp.run_hwsim
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Execute integrated component paths on the best available target/simulator
+    and record provenance.
+- id: swe5-inspector
+  skill: .fabro/skills/swe5-inspector/SKILL.md
+  description: Independent SWE.5 inspector, checklist against frozen workproduct revision.
+  phase: SWE.5
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.llvm_coverage
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.5.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: swe6-author
+  skill: .fabro/skills/swe6-author/SKILL.md
+  description: 'SWE.6 author: Software requirements-based verification: cases, results,
+    coverage and final residual problems.'
+  phase: SWE.6
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 12000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.freeze_baseline
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-repo-mcp.diff_scoped
+  - forge-build-mcp.configure
+  - forge-build-mcp.compile
+  - forge-build-mcp.measure_elf
+  - forge-build-mcp.stack_usage
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.run_integration
+  - forge-tests-mcp.llvm_coverage
+  - forge-sim-mcp.run_renode
+  - forge-sim-mcp.run_hwsim
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Verify integrated C software against all software requirements; never imply
+    system-level validation.
+- id: swe6-inspector
+  skill: .fabro/skills/swe6-inspector/SKILL.md
+  description: Independent SWE.6 inspector, checklist against frozen workproduct revision.
+  phase: SWE.6
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.validate_trace
+  - forge-repo-mcp.diff_scoped
+  - forge-knowledge-mcp.find_lessons
+  - forge-docs-mcp.validate_artifact
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.llvm_coverage
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Inspect against checklists/SWE.6.yaml, record evidence/major/minor findings,
+    never modify author workproducts.
+- id: misra-auditor
+  skill: .fabro/skills/misra-auditor/SKILL.md
+  description: Analyze rule coverage and manual MISRA gaps.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 5000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-analysis-mcp.cppcheck
+  - forge-analysis-mcp.clang_analyze
+  - forge-analysis-mcp.clang_tidy
+  - forge-evidence-mcp.validate_trace
+  - forge-knowledge-mcp.find_lessons
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Produce MISRA coverage matrix; do not claim full compliance from Cppcheck
+    alone.
+- id: footprint-optimizer
+  skill: .fabro/skills/footprint-optimizer/SKILL.md
+  description: Choose efficient verified C implementation alternatives.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 8500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-build-mcp.configure
+  - forge-build-mcp.compile
+  - forge-build-mcp.measure_elf
+  - forge-build-mcp.stack_usage
+  - forge-build-mcp.disassemble
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.llvm_coverage
+  - forge-analysis-mcp.clang_analyze
+  - forge-repo-mcp.diff_scoped
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Minimize Flash/RAM/stack/cycles subject to no safety regressions and full
+    test results.
+- id: safety-evidence-auditor
+  skill: .fabro/skills/safety-evidence-auditor/SKILL.md
+  description: Audit completeness of ASIL B-oriented input and verification evidence.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 4000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.validate_trace
+  - forge-evidence-mcp.check_inspection
+  - forge-analysis-mcp.cppcheck
+  - forge-observer-mcp.get_status
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Identify missing safety/HSI/tool confidence evidence. NEVER authorize a safety
+    release.
+- id: release-manager
+  skill: .fabro/skills/release-manager/SKILL.md
+  description: Final role that collects release inputs for deterministic packager.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 4200
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-evidence-mcp.validate_trace
+  - forge-evidence-mcp.check_inspection
+  - forge-evidence-mcp.build_package
+  - forge-observer-mcp.get_status
+  - forge-observer-mcp.query_events
+  - forge-repo-mcp.get_commit
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Index all existing source, workproducts, gates, incidents, MCP/skills, telemetry,
+    tokens; missing items stay BLOCKED.
+- id: fabric-repair
+  skill: .fabro/skills/fabric-repair/SKILL.md
+  description: Autonomous self-healing maintainer, external control plane dispatched.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 10000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-observer-mcp.get_incident
+  - forge-observer-mcp.query_events
+  - forge-repo-mcp.diff_scoped
+  - forge-repo-mcp.create_worktree
+  - forge-repo-mcp.commit_candidate
+  - forge-tests-mcp.run_unit
+  - forge-tests-mcp.run_integration
+  - forge-knowledge-mcp.find_lessons
+  - forge-knowledge-mcp.propose_lesson
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Diagnose scoped infrastructure incident in isolated worktree and propose patch;
+    do not touch protected paths or self-promote.
+- id: lessons-curator
+  skill: .fabro/skills/lessons-curator/SKILL.md
+  description: Curate repair knowledge into safe, versioned reusable lessons.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 3500
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-knowledge-mcp.find_lessons
+  - forge-knowledge-mcp.propose_lesson
+  - forge-observer-mcp.get_incident
+  readonly: true
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Summarize evidence-backed fixes, deduplicate and propose only; validation
+    engine grants shared publication.
+- id: mcp-integrator
+  skill: .fabro/skills/mcp-integrator/SKILL.md
+  description: Implement/repair MCP tool adapters as authorized fabric infrastructure.
+  phase: null
+  model: qwen3:8b
+  model_provider: ollama
+  max_stage_tokens: 9000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-observer-mcp.get_status
+  - forge-observer-mcp.get_incident
+  - forge-repo-mcp.diff_scoped
+  - forge-repo-mcp.create_worktree
+  - forge-repo-mcp.commit_candidate
+  - forge-tests-mcp.run_unit
+  - forge-knowledge-mcp.find_lessons
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: SPECIFIED_NOT_IMPLEMENTED
+  task: Verify SDK compatibility, tools/list signatures, allowlists and tests; worktree
+    only and no safety policy edits.

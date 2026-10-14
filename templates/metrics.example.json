@@ -1,0 +1,16 @@
+{
+  "status": "NOT_MEASURED",
+  "target_part_number": "REPLACE",
+  "toolchain_version": "REPLACE",
+  "loadable_flash_bytes": null,
+  "static_ram_bytes": null,
+  "max_stack_bytes": null,
+  "stack_proven": false,
+  "heap_calls": null,
+  "api_worst_case_cycles": {"required_api_name": null},
+  "cycle_source": "NOT_MEASURED",
+  "build_log": "REPLACE/path/to/raw_build_log.txt",
+  "build_log_sha256": "REPLACE",
+  "measurement_record": "REPLACE/path/to/raw_hil_measurements.txt",
+  "measurement_sha256": "REPLACE"
+}

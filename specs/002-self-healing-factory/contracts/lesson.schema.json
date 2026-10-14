@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.4/lesson.schema.json",
+  "title": "Forge-C validated lesson",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lesson_id",
+    "source_incident_id",
+    "source_attempt_id",
+    "state",
+    "symptoms",
+    "root_cause",
+    "remedy",
+    "evidence_refs",
+    "tool_versions",
+    "created_at",
+    "validation_tests"
+  ],
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "source_incident_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "source_attempt_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "state": {
+      "enum": [
+        "PROPOSED",
+        "QUARANTINED",
+        "VALIDATING",
+        "VALIDATED",
+        "RETRACTED",
+        "EXPIRED"
+      ]
+    },
+    "symptoms": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    },
+    "root_cause": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 700
+    },
+    "remedy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 850
+    },
+    "constraints": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 1200
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "minItems": 1
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validation_tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "evidence_ref"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN"
+            ]
+          },
+          "evidence_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "consumed_by_runs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      }
+    }
+  }
+}

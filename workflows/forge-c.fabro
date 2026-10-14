@@ -1,0 +1,36 @@
+digraph ForgeCNightly {
+    graph [goal="Generate a traceable, test-backed, footprint-bounded C HAL/LLD release candidate (NOT an ASIL B release) from approved input baselines."]
+    rankdir=LR
+
+    // MODEL ROUTING: intentionally provider-agnostic until the installed Fabro
+    // catalog is pinned. Supply --model / --provider or add a validated
+    // model_stylesheet selecting independent, role-specific providers.
+
+    start [shape=Mdiamond, label="Start"]
+    exit [shape=Msquare, label="Candidate exit (not release)"]
+
+    intake [shape=parallelogram, label="Approved HSI/safety/profile preflight",
+            script="python3 tools/validate_profile.py profiles/stm32n6-rcc-pilot.json"]
+
+    requirements [label="SWE.1 requirements", prompt="@prompts/requirements.md", class="lowcost"]
+    architecture [label="SWE.2 architecture", prompt="@prompts/architecture.md", class="engineering"]
+    design_gate [shape=hexagon, label="Approve safety-related design baseline?"]
+
+    implement [label="SWE.3 C driver", prompt="@prompts/implementation.md", class="engineering"]
+    tests [label="SWE.4-6 tests", prompt="@prompts/verification.md", class="engineering"]
+    optimize [label="Bounded footprint improvement", prompt="@prompts/optimization.md", class="engineering"]
+    gather [label="Collect raw results/evidence", prompt="@prompts/evidence.md", class="engineering"]
+    verify [shape=parallelogram, label="Deterministic candidate gate", goal_gate=true,
+            script="python3 tools/quality_gate.py --phase candidate --profile profiles/stm32n6-rcc-pilot.json --trace evidence/trace.json --metrics evidence/metrics.json --checks evidence/checks.json"]
+    repair [label="Fix failed gate without lowering budget", prompt="@prompts/repair.md", max_visits=3, class="engineering"]
+    candidate [label="Write candidate report", prompt="@prompts/candidate.md", class="lowcost"]
+
+    start -> intake -> requirements -> architecture -> design_gate
+    design_gate -> implement [label="[A] Approve design"]
+    design_gate -> requirements [label="[R] Revise"]
+    implement -> tests -> optimize -> gather -> verify
+    verify -> candidate [label="Technical evidence passes", condition="outcome=succeeded"]
+    verify -> repair [label="Fix evidence/code", condition="outcome=failed"]
+    repair -> tests
+    candidate -> exit
+}

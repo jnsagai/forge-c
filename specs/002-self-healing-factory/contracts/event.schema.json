@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.4/event.schema.json",
+  "title": "Forge-C structured event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "ts_utc",
+    "channel",
+    "level",
+    "message",
+    "redacted",
+    "correlation_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.4"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "ts_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "channel": {
+      "enum": [
+        "human",
+        "workflow",
+        "tools",
+        "ai",
+        "supervisor",
+        "repair",
+        "security",
+        "audit",
+        "metrics",
+        "knowledge"
+      ]
+    },
+    "level": {
+      "enum": [
+        "ERROR",
+        "WARN",
+        "INFO",
+        "DEBUG",
+        "TRACE"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "redacted": {
+      "type": "boolean"
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "span_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "workflow_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "phase": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "tool_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "incident_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "payload_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "input_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "output_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "token_count_provenance": {
+      "enum": [
+        "reported",
+        "estimated",
+        "unknown"
+      ]
+    }
+  }
+}

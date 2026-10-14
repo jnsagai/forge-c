@@ -1,0 +1,436 @@
+schema: forge-c/mcp-registry/0.4
+version: 0.4.0
+policy: EVERY_AGENT_TOOL_USES_MCP
+status: PROPOSED_WRAPPERS_REQUIRED
+server_catalog:
+- id: forge-build-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Wrapper for C compiler/build/binutils; not an official MCP
+  server_mandatory: true
+  ops:
+  - name: configure
+    logical_tool: cmake
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+    - footprint-optimizer
+  - name: compile
+    logical_tool: ninja/clang/arm-none-eabi-gcc
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 180
+    role_grants:
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+    - footprint-optimizer
+  - name: measure_elf
+    logical_tool: size/objdump/nm
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+    - footprint-optimizer
+  - name: stack_usage
+    logical_tool: gcc -fstack-usage
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+    - footprint-optimizer
+  - name: disassemble
+    logical_tool: objdump
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - footprint-optimizer
+- id: forge-analysis-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Wrapper for clang/cppcheck/frama/cbmc etc
+  server_mandatory: true
+  ops:
+  - name: cppcheck
+    logical_tool: cppcheck MISRA addon (subset only)
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - misra-auditor
+    - safety-evidence-auditor
+  - name: clang_analyze
+    logical_tool: clang static analyzer
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - misra-auditor
+    - footprint-optimizer
+  - name: clang_tidy
+    logical_tool: clang-tidy
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - misra-auditor
+  - name: cbmc_verify
+    logical_tool: cbmc
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 180
+    role_grants: []
+  - name: frama_check
+    logical_tool: frama-c
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 180
+    role_grants: []
+- id: forge-tests-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Wrapper for tests/coverage/MC/DC
+  server_mandatory: true
+  ops:
+  - name: run_unit
+    logical_tool: Unity/CMock/CTest
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - footprint-optimizer
+    - fabric-repair
+    - mcp-integrator
+  - name: run_integration
+    logical_tool: CTest/Unity
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+    - fabric-repair
+  - name: llvm_coverage
+    logical_tool: llvm-cov/llvm-profdata
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - footprint-optimizer
+  - name: gcov_coverage
+    logical_tool: gcov/gcovr
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants: []
+- id: forge-sim-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Renode/HwSim; target dependent
+  server_mandatory: false
+  ops:
+  - name: run_renode
+    logical_tool: Renode
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 180
+    role_grants:
+    - swe5-author
+    - swe6-author
+  - name: run_hwsim
+    logical_tool: HwSim
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 180
+    role_grants:
+    - swe5-author
+    - swe6-author
+  - name: inject_fault
+    logical_tool: Renode/HwSim fault injector
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants: []
+- id: forge-evidence-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Wrapper for traceability/inspections/deterministic packager
+  server_mandatory: true
+  ops:
+  - name: freeze_baseline
+    logical_tool: Python evidence gate
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - intake-analyst
+    - swe1-author
+    - swe2-author
+    - swe3-author
+    - swe4-author
+    - swe5-author
+    - swe6-author
+  - name: validate_trace
+    logical_tool: Python trace gate
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - intake-analyst
+    - swe1-author
+    - swe1-inspector
+    - swe2-author
+    - swe2-inspector
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - misra-auditor
+    - safety-evidence-auditor
+    - release-manager
+  - name: check_inspection
+    logical_tool: inspection evidence gate
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe1-inspector
+    - swe2-inspector
+    - swe3-inspector
+    - swe4-inspector
+    - swe5-inspector
+    - swe6-inspector
+    - safety-evidence-auditor
+    - release-manager
+  - name: build_package
+    logical_tool: v0.3 deterministic packager
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - release-manager
+- id: forge-repo-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Scoped Git worktree/diff operations
+  server_mandatory: true
+  ops:
+  - name: diff_scoped
+    logical_tool: git diff
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - swe1-author
+    - swe1-inspector
+    - swe2-author
+    - swe2-inspector
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - footprint-optimizer
+    - fabric-repair
+    - mcp-integrator
+  - name: create_worktree
+    logical_tool: git worktree
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - fabric-repair
+    - mcp-integrator
+  - name: commit_candidate
+    logical_tool: git commit in isolated worktree
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - fabric-repair
+    - mcp-integrator
+  - name: get_commit
+    logical_tool: git rev-parse
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - release-manager
+- id: forge-observer-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Read-only run and incident API for AI agents
+  server_mandatory: true
+  ops:
+  - name: get_status
+    logical_tool: Forge observer API
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - safety-evidence-auditor
+    - release-manager
+    - mcp-integrator
+  - name: get_incident
+    logical_tool: Forge incident API
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - fabric-repair
+    - lessons-curator
+    - mcp-integrator
+  - name: query_events
+    logical_tool: Forge event API
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - release-manager
+    - fabric-repair
+- id: forge-knowledge-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: Safe lesson lookup/proposal/retraction
+  server_mandatory: true
+  ops:
+  - name: find_lessons
+    logical_tool: Forge knowledge store
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - intake-analyst
+    - swe1-author
+    - swe1-inspector
+    - swe2-author
+    - swe2-inspector
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector
+    - misra-auditor
+    - fabric-repair
+    - lessons-curator
+    - mcp-integrator
+  - name: propose_lesson
+    logical_tool: Forge knowledge candidate store
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - fabric-repair
+    - lessons-curator
+  - name: retract_lesson
+    logical_tool: Forge knowledge policy engine
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants: []
+    notes: For deterministic policy controller only; not an AI-granted operation.
+- id: forge-docs-mcp
+  transport: stdio
+  lifecycle: SPECIFIED_NOT_IMPLEMENTED
+  open_source_only: true
+  description: PlantUML/MkDocs/artifact validation; may be optional for initial pilot
+  server_mandatory: false
+  ops:
+  - name: render_diagram
+    logical_tool: PlantUML
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants: []
+  - name: build_docs
+    logical_tool: MkDocs
+    mandatory: false
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants: []
+  - name: validate_artifact
+    logical_tool: Python workproduct checker
+    mandatory: true
+    status: WRAPPER_TO_CREATE
+    timeout_seconds: 60
+    role_grants:
+    - intake-analyst
+    - swe1-author
+    - swe1-inspector
+    - swe2-author
+    - swe2-inspector
+    - swe3-author
+    - swe3-inspector
+    - swe4-author
+    - swe4-inspector
+    - swe5-author
+    - swe5-inspector
+    - swe6-author
+    - swe6-inspector

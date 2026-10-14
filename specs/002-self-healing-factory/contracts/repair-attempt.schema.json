@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.4/repair-attempt.schema.json",
+  "title": "Forge-C controlled repair attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attempt_id",
+    "incident_id",
+    "agent_role",
+    "status",
+    "worktree_ref",
+    "tests",
+    "protected_path_changes",
+    "token_usage",
+    "started_at"
+  ],
+  "properties": {
+    "attempt_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "incident_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "agent_role": {
+      "const": "fabric-repair"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "TESTING",
+        "PROMOTED",
+        "ROLLED_BACK",
+        "FAILED"
+      ]
+    },
+    "worktree_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "patch_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "evidence_ref"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 150
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN"
+            ]
+          },
+          "evidence_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "protected_path_changes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 0
+    },
+    "token_usage": {
+      "type": "object",
+      "required": [
+        "total",
+        "basis"
+      ],
+      "properties": {
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "basis": {
+          "enum": [
+            "reported",
+            "estimated",
+            "unknown"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "promotion_evidence_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}

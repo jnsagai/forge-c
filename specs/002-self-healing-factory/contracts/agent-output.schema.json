@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.4/agent-output.schema.json",
+  "title": "Forge-C agent status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "artifacts",
+    "issues",
+    "next_action"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "PASS",
+        "REWORK",
+        "BLOCKED",
+        "FAILED"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 80
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "maxItems": 30
+    },
+    "next_action": {
+      "enum": [
+        "next",
+        "rework",
+        "halt",
+        "package",
+        "escalate",
+        "none",
+        "retry"
+      ]
+    }
+  }
+}

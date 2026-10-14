@@ -1,0 +1,11 @@
+{
+  "schema_version": "0.4",
+  "event_id": "evt-001",
+  "ts_utc": "2026-10-14T10:00:00Z",
+  "channel": "supervisor",
+  "level": "WARN",
+  "message": "Fabro readiness probe failed (2/2)",
+  "redacted": true,
+  "correlation_id": "corr-001",
+  "incident_id": "inc-001"
+}

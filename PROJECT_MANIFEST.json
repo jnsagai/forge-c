@@ -1,0 +1,946 @@
+{
+  "name": "Forge-C complete OSS dark factory project",
+  "version": "0.5.0",
+  "generated_utc": "2026-10-14T21:34:00Z",
+  "root_directory": "forge-c-darkfactory-v0.5",
+  "source": "Complete v0.5 project (001 baseline + 002 self-healing + 003 manufacturing KPIs); historical v0.1/v0.2 diagrams preserved",
+  "status": "DESIGN_INTEGRATION_PENDING",
+  "design_features": [
+    "SWE1-SWE6 inspections",
+    "agent-SKILLs",
+    "MCP server registry",
+    "model-free supervisor",
+    "repair+lessons",
+    "observability",
+    "offline Release Manager",
+    "manufacturing KPIs"
+  ],
+  "implemented_reference_components": [
+    "generic C RCC host demo",
+    "Python engineering gates",
+    "Python reference release packager"
+  ],
+  "included_files_excluding_manifest_and_checksums": 184,
+  "files": [
+    {
+      "path": ".fabro/skills/fabric-repair/SKILL.md",
+      "bytes": 1907,
+      "sha256": "e04b4b4c4d0ccdbadbe016d336ef7538da4ad8d7f5c8529306ee851c7cbb7a88"
+    },
+    {
+      "path": ".fabro/skills/footprint-optimizer/SKILL.md",
+      "bytes": 1653,
+      "sha256": "a211f2e57123b3699d7f1d434b1152dd60f18ff6737d421d944d00a32ba96da1"
+    },
+    {
+      "path": ".fabro/skills/intake-analyst/SKILL.md",
+      "bytes": 1536,
+      "sha256": "76b1ce493cb77797ee675f36aade860cdd092fa52dc2f919c02a011acc6a404a"
+    },
+    {
+      "path": ".fabro/skills/lessons-curator/SKILL.md",
+      "bytes": 1504,
+      "sha256": "ee3367bf2ab10cd47165847993212b10fa452904361afb6af720689e713d7c7d"
+    },
+    {
+      "path": ".fabro/skills/mcp-integrator/SKILL.md",
+      "bytes": 1651,
+      "sha256": "59cf3be300e4baf18437822a5c6f1245b73579fad0f4ea159ee05e66acb7f706"
+    },
+    {
+      "path": ".fabro/skills/misra-auditor/SKILL.md",
+      "bytes": 1503,
+      "sha256": "8aa9241d853ed087e0b23d6831be43e3d9eb88dd48303411efe01795f3fae189"
+    },
+    {
+      "path": ".fabro/skills/release-manager/SKILL.md",
+      "bytes": 1729,
+      "sha256": "d29a3da76f59a503b0021de7e76a96b180a8b4201931f86f83abfcb65a585d20"
+    },
+    {
+      "path": ".fabro/skills/safety-evidence-auditor/SKILL.md",
+      "bytes": 1548,
+      "sha256": "7106c83c5b6ef4070f90e467b314485b74bf368a86dd582a3c90b5797316ae34"
+    },
+    {
+      "path": ".fabro/skills/swe1-author/SKILL.md",
+      "bytes": 1681,
+      "sha256": "0d2efd02b8b9e6db2148723f83198a2488500dfc50cb3bc2dcb37ad46cb7eb1a"
+    },
+    {
+      "path": ".fabro/skills/swe1-inspector/SKILL.md",
+      "bytes": 1733,
+      "sha256": "6d37484c4edf1e09f29006121442d34def3dae4f4e4c7c194432189f9edeeea3"
+    },
+    {
+      "path": ".fabro/skills/swe2-author/SKILL.md",
+      "bytes": 1696,
+      "sha256": "21e21470e841dd1fb59f2e17f9f6e4db6a87a53e395f7da55780b92fac28eae7"
+    },
+    {
+      "path": ".fabro/skills/swe2-inspector/SKILL.md",
+      "bytes": 1733,
+      "sha256": "8f5cd99f772fc6d5d5e542cac9686ee9a21ff522e5de3c2a4f77f18fc76d679f"
+    },
+    {
+      "path": ".fabro/skills/swe3-author/SKILL.md",
+      "bytes": 1965,
+      "sha256": "2fdb0eed8474786760139531af8a418b74b426dc7f5da08495a4711eab6397a9"
+    },
+    {
+      "path": ".fabro/skills/swe3-inspector/SKILL.md",
+      "bytes": 1865,
+      "sha256": "21486076f492f492a16a82f80154c85e5864f1d92b0c3b1dd3b5fec43ef266af"
+    },
+    {
+      "path": ".fabro/skills/swe4-author/SKILL.md",
+      "bytes": 1932,
+      "sha256": "f7f2adacf6d15e9e88d1382bc35dcd097890d4e47dfab253ac3c4500454059e4"
+    },
+    {
+      "path": ".fabro/skills/swe4-inspector/SKILL.md",
+      "bytes": 1865,
+      "sha256": "79404680851ef75dcc729694e114d054722c50a4750a97c12e8209c13b4e2e9e"
+    },
+    {
+      "path": ".fabro/skills/swe5-author/SKILL.md",
+      "bytes": 1974,
+      "sha256": "398f41ab792949ae2c1c016c1802fcf2223e5a84cd150e63887478c9e5613055"
+    },
+    {
+      "path": ".fabro/skills/swe5-inspector/SKILL.md",
+      "bytes": 1865,
+      "sha256": "da5fc0ffad5dede6fa985af87cc78b535894dfdeb0da7e13a3858e96bb77121c"
+    },
+    {
+      "path": ".fabro/skills/swe6-author/SKILL.md",
+      "bytes": 2004,
+      "sha256": "2ee47052fba42d37e0a983214a25087dbc04e6d2aee74530ffb2b540d2078f6a"
+    },
+    {
+      "path": ".fabro/skills/swe6-inspector/SKILL.md",
+      "bytes": 1865,
+      "sha256": "abbc2db43cc4c5cee4fe42d5a14acc4108c1f5a3ab8faf0f448d3c1d065d2564"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 257,
+      "sha256": "483f5beacc33ec8bad74009d946bfbe14f96a0fac96a6e58dd95026dc05dbe6a"
+    },
+    {
+      "path": ".specify/memory/constitution.md",
+      "bytes": 4696,
+      "sha256": "4f1923ebbebf7457bd101ad638486e4fb2c5121d7852dc3e8ad96e6c86b85b28"
+    },
+    {
+      "path": "CLAUDE.md",
+      "bytes": 4281,
+      "sha256": "1ad8cfbf167cb7f9ad9fb266b0dbe8371e963121a6ceb438cc0553311adf82a0"
+    },
+    {
+      "path": "CLAUDE_START.md",
+      "bytes": 2397,
+      "sha256": "3c37028eae8e23ca90b4766a6bbf7fc42ac1859918ddea3e4885b24629c70e3e"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 1649,
+      "sha256": "72b617def306e3dce345daae93214acaab7a25c62582f90aa75dfa23360c40b7"
+    },
+    {
+      "path": "FORGE-C-PROJETO.md",
+      "bytes": 1886,
+      "sha256": "0a46ff2e3809b7787ed9dd6487d2869a803cad64ea9f7c7ebab0e164e9bd25ac"
+    },
+    {
+      "path": "KPI_CLAUDE_START.md",
+      "bytes": 1853,
+      "sha256": "662d7bdb11d296a6239a01a3692f1beab448e758e31ff52bc68231c5381034d8"
+    },
+    {
+      "path": "KPI_RELEASE_NOTES.md",
+      "bytes": 941,
+      "sha256": "30b06782d61ab311996d1e66318d87aa20b53469aeabab95e27daada79977b26"
+    },
+    {
+      "path": "Makefile",
+      "bytes": 362,
+      "sha256": "31e49d3cc52570af94546a854418d2eddcf4cfe5bfcf25bea84d8a3757fefcda"
+    },
+    {
+      "path": "PROJECT_HANDOFF_v0.5.md",
+      "bytes": 4572,
+      "sha256": "25fec828e5c8cf0ee55fca14a6ba53f04c3681109379f74daf8254b88c130fd2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6472,
+      "sha256": "739d6263f43943116e13a589a259f9c76bb6a0d0cda1542fd75e8869a136d738"
+    },
+    {
+      "path": "TEST_RESULTS_v0.5.md",
+      "bytes": 2027,
+      "sha256": "0d0224f883311db9ab2b1cd796b05528c4f463249f3039e9c1cfd0dfd8594056"
+    },
+    {
+      "path": "architecture/Forge-C_Fabro_DarkFactory_v0.3.drawio",
+      "bytes": 181404,
+      "sha256": "c4eb340e3cb3ffa7ff6196179c8a4a724cb861fc18e1bf6a5e5ba14ed225a590"
+    },
+    {
+      "path": "architecture/Forge-C_Fabro_DarkFactory_v0.4.drawio",
+      "bytes": 228162,
+      "sha256": "a86a3cabcf74941732a22f87b6ceb1c67f5bab813f2c2530c95033dea060ab5b"
+    },
+    {
+      "path": "architecture/Forge-C_Fabro_DarkFactory_v0.5.drawio",
+      "bytes": 239447,
+      "sha256": "229be25a8563169ab6e042c9e99c876db69c3d4096d72e4b071ecdc53e436df3"
+    },
+    {
+      "path": "architecture/generate_diagram.py",
+      "bytes": 22170,
+      "sha256": "87670756e070f92c25dcfef6b56aaa9dcdab93fb00ae4d1548d10384b6974391"
+    },
+    {
+      "path": "architecture/history/Forge-C_Fabro_Inspections_v0.2.drawio",
+      "bytes": 156082,
+      "sha256": "f57ff491fa8e5d9c26541ad66d9a3d7dc490bd2857be4e874fe1732c17e8f64f"
+    },
+    {
+      "path": "architecture/history/Forge-C_Fabro_v0.1.drawio",
+      "bytes": 67115,
+      "sha256": "1be8a4c826bf9f14bc6d75c97aade4df0f680c753cc6f1cec267cead5af29ef5"
+    },
+    {
+      "path": "architecture/previews/Forge-C_DarkFactory_v0.4_Overview.png",
+      "bytes": 201052,
+      "sha256": "a251fcc65c6e66b5b602a69aa69543edecf15cbc62ba1440c44e57f2a55ec056"
+    },
+    {
+      "path": "architecture/previews/Forge-C_v0.4_Dashboard.png",
+      "bytes": 131761,
+      "sha256": "9c2ee4a7eed5d483624424736d41c16a77b098bf67fc7ff7db4fa09e331f55fa"
+    },
+    {
+      "path": "architecture/previews/Forge-C_v0.4_Lessons.png",
+      "bytes": 97387,
+      "sha256": "600accfb18e7c5b5d07a789d08d2263579d03a20b023085825e9dfb45f4adb7d"
+    },
+    {
+      "path": "architecture/previews/Forge-C_v0.4_Skills_MCP.png",
+      "bytes": 127572,
+      "sha256": "dcfafc1ae9cbe6a43235e4d28072224fae354e363086b31c3f2b3464f1a3e969"
+    },
+    {
+      "path": "architecture/previews/Forge-C_v0.4_Supervisor.png",
+      "bytes": 123014,
+      "sha256": "f87f3169a0e22b18ad8654f72a8b2e1e4e7404241b4f56b942f1c02c4b7b5f4d"
+    },
+    {
+      "path": "architecture/previews/Forge-C_v0.5_KPI_Dashboard_Preview.png",
+      "bytes": 82279,
+      "sha256": "61a53fe767468af22604c10d8f0fe3d3f76fa058a6728fc02a44cf607e076d57"
+    },
+    {
+      "path": "config/fabro-settings.oss.example.toml",
+      "bytes": 537,
+      "sha256": "79864ab6421452092431a9d2f3463c562b7977f038bd0deff49ceb81ad8d7a1b"
+    },
+    {
+      "path": "config/factory/agents.yaml",
+      "bytes": 17055,
+      "sha256": "f2390fc33dd7e59651d3f8d890808b9e169284388a3ce03bd3ac97fd03a4a3ad"
+    },
+    {
+      "path": "config/factory/kpi-policy.yaml",
+      "bytes": 1368,
+      "sha256": "882d5d06e8113451303e092363e0b321bbacad76217312ae5ea17ce47465a2c6"
+    },
+    {
+      "path": "config/factory/mcp-registry.yaml",
+      "bytes": 10427,
+      "sha256": "2bc79ed8745469fbe492c87eadaee3da5db440c275344b7cf96094d25ad5b5c5"
+    },
+    {
+      "path": "config/factory/supervisor-policy.yaml",
+      "bytes": 1210,
+      "sha256": "5dbd37cb7434f87590d1bd19cfc4e459f60e8cc0cbe03e0ea58b95b4fc76fcc2"
+    },
+    {
+      "path": "config/factory/token-policy.yaml",
+      "bytes": 663,
+      "sha256": "219a6d02659d5188ad7355289c6a3279f4c8d64a1b3897f3c470a351cba601b6"
+    },
+    {
+      "path": "config/factory/trace-policy.yaml",
+      "bytes": 846,
+      "sha256": "676221d008138cd8ed7390742d84ebc68a4f17140c71c9df82bd2194a5fe6b2c"
+    },
+    {
+      "path": "config/oss-tools.json",
+      "bytes": 1757,
+      "sha256": "bd2d2226ee04999c0a5fa2554ef0e7666775bdd497c6946988f39998148d5c20"
+    },
+    {
+      "path": "docs/BOOTSTRAP-VALIDATION.md",
+      "bytes": 1638,
+      "sha256": "820a366a573b1da7e9808444000d2f44644edb1fb1dfd68c4987fc771ec13410"
+    },
+    {
+      "path": "docs/COMPLIANCE-MATRIX.md",
+      "bytes": 9352,
+      "sha256": "fa8fe3eab76b46faecaefb82fa32b97ee1bd4efde62c1221e0f6e2cebff89532"
+    },
+    {
+      "path": "docs/DARK-FACTORY-ARCHITECTURE-v0.4.md",
+      "bytes": 3284,
+      "sha256": "74eab9382fb3d5be5b88e818b6028ae86b09760cab447f07fb4bc883ca62c308"
+    },
+    {
+      "path": "docs/DASHBOARD-WIREFRAME-v0.4.md",
+      "bytes": 3132,
+      "sha256": "ce572209e9abb8d33a2b37e884a0de95fe3f545854ed4de5377cadd333b8c4c0"
+    },
+    {
+      "path": "docs/INSPECTION_DESIGN-v0.2-archive.md",
+      "bytes": 5649,
+      "sha256": "6546aab2f5c254ab9d1a53617b8cd6b5a389cb237970e916d8b73e0f3e745fc4"
+    },
+    {
+      "path": "docs/KPI-OPERATOR-DASHBOARD-v0.5.md",
+      "bytes": 2432,
+      "sha256": "65cbdf8ee19ff766b1d859156a19b0cc36a9dcb6fb31070ecd5d8f6d3f524e04"
+    },
+    {
+      "path": "docs/OPTIMIZATION.md",
+      "bytes": 5795,
+      "sha256": "1e8124105a661bdda9a295e2fa7ecb9ff79412466de7ac67da9c342b044089f8"
+    },
+    {
+      "path": "docs/OSS-MISRA-COVERAGE.md",
+      "bytes": 1616,
+      "sha256": "fa5a719ddf1f9245f9a80e9120ac3e0959d77e5171fc4acaf180b700a78593a0"
+    },
+    {
+      "path": "docs/OSS-SETUP.md",
+      "bytes": 4553,
+      "sha256": "31abb4aac6270c29f357c794dc0f22137abbc743f7f0e9d9450d4d552c56aa0b"
+    },
+    {
+      "path": "docs/OSS-STATUS.md",
+      "bytes": 1904,
+      "sha256": "24b6c90985730fd54ae33a8e047dbcf6dc106b8aa4f7f1626e876eff0d2fc8db"
+    },
+    {
+      "path": "docs/OSS-V0.1.md",
+      "bytes": 11111,
+      "sha256": "2fd8e34ff3e4c260dcdd1622494a485627b9cdcef5c1f86600da6a9cfa151cd0"
+    },
+    {
+      "path": "docs/PILOT-GENERIC-RCC.md",
+      "bytes": 2890,
+      "sha256": "55f7d35748fff27264d9547b9cc9b845e742fc9761ebe2a529324b896f38f41d"
+    },
+    {
+      "path": "docs/PILOT-STM32N6-RCC.md",
+      "bytes": 3415,
+      "sha256": "5eea394e86470bca21f3fbfdd1c5b4113dc9b20f06730adcb63366866c0b9df1"
+    },
+    {
+      "path": "docs/PROJECT.md",
+      "bytes": 1937,
+      "sha256": "129730516d22ab0b5abf2a3f548671634977c80801b00b1d0efb7b5f68b3b5fa"
+    },
+    {
+      "path": "docs/README-v0.1-original.md",
+      "bytes": 2840,
+      "sha256": "f422eca0ca7792311796c32c194b1c511b8eabc3f139c059db1c003daba4257e"
+    },
+    {
+      "path": "docs/README-v0.4-original.md",
+      "bytes": 4359,
+      "sha256": "bc405022a218e5081bdeb00a1df71b6b097fd750cc75060e02842b1edf80443f"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "bytes": 1753,
+      "sha256": "e6d0a54090c6ad1680fdf6e774546e6ea1451008e0ef2ca8c376f87825b308a2"
+    },
+    {
+      "path": "docs/TOOLCHAIN.md",
+      "bytes": 1649,
+      "sha256": "6c08cdbde55f474a478726a276dbe3fc5caf712bc895ab118b84b7be0451f57c"
+    },
+    {
+      "path": "docs/VERIFICATION.md",
+      "bytes": 3847,
+      "sha256": "25024801af0bd087ec04b0cb6d5179818bbf607d06fa8db4ffcca27e4647db35"
+    },
+    {
+      "path": "drivers/demo_rcc/include/forge_rcc_demo.h",
+      "bytes": 1554,
+      "sha256": "d1196cd7892c99eff05d4387fa0e048f544ea616e9c1565d0ad262e93112e181"
+    },
+    {
+      "path": "drivers/demo_rcc/src/forge_rcc_demo.c",
+      "bytes": 1804,
+      "sha256": "320a828716c961fec45838e088e12687a9f481d78a32b86cd51fd8a14a457c6d"
+    },
+    {
+      "path": "evidence/README.md",
+      "bytes": 565,
+      "sha256": "528c379e402fed1cafa46e543195f4375926812401ef729ecac363b488a546a6"
+    },
+    {
+      "path": "evidence/oss-demo/clang-analyzer.log",
+      "bytes": 191,
+      "sha256": "b2e22c5a4f2bed9c7b170f7810f54ee5784b48a53d050e640e2eec98e8c70a3e"
+    },
+    {
+      "path": "evidence/oss-demo/host-opt-size.log",
+      "bytes": 5415,
+      "sha256": "55bc12b576e39be2ea66aeeed741f055d8c19d2a7a16f53c0ab556f9d8ef6f7b"
+    },
+    {
+      "path": "evidence/oss-demo/llvm-host.log",
+      "bytes": 8093,
+      "sha256": "65bdf51073eeff55012d1c207b2349bf7a72f6b0beba0d475ab781d7a65734da"
+    },
+    {
+      "path": "evidence/oss-demo/manifest.json",
+      "bytes": 648,
+      "sha256": "57899760d3c4b9b793460fae726d7258aea97a89ee2c3083b1aa7f4dbda898f8"
+    },
+    {
+      "path": "evidence/oss-demo/test.profdata",
+      "bytes": 1768,
+      "sha256": "009d63394e892ff1df9f53549ae25e1b35a9e962276178d0f57b9a6b311d8b7e"
+    },
+    {
+      "path": "examples/0001-generic-rcc/WORKPRODUCTS.md",
+      "bytes": 3242,
+      "sha256": "76687c2cded795498c989135c3799d5c1d4bf51109ac15b116207492fdec3d5d"
+    },
+    {
+      "path": "factory/release-manager/OFFLINE_REVIEW_CHECKLIST.md",
+      "bytes": 1925,
+      "sha256": "2b7c5d1cca5ee357b7781749119db0cc80996384061d59021d0b6749ce966ecb"
+    },
+    {
+      "path": "factory/release-manager/README.md",
+      "bytes": 4850,
+      "sha256": "88a3a0c572b0520ac2bfe2a7686b76a2beb4bc961f6dd20a916509390fe75128"
+    },
+    {
+      "path": "factory/release-manager/RELEASE_MANAGER_SPEC.md",
+      "bytes": 5658,
+      "sha256": "cdcc729ce8307694bdd169c5d6c72a6291b4c6e6cfee0365bdbe55b3a3923e38"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.1.yaml",
+      "bytes": 1887,
+      "sha256": "c2fb3cf54a927b399f6b5d7f74d9142f55530b49b6611281b57e8eb321fa75c9"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.2.yaml",
+      "bytes": 1906,
+      "sha256": "3522b34a4574ab72d29061a8a3c4bb6cbedd3dfbcf7e59244f38ad36f01d6404"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.3.yaml",
+      "bytes": 1906,
+      "sha256": "58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.4.yaml",
+      "bytes": 1924,
+      "sha256": "b6b0e53563c84415a5ca6e663c55ec8b1617ce402ad9da05dc0f64b29c8cd9e7"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.5.yaml",
+      "bytes": 1928,
+      "sha256": "87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba"
+    },
+    {
+      "path": "factory/release-manager/checklists/SWE.6.yaml",
+      "bytes": 1941,
+      "sha256": "78f19b6e0df8efed7190d9d6a16397708d3874636843f6eac87c49be8b8c28bb"
+    },
+    {
+      "path": "factory/release-manager/policies/release-package-policy.json",
+      "bytes": 3114,
+      "sha256": "9dc8953d1b52e6e5f126d31038e85d2412778146a2c8f9e1abef9de97c97094e"
+    },
+    {
+      "path": "factory/release-manager/prompts/release-manager.md",
+      "bytes": 1566,
+      "sha256": "c246b3a8ecbe80bb28b372d3d3e8c73596c0c2cf056fbb5559de4cf7d401f5b2"
+    },
+    {
+      "path": "factory/release-manager/schemas/quality-gates.schema.json",
+      "bytes": 797,
+      "sha256": "6a359d2a9ac08229f1be09104d60c6de7b4b92a6708516453e60df4a0854f2f8"
+    },
+    {
+      "path": "factory/release-manager/schemas/release-manifest.schema.json",
+      "bytes": 915,
+      "sha256": "471118625d700ae43a233e1c49fdb8cbef2d19dd2b507790402eea5d9f9178f1"
+    },
+    {
+      "path": "factory/release-manager/scripts/build_review_package.py",
+      "bytes": 9878,
+      "sha256": "eb5ee1edf67201ec59dfefa8f681e816fca3f54a37f70d797dfe53c1e0874c4a"
+    },
+    {
+      "path": "factory/release-manager/tests/test_packager.py",
+      "bytes": 5347,
+      "sha256": "236c45204a8cc3d5c1d58ad1545c386995afafe15aafce34908f7640ef810f3c"
+    },
+    {
+      "path": "forge_rcc_demo.plist",
+      "bytes": 430,
+      "sha256": "8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4"
+    },
+    {
+      "path": "profiles/mcu-template.json",
+      "bytes": 1174,
+      "sha256": "aabb499beeb4e7a8902759547a29f1a975116e3304fbc467b5bdf4bdb69dd03e"
+    },
+    {
+      "path": "profiles/stm32n6-rcc-pilot.json",
+      "bytes": 1213,
+      "sha256": "a963b7070288329e0667cb660de7ce280c6c875fd097b58d4741311012dd6929"
+    },
+    {
+      "path": "scripts/compare_host_size.sh",
+      "bytes": 1219,
+      "sha256": "f0cf1080f58e1724f683cc614dd802a798614f22d49e3511e897c3ddafed24ba"
+    },
+    {
+      "path": "scripts/oss_preflight.py",
+      "bytes": 1708,
+      "sha256": "94338103196526475507dec98d77604f0fc8e75cfb087d0b3ee1dc36a6043d1f"
+    },
+    {
+      "path": "scripts/preflight.sh",
+      "bytes": 196,
+      "sha256": "a8f4d698716b2d7ed070c68dc83699f32519f5e61330fadba1043a8e803322cd"
+    },
+    {
+      "path": "scripts/run_oss_cbmc.sh",
+      "bytes": 627,
+      "sha256": "552ce5f148d0c4a6ee6a0112df1337a66bafa5ee20f7d9bcb2bcd67b20f844f7"
+    },
+    {
+      "path": "scripts/run_oss_clang_analyzer.sh",
+      "bytes": 804,
+      "sha256": "ae0cf6aae748736efcbe6c874c2ec6f9983df446e318cb60fe37b03c71fea6ba"
+    },
+    {
+      "path": "scripts/run_oss_demo.sh",
+      "bytes": 1880,
+      "sha256": "1338779480353d945c0782b330befa130d56e6f2cad3eef160a04f0a4b8341f0"
+    },
+    {
+      "path": "scripts/run_oss_misra_subset.sh",
+      "bytes": 821,
+      "sha256": "609d5cad24aafb5897ee523da3a7d07226a29b757d6e33b6cd41d9cbf1bb54af"
+    },
+    {
+      "path": "scripts/run_oss_static.sh",
+      "bytes": 1041,
+      "sha256": "ff17fa56dcf67510beff26312ac41c194d4593e5d19326c774b3a9b4f03ba69e"
+    },
+    {
+      "path": "scripts/verify_bundle.py",
+      "bytes": 2056,
+      "sha256": "0f9ec85913266ddab099662b20609b0fc7618baa5ef67a2656160b7d653e7c17"
+    },
+    {
+      "path": "specs/001-factory/plan.md",
+      "bytes": 2235,
+      "sha256": "ef9bba2ffa56de020387fffe1b3ae238fb5ce7f75366f055c207f21332a52783"
+    },
+    {
+      "path": "specs/001-factory/spec.md",
+      "bytes": 5016,
+      "sha256": "99ec41766b8e28eca7c5bbaf80d21a7ad74c69a1523a6a98f03a43eba2263b3c"
+    },
+    {
+      "path": "specs/001-factory/tasks.md",
+      "bytes": 2155,
+      "sha256": "d6dd6c118099f32729826fe752a061bde0797063aa66c825b0e04433e1df1187"
+    },
+    {
+      "path": "specs/002-self-healing-factory/acceptance-tests.md",
+      "bytes": 4375,
+      "sha256": "1b3980ed9709acccfce5034f2f3bdc33845127b71295ff72d25e6ea617ee304a"
+    },
+    {
+      "path": "specs/002-self-healing-factory/checklists/requirements.md",
+      "bytes": 1458,
+      "sha256": "3e9b20834eb5c1d1783221e2fafde17e71460be91e56b3b9f7fecf7884e16ee3"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/agent-output.example.json",
+      "bytes": 208,
+      "sha256": "09f021f66ccb75ff421df642632bc463101e729527932e37e2fd847762227f20"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/agent-output.schema.json",
+      "bytes": 957,
+      "sha256": "e5b8ebfb1cd5b719269a3467f6ee7babbbbc3e75217af7c87b3cf1b5525c9186"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/dashboard-api.openapi.yaml",
+      "bytes": 6112,
+      "sha256": "960a6f0ebf441d72c40fbc3fcf2439450472479c3507ba933ad82c1e259840d1"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/event.example.json",
+      "bytes": 268,
+      "sha256": "b5ee05d2c82ee39a5fc8776bf1b6f518bc44c0b170619aad5723bc1f1e80c9c3"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/event.schema.json",
+      "bytes": 2562,
+      "sha256": "e43f257f136d2bbeec14a8a90706194b5d48776ef7df6c706ed0593d9d0e4a39"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/incident.example.json",
+      "bytes": 328,
+      "sha256": "1b25f20bdc915c263f148fd48537f97388def717a842108221d3bfe5bfe883fe"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/incident.schema.json",
+      "bytes": 1968,
+      "sha256": "9aa92112d50482b6955d83ab5fc239dc4f19232ee6e8d949eddaefa001320feb"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/lesson.example.json",
+      "bytes": 713,
+      "sha256": "90979ffea9854ba4ca803048ff4cc83e82924fd6f283039d098b8c87dde86155"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/lesson.schema.json",
+      "bytes": 2743,
+      "sha256": "462766383e866ae854892489fd784c623be3ff82cb54b8a23d139a143c6a6105"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/repair-attempt.example.json",
+      "bytes": 425,
+      "sha256": "5f743b71f2b6af7f42b23ed8909abd60a4dee3f720f95f1e592d5e1ae0c44e26"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/repair-attempt.schema.json",
+      "bytes": 2572,
+      "sha256": "348e92d2bcf015e27ad582d85ed91b5c9a989f0f84faf6e063e2eba754997ab6"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/token-usage.example.json",
+      "bytes": 228,
+      "sha256": "41c9ce3312f12dddf4c23409824b359ce9769c09a4012185df803a60b7025a30"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/token-usage.schema.json",
+      "bytes": 1193,
+      "sha256": "ef1288dcdc8476b11481f587bb5cd45e36f60059569962ce058eb103a9cbeae2"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/tool-result.example.json",
+      "bytes": 327,
+      "sha256": "65f2dcf8ceac35c15e33ba9641818feb41a736e2f2f0a5cf601a4537fc2490ea"
+    },
+    {
+      "path": "specs/002-self-healing-factory/contracts/tool-result.schema.json",
+      "bytes": 1979,
+      "sha256": "22d1332f84fa747291fddf511de4f27747a01def95da7ef0e981c3d0cc155589"
+    },
+    {
+      "path": "specs/002-self-healing-factory/data-model.md",
+      "bytes": 3313,
+      "sha256": "368058bd0a1720641432e3ddd60c4eac7ba336e355b487c5831c15a87fb8c8b5"
+    },
+    {
+      "path": "specs/002-self-healing-factory/plan.md",
+      "bytes": 22938,
+      "sha256": "2cb46dcdcd05d49fe53717e3244c22a2437c5b6aefecd3b9c05dd177e4112cff"
+    },
+    {
+      "path": "specs/002-self-healing-factory/quickstart.md",
+      "bytes": 2362,
+      "sha256": "f45782c7e5cab4b67d21c4cce3736502c45193e54114551f475b1222528dc584"
+    },
+    {
+      "path": "specs/002-self-healing-factory/research.md",
+      "bytes": 2714,
+      "sha256": "6ee6b23606dc27d54851ebb19339bf8711ee3dae87b44603d7e4c5d6eabbc268"
+    },
+    {
+      "path": "specs/002-self-healing-factory/spec.md",
+      "bytes": 20601,
+      "sha256": "5456e8b50783cedcdda53fa8c8a21afc4314a3d37d8cc6527dcb20665bc0c6fb"
+    },
+    {
+      "path": "specs/002-self-healing-factory/tasks.md",
+      "bytes": 15368,
+      "sha256": "8684163a5c79c8e1a30e196d182425fa74fc6bc9f8a27f415bfc35b70f481d37"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/acceptance-tests.md",
+      "bytes": 2330,
+      "sha256": "aaa840da979049beaa9b2376ce452ccf437fdfdbba4194e5f0867f202181469d"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/contracts/kpi-catalog.json",
+      "bytes": 7910,
+      "sha256": "d25d5dccf371f1d68da5c7c6c626a5ce3fcf645a3097b483837b50b02128b51d"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/contracts/kpi-snapshot.schema.json",
+      "bytes": 2829,
+      "sha256": "c0d145f2fc5ae7ba2a84bde52d1e3fd4649f6e503c54a8ee504d253cd3ea731a"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/plan.md",
+      "bytes": 5486,
+      "sha256": "423dbb42bfb85a870ed495316f2fa3d2dbd9baf31ce98c505931e0a7cb683d49"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/spec.md",
+      "bytes": 14405,
+      "sha256": "baceae3ac621861fc310fda39e05e1ee64d668e2d69fecf7bf79beea19677d20"
+    },
+    {
+      "path": "specs/003-manufacturing-kpis/tasks.md",
+      "bytes": 4573,
+      "sha256": "52cf48cd578c2f9153e3a30062089491c0e825ffa9df5810c18ab507654d9d26"
+    },
+    {
+      "path": "templates/checks.example.json",
+      "bytes": 1017,
+      "sha256": "83bf7c68fad4ae6a341e5532c8ad2b4e733ef4b2055018e415f0d4ec35201092"
+    },
+    {
+      "path": "templates/detailed-design.md",
+      "bytes": 589,
+      "sha256": "fd630befa3c92aa52eb6c516d14a3bf64e5d888c4602416652f9ede0291a44e9"
+    },
+    {
+      "path": "templates/deviation.md",
+      "bytes": 333,
+      "sha256": "c807336f0a96dca9eead6e9c07d23adaa282ad408de9d230de43ab328ca5c91f"
+    },
+    {
+      "path": "templates/metrics.example.json",
+      "bytes": 512,
+      "sha256": "a5dd2c05fbe11fb2fb154cf419049376a2cc6ff7a0b0fdec14a66eaded24e8f6"
+    },
+    {
+      "path": "templates/misra-rule-assessment.csv",
+      "bytes": 274,
+      "sha256": "95380194037c2d556c00a3b9d9a470d307f6f46822e06026f16d112de0d4bfea"
+    },
+    {
+      "path": "templates/release-review.md",
+      "bytes": 521,
+      "sha256": "4b2189f98ab9c10067ae1502bd2e713073fe46aed15ea68e1481b1015976b022"
+    },
+    {
+      "path": "templates/safety-analysis.md",
+      "bytes": 527,
+      "sha256": "7ca6cf0c72242e17e4affcc62cbde6eea168563885881b1eb5d87d33ccd373c5"
+    },
+    {
+      "path": "templates/software-architecture.md",
+      "bytes": 713,
+      "sha256": "2bc0607ce925d72e9a565ec0da39d64b811b197f4d814214b3cfd2d37a1fbf9d"
+    },
+    {
+      "path": "templates/software-requirements.md",
+      "bytes": 817,
+      "sha256": "8e75934bdb6ddf650b8b20cbad9205b2fbaa89c071617a38d9e76329a47a3ef3"
+    },
+    {
+      "path": "templates/tool-confidence.md",
+      "bytes": 641,
+      "sha256": "7435ef42e8244037f45ea7bd58ad69f73d5ce2307880aceb638344b6ab45cb11"
+    },
+    {
+      "path": "templates/trace.example.json",
+      "bytes": 2023,
+      "sha256": "f20aa45264666f02be61404b301cbe742f1b2346b95771468eeececb658ceada"
+    },
+    {
+      "path": "templates/traceability.csv",
+      "bytes": 321,
+      "sha256": "d9de27d7818cb6d0882ad2de0d2316e383eff943aaec508d571a6d8421a4106d"
+    },
+    {
+      "path": "templates/verification-matrix.csv",
+      "bytes": 292,
+      "sha256": "39c7674421361d370967a404df768be7176fcc6d7514c195ce322ec428f9ceb6"
+    },
+    {
+      "path": "templates/verification-plan.md",
+      "bytes": 540,
+      "sha256": "41467db9b3a06a3f2ff2fe600e3d8b1d5a5b926f41ee5752a19c9c23b86d15ef"
+    },
+    {
+      "path": "templates/verification-report.md",
+      "bytes": 610,
+      "sha256": "4a7b51b145278cd607d49256d3a90ebe5d6d8fb3edcad2863cf3f1f084247932"
+    },
+    {
+      "path": "templates/workproduct-register.csv",
+      "bytes": 610,
+      "sha256": "f5f4a1f02282cc8a1032690e78acbbe5b49cb699b6cc6f5093444de6a10393c1"
+    },
+    {
+      "path": "tests/c/test_forge_rcc_demo.c",
+      "bytes": 2805,
+      "sha256": "9b77b4d9019428db15c22b39b3b78daa49ea628fa93238722b0518ee481ac52b"
+    },
+    {
+      "path": "tests/formal/cbmc_rcc_harness.c",
+      "bytes": 1182,
+      "sha256": "4d4c535e3a5c091f0dd71f450289667c199d4df28e20a64ddc55ea993e9fcbee"
+    },
+    {
+      "path": "tests/spec/validate_design.py",
+      "bytes": 9808,
+      "sha256": "e81a5c3472142fe83c2ba60a0992ee4f75e44434285a99c66eee05e03256f62c"
+    },
+    {
+      "path": "tests/test_gates.py",
+      "bytes": 8533,
+      "sha256": "3a2641b701968dc969cf65f69793ba54b9b8a6fc7aad020a636e3a09a15078b3"
+    },
+    {
+      "path": "tests/test_oss_pipeline.py",
+      "bytes": 2014,
+      "sha256": "6555ebcec974027ed3ca71a9d416b88b2d3c31da8da1152fd56643e6cbaf2ba1"
+    },
+    {
+      "path": "tools/check_oss_policy.py",
+      "bytes": 2213,
+      "sha256": "63b94298d5f528a2ed302def8bfb431bee6fb143c7e960142eac0ff61b3c6b18"
+    },
+    {
+      "path": "tools/checks_gate.py",
+      "bytes": 1814,
+      "sha256": "4b71542578a2d305f724819cf1e90fe4a1f2ee156ce582b0b287d5251a4e3f7b"
+    },
+    {
+      "path": "tools/footprint_gate.py",
+      "bytes": 3313,
+      "sha256": "142805dfb7cfb8fb0c02d3dd1f681a4f259bada8642a19a8b161759ce437a2a0"
+    },
+    {
+      "path": "tools/gate_common.py",
+      "bytes": 1989,
+      "sha256": "b530ec8d92fc27e72496457f8ca92f4f74116d8674f364af9559f7209c671588"
+    },
+    {
+      "path": "tools/oss_demo_manifest.py",
+      "bytes": 1564,
+      "sha256": "fae15121efb0fdcfd119b8d03fa57592878cb4d8ac165dacf6b6db77980a766c"
+    },
+    {
+      "path": "tools/quality_gate.py",
+      "bytes": 2413,
+      "sha256": "f25b4230534d4165f5ecf81342f28bcda9d8a28d682def0a51c0ebc0e9d5026d"
+    },
+    {
+      "path": "tools/trace_gate.py",
+      "bytes": 7107,
+      "sha256": "3c2ddd270b87376cbb875f9e404504583b37dca46606179ce81860a9f3ffe392"
+    },
+    {
+      "path": "tools/validate_profile.py",
+      "bytes": 4252,
+      "sha256": "4c4ea5f9f5cee5df03398abe9e8786dd19216ac9edd5dd1bd6b2bcf8b1e09cba"
+    },
+    {
+      "path": "tools/verify_oss_demo.py",
+      "bytes": 2755,
+      "sha256": "2e91bfd9ceea60360afff3a7d45e093a9bad7d1278d5cf2ee392f884798ed802"
+    },
+    {
+      "path": "workflows/README.md",
+      "bytes": 1034,
+      "sha256": "f85035f2f83f47a4a6c527c2499d577622034e8c7d0a52095544d66a1f9db836"
+    },
+    {
+      "path": "workflows/forge-c.fabro",
+      "bytes": 2332,
+      "sha256": "d0ef2fb1c070f17c6b14b9e853f6325c975009d85e8b78ca6eb677d1d78e8159"
+    },
+    {
+      "path": "workflows/model-routing-oss.md",
+      "bytes": 1172,
+      "sha256": "f2fcef73f35c79d26db0adff6532dcfed5141ae7b094c2b8cc8ca23e9f344664"
+    },
+    {
+      "path": "workflows/model-routing.example.md",
+      "bytes": 330,
+      "sha256": "3ad49f2ed73e7d5c7278bd5f9318c81f351039c0f8cdf34324c8440212f7d376"
+    },
+    {
+      "path": "workflows/oss-bootstrap.fabro",
+      "bytes": 1079,
+      "sha256": "81361fe825b9077c765ab6477c8bc13a1e66b882eedca42dcb1f55d36ac5392f"
+    },
+    {
+      "path": "workflows/oss-local-candidate.fabro",
+      "bytes": 1913,
+      "sha256": "be598e247ee1c4938627ed9796cc7af7cb4743d54e307785c8d2a038c7be6e5e"
+    },
+    {
+      "path": "workflows/prompts/architecture.md",
+      "bytes": 569,
+      "sha256": "f680cda005b6a34bc8a7d0b9f8906c4ffbcfedab4f6fbde2d727d83e10955024"
+    },
+    {
+      "path": "workflows/prompts/candidate.md",
+      "bytes": 487,
+      "sha256": "2d17d7ca53052c7750400a24922d06c907316516470a84c0d2378e344935b066"
+    },
+    {
+      "path": "workflows/prompts/evidence.md",
+      "bytes": 726,
+      "sha256": "dc70826de0cdd855ba40e237a12903b03f61e54c39b4da160f01a012b7438486"
+    },
+    {
+      "path": "workflows/prompts/implementation.md",
+      "bytes": 971,
+      "sha256": "5f3fb983dc01757a00ad028a0d0e59f54b97d4c992167ae8fd27adab7f517e7f"
+    },
+    {
+      "path": "workflows/prompts/optimization.md",
+      "bytes": 821,
+      "sha256": "80c2dcb33992d0a05bf5f3bd6813f2d5caa16df4da89a07cfa9a796c94df8db0"
+    },
+    {
+      "path": "workflows/prompts/repair.md",
+      "bytes": 475,
+      "sha256": "4b92f2c4139b14f25545700f9b0effc7917d0208b11e8d15011bf504f158a0dc"
+    },
+    {
+      "path": "workflows/prompts/requirements.md",
+      "bytes": 649,
+      "sha256": "6d04e50be35df09aed175d263ea1c91d6606573589a6eaa4c53658c2ed0398c0"
+    },
+    {
+      "path": "workflows/prompts/verification.md",
+      "bytes": 929,
+      "sha256": "cae543417cf56da3ca2279d07311cc107c906cdbfb703f77d10501a05dd35e6f"
+    },
+    {
+      "path": "workflows/release.fabro",
+      "bytes": 1128,
+      "sha256": "5c047e1fbd9100e40f60185f3fc8a07b2eabe2252187a0641b31c80c7bf2c0d8"
+    }
+  ]
+}

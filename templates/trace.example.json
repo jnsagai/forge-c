@@ -1,0 +1,29 @@
+{
+  "baseline_id": "REPLACE_APPROVED_BASELINE",
+  "safety_allocations": [{"software_safety_requirement_id": "REPLACE_SSR_ID", "software_requirement_ids": ["SR-001"], "reviewed": false}],
+  "items": [
+    {"id": "SYS-001", "type": "system_requirement"},
+    {"id": "SR-001", "type": "software_requirement"},
+    {"id": "SA-001", "type": "architecture"},
+    {"id": "DD-001", "type": "detailed_design"},
+    {"id": "UNIT-001", "type": "software_unit", "source_file": "REPLACE/PATH.c"},
+    {"id": "TC-UNIT-001", "type": "unit_test"},
+    {"id": "TC-INT-001", "type": "integration_test"},
+    {"id": "TC-SW-001", "type": "software_test"},
+    {"id": "VR-UNIT-001", "type": "verification_result", "result": "NOT_RUN", "evidence_file": "REPLACE", "evidence_sha256": "REPLACE"},
+    {"id": "VR-INT-001", "type": "verification_result", "result": "NOT_RUN", "evidence_file": "REPLACE", "evidence_sha256": "REPLACE"},
+    {"id": "VR-SW-001", "type": "verification_result", "result": "NOT_RUN", "evidence_file": "REPLACE", "evidence_sha256": "REPLACE"}
+  ],
+  "links": [
+    {"source": "SYS-001", "target": "SR-001", "relation": "derives", "reviewed": false},
+    {"source": "SR-001", "target": "SA-001", "relation": "allocated_to", "reviewed": false},
+    {"source": "SA-001", "target": "DD-001", "relation": "refined_by", "reviewed": false},
+    {"source": "DD-001", "target": "UNIT-001", "relation": "implemented_by", "reviewed": false},
+    {"source": "UNIT-001", "target": "TC-UNIT-001", "relation": "verified_by", "reviewed": false},
+    {"source": "SA-001", "target": "TC-INT-001", "relation": "verified_by", "reviewed": false},
+    {"source": "SR-001", "target": "TC-SW-001", "relation": "verified_by", "reviewed": false},
+    {"source": "TC-UNIT-001", "target": "VR-UNIT-001", "relation": "has_result", "reviewed": false},
+    {"source": "TC-INT-001", "target": "VR-INT-001", "relation": "has_result", "reviewed": false},
+    {"source": "TC-SW-001", "target": "VR-SW-001", "relation": "has_result", "reviewed": false}
+  ]
+}

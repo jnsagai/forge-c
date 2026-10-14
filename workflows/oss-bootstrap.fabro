@@ -1,0 +1,14 @@
+digraph ForgeCBootstrapOSS {
+    graph [goal="Verify a fully open-source, host-only RCC-style C driver example with Clang/LLVM test and coverage tools; do not claim MISRA or ASIL B approval."]
+    rankdir=LR
+
+    start [shape=Mdiamond, label="Start"]
+    exit [shape=Msquare, label="Host demonstration only"]
+    policy [shape=parallelogram, label="No proprietary dependencies", goal_gate=true, script="python3 tools/check_oss_policy.py"]
+    inspect [shape=parallelogram, goal_gate=true, label="Check OSS demo tool availability", script="python3 scripts/oss_preflight.py --strict-demo"]
+    compile_and_test [shape=parallelogram, goal_gate=true, label="Compile, unit-test, LLVM MC/DC", script="./scripts/run_oss_demo.sh"]
+    analyzer [shape=parallelogram, goal_gate=true, label="Clang Static Analyzer", script="./scripts/run_oss_clang_analyzer.sh"]
+    summary [shape=parallelogram, goal_gate=true, label="Verify demo hashes and non-safety status", script="python3 tools/verify_oss_demo.py"]
+
+    start -> policy -> inspect -> compile_and_test -> analyzer -> summary -> exit
+}

@@ -1,0 +1,38 @@
+{
+  "profile_id": "PILOT-RCC-CM55-001",
+  "status": "draft",
+  "driver": "rcc",
+  "asil": "B",
+  "target": {
+    "part_number": "TBD_EXACT_STM32N6_PART",
+    "core": "cortex-m55",
+    "silicon_revision": "TBD",
+    "board": "TBD"
+  },
+  "hsi": { "contract_id": "TBD", "status": "unverified", "approved_by": "TBD" },
+  "source_documents": [
+    { "id": "RM0486", "revision": "TBD", "sha256": "TBD", "approved": false },
+    { "id": "DEVICE_DATASHEET", "revision": "TBD", "sha256": "TBD", "approved": false },
+    { "id": "DEVICE_ERRATA", "revision": "TBD", "sha256": "TBD", "approved": false }
+  ],
+  "safety_allocation": {
+    "status": "unverified",
+    "technical_safety_requirement_ids": [],
+    "software_safety_requirement_ids": [],
+    "safe_state_contract_id": "TBD",
+    "approved_by": "TBD"
+  },
+  "toolchain": {
+    "compiler": "arm-none-eabi-gcc",
+    "version": "TBD",
+    "reproducible_image_digest": "TBD"
+  },
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "api_cycle_limits": { "clock_enable": 1500 }
+  },
+  "budgets_status": "illustrative_not_approved",
+  "approval": { "design_approver": "TBD", "safety_approver": "TBD", "baseline_id": "TBD" }
+}

@@ -1,0 +1,166 @@
+openapi: 3.1.0
+info:
+  title: Forge-C Human Supervisor Dashboard API
+  version: 0.4.0-design
+  description: Design contract only; read-only endpoints. Implementation is Claude task T037.
+servers:
+  - url: http://127.0.0.1:8765
+    description: Loopback default; require local authentication.
+tags:
+  - name: factory
+  - name: events
+  - name: incidents
+  - name: knowledge
+  - name: release
+security:
+  - sessionAuth: []
+paths:
+  /api/v1/health:
+    get:
+      tags: [factory]
+      summary: Factory and OS-supervisor health snapshot
+      responses:
+        '200':
+          description: Deterministic snapshot, with stale/unknown fields where checks failed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, last_supervisor_poll, components]
+                properties:
+                  status: {type: string, enum: [HEALTHY, DEGRADED, UNAVAILABLE, UNKNOWN]}
+                  last_supervisor_poll: {type: [string, 'null'], format: date-time}
+                  components:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, status]
+                      properties:
+                        id: {type: string}
+                        status: {type: string, enum: [HEALTHY, DEGRADED, DOWN, UNKNOWN]}
+                        last_checked: {type: [string, 'null'], format: date-time}
+  /api/v1/runs:
+    get:
+      tags: [factory]
+      summary: Paginated Fabro run projections
+      parameters:
+        - {name: state, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200, default: 50}}
+        - {name: cursor, in: query, schema: {type: string}}
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/agents:
+    get:
+      tags: [factory]
+      summary: Declared roles, SKILL hashes, assignments and state
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/mcp:
+    get:
+      tags: [factory]
+      summary: MCP servers, discovery states and allowed capabilities
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/incidents:
+    get:
+      tags: [incidents]
+      summary: Durable supervisor incidents and repair outcomes
+      parameters:
+        - {name: status, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200, default: 50}}
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/lessons:
+    get:
+      tags: [knowledge]
+      summary: Approved lessons with validation status and provenance
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/packages:
+    get:
+      tags: [release]
+      summary: Machine-ready and blocked offline handover packages
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/tokens:
+    get:
+      tags: [factory]
+      summary: Model token usage and governed budget per run and role
+      parameters:
+        - {name: run_id, in: query, schema: {type: string}}
+      responses:
+        '200': {$ref: '#/components/responses/PaginatedItems'}
+  /api/v1/events:
+    get:
+      tags: [events]
+      summary: Filtered trace events. Viewer filters never alter capture.
+      parameters:
+        - name: channel
+          in: query
+          description: Comma-separated selection; omit for allowed default channels
+          schema:
+            type: string
+            example: human,tools,ai,supervisor
+        - {name: min_level, in: query, schema: {type: string, enum: [ERROR, WARN, INFO, DEBUG, TRACE], default: INFO}}
+        - {name: run_id, in: query, schema: {type: string}}
+        - {name: agent_id, in: query, schema: {type: string}}
+        - {name: phase, in: query, schema: {type: string}}
+        - {name: q, in: query, schema: {type: string, maxLength: 200}}
+        - {name: after_id, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 500, default: 100}}
+      responses:
+        '200':
+          description: Authorized, redacted event projections
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, next_cursor]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Event'}}
+                  next_cursor: {type: [string, 'null']}
+  /api/v1/events/stream:
+    get:
+      tags: [events]
+      summary: Read-only SSE with Last-Event-ID support; polling fallback via /events
+      parameters:
+        - {name: Last-Event-ID, in: header, schema: {type: string}}
+      responses:
+        '200':
+          description: Server-sent JSON event projections with id fields
+          content:
+            text/event-stream:
+              schema: {type: string}
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: forge_dashboard_session
+      description: Local authenticated observer session. No mutation privileges.
+  schemas:
+    Event:
+      type: object
+      description: Superset reference is event.schema.json; this subset is safe for viewer.
+      required: [event_id, ts_utc, channel, level, message]
+      properties:
+        event_id: {type: string}
+        ts_utc: {type: string, format: date-time}
+        channel: {type: string}
+        level: {type: string}
+        message: {type: string, maxLength: 160}
+        run_id: {type: string}
+        phase: {type: string}
+        agent_id: {type: string}
+        payload_ref: {type: string}
+  responses:
+    PaginatedItems:
+      description: Paginated read-only operational projections
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [items, next_cursor]
+            properties:
+              items: {type: array, items: {type: object}}
+              next_cursor: {type: [string, 'null']}

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.cache/
+build/
+dist/
+secrets/
+.env
+*.key
+*.pem
+# evidence is deliberately tracked at release, but do not commit huge transient build logs
+.evidence-tmp/
+# OSS demonstration artifacts (generated locally)
+/build/
+/evidence/oss-demo/

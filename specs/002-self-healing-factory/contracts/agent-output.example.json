@@ -1,0 +1,11 @@
+{
+  "status": "REWORK",
+  "artifacts": [
+    "inspection/SWE.3/INS-003.json"
+  ],
+  "issues": [
+    "MISRA-17.2: manual review needed",
+    "REG-004: reset bit mask mismatch"
+  ],
+  "next_action": "rework"
+}

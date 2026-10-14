@@ -1,0 +1,14 @@
+{
+  "target_compile": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "host_unit": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "static_analysis": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "misra_assessment": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "component_verification": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "integration_verification": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "software_verification": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "coverage_assessment": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "fault_injection": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "target_hil": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "tool_confidence": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"},
+  "independent_review": {"status": "NOT_RUN", "log": "REPLACE", "sha256": "REPLACE"}
+}

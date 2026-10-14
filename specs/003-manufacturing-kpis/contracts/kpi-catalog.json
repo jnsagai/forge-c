@@ -1,0 +1,269 @@
+{
+  "schema_version": "1.0",
+  "catalog_version": "0.5.0",
+  "status": "PROPOSED_NOT_IMPLEMENTED",
+  "source_of_truth": "versioned_event_ledger_and_immutable_evidence",
+  "data_quality_statuses": [
+    "MEASURED",
+    "ESTIMATED",
+    "UNKNOWN",
+    "NOT_APPLICABLE",
+    "NOT_COMPUTABLE",
+    "INSUFFICIENT_SAMPLE",
+    "INSUFFICIENT_BASELINE"
+  ],
+  "required_metadata": [
+    "formula_version",
+    "window_start",
+    "window_end",
+    "numerator",
+    "denominator",
+    "sample_count",
+    "filters",
+    "source_event_refs",
+    "evidence_refs",
+    "source_hash",
+    "data_quality"
+  ],
+  "metrics": [
+    {
+      "id": "K01",
+      "name": "Factory Availability",
+      "unit": "ratio",
+      "definition": "healthy_planned_seconds / eligible_planned_seconds",
+      "source_event_types": [
+        "supervisor.heartbeat",
+        "work_order.admitted",
+        "stage.started"
+      ],
+      "primary_dimension": "production_window",
+      "caveat": "exclude intentional idle; null if no eligible planned seconds"
+    },
+    {
+      "id": "K02",
+      "name": "SWE First Pass Yield",
+      "unit": "ratio",
+      "definition": "initial_inspections_passed / terminal_initial_inspections",
+      "source_event_types": [
+        "inspection.completed"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "reinspection must not change first outcome"
+    },
+    {
+      "id": "K03",
+      "name": "Rolled Throughput Yield",
+      "unit": "ratio",
+      "definition": "closed_orders_all_first_pass / all_closed_orders",
+      "source_event_types": [
+        "inspection.completed",
+        "quality_gate.evaluated",
+        "work_order.closed"
+      ],
+      "primary_dimension": "driver_class",
+      "caveat": "all six phases and applicable gates"
+    },
+    {
+      "id": "K04",
+      "name": "Review-Ready Throughput",
+      "unit": "packages_per_window",
+      "definition": "unique_ready_sealed_packages",
+      "source_event_types": [
+        "package.sealed"
+      ],
+      "primary_dimension": "driver_class",
+      "caveat": "BLOCKED counted separately"
+    },
+    {
+      "id": "K05",
+      "name": "Lead Time",
+      "unit": "seconds_p50_p95",
+      "definition": "sealed_at - admitted_at",
+      "source_event_types": [
+        "work_order.admitted",
+        "package.sealed"
+      ],
+      "primary_dimension": "status",
+      "caveat": "separate READY and BLOCKED"
+    },
+    {
+      "id": "K06",
+      "name": "Station Cycle Time",
+      "unit": "seconds_p50_p95",
+      "definition": "sum(active_station_segments)",
+      "source_event_types": [
+        "stage.started",
+        "stage.paused",
+        "stage.resumed",
+        "stage.completed"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "exclude queue and idle"
+    },
+    {
+      "id": "K07",
+      "name": "Rework Effort Share",
+      "unit": "ratio",
+      "definition": "active_correction_and_reinspection_seconds / productive_swe_seconds",
+      "source_event_types": [
+        "finding.recorded",
+        "finding.resolved",
+        "stage.completed"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "exclude factory infrastructure repair"
+    },
+    {
+      "id": "K08",
+      "name": "Defect Leakage",
+      "unit": "ratio",
+      "definition": "confirmed_downstream_detected / confirmed_findings_with_origin",
+      "source_event_types": [
+        "finding.recorded"
+      ],
+      "primary_dimension": "origin_phase",
+      "caveat": "unknown origin reported separately"
+    },
+    {
+      "id": "K09",
+      "name": "Evidence Completeness",
+      "unit": "ratio",
+      "definition": "validated_required_slots / applicable_required_slots",
+      "source_event_types": [
+        "artifact.evidence_validated"
+      ],
+      "primary_dimension": "safety_profile",
+      "caveat": "validated evidence, not file exists"
+    },
+    {
+      "id": "K10",
+      "name": "Requirements Verification",
+      "unit": "ratio",
+      "definition": "requirements_with_valid_verification / applicable_requirements",
+      "source_event_types": [
+        "requirements.verification_recorded"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "exclude justified N/A with rationale"
+    },
+    {
+      "id": "K11",
+      "name": "Traceability Consistency",
+      "unit": "ratio",
+      "definition": "semantically_validated_required_links / required_links",
+      "source_event_types": [
+        "traceability.link_verified"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "mere links not enough"
+    },
+    {
+      "id": "K12",
+      "name": "MISRA Assessment Coverage",
+      "unit": "ratio",
+      "definition": "assessed_applicable_rules / applicable_rules",
+      "source_event_types": [
+        "misra.rule_assessed"
+      ],
+      "primary_dimension": "ruleset",
+      "caveat": "must report unchecked/unsupported"
+    },
+    {
+      "id": "K13",
+      "name": "Structural Verification Coverage",
+      "unit": "multimeasure",
+      "definition": "statement, branch, and applicable MC/DC separately",
+      "source_event_types": [
+        "quality_gate.evaluated"
+      ],
+      "primary_dimension": "target",
+      "caveat": "coverage provenance and exclusions"
+    },
+    {
+      "id": "K14",
+      "name": "Memory and Timing Envelope",
+      "unit": "multimeasure",
+      "definition": "flash, ram, stack, cycles and respective margins vs target budget",
+      "source_event_types": [
+        "firmware.footprint_measured"
+      ],
+      "primary_dimension": "target",
+      "caveat": "measurements vs estimates labelled"
+    },
+    {
+      "id": "K15",
+      "name": "Tokens per READY Package",
+      "unit": "tokens_per_package",
+      "definition": "total_tokens_across_attempts / unique_ready_packages",
+      "source_event_types": [
+        "agent.usage_recorded",
+        "package.sealed"
+      ],
+      "primary_dimension": "model",
+      "caveat": "no package => null, usage unknown labelled"
+    },
+    {
+      "id": "K16",
+      "name": "Autonomous Repair Effectiveness",
+      "unit": "ratio",
+      "definition": "eligible_incidents_auto_restored / terminal_eligible_incidents",
+      "source_event_types": [
+        "incident.detected",
+        "incident.resolved",
+        "repair.completed"
+      ],
+      "primary_dimension": "component",
+      "caveat": "dedupe incident fingerprint"
+    },
+    {
+      "id": "K17",
+      "name": "Repeat Incident Ratio",
+      "unit": "ratio",
+      "definition": "resolved_root_causes_recurring_in_window / resolved_root_causes_observed",
+      "source_event_types": [
+        "incident.detected",
+        "incident.resolved"
+      ],
+      "primary_dimension": "component",
+      "caveat": "no unsupported lessons-prevention claim"
+    },
+    {
+      "id": "K18",
+      "name": "WIP",
+      "unit": "count",
+      "definition": "admitted_nonterminal_work_orders_at_time",
+      "source_event_types": [
+        "work_order.admitted",
+        "work_order.closed"
+      ],
+      "primary_dimension": "phase",
+      "caveat": "unique order IDs"
+    },
+    {
+      "id": "K19",
+      "name": "Software Factory OEE",
+      "unit": "ratio",
+      "definition": "factory_availability * calibrated_performance * first_pass_package_quality",
+      "source_event_types": [
+        "work_order.closed",
+        "inspection.completed",
+        "supervisor.heartbeat"
+      ],
+      "primary_dimension": "driver_class",
+      "caveat": "N/A until fully calibrated, diagnostic only"
+    },
+    {
+      "id": "K20",
+      "name": "Safety Process Violations",
+      "unit": "count",
+      "definition": "skipped_mandatory_inspections + bypassed_gates + fabricated_approval_assertions",
+      "source_event_types": [
+        "inspection.completed",
+        "quality_gate.evaluated",
+        "package.sealed"
+      ],
+      "primary_dimension": "safety_profile",
+      "caveat": "zero tolerated hard violation, not weighted"
+    }
+  ]
+}

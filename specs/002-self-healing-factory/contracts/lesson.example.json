@@ -1,0 +1,24 @@
+{
+  "lesson_id": "lesson-001",
+  "source_incident_id": "inc-001",
+  "source_attempt_id": "att-001",
+  "state": "VALIDATED",
+  "symptoms": "Fabro readiness failed after a configuration refresh",
+  "root_cause": "Invalid optional config field; validation accepted an unknown name",
+  "remedy": "Validate config field names before service reload",
+  "constraints": "Applies only to configuration schema version 0.4",
+  "evidence_refs": [
+    "sha256:abcdef123"
+  ],
+  "tool_versions": {
+    "fabro": "pinned-example-version"
+  },
+  "created_at": "2026-10-14T10:01:00Z",
+  "validation_tests": [
+    {
+      "id": "test-config-validation",
+      "status": "PASS",
+      "evidence_ref": "artifact:test-001"
+    }
+  ]
+}

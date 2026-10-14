@@ -1,0 +1,14 @@
+# Merge into the settings file used by your installed Fabro release.
+# This example is deliberately offline-only and contains no real credentials.
+# Ollama's local OpenAI-compatible endpoint accepts a dummy bearer token:
+#   export OLLAMA_API_KEY=ollama
+
+[llm.providers.ollama]
+enabled = true
+default_model = "qwen3:8b"
+
+[llm.providers.ollama.models."qwen3:8b"]
+display_name = "Qwen3 8B Local (open model)"
+api_model = "qwen3:8b"
+limits = { context_tokens = 32768, max_output_tokens = 4096 }
+capabilities = { text = true, tools = true }

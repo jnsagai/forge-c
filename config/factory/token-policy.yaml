@@ -1,0 +1,21 @@
+schema: forge-c/token-policy/0.4
+default_model: qwen3:8b
+provider: ollama
+max_concurrent_model_agents: 1
+no_model_supervisor_poll: true
+max_tool_result_bytes: 2048
+max_tool_log_lines_in_prompt: 30
+max_validated_lessons: 3
+max_lesson_payload_tokens: 700
+reuse_context_if_input_sha_unchanged: true
+include_workproduct_by_ref_not_full_text: true
+compact_response_top_level_keys:
+- status
+- artifacts
+- issues
+- next_action
+suppress_explanatory_narrative: true
+always_count_model_usage: true
+reject_on_budget_exhaustion: true
+notes: Total budgets per role in agents.yaml; provider token counters may be unavailable
+  and must be explicitly labeled estimated/unknown.

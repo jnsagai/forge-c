@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.invalid/spec/kpi-snapshot.schema.json",
+  "title": "Forge-C Immutable KPI Snapshot (proposed)",
+  "$comment": "KPI implementation contract; not an existing runtime endpoint.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshot_id",
+    "formula_version",
+    "window_start",
+    "window_end",
+    "metric_values",
+    "event_set_digest",
+    "release_status"
+  ],
+  "properties": {
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "formula_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "window_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "window_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_set_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "release_status": {
+      "enum": [
+        "READY_FOR_OFFLINE_REVIEW",
+        "BLOCKED",
+        "IN_PROGRESS"
+      ]
+    },
+    "source_catalog_hash": {
+      "type": "string"
+    },
+    "metric_values": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metric_id",
+          "status",
+          "value",
+          "unit",
+          "sample_count",
+          "filters",
+          "source_event_refs"
+        ],
+        "properties": {
+          "metric_id": {
+            "type": "string",
+            "pattern": "^K(0[1-9]|1[0-9]|20)$"
+          },
+          "status": {
+            "enum": [
+              "MEASURED",
+              "ESTIMATED",
+              "UNKNOWN",
+              "NOT_APPLICABLE",
+              "NOT_COMPUTABLE",
+              "INSUFFICIENT_SAMPLE",
+              "INSUFFICIENT_BASELINE"
+            ]
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": "string"
+          },
+          "sample_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "numerator": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "denominator": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "filters": {
+            "type": "object"
+          },
+          "source_event_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "explanation": {
+            "type": "string",
+            "maxLength": 600
+          }
+        }
+      }
+    }
+  }
+}

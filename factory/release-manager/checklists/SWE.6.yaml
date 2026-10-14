@@ -1,0 +1,66 @@
+schema: forge-c/inspection-checklist/v0.3
+phase: SWE.6
+version: '0.3'
+policy:
+  author_must_differ_from_inspector: true
+  frozen_baseline_required: true
+  missing_mandatory_item_fails: true
+  critical_major_block: true
+  maximum_rework_cycles: 3
+  agent_cannot_approve_safety_release: true
+  human_gate_during_run: false
+  terminal_action_on_retry_exhaustion: AUTO_INVOKE_RELEASE_MANAGER_BLOCKED
+  autonomous_safety_waiver_allowed: false
+  human_offline_review_required: true
+checks:
+- id: SWE6-01
+  required: true
+  severity_if_failed: major
+  criterion: Integrated software is verified against approved SWE.1 requirements.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE6-02
+  required: true
+  severity_if_failed: major
+  criterion: Verification measures and selection cover normal, boundary and failure
+    behavior.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE6-03
+  required: true
+  severity_if_failed: major
+  criterion: Safety functions, fault responses and target-specific constraints are
+    addressed.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE6-04
+  required: true
+  severity_if_failed: major
+  criterion: Requirements → measures → results traceability is complete and consistent.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE6-05
+  required: true
+  severity_if_failed: major
+  criterion: Pass/fail criteria, actual results, regressions and defect status are
+    auditable.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE6-06
+  required: true
+  severity_if_failed: major
+  criterion: Final verification summary states unverified hardware/ASIL gaps accurately.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict

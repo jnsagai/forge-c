@@ -1,0 +1,65 @@
+schema: forge-c/inspection-checklist/v0.3
+phase: SWE.5
+version: '0.3'
+policy:
+  author_must_differ_from_inspector: true
+  frozen_baseline_required: true
+  missing_mandatory_item_fails: true
+  critical_major_block: true
+  maximum_rework_cycles: 3
+  agent_cannot_approve_safety_release: true
+  human_gate_during_run: false
+  terminal_action_on_retry_exhaustion: AUTO_INVOKE_RELEASE_MANAGER_BLOCKED
+  autonomous_safety_waiver_allowed: false
+  human_offline_review_required: true
+checks:
+- id: SWE5-01
+  required: true
+  severity_if_failed: major
+  criterion: Component behavior and software integration verification are both planned.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE5-02
+  required: true
+  severity_if_failed: major
+  criterion: Sequence of integration and target interfaces match the architecture.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE5-03
+  required: true
+  severity_if_failed: major
+  criterion: Inter-component resource, clock, reset and interrupt interactions are
+    tested.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE5-04
+  required: true
+  severity_if_failed: major
+  criterion: Robustness, fault propagation and timing/resource budgets are checked.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE5-05
+  required: true
+  severity_if_failed: major
+  criterion: Component/integration measures map to architecture, results and regressions.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE5-06
+  required: true
+  severity_if_failed: major
+  criterion: Simulation vs target evidence limitations are explicit and unresolved
+    defects tracked.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict

@@ -1,0 +1,13 @@
+{
+  "incident_id": "inc-001",
+  "fingerprint": "fabro:readiness:0.4",
+  "component": "fabro",
+  "fault_type": "READINESS_FAILURE",
+  "state": "TRIAGED",
+  "severity": "HIGH",
+  "created_at": "2026-10-14T10:00:00Z",
+  "updated_at": "2026-10-14T10:00:15Z",
+  "attempts": 0,
+  "correlation_id": "corr-001",
+  "recoverable": true
+}

@@ -1,0 +1,64 @@
+schema: forge-c/inspection-checklist/v0.3
+phase: SWE.3
+version: '0.3'
+policy:
+  author_must_differ_from_inspector: true
+  frozen_baseline_required: true
+  missing_mandatory_item_fails: true
+  critical_major_block: true
+  maximum_rework_cycles: 3
+  agent_cannot_approve_safety_release: true
+  human_gate_during_run: false
+  terminal_action_on_retry_exhaustion: AUTO_INVOKE_RELEASE_MANAGER_BLOCKED
+  autonomous_safety_waiver_allowed: false
+  human_offline_review_required: true
+checks:
+- id: SWE3-01
+  required: true
+  severity_if_failed: major
+  criterion: Detailed design and unit-level APIs/interfaces match the software architecture.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE3-02
+  required: true
+  severity_if_failed: major
+  criterion: C code handles register access, volatile, bounds, initialization and
+    RMW safely.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE3-03
+  required: true
+  severity_if_failed: major
+  criterion: ISR/concurrency, interrupts, timing and error propagation are bounded.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE3-04
+  required: true
+  severity_if_failed: major
+  criterion: MISRA C coverage/deviations and static-analysis findings are recorded.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE3-05
+  required: true
+  severity_if_failed: major
+  criterion: No heap where prohibited; stack/Flash/RAM impacts are measured or budgeted.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE3-06
+  required: true
+  severity_if_failed: major
+  criterion: Units and source match design, with change/trace provenance.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict

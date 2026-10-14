@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.4/incident.schema.json",
+  "title": "Forge-C incident",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "incident_id",
+    "fingerprint",
+    "component",
+    "fault_type",
+    "state",
+    "severity",
+    "created_at",
+    "updated_at",
+    "attempts",
+    "correlation_id"
+  ],
+  "properties": {
+    "incident_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "fingerprint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "component": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "fault_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "state": {
+      "enum": [
+        "DETECTED",
+        "TRIAGED",
+        "REPAIRING",
+        "VERIFYING",
+        "RESOLVED",
+        "ROLLED_BACK",
+        "REQUIRES_OFFLINE_ATTENTION"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "last_error": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    },
+    "patch_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recoverable": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "attempt_id": "att-001",
+  "incident_id": "inc-001",
+  "agent_role": "fabric-repair",
+  "status": "TESTING",
+  "worktree_ref": "worktree:repair-inc-001",
+  "tests": [
+    {
+      "name": "mcp-contracts",
+      "status": "PASS",
+      "evidence_ref": "artifact:test-001"
+    }
+  ],
+  "protected_path_changes": [],
+  "token_usage": {
+    "total": 987,
+    "basis": "estimated"
+  },
+  "started_at": "2026-10-14T10:01:00Z"
+}

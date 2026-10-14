@@ -1,0 +1,7 @@
+source_id,target_id,relation,source_baseline,target_baseline,rationale,reviewer,status
+SYS-001,SR-001,derives,, ,,,DRAFT
+SR-001,SA-001,allocated_to,, ,,,DRAFT
+SA-001,DD-001,refined_by,, ,,,DRAFT
+DD-001,UNIT-001,implemented_by,, ,,,DRAFT
+UNIT-001,TC-UNIT-001,verified_by,, ,,,DRAFT
+SR-001,TC-SW-001,verified_by,, ,,,DRAFT

@@ -1,0 +1,5 @@
+# Workflow status and migration gates
+
+`forge-c.fabro`, `oss-local-candidate.fabro` and `release.fabro` are preserved **legacy design/exploration workflows**. They contain human decision nodes or lack the required SWE.1–6 inspection, MCP enforcement, finalizer and control-plane integration. **Do not execute them as v0.4 unattended production workflows.** `oss-bootstrap.fabro` is a host demonstration only and not a safety workflow.
+
+**Claude implementation requirement (T009, T018, T046–T048):** create verified v0.4 executable Fabro workflows using the pinned installed Fabro version, ensure a separate author and inspector for each SWE phase, finalizer on all terminal outcomes, no interactive approval during runtime, and deterministic gate/blocked paths. Native Fabro agent calls that bypass required scoped MCPs must be disabled or OS-sandboxed. Supervisor is independent of the Fabro workflow graph. Preserve legacy files until the v0.4 implementation has regression evidence; never claim these templates implement v0.4.

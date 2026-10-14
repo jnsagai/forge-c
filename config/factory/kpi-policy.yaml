@@ -1,0 +1,39 @@
+# Proposed policy only. No runtime aggregator exists yet.
+version: 0.5.0
+mode: measurement_only
+window:
+  primary: rolling_7_days
+  options: [last_24_hours, rolling_7_days, rolling_30_days, custom]
+production_order:
+  denominator: unique_admitted_order_id
+  successful_outcome: READY_FOR_OFFLINE_REVIEW
+  terminal_outcomes: [READY_FOR_OFFLINE_REVIEW, BLOCKED]
+  no_order_in_window: NOT_APPLICABLE
+performance_reference:
+  class_dimensions: [driver_type, complexity, target_mcu, compiler, optimization, safety_profile]
+  policy: frozen_per_class
+  provisional_minimum_homogeneous_samples: 20
+  baseline_unavailable: INSUFFICIENT_BASELINE
+sfoee:
+  enabled_when_calibrated: true
+  components: [availability, normalized_performance, first_pass_package_quality]
+  missing_data: NOT_COMPUTABLE
+  quality_gate_decision_authority: NONE
+first_pass:
+  source: independent_inspector_verdict
+  immutable_after_first_inspection: true
+rework:
+  retry_does_not_create_new_order: true
+data_quality:
+  prefer_null_with_status_over_guessed_zero: true
+  include_sample_count: true
+  include_event_evidence_refs: true
+  token_usage_missing: UNKNOWN
+alerts:
+  mode: observe_only
+  allow_modify_safety_policy: false
+  allow_trigger_factory_repair_without_incident: false
+safety:
+  kpi_can_override_blocking_gate: false
+  release_by_model: forbidden
+  mandatory_inspection_skip_tolerated: 0

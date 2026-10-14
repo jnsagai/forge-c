@@ -1,0 +1,46 @@
+schema: forge-c/trace-policy/0.4
+capture_levels:
+  human: INFO
+  workflow: INFO
+  tools: WARN
+  ai: INFO
+  supervisor: INFO
+  repair: INFO
+  security: INFO
+  audit: INFO
+  metrics: INFO
+  knowledge: INFO
+allowed_levels:
+- 'OFF'
+- ERROR
+- WARN
+- INFO
+- DEBUG
+- TRACE
+mandatory_minimum_levels:
+  audit: INFO
+  security: WARN
+ai_raw_prompt_response_capture: false
+ai_hidden_reasoning_capture: false
+redact_secrets_before_persist: true
+default_tool_payload_max_bytes: 2048
+human_info_summary_max_chars: 160
+per_channel_retention_days:
+  human: 30
+  workflow: 30
+  tools: 14
+  ai: 14
+  supervisor: 30
+  repair: 90
+  security: 90
+  audit: 365
+  metrics: 90
+  knowledge: 365
+dashboard_defaults:
+  visible_channels:
+  - human
+  - workflow
+  - supervisor
+  severity_at_least: INFO
+  store_filters_per_user: true
+viewer_filters_do_not_change_capture: true

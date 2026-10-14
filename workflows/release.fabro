@@ -1,0 +1,18 @@
+digraph ForgeCRelease {
+    graph [goal="Evaluate a Forge-C candidate against all technical evidence including real hardware timing/HIL, tool confidence and independent review, then request authenticated human release authorization."]
+    rankdir=LR
+
+    start [shape=Mdiamond]
+    exit [shape=Msquare, label="Approved, subject to authenticated SCM/ALM release controls"]
+
+    technical [shape=parallelogram, goal_gate=true, label="Strict ASIL-oriented evidence gate",
+              script="python3 tools/quality_gate.py --phase release --profile profiles/stm32n6-rcc-pilot.json --trace evidence/trace.json --metrics evidence/metrics.json --checks evidence/checks.json"]
+    approval [shape=hexagon, label="Authorized safety/release approvers: verify SCM/ALM approvals"]
+    rejected [shape=parallelogram, label="Reject release", script="exit 1"]
+
+    start -> technical
+    technical -> approval [condition="outcome=succeeded", label="Evidence complete"]
+    technical -> rejected [condition="outcome=failed", label="Evidence blocked"]
+    approval -> exit [label="[A] Approve"]
+    approval -> rejected [label="[R] Reject"]
+}

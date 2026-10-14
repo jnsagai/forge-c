@@ -1,0 +1,11 @@
+{
+  "run_id": "run-001",
+  "agent_id": "swe3-author",
+  "model": "qwen3:8b",
+  "basis": "estimated",
+  "tokens_input": 1000,
+  "tokens_output": 500,
+  "budget_total": 12000,
+  "turns": 5,
+  "timestamp": "2026-10-14T10:00:00Z"
+}

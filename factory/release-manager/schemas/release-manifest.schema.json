@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forge-C offline review manifest",
+  "type": "object",
+  "required": ["schema", "run_id", "status", "scope", "gaps", "files", "baseline", "safety_target"],
+  "properties": {
+    "schema": {"const": "forge-c/review-package-manifest/0.3"},
+    "run_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["BLOCKED", "READY_FOR_OFFLINE_REVIEW"]},
+    "scope": {"const": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"},
+    "baseline": {"type": "string"},
+    "safety_target": {"type": "string"},
+    "gaps": {"type": "array", "items": {"type": "string"}},
+    "files": {"type": "array", "items": {"type": "object", "required": ["path", "size", "sha256"], "properties": {"path": {"type": "string"}, "size": {"type": "integer", "minimum": 0}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}}
+  },
+  "additionalProperties": true
+}

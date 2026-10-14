@@ -1,0 +1,65 @@
+schema: forge-c/inspection-checklist/v0.3
+phase: SWE.2
+version: '0.3'
+policy:
+  author_must_differ_from_inspector: true
+  frozen_baseline_required: true
+  missing_mandatory_item_fails: true
+  critical_major_block: true
+  maximum_rework_cycles: 3
+  agent_cannot_approve_safety_release: true
+  human_gate_during_run: false
+  terminal_action_on_retry_exhaustion: AUTO_INVOKE_RELEASE_MANAGER_BLOCKED
+  autonomous_safety_waiver_allowed: false
+  human_offline_review_required: true
+checks:
+- id: SWE2-01
+  required: true
+  severity_if_failed: major
+  criterion: Software components and interfaces cover all SWE.1 requirements.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE2-02
+  required: true
+  severity_if_failed: major
+  criterion: Register ownership, volatile access, RMW, clocks and reset semantics
+    are defined.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE2-03
+  required: true
+  severity_if_failed: major
+  criterion: Concurrency, ISR synchronization, scheduling and reentrancy are addressed.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE2-04
+  required: true
+  severity_if_failed: major
+  criterion: Safety mechanisms, degraded states and architecture dependencies are
+    defined.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE2-05
+  required: true
+  severity_if_failed: major
+  criterion: Memory/time budgets are allocated and justified across components.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE2-06
+  required: true
+  severity_if_failed: major
+  criterion: Architecture decisions and bidirectional SWE.1 trace are consistent.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict

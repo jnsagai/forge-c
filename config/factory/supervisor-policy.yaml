@@ -1,0 +1,48 @@
+schema: forge-c/supervisor-policy/0.4
+mode: NO_MODEL_IN_HEALTH_POLL
+status: SPECIFIED_NOT_IMPLEMENTED
+poll_interval_seconds: 60
+valid_poll_interval_seconds:
+- 15
+- 300
+checks:
+- fabro_readiness
+- fabro_run_progress
+- mcp_handshake
+- queued_run_age
+- evidence_store_writable
+- db_writable
+- disk_pressure
+- ram_pressure
+- gpu_memory_pressure_when_available
+- dashboard_health
+- supervisor_own_watchdog
+incident_dedupe: component+fault_type+run_id+version
+thresholds:
+  fabro_consecutive_failed_polls: 2
+  stage_stall_multiplier: 2.0
+  storage_free_min_mb: 2048
+  queue_max_age_seconds: 1800
+  stable_polls_for_recovery: 3
+repair:
+  request_ai_agent_on_eligible_incident: true
+  role: fabric-repair
+  dispatch_if_fabro_down: external_local_runner
+  max_attempts_per_incident: 2
+  max_attempts_per_hour: 3
+  cooldown_seconds: 900
+  max_concurrent: 1
+  max_tokens_per_attempt: 10000
+  worktree_isolation: true
+  patch_promotion: deterministic_tests_then_atomic_switch
+  rollback_on_regression: true
+  forbid_safety_policy_changes: true
+protected_paths:
+- factory/release-manager/policies/**
+- policies/**
+- safety/**
+- evidence/**
+- workproducts/**
+- configuration/approved/**
+- archives/**
+systemd_watchdog: true

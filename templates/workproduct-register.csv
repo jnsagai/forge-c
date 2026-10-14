@@ -1,0 +1,9 @@
+process,information_item_id,workproduct_id,file,status,baseline,source_reviewed_by,approval_status
+SWE.1,17-00,SWR-SPEC,TBD,not_started,TBD,TBD,not_approved
+SWE.2,04-04,SW-ARCH,TBD,not_started,TBD,TBD,not_approved
+SWE.3,04-05,SW-DETAIL,TBD,not_started,TBD,TBD,not_approved
+SWE.4,08-60,UNIT-VER-MEASURES,TBD,not_started,TBD,TBD,not_approved
+SWE.5,06-50,INTEGRATION-SEQUENCE,TBD,not_started,TBD,TBD,not_approved
+SWE.6,15-52,SOFTWARE-VER-RESULT,TBD,not_started,TBD,TBD,not_approved
+SAFETY,N/A,SW-SAFETY-ANALYSIS,TBD,not_started,TBD,TBD,not_approved
+SAFETY,N/A,TOOL-CONFIDENCE,TBD,not_started,TBD,TBD,not_approved

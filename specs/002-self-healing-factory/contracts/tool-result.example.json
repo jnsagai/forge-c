@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "summary": "Unit tests passed",
+  "artifact_refs": [
+    "sha256:testlogabc"
+  ],
+  "issues": [],
+  "metrics": {
+    "tests_passed": 12
+  },
+  "provenance": {
+    "tool": "CTest",
+    "version": "pinned-example-version",
+    "invocation_id": "tool-001",
+    "exit_code": 0,
+    "duration_ms": 999
+  }
+}

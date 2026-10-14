@@ -1,0 +1,63 @@
+schema: forge-c/inspection-checklist/v0.3
+phase: SWE.1
+version: '0.3'
+policy:
+  author_must_differ_from_inspector: true
+  frozen_baseline_required: true
+  missing_mandatory_item_fails: true
+  critical_major_block: true
+  maximum_rework_cycles: 3
+  agent_cannot_approve_safety_release: true
+  human_gate_during_run: false
+  terminal_action_on_retry_exhaustion: AUTO_INVOKE_RELEASE_MANAGER_BLOCKED
+  autonomous_safety_waiver_allowed: false
+  human_offline_review_required: true
+checks:
+- id: SWE1-01
+  required: true
+  severity_if_failed: major
+  criterion: HSI and allocated software safety requirements are baselined and traceable.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE1-02
+  required: true
+  severity_if_failed: major
+  criterion: Requirements are atomic, consistent, feasible and objectively verifiable.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE1-03
+  required: true
+  severity_if_failed: major
+  criterion: Failure handling, reset/startup behavior and safe states are specified.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE1-04
+  required: true
+  severity_if_failed: major
+  criterion: Flash/RAM/stack/CPU/timing constraints are explicit and measurable.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE1-05
+  required: true
+  severity_if_failed: major
+  criterion: Bidirectional upstream-to-SWE.1 trace and coverage gaps are recorded.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict
+- id: SWE1-06
+  required: true
+  severity_if_failed: major
+  criterion: Verification criteria and unresolved ambiguities are documented.
+  evidence:
+  - workproduct_reference
+  - source_location_or_trace_id
+  - recorded_verdict

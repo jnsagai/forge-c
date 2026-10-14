@@ -1,0 +1,26 @@
+digraph ForgeCLocalCandidate {
+    graph [goal="Produce and review a low-footprint C driver candidate using local OSS agents, objective validation and no commercial services. Do not authorize ASIL B release."]
+    rankdir=LR
+
+    start [shape=Mdiamond]
+    exit [shape=Msquare, label="Candidate ONLY"]
+    inputs [shape=parallelogram, goal_gate=true, label="Require safety/HSI baseline", script="python3 tools/validate_profile.py profiles/stm32n6-rcc-pilot.json"]
+    reqs [label="SWE.1 requirements", prompt="@prompts/requirements.md", class="local"]
+    arch [label="SWE.2 architecture", prompt="@prompts/architecture.md", class="local"]
+    approval [shape=hexagon, label="Human review of safety/HSI architecture"]
+    implement [label="SWE.3 implement C", prompt="@prompts/implementation.md", class="local"]
+    verify [label="SWE.4–6 verification", prompt="@prompts/verification.md", class="local"]
+    improve [label="Bounded size/stack optimization", prompt="@prompts/optimization.md", class="local"]
+    collect [label="Collect raw evidence", prompt="@prompts/evidence.md", class="local"]
+    candidate_gate [shape=parallelogram, goal_gate=true, label="Deterministic candidate gate", script="python3 tools/quality_gate.py --phase candidate --profile profiles/stm32n6-rcc-pilot.json --trace evidence/trace.json --metrics evidence/metrics.json --checks evidence/checks.json"]
+    final [label="Summarize candidate and unresolved items", prompt="@prompts/candidate.md", class="local"]
+
+    start -> inputs -> reqs -> arch -> approval
+    approval -> implement [label="[A] Approve"]
+    approval -> reqs [label="[R] Revise"]
+    rejected [shape=parallelogram, label="Reject candidate", script="exit 1"]
+    implement -> verify -> improve -> collect -> candidate_gate
+    candidate_gate -> final [condition="outcome=succeeded"]
+    candidate_gate -> rejected [condition="outcome=failed"]
+    final -> exit
+}

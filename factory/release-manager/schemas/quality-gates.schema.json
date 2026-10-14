@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forge-C deterministic final-gates report",
+  "type": "object",
+  "required": ["run_status", "checks", "open_findings"],
+  "properties": {
+    "run_status": {"type": "string", "enum": ["COMPLETED", "INCOMPLETE", "FAILED"]},
+    "checks": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "open_findings": {"type": "array", "items": {"type": "object", "required": ["id", "severity"], "properties": {"id": {"type": "string"}, "severity": {"type": "string", "enum": ["critical", "major", "minor", "info"]}}, "additionalProperties": true}},
+    "tool_limitations": {"type": "array", "items": {"type": "string"}},
+    "rework_attempts": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": true
+}

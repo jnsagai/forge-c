@@ -1,0 +1,4 @@
+verification_id,level,related_req_or_design,environment,technique,pass_criteria,selected,raw_result_path,status
+TC-UNIT-001,SWE.4,UNIT-001,host,unit_test,,,,NOT_RUN
+TC-INT-001,SWE.5,SA-001,Renode_or_HIL,interface_test,,,,NOT_RUN
+TC-SW-001,SWE.6,SR-001,real_target,requirement_test,,,,NOT_RUN
