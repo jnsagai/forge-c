@@ -82,6 +82,9 @@ def normalize_args(tool_name: str, args: dict) -> dict:
     args = dict(args or {})
     if model is None:
         return args
+    for k in list(args):  # undeclared keys are dropped by the MCP SDK before the server sees them
+        if k not in model.model_fields:
+            del args[k]
     for k, f in model.model_fields.items():
         if not f.is_required() and k in args and args[k] == f.default:
             del args[k]

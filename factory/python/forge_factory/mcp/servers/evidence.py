@@ -38,7 +38,18 @@ class InspectIn(ToolInput):
     phase: Phase
     baseline_id: str = Field(pattern=r"^BL-SWE\.[1-6]-\d{3}$")
     # Small models often send bare verdict strings; accepted and normalised (evidence = inspected baseline record).
-    verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] = Field(max_length=40)
+    verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] | str = Field(max_length=4000)
+
+
+def parse_verdict_string(text: str) -> dict[str, dict]:
+    """'SWE2-01=PASS; SWE2-02=FAIL:missing budget' -> verdict objects (flat form for small models)."""
+    out: dict[str, dict] = {}
+    for part in re.split(r"[;\n]+", text):
+        m = re.match(r"^\s*([A-Z0-9]{2,8}-\d{2})\s*[=:]\s*(PASS|FAIL|NOT_APPLICABLE)\b\s*:?\s*(.*)$", part.strip(), re.I)
+        if m:
+            out[m.group(1).upper()] = {"verdict": m.group(2).upper(), "evidence_refs": [],
+                                       "findings": [m.group(3).strip()[:120]] if m.group(3).strip() else []}
+    return out
 
 
 class PackageIn(ToolInput):
@@ -94,10 +105,13 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
 
 def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
     base_ref = f"configuration/baselines/{a.phase}/{a.baseline_id}.json"
-    verdicts = {k: (v.model_dump() if isinstance(v, ItemVerdict) else
-                    {"verdict": v, "evidence_refs": [base_ref], "findings": []}) for k, v in a.verdicts.items()}
+    if isinstance(a.verdicts, str):
+        verdicts = parse_verdict_string(a.verdicts)
+    else:
+        verdicts = {k: (v.model_dump() if isinstance(v, ItemVerdict) else
+                        {"verdict": v, "evidence_refs": [base_ref], "findings": []}) for k, v in a.verdicts.items()}
     for v in verdicts.values():
-        if v["verdict"] == "PASS" and not v["evidence_refs"]:
+        if not v["evidence_refs"]:
             v["evidence_refs"] = [base_ref]
     try:
         rec = Store(ctx.workspace).record_inspection(a.phase, ctx.role, a.baseline_id, verdicts)

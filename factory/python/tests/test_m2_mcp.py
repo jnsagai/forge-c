@@ -115,6 +115,10 @@ def test_t011_ticket_mode_requires_fresh_one_time_ticket(ws, monkeypatch):
     sdk.issue_ticket("bind-t011", "mcp__forge_build_mcp__configure", {"profile": "host-gcc"}, "swe3-author",
                      "swe3_author", "SWE.3", str(ws))
     assert sdk.invoke("forge-build-mcp", op, {"profile": "host-clang"})["status"] == "BLOCKED"  # args differ
+    # undeclared extra args (dropped by the MCP SDK) normalise identically on hook and server side
+    sdk.issue_ticket("bind-t011", "mcp__forge_build_mcp__configure", {"profile": "host-gcc", "bogus": 1}, "swe3-author",
+                     "swe3_author", "SWE.3", str(ws))
+    assert sdk.invoke("forge-build-mcp", op, {"profile": "host-gcc"})["status"] == "PASS"
 
 
 # ---------------- T012 build ------------------------------------------------------------------------

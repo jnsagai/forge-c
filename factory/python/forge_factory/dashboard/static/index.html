@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge-C Supervisor</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2330;--muted:#5d6878;--line:#dfe3ea;--ok:#1f8a4c;--warn:#b26b00;--bad:#c62828;--unk:#6b7280;--acc:#2f5bd3}
+@media (prefers-color-scheme: dark){:root{--bg:#0f1318;--card:#171c23;--ink:#e6e9ee;--muted:#9aa4b2;--line:#2a313b;--ok:#3fbf73;--warn:#e0a03a;--bad:#ef5350;--unk:#9aa4b2;--acc:#7da2ff}}
+[hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0}.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:600;font-size:12px;color:#fff;background:var(--unk)}
+.HEALTHY,.PASS,.READY_FOR_OFFLINE_REVIEW,.RESOLVED,.VALIDATED,.OK{background:var(--ok)}.DEGRADED,.REWORK,.REINSPECT,.TRIAGED,.REPAIRING,.VERIFYING,.DISABLED{background:var(--warn)}
+.PENDING{background:var(--unk)}.UNAVAILABLE,.DOWN,.BLOCKED,.FAILED,.REQUIRES_OFFLINE_ATTENTION,.QUARANTINED,.MISSING,.ROLLED_BACK{background:var(--bad)}
+main{display:grid;gap:12px;padding:12px 16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+section h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 8px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.scroll{overflow-x:auto}.muted{color:var(--muted)}.full{grid-column:1/-1}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.filters label{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+.ev{font-family:ui-monospace,Menlo,monospace;font-size:12px;border-bottom:1px solid var(--line);padding:3px 0;overflow-wrap:anywhere}
+.lv-ERROR{color:var(--bad)}.lv-WARN{color:var(--warn)}.bar{height:10px;background:var(--acc);border-radius:3px}
+.phase{display:inline-block;margin:2px;padding:2px 6px;border-radius:6px;font-size:12px;color:#fff}
+#login{max-width:420px;margin:40px auto;padding:16px}
+</style>
+</head>
+<body>
+<header><h1>Forge-C dark factory</h1><span id="health" class="badge">UNKNOWN</span>
+<span class="muted" id="poll"></span><span class="muted" id="role"></span><span class="muted" id="live">offline</span></header>
+<div id="login" hidden><section><h2>Sign in</h2><p class="muted">Paste a dashboard token (state/dashboard/tokens.json).</p>
+<input id="tok" type="password" style="width:100%"><p><button id="go">Open read-only view</button></p></section></div>
+<main id="app" hidden>
+<section class="full"><h2>Work orders and SWE phase board</h2><div class="scroll"><table id="runs"></table></div></section>
+<section><h2>Incidents and repairs</h2><div class="scroll"><table id="inc"></table></div></section>
+<section><h2>Release packages (offline review only)</h2><div class="scroll"><table id="pkg"></table></div></section>
+<section><h2>MCP operations</h2><div class="scroll"><table id="mcp"></table></div></section>
+<section><h2>Lessons</h2><div class="scroll"><table id="les"></table></div></section>
+<section><h2>Tokens (reported/unknown)</h2><div id="tok_chart"></div></section>
+<section><h2>Factory components</h2><div class="scroll"><table id="comp"></table></div></section>
+<section class="full"><h2>Trace viewer (display filters only — capture policy is unaffected)</h2>
+<div class="filters" id="chans"></div>
+<div class="filters"><select id="lvl"><option>ERROR</option><option>WARN</option><option selected>INFO</option><option>DEBUG</option><option>TRACE</option></select>
+<input id="run" placeholder="run id"><input id="q" placeholder="search" maxlength="200"><button id="apply">Apply</button></div>
+<div id="events"></div></section>
+</main>
+<script>
+const CH=["human","workflow","tools","ai","supervisor","repair","security","audit","metrics","knowledge"];
+let me=null,lastId=0,es=null;
+const $=id=>document.getElementById(id), esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const prefsKey=()=>"forge-prefs-"+(me?me.role:"x");
+function prefs(){try{return JSON.parse(localStorage.getItem(prefsKey()))||me.default_view}catch(e){return me.default_view}}
+function savePrefs(p){try{localStorage.setItem(prefsKey(),JSON.stringify(p))}catch(e){}}
+const INIT=window.__INIT__||null;const initKey=p=>p.split("?")[0];
+async function api(p){if(INIT&&INIT[initKey(p)]&&!api.warm.has(initKey(p))&&!p.includes("after")){api.warm.add(initKey(p));return INIT[initKey(p)]}
+ const r=await fetch("/api/v1/"+p,{credentials:"same-origin"});if(r.status===401){showLogin();throw new Error("auth")}return r.json()}
+api.warm=new Set();
+function showLogin(){$("login").hidden=false;$("app").hidden=true}
+function rows(el,head,items,fn){$(el).innerHTML="<tr>"+head.map(h=>"<th>"+h+"</th>").join("")+"</tr>"+items.map(i=>"<tr>"+fn(i).map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")||""}
+const b=s=>`<span class="badge ${esc(s)}">${esc(s)}</span>`;
+async function refresh(){
+ const h=await api("health");$("health").textContent=h.status;$("health").className="badge "+h.status;
+ $("poll").textContent=h.last_supervisor_poll?("poll "+h.last_supervisor_poll.slice(11,19)+" UTC · model calls "+h.model_calls):"no supervisor poll";
+ rows("comp",["component","status"],h.components,c=>[esc(c.id),b(c.status)]);
+ const r=await api("runs?limit=50");rows("runs",["work order","phases","package"],r.items,i=>[esc(i.work_order),
+  Object.entries(i.phases).map(([p,v])=>`<span class="phase ${esc(v.decision)}" title="baselines ${v.baselines}, inspections ${v.inspections}">${esc(p)} ${esc(v.decision)}</span>`).join(""),
+  i.package_status?b(i.package_status):'<span class="muted">active</span>']);
+ const inc=await api("incidents?limit=20");rows("inc",["incident","component/fault","state","attempts"],inc.items,i=>[esc(i.incident_id),esc(i.component+"/"+i.fault_type),b(i.state),esc(i.attempts)]);
+ const p=await api("packages?limit=20");rows("pkg",["run","status","gaps"],p.items,i=>[esc(i.run_id),b(i.package_status),esc(i.gap_count)]);
+ const m=await api("mcp?limit=60");rows("mcp",["operation","status"],m.items,i=>[esc(i.op),b(i.status)]);
+ const l=await api("lessons?limit=20");rows("les",["lesson","state","remedy"],l.items,i=>[esc(i.lesson_id),b(i.state),esc((i.remedy||"").slice(0,80))]);
+ const t=await api("tokens?limit=20");const mx=Math.max(1,...t.items.map(i=>(i.total_input||0)+(i.total_output||0)));
+ $("tok_chart").innerHTML=t.items.map(i=>`<div>${esc(i.work_order)} <span class="muted">(${esc(i.basis)})</span> ${(i.total_input||0)+(i.total_output||0)}<div class="bar" style="width:${100*((i.total_input||0)+(i.total_output||0))/mx}%"></div></div>`).join("")||'<span class="muted">no usage yet</span>';
+}
+function evLine(e){return `<div class="ev lv-${esc(e.level)}">${esc(e.ts_utc.slice(11,19))} [${esc(e.channel)}] ${esc(e.level)} ${esc(e.message)}${e.run_id?' <span class="muted">'+esc(e.run_id.slice(-8))+'</span>':''}</div>`}
+function evQuery(){const p=prefs();const qs=new URLSearchParams({channel:p.channels.join(","),min_level:p.min_level});if(p.run)qs.set("run_id",p.run);if(p.q)qs.set("q",p.q);return qs}
+async function loadEvents(){const p=evQuery();p.set("limit","200");const d=await api("events?"+p);$("events").innerHTML=d.items.slice(-200).reverse().map(evLine).join("");lastId=d.items.length?d.items[d.items.length-1].seq:lastId;live()}
+function live(){if(es)es.close();const p=evQuery();p.set("after",lastId);es=new EventSource("/api/v1/events/stream?"+p);
+ es.addEventListener("forge",m=>{const e=JSON.parse(m.data);lastId=e.seq;$("events").insertAdjacentHTML("afterbegin",evLine(e));$("live").textContent="live (SSE)"});
+ es.onerror=()=>{$("live").textContent="polling";es.close();setTimeout(pollEvents,3000)}}
+async function pollEvents(){const p=evQuery();p.set("after_id",lastId);const d=await api("events?"+p);d.items.forEach(e=>{lastId=e.seq;$("events").insertAdjacentHTML("afterbegin",evLine(e))});live()}
+function filtersUI(){const p=prefs();$("chans").innerHTML=CH.filter(c=>me.channels.includes(c)).map(c=>`<label><input type="checkbox" value="${c}" ${p.channels.includes(c)?"checked":""}> ${c}</label>`).join("");
+ $("lvl").value=p.min_level;$("run").value=p.run||"";$("q").value=p.q||""}
+$("apply").onclick=()=>{const p={channels:[...document.querySelectorAll("#chans input:checked")].map(x=>x.value),min_level:$("lvl").value,run:$("run").value.trim(),q:$("q").value.trim()};savePrefs(p);lastId=0;loadEvents()};
+$("go").onclick=()=>{location.href="/login?token="+encodeURIComponent($("tok").value.trim())};
+(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();setInterval(refresh,5000)}catch(e){showLogin()}})();
+</script>
+</body>
+</html>

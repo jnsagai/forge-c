@@ -91,13 +91,14 @@ def author_prompt(phase: str) -> str:
 
 def inspector_prompt(phase: str) -> str:
     n = phase[-1]
-    items = "; ".join(f"{c['id']}: {c['criterion'][:110]}" for c in load_checklist(phase)["checks"])
+    items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in load_checklist(phase)["checks"])
+    example = "; ".join(f"{c['id']}=PASS" for c in load_checklist(phase)["checks"][:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file.",
              f"Judge each checklist item: {items}.",
-             f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as an object "
-             'mapping EVERY item id to {"verdict":"PASS" or "FAIL","evidence_refs":["<file path>"],"findings":["<short>"]}. '
+             f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
+             f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",
              'Finish with ONLY JSON: {"status":"PASS" or "REWORK","artifacts":["inspection/' + phase +
              '/<INS id>.json"],"issues":["<item id: finding>"],"next_action":"next" or "rework"}']

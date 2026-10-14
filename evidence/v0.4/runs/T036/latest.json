@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m6_observability.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t036"
+  ],
+  "duration_s": 1.336,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "5f9fc34ce64978035686e2af0550cddc4ea327e6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T036/20261014T221056.log",
+  "log_sha256": "205c0db11f757d7053ec2fe84ad84372a0b27d540ed6859ccf2d5a5e26084b14",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T036",
+  "ts_utc": "2026-10-14T22:10:56.770920Z"
+}

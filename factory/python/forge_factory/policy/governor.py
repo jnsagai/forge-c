@@ -12,6 +12,7 @@ from __future__ import annotations
 import fcntl
 import json
 from pathlib import Path
+from typing import Any
 
 from ..common import state_dir, utc_now
 from ..events.emit import emit
@@ -24,7 +25,7 @@ def _state_file(binding_id: str) -> Path:
     return d / f"{binding_id}.json"
 
 
-def _update(binding_id: str, fn) -> dict:
+def _update(binding_id: str, fn: Any) -> Any:
     p = _state_file(binding_id)
     with open(p, "a+", encoding="utf-8") as f:
         fcntl.flock(f, fcntl.LOCK_EX)

@@ -19,6 +19,7 @@ import stat
 import time
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from ..common import sha256_bytes, sha256_file, state_dir, utc_now
 from ..events.emit import emit
@@ -79,7 +80,8 @@ def promote(attempt_id: str, incident_id: str, store: IncidentStore, health_chec
     old = git(infra, "rev-parse", "main")
     cand = git(infra, "rev-parse", branch, check=False)
     roots_before = {str(r): tree_hash(r) for r in (protected_roots or [])}
-    rec = {"attempt_id": attempt_id, "incident_id": incident_id, "agent_role": "fabric-repair", "status": "TESTING",
+    rec: dict[str, Any] = {"attempt_id": attempt_id, "incident_id": incident_id, "agent_role": "fabric-repair",
+                           "status": "TESTING",
            "worktree_ref": f"worktree:{attempt_id}", "tests": [], "protected_path_changes": [],
            "token_usage": token_usage or {"total": None, "basis": "unknown"},
            "started_at": next((a["started_at"] for a in store.attempts(incident_id) if a["attempt_id"] == attempt_id),

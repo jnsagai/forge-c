@@ -22,6 +22,11 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
 ]
 
 
+# Whole key names that hold secrets (not substrings: e.g. `token_count_provenance`/`input_tokens` are metadata).
+SECRET_KEY = re.compile(r"(?i)^(.*[_-])?(password|passwd|secret|client_secret|session_secret|api[_-]?key|"
+                        r"authorization|token|access[_-]?token|refresh[_-]?token|auth[_-]?token|private[_-]?key)$")
+
+
 def redact_text(text: str) -> tuple[str, bool]:
     changed = False
     for name, pat in RULES:
@@ -46,7 +51,7 @@ def redact_obj(obj: Any) -> tuple[Any, bool]:
     if isinstance(obj, dict):
         out, changed = {}, False
         for k, v in obj.items():
-            if isinstance(k, str) and re.search(r"(?i)(password|secret|token|api_?key|authorization)", k) \
+            if isinstance(k, str) and SECRET_KEY.match(k) \
                     and isinstance(v, str) and v:
                 out[k], changed = "[REDACTED:key_name]", True
                 continue

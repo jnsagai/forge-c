@@ -58,14 +58,14 @@
 
 ## M6 — Events, configurable traces and dashboard
 
-- [ ] **T034 [P0]** Implement normalized event collector for Fabro native run events + factory events with idempotent offsets and `event.schema.json` validation. **[FR-026]** Test: replay identical stream yields identical unique event set, no lost order/correlation.
-- [ ] **T035 [P0]** Implement channel/severity capture policy validation and live reload with hard minimum audit/security capture. **[FR-022,FR-023,FR-024]** Test: turning audit OFF is rejected, dashboard filters do not alter capture.
-- [ ] **T036 [P0]** Implement secret redactor, raw AI capture opt-in, immutable artifact-backed tool logs and configurable per-channel retention. **[FR-025,FR-028]** Test: credentials never persisted in any trace level, no hidden reasoning capture.
-- [ ] **T037 [P0]** Implement API queries for health/runs/inspections/agents/MCP/incidents/lessons/packages/tokens and event filters. **[FR-020,FR-021]** Test: role-limited read endpoints and pagination/search correctness.
-- [ ] **T038 [P0]** Build responsive UI with health badge, run stage view, incident/repair panel, MCP status, inspection findings, release status, resource and token charts. **[FR-020]** Test: browser smoke test at mobile and desktop widths.
-- [ ] **T039 [P0]** Implement per-user display controls (channels/severity/run/agent/search), independent from capture policy; minimal default HUMAN view. **[FR-021,FR-022,FR-024]** Test: hidden channels remain queryable to authorized user, audit preserved.
-- [ ] **T040 [P1]** Add SSE with polling fallback, stored offset/reconnect and no direct DB exposure to browser. **[FR-037]** Test: interrupted client reconnects without duplicate display or event loss.
-- [ ] **T041 [P0]** Implement tool/AI/phase token and output-size metrics with unknown/estimated flag; never silently invent provider token counts. **[FR-020,FR-029]** Tests: input/output budgets and dashboard sums accurate.
+- [X] **T034 [P0]** Implement normalized event collector for Fabro native run events + factory events with idempotent offsets and `event.schema.json` validation. **[FR-026]** Test: replay identical stream yields identical unique event set, no lost order/correlation. ✅ Evidence: `evidence/v0.4/runs/T034/latest.json`
+- [X] **T035 [P0]** Implement channel/severity capture policy validation and live reload with hard minimum audit/security capture. **[FR-022,FR-023,FR-024]** Test: turning audit OFF is rejected, dashboard filters do not alter capture. ✅ Evidence: `evidence/v0.4/runs/T035/latest.json`
+- [X] **T036 [P0]** Implement secret redactor, raw AI capture opt-in, immutable artifact-backed tool logs and configurable per-channel retention. **[FR-025,FR-028]** Test: credentials never persisted in any trace level, no hidden reasoning capture. ✅ Evidence: `evidence/v0.4/runs/T036/latest.json`
+- [X] **T037 [P0]** Implement API queries for health/runs/inspections/agents/MCP/incidents/lessons/packages/tokens and event filters. **[FR-020,FR-021]** Test: role-limited read endpoints and pagination/search correctness. ✅ Evidence: `evidence/v0.4/runs/T037/latest.json`
+- [X] **T038 [P0]** Build responsive UI with health badge, run stage view, incident/repair panel, MCP status, inspection findings, release status, resource and token charts. **[FR-020]** Test: browser smoke test at mobile and desktop widths. ✅ Evidence: `evidence/v0.4/runs/T038/latest.json`
+- [X] **T039 [P0]** Implement per-user display controls (channels/severity/run/agent/search), independent from capture policy; minimal default HUMAN view. **[FR-021,FR-022,FR-024]** Test: hidden channels remain queryable to authorized user, audit preserved. ✅ Evidence: `evidence/v0.4/runs/T039/latest.json`
+- [X] **T040 [P1]** Add SSE with polling fallback, stored offset/reconnect and no direct DB exposure to browser. **[FR-037]** Test: interrupted client reconnects without duplicate display or event loss. ✅ Evidence: `evidence/v0.4/runs/T040/latest.json`
+- [X] **T041 [P0]** Implement tool/AI/phase token and output-size metrics with unknown/estimated flag; never silently invent provider token counts. **[FR-020,FR-029]** Tests: input/output budgets and dashboard sums accurate. ✅ Evidence: `evidence/v0.4/runs/T041/latest.json`
 
 ## M7 — Token budget enforcement and complete offline package
 
