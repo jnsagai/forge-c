@@ -5,4 +5,18 @@ extends:
   path: factory/release-manager/checklists/SWE.3.yaml
   sha256: 58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af
 policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
-additional_checks: []
+additional_checks:
+- id: SWE3-07
+  required: true
+  severity_if_failed: major
+  criterion: Generated HAL/LL C code conforms to the applicable driver development guideline (automatable rule
+    subset of ST Cube2 HAL SAD v1.2 - file layout, header guards, naming, const, no RPN conditionals,
+    timeout-bounded loops, local array size, no register-access HAL macros).
+  deterministic_check: hal_guideline_conformance
+  verification_node: gate --step verify --phase SWE.3 --check hal_guideline
+  rules: config/factory/guidelines/st-cube2-hal-v1.2.yaml
+  source: user requirement 2026-10-14 (spec.md Clarifications)
+  evidence:
+  - workproduct_reference
+  - guideline_report_reference
+  - recorded_verdict

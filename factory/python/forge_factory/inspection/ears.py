@@ -78,10 +78,10 @@ def check_statement(req: Requirement, systems: set[str] | None = None) -> Requir
     req.pattern = found[0] if found else None
     if shall_count == 1 and req.pattern is None:
         req.findings.append(f"{req.req_id}:EARS_PATTERN_NONCONFORMANT")
-    if WEAK_MODALS.search(text):
-        req.findings.append(f"{req.req_id}:EARS_WEAK_MODAL:{WEAK_MODALS.search(text).group(1).lower()}")
-    if VAGUE.search(text):
-        req.findings.append(f"{req.req_id}:EARS_VAGUE_TERM:{VAGUE.search(text).group(0).lower()}")
+    if weak := WEAK_MODALS.search(text):
+        req.findings.append(f"{req.req_id}:EARS_WEAK_MODAL:{weak.group(1).lower()}")
+    if vague := VAGUE.search(text):
+        req.findings.append(f"{req.req_id}:EARS_VAGUE_TERM:{vague.group(0).lower()}")
     if not text.endswith("."):
         req.findings.append(f"{req.req_id}:EARS_MISSING_TERMINATOR")
     if systems and found:

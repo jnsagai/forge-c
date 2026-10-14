@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t008_agent_output.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 0.445,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "79df4bb8d140d7eef39a414521073190dfdf867f",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T008/20261014T212631.log",
+  "log_sha256": "00d1acd3b9b46fcb40e0290eb47ee8cdacd3f07ce9bc6aebccdaa9df9631b7ae",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T008",
+  "ts_utc": "2026-10-14T21:26:31.687385Z"
+}

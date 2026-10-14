@@ -16,3 +16,7 @@ secrets/
 # Spec Kit / Claude local state
 .specify/feature.json
 *.egg-info/
+
+# ST copyrighted inputs: keep local (hash manifest is tracked)
+examples/0002-arm_55_rcc_st/inputs/*.md
+examples/0002-arm_55_rcc_st/hal_driver_guideline.md

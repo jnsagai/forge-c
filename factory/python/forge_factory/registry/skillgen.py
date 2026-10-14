@@ -19,7 +19,8 @@ PHASE_OUTPUTS = {
     "SWE.1": ["workproducts/SWE.1/software_requirements.md", "safety/software_safety_requirements.md",
               "traceability/requirements_to_tests.csv"],
     "SWE.2": ["workproducts/SWE.2/software_architecture.md"],
-    "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/src/", "software/include/"],
+    "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/", "software/ll/", "software/src/",
+              "software/include/"],
     "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/",
               "verification/unit/unit_verification_summary.json"],
     "SWE.5": ["workproducts/SWE.5/integration_verification_report.md",
@@ -40,7 +41,13 @@ PHASE_EXTRA = {
               "line as `- **SWR-nnn** <statement>` (checklist SWE1-07; see templates/software-requirements.md).",
               "Allowed EARS keywords: The / While / When / Where / If…then. No should/may/will/must, no TBD.",
               "Run `forge-docs-mcp.validate_artifact` with `check=ears` before reporting PASS."],
-    "SWE.3": ["No heap, no unbounded recursion, `volatile` register access, read-modify-write via masks.",
+    "SWE.3": ["Follow the driver development guideline in the input manifest (ST Cube2 HAL SAD): "
+              "`software/hal/stm32n6xx_hal_<ppp>.c/.h`, header-only `software/ll/stm32n6xx_ll_<ppp>.h`, "
+              "HAL_/LL_ API prefixes, lower-case `hal_`/`ll_` `_t` types, const config pointers, no device RPN "
+              "`#if`, timeout-bounded loops, local arrays <= 128 bytes (checklist SWE3-07).",
+              "Self-check with `forge-docs-mcp.validate_artifact` (`check=hal_guideline`); the deterministic "
+              "verification node re-checks and loops back on any violation.",
+              "No heap, no unbounded recursion, `volatile` register access, read-modify-write via masks.",
               "Compile and analyse only through `forge-build-mcp`/`forge-analysis-mcp`; never claim MISRA "
               "compliance from Cppcheck output."],
     "SWE.4": ["Every test case cites a requirement ID (SWR-nnn) and a unit; keep raw logs by artifact ref.",
@@ -115,6 +122,9 @@ def render(role: dict) -> str:
         proc = [f"Inspect the frozen baseline hash given in the manifest against `{cl}` (extends the v0.3 list).",
                 "Record one verdict per checklist item with evidence refs; any failed required item is a finding.",
                 "If the baseline hash differs from the manifest, report BLOCKED (stale baseline)."]
+        if phase == "SWE.3":
+            proc.append("SWE3-07: HAL/LL guideline conformance is decided by the deterministic verification "
+                        "node report `verification/static/hal_guideline_conformance.json`; cite it.")
         if phase == "SWE.1":
             proc.append("SWE1-07: run `forge-docs-mcp.validate_artifact` with `check=ears`; every non-EARS "
                         "requirement is a major finding.")
@@ -146,16 +156,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--write", action="store_true")
     a = ap.parse_args(argv)
     roles = yaml.safe_load((CONFIG_DIR / "agents.yaml").read_text())["agents"]
-    lock = {"schema": "forge-c/skills-lock/0.4", "skill_version": SKILL_VERSION, "skills": {}}
+    skills: dict[str, dict[str, str]] = {}
+    lock = {"schema": "forge-c/skills-lock/0.4", "skill_version": SKILL_VERSION, "skills": skills}
     for role in roles:
         path = REPO_ROOT / role["skill"]
         if a.write:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(render(role), encoding="utf-8")
-        lock["skills"][role["id"]] = {"path": role["skill"], "sha256": sha256_file(path)}
+        skills[role["id"]] = {"path": role["skill"], "sha256": sha256_file(path)}
     if a.write:
         (CONFIG_DIR / "skills.lock.json").write_text(pretty_json(lock), encoding="utf-8")
-    print(json.dumps({"skills": len(lock["skills"]), "written": a.write}))
+    print(json.dumps({"skills": len(skills), "written": a.write}))
     return 0
 
 

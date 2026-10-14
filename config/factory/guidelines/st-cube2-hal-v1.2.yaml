@@ -1,0 +1,34 @@
+schema: forge-c/coding-guideline-rules/0.4
+guideline:
+  title: "EmbSW Cube2 HAL drivers — Software Architecture and Design (SAD)"
+  version: "1.2"
+  source: examples/0002-arm_55_rcc_st/hal_driver_guideline.md
+  sha256: 509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909
+scope_note: >
+  Deterministic, automatable subset of the guideline. Rules needing human judgement (API semantics,
+  process models, documentation completeness) stay manual SWE.3 inspection items and are NOT claimed here.
+series_prefix: stm32n6xx
+peripheral: rcc
+layout:
+  hal_dir: software/hal
+  ll_dir: software/ll
+  hal_files: ["stm32n6xx_hal_{ppp}.c", "stm32n6xx_hal_{ppp}.h"]
+  ll_files: ["stm32n6xx_ll_{ppp}.h"]
+rules:
+  - {id: GL-FILE-01, section: "6, 7, 7.7", severity: major, text: "HAL files stm32n6xx_hal_ppp.c/.h in hal/, LL header stm32n6xx_ll_ppp.h in ll/"}
+  - {id: GL-FILE-02, section: "6, 7.7", severity: major, text: "No LL source file (LL is header-only)"}
+  - {id: GL-GUARD-01, section: "7.11", severity: major, text: "Header guard #ifndef FILENAME_H / #define / #endif /* FILENAME_H */, no leading underscore"}
+  - {id: GL-MACRO-01, section: "7.11", severity: major, text: "No define/macro starting with underscore; defines all capital"}
+  - {id: GL-TYPE-01, section: "7.11", severity: major, text: "Typedef names lower case ending with _t"}
+  - {id: GL-TYPE-02, section: "7.11", severity: major, text: "Exported HAL types prefixed hal_, LL types prefixed ll_"}
+  - {id: GL-ENUM-01, section: "7.11", severity: major, text: "No enumeration in LL"}
+  - {id: GL-ENUM-02, section: "7.11", severity: major, text: "HAL enumeration values prefixed HAL_"}
+  - {id: GL-API-01, section: "7.11", severity: major, text: "HAL exported APIs prefixed HAL_PPP_"}
+  - {id: GL-API-02, section: "7.7, 7.11", severity: major, text: "LL APIs are static inline and prefixed LL_PPP_"}
+  - {id: GL-ARG-01, section: "7.11", severity: major, text: "Function parameters and structure fields in lower case"}
+  - {id: GL-CONST-01, section: "7.11", severity: major, text: "Configuration/user-input pointers are const-qualified"}
+  - {id: GL-RPN-01, section: "7.11", severity: major, text: "No device RPN conditional (#if defined(STM32N6xxxx))"}
+  - {id: GL-LOOP-01, section: "7.10", severity: major, text: "No infinite loop; wait loops are timeout based"}
+  - {id: GL-ARRAY-01, section: "7.11", severity: major, text: "Local arrays <= 128 bytes"}
+  - {id: GL-MACRO-02, section: "7.11", severity: major, text: "No exported HAL macro accessing hardware registers"}
+  - {id: GL-STATUS-01, section: "7.11", severity: minor, text: "HAL status type named hal_status_t"}

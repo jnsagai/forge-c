@@ -41,7 +41,7 @@ PRODUCT_PATHS = ["software/**", "workproducts/**", "safety/**", "traceability/**
 ROLE_WRITE_PREFIXES: dict[str, list[str]] = {
     "swe1-author": ["workproducts/SWE.1/", "safety/software_safety_requirements.md", "traceability/"],
     "swe2-author": ["workproducts/SWE.2/"],
-    "swe3-author": ["workproducts/SWE.3/", "software/src/", "software/include/"],
+    "swe3-author": ["workproducts/SWE.3/", "software/src/", "software/include/", "software/hal/", "software/ll/"],
     "swe4-author": ["workproducts/SWE.4/", "software/tests/unit/"],
     "swe5-author": ["workproducts/SWE.5/", "software/tests/integration/"],
     "swe6-author": ["workproducts/SWE.6/", "software/tests/software/"],

@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 46 items
+
+factory/python/tests/test_t009_inspection.py .........                   [ 19%]
+factory/python/tests/test_t009_workflow_gates.py ......                  [ 32%]
+factory/python/tests/test_ears.py ..............                         [ 63%]
+factory/python/tests/test_guideline_check.py .................           [100%]
+
+============================== 46 passed in 1.98s ==============================
+
+--- stderr ---

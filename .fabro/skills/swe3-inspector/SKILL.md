@@ -45,6 +45,7 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 1. Inspect the frozen baseline hash given in the manifest against `factory/checklists/v0.4/SWE.3.yaml` (extends the v0.3 list).
 2. Record one verdict per checklist item with evidence refs; any failed required item is a finding.
 3. If the baseline hash differs from the manifest, report BLOCKED (stale baseline).
+4. SWE3-07: HAL/LL guideline conformance is decided by the deterministic verification node report `verification/static/hal_guideline_conformance.json`; cite it.
 
 ## Constraints
 Read-only inspection: never modify author-owned artifact revisions. Report factual findings with severity, evidence ref and owner. Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 5500-token / 20-turn budget is near.

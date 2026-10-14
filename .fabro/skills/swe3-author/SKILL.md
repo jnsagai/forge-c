@@ -46,14 +46,18 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 
 ## Outputs
 - `workproducts/SWE.3/detailed_design.md`
+- `software/hal/`
+- `software/ll/`
 - `software/src/`
 - `software/include/`
 
 ## Procedure
 1. Produce the outputs, then freeze them with `forge-evidence-mcp.freeze_baseline`.
 2. On REWORK input, address each finding ID and refreeze; never edit inspection records.
-3. No heap, no unbounded recursion, `volatile` register access, read-modify-write via masks.
-4. Compile and analyse only through `forge-build-mcp`/`forge-analysis-mcp`; never claim MISRA compliance from Cppcheck output.
+3. Follow the driver development guideline in the input manifest (ST Cube2 HAL SAD): `software/hal/stm32n6xx_hal_<ppp>.c/.h`, header-only `software/ll/stm32n6xx_ll_<ppp>.h`, HAL_/LL_ API prefixes, lower-case `hal_`/`ll_` `_t` types, const config pointers, no device RPN `#if`, timeout-bounded loops, local arrays <= 128 bytes (checklist SWE3-07).
+4. Self-check with `forge-docs-mcp.validate_artifact` (`check=hal_guideline`); the deterministic verification node re-checks and loops back on any violation.
+5. No heap, no unbounded recursion, `volatile` register access, read-modify-write via masks.
+6. Compile and analyse only through `forge-build-mcp`/`forge-analysis-mcp`; never claim MISRA compliance from Cppcheck output.
 
 ## Constraints
 Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 12000-token / 20-turn budget is near.
