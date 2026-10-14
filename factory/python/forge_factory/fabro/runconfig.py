@@ -46,7 +46,7 @@ def toml_str(s: str) -> str:
 
 
 def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers: dict[str, dict] | None = None,
-                    model: str = "qwen3:8b") -> str:
+                    model: str = "qwen3:8b", binding_id: str = "") -> str:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
@@ -57,7 +57,10 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
                   "command = [" + ", ".join(toml_str(c) for c in [py, "-m", spec["module"]]) + "]",
                   f'startup_timeout = "{spec.get("startup_timeout", "20s")}"',
                   f'tool_timeout = "{spec.get("tool_timeout", "200s")}"',
-                  f"[run.agent.mcps.{key}.env]", f"PYTHONPATH = {toml_str(pp)}"]
+                  f"[run.agent.mcps.{key}.env]", f"PYTHONPATH = {toml_str(pp)}",
+                  f"FORGE_STATE_DIR = {toml_str(str(state_dir()))}",
+                  f"FORGE_BINDING_ID = {toml_str(binding_id)}",
+                  f"PATH = {toml_str(os.environ.get('PATH', '/usr/bin:/bin'))}"]
         for k, v in sorted(spec.get("env", {}).items()):
             lines.append(f"{k} = {toml_str(str(v))}")
     hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
@@ -74,7 +77,8 @@ def write_run(ws: Path, graph_text: str, goal: str, binding: Binding,
     (run_dir / "workflow.fabro").write_text(graph_text, encoding="utf-8")
     bpath = run_dir / "binding.json"
     binding.dump(bpath)
-    (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers))
+    (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers,
+                                                           binding_id=binding.binding_id))
     return run_dir / "workflow.toml"
 
 

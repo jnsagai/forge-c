@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m2_mcp.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t011"
+  ],
+  "duration_s": 2.278,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "e32870038fc1beae1960835a22c269ed11140acf",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T011/20261014T213924.log",
+  "log_sha256": "892a6f39954cb8d6670035731a1ba60e4d57bb5e6e7030a87a4a64f2e75a58ac",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T011",
+  "ts_utc": "2026-10-14T21:39:24.583672Z"
+}

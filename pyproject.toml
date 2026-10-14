@@ -35,7 +35,7 @@ testpaths = ["factory/python/tests"]
 addopts = "-q"
 
 [tool.ruff]
-line-length = 120
+line-length = 130
 target-version = "py312"
 
 [tool.mypy]

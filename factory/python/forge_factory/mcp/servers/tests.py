@@ -1,0 +1,130 @@
+"""T014 — forge-tests-mcp: host unit/integration tests + LLVM source-based coverage incl. MC/DC.
+
+Each `software/tests/<level>/test_*.c` is linked with the driver sources into its own host executable
+(`-DFORGE_HOST_TEST=1`, register blocks are provided by the test via the driver's host hook), run with a
+timeout, and counted PASS (exit 0) / FAIL. Coverage uses LLVM 19 `-fcoverage-mcdc`; raw .profraw and
+merged .profdata are preserved by artifact ref. Host results are explicitly NOT target evidence.
+Unity/CMock are not vendored on this host: tests are self-checking C programs (documented gap).
+"""
+from __future__ import annotations
+
+import json
+import shutil
+from typing import Literal
+
+from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
+from .build import INCLUDE_DIRS, SOURCE_DIRS
+
+ALLOW = {"clang", "gcc", "llvm-profdata", "llvm-cov", "gcovr"}
+COV_FLAGS = ["-fprofile-instr-generate", "-fcoverage-mapping", "-fcoverage-mcdc"]
+
+
+class RunIn(ToolInput):
+    coverage: bool = True
+
+
+class CovIn(ToolInput):
+    level: Literal["unit", "integration", "software"] = "unit"
+
+
+def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
+    tdir = ctx.workspace / "software" / "tests" / level
+    tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
+    if not tests:
+        return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang")
+    srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
+            if (ctx.workspace / d).is_dir()]
+    incs = [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
+    bdir = ctx.workspace / "build" / f"tests-{level}"
+    if bdir.exists():
+        shutil.rmtree(bdir)
+    bdir.mkdir(parents=True)
+    log, passed, failed, issues, ms = b"", 0, 0, [], 0.0
+    for t in tests:
+        exe = bdir / t.stem
+        argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+                *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
+        b = run_argv(argv, bdir, 180, ALLOW)
+        log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+        if b.exit_code != 0:
+            failed += 1
+            issues.append(f"BUILD_FAIL:{t.name}")
+            continue
+        r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
+                     env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
+        ms += r.duration_ms
+        log += f"$ {exe.name} -> exit {r.exit_code}\n".encode() + r.stdout[-20000:] + r.stderr[-5000:]
+        if r.exit_code == 0:
+            passed += 1
+        else:
+            failed += 1
+            issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
+    (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
+    return result(ctx, "PASS" if failed == 0 else "FAIL", f"{level}: {passed} passed, {failed} failed (HOST)",
+                  [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),
+                                             "environment": "host", "target_evidence": False},
+                  "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
+
+
+def run_unit(ctx: ToolContext, a: RunIn) -> dict:
+    return _run_level(ctx, "unit", a.coverage)
+
+
+def run_integration(ctx: ToolContext, a: RunIn) -> dict:
+    out = _run_level(ctx, "integration", a.coverage)
+    if out["status"] == "BLOCKED":
+        alt = _run_level(ctx, "software", a.coverage)
+        if alt["status"] != "BLOCKED":
+            return alt
+    return out
+
+
+def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
+    bdir = ctx.workspace / "build" / f"tests-{a.level}"
+    raws = sorted(bdir.glob("*.profraw")) if bdir.is_dir() else []
+    exes = [p for p in sorted(bdir.glob("test_*")) if p.is_file() and p.suffix == ""] if bdir.is_dir() else []
+    if not raws or not exes:
+        return result(ctx, "BLOCKED", "no coverage data; run tests with coverage", issues=["NO_PROFRAW"],
+                      tool="llvm-cov")
+    prof = bdir / "merged.profdata"
+    m = run_argv(["llvm-profdata", "merge", "-sparse", *map(str, raws), "-o", str(prof)], bdir, 60, ALLOW)
+    if m.exit_code != 0:
+        return result(ctx, "FAIL", "llvm-profdata merge failed", [ctx.store(m.stderr)], ["PROFDATA_MERGE_FAILED"],
+                      tool="llvm-profdata")
+    srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c")) if (ctx.workspace / d).is_dir()]
+    objs = [str(exes[0])] + [x for e in exes[1:] for x in ("-object", str(e))]
+    r = run_argv(["llvm-cov", "export", "-summary-only", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)
+    rep = run_argv(["llvm-cov", "report", "-show-mcdc-summary", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)
+    try:
+        totals = json.loads(r.stdout)["data"][0]["totals"]
+    except (ValueError, KeyError, IndexError):
+        return result(ctx, "FAIL", "coverage export unparseable", [ctx.store(r.stdout + r.stderr)], ["COV_PARSE"],
+                      tool="llvm-cov")
+
+    def pct(k: str) -> float | None:
+        v = totals.get(k)
+        return round(float(v["percent"]), 2) if v and v.get("count") else None
+
+    metrics = {"line_pct": pct("lines"), "branch_pct": pct("branches"), "function_pct": pct("functions"),
+               "region_pct": pct("regions"), "mcdc_pct": pct("mcdc"), "environment": "host",
+               "target_evidence": False}
+    refs = [ctx.store(r.stdout, "json"), ctx.store(rep.stdout + rep.stderr), ctx.store(prof.read_bytes(), "profdata")]
+    return result(ctx, "PASS", f"line {metrics['line_pct']}% branch {metrics['branch_pct']}% "
+                  f"MC/DC {metrics['mcdc_pct']}% (host)", refs, [], metrics, "llvm-cov", tool_version("llvm-cov"),
+                  r.exit_code, r.duration_ms + rep.duration_ms, a.model_dump(), r.stdout)
+
+
+def gcov_coverage(ctx: ToolContext, a: CovIn) -> dict:
+    return result(ctx, "UNSUPPORTED", "gcov path not configured for this pilot; use llvm_coverage",
+                  issues=["OPTIONAL_OP_DISABLED:gcov_coverage"], tool="gcovr", version=tool_version("gcovr"))
+
+
+OPERATIONS = [
+    Operation("run_unit", RunIn, run_unit, "Build+run software/tests/unit/test_*.c on host (coverage optional)."),
+    Operation("run_integration", RunIn, run_integration, "Build+run integration (or software-level) host tests."),
+    Operation("llvm_coverage", CovIn, llvm_coverage, "LLVM line/branch/MC/DC coverage summary; raw data by ref."),
+    Operation("gcov_coverage", CovIn, gcov_coverage, "gcov/gcovr coverage (disabled in this pilot)."),
+]
+
+if __name__ == "__main__":
+    build_server("forge-tests-mcp", OPERATIONS).run("stdio")

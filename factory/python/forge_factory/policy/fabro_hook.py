@@ -43,6 +43,12 @@ def main(argv: list[str] | None = None) -> int:
         if not isinstance(ctx, dict):
             raise ValueError("context not an object")
         d = handle(ctx, binding)
+        if d.allow and str(ctx.get("tool_name", "")).startswith("mcp__"):
+            from ..mcp.sdk import issue_ticket
+
+            node = binding.nodes.get(ctx.get("node_id") or "", {})
+            issue_ticket(binding.binding_id, ctx["tool_name"], ctx.get("tool_input") or {}, d.role or "",
+                         ctx.get("node_id") or "", node.get("phase"), binding.workspace)
         try:
             audit(ctx, d, binding.binding_id)
         except Exception:  # noqa: BLE001 - audit failure must not open the gate
