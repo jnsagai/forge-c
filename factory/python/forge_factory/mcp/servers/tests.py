@@ -53,7 +53,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
                      env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
         ms += r.duration_ms
-        log += f"$ {exe.name} -> exit {r.exit_code}\n".encode() + r.stdout[-20000:] + r.stderr[-5000:]
+        log += f"$ {exe.name} -> exit {r.exit_code}\n".encode() + r.stdout + r.stderr  # full raw output kept by ref
         if r.exit_code == 0:
             passed += 1
         else:

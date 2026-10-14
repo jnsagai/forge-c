@@ -1,0 +1,34 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_m5_lessons.py::test_t031_malicious_or_unsafe_lessons_quarantined",
+    "factory/python/tests/test_m2_mcp.py::test_t011_path_traversal_absolute_symlink_and_metachar_rejected",
+    "factory/python/tests/test_m2_mcp.py::test_t011_argv_allowlist_no_shell_timeout_and_limits",
+    "factory/python/tests/test_m4_repair.py::test_t027_protected_change_in_candidate_never_promoted",
+    "factory/python/tests/test_m4_repair.py::test_t026_protected_paths_denied_by_policy_and_os",
+    "factory/python/tests/test_m6_observability.py::test_t036_secret_canary_never_persisted_and_no_reasoning",
+    "factory/python/tests/test_m7_governance_release.py::test_t049_forged_ai_pass_cannot_pass_gate",
+    "factory/python/tests/test_m7_governance_release.py::test_t045_ready_requires_every_check_and_tamper_detected",
+    "factory/python/tests/test_t007_policy.py"
+  ],
+  "duration_s": 7.122,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3231f707cd5e899800b072d847ba8c8609fe6dc6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T049/20261014T221417.log",
+  "log_sha256": "1914be2f8ac7cebe79a267d1624ea48fcf8682fd0d92c3573402ed1300cd05ef",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T049",
+  "ts_utc": "2026-10-14T22:14:17.538849Z"
+}

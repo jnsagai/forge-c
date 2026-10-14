@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 19 items
+
+factory/python/tests/test_m5_lessons.py .....                            [ 26%]
+factory/python/tests/test_m2_mcp.py ..                                   [ 36%]
+factory/python/tests/test_m4_repair.py ..                                [ 47%]
+factory/python/tests/test_m6_observability.py .                          [ 52%]
+factory/python/tests/test_m7_governance_release.py ..                    [ 63%]
+factory/python/tests/test_t007_policy.py ......s                         [100%]
+
+======================== 18 passed, 1 skipped in 6.69s =========================
+
+--- stderr ---

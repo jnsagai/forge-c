@@ -238,7 +238,8 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
     @app.get("/api/v1/events/stream")
     async def stream(request: Request, r: str = Depends(role), last_event_id: str | None = Header(default=None),
                      channel: str | None = None, min_level: str = "INFO", max_seconds: int = Query(25, ge=1, le=300)):
-        start = int(last_event_id) if last_event_id and last_event_id.isdigit() else int(request.query_params.get("after", 0) or 0)
+        after = request.query_params.get("after", "0") or "0"
+        start = int(last_event_id) if last_event_id and last_event_id.isdigit() else (int(after) if after.isdigit() else 0)
         chans = [c for c in channel.split(",") if c] if channel else None
 
         async def gen():

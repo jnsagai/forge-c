@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m7_governance_release.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t046"
+  ],
+  "duration_s": 1.306,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3231f707cd5e899800b072d847ba8c8609fe6dc6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T046/20261014T221415.log",
+  "log_sha256": "6f5c7e63d9176410c38ff5b5b02ea1f6b827a658bd95a76cba3884b9ea712fd1",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T046",
+  "ts_utc": "2026-10-14T22:14:15.227895Z"
+}
