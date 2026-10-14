@@ -27,7 +27,7 @@
    `goal_gate`/conditional routing and an external finalizer reads stage outcomes (T046).
 4. **Provider `reasoning` output is persisted in `agent.message` events** (observed with Qwen3) →
    all model traffic goes through the no-reasoning gateway (ADR-0003).
-5. Prompt/agent hooks *fail open* → never used for policy. Only command hooks are used.
+5. Run-config hooks use `timeout = "20s"` (the docs' `timeout_ms` is rejected by 0.362). Prompt/agent hooks *fail open* → never used for policy. Only command hooks are used.
 6. Skills cannot be scoped per node via documented config; the hook denies `use_skill` for any skill
    other than the node's bound role.
 7. Skill discovery requires the run target to be the git root containing `.fabro/skills`.

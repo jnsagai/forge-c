@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t007_policy.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 8.959,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4366b24417c005b361c269dc99db4bfcb922be63",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T007/20261014T211200.log",
+  "log_sha256": "87258ebd399a5cbddaf79ba05e7b54a757ef72ada44b3be8d1b0c3379fe286ff",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T007",
+  "ts_utc": "2026-10-14T21:12:00.316404Z"
+}
