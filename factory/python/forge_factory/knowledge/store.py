@@ -27,7 +27,7 @@ from ..events.redact import redact_text
 INJECTION = re.compile(r"(?i)(ignore (all |any )?(previous|prior|above)|disregard (the )?(instructions|rules)|"
                        r"system prompt|you are now|act as|new instructions|<\|im_start\|>|<\|system\|>|"
                        r"###\s*instruction|override (the )?(policy|rules)|do not tell|jailbreak)")
-WEAKENING = re.compile(r"(?i)(disable|skip|bypass|waive|suppress|turn off|lower|relax|remove)\b[^.]{0,40}"
+WEAKENING = re.compile(r"(?i)(disable|skip|bypass|waive|suppress|turn off|lower|relax|remove)\b[^\n]{0,60}"
                        r"(gate|inspection|check|test|coverage|misra|policy|threshold|audit|hook|sandbox|safety)|"
                        r"--no-verify|allow[_ -]?shell|chmod\s+777|protected[_ ]paths?|"
                        r"release-package-policy|supervisor-policy|safety/|evidence/")

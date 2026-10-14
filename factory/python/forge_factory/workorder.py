@@ -53,9 +53,10 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
             files[cur_name] = text
             return
         # Oversized section: split at page anchors into <=40 kB parts (content unchanged, order kept).
-        parts, buf = [], []
+        parts: list[list[str]] = []
+        buf: list[str] = []
         for ln in cur:
-            size = sum(len(x) + 1 for x in buf)
+            size: int = sum(len(x) + 1 for x in buf)
             if (ln.startswith("<a id=\"p-") and size > 30_000) or size > 38_000:
                 parts.append(buf)
                 buf = []

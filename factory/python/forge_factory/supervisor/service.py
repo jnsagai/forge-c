@@ -82,7 +82,7 @@ class Supervisor:
         self.dispatch_enabled, self.dry = dispatch_enabled, dry_run_dispatch
         self.finalizer_enabled = finalizer_enabled
         ck = self.home / "checkpoint.json"
-        self.ck = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
+        self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
 
     def poll_once(self) -> dict:
         t0 = time.monotonic()
@@ -98,6 +98,7 @@ class Supervisor:
                     dispatched.append(r)
         if self.finalizer_enabled and fabro_ok:
             self.external_finalizer()
+            self.budget_governor()
         worst = "HEALTHY"
         for s in samples:
             if s.status == "DOWN" or (s.status == "DEGRADED" and worst == "HEALTHY"):
@@ -125,6 +126,21 @@ class Supervisor:
         sd_notify("WATCHDOG=1")
         return health
 
+    def budget_governor(self) -> None:
+        """T042: model-free token governor over active work-order runs (reported usage only)."""
+        from ..policy.governor import check_run
+
+        root = state_dir() / "workorders"
+        for ws in sorted(root.glob("*/workspace")) if root.is_dir() else []:
+            rid_f, bind_f = ws / ".forge-run/fabro_run_id", ws / ".forge-run/binding.json"
+            if not rid_f.is_file() or not bind_f.is_file() or (ws / ".forge-run/package.json").is_file():
+                continue
+            try:
+                nodes = json.loads(bind_f.read_text())["nodes"]
+                check_run(rid_f.read_text().strip(), nodes, ws)
+            except Exception as exc:  # noqa: BLE001
+                emit("supervisor", "DEBUG", f"governor check failed: {type(exc).__name__}")
+
     def external_finalizer(self) -> None:
         """T046: any terminal Fabro work-order run without a package gets a deterministic BLOCKED/READY package."""
         root = state_dir() / "workorders"
@@ -136,7 +152,8 @@ class Supervisor:
                 from ..fabro.client import FabroClient, load_token, run_status
 
                 st = run_status(FabroClient(token=load_token(), timeout=5).get_run(rid_f.read_text().strip()))
-            except Exception:  # noqa: BLE001
+            except Exception as exc:  # noqa: BLE001
+                emit("supervisor", "DEBUG", f"finalizer status probe failed: {type(exc).__name__}")
                 continue
             if st in ("SUCCEEDED", "FAILED", "CANCELLED", "CANCELED", "DEAD"):
                 from ..release.finalize import finalize

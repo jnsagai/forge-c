@@ -10,6 +10,7 @@ import os
 import shutil
 import subprocess
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 
 from ..common import REPO_ROOT, state_dir
@@ -24,7 +25,7 @@ def _git(ws: Path, *args: str) -> str:
                           env={**os.environ, **GIT_ENV}).stdout.strip()
 
 
-def create_workspace(ws: Path, inputs: dict[str, bytes | str] | None = None) -> str:
+def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None) -> str:
     """Create a fresh product workspace git repo; returns the initial commit SHA."""
     if ws.exists():
         shutil.rmtree(ws)
@@ -66,6 +67,8 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
     hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
            f"--binding {binding_path}"
     lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
+              "blocking = true", "sandbox = false", 'timeout = "20s"',
+              "[[run.hooks]]", 'id = "forge-governor-stage-reset"', 'event = "stage_start"', f"script = {toml_str(hook)}",
               "blocking = true", "sandbox = false", 'timeout = "20s"']
     return "\n".join(lines) + "\n"
 

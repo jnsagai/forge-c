@@ -129,6 +129,15 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
         if rep["verdict"] != "PASS":
             findings.append({"id": "SWE3-07:HAL_GUIDELINE", "severity": "major",
                              "detail": f"{len(rep['violations'])} guideline violations"})
+    rid_f = ws / ".forge-run" / "fabro_run_id"
+    if rid_f.is_file():  # T028: unresolved infrastructure incidents affecting this run's provenance block it
+        from ..supervisor.store import IncidentStore
+
+        rid = rid_f.read_text().strip()
+        for inc in IncidentStore().all(500):
+            if inc.get("run_id") == rid and inc["state"] != "RESOLVED":
+                findings.append({"id": f"INCIDENT:{inc['incident_id']}", "severity": "major",
+                                 "detail": f"{inc['component']}/{inc['fault_type']} {inc['state']}"})
     detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
               "target_runs": [r["result"]["status"] for r in tgt]}
     return checks, findings, detail
@@ -219,7 +228,8 @@ def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[st
              "capability determination, tool qualification or production release.",
              "- Unit/integration tests and coverage are HOST executions; they are not target (MCU) evidence.",
              "- MISRA C: Cppcheck addon subset only; MISRA compliance is NOT claimed.",
-             f"- Target verification: {'performed' if checks['target_verification'] else 'NOT_PERFORMED (no target/simulator evidence)'}.",
+             "- Target verification: " + ("performed" if checks["target_verification"]
+                                          else "NOT_PERFORMED (no target/simulator evidence)") + ".",
              f"- Footprint scope: {detail['footprint']['scope']}.",
              "- Disabled optional tools/operations: " + (", ".join(disabled) or "none")]
     lines += [f"- Unmet check: `{k}`" for k, v in sorted(checks.items()) if not v]
@@ -315,7 +325,7 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
            "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
            "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
            "scope": NOT_SAFETY, "policy": str(POLICY_V04.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
-    os.chmod(out_dir, 0o755)
+    os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
     (out_dir / "finalize-result.json").write_text(pretty_json(out))
     os.chmod(out_dir / "finalize-result.json", 0o444)
     (ws / ".forge-run").mkdir(exist_ok=True)
@@ -337,7 +347,10 @@ def verify_archive(archive: Path) -> dict:
         issues.append("ARCHIVE_SHA256_MISMATCH")
     try:
         with zipfile.ZipFile(archive) as z:
-            sums = dict(reversed(line.split("  ", 1)) for line in z.read("SHA256SUMS.txt").decode().splitlines())
+            sums: dict[str, str] = {}
+            for line in z.read("SHA256SUMS.txt").decode().splitlines():
+                digest, member = line.split("  ", 1)
+                sums[member] = digest
             for name in z.namelist():
                 if name == "SHA256SUMS.txt":
                     continue

@@ -47,8 +47,8 @@ ROLE_WRITE_PREFIXES: dict[str, list[str]] = {
     "swe6-author": ["workproducts/SWE.6/", "software/tests/software/"],
     "footprint-optimizer": ["software/src/", "software/include/", "reports/footprint-optimizer/"],
     "intake-analyst": ["reports/intake-analyst/"],
-    "fabric-repair": ["repair/"],
-    "mcp-integrator": ["repair/"],
+    "fabric-repair": ["repair/", "runtime/", "services/"],  # infra repo repairable allowlist (repair/infra.py)
+    "mcp-integrator": ["repair/", "runtime/", "services/"],
 }
 
 

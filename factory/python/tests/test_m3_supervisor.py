@@ -51,6 +51,16 @@ def test_t019_transitions_guarded_dedup_append_only_and_restart(env):
                                                                        "RESOLVED"]
 
 
+def test_t019_lease_released_when_attempt_ends(env):
+    st = IncidentStore(env / "i.sqlite3")
+    inc, _ = st.open_or_dedup("x:Z:-:0.4", "x", "Z")
+    st.transition(inc["incident_id"], "TRIAGED")
+    assert st.acquire_lease(inc["incident_id"], "A")
+    st.transition(inc["incident_id"], "REPAIRING", attempts=1)
+    st.transition(inc["incident_id"], "ROLLED_BACK")
+    assert st.acquire_lease(inc["incident_id"], "B")  # released on rollback
+
+
 def test_t019_lease_single_owner(env):
     st = IncidentStore(env / "i.sqlite3")
     inc, _ = st.open_or_dedup("x:Y:-:0.4", "x", "Y")

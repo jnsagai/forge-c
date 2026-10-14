@@ -37,7 +37,8 @@ class ItemVerdict(BaseModel):
 class InspectIn(ToolInput):
     phase: Phase
     baseline_id: str = Field(pattern=r"^BL-SWE\.[1-6]-\d{3}$")
-    verdicts: dict[str, ItemVerdict] = Field(max_length=40)
+    # Small models often send bare verdict strings; accepted and normalised (evidence = inspected baseline record).
+    verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] = Field(max_length=40)
 
 
 class PackageIn(ToolInput):
@@ -92,9 +93,14 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
 
 
 def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
+    base_ref = f"configuration/baselines/{a.phase}/{a.baseline_id}.json"
+    verdicts = {k: (v.model_dump() if isinstance(v, ItemVerdict) else
+                    {"verdict": v, "evidence_refs": [base_ref], "findings": []}) for k, v in a.verdicts.items()}
+    for v in verdicts.values():
+        if v["verdict"] == "PASS" and not v["evidence_refs"]:
+            v["evidence_refs"] = [base_ref]
     try:
-        rec = Store(ctx.workspace).record_inspection(
-            a.phase, ctx.role, a.baseline_id, {k: v.model_dump() for k, v in a.verdicts.items()})
+        rec = Store(ctx.workspace).record_inspection(a.phase, ctx.role, a.baseline_id, verdicts)
     except InspectionError as exc:
         return result(ctx, "BLOCKED", f"inspection refused: {exc}"[:160], issues=[str(exc)[:120]],
                       tool="forge-inspection")

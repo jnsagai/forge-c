@@ -70,10 +70,10 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                               f"swe{n}_route")
         nodes[a] = {"role": f"swe{n}-author", "phase": phase}
         nodes[ins] = {"role": f"swe{n}-inspector", "phase": phase}
-        L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, prompt="{_q(author_prompt(n))}"]',
+        L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
               f'  {ag} [shape=parallelogram, label="{phase} freeze gate", stdin_source="context.response.{a}", '
               f'script="{_q(gate_cmd(phase, "author"))}"]',
-              f'  {ins} [label="{phase} inspector", max_visits={MAX_VISITS}, prompt="{_q(inspector_prompt(n))}"]',
+              f'  {ins} [label="{phase} inspector", max_visits={MAX_VISITS}, timeout="900s", prompt="{_q(inspector_prompt(n))}"]',
               f'  {ig} [shape=parallelogram, label="{phase} inspection gate", stdin_source="context.response.{ins}", '
               f'script="{_q(gate_cmd(phase, "inspect"))}"]',
               f'  {rt} [shape=parallelogram, label="{phase} bounded rework router", '

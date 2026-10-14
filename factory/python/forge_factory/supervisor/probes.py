@@ -39,7 +39,7 @@ def _http_json(url: str, timeout: float = 3.0, headers: dict | None = None):
     port = int(url.split("://", 1)[1].split("/", 1)[0].rsplit(":", 1)[1]) if url.count(":") >= 2 else 80
     if port in MODEL_PORTS:
         raise PermissionError("supervisor may not contact model endpoints")
-    req = urllib.request.Request(url, headers=headers or {})
+    req = urllib.request.Request(url, headers=headers or {})  # noqa: S310 - loopback config URLs only
     with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - loopback URLs from config only
         import json
 
@@ -99,11 +99,12 @@ class Probes:
                                   metrics={"seconds_since_last_event": round(age, 1), "stall_threshold_s": stall_s}))
             elif kind in ("submitted", "queued", "runnable"):
                 created = r.get("created_at") or r.get("lifecycle", {}).get("created_at")
-                age = (now - datetime.fromisoformat(created.replace("Z", "+00:00"))).total_seconds() if created else None
-                bad = age is not None and age > qmax
-                out.append(Sample("fabro-queue", "queued_run_age", "DEGRADED" if bad else ("HEALTHY" if age is not None
+                qage: float | None = ((now - datetime.fromisoformat(created.replace("Z", "+00:00"))).total_seconds()
+                                      if created else None)
+                bad = qage is not None and qage > qmax
+                out.append(Sample("fabro-queue", "queued_run_age", "DEGRADED" if bad else ("HEALTHY" if qage is not None
                                   else "UNKNOWN"), fault_type="QUEUE_STALL" if bad else None, run_id=rid,
-                                  metrics={"queued_seconds": age}))
+                                  metrics={"queued_seconds": qage}))
         return out or [Sample("fabro-run", "fabro_run_progress", "HEALTHY", metrics={"active": 0})]
 
     # --- MCP (round-robin one server per poll; full handshake) -------------------------------------

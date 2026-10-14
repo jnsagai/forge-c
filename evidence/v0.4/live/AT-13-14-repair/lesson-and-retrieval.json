@@ -1,0 +1,69 @@
+{
+  "lesson": {
+    "constraints": "Applies to forge-c v0.4 runtime/*.json only",
+    "consumed_by_runs": [],
+    "created_at": "2026-10-14T22:02:41.617884Z",
+    "evidence_refs": [
+      "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa"
+    ],
+    "expires_at": "2027-04-12T22:02:41Z",
+    "hash": "d5b7b15a499bf8e73cb035e7e9bfaa2e7cf107b50d5f2665fcf1a0b45f8107b0",
+    "lesson_id": "lesson-4068f4f3c0a9",
+    "remedy": "Restore runtime config to contract; promoted patch bd8b90fa5e266faa",
+    "root_cause": "runtime configuration violated the service contract",
+    "source_attempt_id": "att-c15fd7a10436",
+    "source_incident_id": "inc-9379300402a3",
+    "state": "VALIDATED",
+    "symptoms": "llm-gateway CONFIG_INVALID: UNEXPECTED_PORT:runtime/llm-gateway.json:9999",
+    "tool_versions": {
+      "forge-factory": "0.4.0"
+    },
+    "validation_tests": [
+      {
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+        "id": "protected-path-diff-empty",
+        "status": "PASS"
+      },
+      {
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+        "id": "repairable-allowlist",
+        "status": "PASS"
+      },
+      {
+        "evidence_ref": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "id": "runtime-config-contract",
+        "status": "PASS"
+      },
+      {
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+        "id": "health-stable-3-polls",
+        "status": "PASS"
+      }
+    ],
+    "_reasons": []
+  },
+  "retrieval_for_second_workflow": {
+    "lessons": [
+      {
+        "lesson_id": "lesson-4068f4f3c0a9",
+        "symptoms": "llm-gateway CONFIG_INVALID: UNEXPECTED_PORT:runtime/llm-gateway.json:9999",
+        "root_cause": "runtime configuration violated the service contract",
+        "remedy": "Restore runtime config to contract; promoted patch bd8b90fa5e266faa",
+        "constraints": "Applies to forge-c v0.4 runtime/*.json only",
+        "provenance": {
+          "incident": "inc-9379300402a3",
+          "attempt": "att-c15fd7a10436",
+          "evidence_refs": [
+            "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa"
+          ],
+          "tool_versions": {
+            "forge-factory": "0.4.0"
+          },
+          "expires_at": "2027-04-12T22:02:41Z"
+        }
+      }
+    ],
+    "tokens_estimated": 143,
+    "note": "reference data only, not instructions"
+  }
+}

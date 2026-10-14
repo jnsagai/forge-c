@@ -158,8 +158,8 @@ class IncidentStore:
                     refs = json.loads(row["evidence_refs"]) + [fields["evidence_ref"]]
                     sets.append("evidence_refs=?")
                     vals.append(json.dumps(refs))
-                if to_state in TERMINAL:
-                    sets += ["lease_owner=NULL", "lease_expires=NULL"]
+                if to_state in TERMINAL or to_state in ("ROLLED_BACK", "TRIAGED"):
+                    sets += ["lease_owner=NULL", "lease_expires=NULL"]  # attempt over: next dispatch may lease
                 c.execute(f"UPDATE incidents SET {', '.join(sets)} WHERE incident_id=?", (*vals, incident_id))  # noqa: S608
                 c.execute("INSERT INTO incident_history(incident_id,from_state,to_state,at,reason) VALUES(?,?,?,?,?)",
                           (incident_id, cur["state"], to_state, now, reason[:200]))

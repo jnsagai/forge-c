@@ -86,7 +86,7 @@ class Router:
         now = time.time()
         hour_count = self.store.attempts_since(now - 3600)
         in_repair = [i for i in self.store.active() if i["state"] in ("REPAIRING", "VERIFYING")]
-        out = []
+        out: list[dict] = []
         for inc in self.store.active():
             if inc["state"] not in ("TRIAGED",) or not inc["recoverable"]:
                 continue

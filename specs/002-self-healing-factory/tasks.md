@@ -43,18 +43,18 @@
 
 ## M4 — Isolated autonomous repair
 
-- [ ] **T025 [P0]** Instantiate `fabric-repair` SKILL with incident-only context and bounded MCP grants; avoid copying broad run context into model. **[FR-011,FR-012,FR-027,FR-028]** Test: input token budget and allowed path test.
-- [ ] **T026 [P0]** Create restricted repair worktree/process sandbox and protected path denylist; prefer OS permissions and a syscall/process policy over prompt restrictions. **[FR-012,FR-013]** Test: attempted editing of safety policies/release evidence fails regardless of agent intent.
-- [ ] **T027 [P0]** Implement deterministic repair promotion controller: patch hash, tests, health stability, atomic switch and rollback; no agent self-approval. **[FR-014]** Test: successful induced service config fix, failed test -> rollback.
-- [ ] **T028 [P0]** Record repair outcomes, restored health, elapsed time, token consumption, and unresolved failures into incident ledger and downstream release evidence. **[FR-016,FR-031]** Tests: unfixable fault -> `REQUIRES_OFFLINE_ATTENTION` and blocked package if relevant.
-- [ ] **T029 [P0]** Ensure repairing factory infrastructure never silently repairs/changes product requirements, safety allocations or completed workproduct baselines. **[FR-013,FR-038]** Test: source+evidence SHA unchanged before/after infrastructure repair.
+- [X] **T025 [P0]** Instantiate `fabric-repair` SKILL with incident-only context and bounded MCP grants; avoid copying broad run context into model. **[FR-011,FR-012,FR-027,FR-028]** Test: input token budget and allowed path test. ✅ Evidence: `evidence/v0.4/runs/T025/latest.json`
+- [X] **T026 [P0]** Create restricted repair worktree/process sandbox and protected path denylist; prefer OS permissions and a syscall/process policy over prompt restrictions. **[FR-012,FR-013]** Test: attempted editing of safety policies/release evidence fails regardless of agent intent. ✅ Evidence: `evidence/v0.4/runs/T026/latest.json`
+- [X] **T027 [P0]** Implement deterministic repair promotion controller: patch hash, tests, health stability, atomic switch and rollback; no agent self-approval. **[FR-014]** Test: successful induced service config fix, failed test -> rollback. ✅ Evidence: `evidence/v0.4/runs/T027/latest.json`
+- [X] **T028 [P0]** Record repair outcomes, restored health, elapsed time, token consumption, and unresolved failures into incident ledger and downstream release evidence. **[FR-016,FR-031]** Tests: unfixable fault -> `REQUIRES_OFFLINE_ATTENTION` and blocked package if relevant. ✅ Evidence: `evidence/v0.4/runs/T028/latest.json`
+- [X] **T029 [P0]** Ensure repairing factory infrastructure never silently repairs/changes product requirements, safety allocations or completed workproduct baselines. **[FR-013,FR-038]** Test: source+evidence SHA unchanged before/after infrastructure repair. ✅ Evidence: `evidence/v0.4/runs/T029/latest.json`
 
 ## M5 — Durable lessons learned and cross-workflow reuse
 
-- [ ] **T030 [P0]** Implement lesson candidate schema, SQLite store and validation state machine with provenance, expirations and affected versions. **[FR-017,FR-018]** Tests: unverified repair cannot become `VALIDATED`.
-- [ ] **T031 [P0]** Implement `lessons-curator` process and deterministic validators for secrets, unsafe policy edits, duplicate/unsupported prescriptions and regression check references. **[FR-018,FR-019]** Tests: malformed/prompt-injection lesson quarantined.
-- [ ] **T032 [P0]** Implement scoped top-K retrieval (FTS5 first), tool/error/version relevance and token-size budgets, injecting only trusted lessons. **[FR-019,FR-028,FR-029]** Test: next workflow receives approved lesson, never unapproved candidate.
-- [ ] **T033 [P1]** Implement lesson retraction, impact list of consuming runs, and dependency invalidation on tool/version regression. **[FR-035]** Test: revoked lesson no longer retrieved.
+- [X] **T030 [P0]** Implement lesson candidate schema, SQLite store and validation state machine with provenance, expirations and affected versions. **[FR-017,FR-018]** Tests: unverified repair cannot become `VALIDATED`. ✅ Evidence: `evidence/v0.4/runs/T030/latest.json`
+- [X] **T031 [P0]** Implement `lessons-curator` process and deterministic validators for secrets, unsafe policy edits, duplicate/unsupported prescriptions and regression check references. **[FR-018,FR-019]** Tests: malformed/prompt-injection lesson quarantined. ✅ Evidence: `evidence/v0.4/runs/T031/latest.json`
+- [X] **T032 [P0]** Implement scoped top-K retrieval (FTS5 first), tool/error/version relevance and token-size budgets, injecting only trusted lessons. **[FR-019,FR-028,FR-029]** Test: next workflow receives approved lesson, never unapproved candidate. ✅ Evidence: `evidence/v0.4/runs/T032/latest.json`
+- [X] **T033 [P1]** Implement lesson retraction, impact list of consuming runs, and dependency invalidation on tool/version regression. **[FR-035]** Test: revoked lesson no longer retrieved. ✅ Evidence: `evidence/v0.4/runs/T033/latest.json`
 
 ## M6 — Events, configurable traces and dashboard
 

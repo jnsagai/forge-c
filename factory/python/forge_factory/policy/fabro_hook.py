@@ -16,12 +16,24 @@ from .authz import Authorizer, Binding, Decision
 
 
 def handle(ctx: dict, binding: Binding) -> Decision:
+    from .governor import count_tool_call, reset_node
+
+    if ctx.get("event") == "stage_start":
+        reset_node(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")))
+        return Decision(True, "STAGE_START_RESET", str(ctx.get("node_id")))
     if ctx.get("event") != "pre_tool_use":
         return Decision(True, "NOT_A_TOOL_EVENT", str(ctx.get("event")))
-    return Authorizer(binding).decide(ctx.get("node_id"), str(ctx.get("tool_name", "")), ctx.get("tool_input"))
+    d = Authorizer(binding).decide(ctx.get("node_id"), str(ctx.get("tool_name", "")), ctx.get("tool_input"))
+    if d.allow and d.role:
+        ok, n, limit = count_tool_call(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")), d.role)
+        if not ok:
+            return Decision(False, "TURN_BUDGET_EXHAUSTED", f"{n}>{limit} tool calls; reply BLOCKED now", d.role, d.op)
+    return d
 
 
 def audit(ctx: dict, d: Decision, binding_id: str) -> None:
+    if d.code == "STAGE_START_RESET":
+        return
     common = {"run_id": ctx.get("run_id"), "phase": None, "agent_id": d.role, "tool_id": d.op or ctx.get("tool_name"),
               "workflow_id": ctx.get("workflow_name")}
     msg = f"{'ALLOW' if d.allow else 'DENY'} {ctx.get('tool_name')} role={d.role} {d.code}"

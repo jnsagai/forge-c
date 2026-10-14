@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m5_lessons.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t032"
+  ],
+  "duration_s": 1.129,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4d1459b3cad34369c839a273f66812a31d026c75",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T032/20261014T215950.log",
+  "log_sha256": "ba90ecd41960305803a55cfcec91dc16a02e93c24be317c8465218e59e8bb6c7",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T032",
+  "ts_utc": "2026-10-14T21:59:50.179837Z"
+}

@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m4_repair.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t026"
+  ],
+  "duration_s": 1.001,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4d1459b3cad34369c839a273f66812a31d026c75",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T026/20261014T215841.log",
+  "log_sha256": "b9340a6239926c1013af2ee262ddb48af08d8dd2d000ed43a74241556e3282df",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T026",
+  "ts_utc": "2026-10-14T21:58:41.027844Z"
+}

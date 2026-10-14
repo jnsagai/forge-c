@@ -1,0 +1,50 @@
+{
+  "status": "FAILED",
+  "agent_result_ok": false,
+  "issues": [
+    "AGENT_OUTPUT_SCHEMA"
+  ],
+  "tokens": 6347,
+  "turns": 4,
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/repair/worktrees/att-c15fd7a10436",
+  "token_basis": "reported",
+  "promotion": {
+    "attempt_id": "att-c15fd7a10436",
+    "incident_id": "inc-9379300402a3",
+    "agent_role": "fabric-repair",
+    "status": "PROMOTED",
+    "worktree_ref": "worktree:att-c15fd7a10436",
+    "tests": [
+      {
+        "name": "protected-path-diff-empty",
+        "status": "PASS",
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa"
+      },
+      {
+        "name": "repairable-allowlist",
+        "status": "PASS",
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa"
+      },
+      {
+        "name": "runtime-config-contract",
+        "status": "PASS",
+        "evidence_ref": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "health-stable-3-polls",
+        "status": "PASS",
+        "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa"
+      }
+    ],
+    "protected_path_changes": [],
+    "token_usage": {
+      "total": 6347,
+      "basis": "reported"
+    },
+    "started_at": "2026-10-14T22:00:42.697708Z",
+    "patch_sha256": "bd8b90fa5e266faa55bb391463c4eecb7e6f486bb36cb917c0f8b49db5828aed",
+    "promotion_evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+    "finished_at": "2026-10-14T22:01:31.818862Z"
+  },
+  "finished_at": "2026-10-14T22:01:31.985110Z"
+}

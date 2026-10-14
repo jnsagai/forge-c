@@ -1,0 +1,44 @@
+{
+  "status": "REWORK",
+  "agent_result_ok": true,
+  "issues": [
+    "UNEXPECTED_PORT:runtime/llm._gateway.json:8080"
+  ],
+  "tokens": 6009,
+  "turns": 4,
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/repair/worktrees/att-4a38d16b1c22",
+  "token_basis": "reported",
+  "promotion": {
+    "attempt_id": "att-4a38d16b1c22",
+    "incident_id": "inc-9379300402a3",
+    "agent_role": "fabric-repair",
+    "status": "ROLLED_BACK",
+    "worktree_ref": "worktree:att-4a38d16b1c22",
+    "tests": [
+      {
+        "name": "protected-path-diff-empty",
+        "status": "PASS",
+        "evidence_ref": "commit:b572887f03bce38b3f99b90a98e6b9d3bf41daf3"
+      },
+      {
+        "name": "repairable-allowlist",
+        "status": "PASS",
+        "evidence_ref": "commit:b572887f03bce38b3f99b90a98e6b9d3bf41daf3"
+      },
+      {
+        "name": "runtime-config-contract",
+        "status": "FAIL",
+        "evidence_ref": "sha256:b3b8d62c7c18f546a20bc47073823154b45a3c181e3cd8a36521b65518e2e15f"
+      }
+    ],
+    "protected_path_changes": [],
+    "token_usage": {
+      "total": 6009,
+      "basis": "reported"
+    },
+    "started_at": "2026-10-14T21:58:35.206966Z",
+    "patch_sha256": "0aa890d7dda2651f1bd7f66309ab446c89f4d3046a8d6a0531b583277ad13a74",
+    "finished_at": "2026-10-14T21:59:09.026516Z"
+  },
+  "finished_at": "2026-10-14T21:59:09.071778Z"
+}

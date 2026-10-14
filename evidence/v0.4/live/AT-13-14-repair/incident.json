@@ -1,0 +1,163 @@
+{
+  "incident": {
+    "incident_id": "inc-9379300402a3",
+    "fingerprint": "llm-gateway:CONFIG_INVALID:-:0.4",
+    "component": "llm-gateway",
+    "fault_type": "CONFIG_INVALID",
+    "state": "RESOLVED",
+    "severity": "HIGH",
+    "created_at": "2026-10-14T21:58:34.777355Z",
+    "updated_at": "2026-10-14T22:01:31.924552Z",
+    "attempts": 2,
+    "correlation_id": "corr-inc-9379300402a3",
+    "last_error": "UNEXPECTED_PORT:runtime/llm-gateway.json:9999",
+    "patch_hash": "bd8b90fa5e266faa55bb391463c4eecb7e6f486bb36cb917c0f8b49db5828aed",
+    "recoverable": true
+  },
+  "history": [
+    {
+      "seq": 1,
+      "incident_id": "inc-9379300402a3",
+      "from_state": null,
+      "to_state": "DETECTED",
+      "at": "2026-10-14T21:58:34.777355Z",
+      "reason": "UNEXPECTED_PORT:runtime/llm-gateway.json:9999"
+    },
+    {
+      "seq": 2,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "DETECTED",
+      "to_state": "TRIAGED",
+      "at": "2026-10-14T21:58:34.996379Z",
+      "reason": "AT-13 live induced fault"
+    },
+    {
+      "seq": 3,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "TRIAGED",
+      "to_state": "REPAIRING",
+      "at": "2026-10-14T21:58:35.126828Z",
+      "reason": "dispatch att-4a38d16b1c22 via external_local_worker"
+    },
+    {
+      "seq": 4,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "REPAIRING",
+      "to_state": "VERIFYING",
+      "at": "2026-10-14T21:59:09.049371Z",
+      "reason": "promotion controller"
+    },
+    {
+      "seq": 5,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "VERIFYING",
+      "to_state": "ROLLED_BACK",
+      "at": "2026-10-14T21:59:09.055615Z",
+      "reason": "regression checks failed"
+    },
+    {
+      "seq": 6,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "ROLLED_BACK",
+      "to_state": "TRIAGED",
+      "at": "2026-10-14T21:59:09.063360Z",
+      "reason": "eligible for another bounded attempt"
+    },
+    {
+      "seq": 7,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "TRIAGED",
+      "to_state": "REPAIRING",
+      "at": "2026-10-14T22:00:42.695051Z",
+      "reason": "dispatch att-c15fd7a10436 via external_local_worker"
+    },
+    {
+      "seq": 8,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "REPAIRING",
+      "to_state": "VERIFYING",
+      "at": "2026-10-14T22:01:31.918717Z",
+      "reason": "promotion controller"
+    },
+    {
+      "seq": 9,
+      "incident_id": "inc-9379300402a3",
+      "from_state": "VERIFYING",
+      "to_state": "RESOLVED",
+      "at": "2026-10-14T22:01:31.924552Z",
+      "reason": "promoted f41cad75c4c5 after 3 stable polls"
+    }
+  ],
+  "attempts": [
+    {
+      "agent_role": "fabric-repair",
+      "attempt_id": "att-4a38d16b1c22",
+      "finished_at": "2026-10-14T21:59:09.026516Z",
+      "incident_id": "inc-9379300402a3",
+      "patch_sha256": "0aa890d7dda2651f1bd7f66309ab446c89f4d3046a8d6a0531b583277ad13a74",
+      "protected_path_changes": [],
+      "started_at": "2026-10-14T21:58:35.206966Z",
+      "status": "ROLLED_BACK",
+      "tests": [
+        {
+          "evidence_ref": "commit:b572887f03bce38b3f99b90a98e6b9d3bf41daf3",
+          "name": "protected-path-diff-empty",
+          "status": "PASS"
+        },
+        {
+          "evidence_ref": "commit:b572887f03bce38b3f99b90a98e6b9d3bf41daf3",
+          "name": "repairable-allowlist",
+          "status": "PASS"
+        },
+        {
+          "evidence_ref": "sha256:b3b8d62c7c18f546a20bc47073823154b45a3c181e3cd8a36521b65518e2e15f",
+          "name": "runtime-config-contract",
+          "status": "FAIL"
+        }
+      ],
+      "token_usage": {
+        "basis": "reported",
+        "total": 6009
+      },
+      "worktree_ref": "worktree:att-4a38d16b1c22"
+    },
+    {
+      "agent_role": "fabric-repair",
+      "attempt_id": "att-c15fd7a10436",
+      "finished_at": "2026-10-14T22:01:31.818862Z",
+      "incident_id": "inc-9379300402a3",
+      "patch_sha256": "bd8b90fa5e266faa55bb391463c4eecb7e6f486bb36cb917c0f8b49db5828aed",
+      "promotion_evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+      "protected_path_changes": [],
+      "started_at": "2026-10-14T22:00:42.697708Z",
+      "status": "PROMOTED",
+      "tests": [
+        {
+          "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+          "name": "protected-path-diff-empty",
+          "status": "PASS"
+        },
+        {
+          "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+          "name": "repairable-allowlist",
+          "status": "PASS"
+        },
+        {
+          "evidence_ref": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "name": "runtime-config-contract",
+          "status": "PASS"
+        },
+        {
+          "evidence_ref": "commit:f41cad75c4c5b287acd72098e1a365b2e8a3a4aa",
+          "name": "health-stable-3-polls",
+          "status": "PASS"
+        }
+      ],
+      "token_usage": {
+        "basis": "reported",
+        "total": 6347
+      },
+      "worktree_ref": "worktree:att-c15fd7a10436"
+    }
+  ]
+}
