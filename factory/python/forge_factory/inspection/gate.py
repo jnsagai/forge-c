@@ -24,6 +24,16 @@ from ..events.emit import emit
 from .engine import InspectionError, Store
 
 
+def fail_code(ws: Path, phase: str, step: str) -> int:
+    """Distinct non-zero exit per failed attempt (Fabro 0.362 trips its cycle breaker on identical signatures;
+    the deterministic route gate is the authoritative loop bound)."""
+    log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
+    n = 0
+    if log.is_file():
+        n = sum(1 for x in log.read_text().splitlines() if f'"phase": "{phase}"' in x and f'"step": "{step}"' in x)
+    return 10 + min(n, 200)
+
+
 def _state(ws: Path, phase: str, payload: dict) -> None:
     d = ws / ".forge-run" / "gates"
     d.mkdir(parents=True, exist_ok=True)
@@ -36,12 +46,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
     if not res.ok or res.status != "PASS":
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "errors": res.errors,
                                         "status": res.status, "issues": res.issues})
-        return 1
+        return fail_code(store.workspace, phase, "author")
     try:
         bl = store.freeze(phase, f"swe{phase[-1]}-author")
     except InspectionError as exc:
         _state(store.workspace, phase, {"step": "author", "result": "FREEZE_FAILED", "error": str(exc)})
-        return 1
+        return fail_code(store.workspace, phase, "author")
     _state(store.workspace, phase, {"step": "author", "result": "FROZEN", "baseline_id": bl["baseline_id"]})
     print(json.dumps({"baseline_id": bl["baseline_id"], "baseline_hash": bl["baseline_hash"]}))
     return 0
@@ -54,7 +64,7 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
                                     "gate": g})
     print(json.dumps(g))
     # The agent's own PASS is never sufficient: the recorded, deterministic gate decision rules.
-    return 0 if g["decision"] == "PASS" else 1
+    return 0 if g["decision"] == "PASS" else fail_code(store.workspace, phase, "inspect")
 
 
 def step_route(store: Store, phase: str) -> int:
@@ -80,7 +90,7 @@ def step_verify(store: Store, phase: str, check: str) -> int:
              f"{phase} HAL guideline verification {rep['verdict']} violations={len(rep['violations'])}", phase=phase)
         print(json.dumps({"verdict": rep["verdict"], "violations": len(rep["violations"]),
                           "report": "verification/static/hal_guideline_conformance.json"}))
-        return 0 if rep["verdict"] == "PASS" else 1
+        return 0 if rep["verdict"] == "PASS" else fail_code(store.workspace, phase, "verify")
     print(json.dumps({"error": f"unknown check {check}"}))
     return 2
 

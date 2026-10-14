@@ -293,6 +293,14 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
             loc = ",".join(map(str, exc.errors()[0].get("loc", ())))
             raise ToolDenied("INPUT_INVALID", loc) from exc
         out = operation.handler(ctx, parsed)
+        try:  # durable, append-only record of every tool result for deterministic gates/finalizer
+            rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,
+                   "run_id": run, "result": out}
+            (ws / "evidence").mkdir(parents=True, exist_ok=True)
+            with open(ws / "evidence" / "tool-results.jsonl", "a", encoding="utf-8") as f:
+                f.write(json.dumps(rec, sort_keys=True) + "\n")
+        except OSError:
+            out = result(ctx, "FAIL", "evidence write failed", issues=["EVIDENCE_WRITE_FAILED"])
         emit("tools", "INFO" if out["status"] == "PASS" else "WARN",
              f"{server}.{operation.name} {out['status']} role={role}", correlation_id=run, run_id=run,
              agent_id=role, tool_id=f"{server}.{operation.name}", duration_ms=round((time.monotonic() - t0) * 1000, 1),

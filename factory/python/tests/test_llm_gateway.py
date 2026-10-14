@@ -54,3 +54,18 @@ def test_unknown_usage_labelled_unknown(tmp_path):
     m = gw.Meter(tmp_path / "u.jsonl")
     m.record("m", None, False, 1.0)
     assert json.loads((tmp_path / "u.jsonl").read_text())["basis"] == "unknown"
+
+
+def test_tools_scoped_to_role_detected_from_skill_instruction():
+    names = ["shell", "read_file", "write_file", "use_skill", "mcp__forge_build_mcp__compile",
+             "mcp__forge_evidence_mcp__check_inspection", "web_fetch", "spawn_agent"]
+    tools = [{"type": "function", "function": {"name": n}} for n in names]
+    body = {"messages": [{"role": "user", "content": "Call use_skill with skill_name swe3-inspector and follow it."}],
+            "tools": tools}
+    kept = {t["function"]["name"] for t in gw.sanitize_request(body)["tools"]}
+    assert kept == {"read_file", "use_skill", "mcp__forge_evidence_mcp__check_inspection"}
+    body["messages"][0]["content"] = "Call use_skill with skill_name swe3-author"
+    kept = {t["function"]["name"] for t in gw.sanitize_request(body)["tools"]}
+    assert {"write_file", "mcp__forge_build_mcp__compile"} <= kept and "shell" not in kept
+    body["messages"][0]["content"] = "no role here"
+    assert len(gw.sanitize_request(body)["tools"]) == len(names)  # unknown role: unchanged, hook still enforces

@@ -65,20 +65,21 @@ def test_gate_cli_author_rejects_prose_and_freezes_valid(tmp_path):
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
-    assert gate(tmp_path, "SWE.1", "author", "Done, looks great!").returncode == 1
+    assert gate(tmp_path, "SWE.1", "author", "Done, looks great!").returncode >= 10
     ok = gate(tmp_path, "SWE.1", "author", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                       "next_action": "next"}))
     assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
     # Inspector claiming PASS without a recorded inspection must not pass the gate.
     fake = gate(tmp_path, "SWE.1", "inspect", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                          "next_action": "next"}))
-    assert fake.returncode == 1 and "REINSPECT" in fake.stdout.decode()
+    assert fake.returncode >= 10 and "REINSPECT" in fake.stdout.decode()
     assert gate(tmp_path, "SWE.1", "route").returncode == 0  # rework budget available
 
 
 def test_gate_verify_node_fails_on_missing_code(tmp_path):
     r = gate(tmp_path, "SWE.3", "verify", check="hal_guideline")
-    assert r.returncode == 1
+    r2 = gate(tmp_path, "SWE.3", "verify", check="hal_guideline")
+    assert r.returncode >= 10 and r2.returncode == r.returncode + 1  # distinct Fabro failure signatures
     assert (tmp_path / "verification/static/hal_guideline_conformance.json").is_file()
 
 

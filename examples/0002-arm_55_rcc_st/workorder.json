@@ -1,0 +1,25 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 RCC low-level (LL) and HAL driver",
+  "target": {"part_number": "STM32N657X0 (STM32N6x5/x7 family)", "core": "Arm Cortex-M55", "silicon_revision": "UNSPECIFIED",
+             "source_documents": ["DS14791 Rev 9", "RM0486 Rev 4 chapter 14 + memory map p.176"],
+             "hsi_contract": "NOT_PROVIDED", "safety_allocation": "NOT_PROVIDED (ASIL B-oriented evidence candidate only)"},
+  "scope": [
+    "LL (header-only, static inline): read/write RCC registers through a pointer to an ll_rcc register block type so host tests can substitute RAM",
+    "HSI and HSE oscillator enable/disable (RCC_CR HSION/HSEON or their set/clear registers) and ready-flag wait in RCC_SR with a caller-supplied timeout",
+    "Peripheral clock enable/disable/is-enabled for AHB1-5 and APB1L/1H/2/4L/4H/5 enable registers (RCC_xxxENR, RM0486 14.10.79-14.10.90)",
+    "Peripheral reset assert/release via RCC_xxxRSTR (RM0486 14.10.64-14.10.74)",
+    "HAL: hal_status_t API with HAL_RCC_ prefix, const config pointers, parameter checks, timeout-bounded waits",
+    "Out of scope: PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+  ],
+  "system_names": ["RCC driver", "RCC LL driver", "RCC HAL driver", "STM32N6 RCC driver"],
+  "budgets": {"flash_bytes": 4096, "static_ram_bytes": 64, "stack_bytes": 128, "status": "illustrative_not_approved (profiles/stm32n6-rcc-pilot.json)"},
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {"path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md", "role": "datasheet"},
+    {"path": "inputs/RM0486-rev4-ch14-rcc.md", "role": "reference_manual_rcc_chapter"},
+    {"path": "inputs/RM0486-rev4-memory-map-excerpt.md", "role": "reference_manual_memory_map"},
+    {"path": "inputs/inputs-manifest.json", "role": "conversion_provenance"},
+    {"path": "hal_driver_guideline.md", "role": "development_guideline"}
+  ]
+}

@@ -1,0 +1,28 @@
+# Forge-C model-free supervisor (user service). Rendered by scripts/install_supervisor.sh.
+[Unit]
+Description=Forge-C v0.4 model-free health supervisor (independent of Fabro)
+After=default.target
+StartLimitIntervalSec=600
+StartLimitBurst=20
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=@VENV@/bin/python -m forge_factory.supervisor.service @EXTRA_ARGS@
+WorkingDirectory=@REPO@
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=FORGE_FABRO_URL=http://127.0.0.1:32290
+Environment=FORGE_FABRO_STORAGE=@DATA@/fabro/storage
+Environment=PATH=@PATH@
+# Watchdog: the poll loop sends WATCHDOG=1 every poll (default 60 s +/-10 % jitter); 5 missed => restart.
+WatchdogSec=300
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+UMask=0077
+
+[Install]
+WantedBy=default.target

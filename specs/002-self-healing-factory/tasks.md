@@ -34,12 +34,12 @@
 
 ## M3 — External deterministic supervisor
 
-- [ ] **T019 [P0]** Implement persisted incident DB and state transitions from `data-model.md` and `contracts/incident.schema.json`. **[FR-010]** Tests: transactional transition guards, power loss/restart resume, fingerprint dedup.
-- [ ] **T020 [P0]** Build non-LLM scheduler/service with interval config validation, jitter, independent progress checkpoints and OS/service-manager watchdog. **[FR-007,FR-008,FR-034]** Test: 100 healthy polls and mocked LLM invocation counter = exactly ZERO.
-- [ ] **T021 [P0] [P]** Add health probes for Fabro liveness, run deadlines, stalls, MCP handshake, queue, storage, dashboard and resource pressure with unknown-data states. **[FR-009]** Tests: injected Fabro crash, frozen stage, MCP timeout, disk full, unreachable telemetry.
-- [ ] **T022 [P0]** Implement incident routing, active incident leases, backoff, cooldown, max attempts and repair dispatch queue. **[FR-010,FR-011,FR-015]** Test: only one repair for duplicate root-cause, breaker after configured exhaustion.
-- [ ] **T023 [P0]** Implement Fabro-independent repair launch path for Fabro-down condition (isolated local repair worker), plus Fabro child-run pathway for healthy engine; test both. **[FR-011,FR-034]** Test: Fabro killed -> Repair Agent starts through fallback.
-- [ ] **T024 [P0]** Persist heartbeat/watchdog and reboot resume procedures with systemd services; document container-only fallback. **[FR-007,FR-034]** Tests: supervisor SIGKILL -> OS restarts, incident DB still valid.
+- [X] **T019 [P0]** Implement persisted incident DB and state transitions from `data-model.md` and `contracts/incident.schema.json`. **[FR-010]** Tests: transactional transition guards, power loss/restart resume, fingerprint dedup. ✅ Evidence: `evidence/v0.4/runs/T019/latest.json`
+- [X] **T020 [P0]** Build non-LLM scheduler/service with interval config validation, jitter, independent progress checkpoints and OS/service-manager watchdog. **[FR-007,FR-008,FR-034]** Test: 100 healthy polls and mocked LLM invocation counter = exactly ZERO. ✅ Evidence: `evidence/v0.4/runs/T020/latest.json`
+- [X] **T021 [P0] [P]** Add health probes for Fabro liveness, run deadlines, stalls, MCP handshake, queue, storage, dashboard and resource pressure with unknown-data states. **[FR-009]** Tests: injected Fabro crash, frozen stage, MCP timeout, disk full, unreachable telemetry. ✅ Evidence: `evidence/v0.4/runs/T021/latest.json`
+- [X] **T022 [P0]** Implement incident routing, active incident leases, backoff, cooldown, max attempts and repair dispatch queue. **[FR-010,FR-011,FR-015]** Test: only one repair for duplicate root-cause, breaker after configured exhaustion. ✅ Evidence: `evidence/v0.4/runs/T022/latest.json`
+- [X] **T023 [P0]** Implement Fabro-independent repair launch path for Fabro-down condition (isolated local repair worker), plus Fabro child-run pathway for healthy engine; test both. **[FR-011,FR-034]** Test: Fabro killed -> Repair Agent starts through fallback. ✅ Evidence: `evidence/v0.4/runs/T023/latest.json`
+- [X] **T024 [P0]** Persist heartbeat/watchdog and reboot resume procedures with systemd services; document container-only fallback. **[FR-007,FR-034]** Tests: supervisor SIGKILL -> OS restarts, incident DB still valid. ✅ Evidence: `evidence/v0.4/runs/T024/latest.json`
 
 ## M4 — Isolated autonomous repair
 

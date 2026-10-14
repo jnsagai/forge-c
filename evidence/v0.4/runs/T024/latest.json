@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t024_systemd.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 8.343,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d28ffb928467dbb0997b14825bce6fab011ff4aa",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T024/20261014T215255.log",
+  "log_sha256": "3c62e01fdff4f682edbb2b55cc040f790403b60903c799967ff9b3ed68e40ad1",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T024",
+  "ts_utc": "2026-10-14T21:52:55.127796Z"
+}

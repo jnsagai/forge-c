@@ -28,7 +28,45 @@ REASONING_KEYS = ("reasoning", "reasoning_content", "thinking", "reasoning_detai
 UPSTREAM = os.environ.get("FORGE_OLLAMA_URL", "http://127.0.0.1:11435").rstrip("/")
 
 
+_ROLE_RE = __import__("re").compile(r"skill_name\s+([a-z0-9][a-z0-9-]{2,40})")
+_NATIVE_READ = {"use_skill", "read_file", "read_many_files", "grep", "glob", "list_dir", "update_plan"}
+_NATIVE_WRITE = {"write_file", "edit_file", "apply_patch"}
+_ROLE_TOOLS: dict[str, set[str]] | None = None
+
+
+def role_tools() -> dict[str, set[str]]:
+    """role -> tool names the role may be offered (MCP grants + safe natives). Enforcement stays in the hook."""
+    global _ROLE_TOOLS
+    if _ROLE_TOOLS is None:
+        from .registry.agents import load_agents
+        from .registry.mcp_registry import fabro_tool_name
+
+        _ROLE_TOOLS = {a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ
+                       | (set() if a.readonly else _NATIVE_WRITE) for a in load_agents()[0]}
+    return _ROLE_TOOLS
+
+
+def detect_role(messages: list) -> str | None:
+    for m in messages or []:
+        if isinstance(m, dict) and m.get("role") in ("user", "system") and isinstance(m.get("content"), str):
+            hit = _ROLE_RE.search(m["content"])
+            if hit and hit.group(1) in role_tools():
+                return hit.group(1)
+    return None
+
+
+def scope_tools(body: dict) -> dict:
+    tools = body.get("tools")
+    role = detect_role(body.get("messages") or [])
+    if not isinstance(tools, list) or role is None:
+        return body
+    allowed = role_tools()[role]
+    kept = [t for t in tools if isinstance(t, dict) and (t.get("function") or {}).get("name") in allowed]
+    return {**body, "tools": kept}
+
+
 def sanitize_request(body: dict) -> dict:
+    body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
     out["reasoning_effort"] = "none"
     msgs = []

@@ -109,9 +109,21 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
             for line in (r.stderr.decode(errors="replace")).splitlines():
                 if ": error:" in line or ": warning:" in line:
                     issues.append(line.split(str(ctx.workspace) + "/")[-1][:120])
+    metrics: dict = {"units": len(srcs), "failed_units": failed}
+    if not failed and a.profile == "target-cm55-gcc":
+        # Relocatable driver image + link map for footprint evidence (NOT a firmware image: no startup/linker script).
+        objs = [str(od / (s.stem + ".o")) for s in srcs]
+        argv = [prof["cc"], *prof["flags"], "-nostdlib", "-r", f"-Wl,-Map={od / 'driver.map'}", "-o",
+                str(od / "driver.elf"), *objs]
+        r = run_argv(argv, od, 120, ALLOW)
+        log += b"$ " + " ".join(argv).encode() + b"\n" + r.stdout + r.stderr
+        metrics["relocatable_elf"] = r.exit_code == 0
+        if r.exit_code != 0:
+            failed += 1
+            issues.append("LINK_RELOCATABLE_FAILED")
     ref = ctx.store(log)
     return result(ctx, "PASS" if not failed else "FAIL", f"{len(srcs) - failed}/{len(srcs)} units compiled ({a.profile})",
-                  [ref], issues, {"units": len(srcs), "failed_units": failed}, prof["cc"], tool_version(prof["cc"]),
+                  [ref], issues, metrics, prof["cc"], tool_version(prof["cc"]),
                   0 if not failed else 1, total_ms, a.model_dump(), log)
 
 

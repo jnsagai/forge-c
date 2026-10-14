@@ -31,7 +31,7 @@ DENY_NATIVE = {"shell": "NATIVE_SHELL_DENIED", "web_search": "NETWORK_DENIED", "
 NO_SIDE_EFFECT = {"update_plan", "TaskCreate", "TaskUpdate", "TaskGet", "TaskList"}
 
 # Paths no production agent may write through native tools (safety/QA policy, skills, specs, evidence).
-ALWAYS_PROTECTED = [".fabro/**", ".specify/**", "specs/**", "config/**", "factory/**", ".git/**",
+ALWAYS_PROTECTED = [".fabro/**", ".specify/**", ".forge-run/**", "inputs/**", "specs/**", "config/**", "factory/**", ".git/**",
                     "policies/**", "safety/approved/**", "archives/**", "evidence/**", "configuration/approved/**",
                     "inspection/**", "quality/**"]
 SECRET_READ_DENY = [".git/**", "**/.env", "**/*.key", "**/*.pem", "secrets/**", "**/server.env", "**/auth.json"]

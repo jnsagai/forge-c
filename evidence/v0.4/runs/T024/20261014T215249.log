@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 1 item
+
+factory/python/tests/test_t024_systemd.py F                              [100%]
+
+=================================== FAILURES ===================================
+____________________ test_sigkill_restarts_and_db_integrity ____________________
+
+    @pytest.mark.skipif(os.environ.get("FORGE_SYSTEMD_LIVE") != "1", reason="live systemd test disabled")
+    def test_sigkill_restarts_and_db_integrity():
+        assert prop("ActiveState") == "active" and prop("Type") == "notify" and prop("Restart") == "always"
+>       assert int(prop("WatchdogUSec") or 0) > 0 or prop("WatchdogUSec") not in ("0", "")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: invalid literal for int() with base 10: '5min'
+
+factory/python/tests/test_t024_systemd.py:23: ValueError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_t024_systemd.py::test_sigkill_restarts_and_db_integrity
+============================== 1 failed in 0.07s ===============================
+
+--- stderr ---

@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ..common import pretty_json, sha256_bytes, sha256_file, utc_now
 
-HEADING = re.compile(r"^(?P<num>\d{1,2}(?:\.\d{1,2}){0,4})\s{1,24}(?P<title>[A-Z][^.]{2,110}?)\s*$")
+HEADING = re.compile(r"^(?P<num>\d{1,2}(?:\.\d{1,3}){0,4})\s{1,24}(?P<title>[A-Z][^.]{2,110}?)\s*$")
 NOISE = re.compile(r"^\s*(RM\d{4}|DS\d{5})\s+Rev\s+\d+\s*\d*\s*/?\s*\d*\s*$|^\s*\d+/\d+\s+RM\d{4}|^\s*$")
 
 

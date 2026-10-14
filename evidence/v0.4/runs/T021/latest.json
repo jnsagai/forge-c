@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_m3_supervisor.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "t021"
+  ],
+  "duration_s": 0.574,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d28ffb928467dbb0997b14825bce6fab011ff4aa",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T021/20261014T215311.log",
+  "log_sha256": "a5bf3e51580a83ba7aa9cf3e89181fc2ac0962241078590c210c5f3385dc9c9c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T021",
+  "ts_utc": "2026-10-14T21:53:11.976233Z"
+}

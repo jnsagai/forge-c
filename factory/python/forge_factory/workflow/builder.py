@@ -33,15 +33,15 @@ def gate_cmd(phase: str, step: str, check: str = "") -> str:
 
 
 def author_prompt(n: int) -> str:
-    return (f"Call use_skill with skill_name swe{n}-author and follow it. Inputs: .forge-run/manifest.json "
-            f"(read-only). If inspection/SWE.{n}/ or .forge-run/gates/gate-log.jsonl list findings for SWE.{n}, "
-            f"fix every finding. Write only your SWE.{n} outputs. Final reply: compact JSON only.")
+    from .prompts import author_prompt as ap
+
+    return ap(f"SWE.{n}")
 
 
 def inspector_prompt(n: int) -> str:
-    return (f"Call use_skill with skill_name swe{n}-inspector and follow it. Inspect the latest frozen SWE.{n} "
-            f"baseline (configuration/baselines/SWE.{n}/) against factory checklist SWE.{n} v0.4 and record the "
-            f"inspection with the check_inspection MCP tool. Never edit workproducts. Final reply: compact JSON only.")
+    from .prompts import inspector_prompt as ip
+
+    return ip(f"SWE.{n}")
 
 
 def finalize_cmd(work_order: str) -> str:
@@ -49,12 +49,17 @@ def finalize_cmd(work_order: str) -> str:
     return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
-def build(work_order: str, phases: list[str] | None = None, goal: str | None = None) -> tuple[str, dict]:
+def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
+          sections: dict[str, str] | None = None) -> tuple[str, dict]:
+    from . import prompts
+
+    prompts.SECTIONS.clear()
+    prompts.SECTIONS.update(sections or {})
     phases = phases or PHASES
     nodes: dict[str, dict] = {}
     L = [f'digraph ForgeC_{work_order.replace("-", "_")} {{',
          f'  graph [goal="{_q(goal or "Forge-C v0.4 unattended SWE.1-SWE.6 candidate for offline review")}", '
-         f'default_fidelity="compact"]',
+         f'default_fidelity="compact", loop_restart_signature_limit="8"]',
          '  start [shape=Mdiamond, label="Start"]', '  exit [shape=Msquare, label="Exit (offline review package)"]',
          f'  finalize [shape=parallelogram, label="Deterministic finalizer (READY_FOR_OFFLINE_REVIEW|BLOCKED)", '
          f'script="{_q(finalize_cmd(work_order))}"]']
