@@ -174,6 +174,13 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
     (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return 3; }\n")
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert neg["status"] == "FAIL" and "TEST_FAIL:test_negative.c:exit3" in neg["issues"]
+    (ws / "software/tests/unit/test_negative.c").write_text('#include <stdio.h>\nint main(void){ printf("UT-009 FAIL\\n");'
+                                                         ' return 1; }\n')
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert "UT-009 FAIL" in neg["issues"]  # failing case ids are returned to the agent
+    (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return undefined_symbol; }\n")
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert any("test_negative.c:1" in i and "error:" in i for i in neg["issues"]), neg["issues"]
 
 
 # ---------------- T015 sim ----------------------------------------------------------------------------

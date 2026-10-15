@@ -27,6 +27,17 @@ class CovIn(ToolInput):
     level: Literal["unit", "integration", "software"] = "unit"
 
 
+def _diag(raw: bytes, ws, markers: tuple[str, ...], limit: int) -> list[str]:
+    """First diagnostic lines (compiler errors / failing test cases), workspace-relative and truncated."""
+    out = []
+    for line in raw.decode(errors="replace").splitlines():
+        if any(m in line for m in markers):
+            out.append(line.split(str(ws) + "/")[-1].strip()[:140])
+            if len(out) >= limit:
+                break
+    return out
+
+
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     tdir = ctx.workspace / "software" / "tests" / level
     tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
@@ -49,6 +60,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         if b.exit_code != 0:
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
+            issues += _diag(b.stderr, ctx.workspace, (": error:",), 12)  # the agent cannot fix what it cannot see
             continue
         r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
                      env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
@@ -59,6 +71,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         else:
             failed += 1
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
+            issues += _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
     return result(ctx, "PASS" if failed == 0 else "FAIL", f"{level}: {passed} passed, {failed} failed (HOST)",
                   [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),

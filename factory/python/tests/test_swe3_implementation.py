@@ -48,3 +48,13 @@ def test_missing_declaration_static_api_and_undefined_ll_call(tmp_path):
 def test_commented_out_code_detector_ignores_prose():
     assert commented_out_code("/* Enables the HSI oscillator (see RM0486 p.480). */\nint x;\n") == []
     assert commented_out_code("// count = count + 1U;\n/*\n  LL_RCC_HSI_Enable();\n*/\n") == [1, 3]
+
+
+def test_swe4_scaffold_is_idempotent_and_has_no_test_logic(tmp_path):
+    from forge_factory.workflow.scaffold import TEST_CASES_MARKER, UNIT_TEST, scaffold
+
+    assert scaffold(tmp_path)["created"] is True
+    text = (tmp_path / UNIT_TEST).read_text()
+    assert TEST_CASES_MARKER in text and "CHECK(\"UT-" not in text  # harness only; UT cases are agent-authored
+    (tmp_path / UNIT_TEST).write_text(text.replace(TEST_CASES_MARKER, "static void ut_x(void) {}\n" + TEST_CASES_MARKER))
+    assert scaffold(tmp_path)["created"] is False and "ut_x" in (tmp_path / UNIT_TEST).read_text()

@@ -101,6 +101,9 @@ LL_STEPS = [
     "Call mcp__forge_docs_mcp__validate_artifact with check register_map; it must be PASS.",
     "Reply with the list of LL_RCC_ function names you declared.",
 ]
+HAL_EXAMPLE = ("hal_status_t HAL_RCC_HSI_Enable(void)\n{\n    uint32_t count = 0U;\n    LL_RCC_HSI_Enable();\n"
+               "    while ((LL_RCC_HSI_IsReady() == 0U) && (count < HAL_RCC_TIMEOUT_VALUE))\n    {\n        count++;\n"
+               "    }\n    return (LL_RCC_HSI_IsReady() != 0U) ? HAL_OK : HAL_TIMEOUT;\n}")
 HAL_MARKER = "// HAL_RCC API implementation (SWE.3 HAL author)"
 HAL_H_MARKER = "// HAL_RCC API prototypes (SWE.3 HAL author)"
 HAL_STEPS = [
@@ -117,39 +120,41 @@ HAL_STEPS = [
     "'{marker}' and a final newline.",
     "For EACH API group make ONE edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
-    "function calls only LL_RCC_ functions; every wait loop is 'while ((LL_RCC_<Name>_IsReady() == 0U) && (count < "
-    "HAL_RCC_TIMEOUT_VALUE))' then returns HAL_TIMEOUT if count reached the limit, else HAL_OK; locals lower case.",
+    "function calls only LL_RCC_ functions. Oscillator/PLL Enable functions wait for the ready flag with a timeout, "
+    "exactly like this example (adapt names): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
+    "way; peripheral clock enable/disable and reset functions call the LL function and return HAL_OK.",
     "Call mcp__forge_docs_mcp__validate_artifact with check implementation and add any function it reports missing.",
     "Reply with the list of HAL_RCC_ functions you implemented.",
 ]
 
 
-TEST_CASES_MARKER = "// UNIT TEST CASES (SWE.4 test author)"
-TEST_CALLS_MARKER = "// UNIT TEST CALLS (SWE.4 test author)"
+UT_EXAMPLE = ("static void ut_hsi_enable(void)\n{\n    hal_status_t st;\n    ut_reset_regs();\n"
+              "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n    st = HAL_RCC_HSI_Enable();\n"
+              "    CHECK(\"UT-001\", (st == HAL_OK) && ((ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK) != 0U));\n"
+              "    ut_reset_regs();\n    st = HAL_RCC_HSI_Enable();\n    CHECK(\"UT-002\", st == HAL_TIMEOUT);\n}")
 UT_STEPS = [
-    "read_file software/hal/stm32n6xx_hal_rcc.h and software/ll/stm32n6xx_ll_rcc.h (note each HAL_RCC_ function and the "
-    "LL_RCC_<REG>_OFFSET / _MSK ready flags), and traceability/requirements_to_tests.csv.",
-    "write_file software/tests/unit/test_rcc.c with exactly these lines: '#include <stdio.h>', '#include "
-    "\"stm32n6xx_hal_rcc.h\"', 'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];', 'static int failures = 0;', "
-    "'#define CHECK(id, cond) do { if (cond) { printf(\"%s PASS\\n\", id); } else { printf(\"%s FAIL\\n\", id); "
-    "failures++; } } while (0)', '{cases}', 'int main(void)', '{', '    {calls}', '    return (failures == 0) ? 0 : 1;', "
-    "'}' and a final newline.",
-    "For EACH HAL_RCC_ function group make ONE edit_file call with old_string exactly '{cases}' and new_string = one "
-    "'static void ut_<name>(void)' function (at most 30 lines) followed by a blank line and the marker again. In it: "
-    "clear ll_rcc_regs, set the ready/enable flag bit in ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] when the HAL waits for "
-    "it, call the HAL function, and CHECK(\"UT-0nn\", <expected status and register bits>); add a second CHECK "
-    "for the timeout path (flag never set -> HAL_TIMEOUT) where the function waits.",
-    "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one 'ut_<name>();' line per test "
-    "function followed by the marker again.",
+    "read_file software/tests/unit/test_rcc.c (GENERATED harness: fake ll_rcc_regs, ut_reset_regs(), CHECK(id, cond), "
+    "markers; never change it), software/hal/stm32n6xx_hal_rcc.h (the HAL_RCC_ functions to test) and "
+    "traceability/requirements_to_tests.csv (the UT ids per SWR).",
+    "For EACH HAL_RCC_ function (or Enable/Disable pair) make ONE edit_file call on software/tests/unit/test_rcc.c "
+    "with old_string exactly '{cases}' and new_string = ONE complete static void test function with its body, a "
+    "blank line, then the marker again. Never add prototypes or #define lines. Follow this example exactly (adapt "
+    "names, registers and UT ids): ```{example}``` Wait-for-ready functions get a ready case and a timeout case; "
+    "peripheral enable/reset functions check the bit in RCC_AHB1ENR / RCC_AHB1RSTR.",
+    "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one call line per test function "
+    "(e.g. 'ut_hsi_enable();') followed by the marker again.",
     "Call mcp__forge_tests_mcp__run_unit once and report its summary.",
     "Reply with the list of UT ids you wrote.",
 ]
 
 
 def unit_test_author_prompt() -> str:
-    """SWE.4 step 1 (fresh context): unit tests built incrementally in small edits."""
+    """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
+    from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
+
     steps = ["Call use_skill with skill_name swe4-author.", READ, SMALL] + \
-        [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER) for x in UT_STEPS] + [REPLY]
+        [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
+         for x in UT_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -165,7 +170,8 @@ def ll_author_prompt() -> str:
 def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, SMALL] + \
-        [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER) for x in HAL_STEPS] + [REPLY]
+        [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
+         for x in HAL_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
