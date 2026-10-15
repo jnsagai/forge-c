@@ -136,7 +136,7 @@ def complete_workspace(ws: Path) -> None:
         "safety/tool_assurance_assessment.md": "synthetic\n",
         "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
         "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
-        "software/tests/unit/t.c": "int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+        "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
         "configuration/system_names.json": '["RCC driver"]',
     }
     from test_guideline_check import HAL_C, HAL_H, LL_H
