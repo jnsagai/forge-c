@@ -26,8 +26,14 @@ AUTHOR_STEPS = {
         "write_file workproducts/SWE.1/software_requirements.md: a '# Software requirements' title, then 8-15 requirements, "
         "one per line exactly like: - **SWR-001** When the HSI enable is requested, the RCC driver shall set RCC_CR.HSION. "
         "Each statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', the system name 'RCC driver', and ends "
-        "with a period. Put '  - Source: RM0486 p.<page>' on the next line under each requirement.",
+        "with a period. Put '  - Source: RM0486 p.<page>' on the next line under each requirement. Add three measurable "
+        "resource requirements from the .forge-run/manifest.json budgets, e.g. '- **SWR-0nn** The RCC driver shall occupy "
+        "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget "
+        "(illustrative_not_approved)'.",
         "write_file safety/software_safety_requirements.md listing the safety-relevant SWR IDs (timeouts, error returns).",
+        "write_file traceability/upstream_gaps.md: '# Upstream coverage gaps', one row per upstream input the work order "
+        "does not provide or marks illustrative (HSI contract, software safety allocation, budgets): input | status "
+        "(NOT_PROVIDED / ILLUSTRATIVE) | affected SWR IDs | required human action. Never invent an allocation.",
         "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR "
         "(test_id UT-001.., test_file software/tests/unit/test_rcc.c).",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.1/software_requirements.md and check ears; "
