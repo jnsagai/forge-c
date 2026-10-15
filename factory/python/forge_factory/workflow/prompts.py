@@ -243,7 +243,7 @@ ROBOT_STEPS = [
         "tag of at least one test.",
     "The suite may use ONLY 'Library    ForgeTarget', its five keywords above, keywords you define in the same file and "
     "Log/Should Be Equal: run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, "
-    "Evaluate, Run Keyword and ${{...}}. Never write shell scripts.",
+    "Evaluate, Run Keyword and inline Python expressions. Never write shell scripts.",
     "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors or UNCOVERED_REQUIREMENT issues and repeat "
     "until it PASSes.",
     "Reply with the run_robot summary.",

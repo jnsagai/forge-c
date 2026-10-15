@@ -192,3 +192,10 @@ def test_author_gate_presence_check_blocks_freeze_of_incomplete_phase(tmp_path):
     assert r.returncode >= 10 and "MISSING_REQUIRED_OUTPUT:workproducts/SWE.4/unit_verification_report.md" in out
     assert "REQUIRED_TOOL_NOT_PASS:run_unit:NOT_RUN" in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
     assert not (tmp_path / "configuration/baselines/SWE.4").exists()
+
+
+def test_generated_workflow_has_no_template_delimiters():
+    """r58: Fabro renders the .fabro file as a template; '{{' / '{%' in a prompt broke the launch (no run id)."""
+    for chunk in (40, 150):
+        dot, _ = build("wo-test", chunk_lines=chunk)
+        assert "{{" not in dot and "{%" not in dot and "{#" not in dot

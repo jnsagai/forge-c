@@ -262,6 +262,9 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     out = subprocess.run([fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local", "--label",
                           f"forge={wo}"], cwd=ws, env=fabro_env(), capture_output=True, text=True, timeout=180)
     fabro_run_id = (out.stdout.strip().splitlines() or [""])[-1]
+    if out.returncode != 0 or not fabro_run_id:  # r58: a rejected workflow used to leave an empty run id silently
+        emit("human", "ERROR", f"{wo} Fabro launch failed (exit {out.returncode})", correlation_id=wo)
+        raise RuntimeError(f"fabro run failed (exit {out.returncode}): {(out.stderr or out.stdout)[-600:]}")
     (ws / ".forge-run/fabro_run_id").write_text(fabro_run_id)
     # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
     # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.
