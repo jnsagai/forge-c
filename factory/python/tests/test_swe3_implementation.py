@@ -95,3 +95,12 @@ def test_swe3_all_check_aggregates_three_deterministic_checks(tmp_path, monkeypa
     assert len(canonical_json(out)) <= sdk.MAX_RESULT_BYTES
     assert set(out["metrics"]) >= {"guideline_violations", "register_map_findings", "implementation_findings"}
     assert out["status"] == "FAIL" and any(i.startswith("REGMAP:") for i in out["issues"])  # fixture has no RM defines
+
+
+def test_r38_register_block_defined_in_driver_is_rejected(tmp_path):
+    w = ws(tmp_path)
+    (w / "software/src").mkdir(parents=True)
+    (w / "software/src/stm32n6xx_rcc_regs.c").write_text(
+        "#include <stdint.h>\nvolatile uint32_t ll_rcc_regs[1024U];\n")
+    f = check_implementation(w)["major_findings"]
+    assert "IMPL:REG_BLOCK_DEFINED_IN_DRIVER:software/src/stm32n6xx_rcc_regs.c" in f

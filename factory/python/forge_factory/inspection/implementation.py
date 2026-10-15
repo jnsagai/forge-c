@@ -91,6 +91,14 @@ def check_implementation(ws: Path) -> dict:
             findings.append(f"IMPL:STATIC_API:{f}")
     if not ll_defs:
         findings.append("IMPL:NO_LL_ACCESS_FUNCTIONS")
+    # The register block is placed by the linker (target) / defined by the test harness (host); a driver definition
+    # collides with the harness (r38). Only the extern declaration in the LL header is allowed.
+    for src in sorted(ws.glob("software/**/*.c")):
+        if "/tests/" in src.as_posix():
+            continue
+        if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+ll_rcc_regs\s*\[", strip_c(src.read_text(errors="replace")), re.M) \
+                and not re.search(r"\bextern\b[^;]*\bll_rcc_regs\b", strip_c(src.read_text(errors="replace"))):
+            findings.append(f"IMPL:REG_BLOCK_DEFINED_IN_DRIVER:{src.relative_to(ws).as_posix()}")
     called = set(re.findall(r"\b(LL_RCC_\w+)\s*\(", code.get(HAL_C, "")))
     findings += [f"IMPL:LL_CALL_UNDEFINED:{f}" for f in sorted(called - set(ll_defs))]
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,

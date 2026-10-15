@@ -142,6 +142,8 @@ HAL_STEPS = [
     "lists and types given in the SWE.2 Interfaces section ('(void)' only where the architecture specifies no "
     "parameters; declare any configuration struct type it names, lower case ending _t, before the prototypes), a "
     "blank line, then the marker again; repeat until every allocated function is declared.",
+    "Never define ll_rcc_regs or add other source files: the register block is placed by the linker on target and "
+    "defined by the test harness on host; only the extern declaration in the LL header exists.",
     "write_file software/hal/stm32n6xx_hal_rcc.c with exactly: '#include \"stm32n6xx_hal_rcc.h\"', a blank line, the line "
     "'{marker}' and a final newline.",
     "For each API group (or several groups per call, see the size rule) make an edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
