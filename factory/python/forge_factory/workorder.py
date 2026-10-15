@@ -161,16 +161,75 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
     return ws, manifest
 
 
+RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "evidence"]
+
+
+def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
+    """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
+    non-stale baseline with its recorded inspection), stopping at the first phase that did not. Returns the phases
+    still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
+    from .inspection.engine import PHASE_PATHS, PHASES, Store
+
+    src = state_dir() / "workorders" / source_wo / "workspace"
+    if not src.is_dir():
+        raise FileNotFoundError(f"no workspace for {source_wo}")
+    st = Store(src)
+    stable: list[str] = []
+    for ph in PHASES:
+        g = st.gate(ph)
+        if g["decision"] != "PASS":
+            break
+        stable.append(ph)
+    copied = []
+    for ph in stable:
+        for rel in PHASE_PATHS[ph]:
+            if (src / rel).exists():
+                (ws / rel).parent.mkdir(parents=True, exist_ok=True)
+                if (src / rel).is_dir():
+                    shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(src / rel, ws / rel)
+                copied.append(rel)
+    if stable:
+        for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
+            if (src / rel).is_dir():
+                shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+        for ph in PHASES[len(stable):]:  # nothing of a non-stable phase is carried over as passed
+            for rel in (f"configuration/baselines/{ph}", f"inspection/{ph}"):
+                if (ws / rel).exists():
+                    shutil.rmtree(ws / rel)
+    d = Store(ws)
+    for ph in stable:  # carried-over phases must still pass in the new workspace (integrity check)
+        if d.gate(ph)["decision"] != "PASS":
+            raise ValueError(f"carried-over {ph} does not pass in the new workspace: {d.gate(ph)}")
+    remaining = PHASES[len(stable):]
+    rid = src / ".forge-run" / "fabro_run_id"
+    manifest["resumed_from"] = {
+        "source_work_order": source_wo, "source_fabro_run_id": rid.read_text().strip() if rid.is_file() else None,
+        "stable_phases": {ph: st.gate(ph)["reason"] for ph in stable}, "restart_phase": remaining[0] if remaining else None,
+        "rule": "leading phases with gate PASS on an intact baseline are carried over byte-identical; the workflow "
+                "restarts at the first phase that did not pass"}
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
+    subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",
+                    f"forge: resume from {source_wo} (stable: {', '.join(stable) or 'none'})"], cwd=ws, check=True)
+    return remaining
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
-        model: str = "qwen3:8b", provider: str = "ollama") -> dict:
+        model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None) -> dict:
     ws, manifest = prepare(example, wo)
+    phases = resume_from(ws, manifest, resume) if resume else None
+    if phases == []:
+        return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
     secmap = {}
     for line in (ws / "inputs/index.md").read_text().splitlines():
         parts = [x.strip() for x in line.split(" | ")]
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
-                         sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150)
+                         sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
+                         phases=phases)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(
         {"default": model, "provider": provider, "code_nodes": code_model,
          "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
@@ -216,8 +275,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
     ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
+    ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
     a = ap.parse_args(argv)
-    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider)
+    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
+              resume=a.resume_from)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0
