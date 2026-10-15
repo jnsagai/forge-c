@@ -154,6 +154,11 @@ def test_t013_clean_vs_broken_fixture_and_misra_subset_explicit(ws):
     assert broken["status"] == "FAIL" and broken["metrics"]["diagnostics"] >= 1
     cpp = call(analysis, "forge-analysis-mcp", "cppcheck", {}, "misra-auditor")
     assert cpp["metrics"]["misra_compliance"] == "NOT_CLAIMED" and "subset" in cpp["summary"]
+    (ws / "software/src/broken.c").write_text("#include <stdint.h>\nvolatile uint32_t *r(void);\nvolatile uint32_t *r(void)\n"
+                                              "{\n    /* cppcheck-suppress misra-c2012-11.4 */\n"
+                                              "    return (volatile uint32_t *)0x56028000UL;\n}\n")
+    sup = call(analysis, "forge-analysis-mcp", "cppcheck", {}, "misra-auditor")
+    assert any(i.startswith("MISRA-11.4:broken.c") for i in sup["issues"]), sup  # agent suppressions are ignored
     cb = call(analysis, "forge-analysis-mcp", "cbmc_verify", {}, "misra-auditor")
     assert cb["status"] == "BLOCKED"  # no AI role is granted cbmc in the registry
     os.environ["FORGE_ROLE"] = "x"

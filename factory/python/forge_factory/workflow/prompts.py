@@ -36,8 +36,8 @@ AUTHOR_STEPS = {
     "SWE.2": [
         "Read workproducts/SWE.1/software_requirements.md and these RM0486 section files: {s1}.",
         "write_file workproducts/SWE.2/software_architecture.md with sections: Components (LL header-only stm32n6xx_ll_rcc.h, "
-        "HAL stm32n6xx_hal_rcc.c/.h), Register access (volatile uint32_t at base+offset; base pointer replaceable for host "
-        "tests), Interfaces (each HAL_RCC_ API with hal_status_t and parameters), Timeouts and error handling, Memory and "
+        "HAL stm32n6xx_hal_rcc.c/.h), Register access (extern volatile uint32_t register-block array placed at the RCC "
+        "base by the linker, indexed by offset/4; no integer-to-pointer casts; host tests define the array), Interfaces (each HAL_RCC_ API with hal_status_t and parameters), Timeouts and error handling, Memory and "
         "stack budget (flash<=4096 B, RAM<=64 B, stack<=128 B), Requirement allocation table (SWR -> function), and a "
         "Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 page. RCC base "
         "address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
@@ -55,17 +55,18 @@ AUTHOR_STEPS = {
         "write_file software/hal/stm32n6xx_hal_rcc.c: implement the API calling ONLY LL_RCC_ functions and macros that are "
         "declared in software/ll/stm32n6xx_ll_rcc.h (never invent LL names); every wait loop is while((cond) && (count < "
         "timeout)); every parameter is used or cast to (void); no device RPN #if, no heap, no recursion, local arrays <=128 "
-        "bytes, parameters lower case.",
+        "bytes, parameters lower case, every file ends with a newline.",
         "write_file workproducts/SWE.3/detailed_design.md: per function purpose, registers/bits used with RM page, SWR IDs.",
         "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. To fix errors, "
         "rewrite the whole affected file with write_file (do not use edit_file), then compile again.",
         "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline; fix every violation and repeat until PASS.",
-        "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects.",
+        "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
+        "the code (suppression comments are ignored and forbidden).",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
     "SWE.4": [
         "Read software/hal/stm32n6xx_hal_rcc.h, software/ll/stm32n6xx_ll_rcc.h and traceability/requirements_to_tests.csv.",
         "write_file software/tests/unit/test_rcc.c: a self-checking C program with main() returning 0 only if all checks pass; "
-        "use a static uint32_t register array as the fake RCC block (host), cover every HAL_RCC_ function incl. timeout and "
+        "define 'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' as the fake RCC block (host), cover every HAL_RCC_ function incl. timeout and "
         "invalid-parameter paths; print one line per test case 'UT-00x PASS|FAIL'.",
         "Call mcp__forge_tests_mcp__run_unit; fix failures. Then call mcp__forge_tests_mcp__llvm_coverage.",
         "write_file workproducts/SWE.4/unit_verification_report.md: test cases, SWR mapping, results, coverage numbers from the tool.",
@@ -89,12 +90,14 @@ AUTHOR_STEPS = {
 
 LL_STEPS = [
     "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM).",
-    "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, RCC base as an "
-    "overridable define (#ifndef LL_RCC_BASE / #define LL_RCC_BASE 0x56028000UL / #endif, so host tests can redirect it) "
-    "and #define LL_RCC_REG(off) (*(volatile uint32_t *)(LL_RCC_BASE + (off))), register "
-    "offsets as LL_RCC_..._OFFSET defines, bit masks as LL_RCC_..._Msk defines, and for each oscillator/clock/reset bit "
-    "in the table small static inline functions named LL_RCC_<Name>_Enable, LL_RCC_<Name>_Disable and "
-    "LL_RCC_<Name>_IsReady (returning uint32_t 0U/1U) as applicable; no enum; types lower case ending _t prefixed ll_.",
+    "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, #define "
+    "LL_RCC_REG_COUNT 1024U, the RCC register block as 'extern volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' "
+    "(placed at RCC base 0x56028000 by the linker; host tests define the array) accessed only as "
+    "ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] (never cast an integer to a pointer), register offsets as "
+    "LL_RCC_<REG>_OFFSET defines with U suffix, bit masks as LL_RCC_<REG>_<BIT>_Msk defines, and for each "
+    "oscillator/clock/reset bit in the table small static inline functions named LL_RCC_<Name>_Enable, "
+    "LL_RCC_<Name>_Disable and LL_RCC_<Name>_IsReady (returning uint32_t 0U/1U) as applicable; no enum; types lower "
+    "case ending _t prefixed ll_; end with '#endif /* STM32N6XX_LL_RCC_H */' and a newline.",
     "Reply with the list of LL_RCC_ function names you declared.",
 ]
 

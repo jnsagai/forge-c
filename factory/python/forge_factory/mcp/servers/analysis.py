@@ -44,8 +44,9 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
     files = srcs(ctx)
     if not files:
         return result(ctx, "BLOCKED", "no sources", issues=["NO_SOURCES"], tool="cppcheck")
+    # No --inline-suppr: a suppression comment written by an AI agent is a self-granted MISRA deviation and is ignored.
     argv = ["cppcheck", "--xml", "--xml-version=2", "--enable=warning,style,performance,portability",
-            "--inline-suppr", "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx), *files]
+            "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx), *files]
     r = run_argv(argv, ctx.workspace, 170, ALLOW, mem_mb=4096)
     issues, misra_hits, general = [], set(), 0
     try:
