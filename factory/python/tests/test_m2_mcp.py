@@ -335,3 +335,13 @@ def test_t018_live_fabro_calls_forge_mcp_through_ticket_gate(monkeypatch):
     r = sp.run([sys.executable, "-m", "forge_factory.policy.fabro_hook", "--binding", str(ws / ".forge-run/binding.json")],
                input=json.dumps(ctx).encode(), capture_output=True)
     assert r.returncode == 2 and b"MCP_TOOL_NOT_GRANTED" in r.stdout
+
+
+def test_verdict_string_parsed_by_item_ids_any_separator():
+    from forge_factory.mcp.servers.evidence import parse_verdict_string
+
+    r = parse_verdict_string("SWE1-01=PASS: HSI baselined; QM scope. SWE1-02=PASS: atomic. SWE1-03=FAIL: no reset reqs.")
+    assert {k: v["verdict"] for k, v in r.items()} == {"SWE1-01": "PASS", "SWE1-02": "PASS", "SWE1-03": "FAIL"}
+    assert r["SWE1-03"]["findings"] == ["no reset reqs"]  # r33: full-stop separators lost five verdicts
+    assert parse_verdict_string("SWE2-01=PASS; SWE2-02=FAIL:missing budget\nSWE2-03=NOT_APPLICABLE")["SWE2-02"][
+        "findings"] == ["missing budget"]

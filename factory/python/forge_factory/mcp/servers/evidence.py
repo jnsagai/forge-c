@@ -41,14 +41,20 @@ class InspectIn(ToolInput):
     verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] | str = Field(max_length=4000)
 
 
+_ITEM = re.compile(r"\b([A-Z0-9]{2,8}-\d{2})\s*[=:]\s*(PASS|FAIL|NOT_APPLICABLE)\b", re.I)
+
+
 def parse_verdict_string(text: str) -> dict[str, dict]:
-    """'SWE2-01=PASS; SWE2-02=FAIL:missing budget' -> verdict objects (flat form for small models)."""
+    """'SWE2-01=PASS; SWE2-02=FAIL:missing budget' -> verdict objects (flat form for small models).
+
+    Items are located by their IDs, so any separator works ('; ', newline, '. ' - r33 used full stops)."""
     out: dict[str, dict] = {}
-    for part in re.split(r"[;\n]+", text):
-        m = re.match(r"^\s*([A-Z0-9]{2,8}-\d{2})\s*[=:]\s*(PASS|FAIL|NOT_APPLICABLE)\b\s*:?\s*(.*)$", part.strip(), re.I)
-        if m:
-            out[m.group(1).upper()] = {"verdict": m.group(2).upper(), "evidence_refs": [],
-                                       "findings": [m.group(3).strip()[:120]] if m.group(3).strip() else []}
+    hits = list(_ITEM.finditer(text))
+    for k, m in enumerate(hits):
+        end = hits[k + 1].start() if k + 1 < len(hits) else len(text)
+        note = text[m.end():end].strip().lstrip(":").strip().rstrip(";.,").strip()
+        out[m.group(1).upper()] = {"verdict": m.group(2).upper(), "evidence_refs": [],
+                                   "findings": [note[:120]] if note else []}
     return out
 
 
