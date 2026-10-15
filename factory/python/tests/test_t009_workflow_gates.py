@@ -7,7 +7,7 @@ import sys
 
 import pytest
 from forge_factory.inspection.engine import load_checklist
-from forge_factory.workflow.builder import MAX_VISITS, build
+from forge_factory.workflow.builder import MAX_VISITS, UPSTREAM_LOOPS, build
 
 
 def edges(dot):
@@ -35,7 +35,8 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert nodes["swe3_ll_author"] == {"role": "swe3-author", "phase": "SWE.3"}
     assert ("swe3_verify", "swe3_inspector", "outcome=succeeded") in e
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)
-    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == 1 + load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
+    rework = load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
+    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == 1 + rework + UPSTREAM_LOOPS  # ADR-0008 re-entries
 
 
 def test_code_model_profile_applies_only_to_code_nodes():
@@ -72,13 +73,35 @@ def test_every_node_can_reach_finalize():
         assert "finalize" in seen, node
 
 
-def test_route_success_only_to_author_and_failure_fallback_to_finalize():
+def test_route_success_only_to_author_and_failure_through_upstream_chain_to_finalize():
     dot, _ = build("wo-test")
     e = edges(dot)
     for n in range(1, 7):
         target = "swe3_fix_author" if n == 3 else f"swe{n}_author"  # SWE.3 rework re-enters at the fix step
         assert (f"swe{n}_route", target, "outcome=succeeded") in e
-        assert (f"swe{n}_route", "finalize", "") in e
+        assert (f"swe{n}_route", "upstream_swe1", "") in e  # ADR-0008: not same-phase -> upstream chain
+    assert ("upstream_swe1", "swe1_author", "outcome=succeeded") in e and ("upstream_swe1", "upstream_swe2", "") in e
+    assert ("upstream_swe2", "swe2_author", "outcome=succeeded") in e and ("upstream_swe2", "upstream_swe3", "") in e
+    assert ("upstream_swe3", "swe3_fix_author", "outcome=succeeded") in e and ("upstream_swe3", "finalize", "") in e
+    assert "--phase SWE.3 --step upstream" in dot
+
+
+def test_every_agent_node_has_visit_budget_for_upstream_reentry():
+    """Probe P2 (ADR-0008): Fabro kills the run when a node is entered beyond max_visits."""
+    dot, nodes = build("wo-test")
+    visits = {m.group(1): int(m.group(2)) for m in re.finditer(r"^\s*(\w+) \[.*?max_visits=(\d+)", dot, re.M)}
+    for name in nodes:
+        if name == "release_manager":
+            continue
+        assert visits.get(name, 0) >= 1 + UPSTREAM_LOOPS, (name, visits.get(name))
+
+
+def test_resumed_graph_keeps_upstream_owners_and_starts_at_restart_phase():
+    dot, nodes = build("wo-test", phases=["SWE.6"])
+    e = edges(dot)
+    assert ("start", "swe6_scaffold", "") in e and not any(a == "start" and b != "swe6_scaffold" for a, b, _ in e)
+    assert "swe1_author" in nodes and "swe3_fix_author" in nodes  # reachable through the upstream chain
+    assert ("upstream_swe3", "swe3_fix_author", "outcome=succeeded") in e
 
 
 def _trace(ws):

@@ -10,19 +10,19 @@
     "-k",
     "t047"
   ],
-  "duration_s": 0.816,
+  "duration_s": 0.65,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "3231f707cd5e899800b072d847ba8c8609fe6dc6",
+  "git_head": "05fa04752f4bf77c26481d3fc7b2d3b27d4a2948",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/T047/20261014T221416.log",
-  "log_sha256": "829e18b10169e317d5012cc9dd5049260c5c5484ac49a3801e103d3404b015ea",
+  "log": "evidence/v0.4/runs/T047/20261015T143145.log",
+  "log_sha256": "63c155974e0b300a8bf129ce9d04c5ec7da3ac5f300964592d9eba72f93d3ae3",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "T047",
-  "ts_utc": "2026-10-14T22:14:16.630322Z"
+  "ts_utc": "2026-10-15T14:31:45.617358Z"
 }

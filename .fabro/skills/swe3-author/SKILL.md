@@ -41,6 +41,8 @@ Read-only input manifest for SWE.3: frozen SWE.1+SWE.2 baselines, coding rules s
 - `forge-tests-mcp.run_unit`
 - `forge-tests-mcp.run_integration`
 - `forge-tests-mcp.llvm_coverage`
+- `forge-evidence-mcp.report_defect`
+- `forge-evidence-mcp.reject_defect`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. `write_file`/`edit_file` are allowed only inside the output paths below.
 

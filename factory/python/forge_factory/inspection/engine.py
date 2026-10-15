@@ -147,10 +147,14 @@ class Store:
             from ..release.finalize import latest, tool_results
 
             res = tool_results(self.workspace)
+            code_bl = self.latest_baseline("SWE.3") if PHASES.index(phase) > PHASES.index("SWE.3") else None
             for server, op in REQUIRED_TOOL_PASS[phase]:
                 r = latest(res, server, op)
                 if r is None or r["result"]["status"] != "PASS":
                     out.append(f"REQUIRED_TOOL_NOT_PASS:{op}:{r['result']['status'] if r else 'NOT_RUN'}")
+                elif code_bl and r.get("ts_utc", "") < code_bl["frozen_at"]:
+                    # ADR-0008: a PASS recorded before the current code baseline (e.g. before an upstream fix) is stale
+                    out.append(f"REQUIRED_TOOL_STALE:{op}:before {code_bl['baseline_id']}")
         return out
 
     def stale_reason(self, phase: str, baseline: dict) -> str | None:

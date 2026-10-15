@@ -67,6 +67,13 @@ def test_robot_fails_on_failing_test_and_uncovered_requirement(tmp_path, monkeyp
     assert out["status"] == "FAIL"
     assert any(i.startswith("ROBOT_FAIL:SWR-001") for i in out["issues"])
     assert "UNCOVERED_REQUIREMENT:SWR-001" in out["issues"] and "UNCOVERED_REQUIREMENT:SWR-003" in out["issues"]
+    # ADR-0008 test-integrity record: the scenario with failing checks (runtime, not a build error) is recorded
+    import json as _json
+
+    rec = _json.loads((tmp_path / "evidence/test-integrity.jsonl").read_text().splitlines()[-1])
+    assert rec["op"] == "run_robot" and rec["status"] == "FAIL" and rec["phase"] == "SWE.6"
+    assert rec["assert_failed"] == ["software/tests/software/scn_hsi.c"]
+    assert "software/tests/software/test_rcc_requirements.robot" in rec["files"]
 
 
 def test_robot_policy_rejects_suites_that_could_run_arbitrary_code(tmp_path):

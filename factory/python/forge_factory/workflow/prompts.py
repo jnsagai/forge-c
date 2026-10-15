@@ -19,6 +19,20 @@ def sec(*nums: str) -> str:
     return ", ".join(SECTIONS.get(n, f"(section {n} unavailable)") for n in nums)
 REPLY = 'Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],"issues":[],"next_action":"next"}'
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
+# ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
+FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
+               "fix it in your phase's work products FIRST (its requirement_ids, summary and cited test files are the "
+               "evidence; never edit the cited tests). If you conclude a defect is not in your phase, call "
+               "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason instead.")
+DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matches the SWE.1 requirement and the driver "
+               "code, the API/architecture or the requirement itself is wrong, do NOT change the test: call "
+               "mcp__forge_evidence_mcp__report_defect with kind CODE (driver code), ARCHITECTURE (API/interface "
+               "design) or REQUIREMENT (untestable/inapplicable requirement), requirement_ids, test_files (the failing "
+               "test files) and a summary, then finish with status REWORK. If the test itself is wrong, correct it "
+               "and declare that with report_defect kind TEST (requirement_ids, test_files, why it was wrong).")
+INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
+                  "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
+                  "ARCHITECTURE or REQUIREMENT, requirement_ids, summary) before check_inspection.")
 
 AUTHOR_STEPS = {
     "SWE.1": [
@@ -144,6 +158,11 @@ def small() -> str:
                 "this step.")
     return (f"Keep every write_file/edit_file content under {n} lines and put SEVERAL function groups into one call "
             "(you have at most 20 tool calls in this step). Never call freeze_baseline in this step.")
+REENTRY = ("If the file you are about to write already contains functions (an upstream defect sent the run back "
+           "here), keep every existing function: only add or change what the defects in .forge-run/defects (status "
+           "IN_FIX) and the changed architecture require; never duplicate a function.")
+
+
 LL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
     "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
@@ -255,13 +274,13 @@ ROBOT_STEPS = [
 
 def robot_test_author_prompt() -> str:
     """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
-    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + ROBOT_STEPS + [REPLY]
+    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + ROBOT_STEPS + [DEFECT_RULE] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def target_test_author_prompt() -> str:
     """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
-    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + TARGET_STEPS + [REPLY]
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + TARGET_STEPS + [DEFECT_RULE] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -271,7 +290,7 @@ def unit_test_author_prompt() -> str:
 
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
-         for x in UT_STEPS] + [REPLY]
+         for x in UT_STEPS] + [DEFECT_RULE, REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -295,7 +314,8 @@ FIX3_STEPS = [
 
 def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
-    steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
+    steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
+             FIX_DEFECTS.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -304,7 +324,7 @@ def ll_author_prompt() -> str:
     from ..inspection.regmap import FUNCTIONS_MARKER
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
-        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REPLY]
+        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -312,7 +332,7 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + [REPLY]
+         for x in HAL_STEPS] + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -321,7 +341,10 @@ def author_prompt(phase: str) -> str:
     fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
     body = [x.format(**fills) if "{s" in x else x for x in AUTHOR_STEPS[phase]]
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
-    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + body + [REPLY]
+    extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
+        [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
+    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
+        + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -337,6 +360,7 @@ def inspector_prompt(phase: str) -> str:
              "check_inspection no later than your 15th tool call.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
+             *([INSPECT_DEFECT] if phase != "SWE.1" else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",

@@ -83,6 +83,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
         generated += check_views(store.workspace, render=True)["major_findings"]
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
+    from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
+
+    missing += defects.verify_on_freeze(store.workspace, phase)
+    if phase in ("SWE.4", "SWE.5", "SWE.6"):  # L4 anti-bending: a test edited until it passes must be declared
+        missing += [f"{i} (restore the test and report_defect the upstream fault, or declare the correction with "
+                    "report_defect kind TEST)" for i in defects.bent_tests(store.workspace, phase)]
     if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": "INCOMPLETE",
                                         "issues": missing[:20]})
@@ -125,6 +131,13 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
                                     "gate": g})
     print(json.dumps(g))
     # The agent's own PASS is never sufficient: the recorded, deterministic gate decision rules.
+    if g["decision"] == "PASS":
+        from . import defects
+
+        bl = store.latest_baseline(phase)
+        fixed = defects.mark_fixed(store.workspace, phase, bl["baseline_id"] if bl else "")
+        if fixed:
+            _state(store.workspace, phase, {"step": "defects", "result": "FIXED", "defects": fixed})
     return 0 if g["decision"] == "PASS" else fail_code(store.workspace, phase, "inspect")
 
 
@@ -155,6 +168,16 @@ def step_route(store: Store, phase: str) -> int:
     # The authored maximum applies; Fabro's identical-signature breaker no longer fires because every failed gate
     # execution prints a distinct cycle marker (ADR-0005 #5, verified with a model-free loop probe).
     budget = int(g["max_rework_cycles"])
+    from . import defects
+
+    up = defects.open_from(store.workspace, phase)
+    if up:  # ADR-0008: the fault is upstream - do not burn this phase's rework cycles on code it cannot change
+        g = {**g, "decision": "UPSTREAM", "reason": "open upstream defects: " + ", ".join(
+            f"{d['id']}->{d['target_phase']}" for d in up)}
+        _state(store.workspace, phase, {"step": "route", "gate": g})
+        emit("workflow", "WARN", f"{phase} {g['reason']}", phase=phase)
+        print(json.dumps(g))
+        return 1
     if g["decision"] != "PASS" and cycles >= budget:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)"}
     _state(store.workspace, phase, {"step": "route", "gate": g})
@@ -162,6 +185,21 @@ def step_route(store: Store, phase: str) -> int:
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)
         return 1
     return 0
+
+
+def step_upstream(store: Store, target: str) -> int:
+    """Shared chain node `upstream_sweN` (ADR-0008): exit 0 routes the run to the owner of `target` when an OPEN
+    defect targets it and the run's upstream-loop budget remains; otherwise fall through (next target / finalize)."""
+    from . import defects
+
+    taken = defects.take_upstream(store.workspace, target)
+    _state(store.workspace, target, {"step": "upstream", "result": "LOOP" if taken else "NONE",
+                                     "defects": [d["id"] for d in taken], "loops_used": defects.loops_used(
+                                         store.workspace), "loop_budget": defects.UPSTREAM_LOOP_BUDGET})
+    if taken:
+        emit("workflow", "WARN", f"upstream loop to {target}: {', '.join(d['id'] for d in taken)}", phase=target)
+    print(json.dumps({"target": target, "defects": [d["id"] for d in taken]}))
+    return 0 if taken else 1
 
 
 def step_verify(store: Store, phase: str, check: str) -> int:
@@ -202,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
-    ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify"])
+    ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
@@ -225,6 +263,8 @@ def _run_step(store: Store, a: argparse.Namespace) -> int:
             rc = step_inspect(store, a.phase, sys.stdin.read())
         elif a.step == "route":
             rc = step_route(store, a.phase)
+        elif a.step == "upstream":
+            rc = step_upstream(store, a.phase)
         else:
             rc = step_verify(store, a.phase, a.check)
     except Exception as exc:  # noqa: BLE001 - any gate error is a failed (never passed) gate

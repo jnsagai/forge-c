@@ -32,6 +32,8 @@ Read-only input manifest for SWE.1: approved stakeholder/system requirements, HS
 - `forge-knowledge-mcp.find_lessons`
 - `forge-docs-mcp.validate_artifact`
 - `forge-repo-mcp.diff_scoped`
+- `forge-evidence-mcp.report_defect`
+- `forge-evidence-mcp.reject_defect`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. `write_file`/`edit_file` are allowed only inside the output paths below.
 

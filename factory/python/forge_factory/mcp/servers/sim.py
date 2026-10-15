@@ -23,6 +23,7 @@ from typing import Literal
 from pydantic import Field
 
 from ...common import REPO_ROOT
+from ...inspection.defects import integrity, record_integrity
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
 
@@ -107,6 +108,7 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
         shutil.rmtree(wd)
     wd.mkdir(parents=True)
     log, issues, per = b"", [], {}
+    asserted: list[Path] = []
     passed = failed = 0
     for t in tests:
         scenario = "never_ready" if t.stem.endswith("_timeout") else "default"
@@ -128,9 +130,13 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
         passed += res["passed"]
         failed += res["failed"]
         issues += [f"TARGET_FAIL:{t.name}:check {i}" for i in res["failed_ids"]]
+        if res["failed"]:
+            asserted.append(t)  # runtime check failures (not build errors) - ADR-0008 test-integrity record
         if res["passed"] == 0:
             issues.append(f"NO_CHECKS:{t.name}")
     ok = not issues and passed > 0
+    record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
+                     integrity(ctx.workspace, tests, asserted))
     return result(ctx, "PASS" if ok else "FAIL", f"renode cortex-m55: {passed} checks passed, {failed} failed "
                   f"({len(tests)} images; behavioural RCC model)", [ctx.store(log)], issues[:30],
                   {"passed": passed, "failed": failed, "images": per, "cpu": "cortex-m55",

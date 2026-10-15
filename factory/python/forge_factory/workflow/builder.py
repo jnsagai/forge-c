@@ -20,7 +20,11 @@ from ..common import REPO_ROOT
 from ..inspection.engine import PHASES
 from ..policy.authz import Binding
 
-MAX_VISITS = 4  # 1 + maximum_rework_cycles (3) from the v0.3 checklists
+UPSTREAM_LOOPS = 2  # ADR-0008: run-wide cross-phase loop budget (= defects.UPSTREAM_LOOP_BUDGET)
+# Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008): every node on a re-entry path
+# carries one extra visit per possible upstream loop.
+MAX_VISITS = 4 + UPSTREAM_LOOPS  # 1 + maximum_rework_cycles (3) + upstream re-entries
+ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 
 def _q(s: str) -> str:
@@ -111,8 +115,11 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
          '  start [shape=Mdiamond, label="Start"]', '  exit [shape=Msquare, label="Exit (offline review package)"]',
          f'  finalize [shape=parallelogram, label="Deterministic finalizer (READY_FOR_OFFLINE_REVIEW|BLOCKED)", '
          f'script="{_q(finalize_cmd(work_order))}"]']
+    # All six phases are always in the graph so that upstream loops (ADR-0008) can reach phases a resumed run
+    # carried over; `start` enters at the first phase still to run.
+    restart = phases[0]
     prev = "start"
-    for phase in phases:
+    for phase in PHASES:
         n = int(phase[-1])
         a, ag, ins, ig, rt = (f"swe{n}_author", f"swe{n}_author_gate", f"swe{n}_inspector", f"swe{n}_inspect_gate",
                               f"swe{n}_route")
@@ -135,8 +142,8 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                 nodes[n_] = {"role": "swe3-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.3 register map generator (RM0486, deterministic)", '
                   f'script="{_q(regmap_cmd())}"]',
-                  f'  {ll} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
-                  f'  {hal} [label="SWE.3 HAL author", max_visits=1, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
+                  f'  {ll} [label="SWE.3 LL author", max_visits={ONCE}, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
+                  f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
                   f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", max_visits={MAX_VISITS}, '
                   f'timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
                   f"  {entry} -> {ll}", f"  {ll} -> {hal}", f"  {hal} -> {fix}", f"  {fix} -> {a}"]
@@ -147,14 +154,14 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             nodes[ut] = {"role": "swe4-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.4 unit-test harness generator (deterministic)", '
                   f'script="{_q(scaffold_cmd())}"]',
-                  f'  {ut} [label="SWE.4 unit-test author", max_visits=1, timeout="1200s", '
+                  f'  {ut} [label="SWE.4 unit-test author", max_visits={ONCE}, timeout="1200s", '
                   f'prompt="{_q(unit_test_author_prompt())}"]', f"  {entry} -> {ut}", f"  {ut} -> {a}"]
         if phase == "SWE.5":  # Renode target tests in their own budget; rework re-enters at the SWE.5 author
             from .prompts import target_test_author_prompt
 
             entry = "swe5_target_author"
             nodes[entry] = {"role": "swe5-author", "phase": phase}
-            L += [f'  {entry} [label="SWE.5 target-test author (Renode)", max_visits=1, timeout="1500s", '
+            L += [f'  {entry} [label="SWE.5 target-test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(target_test_author_prompt())}"]', f"  {entry} -> {a}"]
         if phase == "SWE.6":  # r56: Robot requirement tests in their own budget; rework re-enters at the SWE.6 author
             from .prompts import robot_test_author_prompt
@@ -163,9 +170,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             nodes[ta] = {"role": "swe6-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.6 Robot suite generator (deterministic)", '
                   f'script="{_q(robot_scaffold_cmd())}"]',
-                  f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits=1, timeout="1500s", '
+                  f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
-        L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
+        if prev != "start":
+            L.append(f'  {prev} -> {entry} [condition="outcome=succeeded"]')
+        if phase == restart:
+            L.append(f"  start -> {entry}")
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":
             v = "swe3_verify"
@@ -177,8 +187,14 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             L += [f'  {ag} -> {ins} [condition="outcome=succeeded"]', f'  {ag} -> {rt}']
         L += [f"  {ins} -> {ig}", f'  {ig} -> {rt}',
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
-              f'  {rt} -> finalize']
+              f'  {rt} -> upstream_swe1']
         prev = ig
+    # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
+    for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):
+        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k < 3 else "finalize")
+        L += [f'  {up} [shape=parallelogram, label="Upstream loop to SWE.{k} (open defect, loop budget)", '
+              f'script="{_q(gate_cmd(f"SWE.{k}", "upstream"))}"]',
+              f'  {up} -> {owner} [condition="outcome=succeeded"]', f"  {up} -> {nxt}"]
     nodes["release_manager"] = {"role": "release-manager"}
     L += ['  release_manager [label="Release Manager (inventory only)", max_visits=1, prompt="Call use_skill with '
           'skill_name release-manager and follow it. Final reply: compact JSON only."]',

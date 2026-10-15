@@ -36,51 +36,51 @@
     },
     "swe1-author": {
       "path": ".fabro/skills/swe1-author/SKILL.md",
-      "sha256": "b58ebc6a0bfdd4a0aae6b70c4e51d29a44d90b44db931f89dc8d542c79f33b05"
+      "sha256": "f3e78be6d5a822ab5c1ca5d09c0e784d056665545ceea2e4b4805deb86789fd3"
     },
     "swe1-inspector": {
       "path": ".fabro/skills/swe1-inspector/SKILL.md",
-      "sha256": "3fd6b84ef249f21c6bcfc45852ae594b8383d2e7047768828fc5dc4a443e5df4"
+      "sha256": "fbf12ff1be1c2e9ec42feb992ffdb23f978d1dd2ab4563bbe43a5d1f65adaae2"
     },
     "swe2-author": {
       "path": ".fabro/skills/swe2-author/SKILL.md",
-      "sha256": "c4531e737ae19567c754f840b36d6636a30406cbb21f4fd85f15acfd000c533d"
+      "sha256": "d5246d1641dcedea11b283fb121c964d5b63d967e287385a7599e7b8246f2fff"
     },
     "swe2-inspector": {
       "path": ".fabro/skills/swe2-inspector/SKILL.md",
-      "sha256": "274a5ea190be0a1e51f164c850ce388448c45563ef3e2c12831c9d11b95e64da"
+      "sha256": "25b452b9d59b8620aa2f932bc3dd199cbf2949f3e48bed6af2917862600edca7"
     },
     "swe3-author": {
       "path": ".fabro/skills/swe3-author/SKILL.md",
-      "sha256": "d5a57de48e15bc8c77e2567b77b880279cc1bbbf2e85905d607f4fa4828dd811"
+      "sha256": "b287e1e781c8453d28ab3a6229e963ca741fdb77578ce478c0d793cf572defae"
     },
     "swe3-inspector": {
       "path": ".fabro/skills/swe3-inspector/SKILL.md",
-      "sha256": "1b3d4ed649ee74f379f529d71862a736793f2ef01fea4a1bacb977ac07e4d601"
+      "sha256": "b1baed59ce9c30b8c7d57c9c3d477bbb9be4a1259f19610eacd5fdc159987bab"
     },
     "swe4-author": {
       "path": ".fabro/skills/swe4-author/SKILL.md",
-      "sha256": "5e95362f3fe679de31777a6feef5252947ccbb79b084c0e613e0ec508d7f0b30"
+      "sha256": "24db49c964942f8d6fc5f64a5e6f5ddb684aa7596a3cf7aab76eed62325fc448"
     },
     "swe4-inspector": {
       "path": ".fabro/skills/swe4-inspector/SKILL.md",
-      "sha256": "b04189dfd9674931983a9d3c3e3278c28500216625af3416a6426850180ef16e"
+      "sha256": "eaa9d79433d5b91fad5e0c1fe2506facd17271f8da27cee6269d9bd4368d2de7"
     },
     "swe5-author": {
       "path": ".fabro/skills/swe5-author/SKILL.md",
-      "sha256": "24d6e7ec8f59c16444e34126b70858b08e38f3e01db1e432eab3691dad7a7e7b"
+      "sha256": "bb24ee278ea3a6ac790dff06366762d8b74f61ac7989526824a2dd8a0c65cef5"
     },
     "swe5-inspector": {
       "path": ".fabro/skills/swe5-inspector/SKILL.md",
-      "sha256": "7a297b91451a912466396f6911bbe505a24f1ec93eed96fc6a1195de5d043828"
+      "sha256": "29cd3ce15acf5186fc3ab2d7b237811b5c783bfdd5293c6e825e7609d70fd10f"
     },
     "swe6-author": {
       "path": ".fabro/skills/swe6-author/SKILL.md",
-      "sha256": "134361238080c0336a6f55e5f27abda42471ac019d5375675411810797bfdbf1"
+      "sha256": "d447d8f7970982aaa48ace11f19757e0b4ee42ac3f7866a10c40d898153c7cf7"
     },
     "swe6-inspector": {
       "path": ".fabro/skills/swe6-inspector/SKILL.md",
-      "sha256": "f8c94a602cc7fe29c0c5b95bcedfbc5f95a9b1e9ed56db7a8496ae087079ce2c"
+      "sha256": "edf7928a26c441994e473cdda52e44b28908a054b82c11e2489d6600a747fb7b"
     }
   }
 }

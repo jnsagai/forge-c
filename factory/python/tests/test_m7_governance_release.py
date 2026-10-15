@@ -289,7 +289,10 @@ def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path)
     assert [i["fault_type"] for i in st.all()] == ["MCP_HANDSHAKE_FAILURE"]
     dot, _ = build("wo")
     assert "fabric-repair" not in dot and "repair" not in {n.split()[0] for n in dot.splitlines() if "[" in n}
-    assert dot.count("max_visits=4") == 13  # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step)
+    from forge_factory.workflow.builder import MAX_VISITS
+
+    # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step); ADR-0008 adds the upstream re-entries
+    assert MAX_VISITS == 6 and dot.count(f"max_visits={MAX_VISITS}") == 13
 
 
 # ---------------- T049 ------------------------------------------------------------------------------------

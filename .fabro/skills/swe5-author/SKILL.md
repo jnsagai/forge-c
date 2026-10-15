@@ -42,6 +42,7 @@ Read-only input manifest for SWE.5: frozen SWE.2 architecture + SWE.3/SWE.4 base
 - `forge-tests-mcp.llvm_coverage`
 - `forge-sim-mcp.run_renode`
 - `forge-sim-mcp.run_hwsim`
+- `forge-evidence-mcp.report_defect`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. `write_file`/`edit_file` are allowed only inside the output paths below.
 

@@ -66,6 +66,25 @@ class PackageIn(ToolInput):
     pass
 
 
+def _list(v: list[str] | str) -> list[str]:
+    """Small models send comma/space separated strings for lists; accepted and normalised."""
+    items = v if isinstance(v, list) else re.split(r"[,\s]+", v)
+    return [x.strip() for x in items if x and x.strip()]
+
+
+class DefectIn(ToolInput):
+    kind: Literal["CODE", "ARCHITECTURE", "REQUIREMENT", "TEST", "INPUT", "FACTORY"]
+    summary: str = Field(min_length=10, max_length=400)
+    requirement_ids: list[str] | str = Field(default_factory=list, max_length=400)
+    test_files: list[str] | str = Field(default_factory=list, max_length=600)
+    evidence_refs: list[str] | str = Field(default_factory=list, max_length=600)
+
+
+class RejectIn(ToolInput):
+    defect_id: str = Field(pattern=r"^DEF-\d{3}$")
+    reason: str = Field(min_length=10, max_length=400)
+
+
 def freeze_baseline(ctx: ToolContext, a: FreezeIn) -> dict:
     if ctx.phase and ctx.phase != a.phase:
         raise ToolDenied("PHASE_MISMATCH", f"{ctx.phase}!={a.phase}")
@@ -168,11 +187,44 @@ def build_package(ctx: ToolContext, a: PackageIn) -> dict:
                   {"package_status": out["package_status"], "gap_count": out["gap_count"]}, "forge-packager-v0.4")
 
 
+def report_defect(ctx: ToolContext, a: DefectIn) -> dict:
+    """ADR-0008: a defect this role may not fix (CODE->SWE.3, ARCHITECTURE->SWE.2, REQUIREMENT->SWE.1), a declared
+    correction of a test in the own phase (TEST), or an escalation (INPUT, FACTORY). Validated deterministically."""
+    from ...inspection import defects
+
+    if not ctx.phase:
+        raise ToolDenied("NO_PHASE", "report_defect needs the node's phase")
+    try:
+        rec = defects.report(ctx.workspace, detected_phase=ctx.phase, reported_by=ctx.role, kind=a.kind,
+                             summary=a.summary, requirement_ids=_list(a.requirement_ids),
+                             test_files=_list(a.test_files), evidence_refs=_list(a.evidence_refs))
+    except defects.DefectError as exc:
+        return result(ctx, "FAIL", f"defect not recorded: {exc}"[:160], issues=[str(exc)[:120]], tool="forge-defects")
+    return result(ctx, "PASS", f"{rec['id']} {rec['kind']} -> {rec['target_phase'] or 'human'} {rec['status']}",
+                  [f"{defects.DIR}/{rec['id']}.json"], [], {"target_phase": rec["target_phase"]}, "forge-defects",
+                  input_obj=a.model_dump())
+
+
+def reject_defect(ctx: ToolContext, a: RejectIn) -> dict:
+    """The target phase's author rejects a reported defect (the downstream test is wrong), with a recorded reason."""
+    from ...inspection import defects
+
+    try:
+        rec = defects.reject(ctx.workspace, a.defect_id, ctx.role, a.reason)
+    except defects.DefectError as exc:
+        return result(ctx, "FAIL", f"not rejected: {exc}"[:160], issues=[str(exc)[:120]], tool="forge-defects")
+    return result(ctx, "PASS", f"{rec['id']} REJECTED", [f"{defects.DIR}/{rec['id']}.json"], [], {}, "forge-defects",
+                  input_obj=a.model_dump())
+
+
 OPERATIONS = [
     Operation("freeze_baseline", FreezeIn, freeze_baseline, "Freeze your phase outputs to a content-hash baseline."),
     Operation("validate_trace", TraceIn, validate_trace, "Check SWR requirement <-> test traceability."),
     Operation("check_inspection", InspectIn, check_inspection, "Record an inspection of a frozen baseline (inspectors)."),
     Operation("build_package", PackageIn, build_package, "Build the offline review package (READY or BLOCKED)."),
+    Operation("report_defect", DefectIn, report_defect, "Report a defect you may not fix: CODE (SWE.3), ARCHITECTURE "
+              "(SWE.2), REQUIREMENT (SWE.1); declare a TEST correction in your phase; escalate INPUT/FACTORY."),
+    Operation("reject_defect", RejectIn, reject_defect, "Target-phase author: reject a reported defect with a reason."),
 ]
 
 if __name__ == "__main__":

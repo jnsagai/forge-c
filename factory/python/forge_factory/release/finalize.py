@@ -146,6 +146,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
             if inc.get("run_id") == rid and inc["state"] != "RESOLVED":
                 findings.append({"id": f"INCIDENT:{inc['incident_id']}", "severity": "major",
                                  "detail": f"{inc['component']}/{inc['fault_type']} {inc['state']}"})
+    from ..inspection import defects  # ADR-0008: open/escalated defects are unresolved findings (never hidden)
+
+    findings += [{"id": g, "severity": "major", "detail": "defect register"} for g in defects.gaps(ws)]
     detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
               "target_runs": [r["result"]["status"] for r in tgt]}
     return checks, findings, detail
@@ -269,6 +272,8 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     _copy_tree(ws / "evidence" / "raw", stage / "evidence-raw")
     if (ws / "evidence/tool-results.jsonl").is_file():
         _w(stage, "verification/tool-results.jsonl", (ws / "evidence/tool-results.jsonl").read_bytes())
+    for f in sorted((ws / ".forge-run/defects").glob("DEF-*.json")) if (ws / ".forge-run/defects").is_dir() else []:
+        _w(stage, f"defects/{f.name}", f.read_bytes())  # full defect log incl. REJECTED reasons and TEST declarations
     for p in PHASES:
         ins = Store(ws).inspections(p)
         if ins:

@@ -11,8 +11,10 @@ from __future__ import annotations
 import json
 import re
 import shutil
+from pathlib import Path
 from typing import Literal
 
+from ...inspection.defects import integrity, record_integrity
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 from .build import INCLUDE_DIRS, SOURCE_DIRS
 
@@ -52,6 +54,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         shutil.rmtree(bdir)
     bdir.mkdir(parents=True)
     log, passed, failed, issues, ms = b"", 0, 0, [], 0.0
+    asserted: list[Path] = []  # runtime (not build) failures - ADR-0008 test-integrity record
     for t in tests:
         exe = bdir / t.stem
         argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
@@ -71,9 +74,12 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             passed += 1
         else:
             failed += 1
+            asserted.append(t)
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
             issues += _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
+    record_integrity(ctx.workspace, ctx.phase, "run_unit" if level == "unit" else "run_integration",
+                     "PASS" if failed == 0 else "FAIL", integrity(ctx.workspace, tests, asserted))
     return result(ctx, "PASS" if failed == 0 else "FAIL", f"{level}: {passed} passed, {failed} failed (HOST)",
                   [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),
                                              "environment": "host", "target_evidence": False},
@@ -190,6 +196,12 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
     passed = sum(1 for t in tests if t["status"] == "PASS")
     ok = bool(tests) and passed == len(tests) and not [i for i in issues if i.startswith("UNCOVERED")]
+    sdir = ctx.workspace / "software/tests/software"
+    scn = sorted(sdir.glob("*.c"))
+    asserted = sorted({sdir / m for i in issues if i.startswith("ROBOT_FAIL:") and "build failed" not in i
+                       for m in re.findall(r"\b([\w-]+\.c) \[", i)})  # failing checks, not build errors
+    record_integrity(ctx.workspace, ctx.phase, "run_robot", "PASS" if ok else "FAIL",
+                     integrity(ctx.workspace, [*suites, *scn], asserted))
     return result(ctx, "PASS" if ok else "FAIL",
                   f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
                   "verified (Renode STM32N6 model + host measurements)",
