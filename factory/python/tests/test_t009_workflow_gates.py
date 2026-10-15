@@ -121,10 +121,14 @@ def test_gate_cli_author_rejects_prose_and_freezes_valid(tmp_path):
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
     _trace(tmp_path)
-    assert gate(tmp_path, "SWE.1", "author", "Done, looks great!").returncode >= 10
+    # ADR-0008 L10: prose is never evidence - with complete deterministic evidence it is frozen (violation
+    # recorded) and the inspection decides; a failure-signalling reply is still rejected
+    assert gate(tmp_path, "SWE.1", "author", "Done, but the trace is incomplete.").returncode >= 10
+    prose = gate(tmp_path, "SWE.1", "author", "Done, looks great!")
+    assert prose.returncode == 0 and "CONTRACT_VIOLATION_RECORDED" in prose.stdout.decode()
     ok = gate(tmp_path, "SWE.1", "author", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                       "next_action": "next"}))
-    assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
+    assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()  # idempotent: same content, same baseline
     # Inspector claiming PASS without a recorded inspection must not pass the gate.
     fake = gate(tmp_path, "SWE.1", "inspect", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                          "next_action": "next"}))
@@ -223,3 +227,21 @@ def test_generated_workflow_has_no_template_delimiters():
     for chunk in (40, 150):
         dot, _ = build("wo-test", chunk_lines=chunk)
         assert "{{" not in dot and "{%" not in dot and "{#" not in dot
+
+
+def test_format_violation_does_not_cost_a_cycle_when_evidence_is_complete_l10(tmp_path):
+    """ADR-0008 L10 (owner decision): r61 lost 2 of 3 SWE.3 cycles to prose replies after the work was done."""
+    (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
+    for reply in ("I could not finish the trace table.", "Turn budget exhausted before the review.",
+                  "Status: BLOCKED - missing section", '{"status":"BLOCKED","issues":["x"],"next_action":"rerun it"}'):
+        r = gate(tmp_path, "SWE.1", "author", reply)
+        assert r.returncode >= 10, reply  # a reply that signals failure is honoured (schema-invalid BLOCKED: r56)
+    ok = gate(tmp_path, "SWE.1", "author", "I wrote the requirements and the trace file; everything is in place.")
+    assert ok.returncode == 0 and "CONTRACT_VIOLATION_RECORDED" in ok.stdout.decode()
+    log = (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert "FROZEN_BY_EVIDENCE" in log and "AGENT_OUTPUT_CONTRACT_VIOLATION" in log
+    empty = tmp_path / "e"
+    assert gate(empty, "SWE.1", "author", "All done, looks good.").returncode >= 10  # presence gate still rules

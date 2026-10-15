@@ -18,6 +18,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -52,6 +53,11 @@ def _last_gate_ts(ws: Path, phase: str) -> str:
             if f'"phase": "{phase}"' in x:
                 ts = json.loads(x).get("ts", ts)
     return ts
+
+
+# A prose reply that says it did not finish is honoured as a failure (never frozen on evidence alone).
+FAILURE_SIGNAL = re.compile(r"\b(BLOCKED|REWORK|TURN_BUDGET\w*|turn budget|could ?n[o']t|cannot|unable to|incomplete|"
+                            r"not (?:yet )?(?:done|complete|completed|finished|written))\b", re.I)
 
 
 def _trailing_contract(text: str):
@@ -104,6 +110,21 @@ def step_author(store: Store, phase: str, text: str) -> int:
         bl = store.latest_baseline(phase)
         fresh = bl is not None and bl["frozen_at"] > _last_gate_ts(store.workspace, phase) \
             and store.stale_reason(phase, bl) is None
+        if not fresh and text.strip() and not FAILURE_SIGNAL.search(text):
+            # ADR-0008 L10 (owner decision 2026-10-15): a non-empty reply in the wrong FORMAT does not cost a rework
+            # cycle when the deterministic presence gate above already passed (all outputs present, required tools
+            # PASS, no stale/bent tests). The baseline is frozen and the independent inspection decides; the
+            # violation stays recorded. A reply that signals failure, or an empty reply (dead session), is rejected.
+            try:
+                bl = store.freeze(phase, f"swe{phase[-1]}-author")
+            except InspectionError as exc:
+                _state(store.workspace, phase, {"step": "author", "result": "FREEZE_FAILED", "error": str(exc)})
+                return fail_code(store.workspace, phase, "author")
+            _state(store.workspace, phase, {"step": "author", "result": "FROZEN_BY_EVIDENCE",
+                                            "baseline_id": bl["baseline_id"],
+                                            "finding": "AGENT_OUTPUT_CONTRACT_VIOLATION", "errors": res.errors})
+            print(json.dumps({"baseline_id": bl["baseline_id"], "agent_output": "CONTRACT_VIOLATION_RECORDED"}))
+            return 0
         if not fresh or bl is None:
             _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "errors": res.errors,
                                             "status": res.status, "issues": res.issues})
