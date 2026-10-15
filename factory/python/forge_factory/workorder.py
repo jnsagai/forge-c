@@ -161,16 +161,49 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
     return ws, manifest
 
 
+def seed_from_baseline(ws: Path, manifest: dict, source_wo: str, reason: str) -> list[str]:
+    """Implementation focus: reuse the frozen SWE.1/SWE.2 baselines (files, baseline and inspection records) of a
+    previous work order; their gate decisions are recorded and stay gaps in this work order's package."""
+    from .inspection.engine import PHASE_PATHS, Store
+
+    src = state_dir() / "workorders" / source_wo / "workspace"
+    src_store = Store(src)
+    copied = []
+    for ph in ("SWE.1", "SWE.2"):
+        bl = src_store.latest_baseline(ph)
+        if bl is None or src_store.stale_reason(ph, bl):
+            raise ValueError(f"{source_wo}: no valid frozen {ph} baseline to seed from")
+        for rel in PHASE_PATHS[ph] + [f"configuration/baselines/{ph}", f"inspection/{ph}"]:
+            if (src / rel).exists():
+                shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True) if (src / rel).is_dir() \
+                    else shutil.copy2(src / rel, ws / rel)
+                copied.append(rel)
+    manifest["implementation_focus"] = {
+        "source_work_order": source_wo, "decision": reason, "phases_run": ["SWE.3", "SWE.4", "SWE.5", "SWE.6"],
+        "seeded_gate_decisions": {ph: src_store.gate(ph) for ph in ("SWE.1", "SWE.2")},
+        "note": "SWE.1/SWE.2 reused as frozen; any non-PASS decision above remains an open gap in the package"}
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
+    subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",
+                    f"forge: implementation-focus seed (SWE.1/SWE.2 baselines from {source_wo})"], cwd=ws, check=True)
+    return copied
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
-        model: str = "qwen3:8b", provider: str = "ollama") -> dict:
+        model: str = "qwen3:8b", provider: str = "ollama", from_baseline: str | None = None) -> dict:
     ws, manifest = prepare(example, wo)
+    phases = None
+    if from_baseline:
+        seed_from_baseline(ws, manifest, from_baseline,
+                           "owner decision 2026-10-15: implementation focus; upstream constraints deferred")
+        phases = ["SWE.3", "SWE.4", "SWE.5", "SWE.6"]
     secmap = {}
     for line in (ws / "inputs/index.md").read_text().splitlines():
         parts = [x.strip() for x in line.split(" | ")]
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
-                         sections=secmap, code_model=code_model)
+                         sections=secmap, code_model=code_model, phases=phases)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(
         {"default": model, "provider": provider, "code_nodes": code_model,
          "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
@@ -214,8 +247,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
     ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
+    ap.add_argument("--from-baseline", default=None, help="implementation focus: reuse SWE.1/SWE.2 baselines of WO")
     a = ap.parse_args(argv)
-    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider)
+    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
+              from_baseline=a.from_baseline)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0
