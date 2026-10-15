@@ -137,7 +137,8 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
     return ws, manifest
 
 
-def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None) -> dict:
+def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
+        model: str = "qwen3:8b", provider: str = "ollama") -> dict:
     ws, manifest = prepare(example, wo)
     secmap = {}
     for line in (ws / "inputs/index.md").read_text().splitlines():
@@ -147,7 +148,11 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(
-        {"default": "qwen3:8b", "code_nodes": code_model, "nodes": sorted(k for k, v in nodes.items() if v.get("model"))}))
+        {"default": model, "provider": provider, "code_nodes": code_model,
+         "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
+         "local_only": provider == "ollama",
+         "note": "local Ollama via gateway" if provider == "ollama" else
+         "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048"}))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)
@@ -159,7 +164,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         emit("human", "WARN", f"{wo} preflight BLOCKED; no agent started; packaging BLOCKED", correlation_id=wo)
         return {"work_order": wo, "preflight": pre, "package": finalize(ws, wo)}
     toml = write_run(ws, graph, f"{wo} {manifest['driver']}", binding_for(wo, str(ws), nodes),
-                     fabro_mcp_config(mp["servers"]))
+                     fabro_mcp_config(mp["servers"]), model=model, provider=provider)
     fab = shutil.which("fabro") or str(Path.home() / ".fabro/bin/fabro")
     import os
 
@@ -183,8 +188,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--wo", required=True)
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
+    ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
+    ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
     a = ap.parse_args(argv)
-    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model)
+    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0

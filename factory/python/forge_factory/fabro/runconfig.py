@@ -47,11 +47,11 @@ def toml_str(s: str) -> str:
 
 
 def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers: dict[str, dict] | None = None,
-                    model: str = "qwen3:8b", binding_id: str = "") -> str:
+                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama") -> str:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
-             "[run.model]", f"name = {toml_str(model)}", 'provider = "ollama"']
+             "[run.model]", f"name = {toml_str(model)}", f"provider = {toml_str(provider)}"]
     for name, spec in sorted((mcp_servers or {}).items()):
         key = name.replace("-", "_")
         lines += [f"[run.agent.mcps.{key}]", 'type = "stdio"',
@@ -74,14 +74,14 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
 
 
 def write_run(ws: Path, graph_text: str, goal: str, binding: Binding,
-              mcp_servers: dict[str, dict] | None = None) -> Path:
+              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama") -> Path:
     run_dir = ws / ".forge-run"
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "workflow.fabro").write_text(graph_text, encoding="utf-8")
     bpath = run_dir / "binding.json"
     binding.dump(bpath)
-    (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers,
-                                                           binding_id=binding.binding_id))
+    (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers, model=model,
+                                                           binding_id=binding.binding_id, provider=provider))
     return run_dir / "workflow.toml"
 
 

@@ -27,6 +27,8 @@ def local_models() -> set[str]:
 def finished_workorders() -> list[Path]:
     root = STATE / "workorders"
     ws = [p for p in root.glob("*/workspace") if (p / ".forge-run/package.json").is_file()] if root.is_dir() else []
+    ws = [p for p in ws if not (p / ".forge-run/model-profile.json").is_file()  # cloud benchmarks are never T048
+          or json.loads((p / ".forge-run/model-profile.json").read_text()).get("local_only", True)]
     pin = os.environ.get("FORGE_T048_WO")
     if pin:
         ws = [p for p in ws if p.parent.name == pin]

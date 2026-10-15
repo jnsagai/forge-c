@@ -96,6 +96,29 @@ def test_dropped_upstream_answer_retried_bounded_and_metered(tmp_path):
     assert calls["n"] == 1 + gw.DROP_RETRIES  # bounded
 
 
+def test_paid_upstream_auth_forwarded_cache_metered_and_cost_capped(tmp_path, monkeypatch):
+    seen_auth = []
+
+    def paid(request: httpx.Request) -> httpx.Response:
+        seen_auth.append(request.headers.get("authorization"))
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}],
+                                         "usage": {"prompt_tokens": 1_000_000, "completion_tokens": 10,
+                                                   "prompt_cache_hit_tokens": 800_000}})
+
+    monkeypatch.setattr(gw, "PRICES", {"miss": 0.14, "hit": 0.0028, "out": 0.28})
+    monkeypatch.setattr(gw, "COST_CAP_USD", 0.03)
+    meter = tmp_path / "paid.jsonl"
+    c = TestClient(gw.create_app("http://up", meter, transport=httpx.MockTransport(paid)))
+    r = c.post("/chat/completions", json={"model": "deepseek-flash", "messages": []},
+               headers={"Authorization": "Bearer K"})
+    assert r.status_code == 200 and seen_auth == ["Bearer K"]
+    rec = json.loads(meter.read_text())
+    assert rec["tokens_cache_hit"] == 800_000 and "Bearer" not in meter.read_text()  # credential never metered
+    assert abs(gw.spent_usd(meter) - (0.2 * 0.14 + 0.8 * 0.0028 + 10 * 0.28 / 1e6)) < 1e-9
+    blocked = c.post("/v1/chat/completions", json={"model": "deepseek-flash", "messages": []})
+    assert blocked.status_code == 429 and "cost cap" in blocked.text and len(seen_auth) == 1  # cap stops spend
+
+
 def test_unknown_usage_labelled_unknown(tmp_path):
     m = gw.Meter(tmp_path / "u.jsonl")
     m.record("m", None, False, 1.0)

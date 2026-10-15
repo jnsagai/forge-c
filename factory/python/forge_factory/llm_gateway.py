@@ -114,6 +114,21 @@ def dropped(usage: dict | None, shape: dict) -> bool:
     return out > 32 and shape["content_chars"] == 0 and shape["tool_calls"] == 0
 
 
+PRICES = {k: float(os.environ.get(f"FORGE_GATEWAY_PRICE_{k.upper()}_PER_M", "0")) for k in ("miss", "hit", "out")}
+COST_CAP_USD = float(os.environ.get("FORGE_GATEWAY_COST_CAP_USD", "0"))  # 0 = no cap (local upstream)
+
+
+def spent_usd(meter_path: Path) -> float:
+    """Cost of every metered attempt from provider-reported usage (cache hits priced separately)."""
+    total = 0.0
+    for line in meter_path.read_text().splitlines() if meter_path.is_file() else []:
+        r = json.loads(line)
+        hit = int(r.get("tokens_cache_hit") or 0)
+        miss = int(r.get("tokens_input") or 0) - hit
+        total += (miss * PRICES["miss"] + hit * PRICES["hit"] + int(r.get("tokens_output") or 0) * PRICES["out"]) / 1e6
+    return total
+
+
 class Meter:
     def __init__(self, path: Path):
         self.path = path
@@ -124,6 +139,7 @@ class Meter:
         rec = {"ts_utc": utc_now(), "model": model or "unknown",
                "tokens_input": (usage or {}).get("prompt_tokens"),
                "tokens_output": (usage or {}).get("completion_tokens"),
+               "tokens_cache_hit": (usage or {}).get("prompt_cache_hit_tokens"),
                "basis": "reported" if usage else "unknown",
                "reasoning_stripped": stripped, "latency_ms": round(latency_ms, 1)}
         if shape is not None:  # response shape only (never content): exposes upstream-dropped tool calls (ADR-0005)
@@ -151,7 +167,13 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         return Response(r.content, status_code=r.status_code, media_type="application/json")
 
     @app.post("/v1/chat/completions")
+    @app.post("/chat/completions")
     async def chat(request: Request):
+        if COST_CAP_USD > 0 and spent_usd(meter.path) >= COST_CAP_USD:  # paid upstream: hard spend cap
+            return JSONResponse({"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached",
+                                           "type": "cost_cap"}}, status_code=429)
+        auth = request.headers.get("authorization")  # the caller's credential is forwarded, never stored
+        headers = {"Authorization": auth} if auth else None
         try:
             body = await request.json()
             if not isinstance(body, dict):
@@ -163,7 +185,8 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             body.setdefault("stream_options", {"include_usage": True})
 
             async def attempt() -> tuple[int, list[str], dict | None, bool, dict]:
-                upstream_resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body),
+                upstream_resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body,
+                                                                       headers=headers),
                                                   stream=True)
                 lines: list[str] = []
                 usage, stripped = None, False
@@ -205,7 +228,7 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
         for n in range(DROP_RETRIES + 1):
             t0 = time.monotonic()
-            r = await client.post("/v1/chat/completions", json=body)
+            r = await client.post("/v1/chat/completions", json=body, headers=headers)
             try:
                 data = r.json()
             except ValueError:
@@ -231,12 +254,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=11436)
     ap.add_argument("--upstream", default=UPSTREAM)
+    ap.add_argument("--meter", type=Path, default=None, help="usage JSONL (default state/llm-gateway/usage.jsonl)")
     a = ap.parse_args(argv)
     if a.host not in ("127.0.0.1", "::1", "localhost"):
         raise SystemExit("gateway must bind loopback")
     import uvicorn
 
-    uvicorn.run(create_app(a.upstream), host=a.host, port=a.port, log_level="warning")
+    uvicorn.run(create_app(a.upstream, a.meter), host=a.host, port=a.port, log_level="warning")
     return 0
 
 
