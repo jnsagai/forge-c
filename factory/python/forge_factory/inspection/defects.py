@@ -64,8 +64,20 @@ def _in_paths(rel: str, phase: str) -> bool:
     return any(rel == p or rel.startswith(p.rstrip("/") + "/") for p in PHASE_PATHS[phase])
 
 
+def _norm(t: str) -> str:
+    return re.sub(r"\s+", " ", t.replace("*", "")).strip().lower()
+
+
+def _requirement_texts(ws: Path) -> dict[str, str]:
+    from .ears import extract
+
+    p = ws / "workproducts/SWE.1/software_requirements.md"
+    return {r.req_id: r.text for r in extract(p.read_text(errors="replace"))} if p.is_file() else {}
+
+
 def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summary: str,
-           requirement_ids: list[str], test_files: list[str], evidence_refs: list[str]) -> dict:
+           requirement_ids: list[str], test_files: list[str], evidence_refs: list[str],
+           requirement_quote: str = "") -> dict:
     """Validate deterministically and record a defect. Raises DefectError with a stable code on refusal."""
     if kind not in KINDS:
         raise DefectError(f"UNKNOWN_KIND:{kind}")
@@ -84,6 +96,15 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         raise DefectError(f"UNKNOWN_REQUIREMENT:{','.join(unknown[:3])}")
     if kind in ("CODE", "ARCHITECTURE", "REQUIREMENT", "TEST") and not requirement_ids:
         raise DefectError("NO_REQUIREMENT_ID")
+    if kind in ("CODE", "TEST"):
+        # r62: a CODE defect asked for behaviour CONTRARY to SWR-013 ("hardware leaves the bit set") and the fixer
+        # complied. CODE = the code violates a requirement AS WRITTEN; TEST = the corrected test checks a clause AS
+        # WRITTEN. The clause must be quoted verbatim; disagreeing with the requirement is a REQUIREMENT defect.
+        texts = _requirement_texts(ws)
+        q = _norm(requirement_quote)
+        if len(q) < 20 or not any(q in _norm(texts.get(r, "")) for r in requirement_ids):
+            raise DefectError("REQUIREMENT_QUOTE_REQUIRED:quote >=20 chars verbatim from a cited requirement; if "
+                              "the requirement itself is wrong, report kind REQUIREMENT")
     hashes = {}
     for t in test_files:
         p = (ws / t).resolve()
@@ -107,7 +128,7 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     rec = {"schema": "forge-c/defect/0.5", "id": f"DEF-{len(existing) + 1:03d}", "kind": kind,
            "detected_phase": detected_phase, "reported_by": reported_by, "target_phase": target,
            "requirement_ids": requirement_ids, "test_files": hashes, "evidence_refs": evidence_refs[:10],
-           "summary": summary[:400]}
+           "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
     if kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":

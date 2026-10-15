@@ -78,6 +78,7 @@ class DefectIn(ToolInput):
     requirement_ids: list[str] | str = Field(default_factory=list, max_length=400)
     test_files: list[str] | str = Field(default_factory=list, max_length=600)
     evidence_refs: list[str] | str = Field(default_factory=list, max_length=600)
+    requirement_quote: str = Field(default="", max_length=300)
 
 
 class RejectIn(ToolInput):
@@ -197,7 +198,8 @@ def report_defect(ctx: ToolContext, a: DefectIn) -> dict:
     try:
         rec = defects.report(ctx.workspace, detected_phase=ctx.phase, reported_by=ctx.role, kind=a.kind,
                              summary=a.summary, requirement_ids=_list(a.requirement_ids),
-                             test_files=_list(a.test_files), evidence_refs=_list(a.evidence_refs))
+                             test_files=_list(a.test_files), evidence_refs=_list(a.evidence_refs),
+                             requirement_quote=a.requirement_quote)
     except defects.DefectError as exc:
         return result(ctx, "FAIL", f"defect not recorded: {exc}"[:160], issues=[str(exc)[:120]], tool="forge-defects")
     return result(ctx, "PASS", f"{rec['id']} {rec['kind']} -> {rec['target_phase'] or 'human'} {rec['status']}",

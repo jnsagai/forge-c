@@ -35,7 +35,8 @@ def tool(ws, phase, op, status, ts="2026-10-15T10:00:00Z"):
 def code_defect(ws, phase="SWE.6"):
     return D.report(ws, detected_phase=phase, reported_by="swe6-author", kind="CODE", summary="HAL has no parameter "
                     "validation: SWR-014 scenario fails", requirement_ids=["SWR-014"],
-                    test_files=["software/tests/software/scn_invalid_param.c"], evidence_refs=[])
+                    test_files=["software/tests/software/scn_invalid_param.c"], evidence_refs=[],
+                    requirement_quote="shall return HAL_ERROR without any register\nwrite")
 
 
 def gate(ws, phase, step, stdin=b""):
@@ -46,6 +47,12 @@ def gate(ws, phase, step, stdin=b""):
 def test_report_validation_is_deterministic(ws):
     with pytest.raises(D.DefectError, match="CODE_DEFECT_NEEDS_EVIDENCE"):
         code_defect(ws)  # no failing test run and no source location: blame-shifting refused
+    tool(ws, "SWE.5", "run_renode", "FAIL")
+    with pytest.raises(D.DefectError, match="REQUIREMENT_QUOTE_REQUIRED"):  # r62: code asked to contradict SWR-013
+        D.report(ws, detected_phase="SWE.5", reported_by="swe5-author", kind="CODE", summary="hardware leaves the "
+                 "enable bit set after a timeout; the driver must not clear it", requirement_ids=["SWR-013"],
+                 test_files=["software/tests/software/scn_invalid_param.c"], evidence_refs=[],
+                 requirement_quote="the driver shall leave the enable bit set after a timeout")
     with pytest.raises(D.DefectError, match="UNKNOWN_REQUIREMENT"):
         D.report(ws, detected_phase="SWE.6", reported_by="r", kind="ARCHITECTURE", summary="api cannot validate",
                  requirement_ids=["SWR-999"], test_files=[], evidence_refs=[])
@@ -54,13 +61,15 @@ def test_report_validation_is_deterministic(ws):
                  requirement_ids=["SWR-014"], test_files=[], evidence_refs=["software/hal/stm32n6xx_hal_rcc.c:2"])
     with pytest.raises(D.DefectError, match="TEST_FILE_NOT_FOUND"):
         D.report(ws, detected_phase="SWE.6", reported_by="r", kind="TEST", summary="expectation was wrong",
-                 requirement_ids=["SWR-014"], test_files=["../../etc/passwd"], evidence_refs=[])
+                 requirement_ids=["SWR-014"], test_files=["../../etc/passwd"], evidence_refs=[],
+                 requirement_quote="without any register write")
     tool(ws, "SWE.6", "run_robot", "FAIL")
     rec = code_defect(ws)
     assert (rec["id"], rec["target_phase"], rec["status"]) == ("DEF-001", "SWE.3", "OPEN")
     assert list(rec["test_files"]) == ["software/tests/software/scn_invalid_param.c"]
     loc = D.report(ws, detected_phase="SWE.4", reported_by="swe4-inspector", kind="CODE", summary="missing check",
-                   requirement_ids=["SWR-014"], test_files=[], evidence_refs=["software/hal/stm32n6xx_hal_rcc.c:2"])
+                   requirement_ids=["SWR-014"], test_files=[], evidence_refs=["software/hal/stm32n6xx_hal_rcc.c:2"],
+                   requirement_quote="shall return HAL_ERROR without any register write")
     assert loc["target_phase"] == "SWE.3"  # an inspector may cite a source location instead of a failing run
     arch = D.report(ws, detected_phase="SWE.6", reported_by="r", kind="ARCHITECTURE", summary="timeout-only API "
                     "cannot express an invalid parameter", requirement_ids=["SWR-014"], test_files=[], evidence_refs=[])
@@ -70,7 +79,7 @@ def test_report_validation_is_deterministic(ws):
     assert inp["status"] == "ESCALATED" and inp["target_phase"] is None
     t = D.report(ws, detected_phase="SWE.6", reported_by="r", kind="TEST", summary="wrong bit in expectation",
                  requirement_ids=["SWR-013"], test_files=["software/tests/software/scn_invalid_param.c"],
-                 evidence_refs=[])
+                 evidence_refs=[], requirement_quote="the RCC driver shall return HAL_TIMEOUT")
     assert t["status"] == "DECLARED" and t["target_phase"] == "SWE.6"
     assert sorted(D.gaps(ws)) == ["escalated_defect:DEF-004:INPUT", "open_defect:DEF-001:CODE:OPEN",
                                   "open_defect:DEF-002:CODE:OPEN", "open_defect:DEF-003:ARCHITECTURE:OPEN"]
@@ -154,7 +163,8 @@ def test_mcp_report_defect_uses_node_phase_and_role(ws, monkeypatch):
     op = next(o for o in evidence.OPERATIONS if o.name == "report_defect")
     out = sdk.invoke("forge-evidence-mcp", op, {"kind": "CODE", "summary": "HAL lacks parameter validation (SWR-014)",
                                                 "requirement_ids": "SWR-014",
-                                                "test_files": "software/tests/software/scn_invalid_param.c"})
+                                                "test_files": "software/tests/software/scn_invalid_param.c",
+                                                "requirement_quote": "without any register write"})
     assert out["status"] == "PASS" and "DEF-001 CODE -> SWE.3 OPEN" in out["summary"], out
     rec = D.all_defects(ws)[0]
     assert rec["reported_by"] == "swe6-author" and rec["detected_phase"] == "SWE.6"
@@ -181,7 +191,7 @@ def test_bent_test_without_declaration_blocks_freeze_r60(ws):
     assert r.returncode != 0 and b"TEST_CHANGED_AFTER_FAIL" in r.stdout
     D.report(ws, detected_phase="SWE.6", reported_by="swe6-author", kind="TEST", summary="expected HAL_ERROR from a "
              "timeout-only API; scenario now drives SWR-014 through the invalid-timeout path", requirement_ids=["SWR-014"],
-             test_files=[f], evidence_refs=[])
+             test_files=[f], evidence_refs=[], requirement_quote="shall return HAL_ERROR without any register write")
     assert D.bent_tests(ws, "SWE.6") == []  # declared -> visible in the package for the inspector and the human
 
 

@@ -160,3 +160,23 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 - HAL re-entry after an SWE.1/2 loop relies on the author prompt; compile and completeness checks catch
   duplicates.
 - L9 and L10 remain deferred.
+
+## First live run (r62, DeepSeek, resumed from r56 at SWE.6)
+- **Mechanics worked.**
+  - SWE.6 reported DEF-001 (ARCHITECTURE, SWR-014). The route left SWE.6, the chain picked SWE.2, and the
+    architecture gained a selector parameter with HAL_ERROR on invalid selectors. SWE.2 and SWE.3 re-passed
+    inspection, and SWE.4 re-ran.
+  - SWE.5 hit the anti-bending check (`TEST_CHANGED_AFTER_FAIL`) and reported DEF-002 (CODE). This was the
+    second loop, to SWE.3.
+  - The loop budget was then exhausted, so the run ended BLOCKED with both defects listed as gaps.
+- **Semantic failure.** DEF-002 asked the code to keep `<x>ON` set after a timeout ("hardware leaves it set").
+  That contradicts SWR-013 ("shall clear the enable bit it set and return HAL_TIMEOUT"). The SWE.3 fixer complied.
+  SWE.4 then declared the correct test UT-063 "wrong" (DEF-003). The unchanged unit test caught the regression,
+  so the run BLOCKED rather than passing falsely, but the loop had been used for requirement drift.
+- **Remedy:**
+  - CODE and TEST defects must quote, verbatim (20+ characters), the requirement clause the code violates or the
+    corrected test checks. Otherwise the report is refused with `REQUIREMENT_QUOTE_REQUIRED`.
+  - Disagreeing with a requirement, e.g. "real hardware behaves differently", must be filed as kind
+    REQUIREMENT and goes to SWE.1, where the change is visible.
+  - Fixers are told that a requirement as written always wins: reject a defect that asks for contrary behaviour.
+  - Regression test: `test_report_validation_is_deterministic`.

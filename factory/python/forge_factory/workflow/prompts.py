@@ -22,14 +22,19 @@ FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.json
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
                "fix it in your phase's work products FIRST (its requirement_ids, summary and cited test files are the "
-               "evidence; never edit the cited tests). If you conclude a defect is not in your phase, call "
-               "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason instead.")
+               "evidence; never edit the cited tests). First compare the defect with the cited requirement text in "
+               "workproducts/SWE.1/software_requirements.md: a requirement as written always wins. If the defect asks "
+               "for behaviour the requirement does not demand or contradicts, or is not in your phase, call "
+               "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason instead of changing anything.")
 DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matches the SWE.1 requirement and the driver "
-               "code, the API/architecture or the requirement itself is wrong, do NOT change the test: call "
-               "mcp__forge_evidence_mcp__report_defect with kind CODE (driver code), ARCHITECTURE (API/interface "
-               "design) or REQUIREMENT (untestable/inapplicable requirement), requirement_ids, test_files (the failing "
-               "test files) and a summary, then finish with status REWORK. If the test itself is wrong, correct it "
-               "and declare that with report_defect kind TEST (requirement_ids, test_files, why it was wrong).")
+               "code or the API/architecture is wrong, do NOT change the test: call "
+               "mcp__forge_evidence_mcp__report_defect with kind CODE (the code violates the requirement AS WRITTEN; "
+               "requirement_quote = the violated clause copied verbatim) or ARCHITECTURE (the API cannot express the "
+               "requirement), requirement_ids, test_files (the failing test files) and a summary, then finish with "
+               "status REWORK. If you believe the requirement itself is wrong (e.g. real hardware behaves "
+               "differently), report kind REQUIREMENT - never ask for code that contradicts a requirement. If the test "
+               "itself is wrong, correct it and declare that with report_defect kind TEST (requirement_ids, "
+               "test_files, requirement_quote = the clause the corrected test checks, why it was wrong).")
 INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
                   "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary) before check_inspection.")
