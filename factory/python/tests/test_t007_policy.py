@@ -53,6 +53,9 @@ def test_escaped_newline_content_rejected_with_actionable_reason(ws):
     bad = a.decide("auth3", "write_file", {"file_path": "software/src/a.c", "content": "#ifndef X\\n#define X\\n\\n#endif"})
     assert bad.code == "ESCAPED_NEWLINES" and "real line breaks" in bad.reason
     assert a.decide("auth3", "write_file", {"file_path": "software/src/a.c", "content": "#ifndef X\n#define X\n#endif\n"}).allow
+    edit = a.decide("auth3", "edit_file", {"file_path": "software/src/a.c", "old_string": "int f(void) {\\n  a();\\n  b();\\n}",
+                                           "new_string": "int f(void) {\n  b();\n}"})
+    assert edit.code == "ESCAPED_NEWLINES" and "write_file" in edit.reason
 
 
 def test_release_manager_cannot_waive_or_mutate(ws):

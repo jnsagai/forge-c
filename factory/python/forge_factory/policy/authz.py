@@ -168,10 +168,10 @@ class Authorizer:
         if tool in WRITE_TOOLS:
             if role.readonly:
                 return Decision(False, "READONLY_ROLE_WRITE_DENIED", tool, role_id)
-            body = str(tin.get("content") or tin.get("new_string") or "")
-            if body.count("\\n") >= 3 and "\n" not in body:  # double-escaped JSON: file would be one line
-                return Decision(False, "ESCAPED_NEWLINES", "content has literal \\n sequences; resend with real line "
-                                "breaks", role_id)
+            for body in (str(tin.get("content") or tin.get("new_string") or ""), str(tin.get("old_string") or "")):
+                if body.count("\\n") >= 3 and "\n" not in body:  # double-escaped JSON: one-line file / unmatched edit
+                    return Decision(False, "ESCAPED_NEWLINES", "content has literal \\n sequences; resend with real "
+                                    "line breaks, or rewrite the whole file with write_file", role_id)
             prefixes = ROLE_WRITE_PREFIXES.get(role_id, [])
             for raw in self._paths(tool, tin):
                 rel = self._rel(raw)
