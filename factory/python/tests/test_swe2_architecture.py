@@ -6,7 +6,7 @@ from forge_factory.inspection.architecture import check_architecture, is_agent_r
 from forge_factory.inspection.engine import InspectionError, Store
 
 ARCH_MIN = ("# Architecture\n## Components\n- HAL, LL\n## Interfaces\n- HAL_RCC_HSI_Enable\n## Requirement allocation\n"
-            "| SWR | Function |\n|---|---|\n| SWR-001 | HAL_RCC_HSI_Enable |\n## Register table\n"
+            "| SWR | Function |\n|---|---|\n| SWR-001 | HAL_RCC_HSI_SetConfig |\n## Register table\n"
             "| Name | Offset |\n|---|---|\n| RCC_CR | 0x0 |\n")  # synthetic minimum for other tests' fixtures
 REPLY = '{"status":"PASS","artifacts":["workproducts/SWE.2/software_architecture.md"],"issues":[],"next_action":"next"}'
 GOOD = """# Software Architecture

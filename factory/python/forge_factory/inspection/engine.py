@@ -151,12 +151,14 @@ class Store:
                 out[c["id"]] = {"verdict": rep["verdict"], "evidence_refs": [rpath.relative_to(self.workspace)
                                                                              .as_posix()],
                                 "findings": rep["major_findings"][:20], "source": "deterministic"}
-            elif c.get("deterministic_check") in ("architecture_structure", "register_map_conformance"):
+            elif c.get("deterministic_check") in ("architecture_structure", "register_map_conformance",
+                                                  "implementation_completeness"):
                 from .architecture import check_architecture
+                from .implementation import check_implementation
                 from .regmap import check_regmap
 
-                rep = (check_architecture if c["deterministic_check"] == "architecture_structure"
-                       else check_regmap)(self.workspace)
+                rep = {"architecture_structure": check_architecture, "register_map_conformance": check_regmap,
+                       "implementation_completeness": check_implementation}[c["deterministic_check"]](self.workspace)
                 rdir = self.insp / phase / "deterministic"
                 rdir.mkdir(parents=True, exist_ok=True)
                 rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"

@@ -19,7 +19,7 @@ from .architecture import ARCH, SECTIONS_DIR, _rows, _sections
 
 LL_HEADER = "software/ll/stm32n6xx_ll_rcc.h"
 GUARD = "STM32N6XX_LL_RCC_H"
-FUNCTIONS_MARKER = "/* LL_RCC access functions (SWE.3 LL author) */"
+FUNCTIONS_MARKER = "// LL_RCC access functions (SWE.3 LL author)"  # line comment: a dropped '*/' cannot hide code
 _BIT = re.compile(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", re.M)
 
 

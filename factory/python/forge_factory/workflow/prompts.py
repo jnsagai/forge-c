@@ -50,21 +50,24 @@ AUTHOR_STEPS = {
         "(written by the LL and HAL steps). Never change the generated register defines.",
         "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. Fix each error with "
         "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again.",
-        "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline and then with check register_map; fix every "
-        "violation the same way and repeat until both PASS.",
+        "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline, then check register_map, then check "
+        "implementation (every allocated HAL_RCC_ function declared and defined, no commented-out code); fix every "
+        "finding the same way and repeat until all three PASS.",
         "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
         "the code (suppression comments are ignored and forbidden).",
         "write_file workproducts/SWE.3/detailed_design.md (at most 40 lines): '# Detailed design', then a table "
         "| Function | Purpose | Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
     "SWE.4": [
-        "Read software/hal/stm32n6xx_hal_rcc.h, software/ll/stm32n6xx_ll_rcc.h and traceability/requirements_to_tests.csv.",
-        "write_file software/tests/unit/test_rcc.c: a self-checking C program with main() returning 0 only if all checks pass; "
-        "define 'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' as the fake RCC block (host), cover every HAL_RCC_ function incl. timeout and "
-        "invalid-parameter paths; print one line per test case 'UT-00x PASS|FAIL'.",
-        "Call mcp__forge_tests_mcp__run_unit; fix failures. Then call mcp__forge_tests_mcp__llvm_coverage.",
-        "write_file workproducts/SWE.4/unit_verification_report.md: test cases, SWR mapping, results, coverage numbers from the tool.",
-        "Update traceability/requirements_to_tests.csv so every SWR has a test_id implemented in test_rcc.c.",
+        "read_file software/tests/unit/test_rcc.c (written by the unit-test step) and traceability/requirements_to_tests.csv.",
+        "Call mcp__forge_tests_mcp__run_unit. Fix each failing test or compile error with ONE small edit_file call (at most "
+        "40 lines) and run again until PASS. Never weaken a check to make it pass; a real driver defect is reported as an "
+        "issue.",
+        "Call mcp__forge_tests_mcp__llvm_coverage.",
+        "write_file workproducts/SWE.4/unit_verification_report.md (at most 40 lines): '# Unit verification report', a "
+        "table | Test ID | Function | SWR IDs | Result | and the coverage numbers exactly as the tool reported them.",
+        "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
+        "with the UT id that covers it in software/tests/unit/test_rcc.c.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.4."],
     "SWE.5": [
         "Read workproducts/SWE.2/software_architecture.md and software/tests/unit/test_rcc.c.",
@@ -98,8 +101,8 @@ LL_STEPS = [
     "Call mcp__forge_docs_mcp__validate_artifact with check register_map; it must be PASS.",
     "Reply with the list of LL_RCC_ function names you declared.",
 ]
-HAL_MARKER = "/* HAL_RCC API implementation (SWE.3 HAL author) */"
-HAL_H_MARKER = "/* HAL_RCC API prototypes (SWE.3 HAL author) */"
+HAL_MARKER = "// HAL_RCC API implementation (SWE.3 HAL author)"
+HAL_H_MARKER = "// HAL_RCC API prototypes (SWE.3 HAL author)"
 HAL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h (use only the LL_RCC_ functions and defines declared there; never invent "
     "LL names) and workproducts/SWE.2/software_architecture.md (Interfaces and Requirement allocation).",
@@ -116,8 +119,38 @@ HAL_STEPS = [
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
     "function calls only LL_RCC_ functions; every wait loop is 'while ((LL_RCC_<Name>_IsReady() == 0U) && (count < "
     "HAL_RCC_TIMEOUT_VALUE))' then returns HAL_TIMEOUT if count reached the limit, else HAL_OK; locals lower case.",
+    "Call mcp__forge_docs_mcp__validate_artifact with check implementation and add any function it reports missing.",
     "Reply with the list of HAL_RCC_ functions you implemented.",
 ]
+
+
+TEST_CASES_MARKER = "// UNIT TEST CASES (SWE.4 test author)"
+TEST_CALLS_MARKER = "// UNIT TEST CALLS (SWE.4 test author)"
+UT_STEPS = [
+    "read_file software/hal/stm32n6xx_hal_rcc.h and software/ll/stm32n6xx_ll_rcc.h (note each HAL_RCC_ function and the "
+    "LL_RCC_<REG>_OFFSET / _MSK ready flags), and traceability/requirements_to_tests.csv.",
+    "write_file software/tests/unit/test_rcc.c with exactly these lines: '#include <stdio.h>', '#include "
+    "\"stm32n6xx_hal_rcc.h\"', 'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];', 'static int failures = 0;', "
+    "'#define CHECK(id, cond) do { if (cond) { printf(\"%s PASS\\n\", id); } else { printf(\"%s FAIL\\n\", id); "
+    "failures++; } } while (0)', '{cases}', 'int main(void)', '{', '    {calls}', '    return (failures == 0) ? 0 : 1;', "
+    "'}' and a final newline.",
+    "For EACH HAL_RCC_ function group make ONE edit_file call with old_string exactly '{cases}' and new_string = one "
+    "'static void ut_<name>(void)' function (at most 30 lines) followed by a blank line and the marker again. In it: "
+    "clear ll_rcc_regs, set the ready/enable flag bit in ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] when the HAL waits for "
+    "it, call the HAL function, and CHECK(\"UT-0nn\", <expected status and register bits>); add a second CHECK "
+    "for the timeout path (flag never set -> HAL_TIMEOUT) where the function waits.",
+    "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one 'ut_<name>();' line per test "
+    "function followed by the marker again.",
+    "Call mcp__forge_tests_mcp__run_unit once and report its summary.",
+    "Reply with the list of UT ids you wrote.",
+]
+
+
+def unit_test_author_prompt() -> str:
+    """SWE.4 step 1 (fresh context): unit tests built incrementally in small edits."""
+    steps = ["Call use_skill with skill_name swe4-author.", READ, SMALL] + \
+        [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER) for x in UT_STEPS] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def ll_author_prompt() -> str:
