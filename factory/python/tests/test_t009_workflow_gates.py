@@ -72,6 +72,11 @@ def test_route_success_only_to_author_and_failure_fallback_to_finalize():
         assert (f"swe{n}_route", "finalize", "") in e
 
 
+def _trace(ws):
+    (ws / "traceability").mkdir(parents=True, exist_ok=True)
+    (ws / "traceability/requirements_to_tests.csv").write_text("requirement_id,test_id,test_file\nSWR-001,UT-001,t.c\n")
+
+
 def gate(ws, phase, step, stdin="", check=""):
     cmd = [sys.executable, "-m", "forge_factory.inspection.gate", "--workspace", str(ws), "--phase", phase,
            "--step", step] + (["--check", check] if check else [])
@@ -83,6 +88,7 @@ def test_gate_cli_author_rejects_prose_and_freezes_valid(tmp_path):
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
     assert gate(tmp_path, "SWE.1", "author", "Done, looks great!").returncode >= 10
     ok = gate(tmp_path, "SWE.1", "author", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                       "next_action": "next"}))
@@ -116,6 +122,7 @@ def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
     assert gate(tmp_path, "SWE.1", "author", "").returncode >= 10  # nothing frozen: empty reply rejected
     from forge_factory.inspection.engine import Store
     Store(tmp_path).freeze("SWE.1", "swe1-author")  # frozen via MCP during the stage
@@ -130,6 +137,7 @@ def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
     reply = 'Baseline ready, EARS PASS.\n{"status":"PASS","artifacts":[],"issues":[],"next_action":"next"}'
     ok = gate(tmp_path, "SWE.1", "author", reply)
     assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
@@ -151,3 +159,15 @@ def test_route_counts_its_own_invocations_when_no_gate_ran(tmp_path):
     # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route twice
     assert gate(tmp_path, "SWE.3", "route").returncode == 0
     assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 2nd failed cycle -> BLOCKED -> finalizer
+
+
+def test_author_gate_presence_check_blocks_freeze_of_incomplete_phase(tmp_path):
+    """r43: lenient inspectors passed SWE.4/5 whose reports did not exist; nothing incomplete is frozen."""
+    (tmp_path / "workproducts/SWE.4").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.4/notes.md").write_text("x\n")
+    reply = json.dumps({"status": "PASS", "artifacts": [], "issues": [], "next_action": "next"})
+    r = gate(tmp_path, "SWE.4", "author", reply)
+    out = r.stdout.decode()
+    assert r.returncode >= 10 and "MISSING_REQUIRED_OUTPUT:workproducts/SWE.4/unit_verification_report.md" in out
+    assert "REQUIRED_TOOL_NOT_PASS:run_unit:NOT_RUN" in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert not (tmp_path / "configuration/baselines/SWE.4").exists()

@@ -33,6 +33,17 @@ PHASE_PATHS = {
     "SWE.6": ["workproducts/SWE.6", "software/tests/software", "verification/software"],
 }
 SYSTEM_NAMES_FILE = "configuration/system_names.json"
+# Deterministic presence gate before any freeze (r15/r43: lenient inspectors passed phases with missing outputs)
+REQUIRED_OUTPUTS = {
+    "SWE.1": ["workproducts/SWE.1/software_requirements.md", "traceability/requirements_to_tests.csv"],
+    "SWE.2": ["workproducts/SWE.2/software_architecture.md"],
+    "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
+    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
+    "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
+    "SWE.6": ["workproducts/SWE.6/software_verification_report.md"],
+}
+REQUIRED_TOOL_PASS = {"SWE.4": [("forge-tests-mcp", "run_unit")],
+                      "SWE.5": [("forge-tests-mcp", "run_integration")]}
 
 
 class InspectionError(ValueError):
@@ -98,6 +109,7 @@ class Store:
         files = self.files_of(phase)
         if not files:
             raise InspectionError(f"NO_WORKPRODUCTS:{phase}")
+
         from .architecture import is_agent_reply
 
         for rel in files:  # an agent's status reply written over a workproduct is never frozen
@@ -123,6 +135,20 @@ class Store:
             f.write(pretty_json(rec))
         emit("workflow", "INFO", f"{phase} baseline {rec['baseline_id']} frozen", phase=phase, agent_id=author_role)
         return rec
+
+    def missing_outputs(self, phase: str) -> list[str]:
+        """Presence gate used by the production author gate before a phase may be frozen (r15/r43)."""
+        out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in REQUIRED_OUTPUTS.get(phase, [])
+               if not any(f.is_file() and f.stat().st_size > 0 for f in self.workspace.glob(pat))]
+        if REQUIRED_TOOL_PASS.get(phase):
+            from ..release.finalize import latest, tool_results
+
+            res = tool_results(self.workspace)
+            for server, op in REQUIRED_TOOL_PASS[phase]:
+                r = latest(res, server, op)
+                if r is None or r["result"]["status"] != "PASS":
+                    out.append(f"REQUIRED_TOOL_NOT_PASS:{op}:{r['result']['status'] if r else 'NOT_RUN'}")
+        return out
 
     def stale_reason(self, phase: str, baseline: dict) -> str | None:
         if baseline["baseline_hash"] != self.current_hash(phase):

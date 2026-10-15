@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -68,6 +69,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
         tail = _trailing_contract(text)
         if tail is not None:  # contract violation is recorded, the contract object itself is honoured
             prose_violation, res = res.errors, tail
+    missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
+    if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing
+        _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": "INCOMPLETE",
+                                        "issues": missing[:20]})
+        print(json.dumps({"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": missing[:10]}))
+        return fail_code(store.workspace, phase, "author")
     if res.ok and res.status != "PASS":  # the author itself reports it could not complete: honour it (rework)
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": res.status,
                                         "issues": res.issues})
