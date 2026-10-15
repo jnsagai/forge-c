@@ -221,7 +221,10 @@ def inspector_prompt(phase: str) -> str:
     example = "; ".join(f"{c['id']}=PASS" for c in load_checklist(phase)["checks"][:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
-             "read_file each listed workproduct (use offset/limit for long files). Never edit any file.",
+             "read_file each listed workproduct (use offset/limit for long files). Never edit any file. You have at most 20 "
+             "tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed "
+             "automatically; their reports are in verification/static/ and inspection/<phase>/deterministic/), and call "
+             "check_inspection no later than your 15th tool call.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
