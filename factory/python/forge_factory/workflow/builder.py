@@ -71,7 +71,8 @@ def finalize_cmd(work_order: str) -> str:
     return f"{_env()} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
-CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author")
+CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author",
+              "swe5_target_author")
 MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
 
 
@@ -144,6 +145,13 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(scaffold_cmd())}"]',
                   f'  {ut} [label="SWE.4 unit-test author", max_visits=1, timeout="1200s", '
                   f'prompt="{_q(unit_test_author_prompt())}"]', f"  {entry} -> {ut}", f"  {ut} -> {a}"]
+        if phase == "SWE.5":  # Renode target tests in their own budget; rework re-enters at the SWE.5 author
+            from .prompts import target_test_author_prompt
+
+            entry = "swe5_target_author"
+            nodes[entry] = {"role": "swe5-author", "phase": phase}
+            L += [f'  {entry} [label="SWE.5 target-test author (Renode)", max_visits=1, timeout="1500s", '
+                  f'prompt="{_q(target_test_author_prompt())}"]', f"  {entry} -> {a}"]
         L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":

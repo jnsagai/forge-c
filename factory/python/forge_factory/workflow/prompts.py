@@ -110,14 +110,8 @@ AUTHOR_STEPS = {
         "write_file software/tests/integration/test_rcc_integration.c: self-checking host program exercising HAL+LL together "
         "(enable oscillator then peripheral clock then reset sequence, and a forced timeout).",
         "Call mcp__forge_tests_mcp__run_integration; fix failures.",
-        "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model "
-        "sets each RCC_SR ready flag when its RCC_CR enable bit is set) and software/tests/target/test_rcc_target_timeout.c "
-        "(RCC model never sets ready flags: every wait must end in HAL_TIMEOUT). Each file: '#include "
-        "\"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int "
-        "main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' "
-        "on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
-        "definition (the linker places it).",
-        "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
+        "Call mcp__forge_sim_mcp__run_renode once (the target tests were written and run by the previous step) to get "
+        "the target results for the report.",
         "write_file workproducts/SWE.5/integration_verification_report.md with sections: '## Plan' (component and "
         "integration measures), '## Integration sequence' (matches the architecture interfaces), '## Clock/reset "
         "interactions tested', '## Robustness, fault propagation, timing/resource budgets' (timeout paths, measured sizes), "
@@ -226,6 +220,25 @@ UT_STEPS = [
     "Call mcp__forge_tests_mcp__run_unit once and report its summary.",
     "Reply with the list of UT ids you wrote.",
 ]
+
+
+TARGET_STEPS = [
+    "read_file software/hal/stm32n6xx_hal_rcc.h (the HAL API and its exact signatures).",
+    "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model sets "
+    "each RCC_SR ready flag when its RCC_CR enable bit is set) and software/tests/target/test_rcc_target_timeout.c (RCC "
+    "model never sets ready flags: every wait must end in HAL_TIMEOUT). Each file: '#include \"stm32n6xx_hal_rcc.h\"', "
+    "'#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); "
+    "... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' on HAL return values and "
+    "ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs definition (the linker places it).",
+    "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
+    "Reply with the run_renode summary.",
+]
+
+
+def target_test_author_prompt() -> str:
+    """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + TARGET_STEPS + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def unit_test_author_prompt() -> str:

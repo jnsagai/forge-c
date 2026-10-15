@@ -29,6 +29,7 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert "forge_factory.inspection.regmap" in dot and nodes["swe3_hal_author"]["role"] == "swe3-author"
     assert ("swe3_inspect_gate", "swe4_scaffold", "outcome=succeeded") in e and ("swe4_scaffold", "swe4_test_author", "") in e
     assert ("swe4_test_author", "swe4_author", "") in e and "forge_factory.workflow.scaffold" in dot
+    assert ("swe4_inspect_gate", "swe5_target_author", "outcome=succeeded") in e and ("swe5_target_author", "swe5_author", "") in e
     assert nodes["swe3_ll_author"] == {"role": "swe3-author", "phase": "SWE.3"}
     assert ("swe3_verify", "swe3_inspector", "outcome=succeeded") in e
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)
