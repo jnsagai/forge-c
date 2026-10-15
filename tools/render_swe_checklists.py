@@ -60,8 +60,8 @@ def markdown(d: list[dict]) -> str:
          "overlay), the author-gate presence rules and the v0.5 release policy. Deterministic items are decided by "
          "tools and override the inspector's verdict; all other items are judged by an independent inspector agent.", ""]
     for p in d:
-        L += [f"## {p['phase']} — {p['name']}", "", f"Checklist v{p['version']} (sha256 {p['sha']}…), rework budget "
-              f"{p['max_rework']} (the factory blocks after 2 failed cycles, ADR-0005).", "",
+        L += [f"## {p['phase']} — {p['name']}", "", f"Checklist v{p['version']} (sha256 {p['sha']}…), rework loop: up to "
+              f"{p['max_rework']} failed cycles, then BLOCKED (ADR-0005 #17).", "",
               "**Before freeze (author gate):** " + "; ".join([f"`{o}`" for o in p["outputs"]] + p["tools"]) + ".", ""]
         L += [f"- {x}" for x in p["extra"]] + ([""] if p["extra"] else [])
         L += ["| ID | Required | If failed | Criterion | Decided by |", "|---|---|---|---|---|"]
@@ -89,8 +89,8 @@ def page(d: list[dict]) -> str:
         secs.append(
             f'<section id="{p["phase"].replace(".", "")}"><header><h2><span class="ph">{p["phase"]}</span> '
             f'{e(p["name"])}</h2><p class="meta">{len(p["checks"])} items · {ndet} deterministic · checklist '
-            f'v{p["version"]} <code>{p["sha"]}</code> · rework budget {p["max_rework"]} (factory blocks after 2 failed cycles, '
-            f'ADR-0005)</p></header>'
+            f'v{p["version"]} <code>{p["sha"]}</code> · rework loop: up to {p["max_rework"]} failed cycles, then BLOCKED '
+            f'(ADR-0005 #17)</p></header>'
             f'<div class="gate"><h3>Before the baseline is frozen</h3><ul>{gate}</ul>'
             + (f'<h3>Also in this phase</h3><ul>{extra}</ul>' if extra else "") +
             f'</div><div class="tw"><table><thead><tr><th>ID</th><th>Criterion</th><th>Decided by</th>'

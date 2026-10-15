@@ -155,16 +155,27 @@ def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(
 
 
 def test_route_counts_author_rejections_in_rework_budget(tmp_path):
+    for _ in range(2):  # authored maximum_rework_cycles = 3
+        assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+        assert gate(tmp_path, "SWE.3", "route").returncode == 0  # failed cycle within budget: rework
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
-    assert gate(tmp_path, "SWE.3", "route").returncode == 0  # 1 failed cycle: rework allowed
-    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
-    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # BLOCKED -> finalizer (not an endless rework loop)
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
 
 
 def test_route_counts_its_own_invocations_when_no_gate_ran(tmp_path):
-    # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route twice
+    # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route
     assert gate(tmp_path, "SWE.3", "route").returncode == 0
-    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 2nd failed cycle -> BLOCKED -> finalizer
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
+
+
+def test_failed_gate_outputs_differ_per_cycle_for_fabro_breaker(tmp_path):
+    """Fabro hashes node|category|output (digits normalised) and kills the run at the 3rd identical signature."""
+    import re as _re
+
+    outs = [gate(tmp_path, "SWE.3", "author", "prose").stdout.decode() for _ in range(3)]
+    norm = [_re.sub(r"\d+", "<n>", o) for o in outs]
+    assert len(set(norm)) == 3 and all("gate execution " in o for o in outs)
 
 
 def test_author_gate_presence_check_blocks_freeze_of_incomplete_phase(tmp_path):
