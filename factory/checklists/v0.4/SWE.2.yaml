@@ -5,4 +5,17 @@ extends:
   path: factory/release-manager/checklists/SWE.2.yaml
   sha256: 3522b34a4574ab72d29061a8a3c4bb6cbedd3dfbcf7e59244f38ad36f01d6404
 policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
-additional_checks: []
+additional_checks:
+- id: SWE2-07
+  required: true
+  severity_if_failed: major
+  criterion: The architecture workproduct is a markdown document (not an agent status reply) with Components,
+    Interfaces, Register table and Requirement allocation sections; every SWE.1 SWR is allocated, no unknown
+    SWR is referenced, and every register offset matches the RM0486 section supplied in the work-order inputs.
+  deterministic_check: architecture_structure
+  tool: forge-docs-mcp.validate_artifact
+  source: night-run finding 2026-10-15 (WO r11 - 8B inspector passed a JSON reply as architecture)
+  evidence:
+  - workproduct_reference
+  - architecture_report_reference
+  - recorded_verdict

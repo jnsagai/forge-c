@@ -27,6 +27,10 @@ def write_phase(store, phase, text="content"):
     p = store.workspace / f"workproducts/{phase}/doc.md"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text)
+    if phase == "SWE.2":  # SWE2-07 is decided deterministically from the architecture workproduct
+        from test_swe2_architecture import ARCH_MIN
+
+        (p.parent / "software_architecture.md").write_text(ARCH_MIN)
 
 
 def test_checklists_extend_pinned_v03_and_swe1_has_ears():

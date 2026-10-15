@@ -1,4 +1,4 @@
-"""T017 — forge-docs-mcp: deterministic artifact validation (EARS, HAL guideline, markdown/json/csv).
+"""T017 — forge-docs-mcp: deterministic artifact validation (EARS, HAL guideline, SWE.2 architecture, markdown/json/csv).
 
 PlantUML and MkDocs are not installed: render_diagram/build_docs are optional and report UNSUPPORTED.
 """
@@ -11,6 +11,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from ...inspection.architecture import check_architecture, is_agent_reply
 from ...inspection.ears import check_file
 from ...inspection.guideline import check_workspace
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result
@@ -18,7 +19,7 @@ from ..sdk import Operation, ToolContext, ToolInput, build_server, result
 
 class ValidateIn(ToolInput):
     path: str = Field(default=".", max_length=200)
-    check: Literal["ears", "hal_guideline", "markdown", "json", "csv"] = "markdown"
+    check: Literal["ears", "hal_guideline", "architecture", "markdown", "json", "csv"] = "markdown"
 
 
 class DocIn(ToolInput):
@@ -33,6 +34,11 @@ def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
                       [ctx.store(json.dumps(rep, indent=1).encode(), "json")], issues,
                       {"files_checked": len(rep["files_checked"])}, "forge-guideline-check",
                       input_obj=a.model_dump())
+    if a.check == "architecture":
+        rep = check_architecture(ctx.workspace)
+        return result(ctx, rep["verdict"], f"SWE.2 architecture: {len(rep['major_findings'])} findings",
+                      [ctx.store(json.dumps(rep, indent=1).encode(), "json")], rep["major_findings"][:30],
+                      rep["stats"], "forge-architecture-check", input_obj=a.model_dump())
     p = ctx.path(a.path, must_exist=True, kind="file")
     if a.check == "ears":
         rep = check_file(p)
@@ -45,6 +51,8 @@ def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
     if a.check == "markdown":
         if not text.strip():
             issues.append("EMPTY_DOCUMENT")
+        if is_agent_reply(text.strip()):
+            issues.append("WORKPRODUCT_IS_AGENT_REPLY")
         if not any(line.startswith("#") for line in text.splitlines()):
             issues.append("NO_HEADINGS")
         for marker in ("TBD", "TODO", "lorem ipsum"):
@@ -74,7 +82,7 @@ def unsupported(name: str):
 
 OPERATIONS = [
     Operation("validate_artifact", ValidateIn, validate_artifact,
-              "Validate a workproduct (ears|hal_guideline|markdown|json|csv)."),
+              "Validate a workproduct (ears|hal_guideline|architecture|markdown|json|csv)."),
     Operation("render_diagram", DocIn, unsupported("plantuml"), "Render PlantUML (disabled)."),
     Operation("build_docs", DocIn, unsupported("mkdocs"), "Build MkDocs site (disabled)."),
 ]

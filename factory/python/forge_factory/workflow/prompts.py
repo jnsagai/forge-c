@@ -41,7 +41,9 @@ AUTHOR_STEPS = {
         "stack budget (flash<=4096 B, RAM<=64 B, stack<=128 B), Requirement allocation table (SWR -> function), and a "
         "Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 page. RCC base "
         "address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
-        "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check markdown.",
+        "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check "
+        "architecture; fix every finding (rewrite the file with write_file) and repeat until status PASS. Never write "
+        "your JSON reply into a workproduct file.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
         "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM) "

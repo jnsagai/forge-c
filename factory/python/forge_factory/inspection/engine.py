@@ -98,6 +98,12 @@ class Store:
         files = self.files_of(phase)
         if not files:
             raise InspectionError(f"NO_WORKPRODUCTS:{phase}")
+        from .architecture import is_agent_reply
+
+        for rel in files:  # an agent's status reply written over a workproduct is never frozen
+            if rel.endswith((".md", ".c", ".h", ".csv")) and \
+                    is_agent_reply((self.workspace / rel).read_text(errors="replace").strip()):
+                raise InspectionError(f"WORKPRODUCT_IS_AGENT_REPLY:{rel}")
         upstream = {}
         for up in UPSTREAM[phase]:
             lb = self.latest_baseline(up)
@@ -138,6 +144,17 @@ class Store:
                     names = set(json.loads(sn.read_text()))
                 rep = check_file(req, names) if req.is_file() else {"verdict": "FAIL",
                                                                      "major_findings": ["SWE1:NO_REQUIREMENTS_FILE"]}
+                rdir = self.insp / phase / "deterministic"
+                rdir.mkdir(parents=True, exist_ok=True)
+                rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"
+                rpath.write_text(pretty_json(rep))
+                out[c["id"]] = {"verdict": rep["verdict"], "evidence_refs": [rpath.relative_to(self.workspace)
+                                                                             .as_posix()],
+                                "findings": rep["major_findings"][:20], "source": "deterministic"}
+            elif c.get("deterministic_check") == "architecture_structure":
+                from .architecture import check_architecture
+
+                rep = check_architecture(self.workspace)
                 rdir = self.insp / phase / "deterministic"
                 rdir.mkdir(parents=True, exist_ok=True)
                 rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"

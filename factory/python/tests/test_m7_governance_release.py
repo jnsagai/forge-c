@@ -120,9 +120,10 @@ def test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence
 # ---------------- T045 ------------------------------------------------------------------------------------
 def complete_workspace(ws: Path) -> None:
     """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+    from test_swe2_architecture import ARCH_MIN
     files = {
         "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
-        "workproducts/SWE.2/software_architecture.md": "# Architecture\nsynthetic\n",
+        "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
         "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
         "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
         "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
