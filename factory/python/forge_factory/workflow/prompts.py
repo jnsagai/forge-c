@@ -61,6 +61,14 @@ AUTHOR_STEPS = {
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check "
         "architecture; fix every finding (rewrite the file with write_file) and repeat until status PASS. Never write "
         "your JSON reply into a workproduct file.",
+        "write_file workproducts/SWE.2/architecture_static.puml: PlantUML component view between '@startuml' and "
+        "'@enduml' with components named stm32n6xx_hal_rcc (HAL) and stm32n6xx_ll_rcc (LL, header-only), the RCC register "
+        "block (0x56028000) and their dependencies (HAL -> LL -> registers).",
+        "write_file workproducts/SWE.2/architecture_dynamic.puml: PlantUML sequence view(s) between '@startuml' and "
+        "'@enduml' with participants Caller, stm32n6xx_hal_rcc, stm32n6xx_ll_rcc, RCC, showing an oscillator enable with "
+        "the ready path (HAL_OK) and the timeout path (HAL_TIMEOUT) using the allocated HAL_RCC_ function names, plus a "
+        "peripheral clock enable or reset sequence.",
+        "Call mcp__forge_docs_mcp__validate_artifact with check plantuml; fix every finding and repeat until PASS.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.2 baseline."],
     "SWE.3": [
         "read_file workproducts/SWE.2/software_architecture.md (Memory and stack budget section only, use offset/limit).",

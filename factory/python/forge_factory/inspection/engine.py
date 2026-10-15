@@ -35,8 +35,10 @@ PHASE_PATHS = {
 SYSTEM_NAMES_FILE = "configuration/system_names.json"
 # Deterministic presence gate before any freeze (r15/r43: lenient inspectors passed phases with missing outputs)
 REQUIRED_OUTPUTS = {
-    "SWE.1": ["workproducts/SWE.1/software_requirements.md", "traceability/requirements_to_tests.csv"],
-    "SWE.2": ["workproducts/SWE.2/software_architecture.md"],
+    "SWE.1": ["workproducts/SWE.1/software_requirements.md", "traceability/requirements_to_tests.csv",
+              "workproducts/SWE.1/software_requirements.reqif"],
+    "SWE.2": ["workproducts/SWE.2/software_architecture.md", "workproducts/SWE.2/architecture_static.puml",
+              "workproducts/SWE.2/architecture_dynamic.puml"],
     "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
     "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
     "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
@@ -178,13 +180,24 @@ class Store:
                                                                              .as_posix()],
                                 "findings": rep["major_findings"][:20], "source": "deterministic"}
             elif c.get("deterministic_check") in ("architecture_structure", "register_map_conformance",
-                                                  "implementation_completeness"):
+                                                  "implementation_completeness", "architecture_views", "reqif_export"):
                 from .architecture import check_architecture
                 from .implementation import check_implementation
                 from .regmap import check_regmap
+                from .reqif_export import OUT as REQIF_OUT
+                from .reqif_export import validate as reqif_validate
+                from .views import check_views
+
+                def _reqif(ws: Path) -> dict:
+                    p = ws / REQIF_OUT
+                    if not p.is_file():
+                        return {"verdict": "FAIL", "major_findings": ["REQIF:MISSING"]}
+                    v = reqif_validate(p)
+                    return {"verdict": v["verdict"], "major_findings": v["issues"], "spec_objects": v["spec_objects"]}
 
                 rep = {"architecture_structure": check_architecture, "register_map_conformance": check_regmap,
-                       "implementation_completeness": check_implementation}[c["deterministic_check"]](self.workspace)
+                       "implementation_completeness": check_implementation, "architecture_views": check_views,
+                       "reqif_export": _reqif}[c["deterministic_check"]](self.workspace)
                 rdir = self.insp / phase / "deterministic"
                 rdir.mkdir(parents=True, exist_ok=True)
                 rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"

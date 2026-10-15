@@ -202,6 +202,9 @@ def test_t016_evidence_role_enforced_and_inspection_immutable(ws):
     (ws / "workproducts/SWE.1").mkdir(parents=True)
     (ws / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall enable the selected peripheral clock.\n")
+    from test_swe2_architecture import add_reqif
+
+    add_reqif(ws)
     fr = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-author", "SWE.1")
     assert fr["status"] == "PASS"
     bad = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-inspector", "SWE.1")

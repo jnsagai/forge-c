@@ -19,3 +19,15 @@ additional_checks:
   - workproduct_reference
   - architecture_report_reference
   - recorded_verdict
+- id: SWE2-08
+  required: true
+  severity_if_failed: major
+  criterion: The architecture provides a static (component) view and a dynamic (sequence) view in PlantUML that
+    are syntactically valid, render, name the driver components, show allocated HAL APIs and a timeout path.
+  deterministic_check: architecture_views
+  tool: forge-docs-mcp.validate_artifact
+  source: owner request 2026-10-15 (PlantUML static and dynamic views)
+  evidence:
+  - workproduct_reference
+  - views_report_reference
+  - recorded_verdict

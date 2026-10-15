@@ -20,6 +20,9 @@ def store(tmp_path, monkeypatch):
     (ws / "workproducts/SWE.1/software_requirements.md").write_text(EARS_OK)
     (ws / "configuration").mkdir()
     (ws / "configuration/system_names.json").write_text(json.dumps(["RCC driver"]))
+    from test_swe2_architecture import add_reqif
+
+    add_reqif(ws)  # SWE1-08: ReqIF export of the requirements
     return Store(ws)
 
 
@@ -27,10 +30,15 @@ def write_phase(store, phase, text="content"):
     p = store.workspace / f"workproducts/{phase}/doc.md"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text)
-    if phase == "SWE.2":  # SWE2-07 is decided deterministically from the architecture workproduct
-        from test_swe2_architecture import ARCH_MIN
+    if phase == "SWE.2":  # SWE2-07/08 are decided deterministically from the architecture workproducts
+        from test_swe2_architecture import ARCH_MIN, add_views
 
         (p.parent / "software_architecture.md").write_text(ARCH_MIN)
+        add_views(store.workspace)
+    if phase == "SWE.1":
+        from test_swe2_architecture import add_reqif
+
+        add_reqif(store.workspace)
 
 
 def test_checklists_extend_pinned_v03_and_swe1_has_ears():

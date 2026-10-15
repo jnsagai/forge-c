@@ -69,7 +69,18 @@ def step_author(store: Store, phase: str, text: str) -> int:
         tail = _trailing_contract(text)
         if tail is not None:  # contract violation is recorded, the contract object itself is honoured
             prose_violation, res = res.errors, tail
+    generated: list[str] = []
+    if phase == "SWE.1" and (store.workspace / "workproducts/SWE.1/software_requirements.md").is_file():
+        from .reqif_export import export as reqif_export  # deterministic ReqIF, part of the frozen baseline
+
+        rq = reqif_export(store.workspace)
+        generated += [f"REQIF:{i}" for i in rq["issues"]]
+    if phase == "SWE.2" and (store.workspace / "workproducts/SWE.2/architecture_static.puml").is_file():
+        from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
+
+        generated += check_views(store.workspace, render=True)["major_findings"]
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
+    missing += generated
     if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": "INCOMPLETE",
                                         "issues": missing[:20]})

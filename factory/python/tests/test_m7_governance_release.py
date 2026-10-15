@@ -149,6 +149,10 @@ def complete_workspace(ws: Path) -> None:
         p = ws / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(txt)
+    from test_swe2_architecture import add_reqif, add_views
+
+    add_views(ws)
+    add_reqif(ws)
     (ws / "build/target-cm55-gcc").mkdir(parents=True)
     (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
     (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
