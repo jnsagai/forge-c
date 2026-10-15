@@ -1,79 +1,159 @@
-# Forge-C v0.5 — Complete Open-Source Dark Factory Project
+# Forge-C
 
-**Project state: IMPLEMENTATION PLAN + TESTED BASELINE COMPONENTS, NOT A DEPLOYED FACTORY.**
+**An open-source, on-premise "software dark factory" for safety-related embedded C drivers.**
 
-Forge-C is an open-source, autonomous software factory focused on **ultra-low-memory-footprint embedded C HAL / low-level drivers**, using Fabro for orchestration and local Qwen for production agents. Claude Code is the implementation engineer for this repository, **not a mandatory production runtime model or paid dependency**. Engineering workproducts target **Automotive SPICE 4.0 SWE.1–SWE.6** and support an **ISO 26262 ASIL B development lifecycle**, with offline human safety review.
+You give Forge-C an approved set of inputs, such as requirements, safety inputs and the MCU reference manual. Forge-C then
+runs the Automotive SPICE SWE.1–SWE.6 process with AI agents and returns a sealed, hash-verified package for a human to
+review offline. AI agents write and inspect the work. Deterministic open-source tools decide whether it passes:
+compilers, static analysis, MISRA checks, unit tests, coverage and footprint measurement.
 
-**Begin with [CLAUDE_START.md](CLAUDE_START.md) and [KPI_CLAUDE_START.md](KPI_CLAUDE_START.md).**
+> **Status: pilot.** The factory runs end to end on a local model. It is not a certified tool chain. A package is
+> input to human engineering and safety review. It is **never** an ISO 26262 / ASIL B approval, an ASPICE assessment
+> or a production release.
 
-## Versioned feature plans (all included)
+---
 
-| Feature | Content | Primary source |
-|---|---|---|
-| 001 — OSS C driver bootstrap | Host RCC driver, CMake/Clang/LLVM tests, static check, footprint scripts, safety gates | [`specs/001-factory/`](specs/001-factory/) |
-| 002 — Self-healing dark factory | 20 agent SKILLs; 9 MCP service definitions / 34 proposed operations; SWE.1–6 independent inspections; model-free supervisor; repair + lessons; trace dashboard; offline Release Manager | [`specs/002-self-healing-factory/`](specs/002-self-healing-factory/) |
-| 003 — Manufacturing KPI system (v0.5) | 20 KPIs, deterministic aggregation design, event provenance, data contracts, release snapshots; dependent implementation backlog | [`specs/003-manufacturing-kpis/`](specs/003-manufacturing-kpis/) |
+## How it works
 
-## Key project paths
-
-| Purpose | Location |
-|---|---|
-| Claude implementation contract | [`CLAUDE.md`](CLAUDE.md) |
-| Combined v0.5 handoff | [`PROJECT_HANDOFF_v0.5.md`](PROJECT_HANDOFF_v0.5.md) |
-| 002 functional specs / milestone tasks | [`specs/002-self-healing-factory/spec.md`](specs/002-self-healing-factory/spec.md), [`tasks.md`](specs/002-self-healing-factory/tasks.md) |
-| 003 KPI specs / milestone tasks | [`specs/003-manufacturing-kpis/spec.md`](specs/003-manufacturing-kpis/spec.md), [`tasks.md`](specs/003-manufacturing-kpis/tasks.md) |
-| All editable draw.io diagrams | [`architecture/Forge-C_Fabro_DarkFactory_v0.5.drawio`](architecture/Forge-C_Fabro_DarkFactory_v0.5.drawio) (12 tabs), [`architecture/history/`](architecture/history/) |
-| Agent SKILLs and permissions | [`.fabro/skills/`](.fabro/skills/), [`config/factory/agents.yaml`](config/factory/agents.yaml) |
-| Planned MCP adapter registry | [`config/factory/mcp-registry.yaml`](config/factory/mcp-registry.yaml) |
-| Supervisor, traces, token limits, KPI policies | [`config/factory/`](config/factory/) |
-| RCC host demonstrator | [`drivers/demo_rcc/`](drivers/demo_rcc/), [`tests/c/`](tests/c/) |
-| Build/verification tools | [`tools/`](tools/), [`scripts/`](scripts/) |
-| Reference Release Manager packager | [`factory/release-manager/`](factory/release-manager/) |
-| ASPICE/ASIL engineering templates | [`templates/`](templates/), [`docs/COMPLIANCE-MATRIX.md`](docs/COMPLIANCE-MATRIX.md) |
-| Tests and design-contract validation | [`tests/`](tests/), [`factory/release-manager/tests/`](factory/release-manager/tests/) |
-| Existing host demonstration evidence | [`evidence/oss-demo/`](evidence/oss-demo/) — host only, **not ASIL B target evidence** |
-| File catalogue and integrity checks | [`PROJECT_MANIFEST.json`](PROJECT_MANIFEST.json), [`SHA256SUMS.txt`](SHA256SUMS.txt), [`scripts/verify_bundle.py`](scripts/verify_bundle.py) |
-
-## Run existing baseline checks (Ubuntu)
-
-```bash
-python3 tests/spec/validate_design.py
-python3 -m unittest discover -s tests -v
-python3 -m unittest discover -s factory/release-manager/tests -p 'test_*.py' -v
-python3 scripts/verify_bundle.py
-
-# Optional: if Clang/Ninja/LLVM tooling is present, execute host RCC demo:
-./scripts/run_oss_demo.sh
+```mermaid
+flowchart LR
+    IN[Approved inputs<br/>requirements, safety, MCU manual] --> INTAKE[Intake<br/>hash + preflight]
+    INTAKE --> SWE[SWE.1 → SWE.6<br/>author → checks → inspector → gate]
+    SWE -- finding --> SWE
+    SWE --> REL[Release Manager<br/>+ deterministic packager]
+    REL --> PKG[(Sealed package<br/>READY_FOR_OFFLINE_REVIEW<br/>or BLOCKED)]
+    PKG --> HUMAN[Offline human review]
 ```
 
-The 002 design validator requires PyYAML and jsonschema (`python3 -m pip install PyYAML jsonschema` in an isolated development environment). Host demo requires installed LLVM/Clang build tools. These commands **do not** validate the unfinished autonomous platform or any real MCU/ASIL B release.
+1. **Intake.** The inputs are hashed into an isolated git workspace. If an agent or tool permission is missing, the
+   run stops at once with a `BLOCKED` package.
+2. **SWE.1 to SWE.6.** In each step an *author* agent writes the workproduct and deterministic checks run on it. A
+   separate *inspector* agent then reviews it against a versioned checklist, and a gate decides. Failures go back to
+   the author, with a bounded number of attempts.
+3. **Release.** A Release Manager agent collects the evidence. A deterministic packager seals a hash-checked archive
+   that lists every gap it found.
 
-## Non-negotiable architecture
+Several controls run alongside the workflow:
 
-1. Each production AI role loads a versioned SKILL. Every engineering tool the agent can invoke is exposed through a least-privilege MCP adapter; implementation bootstrap may use local shell.
-2. Fabro hosts SWE.1–SWE.6 production steps; a **different AI inspection role** checks each frozen workproduct using a versioned checklist. Failed inspections create findings and trigger bounded rework and reinspection.
-3. A **model-less supervisor** runs separately from Fabro. Eligible incidents dispatch a repair agent into an isolated workspace, validate changes deterministically, rollback upon regression, and publish only verified lessons shared between workflows.
-4. Operator dashboard supports independent event **capture** and user-selected **display** filters, including human, tool, AI summary, audit, supervisor and repair traces. No secrets or hidden reasoning in logs.
-5. Token-efficient agents emit concise structured status/issues; verification reports and traceable workproducts remain complete on disk.
-6. A final **Release Manager agent** always attempts a checksummed offline evidence package. State is `READY_FOR_OFFLINE_REVIEW` or `BLOCKED`; never an automatic ASIL B approval.
-7. KPIs (software OEE, throughput, inspection FPY/RTY, tokens, resource footprint, recovery and evidence completeness) are calculated from deterministic events. KPIs cannot bypass quality/safety gates.
+- **20 agent roles.** Each role loads a versioned `SKILL.md` and may use only its own tools, through 9 MCP tool servers
+  behind a fail-closed policy hook.
+- **A supervisor with no AI.** It watches the services every 60 s, dispatches bounded and reversible repairs, and seals
+  a package for any run that ends without one.
+- **Lessons learned.** A lesson from a verified repair is shared with later runs only after it has been validated.
+- **Traces and KPIs.** Configurable traces, an audit trail and 20 manufacturing KPIs are shown on a read-only dashboard.
+  Prompts, responses and model reasoning are not stored by default.
 
-## Current implementation status (night run 2026-10-14/15, branch `night-run/2026-10-14`)
+The full architecture is described in [`docs/DARK-FACTORY-ARCHITECTURE-v0.4.md`](docs/DARK-FACTORY-ARCHITECTURE-v0.4.md).
+The diagrams can be edited in [`architecture/`](architecture/).
 
-Status is generated from evidence records only: [`docs/IMPLEMENTATION-STATUS-v0.4.md`](docs/IMPLEMENTATION-STATUS-v0.4.md)
-(task → FR → test → `evidence/v0.4/runs/<task>/latest.json`). Operations: [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md).
-Decisions: [`docs/adr/`](docs/adr/) (ADR-0001…0006).
+## What you need
 
-- **Implemented and tested:** `factory/python/forge_factory/` — agent/SKILL registry + preflight (20 versioned SKILLs),
-  deterministic Fabro policy hook (role/phase/path authorization, turn budget), 9 Forge MCP servers with one-time
-  authorization tickets, no-reasoning local LLM gateway, SWE.1–SWE.6 inspection engine (EARS SWE1-07, HAL guideline
-  verification node SWE3-07), generated fail-closed Fabro workflow, model-free supervisor (systemd, watchdog,
-  zero model calls), isolated repair + CAS promotion/rollback, evidence-gated lessons, event store + capture policy,
-  read-only dashboard (SSE), token governor, v0.4/v0.5 offline packager overlay, KPI engine K01–K20 (feature 003).
-- **Live evidence on local qwen3:8b via Fabro 0.362:** autonomous repair (rollback then promotion, lesson validated and
-  reused), policy denials of native-tool bypass, STM32N6 RCC work orders reaching first-pass SWE.1/SWE.2 inspections.
-- **Final STM32N6 pilot outcome:** packages are `BLOCKED` (no target/simulator, model-limited SWE.3+ output); this is
-  the correct dark-factory result, with every gap listed in the package.
-- **Safety:** no automatic ISO 26262 approval or software release. MISRA Cppcheck checks are partial; real target and formal safety activities require competent offline review and applicable tool assurance.
+| | |
+|---|---|
+| OS | Ubuntu 22.04 LTS (the validated toolchain baseline) |
+| Model | Any OpenAI-compatible endpoint with tool calling: local Ollama (default `qwen3:8b`) or a vLLM server |
+| Orchestrator | Fabro 0.362 (workflow engine) |
+| Toolchain | Python 3.13 + [`uv`](https://github.com/astral-sh/uv), LLVM/Clang 19.1.7, `gcc-arm-none-eabi` 10.3, Cppcheck 2.7, CMake, Ninja, gcovr |
 
-See [PROJECT_HANDOFF_v0.5.md](PROJECT_HANDOFF_v0.5.md) for implementation order, dependencies, and acceptance criteria. Check [`TEST_RESULTS_v0.5.md`](TEST_RESULTS_v0.5.md) for this archive's verified tests.
+Everything is open source. Forge-C needs no paid service or cloud API at runtime. The pinned versions are listed in
+[`docs/TOOLCHAIN.md`](docs/TOOLCHAIN.md) and [`docs/OSS-SETUP.md`](docs/OSS-SETUP.md).
+
+## Quick start
+
+```bash
+# 0. Choose where data, models, state and archives live (default: see scripts/forge-env.sh)
+export FORGE_DATA_ROOT=/srv/forge-c
+
+# 1. Load the environment. Do this in every new shell.
+. scripts/forge-env.sh
+
+# 2. Install the Python factory from the hash-pinned lock file
+make factory-bootstrap
+
+# 3. Start the model server, the LLM gateway and Fabro
+./scripts/forge_services.sh start          # Ollama :11435 -> gateway :11436 -> Fabro :32290
+./scripts/install_supervisor.sh            # model-free supervisor as a systemd user service
+
+# 4. Run a work order (the STM32N6 RCC driver pilot)
+python -m forge_factory.workorder --example examples/0002-arm_55_rcc_st --wo WO-0002-demo --detach
+
+# 5. Watch it
+python -m forge_factory.fabro.progress <run-id>
+python -m forge_factory.dashboard.app      # read-only dashboard on http://127.0.0.1:8765
+```
+
+Fabro reads its model provider settings from `$FORGE_FABRO_CONFIG`. See
+[`config/fabro-settings.oss.example.toml`](config/fabro-settings.oss.example.toml) for the provider and model entries.
+
+## Reading the result
+
+A finished work order leaves a write-once archive in `$FORGE_ARCHIVE_DIR`, with one of two statuses:
+
+- **`READY_FOR_OFFLINE_REVIEW`**: every gate passed. The package is ready for human review. This is still **not** an
+  approval.
+- **`BLOCKED`**: something is missing or failed. `missing_artifacts.json` and `REVIEW_SUMMARY.md` say exactly what.
+
+To verify an archive and then review it:
+
+```bash
+python -c "from pathlib import Path; from forge_factory.release.finalize import verify_archive; \
+print(verify_archive(Path('<archive.zip>')))"
+```
+
+Then read `REVIEW_SUMMARY.md`, `evidence/quality/final-gates.json` and `evidence/safety/known_limitations.md`.
+
+## Everyday commands
+
+| Task | Command |
+|---|---|
+| Service status | `./scripts/forge_services.sh status` |
+| Stop services | `./scripts/forge_services.sh stop` |
+| Supervisor status | `systemctl --user status forge-supervisor` |
+| Factory test suite | `make factory-test` |
+| Design and registry check | `make design-check` |
+| Baseline tests (v0.1 demo) | `make test` |
+| v0.3 reference packager tests | `python3 -m unittest discover -s factory/release-manager/tests -p 'test_*.py'` |
+| Implementation status report | `make status` |
+| Compute KPI snapshot | `make kpi` |
+
+Backup, recovery, trace retention and the failure runbook are in [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md).
+
+## Repository map
+
+| Path | What is there |
+|---|---|
+| [`factory/python/forge_factory/`](factory/python/forge_factory/) | The factory: workflow generator, LLM gateway, MCP servers, supervisor, repair, lessons, events, dashboard, KPIs, release packager |
+| [`.fabro/skills/`](.fabro/skills/) | The versioned `SKILL.md` for each of the 20 agent roles |
+| [`config/factory/`](config/factory/) | Agent permissions, MCP registry, supervisor, trace, token and KPI policies |
+| [`examples/`](examples/) | Work order inputs (generic RCC, STM32N6 RCC) |
+| [`specs/`](specs/) | Spec Kit features: 001 OSS driver bootstrap, 002 self-healing factory, 003 manufacturing KPIs |
+| [`docs/`](docs/) | Architecture, operations, compliance matrix, ADRs ([`docs/adr/`](docs/adr/)) |
+| [`drivers/`](drivers/), [`tests/`](tests/) | v0.1 RCC host demonstrator and baseline tests |
+| [`evidence/`](evidence/) | Recorded test and run evidence |
+
+## Current status
+
+- All 51 tasks of the self-healing factory (002) and all 20 KPI tasks (003) pass, each with recorded test evidence.
+  The task-by-task report is [`docs/IMPLEMENTATION-STATUS-v0.4.md`](docs/IMPLEMENTATION-STATUS-v0.4.md).
+- On the STM32N6 RCC pilot, SWE.1 to SWE.6 have all passed in a single run. Packages still end `BLOCKED`, because
+  target verification (simulator or hardware), full MISRA coverage and the deferred safety documents are missing. The
+  package declares each of these gaps.
+- Known findings from running local models are recorded in
+  [`docs/adr/ADR-0005-local-model-runtime-findings.md`](docs/adr/ADR-0005-local-model-runtime-findings.md).
+
+## Safety and limitations
+
+- MISRA C coverage is the Cppcheck addon subset only, and no compliance is claimed.
+- Coverage, tests and footprint figures are host-level evidence, not linked target firmware.
+- No tool, including Forge-C itself, is qualified under ISO 26262-8.
+- Every safety decision requires competent offline human review.
+
+## For contributors
+
+Forge-C is implemented with Claude Code as the engineering assistant. Claude Code is not part of the production
+runtime. To work on the factory, start with [`CLAUDE.md`](CLAUDE.md), [`CLAUDE_START.md`](CLAUDE_START.md) and
+[`PROJECT_HANDOFF_v0.5.md`](PROJECT_HANDOFF_v0.5.md).
+
+## Licence
+
+[Apache-2.0](LICENSE).
