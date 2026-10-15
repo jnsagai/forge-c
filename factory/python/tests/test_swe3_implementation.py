@@ -75,3 +75,23 @@ def test_r26_function_pointer_helper_and_return_calls_are_not_declarations(tmp_p
     assert rep["verdict"] == "PASS", rep["major_findings"]
     g = check_workspace(w)
     assert not [v for v in g["violations"] if v["rule"] in ("GL-API-01", "GL-ARG-01")], g["violations"][:5]
+
+
+def test_swe3_all_check_aggregates_three_deterministic_checks(tmp_path, monkeypatch):
+    import os
+
+    from forge_factory.common import canonical_json
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import docs
+
+    w = ws(tmp_path)
+    monkeypatch.setenv("FORGE_MCP_TRUST", "env")
+    monkeypatch.setenv("FORGE_WORKSPACE", str(w))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    os.environ["FORGE_ROLE"], os.environ["FORGE_PHASE"] = "swe3-author", "SWE.3"
+    op = next(o for o in docs.OPERATIONS if o.name == "validate_artifact")
+    out = sdk.invoke("forge-docs-mcp", op, {"check": "swe3_all"})
+    assert len(canonical_json(out)) <= sdk.MAX_RESULT_BYTES
+    assert set(out["metrics"]) >= {"guideline_violations", "register_map_findings", "implementation_findings"}
+    assert out["status"] == "FAIL" and any(i.startswith("REGMAP:") for i in out["issues"])  # fixture has no RM defines

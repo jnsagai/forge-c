@@ -67,9 +67,8 @@ AUTHOR_STEPS = {
         "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again. "
         "For 'no newline at end of file' replace the last line (e.g. the final #endif line) with the same text followed "
         "by a line break.",
-        "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline, then check register_map, then check "
-        "implementation (every allocated HAL_RCC_ function declared and defined, no commented-out code); fix every "
-        "finding the same way and repeat until all three PASS.",
+        "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (HAL guideline + register map + implementation "
+        "completeness in ONE call); fix every finding the same way and repeat until it PASSes.",
         "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
         "the code (suppression comments are ignored and forbidden).",
         "write_file workproducts/SWE.3/detailed_design.md (at most 40 lines): '# Detailed design', then a table "
@@ -153,7 +152,8 @@ HAL_STEPS = [
     "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL first, "
     "returning HAL_ERROR): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
     "way; peripheral clock enable/disable and reset functions call the LL function and return HAL_OK.",
-    "Call mcp__forge_docs_mcp__validate_artifact with check implementation and add any function it reports missing.",
+    "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all and fix what it reports (missing functions, guideline "
+    "naming such as hal_ prefixed lower-case types ending _t) before replying.",
     "Reply with the list of HAL_RCC_ functions you implemented.",
 ]
 

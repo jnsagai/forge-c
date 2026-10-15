@@ -21,8 +21,8 @@ from ..sdk import Operation, ToolContext, ToolInput, build_server, result
 
 class ValidateIn(ToolInput):
     path: str = Field(default=".", max_length=200)
-    check: Literal["ears", "hal_guideline", "register_map", "implementation", "architecture", "markdown", "json",
-                   "csv"] = "markdown"
+    check: Literal["ears", "hal_guideline", "register_map", "implementation", "swe3_all", "architecture", "markdown",
+                   "json", "csv"] = "markdown"
 
 
 class DocIn(ToolInput):
@@ -36,6 +36,18 @@ def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
         return result(ctx, rep["verdict"], f"HAL guideline: {len(rep['violations'])} violations",
                       [ctx.store(json.dumps(rep, indent=1).encode(), "json")], issues,
                       {"files_checked": len(rep["files_checked"])}, "forge-guideline-check",
+                      input_obj=a.model_dump())
+    if a.check == "swe3_all":  # one call for the three deterministic SWE.3 verification checks (saves agent turns)
+        g, r, i = check_workspace(ctx.workspace), check_regmap(ctx.workspace), check_implementation(ctx.workspace)
+        issues = ([f"{v['rule']}:{v['file'].split('/')[-1]}:{v['line']}:{v['detail'][:60]}" for v in g["violations"]]
+                  + r["major_findings"] + i["major_findings"])
+        verdict = "PASS" if g["verdict"] == r["verdict"] == i["verdict"] == "PASS" else "FAIL"
+        return result(ctx, verdict, f"SWE.3 checks: guideline {g['verdict']} ({len(g['violations'])}), register map "
+                      f"{r['verdict']}, implementation {i['verdict']}",
+                      [ctx.store(json.dumps({"hal_guideline": g, "register_map": r, "implementation": i},
+                                            indent=1).encode(), "json")], issues[:30],
+                      {"guideline_violations": len(g["violations"]), "register_map_findings": len(r["major_findings"]),
+                       "implementation_findings": len(i["major_findings"])}, "forge-swe3-checks",
                       input_obj=a.model_dump())
     if a.check == "implementation":
         rep = check_implementation(ctx.workspace)
@@ -95,7 +107,7 @@ def unsupported(name: str):
 
 OPERATIONS = [
     Operation("validate_artifact", ValidateIn, validate_artifact,
-              "Validate a workproduct (ears|hal_guideline|register_map|implementation|architecture|markdown|json|csv)."),
+              "Validate a workproduct (ears|hal_guideline|register_map|implementation|swe3_all|architecture|markdown|json|csv)."),
     Operation("render_diagram", DocIn, unsupported("plantuml"), "Render PlantUML (disabled)."),
     Operation("build_docs", DocIn, unsupported("mkdocs"), "Build MkDocs site (disabled)."),
 ]
