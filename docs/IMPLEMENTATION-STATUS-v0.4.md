@@ -1,6 +1,6 @@
 # Forge-C implementation status (generated from evidence records)
 
-Generated 2026-10-15T06:32:36.158744Z at commit `9447c2d2f1bc`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
+Generated 2026-10-15T07:10:25.054767Z at commit `83790ad5e7b0`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
 
 * Feature 002: **51/51** tasks PASS
 * Feature 003 (KPI): **20/20** tasks PASS

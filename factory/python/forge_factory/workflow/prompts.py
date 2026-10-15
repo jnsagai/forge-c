@@ -118,14 +118,18 @@ HAL_STEPS = [
     "hal_status_t;', '#define HAL_RCC_TIMEOUT_VALUE 1000U', the line '{hmarker}', '#endif /* STM32N6XX_HAL_RCC_H */' and "
     "a final newline.",
     "Insert the API prototypes with edit_file on that header: old_string exactly '{hmarker}', new_string = at most 8 "
-    "prototypes 'hal_status_t <name>(void);' using EXACTLY the HAL_RCC_ names of the SWE.2 Requirement allocation "
-    "table (never rename them), a blank line, then the marker again; repeat until every allocated function is declared.",
+    "prototypes using EXACTLY the HAL_RCC_ names of the SWE.2 Requirement allocation table and EXACTLY the parameter "
+    "lists and types given in the SWE.2 Interfaces section ('(void)' only where the architecture specifies no "
+    "parameters; declare any configuration struct type it names, lower case ending _t, before the prototypes), a "
+    "blank line, then the marker again; repeat until every allocated function is declared.",
     "write_file software/hal/stm32n6xx_hal_rcc.c with exactly: '#include \"stm32n6xx_hal_rcc.h\"', a blank line, the line "
     "'{marker}' and a final newline.",
     "For EACH API group make ONE edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
-    "function calls only LL_RCC_ functions. Oscillator/PLL Enable functions wait for the ready flag with a timeout, "
-    "exactly like this example (adapt names): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
+    "function calls only LL_RCC_ functions and keeps the exact signature declared in the header. Oscillator/PLL Enable "
+    "functions wait for the ready flag with a timeout like this example (adapt names; if the architecture passes a "
+    "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL first, "
+    "returning HAL_ERROR): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
     "way; peripheral clock enable/disable and reset functions call the LL function and return HAL_OK.",
     "Call mcp__forge_docs_mcp__validate_artifact with check implementation and add any function it reports missing.",
     "Reply with the list of HAL_RCC_ functions you implemented.",
