@@ -21,7 +21,8 @@ from ..sdk import Operation, ToolContext, ToolInput, build_server, result
 
 class ValidateIn(ToolInput):
     path: str = Field(default=".", max_length=200)
-    check: Literal["ears", "hal_guideline", "register_map", "implementation", "architecture", "markdown", "json", "csv"] = "markdown"
+    check: Literal["ears", "hal_guideline", "register_map", "implementation", "architecture", "markdown", "json",
+                   "csv"] = "markdown"
 
 
 class DocIn(ToolInput):
