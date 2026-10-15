@@ -209,3 +209,15 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
     it, or `report_defect` and stop with REWORK.
   - Only run_robot and validate_trace are allowed in this step. The reports are read only when writing the
     report.
+
+## Fourth live run (r65)
+- **Robot passed 18/18, but 3 requirements were never observed.** Observability held back SWR-005/006 (no
+  check on the ready flags) and SWR-014 (no HAL_ERROR check), so `run_robot` correctly stayed FAIL.
+- **The authors misread the finding.** They took `REQUIREMENT_NOT_OBSERVED` as a tooling or mapping problem:
+  they searched for ForgeTarget and grepped the factory, and all 3 cycles ended at the turn budget.
+- **Remedy:**
+  - Issues are now actionable within the 120-character cap: a leading `HOW_TO_OBSERVE` line, then
+    `REQUIREMENT_NOT_OBSERVED:SWR-005:needs TCHECK on LL_RCC_SR_HSIRDY_MSK in scn_osc_ready.c`. Register fields
+    are named by their generated LL macro.
+  - Both the SWE.6 test author and the SWE.6 author are told: this is your test gap. Add exactly the named
+    check. If it then fails, report the defect.

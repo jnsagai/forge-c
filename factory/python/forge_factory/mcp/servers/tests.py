@@ -212,7 +212,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
             if m:
                 exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + " ".join(m.group(2).split())[:90])
     issues = unobserved + issues + exprs  # a passing test that never checks what its requirement demands verifies nothing
-    covered -= {i.split(":")[1] for i in unobserved}
+    covered -= {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")}
     ok = bool(tests) and passed == len(tests) and not unobserved \
         and not [i for i in issues if i.startswith("UNCOVERED")]
     scn = sorted(sdir.glob("*.c"))

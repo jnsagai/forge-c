@@ -84,12 +84,16 @@ def check_suite(path: Path) -> list[str]:
 # A requirement-tagged test must observe what the requirement demands. r60 and r63 tagged SWR-014 ("shall return
 # HAL_ERROR without any register write") on scenarios whose checks never mention HAL_ERROR: traced, never verified.
 HAL_STATUS = re.compile(r"\bHAL_(?:OK|ERROR|TIMEOUT|BUSY)\b")
-REG_FIELD = re.compile(r"\bRCC_[A-Z0-9]+\.([A-Z][A-Z0-9_]+)\b")
+REG_FIELD = re.compile(r"\bRCC_([A-Z0-9]+)\.([A-Z][A-Z0-9_]+)\b")
+# r65: authors read "NOT_OBSERVED" as a tooling/mapping problem and searched the factory - say exactly what to add
+HOW_TO_OBSERVE = "HOW_TO_OBSERVE: add TCHECK(n, <named item>) to the scenario + 'Target Check Should Pass    n' in the SWR test"
 TCHECK = re.compile(r"TCHECK\(\s*([^,]+?)\s*,(.*?)\)\s*;", re.S)
 
 
 def required_tokens(requirement_text: str) -> tuple[set[str], set[str]]:
-    return set(HAL_STATUS.findall(requirement_text)), set(REG_FIELD.findall(requirement_text))
+    """HAL statuses and register fields a requirement names; fields as their generated LL mask macro."""
+    return set(HAL_STATUS.findall(requirement_text)), \
+        {f"LL_RCC_{reg}_{field}_MSK" for reg, field in REG_FIELD.findall(requirement_text)}
 
 
 def _checks(scenario: Path) -> dict[str, str]:
@@ -169,8 +173,9 @@ def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[
             checks = _checks(scenario_dir / scn)
             exprs += [e for i, e in checks.items() if cid is None or i == cid or not i.isdigit()]
         blob = " ".join(exprs)
-        missing = sorted(h for h in hal if h not in blob) if hal else \
-            ([] if any(f in blob for f in fields) else sorted(fields))
+        field_seen = any(f in blob or f.split("_")[-2] in blob for f in fields)  # macro, or the bare field name
+        missing = sorted(h for h in hal if h not in blob) if hal else ([] if field_seen else sorted(fields))
         if missing:
-            issues.append(f"REQUIREMENT_NOT_OBSERVED:{rid}:{','.join(missing)} (the tagged checks never test it)")
-    return issues
+            scn = ",".join(sorted({s for s, _ in obs[rid]})) or "a scenario"
+            issues.append(f"REQUIREMENT_NOT_OBSERVED:{rid}:needs TCHECK on {'|'.join(missing)} in {scn}")
+    return ([HOW_TO_OBSERVE] if issues else []) + issues

@@ -142,7 +142,10 @@ AUTHOR_STEPS = {
         "Call mcp__forge_tests_mcp__run_robot FIRST (the scenario files and software/tests/software/"
         "test_rcc_requirements.robot were written by the previous step). Use only run_robot and validate_trace in this "
         "step - never run_integration, run_renode or build tools.",
-        "If run_robot FAILs, decide BEFORE anything else, in at most 5 tool calls: read "
+        "REQUIREMENT_NOT_OBSERVED means YOUR test never checks what the requirement demands: add exactly the named "
+        "TCHECK to the named scenario file and 'Target Check Should Pass    <n>' to that SWR test (an edit_file each), "
+        "then run_robot again - this is not a tool problem, do not search the factory. "
+        "If run_robot FAILs a check, decide BEFORE anything else, in at most 5 tool calls: read "
         "workproducts/SWE.1/software_requirements.md and use the CHECK_EXPR / REQUIREMENT_NOT_OBSERVED issues (they "
         "show what each failing check tests). For each failing requirement either correct the scenario/suite (and "
         "declare it with report_defect kind TEST) or, if the test is right, call report_defect (CODE or ARCHITECTURE "
@@ -276,8 +279,9 @@ ROBOT_STEPS = [
     "The suite may use ONLY ForgeTarget keywords, keywords you define in the same file and Log/Should Be Equal: "
     "run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, Evaluate, Run "
     "Keyword and inline Python expressions. Never write shell scripts.",
-    "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors or UNCOVERED_REQUIREMENT issues and repeat "
-    "until it PASSes.",
+    "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors, UNCOVERED_REQUIREMENT and "
+    "REQUIREMENT_NOT_OBSERVED issues (add exactly the named TCHECK and its 'Target Check Should Pass' line) and "
+    "repeat until it PASSes.",
     "Reply with the run_robot summary.",
 ]
 

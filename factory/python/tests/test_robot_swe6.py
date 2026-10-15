@@ -157,8 +157,9 @@ def test_requirement_must_be_observed_by_its_tagged_checks_r63(tmp_path):
                      "SWR-016\n    [Tags]    SWR-016\n    Driver Flash Size Should Be At Most    4096\n\n"
                      "*** Keywords ***\nCheck HSI\n    [Arguments]    ${scn}\n    Run Target Scenario    ${scn}\n"
                      "    All Target Checks Should Pass\n")
-    assert unobserved_requirements(suite, tmp_path, reqs) == [
-        "REQUIREMENT_NOT_OBSERVED:SWR-014:HAL_ERROR (the tagged checks never test it)"]
+    out = unobserved_requirements(suite, tmp_path, reqs)
+    assert out[0].startswith("HOW_TO_OBSERVE:") and len(out[0]) <= 120  # r65: actionable, within the issue cap
+    assert out[1:] == ["REQUIREMENT_NOT_OBSERVED:SWR-014:needs TCHECK on HAL_ERROR in scn_param.c"]
     suite.write_text(suite.read_text().replace("Target Check Should Pass    9\n",
                                                "Target Check Should Pass    9\n    Target Check Should Pass    10\n"))
     assert unobserved_requirements(suite, tmp_path, reqs) == []  # check 10 observes HAL_ERROR
