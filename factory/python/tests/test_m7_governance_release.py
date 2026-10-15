@@ -42,12 +42,24 @@ class FakeFabro:
 # ---------------- T042 ------------------------------------------------------------------------------------
 def test_t042_turn_budget_blocks_and_resets_per_visit(env):
     for _ in range(20):
-        ok, n, lim = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
+        ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
         assert ok
-    ok, n, lim = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
+    ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
     assert not ok and n == 21 and lim == 20
     G.reset_node("b", "R", "swe3_author")
     assert G.count_tool_call("b", "R", "swe3_author", "swe3-author")[0]
+
+
+def test_t042_inspector_last_calls_reserved_for_recording_the_inspection(env):
+    """r63: the SWE.6 inspector used all 20 calls reading and never recorded its (correct) finding."""
+    for _ in range(16):
+        assert G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")[0]
+    ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")
+    assert not ok and reserved and n == 16  # denied without consuming budget
+    for tool in ("mcp__forge_evidence_mcp__report_defect", "mcp__forge_evidence_mcp__check_inspection"):
+        ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", tool)
+        assert ok and not reserved
+    assert G.count_tool_call("b", "R", "swe6_author", "swe6-author", "read_file")[0]  # authors unaffected
 
 
 def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
@@ -56,8 +68,11 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
     b = Binding("b2", str(tmp_path), {"insp": {"role": "swe1-inspector", "phase": "SWE.1"}})
     ctx = {"event": "pre_tool_use", "node_id": "insp", "run_id": "R", "tool_name": "read_file",
            "tool_input": {"file_path": "x"}}
-    decisions = [handle(ctx, b) for _ in range(21)]
-    assert all(d.allow for d in decisions[:20]) and decisions[20].code == "TURN_BUDGET_EXHAUSTED"
+    decisions = [handle(ctx, b) for _ in range(17)]
+    assert all(d.allow for d in decisions[:16]) and decisions[16].code == "INSPECTION_CALLS_RESERVED"
+    rec = {**ctx, "tool_name": "mcp__forge_evidence_mcp__check_inspection", "tool_input": {}}
+    decisions = [handle(rec, b) for _ in range(5)]  # the 4 reserved calls, then the authored limit (20)
+    assert all(d.allow for d in decisions[:4]) and decisions[4].code == "TURN_BUDGET_EXHAUSTED"
     assert handle({"event": "stage_start", "node_id": "insp", "run_id": "R"}, b).allow
     assert handle(ctx, b).allow
 

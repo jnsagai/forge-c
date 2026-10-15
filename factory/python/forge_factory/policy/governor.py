@@ -46,14 +46,24 @@ def reset_node(binding_id: str, run_id: str, node_id: str) -> None:
     _update(binding_id, fn)
 
 
-def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str) -> tuple[bool, int, int]:
-    """Returns (allowed, count_after, limit)."""
+RESERVED_FOR_INSPECTORS = 4  # r63: inspectors ran out of calls before recording; the last calls are reserved
+RESERVED_TOOLS = ("mcp__forge_evidence_mcp__check_inspection", "mcp__forge_evidence_mcp__report_defect")
+
+
+def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str,
+                    tool: str = "") -> tuple[bool, int, int, bool]:
+    """Returns (allowed, count_after, limit, reserved_denial). For inspector roles the last RESERVED_FOR_INSPECTORS
+    calls of the authored budget are only usable for check_inspection/report_defect; a denied non-reserved call
+    does not consume budget (the budget itself is unchanged)."""
     limit = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
 
-    def fn(st: dict) -> tuple[bool, int, int]:
+    def fn(st: dict) -> tuple[bool, int, int, bool]:
         k = f"{run_id}:{node_id}"
-        st[k] = int(st.get(k, 0)) + 1
-        return st[k] <= limit, st[k], limit
+        cur = int(st.get(k, 0))
+        if role.endswith("-inspector") and cur >= limit - RESERVED_FOR_INSPECTORS and tool not in RESERVED_TOOLS:
+            return False, cur, limit, True
+        st[k] = cur + 1
+        return st[k] <= limit, st[k], limit, False
     return _update(binding_id, fn)
 
 

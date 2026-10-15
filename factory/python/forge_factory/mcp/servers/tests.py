@@ -195,8 +195,16 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
     issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
     passed = sum(1 for t in tests if t["status"] == "PASS")
-    ok = bool(tests) and passed == len(tests) and not [i for i in issues if i.startswith("UNCOVERED")]
     sdir = ctx.workspace / "software/tests/software"
+    from ...inspection.ears import extract
+    from .robot_policy import unobserved_requirements
+
+    texts = {r.req_id: r.text for r in extract(req.read_text(errors="replace"))} if req.is_file() else {}
+    unobserved = [i for s in suites for i in unobserved_requirements(s, sdir, texts)]
+    issues = unobserved + issues  # a passing test that never checks what its requirement demands verifies nothing
+    covered -= {i.split(":")[1] for i in unobserved}
+    ok = bool(tests) and passed == len(tests) and not unobserved \
+        and not [i for i in issues if i.startswith("UNCOVERED")]
     scn = sorted(sdir.glob("*.c"))
     asserted = sorted({sdir / m for i in issues if i.startswith("ROBOT_FAIL:") and "build failed" not in i
                        for m in re.findall(r"\b([\w-]+\.c) \[", i)})  # failing checks, not build errors

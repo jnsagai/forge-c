@@ -8,6 +8,7 @@ defined in the same file, or a small BuiltIn subset with no code evaluation or d
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ALLOWED_LIBRARIES = {"forgetarget"}
@@ -76,4 +77,100 @@ def check_suite(path: Path) -> list[str]:
             issues.append(f"ROBOT_POLICY:DYNAMIC_KEYWORD:{kw[:40]}:line {line}")
         elif n not in FORGE_KEYWORDS and n not in SAFE_BUILTINS and n not in defined:
             issues.append(f"ROBOT_POLICY:KEYWORD_NOT_ALLOWED:{kw[:40]}:line {line}")
+    return issues
+
+
+# ---- requirement observability (ADR-0008, r60/r63) -----------------------------------------------------------
+# A requirement-tagged test must observe what the requirement demands. r60 and r63 tagged SWR-014 ("shall return
+# HAL_ERROR without any register write") on scenarios whose checks never mention HAL_ERROR: traced, never verified.
+HAL_STATUS = re.compile(r"\bHAL_(?:OK|ERROR|TIMEOUT|BUSY)\b")
+REG_FIELD = re.compile(r"\bRCC_[A-Z0-9]+\.([A-Z][A-Z0-9_]+)\b")
+TCHECK = re.compile(r"TCHECK\(\s*([^,]+?)\s*,(.*?)\)\s*;", re.S)
+
+
+def required_tokens(requirement_text: str) -> tuple[set[str], set[str]]:
+    return set(HAL_STATUS.findall(requirement_text)), set(REG_FIELD.findall(requirement_text))
+
+
+def _checks(scenario: Path) -> dict[str, str]:
+    if not scenario.is_file():
+        return {}
+    return {m.group(1).strip(): m.group(2) for m in TCHECK.finditer(scenario.read_text(errors="replace"))}
+
+
+def observed_checks(suite: Path) -> dict[str, list[tuple[str, str | None]]]:
+    """SWR tag -> [(scenario file, check id or None for all checks)] from the suite's keyword calls (user keywords
+    defined in the same file are expanded with their positional arguments)."""
+    from robot.api import get_model
+    from robot.api.parsing import ModelVisitor
+
+    user: dict[str, tuple[list[str], list[list[str]]]] = {}
+    tests: list[tuple[list[str], list[list[str]]]] = []
+
+    class V(ModelVisitor):
+        def visit_Keyword(self, node):  # noqa: N802
+            args, body = [], []
+            for st in node.body:
+                if type(st).__name__ == "Arguments":
+                    args = [t.value for t in st.get_tokens("ARGUMENT")]
+                elif type(st).__name__ == "KeywordCall":
+                    body.append([st.keyword, *st.args])
+            user[_norm(node.name)] = (args, body)
+
+        def visit_TestCase(self, node):  # noqa: N802
+            tags, body = [], []
+            for st in node.body:
+                if type(st).__name__ == "Tags":
+                    tags = list(st.values)
+                elif type(st).__name__ == "KeywordCall":
+                    body.append([st.keyword, *st.args])
+            tests.append((tags, body))
+
+    V().visit(get_model(str(suite)))
+
+    def expand(call: list[str], depth: int = 0) -> list[list[str]]:
+        k = _norm(call[0])
+        if k in user and depth < 5:
+            args, body = user[k]
+            sub = dict(zip(args, call[1:], strict=False))  # missing args stay unexpanded
+            out = []
+            for c in body:
+                for a, v in sub.items():
+                    c = [x.replace(a, v) for x in c]
+                out += expand(c, depth + 1)
+            return out
+        return [call]
+
+    res: dict[str, list[tuple[str, str | None]]] = {}
+    for tags, body in tests:
+        cur, obs = "", []
+        for call in [c for b in body for c in expand(b)]:
+            k = _norm(call[0])
+            if k == "run target scenario" and len(call) > 1:
+                cur = call[1]
+            elif k == "target check should pass" and len(call) > 1 and cur:
+                obs.append((cur, call[1].strip()))
+            elif k == "all target checks should pass" and cur:
+                obs.append((cur, None))
+        for t in tags:
+            res.setdefault(t, []).extend(obs)
+    return res
+
+
+def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[str, str]) -> list[str]:
+    issues = []
+    obs = observed_checks(suite)
+    for rid, text in sorted(requirements.items()):
+        hal, fields = required_tokens(text)
+        if not (hal or fields) or rid not in obs:
+            continue  # size/budget requirements and untagged ids are judged by the other checks
+        exprs = []
+        for scn, cid in obs[rid]:
+            checks = _checks(scenario_dir / scn)
+            exprs += [e for i, e in checks.items() if cid is None or i == cid or not i.isdigit()]
+        blob = " ".join(exprs)
+        missing = sorted(h for h in hal if h not in blob) if hal else \
+            ([] if any(f in blob for f in fields) else sorted(fields))
+        if missing:
+            issues.append(f"REQUIREMENT_NOT_OBSERVED:{rid}:{','.join(missing)} (the tagged checks never test it)")
     return issues

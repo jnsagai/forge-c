@@ -180,3 +180,19 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
     REQUIREMENT and goes to SWE.1, where the change is visible.
   - Fixers are told that a requirement as written always wins: reject a defect that asks for contrary behaviour.
   - Regression test: `test_report_validation_is_deterministic`.
+
+## Second live run (r63) and remedies
+- **No failing test, no defect.** The SWE.6 author knew the API had no invalid-parameter path. It tagged SWR-014
+  ("shall return HAL_ERROR without any register write") on checks that never mention HAL_ERROR, so nothing
+  failed and the anti-bending check had nothing to catch. r60 had done the same.
+- **The finding was never recorded.** The SWE.6 inspector noticed ("traced but arguably not verified"), but used
+  all 20 calls before calling `check_inspection`, twice. REINSPECT exhausted the budget.
+- **Remedies:**
+  - **Requirement observability:** `run_robot` FAILs with `REQUIREMENT_NOT_OBSERVED:<SWR>:<token>` when the
+    checks a test runs never mention what its requirement demands: every HAL status the requirement names, or one
+    of its `RCC_<REG>.<FIELD>` fields. User keywords are expanded. Retro-check: it flags r60 SWR-014 and r63
+    SWR-014/005/006 (005/006 check only `HAL_OK`, never the ready flag the requirement names). Test:
+    `test_requirement_must_be_observed_by_its_tagged_checks_r63`.
+  - **Reserved inspector calls:** the last 4 of an inspector's authored 20 calls are usable only for
+    `check_inspection`/`report_defect`. A denied call does not consume budget, and the budget itself is
+    unchanged. Test: `test_t042_inspector_last_calls_reserved…`.

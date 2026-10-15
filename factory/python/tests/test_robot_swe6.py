@@ -135,3 +135,28 @@ def test_robot_scaffold_one_tagged_placeholder_per_requirement_never_passes(tmp_
     (tmp_path / SUITE_PATH).write_text(suite)
     r = run(tmp_path, monkeypatch, {})
     assert r["status"] == "FAIL" and r["metrics"]["passed"] == 0 and r["metrics"]["tests"] == 4, r
+
+
+def test_requirement_must_be_observed_by_its_tagged_checks_r63(tmp_path):
+    """r60/r63: SWR-014 ('shall return HAL_ERROR ...') was tagged on checks that never mention HAL_ERROR."""
+    from forge_factory.mcp.servers.robot_policy import unobserved_requirements
+
+    (tmp_path / "scn_param.c").write_text(
+        "int main(void) {\n    TCHECK(9, ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] == cr_before);\n"
+        "    TCHECK(10, HAL_RCC_PeriphClock_Enable(99U) == HAL_ERROR);\n"
+        "    TCHECK(i + 1U, (ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK) != 0U);\n}\n")
+    reqs = {"SWR-014": "If a parameter is invalid, then the RCC driver shall return HAL_ERROR without any register write.",
+            "SWR-001": "When HSI enable is requested, the RCC driver shall set RCC_CR.HSION.",
+            "SWR-016": "The RCC driver shall occupy at most 4096 bytes of flash."}
+    suite = tmp_path / "s.robot"
+    suite.write_text("*** Settings ***\nLibrary    ForgeTarget\n\n*** Test Cases ***\nSWR-014 vacuous\n    [Tags]    SWR-014\n"
+                     "    Run Target Scenario    scn_param.c\n    Target Check Should Pass    9\n\n"
+                     "SWR-001\n    [Tags]    SWR-001\n    Check HSI    scn_param.c\n\n"
+                     "SWR-016\n    [Tags]    SWR-016\n    Driver Flash Size Should Be At Most    4096\n\n"
+                     "*** Keywords ***\nCheck HSI\n    [Arguments]    ${scn}\n    Run Target Scenario    ${scn}\n"
+                     "    All Target Checks Should Pass\n")
+    assert unobserved_requirements(suite, tmp_path, reqs) == [
+        "REQUIREMENT_NOT_OBSERVED:SWR-014:HAL_ERROR (the tagged checks never test it)"]
+    suite.write_text(suite.read_text().replace("Target Check Should Pass    9\n",
+                                               "Target Check Should Pass    9\n    Target Check Should Pass    10\n"))
+    assert unobserved_requirements(suite, tmp_path, reqs) == []  # check 10 observes HAL_ERROR
