@@ -339,7 +339,12 @@ def test_kpi_t020_pilot_reconciles_with_raw_evidence():
     assert E.schema_errors_kpi(snap) == []
     # packages on disk vs package.sealed events (attempt level)
     root = Path(os.environ["FORGE_STATE_DIR"]) / "workorders"
-    sealed_ws = {ws.parent.name for ws in root.glob("*/workspace") if (ws / ".forge-run/package.json").is_file()}
+    def local(ws):
+        prof = ws / ".forge-run/model-profile.json"
+        return not prof.is_file() or json.loads(prof.read_text()).get("local_only", True)
+
+    sealed_ws = {ws.parent.name for ws in root.glob("*/workspace")
+                 if (ws / ".forge-run/package.json").is_file() and local(ws)}
     assert sealed_ws == {e["attempt_id"] for e in evs if e["type"] == "package.sealed"}
     import hashlib
     for ws in root.glob("*/workspace"):  # every recorded package exists on disk with the recorded SHA-256
@@ -353,7 +358,7 @@ def test_kpi_t020_pilot_reconciles_with_raw_evidence():
     assert get(snap, "K16")["denominator"] == len(inc)
     # initial inspections vs inspection files
     first = {}
-    for ws in root.glob("*/workspace"):
+    for ws in filter(local, root.glob("*/workspace")):
         for f in sorted(ws.glob("inspection/SWE.*/INS-*.json")):
             first.setdefault(f.parent.name, f)
     for p in ("SWE.1", "SWE.2"):

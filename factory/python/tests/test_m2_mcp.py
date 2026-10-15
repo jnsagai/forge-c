@@ -219,6 +219,16 @@ def test_t016_evidence_role_enforced_and_inspection_immutable(ws):
     a = call(evidence, "forge-evidence-mcp", "check_inspection",
              {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001", "verdicts": v}, "swe1-author", "SWE.1")
     assert a["status"] == "BLOCKED"
+    # r21 (DeepSeek inspector): a test link planned at SWE.1 is not a missing file until tests are due (SWE.4)
+    (ws / "traceability").mkdir()
+    (ws / "traceability/requirements_to_tests.csv").write_text(
+        "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/test_rcc.c\n")
+    tr = call(evidence, "forge-evidence-mcp", "validate_trace", {}, "swe1-inspector", "SWE.1")
+    assert tr["status"] == "PASS" and tr["metrics"]["planned_test_links"] == 1, tr
+    (ws / "configuration/baselines/SWE.4").mkdir(parents=True)
+    (ws / "configuration/baselines/SWE.4/BL-SWE.4-001.json").write_text("{}")
+    tr = call(evidence, "forge-evidence-mcp", "validate_trace", {}, "swe1-inspector", "SWE.1")
+    assert tr["status"] == "FAIL" and "TEST_FILE_MISSING:software/tests/unit/test_rcc.c" in tr["issues"]
 
 
 def test_t016_repo_scoped_no_push_protected_paths_refused(ws):

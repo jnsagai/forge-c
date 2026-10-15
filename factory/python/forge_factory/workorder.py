@@ -128,6 +128,15 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
     for k, v in idx.items():
         (ws / f".forge-run/index/{Path(k).stem}.json").write_text(json.dumps(v))
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    from .inspection.engine import PHASES, load_checklist
+
+    (ws / ".forge-run/checklists").mkdir(parents=True, exist_ok=True)
+    for ph in PHASES:  # read-only copy of the resolved (hash-pinned) checklist for inspectors
+        cl = load_checklist(ph)
+        (ws / f".forge-run/checklists/{ph}.json").write_text(pretty_json(
+            {"phase": ph, "version": cl["version"], "sha256": cl["sha256"],
+             "checks": [{k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}
+                        for c in cl["checks"]]}))
     (ws / "configuration").mkdir(exist_ok=True)
     (ws / "configuration/system_names.json").write_text(json.dumps(spec["system_names"]))
     (ws / "configuration/target_baseline.json").write_text(pretty_json(spec["target"]))

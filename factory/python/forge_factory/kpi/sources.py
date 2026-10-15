@@ -223,6 +223,9 @@ def collect_all(include_fabro: bool = True) -> list[dict]:
     evs: list[dict] = []
     root = state_dir() / "workorders"
     for ws in sorted(root.glob("*/workspace")) if root.is_dir() else []:
+        prof = ws / ".forge-run/model-profile.json"
+        if prof.is_file() and not json.loads(prof.read_text()).get("local_only", True):
+            continue  # user-authorized cloud benchmarks are reported separately, never in the production KPIs
         usage, stages = None, None
         rid = ws / ".forge-run/fabro_run_id"
         if include_fabro and rid.is_file():

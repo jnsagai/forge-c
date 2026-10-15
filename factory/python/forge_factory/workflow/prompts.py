@@ -195,7 +195,8 @@ def inspector_prompt(phase: str) -> str:
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file.",
-             f"Judge each checklist item: {items}.",
+             f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
+             f"search for it). Judge each checklist item: {items}.",
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",

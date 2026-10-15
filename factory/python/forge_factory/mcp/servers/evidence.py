@@ -82,6 +82,9 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
     else:
         issues.append("TRACE_FILE_MISSING:traceability/requirements_to_tests.csv")
     traced = {r.get("requirement_id", "").strip() for r in rows}
+    # Test files exist only from SWE.4 on: before a SWE.4 baseline, a missing file is a planned link, not a defect.
+    tests_due = any((ctx.workspace / "configuration/baselines/SWE.4").glob("BL-*.json"))
+    planned = 0
     for r in reqs:
         if r not in traced:
             issues.append(f"UNTRACED:{r}")
@@ -96,11 +99,15 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
             try:
                 ctx.path(tfile, must_exist=True, kind="file")
             except ToolDenied:
-                issues.append(f"TEST_FILE_MISSING:{tfile[:60]}")
+                if tests_due:
+                    issues.append(f"TEST_FILE_MISSING:{tfile[:60]}")
+                else:
+                    planned += 1
     covered = len([r for r in reqs if r in traced])
-    return result(ctx, "PASS" if not issues else "FAIL", f"{covered}/{len(reqs)} requirements traced", [], issues,
-                  {"requirements": len(reqs), "traced": covered, "rows": len(rows)}, "forge-trace-gate",
-                  input_obj=a.model_dump())
+    return result(ctx, "PASS" if not issues else "FAIL", f"{covered}/{len(reqs)} requirements traced"
+                  + (f"; {planned} test links planned (test files are due at SWE.4)" if planned else ""), [], issues,
+                  {"requirements": len(reqs), "traced": covered, "rows": len(rows), "planned_test_links": planned,
+                   "test_files_required": tests_due}, "forge-trace-gate", input_obj=a.model_dump())
 
 
 def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
