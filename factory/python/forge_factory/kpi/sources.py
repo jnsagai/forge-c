@@ -202,7 +202,7 @@ def from_incidents() -> list[dict]:
 
 def from_supervisor_events(path: Path | None = None) -> list[dict]:
     p = path or state_dir() / "events/factory-events.jsonl"
-    out = []
+    out: list[dict] = []
     if not p.is_file():
         return out
     for line in p.read_text().splitlines():

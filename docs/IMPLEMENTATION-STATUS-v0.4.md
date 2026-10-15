@@ -1,9 +1,9 @@
 # Forge-C implementation status (generated from evidence records)
 
-Generated 2026-10-14T22:16:21.056966Z at commit `37287e25323d`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
+Generated 2026-10-15T01:55:23.134136Z at commit `727748df39ea`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
 
 * Feature 002: **48/51** tasks PASS
-* Feature 003 (KPI): **0/20** tasks PASS
+* Feature 003 (KPI): **20/20** tasks PASS
 * Functional requirements covered by a passing task: **40/40**
 * P0 requirement gaps: none
 
@@ -67,26 +67,26 @@ Generated 2026-10-14T22:16:21.056966Z at commit `37287e25323d`. Status is derive
 
 | Task | P | Status | Evidence |
 |---|---|---|---|
-| KPI-T001 | P0 | NOT_RUN | - |
-| KPI-T002 | P0 | NOT_RUN | - |
-| KPI-T003 | P0 | NOT_RUN | - |
-| KPI-T004 | P0 | NOT_RUN | - |
-| KPI-T005 | P0 | NOT_RUN | - |
-| KPI-T006 | P0 | NOT_RUN | - |
-| KPI-T007 | P0 | NOT_RUN | - |
-| KPI-T008 | P0 | NOT_RUN | - |
-| KPI-T009 | P0 | NOT_RUN | - |
-| KPI-T010 | P0 | NOT_RUN | - |
-| KPI-T011 | P1 | NOT_RUN | - |
-| KPI-T012 | P0 | NOT_RUN | - |
-| KPI-T013 | P0 | NOT_RUN | - |
-| KPI-T014 | P1 | NOT_RUN | - |
-| KPI-T015 | P0 | NOT_RUN | - |
-| KPI-T016 | P0 | NOT_RUN | - |
-| KPI-T017 | P0 | NOT_RUN | - |
-| KPI-T018 | P0 | NOT_RUN | - |
-| KPI-T019 | P1 | NOT_RUN | - |
-| KPI-T020 | P0 | NOT_RUN | - |
+| KPI-T001 | P0 | PASS | evidence/v0.4/runs/KPI-T001/latest.json |
+| KPI-T002 | P0 | PASS | evidence/v0.4/runs/KPI-T002/latest.json |
+| KPI-T003 | P0 | PASS | evidence/v0.4/runs/KPI-T003/latest.json |
+| KPI-T004 | P0 | PASS | evidence/v0.4/runs/KPI-T004/latest.json |
+| KPI-T005 | P0 | PASS | evidence/v0.4/runs/KPI-T005/latest.json |
+| KPI-T006 | P0 | PASS | evidence/v0.4/runs/KPI-T006/latest.json |
+| KPI-T007 | P0 | PASS | evidence/v0.4/runs/KPI-T007/latest.json |
+| KPI-T008 | P0 | PASS | evidence/v0.4/runs/KPI-T008/latest.json |
+| KPI-T009 | P0 | PASS | evidence/v0.4/runs/KPI-T009/latest.json |
+| KPI-T010 | P0 | PASS | evidence/v0.4/runs/KPI-T010/latest.json |
+| KPI-T011 | P1 | PASS | evidence/v0.4/runs/KPI-T011/latest.json |
+| KPI-T012 | P0 | PASS | evidence/v0.4/runs/KPI-T012/latest.json |
+| KPI-T013 | P0 | PASS | evidence/v0.4/runs/KPI-T013/latest.json |
+| KPI-T014 | P1 | PASS | evidence/v0.4/runs/KPI-T014/latest.json |
+| KPI-T015 | P0 | PASS | evidence/v0.4/runs/KPI-T015/latest.json |
+| KPI-T016 | P0 | PASS | evidence/v0.4/runs/KPI-T016/latest.json |
+| KPI-T017 | P0 | PASS | evidence/v0.4/runs/KPI-T017/latest.json |
+| KPI-T018 | P0 | PASS | evidence/v0.4/runs/KPI-T018/latest.json |
+| KPI-T019 | P1 | PASS | evidence/v0.4/runs/KPI-T019/latest.json |
+| KPI-T020 | P0 | PASS | evidence/v0.4/runs/KPI-T020/latest.json |
 
 ## FR → task matrix
 

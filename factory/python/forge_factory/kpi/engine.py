@@ -89,8 +89,11 @@ class Engine:
             if e["ts_utc"] >= o.get("latest_admitted", ""):
                 o["latest_admitted"], o["latest_attempt"] = e["ts_utc"], e["attempt_id"]
         for e in self.of("package.sealed", src=self.all):
-            o = out.get(e["order_id"])
-            if o is not None and (o.get("sealed") is None or e["ts_utc"] >= o["sealed"]):
+            po = out.get(e["order_id"])
+            if po is None:
+                continue
+            o = po
+            if (o.get("sealed") is None or e["ts_utc"] >= o["sealed"]):
                 o.update({"sealed": e["ts_utc"], "status": e["payload"]["package_status"], "pkg_ref": e["event_id"],
                           "evidence": e["evidence_refs"], "gaps": e["payload"].get("gaps", [])})
         for o in out.values():  # a newer attempt after the last seal re-opens the order (retry, not a new unit)
@@ -193,7 +196,8 @@ class Engine:
     def segments(self) -> list[dict]:
         """Active station segments from Fabro stage events: (order, attempt, phase, node, visit, seconds)."""
         st: dict[tuple, str] = {}
-        segs, visits = [], {}
+        segs: list[dict] = []
+        visits: dict[tuple, int] = {}
         for e in self.of("stage.started", "stage.completed", "stage.failed"):
             node = e["payload"].get("node") or ""
             if not e.get("phase") or "gate" in node or "route" in node or "verify" in node:
