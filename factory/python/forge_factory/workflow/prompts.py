@@ -35,7 +35,9 @@ AUTHOR_STEPS = {
         "timing requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations). Do not invent a "
         "system safe state: record it as NOT_PROVIDED in the gap record.",
         "write_file safety/software_safety_requirements.md listing the safety-relevant SWR IDs (timeouts, error returns).",
-        "write_file traceability/upstream_gaps.md: '# Upstream coverage gaps', one row per upstream input the work order "
+        "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it: write "
+        "one requirement per allocated software safety requirement with '  - Source: <SSR id>' and use its budgets and "
+        "safe state. write_file traceability/upstream_gaps.md: '# Upstream coverage gaps', one row per upstream input the work order "
         "does not provide or marks illustrative (HSI contract, software safety allocation, budgets): input | status "
         "(NOT_PROVIDED / ILLUSTRATIVE) | affected SWR IDs | required human action. Never invent an allocation.",
         "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR "

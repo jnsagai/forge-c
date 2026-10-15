@@ -105,14 +105,29 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
             inputs.update({k: v.encode() for k, v in files.items()})
             index_lines += idx_lines
     inputs["inputs/index.md"] = ("\n".join(index_lines) + "\n").encode()
+    from .upstream import UPSTREAM_FILE, load_upstream
+
+    upstream = load_upstream(example)  # human-approved HSI/safety allocation/budgets, else NOT_PROVIDED
+    target, budgets = dict(spec["target"]), dict(spec["budgets"])
+    if upstream["status"] == "APPROVED":
+        d = upstream["data"]
+        inputs["inputs/upstream-inputs.yaml"] = (example / UPSTREAM_FILE).read_bytes()
+        listed.append({"path": "inputs/upstream-inputs.yaml", "role": "approved_upstream_inputs",
+                       "sha256": upstream["sha256"], "bytes": len(inputs["inputs/upstream-inputs.yaml"])})
+        who = f"approved by {d['approval']['approved_by']} on {d['approval']['approved_on']}"
+        target.update({"hsi_contract": f"PROVIDED {d['hsi_contract']['contract_id']} ({who})",
+                       "safety_allocation": f"PROVIDED ASIL {d['safety_allocation']['asil']} ({who})",
+                       "part_number": d["target"]["part_number"], "silicon_revision": d["target"]["silicon_revision"]})
+        budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
     head = create_workspace(ws, inputs)
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
     manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
-                "input_baseline_commit": head, "driver": spec["driver"], "target": spec["target"],
-                "scope": spec["scope"], "budgets": spec["budgets"], "inputs": listed,
+                "input_baseline_commit": head, "driver": spec["driver"], "target": target,
+                "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
+                "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
                 "outputs": {"SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/"
                                      "requirements_to_tests.csv + safety/software_safety_requirements.md",
