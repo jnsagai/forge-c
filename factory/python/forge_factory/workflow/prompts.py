@@ -65,8 +65,10 @@ AUTHOR_STEPS = {
     "SWE.3": [
         "read_file workproducts/SWE.2/software_architecture.md (Memory and stack budget section only, use offset/limit).",
         "Call mcp__forge_analysis_mcp__cppcheck and mcp__forge_analysis_mcp__clang_analyze, then "
-        "mcp__forge_build_mcp__measure_elf and mcp__forge_build_mcp__stack_usage with profile target-cm55-gcc. Do not "
-        "change code in this step (the fix step already made it compile and pass the checks).",
+        "mcp__forge_build_mcp__measure_elf and mcp__forge_build_mcp__stack_usage with profile target-cm55-gcc. If "
+        "cppcheck reports any finding, fix it in the code (MISRA 15.5: single return via a status variable; MISRA 11.9: "
+        "use NULL, never 0, as null pointer constant; style variableScope: innermost block; no suppressions), re-run "
+        "cppcheck and validate_artifact check swe3_all until both PASS, then measure.",
         "write_file workproducts/SWE.3/detailed_design.md: '# Detailed design'; a table | Function | Purpose | "
         "Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function; '## Static analysis and MISRA "
         "(subset)' with the cppcheck and clang results exactly as the tools reported them (rules hit, counts; state that "
@@ -225,7 +227,8 @@ FIX3_STEPS = [
     "completeness in ONE call); fix every finding and repeat until it PASSes; re-compile after changes.",
     "Call mcp__forge_analysis_mcp__cppcheck; fix EVERY reported finding (MISRA and general/style) by restructuring the "
     "code, e.g. rule 15.5: one return at the end using a status variable; style variableScope: declare the variable in "
-    "the innermost block that uses it; never add suppression comments. Repeat cppcheck until it PASSes, then re-run "
+    "the innermost block that uses it; rule 11.9: NULL as null pointer constant; never add suppression comments. "
+    "Repeat cppcheck until it PASSes, then re-run "
     "compile and swe3_all.",
     "Reply PASS only when both compiles, swe3_all and cppcheck PASS.",
 ]

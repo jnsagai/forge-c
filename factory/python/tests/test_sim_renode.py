@@ -63,3 +63,12 @@ def test_renode_reports_failing_checks_and_missing_tests(tmp_path, monkeypatch):
     assert out["status"] == "FAIL" and "TARGET_FAIL:test_rcc_target_timeout.c:check 1" in out["issues"]
     empty = ws(tmp_path / "e", monkeypatch, {})
     assert empty["status"] == "BLOCKED" and empty["issues"] == ["NO_TESTS:software/tests/target"]
+
+
+def test_renode_found_from_mcp_server_environment(monkeypatch):
+    """MCP servers only receive FORGE_STATE_DIR (r45 run_renode reported 'not installed' without this)."""
+    real = sim.renode_bin()
+    monkeypatch.delenv("FORGE_DATA_ROOT", raising=False)
+    monkeypatch.delenv("FORGE_RENODE_BIN", raising=False)
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    assert sim.renode_bin() == real

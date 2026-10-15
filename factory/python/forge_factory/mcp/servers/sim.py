@@ -47,8 +47,10 @@ CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", 
 def renode_bin() -> str | None:
     env = os.environ.get("FORGE_RENODE_BIN")
     cand = [env] if env else []
-    root = os.environ.get("FORGE_DATA_ROOT")
-    if root:
+    roots = [os.environ.get("FORGE_DATA_ROOT")]
+    if os.environ.get("FORGE_STATE_DIR"):  # MCP servers get FORGE_STATE_DIR (= <data root>/state), not FORGE_DATA_ROOT
+        roots.append(str(Path(os.environ["FORGE_STATE_DIR"]).parent))
+    for root in filter(None, roots):
         cand.append(str(Path(root) / "toolchains/renode/renode_1.17.0-portable/renode"))
     cand.append(shutil.which("renode") or "")
     return next((c for c in cand if c and Path(c).is_file()), None)
