@@ -59,8 +59,8 @@ def markdown(d: list[dict]) -> str:
          "tools and override the inspector's verdict; all other items are judged by an independent inspector agent.", ""]
     for p in d:
         L += [f"## {p['phase']} — {p['name']}", "", f"Checklist v{p['version']} (sha256 {p['sha']}…), rework budget "
-              f"{p['max_rework']} (the factory blocks after 2 failed cycles, ADR-0005).", "", "**Before freeze (author gate):** " + "; ".join(
-                  [f"`{o}`" for o in p["outputs"]] + p["tools"]) + ".", ""]
+              f"{p['max_rework']} (the factory blocks after 2 failed cycles, ADR-0005).", "",
+              "**Before freeze (author gate):** " + "; ".join([f"`{o}`" for o in p["outputs"]] + p["tools"]) + ".", ""]
         L += [f"- {x}" for x in p["extra"]] + ([""] if p["extra"] else [])
         L += ["| ID | Required | If failed | Criterion | Decided by |", "|---|---|---|---|---|"]
         L += [f"| {c['id']} | {'yes' if c['required'] else 'no'} | {c['sev']} | {c['criterion']} | "
