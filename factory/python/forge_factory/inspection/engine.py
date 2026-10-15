@@ -29,7 +29,7 @@ PHASE_PATHS = {
     "SWE.2": ["workproducts/SWE.2"],
     "SWE.3": ["workproducts/SWE.3", "software/src", "software/include", "software/hal", "software/ll"],
     "SWE.4": ["workproducts/SWE.4", "software/tests/unit", "verification/unit"],
-    "SWE.5": ["workproducts/SWE.5", "software/tests/integration", "verification/integration"],
+    "SWE.5": ["workproducts/SWE.5", "software/tests/integration", "software/tests/target", "verification/integration"],
     "SWE.6": ["workproducts/SWE.6", "software/tests/software", "verification/software"],
 }
 SYSTEM_NAMES_FILE = "configuration/system_names.json"

@@ -8,21 +8,95 @@
     "safety_claim_requires_human_approval": true
   },
   "core": [
-    {"name": "Fabro", "license": "MIT", "role": "orchestration"},
-    {"name": "Ollama", "license": "MIT", "role": "local-model-server"},
-    {"name": "Qwen3 8B", "license": "Apache-2.0", "role": "model", "model_id": "qwen3:8b"},
-    {"name": "CMake", "license": "BSD-3-Clause", "role": "build"},
-    {"name": "Ninja", "license": "Apache-2.0", "role": "build"},
-    {"name": "LLVM/Clang", "license": "Apache-2.0 WITH LLVM-exception", "role": "compiler-analysis-coverage"},
-    {"name": "GCC Arm Embedded", "license": "GPL-3.0-with-exceptions-and-components", "role": "target-compiler"},
-    {"name": "Cppcheck", "license": "GPL-3.0-or-later", "role": "MISRA-subset-and-static"},
-    {"name": "CBMC", "license": "BSD-4-Clause", "role": "bounded-model-checking"},
-    {"name": "Frama-C", "license": "open-source-distribution-check-plugin-licenses", "role": "abstract-interpretation"},
-    {"name": "Unity", "license": "MIT", "role": "embedded-unit-testing"},
-    {"name": "CMock", "license": "MIT", "role": "mock-generation"},
-    {"name": "Renode", "license": "MIT", "role": "simulation"},
-    {"name": "gcovr", "license": "BSD-3-Clause", "role": "GCC-host-coverage"}
+    {
+      "name": "Fabro",
+      "license": "MIT",
+      "role": "orchestration"
+    },
+    {
+      "name": "Ollama",
+      "license": "MIT",
+      "role": "local-model-server"
+    },
+    {
+      "name": "Qwen3 8B",
+      "license": "Apache-2.0",
+      "role": "model",
+      "model_id": "qwen3:8b"
+    },
+    {
+      "name": "CMake",
+      "license": "BSD-3-Clause",
+      "role": "build"
+    },
+    {
+      "name": "Ninja",
+      "license": "Apache-2.0",
+      "role": "build"
+    },
+    {
+      "name": "LLVM/Clang",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "role": "compiler-analysis-coverage"
+    },
+    {
+      "name": "GCC Arm Embedded",
+      "license": "GPL-3.0-with-exceptions-and-components",
+      "role": "target-compiler"
+    },
+    {
+      "name": "Cppcheck",
+      "license": "GPL-3.0-or-later",
+      "role": "MISRA-subset-and-static"
+    },
+    {
+      "name": "CBMC",
+      "license": "BSD-4-Clause",
+      "role": "bounded-model-checking"
+    },
+    {
+      "name": "Frama-C",
+      "license": "open-source-distribution-check-plugin-licenses",
+      "role": "abstract-interpretation"
+    },
+    {
+      "name": "Unity",
+      "license": "MIT",
+      "role": "embedded-unit-testing"
+    },
+    {
+      "name": "CMock",
+      "license": "MIT",
+      "role": "mock-generation"
+    },
+    {
+      "name": "Renode",
+      "license": "MIT",
+      "role": "simulation",
+      "version": "1.17.0",
+      "artifact": "renode-1.17.0.linux-portable.tar.gz",
+      "sha256": "4ba7c68b59e2447f188ef4b4b112fcccd2802582c460beedceb63b84e5605a5f",
+      "install": "$FORGE_DATA_ROOT/toolchains/renode/renode_1.17.0-portable"
+    },
+    {
+      "name": "gcovr",
+      "license": "BSD-3-Clause",
+      "role": "GCC-host-coverage"
+    }
   ],
-  "out_of_scope": ["DeepSeek API", "Codex paid service", "Parasoft", "Coverity", "Codebeamer", "Enterprise Architect", "commercial MC/DC tools"],
-  "proprietary_standards_not_bundled": ["MISRA C", "ISO 26262", "AUTOSAR specifications", "MCU vendor reference manuals"]
+  "out_of_scope": [
+    "DeepSeek API",
+    "Codex paid service",
+    "Parasoft",
+    "Coverity",
+    "Codebeamer",
+    "Enterprise Architect",
+    "commercial MC/DC tools"
+  ],
+  "proprietary_standards_not_bundled": [
+    "MISRA C",
+    "ISO 26262",
+    "AUTOSAR specifications",
+    "MCU vendor reference manuals"
+  ]
 }

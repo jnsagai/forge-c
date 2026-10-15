@@ -184,7 +184,8 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
 
 
 # ---------------- T015 sim ----------------------------------------------------------------------------
-def test_t015_unavailable_simulator_and_deterministic_fault_plan(ws):
+def test_t015_unavailable_simulator_and_deterministic_fault_plan(ws, monkeypatch):
+    monkeypatch.setattr(sim, "renode_bin", lambda: None)  # simulator absent (installed case: test_sim_renode.py)
     r = call(sim, "forge-sim-mcp", "run_renode", {}, "swe5-author", "SWE.5")
     assert r["status"] == "UNSUPPORTED" and "SAFETY_GAP:target_behaviour_unverified" in r["issues"]
     os.environ["FORGE_ROLE"] = "swe5-author"

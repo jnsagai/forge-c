@@ -85,18 +85,28 @@ AUTHOR_STEPS = {
         "with the UT id that covers it in software/tests/unit/test_rcc.c.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.4 baseline."],
     "SWE.5": [
-        "Read workproducts/SWE.2/software_architecture.md and software/tests/unit/test_rcc.c.",
-        "write_file software/tests/integration/test_rcc_integration.c: self-checking program exercising HAL+LL together "
+        "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_rcc.h and software/tests/unit/test_rcc.c.",
+        "write_file software/tests/integration/test_rcc_integration.c: self-checking host program exercising HAL+LL together "
         "(enable oscillator then peripheral clock then reset sequence, and a forced timeout).",
-        "Call mcp__forge_tests_mcp__run_integration; fix failures. Call mcp__forge_sim_mcp__run_renode once and record its result.",
-        "write_file workproducts/SWE.5/integration_verification_report.md with sequences, results and the simulator status.",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.5."],
+        "Call mcp__forge_tests_mcp__run_integration; fix failures.",
+        "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model "
+        "sets each RCC_SR ready flag when its RCC_CR enable bit is set) and software/tests/target/test_rcc_target_timeout.c "
+        "(RCC model never sets ready flags: every wait must end in HAL_TIMEOUT). Each file: '#include "
+        "\"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int "
+        "main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' "
+        "on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
+        "definition (the linker places it).",
+        "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
+        "write_file workproducts/SWE.5/integration_verification_report.md: sequences, host results, and the Renode target "
+        "results exactly as reported (simulated Cortex-M55 with a behavioural RCC model; not silicon verification).",
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
         "Read workproducts/SWE.1/software_requirements.md, the SWE.4 and SWE.5 reports and traceability/requirements_to_tests.csv.",
-        "Call mcp__forge_tests_mcp__run_integration and mcp__forge_evidence_mcp__validate_trace.",
+        "Call mcp__forge_tests_mcp__run_integration, mcp__forge_sim_mcp__run_renode and mcp__forge_evidence_mcp__validate_trace.",
         "write_file workproducts/SWE.6/software_verification_report.md: table SWR -> test id -> result -> evidence, list "
-        "untested requirements as issues, state that results are host-only (no target verification).",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.6."],
+        "untested requirements as issues, state the environments (host tests; simulated Cortex-M55 target on Renode with a "
+        "behavioural RCC model; no silicon verification).",
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.6 baseline."],
 }
 
 

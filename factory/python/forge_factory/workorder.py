@@ -134,7 +134,7 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
                             "SWE.2": "workproducts/SWE.2/software_architecture.md",
                             "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
                             "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
-                            "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c",
+                            "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
                             "SWE.6": "workproducts/SWE.6/software_verification_report.md"},
                 "section_index_files": {k: f".forge-run/index/{Path(k).stem}.json" for k in idx},
                 "rules": ["Cite source as DOC p.N for every hardware fact", "Never invent registers or bits",
