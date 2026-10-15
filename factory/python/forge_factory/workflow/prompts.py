@@ -288,7 +288,8 @@ ROBOT_STEPS = [
     "'*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each "
     "'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_<topic>.c' then 'Target Check Should "
     "Pass    <n>' (add '    scenario=never_ready' for timeout behaviour; use 'Driver Flash Size Should Be At Most' / "
-    "'Driver Static RAM Should Be At Most' for size requirements). Separate keyword and arguments with 4 spaces. "
+    "'Driver Static RAM Should Be At Most' / 'Driver Stack Should Be At Most' for size and stack requirements; "
+    "'Target Check Should Pass    <n>' needs TCHECK(<n>, ...) in the scenario run last). Separate keyword and arguments with 4 spaces. "
     "The suite may use ONLY ForgeTarget keywords, keywords you define in the same file and Log/Should Be Equal: "
     "run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, Evaluate, Run "
     "Keyword and inline Python expressions. Never write shell scripts.",

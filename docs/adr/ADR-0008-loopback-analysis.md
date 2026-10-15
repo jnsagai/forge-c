@@ -313,3 +313,15 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 - DEF-002/DEF-004 stay FIXED (not VERIFIED) because SWE.6 was not reached again.
 - **Owner decisions after r71 (2026-10-15):** L13 gate-declared post-fix adaptation; `max_turns` 20 → 35 for the
   SWE.4 and SWE.5 authors too (all authors except SWE.1 now 35; inspectors 20).
+
+## Eleventh live run (r72): triage twice, then a 18/18 suite blocked by anti-bending
+- **L12 worked twice:** SWE.3's triage rejected two pairs of SWE.6 CODE defects (SWR-014 timeout as "invalid
+  parameter"; SWR-015 "at most 1000 iterations" read as a floor) with sound, quoted reasons, and the run returned to
+  SWE.6 each time (no re-freeze). SWE.6 declared its corrections (DEF-003/004 TEST).
+- **The suite reached 18/18**, but the author had edited two scenario files again after later failures without a new
+  declaration, so the author gate rejected it (`TEST_CHANGED_AFTER_FAIL`) in the last cycle and the phase BLOCKED.
+- **Factory bug found:** `Target Check Should Pass    26` passed with no TCHECK 26 in the scenario (the target only
+  reports failed ids), so SWR-018 (stack ≤ 128 B) "passed" vacuously. The library had no stack keyword; the author
+  invented two. **Fixed:** an undefined check id fails; new keyword `Driver Stack Should Be At Most` computes the
+  worst-case call chain from gcc `-fcallgraph-info=su` (indirect callbacks charged the deepest direct chain; calls
+  outside the driver, recursion, unbounded dynamic frames or an empty graph fail). r72's driver: 48 B.

@@ -13,7 +13,8 @@ from pathlib import Path
 
 ALLOWED_LIBRARIES = {"forgetarget"}
 FORGE_KEYWORDS = {"run target scenario", "target check should pass", "all target checks should pass",
-                  "driver flash size should be at most", "driver static ram should be at most"}
+                  "driver flash size should be at most", "driver static ram should be at most",
+                  "driver stack should be at most"}
 # BuiltIn subset: logging and literal comparisons only. Deliberately excluded: Evaluate, Should Be True (evaluates
 # Python), Call Method, Import Library/Resource/Variables, Run Keyword* (dynamic dispatch), Set Library Search Order.
 SAFE_BUILTINS = {"log", "comment", "no operation", "should be equal", "should not be equal",

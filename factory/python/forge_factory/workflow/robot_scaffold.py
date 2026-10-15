@@ -28,6 +28,8 @@ HEADER = f"""{MARKER}: one test case per SWE.1 requirement (names and tags fixed
 #   All Target Checks Should Pass
 #   Driver Flash Size Should Be At Most    <bytes>
 #   Driver Static RAM Should Be At Most    <bytes>
+#   Driver Stack Should Be At Most    <bytes>          (worst-case call chain of the driver)
+#   Target Check Should Pass needs a TCHECK with that number in the scenario that was run last
 # Scenario files live next to this suite: software/tests/software/scn_<topic>.c
 # Register access in scenarios: ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)
 *** Settings ***

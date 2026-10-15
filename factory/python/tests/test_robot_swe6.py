@@ -195,3 +195,24 @@ def test_check_expr_shows_the_call_that_set_the_checked_variable_r68(tmp_path, m
                                      "observes": [], "driver_call": True}]  # SWR-001 names RCC_CR.HSION, not a status
     assert rec["build_failed"] == [] and all((tmp_path / ".forge-run/test-snapshots" / h).is_file()
                                              for h in rec["files"].values())
+
+
+def test_undefined_check_id_never_passes_and_stack_bound_is_measured_r72(tmp_path, monkeypatch):
+    """r72: 'Target Check Should Pass    26' passed with no TCHECK 26 in the scenario (only failed ids are reported);
+    the SWE.6 author had no keyword for the stack requirement and invented two."""
+    suite = SUITE.replace("    Target Check Should Pass    2\n", "    Target Check Should Pass    2\n"
+                          "    Target Check Should Pass    26\n")
+    suite = suite.replace("Driver Flash Size Should Be At Most    4096", "Driver Stack Should Be At Most    16")
+    deep = ("int hal_rcc_ex_scratch(int i);\nint hal_rcc_ex_scratch(int i)\n{\n    volatile int b[16];\n"
+            "    b[i & 15] = i;\n    return b[0];\n}\n")  # a 64+ byte frame
+    out = run(tmp_path, monkeypatch, {"software/hal/stm32n6xx_hal_rcc_ex.c": deep,
+                                      "software/tests/software/scn_hsi.c": SCN,
+                                      "software/tests/software/scn_hsi_timeout.c": SCN_TO,
+                                      "software/tests/software/test_rcc_requirements.robot": suite})
+    assert out["status"] == "FAIL"
+    assert any(i.startswith("ROBOT_FAIL:SWR-001") and "check 26 is not defined" in i for i in out["issues"]), out
+    assert any(i.startswith("ROBOT_FAIL:SWR-003") and "worst-case stack" in i and "exceeds 16 B" in i
+               for i in out["issues"]), out["issues"]
+    ok = run(tmp_path, monkeypatch, {"software/tests/software/test_rcc_requirements.robot": SUITE.replace(
+        "Driver Flash Size Should Be At Most    4096", "Driver Stack Should Be At Most    1024")})
+    assert ok["status"] == "PASS", ok
