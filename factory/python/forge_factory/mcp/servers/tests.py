@@ -201,7 +201,17 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
 
     texts = {r.req_id: r.text for r in extract(req.read_text(errors="replace"))} if req.is_file() else {}
     unobserved = [i for s in suites for i in unobserved_requirements(s, sdir, texts)]
-    issues = unobserved + issues  # a passing test that never checks what its requirement demands verifies nothing
+    from .robot_policy import TCHECK
+
+    exprs = []  # r64: authors spent their budget reading files to learn what a failed check tested - say it here
+    for i in [x for x in issues if x.startswith("ROBOT_FAIL:")]:
+        for cid, scn in re.findall(r"check (\d+) failed in ([\w-]+\.c)", i):
+            f = sdir / scn
+            src = f.read_text(errors="replace") if f.is_file() else ""
+            m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
+            if m:
+                exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + " ".join(m.group(2).split())[:90])
+    issues = unobserved + issues + exprs  # a passing test that never checks what its requirement demands verifies nothing
     covered -= {i.split(":")[1] for i in unobserved}
     ok = bool(tests) and passed == len(tests) and not unobserved \
         and not [i for i in issues if i.startswith("UNCOVERED")]

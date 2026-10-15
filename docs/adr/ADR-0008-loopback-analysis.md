@@ -196,3 +196,16 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   - **Reserved inspector calls:** the last 4 of an inspector's authored 20 calls are usable only for
     `check_inspection`/`report_defect`. A denied call does not consume budget, and the budget itself is
     unchanged. Test: `test_t042_inspector_last_calls_reserved…`.
+
+## Third live run (r64)
+- **The SWR-014 test was real.** It checked HAL_ERROR on an invalid selector and failed, and observability also
+  flagged SWR-012. But no defect was reported. Each SWE.6 author visit spent its 20 calls diagnosing the terse
+  `check 1 failed in scn_invalid_param.c`: it re-read scenarios, the HAL and the reports, and even re-ran
+  integration and Renode. Rework was exhausted without any decision.
+- **Remedies:**
+  - `run_robot` adds `CHECK_EXPR:<scenario>#<id>:<expression>` for every failed check, so the decision needs no
+    file reads.
+  - The SWE.6 author runs Robot first and must decide within 5 calls on a failure: correct the test and declare
+    it, or `report_defect` and stop with REWORK.
+  - Only run_robot and validate_trace are allowed in this step. The reports are read only when writing the
+    report.

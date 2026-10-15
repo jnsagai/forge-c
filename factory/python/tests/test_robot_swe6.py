@@ -67,6 +67,8 @@ def test_robot_fails_on_failing_test_and_uncovered_requirement(tmp_path, monkeyp
     assert out["status"] == "FAIL"
     assert any(i.startswith("ROBOT_FAIL:SWR-001") for i in out["issues"])
     assert "UNCOVERED_REQUIREMENT:SWR-001" in out["issues"] and "UNCOVERED_REQUIREMENT:SWR-003" in out["issues"]
+    # r64: the failing check's expression is in the result, so the author can decide without reading files
+    assert "CHECK_EXPR:scn_hsi.c#1:HAL_RCC_HSI_Enable(1000U) == HAL_OK" in out["issues"], out["issues"]
     # ADR-0008 test-integrity record: the scenario with failing checks (runtime, not a build error) is recorded
     import json as _json
 

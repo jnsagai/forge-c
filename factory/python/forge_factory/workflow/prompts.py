@@ -139,15 +139,20 @@ AUTHOR_STEPS = {
         "silicon verification) and '## Open defects' (or 'none').",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
-        "Read workproducts/SWE.1/software_requirements.md (every SWR id) and the SWE.4 and SWE.5 reports.",
-        "The scenario files and the Robot suite software/tests/software/test_rcc_requirements.robot were written and run "
-        "by the previous step. Call mcp__forge_tests_mcp__run_robot once for the results; only if it fails, fix the "
-        "failing tests or UNCOVERED_REQUIREMENT issues and call it again. Then call mcp__forge_evidence_mcp__validate_trace.",
+        "Call mcp__forge_tests_mcp__run_robot FIRST (the scenario files and software/tests/software/"
+        "test_rcc_requirements.robot were written by the previous step). Use only run_robot and validate_trace in this "
+        "step - never run_integration, run_renode or build tools.",
+        "If run_robot FAILs, decide BEFORE anything else, in at most 5 tool calls: read "
+        "workproducts/SWE.1/software_requirements.md and use the CHECK_EXPR / REQUIREMENT_NOT_OBSERVED issues (they "
+        "show what each failing check tests). For each failing requirement either correct the scenario/suite (and "
+        "declare it with report_defect kind TEST) or, if the test is right, call report_defect (CODE or ARCHITECTURE "
+        "with requirement_quote) and then finish immediately with status REWORK - do not write the report.",
+        "When run_robot PASSes: call mcp__forge_evidence_mcp__validate_trace, then read the SWE.4 and SWE.5 reports.",
         "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> Robot test -> pass/fail -> "
         "evidence (build/robot/output.xml, log.html), covering normal, boundary and failure behaviour; '## Fault responses "
-        "and target constraints'; '## Regressions and defect status'; and '## Unverified items' stating accurately: host "
-        "tests plus simulated Cortex-M55 target (Renode, behavioural RCC model) only, no silicon/board verification, "
-        "safety allocation out of scope by owner decision.",
+        "and target constraints'; '## Regressions and defect status' (list every defect in .forge-run/defects); and "
+        "'## Unverified items' stating accurately: host tests plus simulated Cortex-M55 target (Renode, behavioural RCC "
+        "model) only, no silicon/board verification, safety allocation out of scope by owner decision.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.6 baseline."],
 }
 
