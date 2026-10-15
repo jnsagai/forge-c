@@ -361,3 +361,23 @@ def auto_code_defect(ws: Path, phase: str, since: str) -> dict | None:
         _save(ws, rec)
         return rec
     return None
+
+
+# ---- triage before the upstream fix (ADR-0008 L12, owner decision 2026-10-15) -----------------------------------
+def last_loop(ws: Path) -> dict | None:
+    p = ws / LOOPS
+    lines = [x for x in p.read_text().splitlines() if x.strip()] if p.is_file() else []
+    return json.loads(lines[-1]) if lines else None
+
+
+def rejected_loop_return(ws: Path) -> str | None:
+    """r70: SWE.2 rejected a wrong ARCHITECTURE defect but its author re-ran its normal steps, re-froze and cascaded
+    into SWE.3. When the owner's triage rejected EVERY defect of the latest loop, the run returns to the phase that
+    reported them (the most downstream detecting phase); nothing upstream is re-frozen. Otherwise None (fix path)."""
+    loop = last_loop(ws)
+    if loop is None:
+        return None
+    recs = [d for d in all_defects(ws) if d["id"] in loop["defects"]]
+    if not recs or any(d["status"] != "REJECTED" for d in recs):
+        return None
+    return max((d["detected_phase"] for d in recs), key=PHASES.index)

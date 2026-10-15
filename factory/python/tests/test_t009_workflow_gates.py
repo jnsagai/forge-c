@@ -81,10 +81,16 @@ def test_route_success_only_to_author_and_failure_through_upstream_chain_to_fina
         target = "swe3_fix_author" if n == 3 else f"swe{n}_author"  # SWE.3 rework re-enters at the fix step
         assert (f"swe{n}_route", target, "outcome=succeeded") in e
         assert (f"swe{n}_route", "upstream_swe1", "") in e  # ADR-0008: not same-phase -> upstream chain
-    assert ("upstream_swe1", "swe1_author", "outcome=succeeded") in e and ("upstream_swe1", "upstream_swe2", "") in e
-    assert ("upstream_swe2", "swe2_author", "outcome=succeeded") in e and ("upstream_swe2", "upstream_swe3", "") in e
-    assert ("upstream_swe3", "swe3_fix_author", "outcome=succeeded") in e and ("upstream_swe3", "finalize", "") in e
-    assert "--phase SWE.3 --step upstream" in dot
+    for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):  # L12: triage first
+        nxt = f"upstream_swe{k + 1}" if k < 3 else "finalize"
+        assert (f"upstream_swe{k}", f"swe{k}_triage", "outcome=succeeded") in e and (f"upstream_swe{k}", nxt, "") in e
+        assert (f"swe{k}_triage", f"swe{k}_triage_gate", "") in e
+        assert (f"swe{k}_triage_gate", owner, "outcome=succeeded") in e and (f"swe{k}_triage_gate", "return_swe2", "") in e
+    for n in range(2, 7):  # fully rejected loop: back to the reporting phase's rework entry, never re-freezing upstream
+        entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
+        assert (f"return_swe{n}", entry, "outcome=succeeded") in e
+        assert (f"return_swe{n}", f"return_swe{n + 1}" if n < 6 else "finalize", "") in e
+    assert "--phase SWE.3 --step upstream" in dot and "--phase SWE.3 --step triage" in dot
 
 
 def test_every_agent_node_has_visit_budget_for_upstream_reentry():
@@ -102,7 +108,7 @@ def test_resumed_graph_keeps_upstream_owners_and_starts_at_restart_phase():
     e = edges(dot)
     assert ("start", "swe6_scaffold", "") in e and not any(a == "start" and b != "swe6_scaffold" for a, b, _ in e)
     assert "swe1_author" in nodes and "swe3_fix_author" in nodes  # reachable through the upstream chain
-    assert ("upstream_swe3", "swe3_fix_author", "outcome=succeeded") in e
+    assert ("swe3_triage_gate", "swe3_fix_author", "outcome=succeeded") in e
 
 
 def _trace(ws):

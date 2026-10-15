@@ -41,11 +41,15 @@ class FakeFabro:
 
 # ---------------- T042 ------------------------------------------------------------------------------------
 def test_t042_turn_budget_blocks_and_resets_per_visit(env):
-    for _ in range(20):
+    from forge_factory.registry.agents import load_agents
+
+    limit = {a.id: a.max_turns for a in load_agents()[0]}
+    assert limit["swe3-author"] == 35 and limit["swe3-inspector"] == 20  # owner decision 2026-10-15 (r70)
+    for _ in range(35):
         ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
         assert ok
     ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
-    assert not ok and n == 21 and lim == 20
+    assert not ok and n == 36 and lim == 35
     G.reset_node("b", "R", "swe3_author")
     assert G.count_tool_call("b", "R", "swe3_author", "swe3-author")[0]
 

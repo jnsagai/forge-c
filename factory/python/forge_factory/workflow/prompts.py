@@ -36,7 +36,9 @@ DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matche
                "status REWORK. If you believe the requirement itself is wrong (e.g. real hardware behaves "
                "differently), report kind REQUIREMENT - never ask for code that contradicts a requirement. If the test "
                "itself is wrong, correct it and declare that with report_defect kind TEST (requirement_ids, "
-               "test_files, requirement_quote = the clause the corrected test checks, why it was wrong).")
+               "test_files, requirement_quote = the clause the corrected test checks, why it was wrong). A defect you "
+               "reported that is REJECTED in .forge-run/defects carries the owner's reason: correct your test (declare "
+               "it as TEST) or, if the requirement itself is wrong, report kind REQUIREMENT - never re-report it.")
 INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
                   "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
@@ -333,6 +335,27 @@ FIX3_STEPS = [
     "compile and swe3_all.",
     "Reply PASS only when both compiles, swe3_all and cppcheck PASS.",
 ]
+
+
+TRIAGE_READ = {1: "workproducts/SWE.1/software_requirements.md",
+               2: "workproducts/SWE.1/software_requirements.md and workproducts/SWE.2/software_architecture.md",
+               3: "workproducts/SWE.1/software_requirements.md and software/hal/stm32n6xx_hal_rcc.h"}
+
+
+def triage_prompt(k: int) -> str:
+    """ADR-0008 L12: the upstream owner judges routed defects in a small, edit-free step before any fix."""
+    steps = [f"Call use_skill with skill_name swe{k}-author.",
+             f"This step only TRIAGES defects routed to SWE.{k}; use at most 8 tool calls and do NOT write or edit any "
+             "file (a later step fixes accepted defects).",
+             f"glob .forge-run/defects/DEF-*.json and read every defect with target_phase SWE.{k} and status IN_FIX.",
+             f"read_file {TRIAGE_READ[k]}.",
+             "For each defect: if the requirement AS WRITTEN demands what the defect asks and your phase's work product "
+             "does not provide it, ACCEPT it (do nothing). Otherwise - the requirement does not demand it, contradicts "
+             "it, or the downstream test calls something the requirement never asked for - call "
+             "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason that quotes the requirement.",
+             'Finish with ONLY this JSON: {"status":"PASS","artifacts":[],"issues":["DEF-nnn ACCEPTED|REJECTED"],'
+             '"next_action":"next"}']
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def fix3_author_prompt() -> str:

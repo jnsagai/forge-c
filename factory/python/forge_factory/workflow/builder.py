@@ -191,11 +191,28 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'  {rt} -> upstream_swe1']
         prev = ig
     # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
+    # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
+    # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).
+    from .prompts import triage_prompt
+
     for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):
         up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k < 3 else "finalize")
+        tri, tg = f"swe{k}_triage", f"swe{k}_triage_gate"
+        nodes[tri] = {"role": f"swe{k}-author", "phase": f"SWE.{k}"}
         L += [f'  {up} [shape=parallelogram, label="Upstream loop to SWE.{k} (open defect, loop budget)", '
               f'script="{_q(gate_cmd(f"SWE.{k}", "upstream"))}"]',
-              f'  {up} -> {owner} [condition="outcome=succeeded"]', f"  {up} -> {nxt}"]
+              f'  {tri} [label="SWE.{k} defect triage (accept or reject, no edits)", max_visits={ONCE}, '
+              f'timeout="600s", prompt="{_q(triage_prompt(k))}"]',
+              f'  {tg} [shape=parallelogram, label="SWE.{k} triage gate (fix | return)", '
+              f'script="{_q(gate_cmd(f"SWE.{k}", "triage"))}"]',
+              f'  {up} -> {tri} [condition="outcome=succeeded"]', f"  {up} -> {nxt}", f"  {tri} -> {tg}",
+              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> return_swe2"]
+    for n in range(2, 7):
+        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n < 6 else "finalize")
+        entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
+        L += [f'  {ret} [shape=parallelogram, label="Return to SWE.{n} (its defects were rejected)", '
+              f'script="{_q(gate_cmd(f"SWE.{n}", "return"))}"]',
+              f'  {ret} -> {entry} [condition="outcome=succeeded"]', f"  {ret} -> {nxt}"]
     nodes["release_manager"] = {"role": "release-manager"}
     L += ['  release_manager [label="Release Manager (inventory only)", max_visits=1, prompt="Call use_skill with '
           'skill_name release-manager and follow it. Final reply: compact JSON only."]',

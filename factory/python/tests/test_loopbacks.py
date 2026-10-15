@@ -339,3 +339,42 @@ def test_safety_net_never_blames_code_without_a_driver_check_that_observes_the_r
         r = gate(ws, "SWE.6", "route")
     assert r.returncode == 1 and b"BLOCKED" in (ws / ".forge-run/gates/gate-log.jsonl").read_bytes()
     assert D.all_defects(ws) == []
+
+
+# ---- L12 triage: a fully rejected loop returns to the reporter without re-freezing upstream (r70) -------------
+def _triage_setup(ws, monkeypatch, intact=True):
+    from forge_factory.inspection import gate as G
+
+    monkeypatch.setattr(Store, "latest_baseline", lambda self, p: {"baseline_id": "BL", "frozen_at": "x"})
+    monkeypatch.setattr(Store, "stale_reason", lambda self, p, bl: None if intact else "BASELINE_CHANGED_AFTER_FREEZE")
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    code_defect(ws)
+    assert D.take_upstream(ws, "SWE.3")
+    return G
+
+
+def test_triage_rejecting_every_defect_returns_to_the_reporting_phase(ws, monkeypatch):
+    G = _triage_setup(ws, monkeypatch)
+    assert G.step_triage(Store(ws), "SWE.3") == 0  # nothing rejected yet -> owner's fix step
+    D.reject(ws, "DEF-001", "swe3-author", "SWR-014 as written is met; the scenario passes an allowed timeout")
+    assert G.step_triage(Store(ws), "SWE.3") == 1  # -> return chain, nothing re-frozen upstream
+    assert [G.step_return(Store(ws), f"SWE.{n}") for n in range(2, 7)] == [1, 1, 1, 1, 0]  # back to SWE.6
+
+
+def test_triage_that_edited_the_owner_baseline_goes_through_the_fix_step(ws, monkeypatch):
+    G = _triage_setup(ws, monkeypatch, intact=False)
+    D.reject(ws, "DEF-001", "swe3-author", "SWR-014 as written is met; the scenario passes an allowed timeout")
+    assert G.step_triage(Store(ws), "SWE.3") == 0  # the changed work product must be re-frozen and inspected
+    assert G.step_return(Store(ws), "SWE.4") == 1
+
+
+def test_partially_rejected_loop_is_fixed_by_the_owner(ws, monkeypatch):
+    G = _triage_setup(ws, monkeypatch)
+    tool(ws, "SWE.6", "run_robot", "FAIL", ts="2026-10-15T11:00:00Z")
+    D.report(ws, detected_phase="SWE.6", reported_by="swe6-author", kind="CODE", summary="no HAL_TIMEOUT on wait",
+             requirement_ids=["SWR-013"], test_files=["software/tests/software/scn_invalid_param.c"], evidence_refs=[],
+             requirement_quote="the RCC driver shall return HAL_TIMEOUT")
+    assert [d["id"] for d in D.take_upstream(ws, "SWE.3")] == ["DEF-002"]
+    D.reject(ws, "DEF-002", "swe3-author", "HAL_TIMEOUT is returned; the scenario never waits")
+    assert G.step_triage(Store(ws), "SWE.3") == 1  # latest loop (DEF-002) fully rejected
+    assert D.all_defects(ws)[0]["status"] == "IN_FIX"  # the earlier loop's defect stays with the owner

@@ -239,6 +239,36 @@ def step_upstream(store: Store, target: str) -> int:
     return 0 if taken else 1
 
 
+def step_triage(store: Store, target: str) -> int:
+    """`swe{k}_triage_gate` (ADR-0008 L12): exit 0 -> the owner's fix step (some defect accepted, or the triage left
+    the owner's baseline changed); exit 1 -> return chain: every defect was rejected, nothing is re-frozen."""
+    from . import defects
+
+    back = defects.rejected_loop_return(store.workspace)
+    bl = store.latest_baseline(target)
+    intact = bl is not None and store.stale_reason(target, bl) is None
+    decision = "RETURN" if back and intact else "FIX"
+    _state(store.workspace, target, {"step": "triage", "result": decision, "return_to": back if decision == "RETURN"
+                                     else None, "baseline_intact": intact})
+    if decision == "RETURN":
+        emit("workflow", "WARN", f"{target} rejected every routed defect: returning to {back} without a cascade",
+             phase=target)
+    print(json.dumps({"target": target, "decision": decision, "return_to": back}))
+    return 1 if decision == "RETURN" else 0
+
+
+def step_return(store: Store, phase: str) -> int:
+    """Return chain node `return_sweN`: exit 0 routes back to phase N's rework entry when the latest loop was
+    rejected in full and N reported it; otherwise fall through (next phase / finalize)."""
+    from . import defects
+
+    back = defects.rejected_loop_return(store.workspace)
+    if back == phase:
+        _state(store.workspace, phase, {"step": "return", "result": "RESUME"})
+    print(json.dumps({"phase": phase, "resume": back == phase}))
+    return 0 if back == phase else 1
+
+
 def step_verify(store: Store, phase: str, check: str) -> int:
     if check == "hal_guideline":
         from .guideline import check_workspace
@@ -277,7 +307,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
-    ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream"])
+    ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream", "triage",
+                                                      "return"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
@@ -302,6 +333,10 @@ def _run_step(store: Store, a: argparse.Namespace) -> int:
             rc = step_route(store, a.phase)
         elif a.step == "upstream":
             rc = step_upstream(store, a.phase)
+        elif a.step == "triage":
+            rc = step_triage(store, a.phase)
+        elif a.step == "return":
+            rc = step_return(store, a.phase)
         else:
             rc = step_verify(store, a.phase, a.check)
     except Exception as exc:  # noqa: BLE001 - any gate error is a failed (never passed) gate
