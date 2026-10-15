@@ -79,8 +79,15 @@ AUTHOR_STEPS = {
         "40 lines) and run again until PASS. Never weaken a check to make it pass; a real driver defect is reported as an "
         "issue.",
         "Call mcp__forge_tests_mcp__llvm_coverage.",
-        "write_file workproducts/SWE.4/unit_verification_report.md (at most 40 lines): '# Unit verification report', a "
-        "table | Test ID | Function | SWR IDs | Result | and the coverage numbers exactly as the tool reported them.",
+        "write_file workproducts/SWE.4/unit_verification_report.md with these sections (SWE.4 checklist): '## Measures, "
+        "environment, entry/exit criteria and regression' (host clang build, fake register array; entry: SWE.3 baseline "
+        "frozen; exit: all UT PASS and coverage goal met or deviation recorded; regression: full suite re-run on every "
+        "change); '## Test cases' table | UT id | function | SWR ids | kind (positive/negative/boundary/error) | result | "
+        "with EXACTLY the UT ids of software/tests/unit/test_rcc.c; '## Mock fidelity' (plain RAM register array: no "
+        "write-1-to-clear, read-only or hardware side effects; ready flags preset by the test; limitations listed); "
+        "'## Static analysis' (cppcheck/clang results from SWE.3, deviations: none or listed); '## Coverage' (goal: 100% "
+        "statement/branch of driver code; the llvm_coverage numbers exactly as reported; any shortfall listed as a "
+        "deviation with reason); '## Findings' (open issues or 'none').",
         "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
         "with a UT id that really appears in a CHECK of software/tests/unit/test_rcc.c (never cite an id that is not "
         "tested; add the missing test first). Then call mcp__forge_evidence_mcp__validate_trace and fix until PASS.",
@@ -98,15 +105,21 @@ AUTHOR_STEPS = {
         "on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
         "definition (the linker places it).",
         "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
-        "write_file workproducts/SWE.5/integration_verification_report.md: sequences, host results, and the Renode target "
-        "results exactly as reported (simulated Cortex-M55 with a behavioural RCC model; not silicon verification).",
+        "write_file workproducts/SWE.5/integration_verification_report.md with sections: '## Plan' (component and "
+        "integration measures), '## Integration sequence' (matches the architecture interfaces), '## Clock/reset "
+        "interactions tested', '## Robustness, fault propagation, timing/resource budgets' (timeout paths, measured sizes), "
+        "'## Results' (host results and the Renode target results exactly as reported), '## Simulation vs target "
+        "limitations' (simulated Cortex-M55 with a behavioural RCC model: no clock-tree timing, no security filtering, no "
+        "silicon verification) and '## Open defects' (or 'none').",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
         "Read workproducts/SWE.1/software_requirements.md, the SWE.4 and SWE.5 reports and traceability/requirements_to_tests.csv.",
         "Call mcp__forge_tests_mcp__run_integration, mcp__forge_sim_mcp__run_renode and mcp__forge_evidence_mcp__validate_trace.",
-        "write_file workproducts/SWE.6/software_verification_report.md: table SWR -> test id -> result -> evidence, list "
-        "untested requirements as issues, state the environments (host tests; simulated Cortex-M55 target on Renode with a "
-        "behavioural RCC model; no silicon verification).",
+        "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> measure (unit/integration/"
+        "target) -> test id -> pass/fail -> evidence (only ids that exist in the test files), covering normal, boundary "
+        "and failure behaviour; '## Fault responses and target constraints'; '## Regressions and defect status'; and "
+        "'## Unverified items' stating accurately: host tests plus simulated Cortex-M55 target only, no silicon/board "
+        "verification, safety allocation out of scope by owner decision.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.6 baseline."],
 }
 
