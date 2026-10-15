@@ -170,7 +170,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
-                         sections=secmap, code_model=code_model)
+                         sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(
         {"default": model, "provider": provider, "code_nodes": code_model,
          "nodes": sorted(k for k, v in nodes.items() if v.get("model")),

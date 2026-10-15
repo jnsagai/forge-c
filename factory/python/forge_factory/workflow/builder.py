@@ -66,8 +66,13 @@ MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR
 
 
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
-          sections: dict[str, str] | None = None, code_model: str | None = None) -> tuple[str, dict]:
-    """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15)."""
+          sections: dict[str, str] | None = None, code_model: str | None = None,
+          chunk_lines: int = 40) -> tuple[str, dict]:
+    """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
+    `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
+    from . import prompts
+
+    prompts.CHUNK["lines"] = chunk_lines
     dot, nodes = _build(work_order, phases, goal, sections)
     if code_model:
         for n in CODE_NODES:

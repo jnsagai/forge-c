@@ -102,8 +102,17 @@ AUTHOR_STEPS = {
 }
 
 
-SMALL = ("Keep every write_file/edit_file content under 40 lines; long tool calls are lost. Make one call per "
-         "function group and continue with the next group after each result. Never call freeze_baseline in this step.")
+CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
+
+
+def small() -> str:
+    n = CHUNK["lines"]
+    if n <= 40:
+        return ("Keep every write_file/edit_file content under 40 lines; long tool calls are lost. Make one call per "
+                "function group and continue with the next group after each result. Never call freeze_baseline in "
+                "this step.")
+    return (f"Keep every write_file/edit_file content under {n} lines and put SEVERAL function groups into one call "
+            "(you have at most 20 tool calls in this step). Never call freeze_baseline in this step.")
 LL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
     "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
@@ -137,7 +146,7 @@ HAL_STEPS = [
     "blank line, then the marker again; repeat until every allocated function is declared.",
     "write_file software/hal/stm32n6xx_hal_rcc.c with exactly: '#include \"stm32n6xx_hal_rcc.h\"', a blank line, the line "
     "'{marker}' and a final newline.",
-    "For EACH API group make ONE edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
+    "For each API group (or several groups per call, see the size rule) make an edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
     "function calls only LL_RCC_ functions and keeps the exact signature declared in the header. Oscillator/PLL Enable "
     "functions wait for the ready flag with a timeout like this example (adapt names; if the architecture passes a "
@@ -174,7 +183,7 @@ def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
-    steps = ["Call use_skill with skill_name swe4-author.", READ, SMALL] + \
+    steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
          for x in UT_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
@@ -184,14 +193,14 @@ def ll_author_prompt() -> str:
     """SWE.3 step 1 (fresh, small context): LL access functions on the generated register map; HAL comes next."""
     from ..inspection.regmap import FUNCTIONS_MARKER
 
-    steps = ["Call use_skill with skill_name swe3-author.", READ, SMALL] + \
+    steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
-    steps = ["Call use_skill with skill_name swe3-author.", READ, SMALL] + \
+    steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
          for x in HAL_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))

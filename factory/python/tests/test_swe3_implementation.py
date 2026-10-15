@@ -2,7 +2,7 @@
 from forge_factory.inspection.implementation import check_implementation, commented_out_code
 
 ARCH = ("# A\n## Requirement allocation\n| SWR | Function |\n|---|---|\n| SWR-001 | `HAL_RCC_HSI_Enable` |\n"
-        "| SWR-002 | HAL_RCC_HSI_Disable |\n")
+        "| SWR-002 | HAL_RCC_HSI_Disable |\n| SWR-003 | timeout bound HAL_RCC_TIMEOUT_VALUE (macro, r30) |\n")
 LL = ("#ifndef STM32N6XX_LL_RCC_H\n#define STM32N6XX_LL_RCC_H\n#include <stdint.h>\n"
       "extern volatile uint32_t ll_rcc_regs[1024U];\n"
       "static inline void LL_RCC_HSI_Enable(void)\n{\n    ll_rcc_regs[0U] |= 8U;\n}\n"

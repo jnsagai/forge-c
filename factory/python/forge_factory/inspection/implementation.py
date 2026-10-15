@@ -34,6 +34,8 @@ def allocated_functions(ws: Path) -> list[str]:
     for row in _rows(body):
         for cell in row:
             for n in re.findall(r"\bHAL_RCC_\w+", cell):
+                if n[len("HAL_RCC_"):] == n[len("HAL_RCC_"):].upper():  # ALL-CAPS = macro (r30: HAL_RCC_TIMEOUT_VALUE)
+                    continue
                 if n not in names:
                     names.append(n)
     return names
