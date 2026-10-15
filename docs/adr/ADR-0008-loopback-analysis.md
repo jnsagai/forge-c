@@ -299,3 +299,14 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   rule tells test authors that calling an undeclared function is usually their TEST error.
 - **Owner decisions (2026-10-15):** L12 triage (no cascade on rejection); `max_turns` 20 → 35 for the SWE.2,
   SWE.3 and SWE.6 authors (inspectors unchanged; per-visit token budgets unchanged).
+
+## Tenth live run (r71): triage and return chain exercised
+- **L12 worked:** SWE.6 filed an ARCHITECTURE defect (DEF-001) and a CODE defect (DEF-002). SWE.2's triage rejected
+  DEF-001 in 3 tool calls and the return chain resumed SWE.6 directly (no re-freeze, no cascade). SWE.6 then declared
+  its test correction (DEF-003 TEST) and reported DEF-004 (CODE, SWR-013). SWE.3's triage chose FIX; SWE.3 fixed both
+  defects with one rework cycle (FIXED).
+- **SWE.4** passed after two cycles (one turn-budget exhaustion at 20 calls).
+- **SWE.5 BLOCKED on anti-bending:** the SWE.3 fix changed behaviour, so two integration checks (IT-017, IT-021)
+  failed; the author adapted the test without declaring it (`TEST_CHANGED_AFTER_FAIL` three times; visit 1 also ran
+  out of its 20 calls). The control is correct (a fix can break a correct test), but the model never declares.
+- DEF-002/DEF-004 stay FIXED (not VERIFIED) because SWE.6 was not reached again.
