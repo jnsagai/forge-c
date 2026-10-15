@@ -1,0 +1,28 @@
+{
+  "command": [
+    "env",
+    "FORGE_T048_WO=WO-0002-STM32N6-RCC-r10",
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t048_e2e.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 0.497,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "78f56ef1e4f1834f2c273e5a9f79173165d6ae5d",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T048/20261015T023515.log",
+  "log_sha256": "08e673cd2e5d76e97cf662001321946a6e2f458121e0efc0806a40436235c63b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T048",
+  "ts_utc": "2026-10-15T02:35:15.151845Z"
+}

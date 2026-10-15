@@ -33,7 +33,9 @@
       "passing_tasks": [
         "T004",
         "T005",
-        "T006"
+        "T006",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -49,7 +51,9 @@
       "fr": "FR-002",
       "passing_tasks": [
         "T005",
-        "T006"
+        "T006",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -66,7 +70,9 @@
         "T007",
         "T009",
         "T044",
-        "T047"
+        "T047",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -89,7 +95,9 @@
         "T014",
         "T015",
         "T016",
-        "T017"
+        "T017",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -110,7 +118,9 @@
       "fr": "FR-005",
       "passing_tasks": [
         "T010",
-        "T018"
+        "T018",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -128,7 +138,9 @@
         "T011",
         "T012",
         "T016",
-        "T049"
+        "T048",
+        "T049",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -146,7 +158,9 @@
       "fr": "FR-007",
       "passing_tasks": [
         "T020",
-        "T024"
+        "T024",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -160,7 +174,9 @@
     {
       "fr": "FR-008",
       "passing_tasks": [
-        "T020"
+        "T020",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -173,7 +189,9 @@
     {
       "fr": "FR-009",
       "passing_tasks": [
-        "T021"
+        "T021",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -187,7 +205,9 @@
       "fr": "FR-010",
       "passing_tasks": [
         "T019",
-        "T022"
+        "T022",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -203,7 +223,9 @@
       "passing_tasks": [
         "T022",
         "T023",
-        "T025"
+        "T025",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -219,7 +241,9 @@
       "fr": "FR-012",
       "passing_tasks": [
         "T025",
-        "T026"
+        "T026",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -235,7 +259,9 @@
       "passing_tasks": [
         "T026",
         "T029",
-        "T049"
+        "T048",
+        "T049",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -250,7 +276,9 @@
     {
       "fr": "FR-014",
       "passing_tasks": [
-        "T027"
+        "T027",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -264,7 +292,9 @@
       "fr": "FR-015",
       "passing_tasks": [
         "T022",
-        "T047"
+        "T047",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -278,7 +308,9 @@
     {
       "fr": "FR-016",
       "passing_tasks": [
-        "T028"
+        "T028",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -291,7 +323,9 @@
     {
       "fr": "FR-017",
       "passing_tasks": [
-        "T030"
+        "T030",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -306,7 +340,9 @@
       "passing_tasks": [
         "T030",
         "T031",
-        "T049"
+        "T048",
+        "T049",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -323,7 +359,9 @@
       "passing_tasks": [
         "T017",
         "T031",
-        "T032"
+        "T032",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -340,7 +378,9 @@
       "passing_tasks": [
         "T037",
         "T038",
-        "T041"
+        "T041",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -356,7 +396,9 @@
       "fr": "FR-021",
       "passing_tasks": [
         "T037",
-        "T039"
+        "T039",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -371,7 +413,9 @@
       "fr": "FR-022",
       "passing_tasks": [
         "T035",
-        "T039"
+        "T039",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -385,7 +429,9 @@
     {
       "fr": "FR-023",
       "passing_tasks": [
-        "T035"
+        "T035",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -399,7 +445,9 @@
       "fr": "FR-024",
       "passing_tasks": [
         "T035",
-        "T039"
+        "T039",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -414,7 +462,9 @@
       "fr": "FR-025",
       "passing_tasks": [
         "T036",
-        "T049"
+        "T048",
+        "T049",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -428,7 +478,9 @@
     {
       "fr": "FR-026",
       "passing_tasks": [
-        "T034"
+        "T034",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -444,7 +496,9 @@
         "T006",
         "T008",
         "T025",
-        "T043"
+        "T043",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -465,7 +519,9 @@
         "T025",
         "T032",
         "T036",
-        "T043"
+        "T043",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -485,7 +541,9 @@
       "passing_tasks": [
         "T032",
         "T041",
-        "T042"
+        "T042",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -500,7 +558,9 @@
     {
       "fr": "FR-030",
       "passing_tasks": [
-        "T042"
+        "T042",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -517,7 +577,9 @@
         "T016",
         "T028",
         "T045",
-        "T046"
+        "T046",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -536,7 +598,9 @@
       "passing_tasks": [
         "T002",
         "T045",
-        "T046"
+        "T046",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -552,7 +616,9 @@
       "fr": "FR-033",
       "passing_tasks": [
         "T045",
-        "T049"
+        "T048",
+        "T049",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -569,7 +635,9 @@
         "T004",
         "T020",
         "T023",
-        "T024"
+        "T024",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -585,7 +653,9 @@
     {
       "fr": "FR-035",
       "passing_tasks": [
-        "T033"
+        "T033",
+        "T048",
+        "T051"
       ],
       "priority": "P1",
       "status": "COVERED",
@@ -598,7 +668,9 @@
     {
       "fr": "FR-036",
       "passing_tasks": [
-        "T044"
+        "T044",
+        "T048",
+        "T051"
       ],
       "priority": "P1",
       "status": "COVERED",
@@ -611,7 +683,9 @@
     {
       "fr": "FR-037",
       "passing_tasks": [
-        "T040"
+        "T040",
+        "T048",
+        "T051"
       ],
       "priority": "P1",
       "status": "COVERED",
@@ -626,7 +700,9 @@
       "passing_tasks": [
         "T009",
         "T029",
-        "T047"
+        "T047",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -642,7 +718,10 @@
       "fr": "FR-039",
       "passing_tasks": [
         "T001",
-        "T003"
+        "T003",
+        "T048",
+        "T050",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -660,7 +739,9 @@
         "T010",
         "T013",
         "T015",
-        "T018"
+        "T018",
+        "T048",
+        "T051"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -674,13 +755,13 @@
       ]
     }
   ],
-  "generated_at": "2026-10-15T01:55:23.134136Z",
-  "git_head": "727748df39eac500cb48187fb1ec17242f6bc0c4",
+  "generated_at": "2026-10-15T02:41:07.988592Z",
+  "git_head": "78f56ef1e4f1834f2c273e5a9f79173165d6ae5d",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
   "summary": {
-    "002_pass": 48,
+    "002_pass": 51,
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
@@ -1355,8 +1436,10 @@
       "task": "T047"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T048/latest.json"
+      ],
       "frs": [
         "FR-001",
         "FR-002",
@@ -1399,9 +1482,9 @@
         "FR-039",
         "FR-040"
       ],
-      "line": "- [ ] **T048 [P0]** Execute offline generic RCC end-to-end on local Qwen using real Fabro: full workproducts, inspections, tests, footprint, coverage, health/trace reports and review archive. **[FR-00",
+      "line": "- [X] **T048 [P0]** Execute offline generic RCC end-to-end on local Qwen using real Fabro: full workproducts, inspections, tests, footprint, coverage, health/trace reports and review archive. **[FR-00",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "T048"
     },
     {
@@ -1422,19 +1505,23 @@
       "task": "T049"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T050/latest.json"
+      ],
       "frs": [
         "FR-039"
       ],
-      "line": "- [ ] **T050 [P0]** Document Ubuntu setup, service lifecycle, backup/restore, trace retention, dashboard auth, upgrade/rollback, failure runbook, review instructions and known safety-tool gaps. **[FR-",
+      "line": "- [X] **T050 [P0]** Document Ubuntu setup, service lifecycle, backup/restore, trace retention, dashboard auth, upgrade/rollback, failure runbook, review instructions and known safety-tool gaps. **[FR-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "T050"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/T051/latest.json"
+      ],
       "frs": [
         "FR-001",
         "FR-002",
@@ -1477,9 +1564,9 @@
         "FR-039",
         "FR-040"
       ],
-      "line": "- [ ] **T051 [P0]** Generate final FR→task→test coverage matrix, run all contract/acceptance suites, stamp evidence/commit hashes and produce a self-contained implementation status report (PASS/FAIL/N",
+      "line": "- [X] **T051 [P0]** Generate final FR→task→test coverage matrix, run all contract/acceptance suites, stamp evidence/commit hashes and produce a self-contained implementation status report (PASS/FAIL/N",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "T051"
     }
   ],

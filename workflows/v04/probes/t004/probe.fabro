@@ -2,6 +2,6 @@ digraph ForgeT004Probe {
     graph [goal="Forge-C T004 capability probe: skills, MCP tool, pre_tool_use hook"]
     start [shape=Mdiamond, label="Start"]
     exit  [shape=Msquare, label="Exit"]
-    probe [label="Probe", max_visits=1, prompt="Do exactly these steps. 1) Call tool use_skill with skill_name swe1-inspector and read it. 2) Call the MCP tool whose name ends with __ping with text T004. 3) Call the shell tool with command: echo native-shell-attempt. 4) Reply with only this JSON: {\"status\":\"PASS\",\"artifacts\":[],\"issues\":[],\"next_action\":\"none\"}"]
+    probe [label="Probe", max_visits=1, prompt="Do exactly these steps. 1) Call tool use_skill for the skill named swe1-inspector and read it. 2) Call the MCP tool whose name ends with __ping with text T004. 3) Call the shell tool with command: echo native-shell-attempt. 4) Reply with only this JSON: {\"status\":\"PASS\",\"artifacts\":[],\"issues\":[],\"next_action\":\"none\"}"]
     start -> probe -> exit
 }

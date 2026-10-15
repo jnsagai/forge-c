@@ -1,0 +1,94 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 184 items
+
+factory/python/tests/test_ears.py ..............                         [  7%]
+factory/python/tests/test_guideline_check.py .................           [ 16%]
+factory/python/tests/test_kpi_003.py .......................             [ 29%]
+factory/python/tests/test_llm_gateway.py ....                            [ 31%]
+factory/python/tests/test_m2_mcp.py ................F                    [ 40%]
+factory/python/tests/test_m3_supervisor.py ............                  [ 47%]
+factory/python/tests/test_m4_repair.py .......                           [ 51%]
+factory/python/tests/test_m5_lessons.py .........                        [ 55%]
+factory/python/tests/test_m6_observability.py ...........                [ 61%]
+factory/python/tests/test_m7_governance_release.py ...........           [ 67%]
+factory/python/tests/test_t001_inventory.py ...                          [ 69%]
+factory/python/tests/test_t004_fabro_capabilities.py ........F           [ 74%]
+factory/python/tests/test_t005_t006_agents_skills.py ..........          [ 79%]
+factory/python/tests/test_t007_policy.py ........                        [ 84%]
+factory/python/tests/test_t008_agent_output.py .....                     [ 86%]
+factory/python/tests/test_t009_inspection.py .........                   [ 91%]
+factory/python/tests/test_t009_workflow_gates.py .........               [ 96%]
+factory/python/tests/test_t024_systemd.py .                              [ 97%]
+factory/python/tests/test_t048_e2e.py .                                  [ 97%]
+factory/python/tests/test_t050_t051_docs_status.py .s..                  [100%]
+
+=================================== FAILURES ===================================
+___________ test_t018_live_fabro_calls_forge_mcp_through_ticket_gate ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76705e814d50>
+
+    @pytest.mark.skipif(os.environ.get("FORGE_FABRO_LIVE") != "1", reason="live Fabro disabled")
+    def test_t018_live_fabro_calls_forge_mcp_through_ticket_gate(monkeypatch):
+        for k in ("FORGE_MCP_TRUST", "FORGE_ROLE", "FORGE_WORKSPACE", "FORGE_EVENTS_DIR"):
+            monkeypatch.delenv(k, raising=False)
+        from forge_factory.fabro.client import FabroClient, load_token
+        from forge_factory.fabro.runconfig import create_workspace, fabro_run, write_run
+        from forge_factory.policy.authz import Binding
+    
+        ws = Path(os.environ["FORGE_STATE_DIR"]) / "workspaces" / "t018-live"
+        create_workspace(ws, {"software/src/forge_rcc_demo.c": RCC_C.read_text(),
+                              "software/include/forge_rcc_demo.h": RCC_H.read_text()})
+        b = Binding("t018-live", str(ws), {"auth3": {"role": "swe3-author", "phase": "SWE.3"}})
+        toml = write_run(ws, LIVE_GRAPH, "T018", b, PF.fabro_mcp_config(["forge-build-mcp", "forge-evidence-mcp"]))
+        run_id = fabro_run(ws, toml, "t018-live", timeout=600)
+        done = [e["properties"]["event"]["ToolCallCompleted"] for e in FabroClient(token=load_token()).iter_events(run_id)
+                if e["event"] == "agent.tool.completed"]
+        by = {d["tool_name"]: d for d in done}
+        assert json.loads(by["mcp__forge_build_mcp__configure"]["output"])["status"] == "PASS"
+        assert json.loads(by["mcp__forge_build_mcp__compile"]["output"])["status"] == "PASS"
+        if "mcp__forge_evidence_mcp__build_package" in by:  # model compliance varies; if attempted it must be denied
+            assert by["mcp__forge_evidence_mcp__build_package"].get("error_kind") == "denied"
+>       assert list((ws / "build/target-cm55-gcc").glob("*.o"))
+E       AssertionError: assert []
+E        +  where [] = list(<map object at 0x76705e800c70>)
+E        +    where <map object at 0x76705e800c70> = glob('*.o')
+E        +      where glob = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workspaces/t018-live') / 'build/target-cm55-gcc').glob
+
+factory/python/tests/test_m2_mcp.py:302: AssertionError
+___________________ test_live_probe_against_installed_fabro ____________________
+
+    @pytest.mark.skipif(os.environ.get("FORGE_FABRO_LIVE") != "1", reason="live Fabro smoke disabled")
+    def test_live_probe_against_installed_fabro():
+        from forge_factory.fabro.client import load_token
+    
+        c = FabroClient(token=load_token())
+        info = c.system_info()
+        assert info["version"].startswith("0.362.0")
+        repo = Path(__file__).resolve().parents[3]
+        state = Path(os.environ["FORGE_STATE_DIR"]) / "probes" / "t004"
+        for f in ("hook-calls.jsonl", "mcp-calls.jsonl"):
+            (state / f).unlink(missing_ok=True)
+        env = {**os.environ, "HOME": os.environ["FORGE_FABRO_HOME"], "FABRO_NO_UPGRADE_CHECK": "1"}
+        fabro = os.environ["FORGE_FABRO_BIN"]
+        out = subprocess.run([fabro, "run", str(state / "workflow.toml"), "--detach", "--auto-approve", "--environment",
+                              "local", "--label", "forge=t004-live"], cwd=repo, env=env, capture_output=True, text=True,
+                             timeout=120)
+        run_id = out.stdout.strip().splitlines()[-1]
+        subprocess.run([fabro, "wait", run_id], env=env, capture_output=True, timeout=600)
+        evs = list(c.iter_events(run_id))
+        assert run_status(c.get_run(run_id)) == "SUCCEEDED"
+        hooks = [json.loads(x)["tool_name"] for x in (state / "hook-calls.jsonl").read_text().splitlines()]
+>       assert "shell" in hooks and any(h.startswith("mcp__forge_probe__") for h in hooks)
+E       AssertionError: assert ('shell' in ['use_skill', 'glob'])
+
+factory/python/tests/test_t004_fabro_capabilities.py:107: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_m2_mcp.py::test_t018_live_fabro_calls_forge_mcp_through_ticket_gate
+FAILED factory/python/tests/test_t004_fabro_capabilities.py::test_live_probe_against_installed_fabro
+============= 2 failed, 181 passed, 1 skipped in 79.75s (0:01:19) ==============
+
+--- stderr ---
