@@ -123,13 +123,24 @@ AUTHOR_STEPS = {
         "silicon verification) and '## Open defects' (or 'none').",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
-        "Read workproducts/SWE.1/software_requirements.md, the SWE.4 and SWE.5 reports and traceability/requirements_to_tests.csv.",
-        "Call mcp__forge_tests_mcp__run_integration, mcp__forge_sim_mcp__run_renode and mcp__forge_evidence_mcp__validate_trace.",
-        "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> measure (unit/integration/"
-        "target) -> test id -> pass/fail -> evidence (only ids that exist in the test files), covering normal, boundary "
-        "and failure behaviour; '## Fault responses and target constraints'; '## Regressions and defect status'; and "
-        "'## Unverified items' stating accurately: host tests plus simulated Cortex-M55 target only, no silicon/board "
-        "verification, safety allocation out of scope by owner decision.",
+        "Read workproducts/SWE.1/software_requirements.md (every SWR id), the SWE.4 and SWE.5 reports and "
+        "software/hal/stm32n6xx_hal_rcc.h.",
+        "Requirement-based tests with Robot Framework on the Renode STM32N6 model: write small C scenario files "
+        "software/tests/software/scn_<topic>.c (same form as the target tests: '#include \"stm32n6xx_hal_rcc.h\"', "
+        "'#include \"forge_target_test.h\"', 'FORGE_MAILBOX_DEFINE;', main with FORGE_TEST_BEGIN(); TCHECK(<n>, <cond>); "
+        "FORGE_TEST_END();) and ONE suite software/tests/software/test_rcc_requirements.robot: '*** Settings ***' with "
+        "'Library    ForgeTarget', then '*** Test Cases ***' with one test case per SWR, '[Tags]    SWR-0nn' and keywords "
+        "'Run Target Scenario    scn_<topic>.c' (add '    scenario=never_ready' for timeout behaviour), 'Target Check "
+        "Should Pass    <n>', 'All Target Checks Should Pass', 'Driver Flash Size Should Be At Most    <bytes>', 'Driver "
+        "Static RAM Should Be At Most    <bytes>'. Separate keyword and arguments with 4 spaces. Every SWR id must be the "
+        "tag of at least one test.",
+        "Call mcp__forge_tests_mcp__run_robot; fix failing tests or UNCOVERED_REQUIREMENT issues and repeat until PASS. "
+        "Then call mcp__forge_evidence_mcp__validate_trace.",
+        "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> Robot test -> pass/fail -> "
+        "evidence (build/robot/output.xml, log.html), covering normal, boundary and failure behaviour; '## Fault responses "
+        "and target constraints'; '## Regressions and defect status'; and '## Unverified items' stating accurately: host "
+        "tests plus simulated Cortex-M55 target (Renode, behavioural RCC model) only, no silicon/board verification, "
+        "safety allocation out of scope by owner decision.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.6 baseline."],
 }
 

@@ -76,11 +76,11 @@
     },
     "swe6-author": {
       "path": ".fabro/skills/swe6-author/SKILL.md",
-      "sha256": "3d4295e80806f84cd6722ab53156c51a1753e9967c97de902f677556643e9963"
+      "sha256": "134361238080c0336a6f55e5f27abda42471ac019d5375675411810797bfdbf1"
     },
     "swe6-inspector": {
       "path": ".fabro/skills/swe6-inspector/SKILL.md",
-      "sha256": "29167a28a9baee29d8cc461c842dad22db4bbca9b72fedef93a260c31fabf11b"
+      "sha256": "f8c94a602cc7fe29c0c5b95bcedfbc5f95a9b1e9ed56db7a8496ae087079ce2c"
     }
   }
 }

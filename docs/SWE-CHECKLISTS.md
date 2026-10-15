@@ -99,7 +99,9 @@ Checklist v0.4 (sha256 575f070054fb…), rework budget 3 (the factory blocks aft
 
 Checklist v0.4 (sha256 e617eabd5726…), rework budget 3 (the factory blocks after 2 failed cycles, ADR-0005).
 
-**Before freeze (author gate):** `workproducts/SWE.6/software_verification_report.md`.
+**Before freeze (author gate):** `workproducts/SWE.6/software_verification_report.md`; `software/tests/software/*.robot`; run_robot PASS.
+
+- Requirement-based tests in Robot Framework 6.1 (software/tests/software/*.robot, one test per SWR tag) run on the Renode STM32N6 model with the ForgeTarget keywords; run_robot passes only if every test passes and every SWR is verified.
 
 | ID | Required | If failed | Criterion | Decided by |
 |---|---|---|---|---|
@@ -119,7 +121,7 @@ Checklist v0.4 (sha256 e617eabd5726…), rework budget 3 (the factory blocks aft
 | misra_coverage_assessed | cppcheck ran and the MISRA coverage matrix exists. |
 | unit_verification | Latest run_unit is PASS. |
 | integration_verification | Latest run_integration is PASS. |
-| software_verification | SWE.6 gate PASS and integration verification PASS. |
+| software_verification | SWE.6 gate PASS, integration verification PASS and the Robot SWE.6 suite PASS. |
 | traceability | Every SWR has a test id, and every cited test id exists in its test file. |
 | resource_budgets | Measured flash, static RAM and max stack frame are within the work-order budgets. |
 | target_verification | A run_renode (or HwSim) result is PASS. |

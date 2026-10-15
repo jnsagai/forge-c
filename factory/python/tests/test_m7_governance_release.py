@@ -167,6 +167,7 @@ def complete_workspace(ws: Path) -> None:
     ok = {"status": "PASS", "summary": "target", "artifact_refs": [], "issues": [], "provenance": {}, "metrics": {}}
     rows = [("forge-analysis-mcp", "cppcheck", ok), ("forge-analysis-mcp", "clang_analyze", ok),
             ("forge-tests-mcp", "run_unit", ok), ("forge-tests-mcp", "run_integration", ok),
+            ("forge-tests-mcp", "run_robot", ok),
             ("forge-build-mcp", "measure_elf", {**ok, "summary": "text=10 (target-cm55-gcc)",
                                                 "metrics": {"flash_bytes": 100, "ram_bytes": 8}}),
             ("forge-build-mcp", "stack_usage", {**ok, "summary": "max frame (target-cm55-gcc)",

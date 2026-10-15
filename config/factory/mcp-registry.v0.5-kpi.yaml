@@ -17,6 +17,17 @@ servers:
       status: IMPLEMENTED_V05
       timeout_seconds: 60
       role_grants: [release-manager, safety-evidence-auditor]
+  forge-tests-mcp:
+    ops:
+    - name: run_robot
+      logical_tool: Robot Framework SWE.6 requirement-based tests on the Renode STM32N6 model
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 600
+      role_grants: [swe6-author, swe6-inspector]
+      notes: Owner request 2026-10-15; PASS only if all tests pass and every SWR is a tag of a passing test.
 role_tool_additions:
   release-manager: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]
   safety-evidence-auditor: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]
+  swe6-author: [forge-tests-mcp.run_robot]
+  swe6-inspector: [forge-tests-mcp.run_robot]

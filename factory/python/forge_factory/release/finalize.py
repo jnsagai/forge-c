@@ -104,7 +104,8 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     checks["misra_coverage_assessed"] = cpp is not None and (ws / "verification/static/misra_coverage_matrix.md").is_file()
     checks["unit_verification"] = ok(latest(res, "forge-tests-mcp", "run_unit"))
     checks["integration_verification"] = ok(latest(res, "forge-tests-mcp", "run_integration"))
-    checks["software_verification"] = gates["SWE.6"]["decision"] == "PASS" and checks["integration_verification"]
+    checks["software_verification"] = (gates["SWE.6"]["decision"] == "PASS" and checks["integration_verification"]
+                                       and ok(latest(res, "forge-tests-mcp", "run_robot")))  # SWE.6 Robot suite
     tr_ok, tr_issues = trace_check(ws)
     checks["traceability"] = tr_ok
     size = latest(res, "forge-build-mcp", "measure_elf", lambda r: "target" in json.dumps(r["result"]["summary"]))

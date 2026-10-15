@@ -98,6 +98,13 @@
       "role": "ReqIF 1.2 schema validation / parsing (SWE.1 export)",
       "version": "0.1.0",
       "pinned_in": "requirements/forge-factory.lock (hashes)"
+    },
+    {
+      "name": "Robot Framework",
+      "license": "Apache-2.0",
+      "role": "SWE.6 requirement-based tests (ForgeTarget keywords on the Renode STM32N6 model)",
+      "version": "6.1",
+      "pinned_in": "requirements/forge-factory.lock (hashes)"
     }
   ],
   "out_of_scope": [

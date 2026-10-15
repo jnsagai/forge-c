@@ -9,6 +9,7 @@ Unity/CMock are not vendored on this host: tests are self-checking C programs (d
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from typing import Literal
 
@@ -132,9 +133,72 @@ def gcov_coverage(ctx: ToolContext, a: CovIn) -> dict:
                   issues=["OPTIONAL_OP_DISABLED:gcov_coverage"], tool="gcovr", version=tool_version("gcovr"))
 
 
+class RobotIn(ToolInput):
+    pass
+
+
+def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
+    """SWE.6 requirement-based tests: Robot Framework suites (software/tests/software/*.robot) using the ForgeTarget
+    keyword library on the Renode STM32N6 model. PASS only if every test passes and every SWE.1 requirement is the
+    tag of at least one passing test."""
+    import os
+    import sys
+    import xml.etree.ElementTree as ET  # noqa: N817
+
+    from ...common import REPO_ROOT
+    from ...inspection.architecture import SWR
+
+    suites = sorted((ctx.workspace / "software/tests/software").glob("*.robot"))
+    if not suites:
+        return result(ctx, "BLOCKED", "no Robot suites", issues=["NO_TESTS:software/tests/software/*.robot"],
+                      tool="robotframework")
+    out = ctx.workspace / "build" / "robot"
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+    py = sys.executable
+    env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
+           **{k: os.environ[k] for k in ("FORGE_STATE_DIR", "FORGE_DATA_ROOT") if os.environ.get(k)}}
+    r = run_argv([py, "-m", "robot", "--pythonpath", str(REPO_ROOT / "factory/sim/stm32n6"), "--pythonpath",
+                  str(REPO_ROOT / "factory/python"), "--outputdir", str(out), "--consolecolors", "off",
+                  "--console", "dotted", *[str(s) for s in suites]], ctx.workspace, 570, {os.path.basename(py)},
+                 env_extra=env, mem_mb=65536, fsize_mb=512)
+    xml = out / "output.xml"
+    if not xml.is_file():
+        return result(ctx, "FAIL", "robot produced no output.xml", [ctx.store(r.stdout + r.stderr)],
+                      ["ROBOT_NO_OUTPUT"], tool="robotframework", exit_code=r.exit_code)
+    tests, issues, covered = [], [], set()
+    for t in ET.parse(xml).getroot().iter("test"):  # noqa: S314 - output.xml written by the local robot run
+        tags = [x.text or "" for x in t.findall("./tags/tag")] or [x.text or "" for x in t.findall("./tag")]
+        st = t.find("status")
+        status = st.get("status") if st is not None else "FAIL"
+        tests.append({"name": t.get("name"), "tags": tags, "status": status})
+        if status == "PASS":
+            covered |= {g for g in tags if SWR.fullmatch(g)}
+        else:
+            msg = (st.text or "").strip().replace("\n", " ")[:120] if st is not None else ""
+            issues.append(f"ROBOT_FAIL:{t.get('name')}:{msg}")
+    req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
+    reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
+    issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
+    passed = sum(1 for t in tests if t["status"] == "PASS")
+    ok = bool(tests) and passed == len(tests) and not [i for i in issues if i.startswith("UNCOVERED")]
+    return result(ctx, "PASS" if ok else "FAIL",
+                  f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
+                  "verified (Renode STM32N6 model + host measurements)",
+                  [ctx.store(xml.read_bytes(), "xml")], issues[:30],
+                  {"tests": len(tests), "passed": passed, "failed": len(tests) - passed, "requirements": len(reqs),
+                   "requirements_verified": len(covered & set(reqs)), "environment": "robotframework 6.1 + renode "
+                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False},
+                  "robotframework", tool_version(py, ("-m", "robot", "--version")), r.exit_code, r.duration_ms,
+                  a.model_dump(), r.stdout + r.stderr)
+
+
 OPERATIONS = [
     Operation("run_unit", RunIn, run_unit, "Build+run software/tests/unit/test_*.c on host (coverage optional)."),
     Operation("run_integration", RunIn, run_integration, "Build+run integration (or software-level) host tests."),
+    Operation("run_robot", RobotIn, run_robot,
+              "SWE.6: run Robot Framework requirement tests (software/tests/software/*.robot) on the Renode model."),
     Operation("llvm_coverage", CovIn, llvm_coverage, "LLVM line/branch/MC/DC coverage summary; raw data by ref."),
     Operation("gcov_coverage", CovIn, gcov_coverage, "gcov/gcovr coverage (disabled in this pilot)."),
 ]

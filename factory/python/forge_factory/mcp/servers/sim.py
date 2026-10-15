@@ -56,7 +56,20 @@ def renode_bin() -> str | None:
     return next((c for c in cand if c and Path(c).is_file()), None)
 
 
-def _run_image(ctx: ToolContext, renode: str, elf: Path, scenario: str, wd: Path) -> tuple[dict | None, bytes]:
+def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]]:
+    """Build one RAM-resident Cortex-M55 test image (test source + driver sources + startup + linker script)."""
+    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ws / d).glob("*.c"))]
+    incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
+                                     "software/tests/software") if (ws / d).is_dir()]
+    b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
+                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
+    errs = [ln.split(str(ws) + "/")[-1][:140] for ln in b.stderr.decode(errors="replace").splitlines()
+            if ": error:" in ln][:8]
+    return b.exit_code == 0, b.stdout + b.stderr, errs
+
+
+def run_image(renode: str, elf: Path, scenario: str, wd: Path) -> tuple[dict | None, bytes]:
+    """Run an image on the Forge-C STM32N6 platform with the given RCC scenario; read the RAM mailbox."""
     model = wd / f"rcc_model_{scenario}.py"
     model.write_text(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
                             (SIM_DIR / "rcc_model.py").read_text(), flags=re.M))
@@ -89,9 +102,6 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     tests = sorted((ctx.workspace / "software/tests/target").glob("test_*.c"))
     if not tests:
         return result(ctx, "BLOCKED", "no target tests", issues=["NO_TESTS:software/tests/target"], tool="renode")
-    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ctx.workspace / d).glob("*.c"))]
-    incs = [f"-I{ctx.workspace / d}" for d in ("software/hal", "software/ll", "software/include",
-                                                "software/tests/target") if (ctx.workspace / d).is_dir()]
     wd = ctx.workspace / "build" / "renode"
     if wd.exists():
         shutil.rmtree(wd)
@@ -101,16 +111,14 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     for t in tests:
         scenario = "never_ready" if t.stem.endswith("_timeout") else "default"
         elf = wd / f"{t.stem}.elf"
-        b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
-                      str(SIM_DIR / "startup.c"), str(t), *srcs, "-o", str(elf)], wd, 180, {"arm-none-eabi-gcc"})
-        log += b.stdout + b.stderr
-        if b.exit_code != 0:
+        ok_build, blog, errs = build_image(ctx.workspace, t, elf)
+        log += blog
+        if not ok_build:
             issues.append(f"BUILD_FAIL:{t.name}")
-            issues += [ln.split(str(ctx.workspace) + "/")[-1][:140] for ln in b.stderr.decode(errors="replace")
-                       .splitlines() if ": error:" in ln][:8]
+            issues += errs
             failed += 1
             continue
-        res, out = _run_image(ctx, renode, elf, scenario, wd)
+        res, out = run_image(renode, elf, scenario, wd)
         log += out
         if res is None or not res["magic_ok"] or not res["done"]:
             issues.append(f"NO_RESULT:{t.name}:{scenario}")

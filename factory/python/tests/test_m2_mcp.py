@@ -48,7 +48,7 @@ def call(mod, server, op, args, role, phase=None):
 # ---------------- T010 registry + preflight --------------------------------------------------------
 def test_t010_catalog_all_ops_implemented_and_mandatory_available():
     cat = PF.op_catalog()
-    assert len(cat) == 36  # 34 design ops + 2 versioned v0.5 KPI overlay ops
+    assert len(cat) == 37  # 34 design ops + 2 v0.5 KPI overlay ops + run_robot (SWE.6, owner request 2026-10-15)
     assert not [k for k, e in cat.items() if e["status"] == "NOT_IMPLEMENTED"]
     assert not [k for k, e in cat.items() if e["mandatory"] and e["status"] != "OK"]
 

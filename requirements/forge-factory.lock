@@ -1479,3 +1479,9 @@ xmlschema==4.3.2 \
     --hash=sha256:cf5c970a30f6ebcb3da35260e694704cc0b6794d8ace46125bb2a95e38ed9307 \
     --hash=sha256:f3b33a21a2b2cdc404ddc3fb599d8bc1dee90b155d547370672e6e684746b8d6
     # via reqif
+
+# Robot Framework for SWE.6 requirement-based tests (owner request 2026-10-15); version pinned by Renode 1.17.0 tests
+robotframework==6.1 \
+    --hash=sha256:46b04648547eab6433ce107c4b40757aa8bea1e47bd86af9c0cff5546dac767e \
+    --hash=sha256:a94e0b3c4f8ae08c0a4dc7bff6fa8a51730565103f8c682a2d8391da9a4697f5
+    # via -r /tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/robot.in

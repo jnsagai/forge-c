@@ -42,10 +42,11 @@ REQUIRED_OUTPUTS = {
     "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
     "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
     "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
-    "SWE.6": ["workproducts/SWE.6/software_verification_report.md"],
+    "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
 }
 REQUIRED_TOOL_PASS = {"SWE.4": [("forge-tests-mcp", "run_unit")],
-                      "SWE.5": [("forge-tests-mcp", "run_integration")]}
+                      "SWE.5": [("forge-tests-mcp", "run_integration")],
+                      "SWE.6": [("forge-tests-mcp", "run_robot")]}
 
 
 class InspectionError(ValueError):

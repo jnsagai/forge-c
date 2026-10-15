@@ -35,6 +35,7 @@ Read-only input manifest for SWE.6: frozen SWE.1 requirements + all SWE.3–SWE.
 - `forge-analysis-mcp.clang_analyze`
 - `forge-tests-mcp.run_unit`
 - `forge-tests-mcp.llvm_coverage`
+- `forge-tests-mcp.run_robot`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. You may not use `write_file`/`edit_file`.
 
