@@ -20,3 +20,16 @@ additional_checks:
   - workproduct_reference
   - guideline_report_reference
   - recorded_verdict
+- id: SWE3-08
+  required: true
+  severity_if_failed: major
+  criterion: Every LL register offset, bit position and bit mask definition matches the RM0486 register
+    description supplied in the work-order inputs (register definitions are generated from RM0486 and
+    re-verified; no definition for a register or field absent from the RM inputs).
+  deterministic_check: register_map_conformance
+  verification_node: gate --step verify --phase SWE.3 --check hal_guideline
+  source: night-run finding 2026-10-15 (WO r13 - 8B model invented register offsets and masks)
+  evidence:
+  - workproduct_reference
+  - register_map_report_reference
+  - recorded_verdict

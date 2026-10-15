@@ -1,6 +1,6 @@
 """T009/T046/T047 — generate the v0.4 unattended SWE.1–SWE.6 Fabro workflow (DOT) + run binding.
 
-Graph per phase n:  (SWE.3: swe3_ll_author ->) swe{n}_author -> swe{n}_author_gate -[ok]->
+Graph per phase n:  (SWE.3: swe3_regmap -> swe3_ll_author ->) swe{n}_author -> swe{n}_author_gate -[ok]->
                     (SWE.3: swe3_verify ->) swe{n}_inspector
                     -> swe{n}_inspect_gate -[ok]-> next phase ... ; any gate failure -> swe{n}_route
                     swe{n}_route -[ok: rework budget left]-> swe{n}_author | -[fail]-> finalize
@@ -45,6 +45,11 @@ def inspector_prompt(n: int) -> str:
     return ip(f"SWE.{n}")
 
 
+def regmap_cmd() -> str:
+    pp = REPO_ROOT / "factory" / "python"
+    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
+
+
 def finalize_cmd(work_order: str) -> str:
     pp = REPO_ROOT / "factory" / "python"
     return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
@@ -83,10 +88,12 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
         if phase == "SWE.3":  # LL header in its own fresh context first; rework re-enters at the HAL author
             from .prompts import ll_author_prompt
 
-            entry = "swe3_ll_author"
-            nodes[entry] = {"role": "swe3-author", "phase": phase}
-            L += [f'  {entry} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
-                  f"  {entry} -> {a}"]
+            entry, ll = "swe3_regmap", "swe3_ll_author"
+            nodes[ll] = {"role": "swe3-author", "phase": phase}
+            L += [f'  {entry} [shape=parallelogram, label="SWE.3 register map generator (RM0486, deterministic)", '
+                  f'script="{_q(regmap_cmd())}"]',
+                  f'  {ll} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
+                  f"  {entry} -> {ll}", f"  {ll} -> {a}"]
         L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":

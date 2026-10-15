@@ -47,8 +47,9 @@ AUTHOR_STEPS = {
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
         "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM) "
-        "and read_file software/ll/stm32n6xx_ll_rcc.h (written by the LL step). If the LL header is missing a register or "
-        "bit you need, rewrite it with write_file (same rules: defines and static inline LL_RCC_ functions only).",
+        "and read_file software/ll/stm32n6xx_ll_rcc.h (register defines generated from RM0486, access functions written "
+        "by the LL step). Never change its register defines; if an access function you need is missing, add it with "
+        "edit_file just before the final #endif line.",
         "write_file software/hal/stm32n6xx_hal_rcc.h: guard STM32N6XX_HAL_RCC_H, #include \"stm32n6xx_ll_rcc.h\", typedef "
         "enum {HAL_OK=0U,HAL_ERROR=1U,HAL_TIMEOUT=2U} hal_status_t, lower-case hal_ types ending _t, API prototypes "
         "HAL_RCC_... with const pointers for config.",
@@ -59,7 +60,8 @@ AUTHOR_STEPS = {
         "write_file workproducts/SWE.3/detailed_design.md: per function purpose, registers/bits used with RM page, SWR IDs.",
         "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. To fix errors, "
         "rewrite the whole affected file with write_file (do not use edit_file), then compile again.",
-        "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline; fix every violation and repeat until PASS.",
+        "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline and then with check register_map; fix every "
+        "violation and repeat until both PASS.",
         "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
         "the code (suppression comments are ignored and forbidden).",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
@@ -89,22 +91,26 @@ AUTHOR_STEPS = {
 
 
 LL_STEPS = [
-    "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM).",
-    "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, #define "
-    "LL_RCC_REG_COUNT 1024U, the RCC register block as 'extern volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' "
-    "(placed at RCC base 0x56028000 by the linker; host tests define the array) accessed only as "
-    "ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] (never cast an integer to a pointer), register offsets as "
-    "LL_RCC_<REG>_OFFSET defines with U suffix, bit masks as LL_RCC_<REG>_<BIT>_Msk defines, and for each "
-    "oscillator/clock/reset bit in the table small static inline functions named LL_RCC_<Name>_Enable, "
-    "LL_RCC_<Name>_Disable and LL_RCC_<Name>_IsReady (returning uint32_t 0U/1U) as applicable; no enum; types lower "
-    "case ending _t prefixed ll_; end with '#endif /* STM32N6XX_LL_RCC_H */' and a newline.",
+    "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
+    "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
+    "workproducts/SWE.2/software_architecture.md (Interfaces and Requirement allocation only).",
+    "Call edit_file on software/ll/stm32n6xx_ll_rcc.h with old_string exactly '" + "{marker}" + "' and new_string = that "
+    "same marker line followed by the access functions: for each oscillator/PLL enable bit and each peripheral "
+    "enable/reset bit the HAL needs, small 'static inline' functions LL_RCC_<Name>_Enable(void), "
+    "LL_RCC_<Name>_Disable(void) and LL_RCC_<Name>_IsReady(void) / LL_RCC_<Name>_IsEnabled(void) (Enable/Disable return "
+    "void, IsReady/IsEnabled return uint32_t 0U or 1U), each body one statement on ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] using only the generated _MSK defines "
+    "(ready flags are in RCC_SR, enables in RCC_CR / RCC_AHB1ENR, resets in RCC_AHB1RSTR). Real line breaks only.",
+    "Call mcp__forge_docs_mcp__validate_artifact with check register_map; it must be PASS.",
     "Reply with the list of LL_RCC_ function names you declared.",
 ]
 
 
 def ll_author_prompt() -> str:
-    """SWE.3 step 1 (fresh, small context): the LL header alone; the HAL step then implements against it."""
-    steps = ["Call use_skill with skill_name swe3-author.", READ] + LL_STEPS + [REPLY]
+    """SWE.3 step 1 (fresh, small context): LL access functions on the generated register map; HAL comes next."""
+    from ..inspection.regmap import FUNCTIONS_MARKER
+
+    steps = ["Call use_skill with skill_name swe3-author.", READ] + \
+        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 

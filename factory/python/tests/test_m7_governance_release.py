@@ -136,8 +136,11 @@ def complete_workspace(ws: Path) -> None:
         "configuration/system_names.json": '["RCC driver"]',
     }
     from test_guideline_check import HAL_C, HAL_H, LL_H
+    from test_swe3_regmap import RM_CR
     files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
-                  "software/ll/stm32n6xx_ll_rcc.h": LL_H})
+                  "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                      "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                  "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
     for rel, txt in files.items():
         p = ws / rel
         p.parent.mkdir(parents=True, exist_ok=True)

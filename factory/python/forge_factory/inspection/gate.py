@@ -132,18 +132,25 @@ def step_route(store: Store, phase: str) -> int:
 def step_verify(store: Store, phase: str, check: str) -> int:
     if check == "hal_guideline":
         from .guideline import check_workspace
+        from .regmap import check_regmap
 
         rep = check_workspace(store.workspace)
+        reg = check_regmap(store.workspace)  # register definitions vs RM0486 inputs (SWE3-08)
         out = store.workspace / "verification" / "static" / "hal_guideline_conformance.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(pretty_json(rep))
-        _state(store.workspace, phase, {"step": "verify", "check": check, "verdict": rep["verdict"],
-                                        "violations": len(rep["violations"])})
-        emit("workflow", "INFO" if rep["verdict"] == "PASS" else "WARN",
-             f"{phase} HAL guideline verification {rep['verdict']} violations={len(rep['violations'])}", phase=phase)
-        print(json.dumps({"verdict": rep["verdict"], "violations": len(rep["violations"]),
+        (out.parent / "register_map_conformance.json").write_text(pretty_json(reg))
+        verdict = "PASS" if rep["verdict"] == "PASS" and reg["verdict"] == "PASS" else "FAIL"
+        _state(store.workspace, phase, {"step": "verify", "check": check, "verdict": verdict,
+                                        "violations": len(rep["violations"]),
+                                        "register_map_findings": len(reg["major_findings"])})
+        emit("workflow", "INFO" if verdict == "PASS" else "WARN",
+             f"{phase} HAL guideline verification {rep['verdict']} violations={len(rep['violations'])}; "
+             f"register map {reg['verdict']}", phase=phase)
+        print(json.dumps({"verdict": verdict, "violations": len(rep["violations"]),
+                          "register_map_findings": reg["major_findings"][:10],
                           "report": "verification/static/hal_guideline_conformance.json"}))
-        return 0 if rep["verdict"] == "PASS" else fail_code(store.workspace, phase, "verify")
+        return 0 if verdict == "PASS" else fail_code(store.workspace, phase, "verify")
     print(json.dumps({"error": f"unknown check {check}"}))
     return 2
 
