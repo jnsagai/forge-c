@@ -103,7 +103,10 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
         tfile = (row.get("test_file") or "").strip()
         if tfile:
             try:
-                ctx.path(tfile, must_exist=True, kind="file")
+                tpath = ctx.path(tfile, must_exist=True, kind="file")
+                # r41: the trace must not cite test ids the test file does not contain (false traceability)
+                if tests_due and test and not re.search(rf"\b{re.escape(test)}\b", tpath.read_text(errors="replace")):
+                    issues.append(f"TEST_ID_NOT_IN_FILE:{test}:{tfile[:50]}")
             except ToolDenied:
                 if tests_due:
                     issues.append(f"TEST_FILE_MISSING:{tfile[:60]}")

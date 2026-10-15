@@ -230,6 +230,11 @@ def test_t016_evidence_role_enforced_and_inspection_immutable(ws):
     (ws / "configuration/baselines/SWE.4/BL-SWE.4-001.json").write_text("{}")
     tr = call(evidence, "forge-evidence-mcp", "validate_trace", {}, "swe1-inspector", "SWE.1")
     assert tr["status"] == "FAIL" and "TEST_FILE_MISSING:software/tests/unit/test_rcc.c" in tr["issues"]
+    (ws / "software/tests/unit/test_rcc.c").write_text('CHECK("UT-002", 1);\n')  # r41: id cited but not tested
+    tr = call(evidence, "forge-evidence-mcp", "validate_trace", {}, "swe1-inspector", "SWE.1")
+    assert "TEST_ID_NOT_IN_FILE:UT-001:software/tests/unit/test_rcc.c" in tr["issues"]
+    (ws / "software/tests/unit/test_rcc.c").write_text('CHECK("UT-001", 1);\n')
+    assert call(evidence, "forge-evidence-mcp", "validate_trace", {}, "swe1-inspector", "SWE.1")["status"] == "PASS"
 
 
 def test_t016_repo_scoped_no_push_protected_paths_refused(ws):

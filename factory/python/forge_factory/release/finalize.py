@@ -83,7 +83,13 @@ def trace_check(ws: Path) -> tuple[bool, list[str]]:
     rows = list(csv.DictReader(io.StringIO(tr.read_text())))
     traced = {r.get("requirement_id", "").strip() for r in rows if (r.get("test_id") or "").strip()}
     missing = sorted(reqs - traced)
-    return bool(reqs) and not missing, [f"UNTRACED:{m}" for m in missing[:20]]
+    phantom = []  # a cited test id must exist in its test file (no false traceability, r41)
+    for r in rows:
+        tid, tf = (r.get("test_id") or "").strip(), (r.get("test_file") or "").strip()
+        f = ws / tf if tf else None
+        if tid and f is not None and f.is_file() and not re.search(rf"\b{re.escape(tid)}\b", f.read_text(errors="replace")):
+            phantom.append(f"TEST_ID_NOT_IN_FILE:{tid}")
+    return bool(reqs) and not missing and not phantom, [f"UNTRACED:{m}" for m in missing[:20]] + phantom[:20]
 
 
 def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:

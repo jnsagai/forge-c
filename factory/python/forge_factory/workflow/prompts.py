@@ -82,7 +82,8 @@ AUTHOR_STEPS = {
         "write_file workproducts/SWE.4/unit_verification_report.md (at most 40 lines): '# Unit verification report', a "
         "table | Test ID | Function | SWR IDs | Result | and the coverage numbers exactly as the tool reported them.",
         "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
-        "with the UT id that covers it in software/tests/unit/test_rcc.c.",
+        "with a UT id that really appears in a CHECK of software/tests/unit/test_rcc.c (never cite an id that is not "
+        "tested; add the missing test first). Then call mcp__forge_evidence_mcp__validate_trace and fix until PASS.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.4 baseline."],
     "SWE.5": [
         "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_rcc.h and software/tests/unit/test_rcc.c.",
