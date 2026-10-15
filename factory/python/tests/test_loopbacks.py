@@ -71,8 +71,13 @@ def test_report_validation_is_deterministic(ws):
                    requirement_ids=["SWR-014"], test_files=[], evidence_refs=["software/hal/stm32n6xx_hal_rcc.c:2"],
                    requirement_quote="shall return HAL_ERROR without any register write")
     assert loc["target_phase"] == "SWE.3"  # an inspector may cite a source location instead of a failing run
+    with pytest.raises(D.DefectError, match="REQUIREMENT_QUOTE_REQUIRED"):  # r70: invented quote, wrong blame
+        D.report(ws, detected_phase="SWE.4", reported_by="swe4-author", kind="ARCHITECTURE", summary="API has no PLL "
+                 "disable", requirement_ids=["SWR-013"], test_files=[], evidence_refs=[],
+                 requirement_quote="SWR-013: PLL disable for every oscillator")
     arch = D.report(ws, detected_phase="SWE.6", reported_by="r", kind="ARCHITECTURE", summary="timeout-only API "
-                    "cannot express an invalid parameter", requirement_ids=["SWR-014"], test_files=[], evidence_refs=[])
+                    "cannot express an invalid parameter", requirement_ids=["SWR-014"], test_files=[], evidence_refs=[],
+                    requirement_quote="If a parameter is invalid, then the RCC driver shall return HAL_ERROR")
     assert arch["target_phase"] == "SWE.2"
     inp = D.report(ws, detected_phase="SWE.1", reported_by="r", kind="INPUT", summary="RM sections contradict",
                    requirement_ids=[], test_files=[], evidence_refs=[])

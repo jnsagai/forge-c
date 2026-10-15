@@ -283,3 +283,18 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 - **Prompts:** the SWE.6 test author stops at "only driver checks that test what the requirement names fail"
   instead of "repeat until it PASSes"; both SWE.6 authors are told such a check is never changed, weakened or
   removed.
+
+## Ninth live run (r70): both owner decisions exercised
+- **SWE.6 reported the SWR-014 CODE defect itself** (DEF-001, first cycle). SWE.3 fixed it and the inspection
+  passed (FIXED). The safety net did not need to fire.
+- **The per-epoch budget worked:** SWE.3 had one failed cycle in epoch 1 and got 3 fresh cycles after loop 2.
+- **The second loop was a wrong blame.** The SWE.4 unit-test author called `HAL_RCC_PLL1_Disable`, which does not
+  exist, and filed an ARCHITECTURE defect on SWR-008 (a peripheral clock disable) with the invented "quote"
+  `SWR-008: MSI disable.`. SWE.2 rejected it correctly, but its author re-ran its normal steps, re-froze the
+  architecture and so cascaded into SWE.3. SWE.3 then BLOCKED: new inspection finding SWE3-06 and two
+  turn-budget exhaustions.
+- **Turn budget:** 5 of 7 author rejections in r70 were `TURN_BUDGET_EXHAUSTED (21>20)` (SWE.2 ×2, SWE.3 ×3).
+- **Remedy (implemented):** ARCHITECTURE defects need a verbatim `requirement_quote` like CODE and TEST; the defect
+  rule tells test authors that calling an undeclared function is usually their TEST error.
+- **Open:** a rejection-only upstream visit should not re-freeze the owner's work products (no cascade); the
+  per-step tool-call budget (owner decision pending).

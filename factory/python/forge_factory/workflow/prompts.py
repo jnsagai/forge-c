@@ -30,14 +30,17 @@ DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matche
                "code or the API/architecture is wrong, do NOT change the test: call "
                "mcp__forge_evidence_mcp__report_defect with kind CODE (the code violates the requirement AS WRITTEN; "
                "requirement_quote = the violated clause copied verbatim) or ARCHITECTURE (the API cannot express the "
-               "requirement), requirement_ids, test_files (the failing test files) and a summary, then finish with "
+               "clause copied verbatim into requirement_quote; first check that the requirement really demands the "
+               "missing function - a test that calls a function the header does not declare is usually a TEST "
+               "error), requirement_ids, test_files (the failing test files) and a summary, then finish with "
                "status REWORK. If you believe the requirement itself is wrong (e.g. real hardware behaves "
                "differently), report kind REQUIREMENT - never ask for code that contradicts a requirement. If the test "
                "itself is wrong, correct it and declare that with report_defect kind TEST (requirement_ids, "
                "test_files, requirement_quote = the clause the corrected test checks, why it was wrong).")
 INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
                   "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
-                  "ARCHITECTURE or REQUIREMENT, requirement_ids, summary) before check_inspection.")
+                  "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
+                  "= the clause copied verbatim) before check_inspection.")
 
 AUTHOR_STEPS = {
     "SWE.1": [

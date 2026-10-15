@@ -99,10 +99,13 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         raise DefectError(f"UNKNOWN_REQUIREMENT:{','.join(unknown[:3])}")
     if kind in ("CODE", "ARCHITECTURE", "REQUIREMENT", "TEST") and not requirement_ids:
         raise DefectError("NO_REQUIREMENT_ID")
-    if kind in ("CODE", "TEST"):
+    if kind in ("CODE", "TEST", "ARCHITECTURE"):
         # r62: a CODE defect asked for behaviour CONTRARY to SWR-013 ("hardware leaves the bit set") and the fixer
         # complied. CODE = the code violates a requirement AS WRITTEN; TEST = the corrected test checks a clause AS
         # WRITTEN. The clause must be quoted verbatim; disagreeing with the requirement is a REQUIREMENT defect.
+        # r70: an ARCHITECTURE defect demanded PLL disable APIs for SWR-008 (a peripheral clock disable) with the
+        # invented "quote" 'SWR-008: MSI disable.'; it cost an upstream loop and a cascade. ARCHITECTURE = the API
+        # cannot express a clause AS WRITTEN: quoted verbatim as well.
         texts = _requirement_texts(ws)
         q = _norm(requirement_quote)
         if len(q) < 20 or not any(q in _norm(texts.get(r, "")) for r in requirement_ids):
