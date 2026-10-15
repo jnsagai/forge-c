@@ -22,7 +22,7 @@ SCHEMA_PATH = "../../003-manufacturing-kpis/contracts/kpi-source-event.schema.js
 
 
 def order_of(attempt_id: str, manifest: dict) -> str:
-    return manifest.get("order_id") or re.sub(r"-r\d+(-aborted)?$", "", attempt_id)
+    return manifest.get("order_id") or re.sub(r"-r\d+(-[a-z0-9-]+)?$", "", attempt_id)  # -rN, -rN-aborted, -rN-<tag>
 
 
 def ev(type_: str, key: str, ts: str, order: str, attempt: str, payload: dict, evidence: list[str] | None = None,

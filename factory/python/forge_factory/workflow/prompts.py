@@ -28,18 +28,19 @@ AUTHOR_STEPS = {
         "Each statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', the system name 'RCC driver', and ends "
         "with a period. Put '  - Source: RM0486 p.<page>' on the next line under each requirement. Add three measurable "
         "resource requirements from the .forge-run/manifest.json budgets, e.g. '- **SWR-0nn** The RCC driver shall occupy "
-        "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget "
-        "(illustrative_not_approved)'. Add reset/startup requirements from the register reset values in the section "
-        "files (e.g. state after reset of each enable bit), one requirement per failure response (timeout -> HAL_TIMEOUT "
-        "with the enable bit left as is, invalid parameter -> HAL_ERROR without register writes), and one measurable "
-        "timing requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations). Do not invent a "
-        "system safe state: record it as NOT_PROVIDED in the gap record.",
-        "write_file safety/software_safety_requirements.md listing the safety-relevant SWR IDs (timeouts, error returns).",
-        "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it: write "
-        "one requirement per allocated software safety requirement with '  - Source: <SSR id>' and use its budgets and "
-        "safe state. write_file traceability/upstream_gaps.md: '# Upstream coverage gaps', one row per upstream input the work order "
-        "does not provide or marks illustrative (HSI contract, software safety allocation, budgets): input | status "
-        "(NOT_PROVIDED / ILLUSTRATIVE) | affected SWR IDs | required human action. Never invent an allocation.",
+        "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget (owner "
+        "development target)'. Add reset/startup requirements from the register reset values in the section files (e.g. "
+        "state after reset of each enable bit), one requirement per failure response (timeout -> HAL_TIMEOUT with the "
+        "enable bit left as is, invalid parameter -> HAL_ERROR without register writes), and one measurable timing "
+        "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
+        "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
+        "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
+        "safety items; otherwise list the safety-relevant SWR IDs.",
+        "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it and write "
+        "one requirement per allocated software safety requirement with '  - Source: <SSR id>'. write_file "
+        "traceability/upstream_gaps.md: '# Upstream coverage', one row per upstream input from the manifest target (HSI "
+        "contract, safety allocation, budgets): input | status as stated in the manifest | affected SWR IDs. Never "
+        "invent an allocation.",
         "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR "
         "(test_id UT-001.., test_file software/tests/unit/test_rcc.c).",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.1/software_requirements.md and check ears; "
