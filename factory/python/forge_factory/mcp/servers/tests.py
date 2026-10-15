@@ -143,6 +143,18 @@ class RobotIn(ToolInput):
     pass
 
 
+def _compact_build_error(err: str) -> str:
+    """'x.c:15:53: error: 'A' undeclared (first use ...); did you mean 'A_MSK'?' -> "15: 'A' undeclared; did you
+    mean 'A_MSK'" so the fix fits in one capped issue line."""
+    m = re.search(r":(\d+):\d+: error: (.*)", err)
+    if not m:
+        return " ".join(err.split())[:100]
+    text = re.split(r"\s+\d+ \|", m.group(2))[0]  # drop gcc's source excerpt
+    hint = re.search(r"did you mean '[^']+'", text)
+    text = re.sub(r"\s*\(first use[^)]*\)|;?\s*did you mean '[^']+'\??", "", text).strip()
+    return f"{m.group(1)}: {text}" + (f"; {hint.group(0)}" if hint else "")
+
+
 def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     """SWE.6 requirement-based tests: Robot Framework suites (software/tests/software/*.robot) using the ForgeTarget
     keyword library on the Renode STM32N6 model. PASS only if every test passes and every SWE.1 requirement is the
@@ -181,6 +193,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
         return result(ctx, "FAIL", "robot produced no output.xml", [ctx.store(r.stdout + r.stderr)],
                       ["ROBOT_NO_OUTPUT"], tool="robotframework", exit_code=r.exit_code)
     tests, issues, covered = [], [], set()
+    builds: dict[str, str] = {}  # r67: one compact BUILD_FAIL per scenario, gcc's "did you mean" kept
     for t in ET.parse(xml).getroot().iter("test"):  # noqa: S314 - output.xml written by the local robot run
         tags = [x.text or "" for x in t.findall("./tags/tag")] or [x.text or "" for x in t.findall("./tag")]
         st = t.find("status")
@@ -189,8 +202,13 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
         if status == "PASS":
             covered |= {g for g in tags if SWR.fullmatch(g)}
         else:
-            msg = (st.text or "").strip().replace("\n", " ")[:120] if st is not None else ""
-            issues.append(f"ROBOT_FAIL:{t.get('name')}:{msg}")
+            full = (st.text or "").strip().replace("\n", " ") if st is not None else ""
+            b = re.match(r"build failed for ([\w-]+\.c): (.*)", full)
+            if b:
+                builds.setdefault(b.group(1), _compact_build_error(b.group(2)))
+                issues.append(f"ROBOT_FAIL:{t.get('name').split()[0]}:build failed ({b.group(1)})")
+            else:
+                issues.append(f"ROBOT_FAIL:{t.get('name')}:{full[:120]}")
     req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
     reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
     issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
@@ -200,7 +218,10 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     from .robot_policy import unobserved_requirements
 
     texts = {r.req_id: r.text for r in extract(req.read_text(errors="replace"))} if req.is_file() else {}
-    unobserved = [i for s in suites for i in unobserved_requirements(s, sdir, texts)]
+    unobserved = [i for s in suites for i in unobserved_requirements(s, sdir, texts)
+                  if not any(f" in {b}" in i for b in builds)]  # a scenario that does not build is fixed first
+    if unobserved == [x for x in unobserved if x.startswith("HOW_TO_OBSERVE")]:
+        unobserved = []
     from .robot_policy import TCHECK
 
     exprs = []  # r64: authors spent their budget reading files to learn what a failed check tested - say it here
@@ -211,7 +232,12 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
             m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
             if m:
                 exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + " ".join(m.group(2).split())[:90])
-    issues = unobserved + issues + exprs  # a passing test that never checks what its requirement demands verifies nothing
+    # most fundamental first (the result is capped): build errors, failed checks with their expressions, then
+    # requirements the passing checks never observe, then the per-test/coverage lines
+    build_issues = [f"BUILD_FAIL:{k}:{v}" for k, v in sorted(builds.items())]
+    fails = [i for i in issues if i.startswith("ROBOT_FAIL:") and "build failed (" not in i]
+    rest = [i for i in issues if i not in fails]
+    issues = build_issues + fails + exprs + unobserved + rest
     covered -= {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")}
     ok = bool(tests) and passed == len(tests) and not unobserved \
         and not [i for i in issues if i.startswith("UNCOVERED")]

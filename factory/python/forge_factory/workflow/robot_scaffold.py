@@ -29,6 +29,7 @@ HEADER = f"""{MARKER}: one test case per SWE.1 requirement (names and tags fixed
 #   Driver Flash Size Should Be At Most    <bytes>
 #   Driver Static RAM Should Be At Most    <bytes>
 # Scenario files live next to this suite: software/tests/software/scn_<topic>.c
+# Register access in scenarios: ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)
 *** Settings ***
 Library    ForgeTarget
 

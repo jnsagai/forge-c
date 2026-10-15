@@ -269,8 +269,9 @@ ROBOT_STEPS = [
     "Write the C scenario files software/tests/software/scn_<topic>.c (group requirements by topic, several checks per "
     "file) in the same form as the target tests: '#include \"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', "
     "'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); TCHECK(<n>, <condition>); ... FORGE_TEST_END(); "
-    "return 0; }' with conditions on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, "
-    "no stdlib, no ll_rcc_regs definition.",
+    "return 0; }' with conditions on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & "
+    "LL_RCC_<REG>_<FIELD>_MSK bits (always the _MSK macro, e.g. LL_RCC_CR_HSION_MSK; never LL_RCC_CR_HSION). No "
+    "printf, no stdlib, no ll_rcc_regs definition.",
     "Rewrite software/tests/software/test_rcc_requirements.robot with ONE write_file: keep the header comment, "
     "'*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each "
     "'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_<topic>.c' then 'Target Check Should "

@@ -163,3 +163,16 @@ def test_requirement_must_be_observed_by_its_tagged_checks_r63(tmp_path):
     suite.write_text(suite.read_text().replace("Target Check Should Pass    9\n",
                                                "Target Check Should Pass    9\n    Target Check Should Pass    10\n"))
     assert unobserved_requirements(suite, tmp_path, reqs) == []  # check 10 observes HAL_ERROR
+
+
+def test_build_failures_come_first_once_per_scenario_with_compiler_hint_r67(tmp_path, monkeypatch):
+    """r67: build errors were cut from the capped result behind observability lines; authors never saw them."""
+    bad = SCN.replace("LL_RCC_CR_HSION_MSK", "LL_RCC_CR_HSION")
+    suite = SUITE.replace("Run Target Scenario    scn_hsi_timeout.c", "Run Target Scenario    scn_hsi.c")
+    out = run(tmp_path, monkeypatch, {"software/tests/software/scn_hsi.c": bad,
+                                      "software/tests/software/test_rcc_requirements.robot": suite})
+    assert out["status"] == "FAIL"
+    first = out["issues"][0]
+    assert first.startswith("BUILD_FAIL:scn_hsi.c:") and "LL_RCC_CR_HSION" in first, out["issues"]
+    assert sum(1 for i in out["issues"] if i.startswith("BUILD_FAIL:")) == 1  # one line per scenario
+    assert not any(i.startswith(("REQUIREMENT_NOT_OBSERVED", "HOW_TO_OBSERVE")) for i in out["issues"])

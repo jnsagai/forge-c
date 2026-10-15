@@ -237,3 +237,16 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 - **Open owner question: budget per epoch.** After an upstream fix, the downstream phases re-verify on a new
   baseline. Their rework budget currently still includes failures from before the fix. A per-epoch budget (3
   cycles per upstream change) would need `max_visits = 4 × (1 + U)`.
+
+## Sixth live run (r67)
+- **Every SWE.6 scenario failed to build.** The test author wrote `LL_RCC_CR_HSION` instead of the generated
+  `LL_RCC_CR_HSION_MSK`.
+- **The authors never saw the cause.** The fix of r65 put observability lines first, so 28 issues were cut to 11
+  by the 2 KB result cap, and the build errors and gcc's "did you mean" hint were dropped. The authors chased
+  observability lines for scenarios that did not compile.
+- **Remedies:**
+  - `run_robot` issues are ordered by how fundamental they are: one `BUILD_FAIL:<scenario>:<line>: <error>; did
+    you mean '<X>'` per scenario, then failed checks plus `CHECK_EXPR`, then observability (suppressed for
+    scenarios that do not build), then per-test and coverage lines.
+  - The suite header and the test-author prompt state the LL mask naming convention.
+  - Test: `test_build_failures_come_first_once_per_scenario_with_compiler_hint_r67` (real Renode run).
