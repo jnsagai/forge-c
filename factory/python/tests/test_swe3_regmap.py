@@ -78,7 +78,7 @@ def test_verify_node_fails_on_register_map_even_if_guideline_passes(tmp_path):
     r = subprocess.run([sys.executable, "-m", "forge_factory.inspection.gate", "--workspace", str(ws), "--phase", "SWE.3",
                         "--step", "verify", "--check", "hal_guideline"], capture_output=True, text=True,
                        env={**os.environ, "FORGE_EVENTS_DIR": str(tmp_path / "ev")})
-    out = json.loads(r.stdout.splitlines()[0])  # 2nd line: per-execution cycle marker
+    out = json.loads(r.stdout.splitlines()[1])  # 1st line: per-execution cycle marker (r56: must lead)
     assert r.returncode != 0 and out["verdict"] == "FAIL" and out["violations"] == 0
     assert out["register_map_findings"] == ["REGMAP:OFFSET_MISMATCH:CR:0x4!=0x0"]
 

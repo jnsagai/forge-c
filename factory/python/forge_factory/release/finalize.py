@@ -179,20 +179,21 @@ def operational_inventory(ws: Path, stage: Path, run_id: str, fabro_run_id: str 
        pretty_json({"event_schema": "specs/002-self-healing-factory/contracts/event.schema.json",
                     "capture_policy_sha256": sha256_bytes(pol.encode()), "segments": seg}))
     _w(stage, "operations/telemetry/capture-policy.yaml", pol)
-    usage = token_usage(fabro_run_id)
+    usage = token_usage(fabro_run_id, ws)
     _w(stage, "operations/tokens/usage-by-agent.json", pretty_json(usage))
     _w(stage, "operations/run/run-summary.json",
        pretty_json({"run_id": run_id, "fabro_run_id": fabro_run_id, "finalized_at": utc_now(),
                     "workspace_head": _git(ws, "rev-parse", "HEAD"), "dirty": bool(_git(ws, "status", "--porcelain"))}))
 
 
-def token_usage(fabro_run_id: str | None) -> dict:
+def token_usage(fabro_run_id: str | None, ws: Path | None = None) -> dict:
     if not fabro_run_id:
         return {"basis": "unknown", "reason": "no Fabro run id", "by_stage": []}
     try:
-        from ..fabro.client import FabroClient, load_token
+        from ..fabro.client import FabroClient, client_for_workspace, load_token
 
-        u = FabroClient(token=load_token(), timeout=10).usage(fabro_run_id)
+        c = client_for_workspace(ws, timeout=10) if ws is not None else FabroClient(token=load_token(), timeout=10)
+        u = c.usage(fabro_run_id)
         stages = [{"stage": s["stage"]["id"], "model": s["model"]["model_id"], "provider": s["model"]["provider"],
                    "tokens_input": s["usage"]["tokens"]["input"], "tokens_output": s["usage"]["tokens"]["output"],
                    "state": s.get("state")} for s in u.get("stages", [])]

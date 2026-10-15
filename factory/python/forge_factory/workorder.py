@@ -258,6 +258,10 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                           f"forge={wo}"], cwd=ws, env=fabro_env(), capture_output=True, text=True, timeout=180)
     fabro_run_id = (out.stdout.strip().splitlines() or [""])[-1]
     (ws / ".forge-run/fabro_run_id").write_text(fabro_run_id)
+    # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
+    # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.
+    (ws / ".forge-run/fabro_server.json").write_text(json.dumps(
+        {"url": os.environ.get("FORGE_FABRO_URL", ""), "storage": os.environ.get("FORGE_FABRO_STORAGE", "")}))
     emit("human", "INFO", f"{wo} started Fabro run {fabro_run_id}", correlation_id=wo, run_id=fabro_run_id)
     if detach:
         return {"work_order": wo, "fabro_run_id": fabro_run_id, "workspace": str(ws), "preflight": pre}

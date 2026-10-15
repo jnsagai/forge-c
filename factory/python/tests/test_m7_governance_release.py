@@ -244,6 +244,30 @@ def test_t046_external_finalizer_packages_crashed_run(env, monkeypatch):
     assert pkg["package_status"] == "BLOCKED"
 
 
+def test_t046_external_finalizer_asks_the_server_that_holds_the_run(env, monkeypatch):
+    """r56: a cloud-benchmark run lives on another Fabro server; asking the local one (404) left it unpackaged."""
+    from forge_factory.supervisor import service as S
+    ws = env / "state/workorders/WO-CLOUD/workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
+    (ws / ".forge-run/fabro_run_id").write_text("RUN-CLOUD")
+    (ws / ".forge-run/fabro_server.json").write_text(json.dumps({"url": "http://127.0.0.1:32291/api/v1",
+                                                                 "storage": str(env / "cloud-storage")}))
+    (env / "cloud-storage").mkdir()
+    (env / "cloud-storage/server.env").write_text("FABRO_DEV_TOKEN=cloud-token\n")
+    import forge_factory.fabro.client as C
+    calls = []
+
+    def fake(**kw):
+        calls.append(kw)
+        return FakeFabro([], status="failed")
+
+    monkeypatch.setattr(C, "FabroClient", fake)
+    S.Supervisor(S.load_policy(), None, home=env / "sup", dispatch_enabled=False).external_finalizer()
+    assert calls[0]["base_url"].endswith(":32291/api/v1") and calls[0]["token"] == "cloud-token"  # status probe
+    assert json.loads((ws / ".forge-run/package.json").read_text())["package_status"] == "BLOCKED"
+
+
 # ---------------- T047 ------------------------------------------------------------------------------------
 def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path):
     from forge_factory.supervisor.probes import Sample

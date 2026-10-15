@@ -178,6 +178,8 @@ def test_failed_gate_outputs_differ_per_cycle_for_fabro_breaker(tmp_path):
     outs = [gate(tmp_path, "SWE.3", "author", "prose").stdout.decode() for _ in range(3)]
     norm = [_re.sub(r"\d+", "<n>", o) for o in outs]
     assert len(set(norm)) == 3 and all("gate execution " in o for o in outs)
+    # r56: Fabro truncates the output in its signature (~200 chars) - the marker must be the first line
+    assert all(o.startswith("gate execution ") for o in outs) and len({o[:40] for o in norm}) == 3
 
 
 def test_author_gate_presence_check_blocks_freeze_of_incomplete_phase(tmp_path):

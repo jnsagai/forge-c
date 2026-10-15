@@ -14,6 +14,8 @@ never route themselves (routing keys are rejected by the T008 parser).
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import sys
@@ -204,6 +206,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        rc = _run_step(store, a)
+    # r56: Fabro keeps only the first ~200 characters of the output in its failure signature, so the marker that
+    # makes each failed execution distinct must come FIRST (a trailing marker was cut off on long outputs).
+    if rc != 0:
+        print(cycle_marker(store.workspace))
+    sys.stdout.write(buf.getvalue())
+    return rc
+
+
+def _run_step(store: Store, a: argparse.Namespace) -> int:
     try:
         if a.step == "author":
             rc = step_author(store, a.phase, sys.stdin.read())
@@ -216,8 +230,6 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001 - any gate error is a failed (never passed) gate
         print(json.dumps({"gate_error": type(exc).__name__, "detail": str(exc)[:200]}))
         rc = 3
-    if rc != 0:
-        print(cycle_marker(store.workspace))
     return rc
 
 
