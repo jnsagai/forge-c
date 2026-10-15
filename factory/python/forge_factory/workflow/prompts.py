@@ -29,7 +29,11 @@ AUTHOR_STEPS = {
         "with a period. Put '  - Source: RM0486 p.<page>' on the next line under each requirement. Add three measurable "
         "resource requirements from the .forge-run/manifest.json budgets, e.g. '- **SWR-0nn** The RCC driver shall occupy "
         "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget "
-        "(illustrative_not_approved)'.",
+        "(illustrative_not_approved)'. Add reset/startup requirements from the register reset values in the section "
+        "files (e.g. state after reset of each enable bit), one requirement per failure response (timeout -> HAL_TIMEOUT "
+        "with the enable bit left as is, invalid parameter -> HAL_ERROR without register writes), and one measurable "
+        "timing requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations). Do not invent a "
+        "system safe state: record it as NOT_PROVIDED in the gap record.",
         "write_file safety/software_safety_requirements.md listing the safety-relevant SWR IDs (timeouts, error returns).",
         "write_file traceability/upstream_gaps.md: '# Upstream coverage gaps', one row per upstream input the work order "
         "does not provide or marks illustrative (HSI contract, software safety allocation, budgets): input | status "
