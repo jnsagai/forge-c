@@ -117,3 +117,19 @@ Expose remotely only behind an authenticated reverse proxy.
 * Footprint is object-level / relocatable-image level, not a linked firmware image with startup and linker script.
 * HSI, safety allocation, errata and silicon revision are not provided for the STM32N6 pilot.
 * Tool qualification (ISO 26262-8 §11) is not performed for any tool or for the factory itself.
+
+## External Fabro Monitor (`~/fabro_dashboard`) integration
+
+Forge-C also appears in the existing LAN **Fabro Monitor** (`http://master.local:8787`, user service `fabro-monitor`).
+That repo's code is unchanged; only its untracked `config.local.json` was extended (backup
+`config.local.json.bak-20261015`):
+- source `forge-c` → `http://127.0.0.1:32290/api/v1`, token read from Forge-C's isolated Fabro CLI
+  `$FORGE_FABRO_HOME/.fabro/auth.json` (never sent to the browser);
+- project `forge-c` (`Forge-C Fabric`) with `path=$FORGE_STATE_DIR` and `queue_globs: workorders/*/dashboard/queue.json`.
+
+The model-free supervisor writes one queue record per work order on every poll
+(`forge_factory.dashboard.fabro_monitor_export`; run once manually with
+`python -m forge_factory.dashboard.fabro_monitor_export`). Items are SWE.1–SWE.6 plus the finalizer. Status comes
+only from the deterministic gate log and package record, never from agent claims. The Fabro run status in the
+**Runs** tab is a workflow outcome. A run can be `succeeded` while its product package is `BLOCKED`, which the
+**Queues** tab shows. The monitor has no login; it is read-only and LAN-only.

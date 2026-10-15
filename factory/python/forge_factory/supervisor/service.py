@@ -99,6 +99,7 @@ class Supervisor:
         if self.finalizer_enabled and fabro_ok:
             self.external_finalizer()
             self.budget_governor()
+        self.export_dashboard_queues(fabro_ok)
         worst = "HEALTHY"
         for s in samples:
             if s.status == "DOWN" or (s.status == "DEGRADED" and worst == "HEALTHY"):
@@ -125,6 +126,17 @@ class Supervisor:
         emit("metrics", "INFO", f"supervisor poll_ms={health['poll_ms']} model_calls={health['model_calls']}")
         sd_notify("WATCHDOG=1")
         return health
+
+    def export_dashboard_queues(self, fabro_ok: bool) -> None:
+        """Queue records for the external fabro_dashboard monitor (file export only; never affects supervision)."""
+        try:
+            from ..dashboard.fabro_monitor_export import export_all
+            from ..fabro.client import FabroClient, load_token, run_status
+
+            client = FabroClient(token=load_token(), timeout=5) if fabro_ok else None
+            export_all((lambda rid: run_status(client.get_run(rid))) if client else None)
+        except Exception as exc:  # noqa: BLE001
+            emit("supervisor", "DEBUG", f"dashboard queue export failed: {type(exc).__name__}")
 
     def budget_governor(self) -> None:
         """T042: model-free token governor over active work-order runs (reported usage only)."""
