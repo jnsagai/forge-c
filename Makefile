@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 PYTHON ?= python3
 .PHONY: test profile release-gate
 
@@ -25,3 +26,10 @@ factory-cov:
 	$(FACTORY_ENV) python -m pytest factory/python/tests --cov=forge_factory --cov-report=term-missing:skip-covered
 design-check:
 	$(FACTORY_ENV) python tests/spec/validate_design.py
+.PHONY: factory-live kpi status
+factory-live:
+	$(FACTORY_ENV) FORGE_FABRO_LIVE=1 FORGE_SYSTEMD_LIVE=1 FORGE_BROWSER_LIVE=1 python -m pytest factory/python/tests -q
+kpi:
+	$(FACTORY_ENV) python -c "from forge_factory.kpi.service import compute_and_store; s=compute_and_store(); print(s['snapshot_id'])"
+status:
+	$(FACTORY_ENV) python -m forge_factory.report
