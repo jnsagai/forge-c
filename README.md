@@ -58,10 +58,22 @@ The 002 design validator requires PyYAML and jsonschema (`python3 -m pip install
 6. A final **Release Manager agent** always attempts a checksummed offline evidence package. State is `READY_FOR_OFFLINE_REVIEW` or `BLOCKED`; never an automatic ASIL B approval.
 7. KPIs (software OEE, throughput, inspection FPY/RTY, tokens, resource footprint, recovery and evidence completeness) are calculated from deterministic events. KPIs cannot bypass quality/safety gates.
 
-## Current implementation status
+## Current implementation status (night run 2026-10-14/15, branch `night-run/2026-10-14`)
 
-- **Code included:** generic RCC C driver; host unit tests and LLVM MC/DC demonstration; simple quality gates; versioned templates; standalone Python release-packager reference.
-- **Design specifications (Claude must implement/integrate):** complete Fabro autonomous operation, all 9 MCP servers, all 20 production agent roles in execution, model-free supervisor, autonomous repair, lessons store, dashboard/trace APIs, end-to-end inspection loops, production KPI computation.
+Status is generated from evidence records only: [`docs/IMPLEMENTATION-STATUS-v0.4.md`](docs/IMPLEMENTATION-STATUS-v0.4.md)
+(task → FR → test → `evidence/v0.4/runs/<task>/latest.json`). Operations: [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md).
+Decisions: [`docs/adr/`](docs/adr/) (ADR-0001…0006).
+
+- **Implemented and tested:** `factory/python/forge_factory/` — agent/SKILL registry + preflight (20 versioned SKILLs),
+  deterministic Fabro policy hook (role/phase/path authorization, turn budget), 9 Forge MCP servers with one-time
+  authorization tickets, no-reasoning local LLM gateway, SWE.1–SWE.6 inspection engine (EARS SWE1-07, HAL guideline
+  verification node SWE3-07), generated fail-closed Fabro workflow, model-free supervisor (systemd, watchdog,
+  zero model calls), isolated repair + CAS promotion/rollback, evidence-gated lessons, event store + capture policy,
+  read-only dashboard (SSE), token governor, v0.4/v0.5 offline packager overlay, KPI engine K01–K20 (feature 003).
+- **Live evidence on local qwen3:8b via Fabro 0.362:** autonomous repair (rollback then promotion, lesson validated and
+  reused), policy denials of native-tool bypass, STM32N6 RCC work orders reaching first-pass SWE.1/SWE.2 inspections.
+- **Final STM32N6 pilot outcome:** packages are `BLOCKED` (no target/simulator, model-limited SWE.3+ output); this is
+  the correct dark-factory result, with every gap listed in the package.
 - **Safety:** no automatic ISO 26262 approval or software release. MISRA Cppcheck checks are partial; real target and formal safety activities require competent offline review and applicable tool assurance.
 
 See [PROJECT_HANDOFF_v0.5.md](PROJECT_HANDOFF_v0.5.md) for implementation order, dependencies, and acceptance criteria. Check [`TEST_RESULTS_v0.5.md`](TEST_RESULTS_v0.5.md) for this archive's verified tests.
