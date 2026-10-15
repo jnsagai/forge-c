@@ -755,8 +755,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-15T09:19:19.965743Z",
-  "git_head": "1c07bb3600c262600ca1c70a822d3256e7bee09b",
+  "generated_at": "2026-10-15T09:43:28.204974Z",
+  "git_head": "1b5a3a1a59644ce369076e2484b379c87697dca4",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",

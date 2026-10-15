@@ -7,9 +7,9 @@ Work item format: `TASK-ID [Owner role] (Depends on) Description -> acceptance`.
 - [ ] `T-003` [Architecture] HSI/RM/errata semantic model & source provenance -> verified register contract
 - [x] `T-004` [Factory] Project charter, constitution, SWE and ASIL evidence mapping -> reviewable documents
 - [x] `T-005` [Factory] Scaffold profile/footprint/trace/checks gates -> executable negative tests
-- [ ] `T-006` [Factory] Pin Fabro version, providers/models and sandbox -> verified model/proxy config
-- [ ] `T-007` [Factory] Validate end-to-end Fabro DOT workflow syntax & path semantics -> smoke run
-- [ ] `T-008` [Build] C11 target and native build scripts with CMake/compilers -> reproducible target + test build
+- [X] `T-006` [Factory] Pin Fabro version, providers/models and sandbox -> verified model/proxy config ✅ Evidence: `evidence/v0.4/runs/001-T-006/latest.json`
+- [X] `T-007` [Factory] Validate end-to-end Fabro DOT workflow syntax & path semantics -> smoke run ✅ Evidence: `evidence/v0.4/runs/001-T-007/latest.json`
+- [X] `T-008` [Build] C11 target and native build scripts with CMake/compilers -> reproducible target + test build ✅ Evidence: `evidence/v0.4/runs/001-T-008/latest.json`
 - [ ] `T-009` [SWE.1] Approved SWE requirements for RCC including RAM/ROM/timing -> reviewed requirements baseline
 - [ ] `T-010` [SWE.2] Software architecture and safety interaction analysis -> signed design review
 - [ ] `T-011` [SWE.3] Detailed design/API and code implementation -> reviewed C/H + map/ELF

@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_t009_workflow_gates.py",
+    "factory/python/tests/test_t048_e2e.py"
+  ],
+  "duration_s": 5.634,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "1b5a3a1a59644ce369076e2484b379c87697dca4",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/001-T-007/20261015T094208.log",
+  "log_sha256": "dbf049304d7fc0d450dcb8172178d754eb96468b38f0c7d42d33493ff565b88a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "001-T-007",
+  "ts_utc": "2026-10-15T09:42:08.963429Z"
+}
