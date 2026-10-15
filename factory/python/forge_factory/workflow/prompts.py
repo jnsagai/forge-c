@@ -30,22 +30,24 @@ AUTHOR_STEPS = {
         "resource requirements from the .forge-run/manifest.json budgets, e.g. '- **SWR-0nn** The RCC driver shall occupy "
         "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget (owner "
         "development target)'. Add reset/startup requirements from the register reset values in the section files (e.g. "
-        "state after reset of each enable bit), one requirement per failure response (timeout -> HAL_TIMEOUT with the "
-        "enable bit left as is, invalid parameter -> HAL_ERROR without register writes), and one measurable timing "
+        "state after reset of each enable bit), one requirement per failure response (ready timeout -> the driver clears the "
+        "enable bit it set (driver fallback state: oscillator/clock off) and returns HAL_TIMEOUT; invalid parameter -> "
+        "HAL_ERROR without register writes), and one measurable timing "
         "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
         "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
         "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
         "safety items; otherwise list the safety-relevant SWR IDs.",
         "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it and write "
         "one requirement per allocated software safety requirement with '  - Source: <SSR id>'. write_file "
-        "traceability/upstream_gaps.md: '# Upstream coverage', one row per upstream input from the manifest target (HSI "
-        "contract, safety allocation, budgets): input | status as stated in the manifest | affected SWR IDs. Never "
-        "invent an allocation.",
+        "traceability/upstream_gaps.md: '# Upstream coverage', (a) one row per upstream input from the manifest target "
+        "(HSI contract, safety allocation, budgets): input | status as stated in the manifest | affected SWR IDs, and (b) "
+        "a bidirectional trace table: upstream id (RM0486-<section number> or WO-BUDGET) | SWR IDs, plus for every SWR its "
+        "upstream id. Never invent an allocation.",
         "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR "
         "(test_id UT-001.., test_file software/tests/unit/test_rcc.c).",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.1/software_requirements.md and check ears; "
         "fix and repeat until status PASS.",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.1."],
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.1 baseline."],
     "SWE.2": [
         "Read workproducts/SWE.1/software_requirements.md and these RM0486 section files: {s1}.",
         "write_file workproducts/SWE.2/software_architecture.md with sections: Components (LL header-only stm32n6xx_ll_rcc.h, "
@@ -59,7 +61,7 @@ AUTHOR_STEPS = {
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check "
         "architecture; fix every finding (rewrite the file with write_file) and repeat until status PASS. Never write "
         "your JSON reply into a workproduct file.",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.2 baseline."],
     "SWE.3": [
         "read_file software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c (the LL header is already "
         "machine-verified; read it only if a compile error points into it). Never change the generated register defines.",

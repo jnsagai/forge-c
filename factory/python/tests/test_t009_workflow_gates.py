@@ -124,6 +124,20 @@ def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
     assert bad.returncode >= 10  # explicit agent BLOCKED is honoured
 
 
+def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(tmp_path):
+    (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    reply = 'Baseline ready, EARS PASS.\n{"status":"PASS","artifacts":[],"issues":[],"next_action":"next"}'
+    ok = gate(tmp_path, "SWE.1", "author", reply)
+    assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
+    log = (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert '"FROZEN"' in log and "AGENT_OUTPUT_CONTRACT_VIOLATION" in log
+    blocked = gate(tmp_path, "SWE.1", "author",
+                   'Ran out of turns.\n{"status":"BLOCKED","artifacts":[],"issues":["x"],"next_action":"halt"}')
+    assert blocked.returncode >= 10  # a trailing BLOCKED contract is honoured too
+
+
 def test_route_counts_author_rejections_in_rework_budget(tmp_path):
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
     assert gate(tmp_path, "SWE.3", "route").returncode == 0  # 1 failed cycle: rework allowed

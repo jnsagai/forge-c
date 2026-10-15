@@ -51,8 +51,23 @@ def _last_gate_ts(ws: Path, phase: str) -> str:
     return ts
 
 
+def _trailing_contract(text: str):
+    """A prose reply that ENDS with a valid compact contract object (e.g. 'Done.\n{"status":"PASS",...}')."""
+    i = text.rfind("\n{")
+    i = i + 1 if i >= 0 else text.find("{")
+    if i < 0:
+        return None
+    tail = parse(text[i:].strip())
+    return tail if tail.ok else None
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
+    prose_violation = None
+    if not res.ok:
+        tail = _trailing_contract(text)
+        if tail is not None:  # contract violation is recorded, the contract object itself is honoured
+            prose_violation, res = res.errors, tail
     if res.ok and res.status != "PASS":  # the author itself reports it could not complete: honour it (rework)
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": res.status,
                                         "issues": res.issues})
@@ -77,7 +92,8 @@ def step_author(store: Store, phase: str, text: str) -> int:
     except InspectionError as exc:
         _state(store.workspace, phase, {"step": "author", "result": "FREEZE_FAILED", "error": str(exc)})
         return fail_code(store.workspace, phase, "author")
-    _state(store.workspace, phase, {"step": "author", "result": "FROZEN", "baseline_id": bl["baseline_id"]})
+    _state(store.workspace, phase, {"step": "author", "result": "FROZEN", "baseline_id": bl["baseline_id"]}
+           | ({"finding": "AGENT_OUTPUT_CONTRACT_VIOLATION", "errors": prose_violation} if prose_violation else {}))
     print(json.dumps({"baseline_id": bl["baseline_id"], "baseline_hash": bl["baseline_hash"]}))
     return 0
 
