@@ -65,6 +65,15 @@ def test_client_pages_events_idempotently():
     assert list(c.iter_events("r", EVENTS[-1]["seq"])) == []
 
 
+def test_client_pages_past_server_page_cap():
+    def handler(req: httpx.Request) -> httpx.Response:  # server caps every page at 5 events
+        since = int(req.url.params.get("since_seq", 0))
+        return httpx.Response(200, json={"data": [e for e in EVENTS if e["seq"] > since][:5]})
+
+    c = FabroClient("http://x", "t", transport=httpx.MockTransport(handler))
+    assert [e["seq"] for e in c.iter_events("r")] == [e["seq"] for e in EVENTS]
+
+
 def test_unreachable_fabro_is_not_healthy_and_unknown_status_not_pass():
     def handler(req):
         raise httpx.ConnectError("down")

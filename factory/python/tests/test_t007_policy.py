@@ -48,6 +48,13 @@ def test_author_write_scope_and_protected_paths(ws):
     assert a.decide("auth3", "apply_patch", {"patch": patch}).code == "PROTECTED_PATH_DENIED"
 
 
+def test_escaped_newline_content_rejected_with_actionable_reason(ws):
+    a = authz(ws)
+    bad = a.decide("auth3", "write_file", {"file_path": "software/src/a.c", "content": "#ifndef X\\n#define X\\n\\n#endif"})
+    assert bad.code == "ESCAPED_NEWLINES" and "real line breaks" in bad.reason
+    assert a.decide("auth3", "write_file", {"file_path": "software/src/a.c", "content": "#ifndef X\n#define X\n#endif\n"}).allow
+
+
 def test_release_manager_cannot_waive_or_mutate(ws):
     a = authz(ws)
     assert a.decide("rm", "mcp__forge_knowledge_mcp__retract_lesson", {}).allow is False

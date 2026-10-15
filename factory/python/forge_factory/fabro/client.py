@@ -81,14 +81,15 @@ class FabroClient:
 
     def iter_events(self, run_id: str, since_seq: int = 0, page: int = 200) -> Iterator[dict]:
         seq = since_seq
-        while True:
+        while True:  # the server may cap page size below `page`: only an empty batch ends the stream
             batch = self.events(run_id, seq, page)
             if not batch:
                 return
+            last = seq
             for e in batch:
                 seq = max(seq, int(e["seq"]))
                 yield e
-            if len(batch) < page:
+            if seq == last:
                 return
 
     def cancel(self, run_id: str) -> int:
