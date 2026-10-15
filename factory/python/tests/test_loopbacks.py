@@ -239,3 +239,22 @@ def test_agents_cannot_write_defect_register_or_integrity_evidence(tmp_path):
         for rel in (".forge-run/defects/DEF-001.json", "evidence/test-integrity.jsonl",
                     ".forge-run/gates/upstream-loops.jsonl"):
             assert not a.decide(node, "write_file", {"file_path": rel, "content": "x"}).allow, (node, rel)
+
+
+def test_same_open_defect_reported_twice_is_one_defect_r66(ws):
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    a, b = code_defect(ws), code_defect(ws)
+    assert a["id"] == b["id"] == "DEF-001" and len(D.all_defects(ws)) == 1
+
+
+def test_carried_over_inspection_failures_do_not_consume_this_runs_budget_r66(ws):
+    s = Store(ws)
+    (ws / "inspection/SWE.5").mkdir(parents=True)
+    (ws / "inspection/SWE.5/INS-SWE.5-001.json").write_text(json.dumps(
+        {"verdict": "FAIL", "recorded_at": "2026-10-15T13:12:15Z", "baseline_hash": "x"}))  # from the source run
+    (ws / ".forge-run").mkdir(exist_ok=True)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"created_at": "2026-10-15T16:58:08Z"}))
+    assert s.gate("SWE.5")["failed_inspections"] == 0
+    (ws / "inspection/SWE.5/INS-SWE.5-002.json").write_text(json.dumps(
+        {"verdict": "FAIL", "recorded_at": "2026-10-15T17:10:00Z", "baseline_hash": "y"}))
+    assert s.gate("SWE.5")["failed_inspections"] == 1

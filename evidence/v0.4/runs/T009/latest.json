@@ -11,19 +11,19 @@
     "-p",
     "no:cacheprovider"
   ],
-  "duration_s": 15.401,
+  "duration_s": 14.897,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "b8fdb8620aa5628aa9fd3ecbb27664dff1e25145",
+  "git_head": "ef6c37df22108485dd737e3f771e82b4aafd5f20",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/T009/20261015T165224.log",
-  "log_sha256": "1fe27e94abc5de712a5c279a3750236ca7ede1ed2af63d63f4ad38bcaeca1cab",
+  "log": "evidence/v0.4/runs/T009/20261015T171318.log",
+  "log_sha256": "74a736a533b3396fa8692cf2b4ed6764e8dcee0e524270de7d52e4b9a1535d2c",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "T009",
-  "ts_utc": "2026-10-15T16:52:24.077379Z"
+  "ts_utc": "2026-10-15T17:13:18.154491Z"
 }

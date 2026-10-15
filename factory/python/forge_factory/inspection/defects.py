@@ -123,6 +123,11 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     if kind == "TEST" and not test_files:
         raise DefectError("TEST_DEFECT_NEEDS_TEST_FILE")
     existing = all_defects(ws)
+    same = next((d for d in existing if d["status"] == "OPEN" and d["kind"] == kind
+                 and d["detected_phase"] == detected_phase and sorted(d["requirement_ids"]) == sorted(requirement_ids)),
+                None)
+    if same is not None and kind not in ("TEST", *ESCALATED_KINDS):
+        return same  # r66: the same defect reported again while open is the same defect (no duplicate loop)
     if sum(1 for d in existing if d["status"] in OPEN_STATES) >= MAX_OPEN:
         raise DefectError(f"TOO_MANY_OPEN_DEFECTS:{MAX_OPEN}")
     rec = {"schema": "forge-c/defect/0.5", "id": f"DEF-{len(existing) + 1:03d}", "kind": kind,

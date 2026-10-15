@@ -221,3 +221,19 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
     are named by their generated LL macro.
   - Both the SWE.6 test author and the SWE.6 author are told: this is your test gap. Add exactly the named
     check. If it then fails, report the defect.
+
+## Fifth live run (r66): the loop works end to end on the agent side
+- **SWE.6 reported a grounded CODE defect** for SWR-014, with a verbatim quote and the failing check
+  `HAL_RCC_MSI_Enable(0U) == HAL_ERROR`.
+- **The loop ran:** chain to SWE.3, where the fix author made timeout 0 an invalid parameter (HAL_ERROR). Verify
+  and inspection passed, the defect became FIXED, and SWE.4 re-verified and passed.
+- **SWE.5 was BLOCKED before SWE.6 could verify the defect.**
+  - Its budget included r56's failed `INS-SWE.5-001`, carried over by `--resume-from`.
+  - It also edited an integration test after a runtime failure without declaring it; anti-bending rejected
+    that correctly.
+- **Bug fixes:**
+  - Failed inspections count toward this run's budget only if recorded since the run's manifest was created.
+  - A repeat report of the same still-OPEN defect returns the existing one (r66 created a duplicate DEF-002).
+- **Open owner question: budget per epoch.** After an upstream fix, the downstream phases re-verify on a new
+  baseline. Their rework budget currently still includes failures from before the fix. A per-epoch budget (3
+  cycles per upstream change) would need `max_visits = 4 × (1 + U)`.

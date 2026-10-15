@@ -269,12 +269,21 @@ class Store:
         d = self.insp / phase
         return [json.loads(p.read_text()) for p in sorted(d.glob("INS-*.json"))] if d.is_dir() else []
 
+    def run_started(self) -> str:
+        m = self.workspace / ".forge-run" / "manifest.json"
+        try:
+            return str(json.loads(m.read_text()).get("created_at") or "")
+        except (OSError, ValueError):
+            return ""
+
     def gate(self, phase: str) -> dict:
         checklist = load_checklist(phase)
         max_cycles = int(checklist["policy"]["maximum_rework_cycles"])
         ins = self.inspections(phase)
         bl = self.latest_baseline(phase)
-        failed = sum(1 for i in ins if i["verdict"] != "PASS")
+        # r66: inspections carried over by --resume-from belong to another run's budget; only this run's count
+        started = self.run_started()
+        failed = sum(1 for i in ins if i["verdict"] != "PASS" and i.get("recorded_at", "") >= started)
         if bl is None:
             decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), "NO_BASELINE"
         else:
