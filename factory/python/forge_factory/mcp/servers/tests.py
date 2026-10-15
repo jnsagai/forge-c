@@ -152,6 +152,12 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     if not suites:
         return result(ctx, "BLOCKED", "no Robot suites", issues=["NO_TESTS:software/tests/software/*.robot"],
                       tool="robotframework")
+    from .robot_policy import check_suite
+
+    policy = [i for s in suites for i in check_suite(s)]
+    if policy:  # r57: a suite is code - only the factory keyword library may run (no Process/OperatingSystem/eval)
+        return result(ctx, "FAIL", f"robot suite rejected by policy ({len(policy)} issues): use only Library "
+                      "ForgeTarget and its keywords", issues=policy[:30], tool="robotframework")
     out = ctx.workspace / "build" / "robot"
     if out.exists():
         shutil.rmtree(out)
@@ -159,7 +165,8 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     py = sys.executable
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
            **{k: os.environ[k] for k in ("FORGE_STATE_DIR", "FORGE_DATA_ROOT") if os.environ.get(k)}}
-    r = run_argv([py, "-m", "robot", "--pythonpath", str(REPO_ROOT / "factory/sim/stm32n6"), "--pythonpath",
+    # -I: isolated mode, so modules in the (agent-written) workspace cannot shadow stdlib/robot/ForgeTarget imports
+    r = run_argv([py, "-I", "-m", "robot", "--pythonpath", str(REPO_ROOT / "factory/sim/stm32n6"), "--pythonpath",
                   str(REPO_ROOT / "factory/python"), "--outputdir", str(out), "--consolecolors", "off",
                   "--console", "dotted", *[str(s) for s in suites]], ctx.workspace, 570, {os.path.basename(py)},
                  env_extra=env, mem_mb=65536, fsize_mb=512)

@@ -30,6 +30,8 @@ def test_resume_carries_only_leading_passed_phases(tmp_path, monkeypatch):
         bl = s.freeze(ph, f"swe{ph[-1]}-author")
         assert s.record_inspection(ph, insp, bl["baseline_id"], _all_pass(ph))["verdict"] == "PASS"
     s.freeze("SWE.3", "swe3-author")  # frozen but never inspected -> not stable
+    (src / "build/target-cm55-gcc").mkdir(parents=True)
+    (src / "build/target-cm55-gcc/driver.elf").write_bytes(b"ELF")  # build of SWE.3 sources: only with a stable SWE.3
     ws = tmp_path / "state/workorders/WO-NEW/workspace"
     (ws / ".forge-run").mkdir(parents=True)
     subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
@@ -39,6 +41,7 @@ def test_resume_carries_only_leading_passed_phases(tmp_path, monkeypatch):
     d = Store(ws)
     assert d.gate("SWE.1")["decision"] == "PASS" and d.gate("SWE.2")["decision"] == "PASS"
     assert not (ws / "configuration/baselines/SWE.3").exists() and not (ws / "workproducts/SWE.3").exists()
+    assert not (ws / "build/target-cm55-gcc").exists()
     rec = json.loads((ws / ".forge-run/manifest.json").read_text())["resumed_from"]
     assert rec["source_work_order"] == "WO-SRC" and rec["restart_phase"] == "SWE.3"
     assert set(rec["stable_phases"]) == {"SWE.1", "SWE.2"}

@@ -241,6 +241,9 @@ ROBOT_STEPS = [
         "Should Pass    <n>', 'All Target Checks Should Pass', 'Driver Flash Size Should Be At Most    <bytes>', 'Driver "
         "Static RAM Should Be At Most    <bytes>'. Separate keyword and arguments with 4 spaces. Every SWR id must be the "
         "tag of at least one test.",
+    "The suite may use ONLY 'Library    ForgeTarget', its five keywords above, keywords you define in the same file and "
+    "Log/Should Be Equal: run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, "
+    "Evaluate, Run Keyword and ${{...}}. Never write shell scripts.",
     "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors or UNCOVERED_REQUIREMENT issues and repeat "
     "until it PASSes.",
     "Reply with the run_robot summary.",

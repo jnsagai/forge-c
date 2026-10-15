@@ -162,6 +162,7 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
 
 
 RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "evidence"]
+TARGET_BUILD = "build/target-cm55-gcc"
 
 
 def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
@@ -194,6 +195,10 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
         for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
             if (src / rel).is_dir():
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+        # r57: the target ELF/map are the build of the carried-over SWE.3 sources (byte-identical) and are referenced by
+        # the carried tool evidence; without them the package lacks software/build/*.elf|*.map
+        if "SWE.3" in stable and (src / TARGET_BUILD).is_dir():
+            shutil.copytree(src / TARGET_BUILD, ws / TARGET_BUILD, dirs_exist_ok=True)
         for ph in PHASES[len(stable):]:  # nothing of a non-stable phase is carried over as passed
             for rel in (f"configuration/baselines/{ph}", f"inspection/{ph}"):
                 if (ws / rel).exists():
