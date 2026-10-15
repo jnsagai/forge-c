@@ -28,7 +28,8 @@ case "${1:-status}" in
   stop) stop_one "fabro server start --foreground --no-web --no-upgrade-check --config $FORGE_FABRO_CONFIG"
         stop_one "forge_factory.llm_gateway --port 11436"; stop_one "$OLLAMA serve" ;;
   restart-ollama) stop_one "$OLLAMA serve"; sleep 2; start_ollama; sleep 4; "$0" status ;;
+  restart-gateway) stop_one "forge_factory.llm_gateway --port 11436"; sleep 1; start_gateway; sleep 3; "$0" status ;;
   status) for u in 127.0.0.1:11435/api/version 127.0.0.1:11436/health 127.0.0.1:32290/health; do
             printf '%-32s %s\n' "$u" "$(curl -s -m 3 "$u" || echo DOWN)"; done ;;
-  *) echo "usage: $0 start|stop|restart-ollama|status" >&2; exit 2 ;;
+  *) echo "usage: $0 start|stop|restart-ollama|restart-gateway|status" >&2; exit 2 ;;
 esac

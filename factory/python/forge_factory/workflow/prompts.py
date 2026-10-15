@@ -46,24 +46,16 @@ AUTHOR_STEPS = {
         "your JSON reply into a workproduct file.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
-        "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM) "
-        "and read_file software/ll/stm32n6xx_ll_rcc.h (register defines generated from RM0486, access functions written "
-        "by the LL step). Never change its register defines; if an access function you need is missing, add it with "
-        "edit_file just before the final #endif line.",
-        "write_file software/hal/stm32n6xx_hal_rcc.h: guard STM32N6XX_HAL_RCC_H, #include \"stm32n6xx_ll_rcc.h\", typedef "
-        "enum {HAL_OK=0U,HAL_ERROR=1U,HAL_TIMEOUT=2U} hal_status_t, lower-case hal_ types ending _t, API prototypes "
-        "HAL_RCC_... with const pointers for config.",
-        "write_file software/hal/stm32n6xx_hal_rcc.c: implement the API calling ONLY LL_RCC_ functions and macros that are "
-        "declared in software/ll/stm32n6xx_ll_rcc.h (never invent LL names); every wait loop is while((cond) && (count < "
-        "timeout)); every parameter is used or cast to (void); no device RPN #if, no heap, no recursion, local arrays <=128 "
-        "bytes, parameters lower case, every file ends with a newline.",
-        "write_file workproducts/SWE.3/detailed_design.md: per function purpose, registers/bits used with RM page, SWR IDs.",
-        "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. To fix errors, "
-        "rewrite the whole affected file with write_file (do not use edit_file), then compile again.",
+        "read_file software/ll/stm32n6xx_ll_rcc.h, software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c "
+        "(written by the LL and HAL steps). Never change the generated register defines.",
+        "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. Fix each error with "
+        "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again.",
         "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline and then with check register_map; fix every "
-        "violation and repeat until both PASS.",
+        "violation the same way and repeat until both PASS.",
         "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
         "the code (suppression comments are ignored and forbidden).",
+        "write_file workproducts/SWE.3/detailed_design.md (at most 40 lines): '# Detailed design', then a table "
+        "| Function | Purpose | Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
     "SWE.4": [
         "Read software/hal/stm32n6xx_hal_rcc.h, software/ll/stm32n6xx_ll_rcc.h and traceability/requirements_to_tests.csv.",
@@ -90,18 +82,41 @@ AUTHOR_STEPS = {
 }
 
 
+SMALL = ("Keep every write_file/edit_file content under 40 lines; long tool calls are lost. Make one call per "
+         "function group and continue with the next group after each result.")
 LL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
     "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
     "workproducts/SWE.2/software_architecture.md (Interfaces and Requirement allocation only).",
-    "Call edit_file on software/ll/stm32n6xx_ll_rcc.h with old_string exactly '" + "{marker}" + "' and new_string = that "
-    "same marker line followed by the access functions: for each oscillator/PLL enable bit and each peripheral "
-    "enable/reset bit the HAL needs, small 'static inline' functions LL_RCC_<Name>_Enable(void), "
-    "LL_RCC_<Name>_Disable(void) and LL_RCC_<Name>_IsReady(void) / LL_RCC_<Name>_IsEnabled(void) (Enable/Disable return "
-    "void, IsReady/IsEnabled return uint32_t 0U or 1U), each body one statement on ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] using only the generated _MSK defines "
-    "(ready flags are in RCC_SR, enables in RCC_CR / RCC_AHB1ENR, resets in RCC_AHB1RSTR). Real line breaks only.",
+    "For EACH oscillator/PLL and each peripheral the HAL needs, make ONE edit_file call on software/ll/stm32n6xx_ll_rcc.h "
+    "with old_string exactly '{marker}' and new_string = that group's functions, a blank line, then the same marker "
+    "line again (so the next group can be inserted). A group is: static inline void LL_RCC_<Name>_Enable(void) and "
+    "LL_RCC_<Name>_Disable(void), plus static inline uint32_t LL_RCC_<Name>_IsReady(void) (oscillators/PLLs, flag "
+    "in RCC_SR) or LL_RCC_<Name>_IsEnabled(void) (peripherals); each body is one statement on "
+    "ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] using only the generated _MSK defines (enables in RCC_CR / RCC_AHB1ENR, "
+    "resets in RCC_AHB1RSTR with LL_RCC_<Name>_ForceReset/ReleaseReset). Real line breaks only.",
     "Call mcp__forge_docs_mcp__validate_artifact with check register_map; it must be PASS.",
     "Reply with the list of LL_RCC_ function names you declared.",
+]
+HAL_MARKER = "/* HAL_RCC API implementation (SWE.3 HAL author) */"
+HAL_H_MARKER = "/* HAL_RCC API prototypes (SWE.3 HAL author) */"
+HAL_STEPS = [
+    "read_file software/ll/stm32n6xx_ll_rcc.h (use only the LL_RCC_ functions and defines declared there; never invent "
+    "LL names) and workproducts/SWE.2/software_architecture.md (Interfaces and Requirement allocation).",
+    "write_file software/hal/stm32n6xx_hal_rcc.h with exactly: '#ifndef STM32N6XX_HAL_RCC_H', '#define "
+    "STM32N6XX_HAL_RCC_H', '#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum {HAL_OK=0U,HAL_ERROR=1U,HAL_TIMEOUT=2U} "
+    "hal_status_t;', '#define HAL_RCC_TIMEOUT_VALUE 1000U', the line '{hmarker}', '#endif /* STM32N6XX_HAL_RCC_H */' and "
+    "a final newline.",
+    "Insert the API prototypes with edit_file on that header: old_string exactly '{hmarker}', new_string = at most 8 "
+    "prototypes 'hal_status_t HAL_RCC_<Name>_Enable(void);' etc., a blank line, then the marker again; repeat until "
+    "every interface of the architecture is declared.",
+    "write_file software/hal/stm32n6xx_hal_rcc.c with exactly: '#include \"stm32n6xx_hal_rcc.h\"', a blank line, the line "
+    "'{marker}' and a final newline.",
+    "For EACH API group make ONE edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "
+    "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
+    "function calls only LL_RCC_ functions; every wait loop is 'while ((LL_RCC_<Name>_IsReady() == 0U) && (count < "
+    "HAL_RCC_TIMEOUT_VALUE))' then returns HAL_TIMEOUT if count reached the limit, else HAL_OK; locals lower case.",
+    "Reply with the list of HAL_RCC_ functions you implemented.",
 ]
 
 
@@ -109,8 +124,15 @@ def ll_author_prompt() -> str:
     """SWE.3 step 1 (fresh, small context): LL access functions on the generated register map; HAL comes next."""
     from ..inspection.regmap import FUNCTIONS_MARKER
 
-    steps = ["Call use_skill with skill_name swe3-author.", READ] + \
+    steps = ["Call use_skill with skill_name swe3-author.", READ, SMALL] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+def hal_author_prompt() -> str:
+    """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
+    steps = ["Call use_skill with skill_name swe3-author.", READ, SMALL] + \
+        [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER) for x in HAL_STEPS] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 

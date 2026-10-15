@@ -24,7 +24,8 @@ def test_graph_has_six_separate_loops_and_verification_node():
     e = edges(dot)
     assert ("swe3_author_gate", "swe3_verify", "outcome=succeeded") in e
     assert ("swe2_inspect_gate", "swe3_regmap", "outcome=succeeded") in e and ("swe3_regmap", "swe3_ll_author", "") in e
-    assert ("swe3_ll_author", "swe3_author", "") in e and "forge_factory.inspection.regmap" in dot
+    assert ("swe3_ll_author", "swe3_hal_author", "") in e and ("swe3_hal_author", "swe3_author", "") in e
+    assert "forge_factory.inspection.regmap" in dot and nodes["swe3_hal_author"]["role"] == "swe3-author"
     assert nodes["swe3_ll_author"] == {"role": "swe3-author", "phase": "SWE.3"}
     assert ("swe3_verify", "swe3_inspector", "outcome=succeeded") in e
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)

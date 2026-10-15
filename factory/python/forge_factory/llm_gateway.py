@@ -107,12 +107,18 @@ class Meter:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
 
-    def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float) -> None:
+    def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
+               shape: dict | None = None) -> None:
         rec = {"ts_utc": utc_now(), "model": model or "unknown",
                "tokens_input": (usage or {}).get("prompt_tokens"),
                "tokens_output": (usage or {}).get("completion_tokens"),
                "basis": "reported" if usage else "unknown",
                "reasoning_stripped": stripped, "latency_ms": round(latency_ms, 1)}
+        if shape is not None:  # response shape only (never content): exposes upstream-dropped tool calls (ADR-0005)
+            out = int((usage or {}).get("completion_tokens") or 0)
+            rec.update({"content_chars": shape["content_chars"], "tool_calls": shape["tool_calls"],
+                        "finish_reason": shape.get("finish_reason"),
+                        "dropped_output": out > 32 and shape["content_chars"] == 0 and shape["tool_calls"] == 0})
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
 
@@ -150,6 +156,7 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
 
             async def gen():
                 usage, stripped = None, False
+                shape = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
                 try:
                     async for line in upstream_resp.aiter_lines():
                         if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
@@ -161,12 +168,17 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                             chunk, r = strip_reasoning(chunk)
                             stripped |= r
                             usage = chunk.get("usage") or usage
+                            for ch in chunk.get("choices") or []:
+                                delta = ch.get("delta") or {}
+                                shape["content_chars"] += len(delta.get("content") or "")
+                                shape["tool_calls"] += len(delta.get("tool_calls") or [])
+                                shape["finish_reason"] = ch.get("finish_reason") or shape["finish_reason"]
                             yield "data: " + json.dumps(chunk, separators=(",", ":")) + "\n"
                         else:
                             yield line + "\n"
                 finally:
                     await upstream_resp.aclose()
-                    meter.record(body.get("model"), usage, stripped, (time.monotonic() - started) * 1000)
+                    meter.record(body.get("model"), usage, stripped, (time.monotonic() - started) * 1000, shape)
 
             return StreamingResponse(gen(), status_code=upstream_resp.status_code,
                                      media_type="text/event-stream")
@@ -176,8 +188,14 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         except ValueError:
             return Response(r.content, status_code=r.status_code)
         data, stripped = strip_reasoning(data)
+        shape = None
+        if isinstance(data, dict) and data.get("choices"):
+            ch = data["choices"][0]
+            msg = ch.get("message") or {}
+            shape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
+                     "finish_reason": ch.get("finish_reason")}
         meter.record(body.get("model"), data.get("usage") if isinstance(data, dict) else None, stripped,
-                     (time.monotonic() - started) * 1000)
+                     (time.monotonic() - started) * 1000, shape)
         return JSONResponse(data, status_code=r.status_code)
 
     return app

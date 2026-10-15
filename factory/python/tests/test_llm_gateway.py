@@ -47,7 +47,17 @@ def test_stream_deltas_stripped(tmp_path):
     r = c.post("/v1/chat/completions", json={"model": "qwen3:8b", "stream": True, "messages": []})
     assert "SECRET-THOUGHT" not in r.text and "Hel" in r.text and "[DONE]" in r.text
     rec = json.loads((tmp_path / "usage.jsonl").read_text().splitlines()[-1])
-    assert rec["tokens_output"] == 2
+    assert rec["tokens_output"] == 2 and rec["content_chars"] == 5 and rec["dropped_output"] is False
+
+
+def test_dropped_output_flagged_without_logging_content(tmp_path):
+    m = gw.Meter(tmp_path / "u.jsonl")
+    m.record("m", {"prompt_tokens": 9000, "completion_tokens": 1905}, False, 1.0,
+             {"content_chars": 0, "tool_calls": 0, "finish_reason": "stop"})
+    m.record("m", {"prompt_tokens": 9000, "completion_tokens": 90}, False, 1.0,
+             {"content_chars": 0, "tool_calls": 1, "finish_reason": "tool_calls"})
+    a, b = [json.loads(x) for x in (tmp_path / "u.jsonl").read_text().splitlines()]
+    assert a["dropped_output"] is True and b["dropped_output"] is False and "content" not in a
 
 
 def test_unknown_usage_labelled_unknown(tmp_path):
