@@ -197,7 +197,9 @@ FIX3_STEPS = [
     "replace the last line (e.g. the final #endif line) with the same text followed by a line break.",
     "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (HAL guideline + register map + implementation "
     "completeness in ONE call); fix every finding and repeat until it PASSes; re-compile after changes.",
-    "Reply PASS only when both compiles and swe3_all PASS.",
+    "Call mcp__forge_analysis_mcp__cppcheck; remove every MISRA hit by restructuring the code (e.g. rule 15.5: one "
+    "return at the end using a status variable; never add suppression comments), then re-run compile and swe3_all.",
+    "Reply PASS only when both compiles, swe3_all and cppcheck PASS.",
 ]
 
 

@@ -159,6 +159,9 @@ def step_verify(store: Store, phase: str, check: str) -> int:
         out.write_text(pretty_json(rep))
         (out.parent / "register_map_conformance.json").write_text(pretty_json(reg))
         (out.parent / "implementation_completeness.json").write_text(pretty_json(imp))
+        from .misra_matrix import build as misra_matrix
+
+        misra_matrix(store.workspace)  # coverage record (not compliance) for the release policy
         verdict = "PASS" if rep["verdict"] == reg["verdict"] == imp["verdict"] == "PASS" else "FAIL"
         _state(store.workspace, phase, {"step": "verify", "check": check, "verdict": verdict,
                                         "violations": len(rep["violations"]),

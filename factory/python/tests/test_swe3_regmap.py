@@ -81,3 +81,15 @@ def test_verify_node_fails_on_register_map_even_if_guideline_passes(tmp_path):
     out = json.loads(r.stdout)
     assert r.returncode != 0 and out["verdict"] == "FAIL" and out["violations"] == 0
     assert out["register_map_findings"] == ["REGMAP:OFFSET_MISMATCH:CR:0x4!=0x0"]
+
+
+def test_misra_matrix_records_coverage_and_hits_not_compliance(tmp_path, monkeypatch):
+    from forge_factory.inspection import misra_matrix
+
+    monkeypatch.setattr("forge_factory.release.finalize.tool_results", lambda ws: [
+        {"server": "forge-analysis-mcp", "op": "cppcheck",
+         "result": {"status": "FAIL", "summary": "1 MISRA rules hit", "issues": ["MISRA-15.5:hal.c:47"]}}])
+    out = misra_matrix.build(tmp_path)
+    text = (tmp_path / misra_matrix.MATRIX).read_text()
+    assert out["hits"] == ["15.5"] and "| 15.5 | yes | HIT (1x: hal.c:47) |" in text
+    assert "MISRA compliance is NOT claimed" in text and "| 1.1 | no | not automated - manual review required |" in text
