@@ -1,6 +1,6 @@
 """T009/T046/T047 — generate the v0.4 unattended SWE.1–SWE.6 Fabro workflow (DOT) + run binding.
 
-Graph per phase n:  (SWE.3: swe3_regmap -> swe3_ll_author -> swe3_hal_author ->; SWE.4: swe4_scaffold -> swe4_test_author ->)
+Graph per phase n:  (SWE.3: regmap -> ll -> hal -> fix ->; SWE.4: swe4_scaffold -> swe4_test_author ->)
                     swe{n}_author -> swe{n}_author_gate -[ok]->
                     (SWE.3: swe3_verify ->) swe{n}_inspector
                     -> swe{n}_inspect_gate -[ok]-> next phase ... ; any gate failure -> swe{n}_route
@@ -61,7 +61,7 @@ def finalize_cmd(work_order: str) -> str:
     return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
-CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_author", "swe4_test_author", "swe4_author")
+CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author")
 MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
 
 
@@ -113,16 +113,18 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'script="{_q(gate_cmd(phase, "route"))}"]']
         entry = a
         if phase == "SWE.3":  # LL header in its own fresh context first; rework re-enters at the HAL author
-            from .prompts import hal_author_prompt, ll_author_prompt
+            from .prompts import fix3_author_prompt, hal_author_prompt, ll_author_prompt
 
-            entry, ll, hal = "swe3_regmap", "swe3_ll_author", "swe3_hal_author"
-            nodes[ll] = {"role": "swe3-author", "phase": phase}
-            nodes[hal] = {"role": "swe3-author", "phase": phase}
+            entry, ll, hal, fix = "swe3_regmap", "swe3_ll_author", "swe3_hal_author", "swe3_fix_author"
+            for n_ in (ll, hal, fix):
+                nodes[n_] = {"role": "swe3-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.3 register map generator (RM0486, deterministic)", '
                   f'script="{_q(regmap_cmd())}"]',
                   f'  {ll} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
                   f'  {hal} [label="SWE.3 HAL author", max_visits=1, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
-                  f"  {entry} -> {ll}", f"  {ll} -> {hal}", f"  {hal} -> {a}"]
+                  f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", max_visits={MAX_VISITS}, '
+                  f'timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
+                  f"  {entry} -> {ll}", f"  {ll} -> {hal}", f"  {hal} -> {fix}", f"  {fix} -> {a}"]
         if phase == "SWE.4":  # unit tests written in their own fresh context; rework re-enters at the SWE.4 author
             from .prompts import unit_test_author_prompt
 
@@ -143,7 +145,8 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
         else:
             L += [f'  {ag} -> {ins} [condition="outcome=succeeded"]', f'  {ag} -> {rt}']
         L += [f"  {ins} -> {ig}", f'  {ig} -> {rt}',
-              f'  {rt} -> {a} [condition="outcome=succeeded"]', f'  {rt} -> finalize']
+              f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
+              f'  {rt} -> finalize']
         prev = ig
     nodes["release_manager"] = {"role": "release-manager"}
     L += ['  release_manager [label="Release Manager (inventory only)", max_visits=1, prompt="Call use_skill with '

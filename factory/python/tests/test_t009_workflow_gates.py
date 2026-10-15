@@ -24,7 +24,8 @@ def test_graph_has_six_separate_loops_and_verification_node():
     e = edges(dot)
     assert ("swe3_author_gate", "swe3_verify", "outcome=succeeded") in e
     assert ("swe2_inspect_gate", "swe3_regmap", "outcome=succeeded") in e and ("swe3_regmap", "swe3_ll_author", "") in e
-    assert ("swe3_ll_author", "swe3_hal_author", "") in e and ("swe3_hal_author", "swe3_author", "") in e
+    assert ("swe3_ll_author", "swe3_hal_author", "") in e and ("swe3_hal_author", "swe3_fix_author", "") in e
+    assert ("swe3_fix_author", "swe3_author", "") in e
     assert "forge_factory.inspection.regmap" in dot and nodes["swe3_hal_author"]["role"] == "swe3-author"
     assert ("swe3_inspect_gate", "swe4_scaffold", "outcome=succeeded") in e and ("swe4_scaffold", "swe4_test_author", "") in e
     assert ("swe4_test_author", "swe4_author", "") in e and "forge_factory.workflow.scaffold" in dot
@@ -66,7 +67,8 @@ def test_route_success_only_to_author_and_failure_fallback_to_finalize():
     dot, _ = build("wo-test")
     e = edges(dot)
     for n in range(1, 7):
-        assert (f"swe{n}_route", f"swe{n}_author", "outcome=succeeded") in e
+        target = "swe3_fix_author" if n == 3 else f"swe{n}_author"  # SWE.3 rework re-enters at the fix step
+        assert (f"swe{n}_route", target, "outcome=succeeded") in e
         assert (f"swe{n}_route", "finalize", "") in e
 
 

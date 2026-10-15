@@ -63,18 +63,15 @@ AUTHOR_STEPS = {
         "your JSON reply into a workproduct file.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.2 baseline."],
     "SWE.3": [
-        "read_file software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c (the LL header is already "
-        "machine-verified; read it only if a compile error points into it). Never change the generated register defines.",
-        "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. Fix each error with "
-        "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again. "
-        "For 'no newline at end of file' replace the last line (e.g. the final #endif line) with the same text followed "
-        "by a line break.",
-        "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (HAL guideline + register map + implementation "
-        "completeness in ONE call); fix every finding the same way and repeat until it PASSes.",
-        "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects by changing "
-        "the code (suppression comments are ignored and forbidden).",
-        "write_file workproducts/SWE.3/detailed_design.md (at most 40 lines): '# Detailed design', then a table "
-        "| Function | Purpose | Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function.",
+        "read_file workproducts/SWE.2/software_architecture.md (Memory and stack budget section only, use offset/limit).",
+        "Call mcp__forge_analysis_mcp__cppcheck and mcp__forge_analysis_mcp__clang_analyze, then "
+        "mcp__forge_build_mcp__measure_elf and mcp__forge_build_mcp__stack_usage with profile target-cm55-gcc. Do not "
+        "change code in this step (the fix step already made it compile and pass the checks).",
+        "write_file workproducts/SWE.3/detailed_design.md: '# Detailed design'; a table | Function | Purpose | "
+        "Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function; '## Static analysis and MISRA "
+        "(subset)' with the cppcheck and clang results exactly as the tools reported them (rules hit, counts; state that "
+        "MISRA compliance is not claimed); '## Resource usage' with the measured flash/RAM (measure_elf) and maximum "
+        "stack frame (stack_usage) next to the architecture budgets.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.3 baseline."],
     "SWE.4": [
         "read_file software/tests/unit/test_rcc.c (written by the unit-test step) and traceability/requirements_to_tests.csv.",
@@ -188,6 +185,25 @@ def unit_test_author_prompt() -> str:
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
          for x in UT_STEPS] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+FIX3_STEPS = [
+    "read_file software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c (the LL header register defines "
+    "are machine-verified; read the LL header only if a compile error points into it). Never change the generated "
+    "register defines.",
+    "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. Fix each error with "
+    "an edit_file call (old_string = the exact lines to replace), then compile again. For 'no newline at end of file' "
+    "replace the last line (e.g. the final #endif line) with the same text followed by a line break.",
+    "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (HAL guideline + register map + implementation "
+    "completeness in ONE call); fix every finding and repeat until it PASSes; re-compile after changes.",
+    "Reply PASS only when both compiles and swe3_all PASS.",
+]
+
+
+def fix3_author_prompt() -> str:
+    """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
+    steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 

@@ -256,7 +256,7 @@ def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path)
     assert [i["fault_type"] for i in st.all()] == ["MCP_HANDSHAKE_FAILURE"]
     dot, _ = build("wo")
     assert "fabric-repair" not in dot and "repair" not in {n.split()[0] for n in dot.splitlines() if "[" in n}
-    assert dot.count("max_visits=4") == 12  # bounded SWE loops (6 authors + 6 inspectors)
+    assert dot.count("max_visits=4") == 13  # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step)
 
 
 # ---------------- T049 ------------------------------------------------------------------------------------
