@@ -64,6 +64,18 @@ def test_wrong_offset_missing_allocation_unknown_swr_and_missing_section(ws):
     assert any(x.startswith("SWE2:REGISTER_OFFSET_MISMATCH:RCC_AHB1ENR") for x in f)
 
 
+def test_swr_ranges_allocated_and_not_misread_as_ids(ws):
+    from forge_factory.inspection.architecture import swr_ids
+
+    assert swr_ids("| SWR-001..SWR-004 | f |") == {"SWR-001", "SWR-002", "SWR-003", "SWR-004"}
+    assert swr_ids("SWR-010 to 012, SWR-020") == {"SWR-010", "SWR-011", "SWR-012", "SWR-020"}
+    assert swr_ids("SWR-SAFE-01 and SWR-002") == {"SWR-SAFE-01", "SWR-002"}
+    ranged = GOOD.replace("| SWR-001 | `HAL_RCC_HSI_Enable` |\n| SWR-002 | `HAL_RCC_HSI_Disable` |",
+                          "| SWR-001..SWR-002 | `HAL_RCC_HSI_Enable`, `HAL_RCC_HSI_Disable` |")
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(ranged)
+    assert check_architecture(ws)["verdict"] == "PASS", check_architecture(ws)
+
+
 def test_inspection_records_deterministic_swe2_item(ws):
     (ws / "workproducts/SWE.1/software_requirements.md").write_text("- **SWR-001** a\n- **SWR-002** b\n")
     s = Store(ws)

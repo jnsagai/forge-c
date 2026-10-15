@@ -16,7 +16,18 @@ REQS = "workproducts/SWE.1/software_requirements.md"
 SECTIONS_DIR = "inputs/sections/RM0486"
 REQUIRED_SECTIONS = {"components": r"component", "interfaces": r"interface", "register_table": r"register\s+table",
                      "requirement_allocation": r"allocation"}
-SWR = re.compile(r"SWR-[A-Z0-9][A-Z0-9_.-]*[A-Z0-9]")
+SWR = re.compile(r"SWR-[A-Z0-9]+(?:[_-][A-Z0-9]+)*")  # an ID never contains '..' (r23: ranges were read as IDs)
+_RANGE = re.compile(r"\b(SWR-(?:[A-Z0-9]+[_-])*)(\d+)\s*(?:\.\.|–|—|-|to)\s*(?:SWR-(?:[A-Z0-9]+[_-])*)?(\d+)\b")
+
+
+def swr_ids(text: str) -> set[str]:
+    """SWR identifiers in text, with numeric ranges like 'SWR-001..SWR-004' or 'SWR-001 to 004' expanded."""
+    ids = set(SWR.findall(text))
+    for m in _RANGE.finditer(text):
+        prefix, lo, hi = m.group(1), m.group(2), m.group(3)
+        if int(hi) > int(lo) and int(hi) - int(lo) <= 200:
+            ids |= {f"{prefix}{n:0{len(lo)}d}" for n in range(int(lo), int(hi) + 1)}
+    return ids
 HEX = re.compile(r"^(0x[0-9a-fA-F]+|\d+)$")
 
 
@@ -71,8 +82,8 @@ def check_architecture(ws: Path) -> dict:
             findings.append(f"SWE2:MISSING_SECTION:{key}")
     req_file = ws / REQS
     known = set(SWR.findall(req_file.read_text(errors="replace"))) if req_file.is_file() else set()
-    referenced = set(SWR.findall(text))
-    allocated = set(SWR.findall(found["requirement_allocation"] or ""))
+    referenced = swr_ids(text)
+    allocated = swr_ids(found["requirement_allocation"] or "")
     findings += [f"SWE2:SWR_NOT_ALLOCATED:{r}" for r in sorted(known - allocated)]
     findings += [f"SWE2:UNKNOWN_SWR:{r}" for r in sorted(referenced - known)] if known else []
     regs = _rows(found["register_table"] or "")
