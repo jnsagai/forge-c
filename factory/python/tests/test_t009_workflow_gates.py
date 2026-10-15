@@ -34,6 +34,16 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == 1 + load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
 
 
+def test_code_model_profile_applies_only_to_code_nodes():
+    from forge_factory.workflow.builder import CODE_NODES
+
+    dot, nodes = build("wo-test", code_model="qwen3-coder:30b")
+    assert {k for k, v in nodes.items() if v.get("model")} == set(CODE_NODES)
+    assert dot.count('model="qwen3-coder:30b"') == len(CODE_NODES)
+    assert 'swe1_author [label=' in dot and 'swe3_inspector [label=' in dot  # inspectors/others keep the default
+    assert build("wo-test")[0].count('model="') == 0
+
+
 def test_every_node_can_reach_finalize():
     dot, _ = build("wo-test")
     e = edges(dot)

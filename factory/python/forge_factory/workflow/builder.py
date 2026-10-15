@@ -61,8 +61,24 @@ def finalize_cmd(work_order: str) -> str:
     return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
+CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_author", "swe4_test_author", "swe4_author")
+MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
+
+
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
-          sections: dict[str, str] | None = None) -> tuple[str, dict]:
+          sections: dict[str, str] | None = None, code_model: str | None = None) -> tuple[str, dict]:
+    """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15)."""
+    dot, nodes = _build(work_order, phases, goal, sections)
+    if code_model:
+        for n in CODE_NODES:
+            if n in nodes:
+                dot = dot.replace(f"  {n} [label=", f'  {n} [{MODEL_ATTR}="{_q(code_model)}", label=', 1)
+                nodes[n] = {**nodes[n], "model": code_model}
+    return dot, nodes
+
+
+def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
+           sections: dict[str, str] | None = None) -> tuple[str, dict]:
     from . import prompts
 
     prompts.SECTIONS.clear()

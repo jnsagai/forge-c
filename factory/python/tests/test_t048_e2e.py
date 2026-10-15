@@ -14,6 +14,16 @@ import pytest
 STATE = Path(os.environ.get("FORGE_STATE_DIR", "/nonexistent"))
 
 
+def local_models() -> set[str]:
+    """Models declared for the loopback Ollama provider in the isolated Forge-C Fabro config."""
+    import re
+
+    cfg = Path(os.environ.get("FORGE_FABRO_CONFIG", "/nonexistent"))
+    text = cfg.read_text() if cfg.is_file() else ""
+    assert 'base_url = "http://127.0.0.1:11436/v1"' in text or not text  # provider is the local gateway
+    return set(re.findall(r'^\[llm\.providers\.ollama\.models\."([^"]+)"\]', text, re.M)) or {"qwen3:8b"}
+
+
 def finished_workorders() -> list[Path]:
     root = STATE / "workorders"
     ws = [p for p in root.glob("*/workspace") if (p / ".forge-run/package.json").is_file()] if root.is_dir() else []
@@ -41,7 +51,7 @@ def test_t048_unattended_local_qwen_run_and_reproducible_evidence(tmp_path):
     kinds = {e["event"] for e in evs}
     assert not any(k.startswith(("interview.", "question.", "run.approval", "human.")) for k in kinds)  # no human gate
     models = {(e.get("properties") or {}).get("model") for e in evs if e["event"] == "stage.prompt"}
-    assert models <= {"qwen3:8b", None}  # local model only
+    assert models <= local_models() | {None}  # only models served by the local Ollama provider
     assert "hexagon" not in (ws / ".forge-run/workflow.fabro").read_text()
     archive = Path(pkg["archive"])
     assert verify_archive(archive)["integrity"] == "PASS"

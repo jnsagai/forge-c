@@ -137,7 +137,7 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
     return ws, manifest
 
 
-def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600) -> dict:
+def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None) -> dict:
     ws, manifest = prepare(example, wo)
     secmap = {}
     for line in (ws / "inputs/index.md").read_text().splitlines():
@@ -145,7 +145,9 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600)
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
-                         sections=secmap)
+                         sections=secmap, code_model=code_model)
+    (ws / ".forge-run/model-profile.json").write_text(pretty_json(
+        {"default": "qwen3:8b", "code_nodes": code_model, "nodes": sorted(k for k, v in nodes.items() if v.get("model"))}))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)
@@ -180,8 +182,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--example", type=Path, required=True)
     ap.add_argument("--wo", required=True)
     ap.add_argument("--detach", action="store_true")
+    ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     a = ap.parse_args(argv)
-    res = run(a.example.resolve(), a.wo, a.detach)
+    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0
