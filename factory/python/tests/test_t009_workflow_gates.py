@@ -113,3 +113,9 @@ def test_route_counts_author_rejections_in_rework_budget(tmp_path):
     assert gate(tmp_path, "SWE.3", "route").returncode == 0  # 1 failed cycle: rework allowed
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
     assert gate(tmp_path, "SWE.3", "route").returncode == 1  # BLOCKED -> finalizer (not an endless rework loop)
+
+
+def test_route_counts_its_own_invocations_when_no_gate_ran(tmp_path):
+    # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route twice
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 2nd failed cycle -> BLOCKED -> finalizer

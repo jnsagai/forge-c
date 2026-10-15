@@ -95,6 +95,13 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
 FABRO_SAFE_CYCLES = 2
 
 
+def _count(ws: Path, phase: str, step: str) -> int:
+    log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
+    if not log.is_file():
+        return 0
+    return sum(1 for x in log.read_text().splitlines() if f'"phase": "{phase}"' in x and f'"step": "{step}"' in x)
+
+
 def author_rejections(ws: Path, phase: str) -> int:
     log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
     if not log.is_file():
@@ -106,7 +113,10 @@ def author_rejections(ws: Path, phase: str) -> int:
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
-    cycles = g["failed_inspections"] + author_rejections(store.workspace, phase)
+    # The route node is reached ONLY after a failed author/verify/inspection stage (including agent-session failures
+    # where no gate could run), so each route invocation is one failed cycle.
+    prior_routes = _count(store.workspace, phase, "route")
+    cycles = max(g["failed_inspections"] + author_rejections(store.workspace, phase), prior_routes + 1)
     # Fabro 0.362 terminates a run at the 3rd identical deterministic failure signature (numbers normalised), which
     # would bypass the in-graph finalizer; block at 2 failed cycles (within the authored maximum of 3, ADR-0005).
     budget = min(int(g["max_rework_cycles"]), FABRO_SAFE_CYCLES)
