@@ -153,6 +153,7 @@ Backup, recovery, trace retention and the failure runbook are in [`docs/OPERATIO
 Forge-C is implemented with Claude Code as the engineering assistant. Claude Code is not part of the production
 runtime. To work on the factory, start with [`CLAUDE.md`](CLAUDE.md), [`CLAUDE_START.md`](CLAUDE_START.md) and
 [`PROJECT_HANDOFF_v0.5.md`](PROJECT_HANDOFF_v0.5.md).
+On the on-premise VM, the local Qwen Code assistant follows [`QWEN.md`](QWEN.md), which carries the same rules.
 
 ## Licence
 
