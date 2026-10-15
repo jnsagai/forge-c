@@ -52,7 +52,6 @@ def test_implementation_focus_seed_reuses_frozen_baselines_and_records_decisions
     monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
     src = tmp_path / "state/workorders/WO-SRC/workspace"
     for rel, txt in (("workproducts/SWE.1/software_requirements.md", "- **SWR-001** The RCC driver shall x.\n"),
-                     ("safety/software_safety_requirements.md", "- SWR-001\n"),
                      ("workproducts/SWE.2/software_architecture.md", ARCH_MIN)):
         (src / rel).parent.mkdir(parents=True, exist_ok=True)
         (src / rel).write_text(txt)

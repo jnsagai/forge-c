@@ -175,7 +175,6 @@ def seed_from_baseline(ws: Path, manifest: dict, source_wo: str, reason: str) ->
             raise ValueError(f"{source_wo}: no valid frozen {ph} baseline to seed from")
         for rel in PHASE_PATHS[ph] + [f"configuration/baselines/{ph}", f"inspection/{ph}"]:
             if (src / rel).exists():
-                (ws / rel).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True) if (src / rel).is_dir() \
                     else shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
