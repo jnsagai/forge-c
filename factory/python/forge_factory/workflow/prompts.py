@@ -48,10 +48,12 @@ AUTHOR_STEPS = {
         "your JSON reply into a workproduct file.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
-        "read_file software/ll/stm32n6xx_ll_rcc.h, software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c "
-        "(written by the LL and HAL steps). Never change the generated register defines.",
+        "read_file software/hal/stm32n6xx_hal_rcc.h and software/hal/stm32n6xx_hal_rcc.c (the LL header is already "
+        "machine-verified; read it only if a compile error points into it). Never change the generated register defines.",
         "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. Fix each error with "
-        "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again.",
+        "ONE small edit_file call (old_string = the few exact lines to replace, at most 40 lines), then compile again. "
+        "For 'no newline at end of file' replace the last line (e.g. the final #endif line) with the same text followed "
+        "by a line break.",
         "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline, then check register_map, then check "
         "implementation (every allocated HAL_RCC_ function declared and defined, no commented-out code); fix every "
         "finding the same way and repeat until all three PASS.",
@@ -59,7 +61,7 @@ AUTHOR_STEPS = {
         "the code (suppression comments are ignored and forbidden).",
         "write_file workproducts/SWE.3/detailed_design.md (at most 40 lines): '# Detailed design', then a table "
         "| Function | Purpose | Registers/bits (RM0486 page) | SWR IDs | with one row per HAL_RCC_ function.",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.3 baseline."],
     "SWE.4": [
         "read_file software/tests/unit/test_rcc.c (written by the unit-test step) and traceability/requirements_to_tests.csv.",
         "Call mcp__forge_tests_mcp__run_unit. Fix each failing test or compile error with ONE small edit_file call (at most "
@@ -70,7 +72,7 @@ AUTHOR_STEPS = {
         "table | Test ID | Function | SWR IDs | Result | and the coverage numbers exactly as the tool reported them.",
         "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
         "with the UT id that covers it in software/tests/unit/test_rcc.c.",
-        "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.4."],
+        "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.4 baseline."],
     "SWE.5": [
         "Read workproducts/SWE.2/software_architecture.md and software/tests/unit/test_rcc.c.",
         "write_file software/tests/integration/test_rcc_integration.c: self-checking program exercising HAL+LL together "
@@ -88,7 +90,7 @@ AUTHOR_STEPS = {
 
 
 SMALL = ("Keep every write_file/edit_file content under 40 lines; long tool calls are lost. Make one call per "
-         "function group and continue with the next group after each result.")
+         "function group and continue with the next group after each result. Never call freeze_baseline in this step.")
 LL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
     "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
@@ -181,8 +183,8 @@ def author_prompt(phase: str) -> str:
     n = phase[-1]
     fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
     body = [x.format(**fills) if "{s" in x else x for x in AUTHOR_STEPS[phase]]
-    steps = [f"Call use_skill with skill_name swe{n}-author.", READ, "read_file .forge-run/manifest.json.",
-             FIX.format(p=phase)] + body + [REPLY]
+    manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
+    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + body + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
