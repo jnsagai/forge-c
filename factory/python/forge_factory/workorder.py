@@ -175,6 +175,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         {"default": model, "provider": provider, "code_nodes": code_model,
          "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
          "local_only": provider == "ollama",
+         "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
+         if provider == "ollama" else "per agent registry max_stage_tokens",
          "note": "local Ollama via gateway" if provider == "ollama" else
          "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048"}))
     roles = sorted({n["role"] for n in nodes.values()})

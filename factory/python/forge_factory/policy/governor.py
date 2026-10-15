@@ -60,6 +60,11 @@ def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str) -> tu
 def check_run(run_id: str, nodes: dict, workspace: Path | None = None, client=None, cancel: bool = True) -> dict:
     from ..fabro.client import FabroClient, load_token
 
+    if workspace is not None and (workspace / ".forge-run" / "model-profile.json").is_file():
+        prof = json.loads((workspace / ".forge-run" / "model-profile.json").read_text())
+        if str(prof.get("token_budget", "")).startswith("unlimited"):  # owner decision for local runs
+            return {"run_id": run_id, "status": "TOKEN_BUDGET_DISABLED", "reason": prof["token_budget"],
+                    "checked_at": utc_now()}
     c = client or FabroClient(token=load_token(), timeout=10)
     budgets = {a.id: a.max_stage_tokens for a in load_agents()[0]}
     try:

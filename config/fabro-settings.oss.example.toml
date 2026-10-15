@@ -10,12 +10,12 @@ default_model = "qwen3:8b"
 [llm.providers.ollama.models."qwen3:8b"]
 display_name = "Qwen3 8B Local (open model)"
 api_model = "qwen3:8b"
-limits = { context_tokens = 32768, max_output_tokens = 4096 }
+limits = { context_tokens = 32768, max_output_tokens = 16384 }  # owner decision 2026-10-15: no token limits for local qwen
 capabilities = { text = true, tools = true }
 
 # Trial profile (user-approved 2026-10-15): MoE coder model for SWE.3/SWE.4 code nodes only; default stays qwen3:8b.
 [llm.providers.ollama.models."qwen3-coder:30b"]
 display_name = "Qwen3-Coder 30B-A3B (local MoE, Apache-2.0)"
 api_model = "qwen3-coder:30b"
-limits = { context_tokens = 32768, max_output_tokens = 8192 }
+limits = { context_tokens = 32768, max_output_tokens = 16384 }  # owner decision 2026-10-15
 capabilities = { text = true, tools = true }

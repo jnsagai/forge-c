@@ -72,6 +72,10 @@ def test_t042_token_exhaustion_cancels_and_blocks_never_false_pass(env, tmp_path
     assert "TOKEN_BUDGET_EXHAUSTED" in (ws / ".forge-run/gates/gate-log.jsonl").read_text()
     ok = G.check_run("RUN-Y", {"swe1_author": {"role": "swe1-author"}}, ws, FakeFabro([("swe1_author", 10, 1)]))
     assert ok["status"] == "WITHIN_BUDGET"
+    # owner decision 2026-10-15: local qwen runs carry token_budget=unlimited -> governor never cancels them
+    (ws / ".forge-run/model-profile.json").write_text(json.dumps({"token_budget": "unlimited (owner decision)"}))
+    off = G.check_run("RUN-Z", {"swe3_author": {"role": "swe3-author"}}, ws, FakeFabro([("swe3_author", 10**7, 1)]))
+    assert off["status"] == "TOKEN_BUDGET_DISABLED"
 
 
 # ---------------- T043 ------------------------------------------------------------------------------------
