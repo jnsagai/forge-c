@@ -94,7 +94,7 @@ def _hook(binding_file, ctx_bytes, env):
 def test_hook_process_fail_closed_and_audited(ws, tmp_path):
     bfile = tmp_path / "binding.json"
     Binding("b2", str(ws), {"insp3": {"role": "swe3-inspector", "phase": "SWE.3"}}).dump(bfile)
-    env = {**os.environ, "FORGE_EVENTS_DIR": str(tmp_path / "ev")}
+    env = {**os.environ, "FORGE_EVENTS_DIR": str(tmp_path / "ev"), "FORGE_STATE_DIR": str(tmp_path / "state")}
     ok = _hook(bfile, json.dumps({"event": "pre_tool_use", "node_id": "insp3", "tool_name": "read_file",
                                   "tool_input": {"file_path": "workproducts/SWE.3/detailed_design.md"},
                                   "run_id": "R1"}).encode(), env)

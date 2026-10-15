@@ -21,3 +21,11 @@ that role's granted MCP tools plus the safe native tools. This is an *offering* 
 a security control: authorization stays in the fail-closed `pre_tool_use` hook (T007), which every call
 passes through regardless of what was offered. Infrastructure probes that must offer denied tools to prove
 the hook denies them (the T004 probe) therefore name the skill without the `skill_name <id>` phrase.
+## Addendum (2026-10-15) — bounded retry of dropped upstream answers
+With no-think Qwen3, Ollama 0.34 sometimes returns **neither content nor a tool call** although the model
+generated output (ADR-0005 #13). This happened in about 2% of factory calls and about 4.5% of calls with more than 100
+output tokens. Each one silently ended an agent node. The gateway re-sends the **identical client request** at most
+`FORGE_GATEWAY_DROP_RETRIES` (default 2) times, and only for such empty answers (`completion_tokens > 32`, no
+content, no tool calls). Streams are buffered to make this possible. The gateway never alters prompts and never
+starts a model call on its own initiative. Every attempt is metered (`attempt`, `dropped_output`), so token KPIs
+include the cost of retries.

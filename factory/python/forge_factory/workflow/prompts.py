@@ -37,7 +37,9 @@ AUTHOR_STEPS = {
         "Read workproducts/SWE.1/software_requirements.md and these RM0486 section files: {s1}.",
         "write_file workproducts/SWE.2/software_architecture.md with sections: Components (LL header-only stm32n6xx_ll_rcc.h, "
         "HAL stm32n6xx_hal_rcc.c/.h), Register access (extern volatile uint32_t register-block array placed at the RCC "
-        "base by the linker, indexed by offset/4; no integer-to-pointer casts; host tests define the array), Interfaces (each HAL_RCC_ API with hal_status_t and parameters), Timeouts and error handling, Memory and "
+        "base by the linker, indexed by offset/4; no integer-to-pointer casts; host tests define the array), Interfaces (each HAL_RCC_ API with hal_status_t, named exactly HAL_RCC_<Name>_Enable, HAL_RCC_<Name>_Disable, "
+        "HAL_RCC_<Name>_Reset or HAL_RCC_<Name>_ReleaseReset where <Name> is HSI, HSE, MSI, LSI, LSE, PLL1..PLL4 or the "
+        "peripheral, e.g. HAL_RCC_HSI_Enable), Timeouts and error handling, Memory and "
         "stack budget (flash<=4096 B, RAM<=64 B, stack<=128 B), Requirement allocation table (SWR -> function), and a "
         "Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 page. RCC base "
         "address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
@@ -114,8 +116,8 @@ HAL_STEPS = [
     "hal_status_t;', '#define HAL_RCC_TIMEOUT_VALUE 1000U', the line '{hmarker}', '#endif /* STM32N6XX_HAL_RCC_H */' and "
     "a final newline.",
     "Insert the API prototypes with edit_file on that header: old_string exactly '{hmarker}', new_string = at most 8 "
-    "prototypes 'hal_status_t HAL_RCC_<Name>_Enable(void);' etc., a blank line, then the marker again; repeat until "
-    "every interface of the architecture is declared.",
+    "prototypes 'hal_status_t <name>(void);' using EXACTLY the HAL_RCC_ names of the SWE.2 Requirement allocation "
+    "table (never rename them), a blank line, then the marker again; repeat until every allocated function is declared.",
     "write_file software/hal/stm32n6xx_hal_rcc.c with exactly: '#include \"stm32n6xx_hal_rcc.h\"', a blank line, the line "
     "'{marker}' and a final newline.",
     "For EACH API group make ONE edit_file call on software/hal/stm32n6xx_hal_rcc.c with old_string exactly '{marker}' "

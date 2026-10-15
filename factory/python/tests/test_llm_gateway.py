@@ -60,6 +60,42 @@ def test_dropped_output_flagged_without_logging_content(tmp_path):
     assert a["dropped_output"] is True and b["dropped_output"] is False and "content" not in a
 
 
+def test_dropped_upstream_answer_retried_bounded_and_metered(tmp_path):
+    calls = {"n": 0}
+
+    def flaky(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        body = json.loads(request.content)
+        empty = calls["n"] == 1
+        if body.get("stream"):
+            delta = {} if empty else {"tool_calls": [{"index": 0, "function": {"name": "write_file", "arguments": "{}"}}]}
+            text = "data: " + json.dumps({"choices": [{"delta": delta, "finish_reason": "stop"}],
+                                          "usage": {"prompt_tokens": 9, "completion_tokens": 400}}) + "\n\ndata: [DONE]\n\n"
+            return httpx.Response(200, text=text, headers={"content-type": "text/event-stream"})
+        msg = {"role": "assistant", "content": ""} if empty else {"role": "assistant", "content": "ok"}
+        return httpx.Response(200, json={"choices": [{"message": msg, "finish_reason": "stop"}],
+                                         "usage": {"prompt_tokens": 9, "completion_tokens": 400}})
+
+    for stream in (False, True):
+        calls["n"] = 0
+        meter = tmp_path / f"u{stream}.jsonl"
+        c = TestClient(gw.create_app("http://up", meter, transport=httpx.MockTransport(flaky)))
+        r = c.post("/v1/chat/completions", json={"model": "qwen3:8b", "stream": stream, "messages": []})
+        assert r.status_code == 200 and calls["n"] == 2 and ("write_file" in r.text or "ok" in r.text)
+        recs = [json.loads(x) for x in meter.read_text().splitlines()]
+        assert [x["attempt"] for x in recs] == [0, 1] and [x["dropped_output"] for x in recs] == [True, False]
+
+    def always_empty(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(200, json={"choices": [{"message": {"content": ""}, "finish_reason": "stop"}],
+                                         "usage": {"prompt_tokens": 9, "completion_tokens": 400}})
+
+    calls["n"] = 0
+    c = TestClient(gw.create_app("http://up", tmp_path / "e.jsonl", transport=httpx.MockTransport(always_empty)))
+    assert c.post("/v1/chat/completions", json={"model": "m", "messages": []}).status_code == 200
+    assert calls["n"] == 1 + gw.DROP_RETRIES  # bounded
+
+
 def test_unknown_usage_labelled_unknown(tmp_path):
     m = gw.Meter(tmp_path / "u.jsonl")
     m.record("m", None, False, 1.0)

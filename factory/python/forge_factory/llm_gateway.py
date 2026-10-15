@@ -5,7 +5,9 @@ thinks by default. FR-025 forbids requesting or storing hidden reasoning. This g
 
 * forces `reasoning_effort="none"` (Ollama => think=false) on every chat request;
 * strips any `reasoning`/`reasoning_content`/`thinking` fields from responses and stream deltas;
-* appends reported token usage (never estimated here) to a JSONL meter for T041.
+* appends reported token usage (never estimated here) to a JSONL meter for T041;
+* re-sends the identical request (bounded, FORGE_GATEWAY_DROP_RETRIES) when the upstream returned an empty
+  answer for generated output (dropped tool call, ADR-0003 addendum); every attempt is metered.
 
 It never calls a model on its own and holds no credentials. Bind loopback only.
 """
@@ -102,6 +104,16 @@ def strip_reasoning(obj: Any) -> tuple[Any, bool]:
     return obj, False
 
 
+# Ollama 0.34 + qwen3 (no-think) sometimes returns neither content nor a tool call for a generated tool call
+# (ADR-0005 #13). The identical client request is re-sent at most DROP_RETRIES times; every attempt is metered.
+DROP_RETRIES = int(os.environ.get("FORGE_GATEWAY_DROP_RETRIES", "2"))
+
+
+def dropped(usage: dict | None, shape: dict) -> bool:
+    out = int((usage or {}).get("completion_tokens") or 0)
+    return out > 32 and shape["content_chars"] == 0 and shape["tool_calls"] == 0
+
+
 class Meter:
     def __init__(self, path: Path):
         self.path = path
@@ -115,10 +127,9 @@ class Meter:
                "basis": "reported" if usage else "unknown",
                "reasoning_stripped": stripped, "latency_ms": round(latency_ms, 1)}
         if shape is not None:  # response shape only (never content): exposes upstream-dropped tool calls (ADR-0005)
-            out = int((usage or {}).get("completion_tokens") or 0)
             rec.update({"content_chars": shape["content_chars"], "tool_calls": shape["tool_calls"],
-                        "finish_reason": shape.get("finish_reason"),
-                        "dropped_output": out > 32 and shape["content_chars"] == 0 and shape["tool_calls"] == 0})
+                        "finish_reason": shape.get("finish_reason"), "attempt": shape.get("attempt", 0),
+                        "dropped_output": dropped(usage, shape)})
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
 
@@ -148,22 +159,22 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         except ValueError:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
         body = sanitize_request(body)
-        started = time.monotonic()
         if body.get("stream"):
             body.setdefault("stream_options", {"include_usage": True})
-            req = client.build_request("POST", "/v1/chat/completions", json=body)
-            upstream_resp = await client.send(req, stream=True)
 
-            async def gen():
+            async def attempt() -> tuple[int, list[str], dict | None, bool, dict]:
+                upstream_resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body),
+                                                  stream=True)
+                lines: list[str] = []
                 usage, stripped = None, False
-                shape = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
+                shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
                 try:
                     async for line in upstream_resp.aiter_lines():
                         if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
                             try:
                                 chunk = json.loads(line[6:])
                             except ValueError:
-                                yield line + "\n"
+                                lines.append(line + "\n")
                                 continue
                             chunk, r = strip_reasoning(chunk)
                             stripped |= r
@@ -173,29 +184,43 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                                 shape["content_chars"] += len(delta.get("content") or "")
                                 shape["tool_calls"] += len(delta.get("tool_calls") or [])
                                 shape["finish_reason"] = ch.get("finish_reason") or shape["finish_reason"]
-                            yield "data: " + json.dumps(chunk, separators=(",", ":")) + "\n"
+                            lines.append("data: " + json.dumps(chunk, separators=(",", ":")) + "\n")
                         else:
-                            yield line + "\n"
+                            lines.append(line + "\n")
                 finally:
                     await upstream_resp.aclose()
-                    meter.record(body.get("model"), usage, stripped, (time.monotonic() - started) * 1000, shape)
+                return upstream_resp.status_code, lines, usage, stripped, shape
 
-            return StreamingResponse(gen(), status_code=upstream_resp.status_code,
-                                     media_type="text/event-stream")
-        r = await client.post("/v1/chat/completions", json=body)
-        try:
-            data = r.json()
-        except ValueError:
-            return Response(r.content, status_code=r.status_code)
-        data, stripped = strip_reasoning(data)
-        shape = None
-        if isinstance(data, dict) and data.get("choices"):
-            ch = data["choices"][0]
-            msg = ch.get("message") or {}
-            shape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
-                     "finish_reason": ch.get("finish_reason")}
-        meter.record(body.get("model"), data.get("usage") if isinstance(data, dict) else None, stripped,
-                     (time.monotonic() - started) * 1000, shape)
+            for n in range(DROP_RETRIES + 1):  # buffered so an empty (dropped) upstream answer can be retried
+                t0 = time.monotonic()
+                status, lines, usage, stripped, shape = await attempt()
+                meter.record(body.get("model"), usage, stripped, (time.monotonic() - t0) * 1000, {**shape, "attempt": n})
+                if status != 200 or not dropped(usage, shape):
+                    break
+
+            async def gen():
+                for line in lines:
+                    yield line
+
+            return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
+        for n in range(DROP_RETRIES + 1):
+            t0 = time.monotonic()
+            r = await client.post("/v1/chat/completions", json=body)
+            try:
+                data = r.json()
+            except ValueError:
+                return Response(r.content, status_code=r.status_code)
+            data, stripped = strip_reasoning(data)
+            nshape: dict[str, Any] | None = None
+            if isinstance(data, dict) and data.get("choices"):
+                ch = data["choices"][0]
+                msg = ch.get("message") or {}
+                nshape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
+                         "finish_reason": ch.get("finish_reason"), "attempt": n}
+            usage = data.get("usage") if isinstance(data, dict) else None
+            meter.record(body.get("model"), usage, stripped, (time.monotonic() - t0) * 1000, nshape)
+            if r.status_code != 200 or nshape is None or not dropped(usage, nshape):
+                break
         return JSONResponse(data, status_code=r.status_code)
 
     return app
