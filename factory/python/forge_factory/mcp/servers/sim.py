@@ -64,8 +64,12 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
                                      "software/tests/software") if (ws / d).is_dir()]
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
                   str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
-    errs = [ln.split(str(ws) + "/")[-1][:140] for ln in b.stderr.decode(errors="replace").splitlines()
-            if ": error:" in ln][:8]
+    lines = b.stderr.decode(errors="replace").splitlines()
+    # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
+    errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines
+            if ("undefined reference" in ln or ": error:" in ln) and "collect2" not in ln][:8]
+    if not errs:
+        errs = [ln[:140] for ln in lines if "error" in ln][:4]
     return b.exit_code == 0, b.stdout + b.stderr, errs
 
 

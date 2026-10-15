@@ -146,6 +146,9 @@ class RobotIn(ToolInput):
 def _compact_build_error(err: str) -> str:
     """'x.c:15:53: error: 'A' undeclared (first use ...); did you mean 'A_MSK'?' -> "15: 'A' undeclared; did you
     mean 'A_MSK'" so the fix fits in one capped issue line."""
+    u = re.search(r"undefined reference to [`'](\w+)'", err)
+    if u:  # link error: name the missing symbol (r68)
+        return f"link: undefined reference to '{u.group(1)}' (not provided by the driver or forge_target_test.h)"
     m = re.search(r":(\d+):\d+: error: (.*)", err)
     if not m:
         return " ".join(err.split())[:100]
@@ -231,7 +234,12 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
             src = f.read_text(errors="replace") if f.is_file() else ""
             m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
             if m:
-                exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + " ".join(m.group(2).split())[:90])
+                expr = " ".join(m.group(2).split())
+                v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)  # r68: 'st == HAL_ERROR' - show what set st
+                setter = [x for x in re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", src[:m.start()])] if v else []
+                if setter:
+                    expr = f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}"
+                exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + expr[:100])
     # most fundamental first (the result is capped): build errors, failed checks with their expressions, then
     # requirements the passing checks never observe, then the per-test/coverage lines
     build_issues = [f"BUILD_FAIL:{k}:{v}" for k, v in sorted(builds.items())]

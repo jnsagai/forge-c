@@ -250,3 +250,17 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
     scenarios that do not build), then per-test and coverage lines.
   - The suite header and the test-author prompt state the LL mask naming convention.
   - Test: `test_build_failures_come_first_once_per_scenario_with_compiler_hint_r67` (real Renode run).
+
+## Seventh live run (r68)
+- **The new ordering reached the authors.** Build errors and failed checks with their expressions came first.
+- **Two gaps were still uninformative:**
+  - Link failures showed only `collect2: error: ld returned 1 exit status`.
+  - `CHECK_EXPR` showed `st == HAL_ERROR` without the call that set `st`.
+- **The run BLOCKED without a defect report.** The authors kept fixing an `scn_osc_enable.c` link error and an
+  SWR-013 check that expected HAL_TIMEOUT in the default (ready) scenario.
+- **Remedies:**
+  - The scenario build keeps `undefined reference` lines and is compacted to `link: undefined reference to
+    '<sym>'`.
+  - `CHECK_EXPR` appends the last assignment of the checked variable: `st == HAL_ERROR with st =
+    HAL_RCC_HSI_Enable(0U)`.
+  - Test: `test_check_expr_shows_the_call_that_set_the_checked_variable_r68`.

@@ -176,3 +176,13 @@ def test_build_failures_come_first_once_per_scenario_with_compiler_hint_r67(tmp_
     assert first.startswith("BUILD_FAIL:scn_hsi.c:") and "LL_RCC_CR_HSION" in first, out["issues"]
     assert sum(1 for i in out["issues"] if i.startswith("BUILD_FAIL:")) == 1  # one line per scenario
     assert not any(i.startswith(("REQUIREMENT_NOT_OBSERVED", "HOW_TO_OBSERVE")) for i in out["issues"])
+
+
+def test_check_expr_shows_the_call_that_set_the_checked_variable_r68(tmp_path, monkeypatch):
+    scn = ("#include \"stm32n6xx_hal_rcc.h\"\n#include \"forge_target_test.h\"\nFORGE_MAILBOX_DEFINE;\nint main(void)\n{\n"
+           "    int st;\n    FORGE_TEST_BEGIN();\n    st = HAL_RCC_HSI_Enable(1000U);\n    TCHECK(1, st == HAL_TIMEOUT);\n"
+           "    FORGE_TEST_END();\n    return 0;\n}\n")
+    suite = SUITE[:SUITE.index("SWR-002")].replace("    Target Check Should Pass    2\n", "")
+    out = run(tmp_path, monkeypatch, {"software/tests/software/scn_hsi.c": scn,
+                                      "software/tests/software/test_rcc_requirements.robot": suite})
+    assert "CHECK_EXPR:scn_hsi.c#1:st == HAL_TIMEOUT with st = HAL_RCC_HSI_Enable(1000U)" in out["issues"], out["issues"]
