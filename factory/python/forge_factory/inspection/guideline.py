@@ -26,6 +26,9 @@ def load_rules(path: Path = RULES_FILE) -> dict:
     return data
 
 
+C_STATEMENT_KEYWORDS = {"return", "else", "case", "goto", "do", "sizeof", "typedef", "break", "continue", "default"}
+
+
 def strip_c(src: str) -> str:
     """Remove comments and string/char literals, preserving line structure."""
     out, i, n = [], 0, len(src)
@@ -156,6 +159,8 @@ class Checker:
                              r"[A-Za-z_][A-Za-z0-9_]*(?:\s*\*+\s*|\s+))([A-Za-z_][A-Za-z0-9_]*)\s*\(([^;{)]*)\)\s*[;{]",
                              s, re.M):
             if m.group(2) in ("if", "while", "for", "switch", "return", "sizeof"):
+                continue
+            if m.group(1).split()[-1].strip("*") in C_STATEMENT_KEYWORDS:  # r26: 'return f(x);' is a call, not a decl
                 continue
             out.append((m.group(1), m.group(2), m.group(3), m.start()))
         return out

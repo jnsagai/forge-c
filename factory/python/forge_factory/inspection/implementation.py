@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 
 from .architecture import ARCH, _rows, _sections
-from .guideline import strip_c
+from .guideline import C_STATEMENT_KEYWORDS, strip_c
 
 HAL_H = "software/hal/stm32n6xx_hal_rcc.h"
 HAL_C = "software/hal/stm32n6xx_hal_rcc.c"
@@ -42,14 +42,16 @@ def allocated_functions(ws: Path) -> list[str]:
 def _defs(code: str) -> dict[str, str]:
     """name -> qualifiers for function definitions (signature followed by a body)."""
     out = {}
-    for m in re.finditer(r"^[ \t]*((?:static\s+|inline\s+|__STATIC_INLINE\s+|const\s+)*)[A-Za-z_]\w*[\s*]+"
-                         r"([A-Za-z_]\w*)\s*\([^;{)]*\)\s*\{", code, re.M):
-        out[m.group(2)] = m.group(1)
+    for m in re.finditer(r"^[ \t]*((?:static\s+|inline\s+|__STATIC_INLINE\s+|const\s+)*)([A-Za-z_]\w*)[\s*]+"
+                         r"([A-Za-z_]\w*)\s*\([^;{]*?\)\s*\{", code, re.M):
+        if m.group(2) not in C_STATEMENT_KEYWORDS:
+            out[m.group(3)] = m.group(1)
     return out
 
 
 def _protos(code: str) -> set[str]:
-    return set(re.findall(r"^[ \t]*(?:extern\s+)?[A-Za-z_]\w*[\s*]+([A-Za-z_]\w*)\s*\([^;{)]*\)\s*;", code, re.M))
+    return {m.group(2) for m in re.finditer(r"^[ \t]*(?:extern\s+)?([A-Za-z_]\w*)[\s*]+([A-Za-z_]\w*)\s*\([^;{]*?\)\s*;",
+                                           code, re.M) if m.group(1) not in C_STATEMENT_KEYWORDS}
 
 
 def commented_out_code(raw: str) -> list[int]:

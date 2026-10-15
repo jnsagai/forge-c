@@ -159,7 +159,8 @@ UT_STEPS = [
     "For EACH HAL_RCC_ function (or Enable/Disable pair) make ONE edit_file call on software/tests/unit/test_rcc.c "
     "with old_string exactly '{cases}' and new_string = ONE complete static void test function with its body, a "
     "blank line, then the marker again. Never add prototypes or #define lines. Follow this example exactly (adapt "
-    "names, registers and UT ids): ```{example}``` Wait-for-ready functions get a ready case and a timeout case; "
+    "names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / _MSK defines that exist in "
+    "software/ll/stm32n6xx_ll_rcc.h - never registers from other STM32 families such as BDCR): ```{example}``` Wait-for-ready functions get a ready case and a timeout case; "
     "peripheral enable/reset functions check the bit in RCC_AHB1ENR / RCC_AHB1RSTR.",
     "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one call line per test function "
     "(e.g. 'ut_hsi_enable();') followed by the marker again.",

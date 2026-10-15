@@ -58,3 +58,20 @@ def test_swe4_scaffold_is_idempotent_and_has_no_test_logic(tmp_path):
     assert TEST_CASES_MARKER in text and "CHECK(\"UT-" not in text  # harness only; UT cases are agent-authored
     (tmp_path / UNIT_TEST).write_text(text.replace(TEST_CASES_MARKER, "static void ut_x(void) {}\n" + TEST_CASES_MARKER))
     assert scaffold(tmp_path)["created"] is False and "ut_x" in (tmp_path / UNIT_TEST).read_text()
+
+
+def test_r26_function_pointer_helper_and_return_calls_are_not_declarations(tmp_path):
+    from forge_factory.inspection.guideline import check_workspace
+
+    helper = ("#include \"stm32n6xx_hal_rcc.h\"\n"
+              "static hal_status_t hal_rcc_wait_ready(uint32_t timeout, uint32_t (*is_ready)(void))\n{\n"
+              "    uint32_t count = 0U;\n    while ((is_ready() == 0U) && (count < timeout))\n    {\n        count++;\n"
+              "    }\n    return (is_ready() != 0U) ? HAL_OK : HAL_TIMEOUT;\n}\n"
+              "hal_status_t HAL_RCC_HSI_Enable(void)\n{\n    LL_RCC_HSI_Enable();\n"
+              "    return hal_rcc_wait_ready(1000U, LL_RCC_HSI_IsReady);\n}\n"
+              "hal_status_t HAL_RCC_HSI_Disable(void)\n{\n    LL_RCC_HSI_Disable();\n    return HAL_OK;\n}\n")
+    w = ws(tmp_path, src=helper)
+    rep = check_implementation(w)
+    assert rep["verdict"] == "PASS", rep["major_findings"]
+    g = check_workspace(w)
+    assert not [v for v in g["violations"] if v["rule"] in ("GL-API-01", "GL-ARG-01")], g["violations"][:5]
