@@ -72,7 +72,7 @@ def finalize_cmd(work_order: str) -> str:
 
 
 CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author",
-              "swe5_target_author")
+              "swe5_target_author", "swe6_test_author")
 MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
 
 
@@ -152,6 +152,13 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             nodes[entry] = {"role": "swe5-author", "phase": phase}
             L += [f'  {entry} [label="SWE.5 target-test author (Renode)", max_visits=1, timeout="1500s", '
                   f'prompt="{_q(target_test_author_prompt())}"]', f"  {entry} -> {a}"]
+        if phase == "SWE.6":  # r56: Robot requirement tests in their own budget; rework re-enters at the SWE.6 author
+            from .prompts import robot_test_author_prompt
+
+            entry = "swe6_test_author"
+            nodes[entry] = {"role": "swe6-author", "phase": phase}
+            L += [f'  {entry} [label="SWE.6 Robot test author (Renode)", max_visits=1, timeout="1500s", '
+                  f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {a}"]
         L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":
