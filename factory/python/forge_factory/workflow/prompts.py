@@ -230,20 +230,23 @@ TARGET_STEPS = [
 
 
 ROBOT_STEPS = [
-    "read_file workproducts/SWE.1/software_requirements.md (every SWR id) and software/hal/stm32n6xx_hal_rcc.h (the HAL "
-    "API and its exact signatures). " + PROVIDED,
-    "Requirement-based tests with Robot Framework on the Renode STM32N6 model: write small C scenario files "
-        "software/tests/software/scn_<topic>.c (same form as the target tests: '#include \"stm32n6xx_hal_rcc.h\"', "
-        "'#include \"forge_target_test.h\"', 'FORGE_MAILBOX_DEFINE;', main with FORGE_TEST_BEGIN(); TCHECK(<n>, <cond>); "
-        "FORGE_TEST_END();) and ONE suite software/tests/software/test_rcc_requirements.robot: '*** Settings ***' with "
-        "'Library    ForgeTarget', then '*** Test Cases ***' with one test case per SWR, '[Tags]    SWR-0nn' and keywords "
-        "'Run Target Scenario    scn_<topic>.c' (add '    scenario=never_ready' for timeout behaviour), 'Target Check "
-        "Should Pass    <n>', 'All Target Checks Should Pass', 'Driver Flash Size Should Be At Most    <bytes>', 'Driver "
-        "Static RAM Should Be At Most    <bytes>'. Separate keyword and arguments with 4 spaces. Every SWR id must be the "
-        "tag of at least one test.",
-    "The suite may use ONLY 'Library    ForgeTarget', its five keywords above, keywords you define in the same file and "
-    "Log/Should Be Equal: run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, "
-    "Evaluate, Run Keyword and inline Python expressions. Never write shell scripts.",
+    "read_file software/tests/software/test_rcc_requirements.robot (GENERATED: one test case per SWR with its tags and "
+    "the allowed keywords in its header; every body is a 'Fail    NOT IMPLEMENTED' placeholder), "
+    "workproducts/SWE.1/software_requirements.md and software/hal/stm32n6xx_hal_rcc.h (exact HAL signatures). "
+    + PROVIDED + " Read nothing else: no other sources, tests, reports or tools are needed in this step.",
+    "Write the C scenario files software/tests/software/scn_<topic>.c (group requirements by topic, several checks per "
+    "file) in the same form as the target tests: '#include \"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', "
+    "'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); TCHECK(<n>, <condition>); ... FORGE_TEST_END(); "
+    "return 0; }' with conditions on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, "
+    "no stdlib, no ll_rcc_regs definition.",
+    "Rewrite software/tests/software/test_rcc_requirements.robot with ONE write_file: keep the header comment, "
+    "'*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each "
+    "'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_<topic>.c' then 'Target Check Should "
+    "Pass    <n>' (add '    scenario=never_ready' for timeout behaviour; use 'Driver Flash Size Should Be At Most' / "
+    "'Driver Static RAM Should Be At Most' for size requirements). Separate keyword and arguments with 4 spaces. "
+    "The suite may use ONLY ForgeTarget keywords, keywords you define in the same file and Log/Should Be Equal: "
+    "run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, Evaluate, Run "
+    "Keyword and inline Python expressions. Never write shell scripts.",
     "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors or UNCOVERED_REQUIREMENT issues and repeat "
     "until it PASSes.",
     "Reply with the run_robot summary.",

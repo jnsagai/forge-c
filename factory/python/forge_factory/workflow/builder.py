@@ -63,6 +63,10 @@ def scaffold_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.workflow.scaffold --workspace ."
 
 
+def robot_scaffold_cmd() -> str:
+    return f"{_env()} {sys.executable} -m forge_factory.workflow.robot_scaffold --workspace ."
+
+
 def regmap_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
 
@@ -155,10 +159,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
         if phase == "SWE.6":  # r56: Robot requirement tests in their own budget; rework re-enters at the SWE.6 author
             from .prompts import robot_test_author_prompt
 
-            entry = "swe6_test_author"
-            nodes[entry] = {"role": "swe6-author", "phase": phase}
-            L += [f'  {entry} [label="SWE.6 Robot test author (Renode)", max_visits=1, timeout="1500s", '
-                  f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {a}"]
+            entry, ta = "swe6_scaffold", "swe6_test_author"  # r59: suite skeleton generated from the SWE.1 baseline
+            nodes[ta] = {"role": "swe6-author", "phase": phase}
+            L += [f'  {entry} [shape=parallelogram, label="SWE.6 Robot suite generator (deterministic)", '
+                  f'script="{_q(robot_scaffold_cmd())}"]',
+                  f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits=1, timeout="1500s", '
+                  f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
         L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":

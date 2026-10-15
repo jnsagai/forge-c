@@ -106,3 +106,25 @@ def test_run_robot_refuses_policy_violation_before_running(tmp_path, monkeypatch
                                       f"    [Tags]    SWR-001\n    Create File    {marker}    x\n"})
     assert out["status"] == "FAIL" and any("LIBRARY_NOT_ALLOWED:OperatingSystem" in i for i in out["issues"])
     assert not marker.exists() and not (tmp_path / "build/robot").exists()
+
+
+def test_robot_scaffold_one_tagged_placeholder_per_requirement_never_passes(tmp_path, monkeypatch):
+    """r59: suite skeleton generated from SWE.1; placeholders fail, so only authored target checks can pass."""
+    from forge_factory.mcp.servers.robot_policy import check_suite
+    from forge_factory.workflow.robot_scaffold import SUITE as SUITE_PATH
+    from forge_factory.workflow.robot_scaffold import scaffold
+
+    (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
+        REQS + "- **SWR-004** If ${x} & @{y} appear, then the RCC driver shall not break the suite.\n")
+    out = scaffold(tmp_path)
+    assert out["created"] and out["test_cases"] == 4
+    suite = (tmp_path / SUITE_PATH).read_text()
+    assert check_suite(tmp_path / SUITE_PATH) == [] and "${" not in suite and "@{" not in suite
+    for i in range(1, 5):
+        assert f"[Tags]    SWR-00{i}" in suite
+    (tmp_path / SUITE_PATH).write_text(suite + "# authored\n")
+    assert scaffold(tmp_path)["created"] is False and "# authored" in (tmp_path / SUITE_PATH).read_text()
+    (tmp_path / SUITE_PATH).write_text(suite)
+    r = run(tmp_path, monkeypatch, {})
+    assert r["status"] == "FAIL" and r["metrics"]["passed"] == 0 and r["metrics"]["tests"] == 4, r
