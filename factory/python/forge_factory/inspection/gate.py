@@ -92,6 +92,9 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
     return 0 if g["decision"] == "PASS" else fail_code(store.workspace, phase, "inspect")
 
 
+FABRO_SAFE_CYCLES = 2
+
+
 def author_rejections(ws: Path, phase: str) -> int:
     log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
     if not log.is_file():
@@ -104,7 +107,10 @@ def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
     cycles = g["failed_inspections"] + author_rejections(store.workspace, phase)
-    if g["decision"] != "PASS" and cycles >= g["max_rework_cycles"]:
+    # Fabro 0.362 terminates a run at the 3rd identical deterministic failure signature (numbers normalised), which
+    # would bypass the in-graph finalizer; block at 2 failed cycles (within the authored maximum of 3, ADR-0005).
+    budget = min(int(g["max_rework_cycles"]), FABRO_SAFE_CYCLES)
+    if g["decision"] != "PASS" and cycles >= budget:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)"}
     _state(store.workspace, phase, {"step": "route", "gate": g})
     if g["decision"] == "BLOCKED":

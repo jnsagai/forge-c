@@ -109,6 +109,7 @@ def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
 
 
 def test_route_counts_author_rejections_in_rework_budget(tmp_path):
-    for _ in range(3):
-        assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0  # 1 failed cycle: rework allowed
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
     assert gate(tmp_path, "SWE.3", "route").returncode == 1  # BLOCKED -> finalizer (not an endless rework loop)
