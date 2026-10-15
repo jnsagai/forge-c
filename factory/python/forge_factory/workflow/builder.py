@@ -27,10 +27,23 @@ def _q(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def gate_cmd(phase: str, step: str, check: str = "") -> str:
+def _env() -> str:
+    """Fabro command nodes do not inherit the Forge-C environment: pass code and data locations explicitly
+    (r47: the SWE.2 gate could not find the pinned PlantUML jar)."""
+    import os
+    import shlex
+
+    from ..common import state_dir
+
     pp = REPO_ROOT / "factory" / "python"
+    sd = state_dir()
+    root = os.environ.get("FORGE_DATA_ROOT") or str(sd.parent)
+    return f"PYTHONPATH={pp} FORGE_STATE_DIR={shlex.quote(str(sd))} FORGE_DATA_ROOT={shlex.quote(root)}"
+
+
+def gate_cmd(phase: str, step: str, check: str = "") -> str:
     extra = f" --check {check}" if check else ""
-    return (f"PYTHONPATH={pp} {sys.executable} -m forge_factory.inspection.gate --workspace . "
+    return (f"{_env()} {sys.executable} -m forge_factory.inspection.gate --workspace . "
             f"--phase {phase} --step {step}{extra}")
 
 
@@ -47,18 +60,15 @@ def inspector_prompt(n: int) -> str:
 
 
 def scaffold_cmd() -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.workflow.scaffold --workspace ."
+    return f"{_env()} {sys.executable} -m forge_factory.workflow.scaffold --workspace ."
 
 
 def regmap_cmd() -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
+    return f"{_env()} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
 
 
 def finalize_cmd(work_order: str) -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
+    return f"{_env()} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
 CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author")

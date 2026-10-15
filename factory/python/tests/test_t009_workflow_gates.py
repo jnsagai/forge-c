@@ -45,6 +45,12 @@ def test_code_model_profile_applies_only_to_code_nodes():
     assert build("wo-test")[0].count('model="') == 0
 
 
+def test_command_nodes_carry_data_locations():
+    dot, _ = build("wo-test")
+    cmds = [ln for ln in dot.splitlines() if "script=" in ln]
+    assert cmds and all("FORGE_STATE_DIR=" in c and "FORGE_DATA_ROOT=" in c for c in cmds)  # r47
+
+
 def test_every_node_can_reach_finalize():
     dot, _ = build("wo-test")
     e = edges(dot)
