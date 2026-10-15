@@ -1,6 +1,7 @@
 """T009/T046/T047 — generate the v0.4 unattended SWE.1–SWE.6 Fabro workflow (DOT) + run binding.
 
-Graph per phase n:  swe{n}_author -> swe{n}_author_gate -[ok]-> (SWE.3: swe3_verify ->) swe{n}_inspector
+Graph per phase n:  (SWE.3: swe3_ll_author ->) swe{n}_author -> swe{n}_author_gate -[ok]->
+                    (SWE.3: swe3_verify ->) swe{n}_inspector
                     -> swe{n}_inspect_gate -[ok]-> next phase ... ; any gate failure -> swe{n}_route
                     swe{n}_route -[ok: rework budget left]-> swe{n}_author | -[fail]-> finalize
 After SWE.6: release_manager (agent, read-only) -> finalize (deterministic packager) -> exit.
@@ -78,7 +79,15 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
               f'script="{_q(gate_cmd(phase, "inspect"))}"]',
               f'  {rt} [shape=parallelogram, label="{phase} bounded rework router", '
               f'script="{_q(gate_cmd(phase, "route"))}"]']
-        L.append(f"  {prev} -> {a}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
+        entry = a
+        if phase == "SWE.3":  # LL header in its own fresh context first; rework re-enters at the HAL author
+            from .prompts import ll_author_prompt
+
+            entry = "swe3_ll_author"
+            nodes[entry] = {"role": "swe3-author", "phase": phase}
+            L += [f'  {entry} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
+                  f"  {entry} -> {a}"]
+        L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":
             v = "swe3_verify"

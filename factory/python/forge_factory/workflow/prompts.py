@@ -44,16 +44,19 @@ AUTHOR_STEPS = {
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check markdown.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
-        "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM).",
-        "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, register offsets as "
-        "LL_RCC_..._OFFSET defines, bit masks as LL_RCC_... defines, only static inline functions named LL_RCC_..., no enum, "
-        "types lower case ending _t prefixed ll_.",
-        "write_file software/hal/stm32n6xx_hal_rcc.h: guard STM32N6XX_HAL_RCC_H, typedef enum {HAL_OK=0U,HAL_ERROR=1U,"
-        "HAL_TIMEOUT=2U} hal_status_t, lower-case hal_ types ending _t, API prototypes HAL_RCC_... with const pointers for config.",
-        "write_file software/hal/stm32n6xx_hal_rcc.c: implement the API; every wait loop is while((cond) && (count < timeout)); "
-        "no device RPN #if, no heap, no recursion, local arrays <=128 bytes, parameters lower case.",
+        "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM) "
+        "and read_file software/ll/stm32n6xx_ll_rcc.h (written by the LL step). If the LL header is missing a register or "
+        "bit you need, rewrite it with write_file (same rules: defines and static inline LL_RCC_ functions only).",
+        "write_file software/hal/stm32n6xx_hal_rcc.h: guard STM32N6XX_HAL_RCC_H, #include \"stm32n6xx_ll_rcc.h\", typedef "
+        "enum {HAL_OK=0U,HAL_ERROR=1U,HAL_TIMEOUT=2U} hal_status_t, lower-case hal_ types ending _t, API prototypes "
+        "HAL_RCC_... with const pointers for config.",
+        "write_file software/hal/stm32n6xx_hal_rcc.c: implement the API calling ONLY LL_RCC_ functions and macros that are "
+        "declared in software/ll/stm32n6xx_ll_rcc.h (never invent LL names); every wait loop is while((cond) && (count < "
+        "timeout)); every parameter is used or cast to (void); no device RPN #if, no heap, no recursion, local arrays <=128 "
+        "bytes, parameters lower case.",
         "write_file workproducts/SWE.3/detailed_design.md: per function purpose, registers/bits used with RM page, SWR IDs.",
-        "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang; fix all errors.",
+        "Call mcp__forge_build_mcp__compile with profile target-cm55-gcc, then with profile host-clang. To fix errors, "
+        "rewrite the whole affected file with write_file (do not use edit_file), then compile again.",
         "Call mcp__forge_docs_mcp__validate_artifact with check hal_guideline; fix every violation and repeat until PASS.",
         "Call mcp__forge_analysis_mcp__clang_analyze and mcp__forge_analysis_mcp__cppcheck; fix real defects.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.3."],
@@ -80,6 +83,24 @@ AUTHOR_STEPS = {
         "untested requirements as issues, state that results are host-only (no target verification).",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.6."],
 }
+
+
+LL_STEPS = [
+    "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM).",
+    "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, RCC base as an "
+    "overridable define (#ifndef LL_RCC_BASE / #define LL_RCC_BASE 0x56028000UL / #endif, so host tests can redirect it) "
+    "and #define LL_RCC_REG(off) (*(volatile uint32_t *)(LL_RCC_BASE + (off))), register "
+    "offsets as LL_RCC_..._OFFSET defines, bit masks as LL_RCC_..._Msk defines, and for each oscillator/clock/reset bit "
+    "in the table small static inline functions named LL_RCC_<Name>_Enable, LL_RCC_<Name>_Disable and "
+    "LL_RCC_<Name>_IsReady (returning uint32_t 0U/1U) as applicable; no enum; types lower case ending _t prefixed ll_.",
+    "Reply with the list of LL_RCC_ function names you declared.",
+]
+
+
+def ll_author_prompt() -> str:
+    """SWE.3 step 1 (fresh, small context): the LL header alone; the HAL step then implements against it."""
+    steps = ["Call use_skill with skill_name swe3-author.", READ] + LL_STEPS + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def author_prompt(phase: str) -> str:
