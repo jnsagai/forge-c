@@ -149,7 +149,9 @@ AUTHOR_STEPS = {
         "workproducts/SWE.1/software_requirements.md and use the CHECK_EXPR / REQUIREMENT_NOT_OBSERVED issues (they "
         "show what each failing check tests). For each failing requirement either correct the scenario/suite (and "
         "declare it with report_defect kind TEST) or, if the test is right, call report_defect (CODE or ARCHITECTURE "
-        "with requirement_quote) and then finish immediately with status REWORK - do not write the report.",
+        "with requirement_quote) and then finish immediately with status REWORK - do not write the report. A failing "
+        "check that calls the driver and tests what the requirement names (e.g. 'rc == HAL_ERROR with rc = "
+        "HAL_RCC_...(...)') is right by construction: never change, weaken or remove it - report it as CODE.",
         "When run_robot PASSes: call mcp__forge_evidence_mcp__validate_trace, then read the SWE.4 and SWE.5 reports.",
         "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> Robot test -> pass/fail -> "
         "evidence (build/robot/output.xml, log.html), covering normal, boundary and failure behaviour; '## Fault responses "
@@ -280,9 +282,12 @@ ROBOT_STEPS = [
     "The suite may use ONLY ForgeTarget keywords, keywords you define in the same file and Log/Should Be Equal: "
     "run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, Evaluate, Run "
     "Keyword and inline Python expressions. Never write shell scripts.",
-    "Call mcp__forge_tests_mcp__run_robot; fix failing tests, build errors, UNCOVERED_REQUIREMENT and "
-    "REQUIREMENT_NOT_OBSERVED issues (add exactly the named TCHECK and its 'Target Check Should Pass' line) and "
-    "repeat until it PASSes.",
+    "Call mcp__forge_tests_mcp__run_robot; fix build errors, UNCOVERED_REQUIREMENT and REQUIREMENT_NOT_OBSERVED "
+    "issues (add exactly the named TCHECK and its 'Target Check Should Pass' line) and failing checks your test got "
+    "wrong, and repeat until it PASSes - OR until the only failing checks call the driver and test exactly what the "
+    "requirement names (e.g. CHECK_EXPR 'rc == HAL_ERROR with rc = HAL_RCC_...(...)' for 'shall return HAL_ERROR'). "
+    "Then STOP editing: such a check is the evidence of a driver defect - never change, weaken or remove it; apply "
+    "the defect rule below (report_defect kind CODE).",
     "Reply with the run_robot summary.",
 ]
 

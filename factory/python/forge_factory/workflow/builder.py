@@ -21,9 +21,10 @@ from ..inspection.engine import PHASES
 from ..policy.authz import Binding
 
 UPSTREAM_LOOPS = 2  # ADR-0008: run-wide cross-phase loop budget (= defects.UPSTREAM_LOOP_BUDGET)
-# Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008): every node on a re-entry path
-# carries one extra visit per possible upstream loop.
-MAX_VISITS = 4 + UPSTREAM_LOOPS  # 1 + maximum_rework_cycles (3) + upstream re-entries
+REWORK_CYCLES = 3  # checklist policy maximum_rework_cycles
+# Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008). The rework budget is per epoch
+# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES visits again.
+MAX_VISITS = (1 + REWORK_CYCLES) * (1 + UPSTREAM_LOOPS)
 ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 

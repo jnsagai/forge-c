@@ -88,6 +88,7 @@ REG_FIELD = re.compile(r"\bRCC_([A-Z0-9]+)\.([A-Z][A-Z0-9_]+)\b")
 # r65: authors read "NOT_OBSERVED" as a tooling/mapping problem and searched the factory - say exactly what to add
 HOW_TO_OBSERVE = "HOW_TO_OBSERVE: add TCHECK(n, <named item>) to the scenario + 'Target Check Should Pass    n' in the SWR test"
 TCHECK = re.compile(r"TCHECK\(\s*([^,]+?)\s*,(.*?)\)\s*;", re.S)
+DRIVER_CALL = re.compile(r"\b(?:HAL|LL)_RCC_\w+\s*\(")  # a call into the driver under test (not a mask macro)
 
 
 def required_tokens(requirement_text: str) -> tuple[set[str], set[str]]:

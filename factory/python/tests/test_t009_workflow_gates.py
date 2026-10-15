@@ -36,7 +36,8 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert ("swe3_verify", "swe3_inspector", "outcome=succeeded") in e
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)
     rework = load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
-    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == 1 + rework + UPSTREAM_LOOPS  # ADR-0008 re-entries
+    # ADR-0008 per-epoch rework budget: every upstream loop gives each phase 1 + rework visits again
+    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == (1 + rework) * (1 + UPSTREAM_LOOPS)
 
 
 def test_code_model_profile_applies_only_to_code_nodes():

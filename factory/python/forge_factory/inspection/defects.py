@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 from pathlib import Path
 
 from ..common import pretty_json, sha256_file, utc_now
@@ -17,6 +18,8 @@ from .engine import PHASE_PATHS, PHASES
 
 DIR = ".forge-run/defects"
 LOOPS = ".forge-run/gates/upstream-loops.jsonl"
+SNAPSHOTS = ".forge-run/test-snapshots"  # content-addressed copies of every test file a test tool ran (tools only)
+GATE_REPORTER = "route-gate"  # reported_by of a defect filed by the deterministic safety net (ADR-0008 L11)
 KINDS = ("CODE", "ARCHITECTURE", "REQUIREMENT", "TEST", "INPUT", "FACTORY")
 KIND_TARGET = {"CODE": "SWE.3", "ARCHITECTURE": "SWE.2", "REQUIREMENT": "SWE.1"}  # fixed owner per kind
 ESCALATED_KINDS = ("INPUT", "FACTORY")
@@ -230,7 +233,8 @@ def gaps(ws: Path) -> list[str]:
         if d["status"] == "ESCALATED":
             out.append(f"escalated_defect:{d['id']}:{d['kind']}")
         elif d["status"] not in ("VERIFIED", "REJECTED", "DECLARED"):
-            out.append(f"open_defect:{d['id']}:{d['kind']}:{d['status']}")
+            out.append(f"open_defect:{d['id']}:{d['kind']}:{d['status']}"
+                       + (":gate-filed" if d.get("reported_by") == GATE_REPORTER else ""))
     return out
 
 
@@ -254,6 +258,11 @@ def integrity(ws: Path, test_files: list[Path], assertion_failed: list[Path]) ->
     """Recorded with every test-tool result: which test files had RUNTIME assertion failures (not build errors),
     the hash of every test file and of the product code, so a later 'fixed' test can be checked deterministically."""
     rel = {p.resolve().relative_to(ws.resolve()).as_posix(): sha256_file(p) for p in test_files if p.is_file()}
+    snap = ws / SNAPSHOTS  # the exact files of every run, so a failing test can be cited and restored later (L11)
+    snap.mkdir(parents=True, exist_ok=True)
+    for f, h in rel.items():
+        if not (snap / h).is_file():
+            shutil.copyfile(ws / f, snap / h)
     return {"code_sha": code_hash(ws), "files": rel,
             "assert_failed": sorted(p.resolve().relative_to(ws.resolve()).as_posix() for p in assertion_failed
                                     if p.is_file())}
@@ -298,3 +307,54 @@ def bent_tests(ws: Path, phase: str) -> list[str]:
                 if not ok and msg not in issues:
                     issues.append(msg)
     return issues
+
+
+# ---- safety net (ADR-0008 L11, owner decision 2026-10-15) -----------------------------------------------------
+def auto_code_defect(ws: Path, phase: str, since: str) -> dict | None:
+    """When a test phase is about to BLOCK without having reported anything, file the CODE defect its own recorded
+    evidence already proves (r67-r69: the SWE.6 author edited a correct failing check instead of reporting it).
+
+    Evidence = the newest test run of this phase in this run where the product code is byte-identical to now, every
+    scenario built, and EVERY failed check calls the driver and tests a token the tagged requirement names (e.g.
+    'rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)' for 'shall return HAL_ERROR'), and that requirement was not
+    reported unobserved. The run's test files are restored from the tool snapshots (it reproduces exactly: same code,
+    same tests) and cited, so the fix is verified with the very test that failed. The SWE.3 author still judges and
+    may reject_defect with a reason. Nothing is filed when the same tests were already the subject of a defect."""
+    cur = code_hash(ws)
+    texts = _requirement_texts(ws)
+    runs = [r for r in _integrity_runs(ws) if r.get("phase") == phase and r.get("status") == "FAIL"
+            and r.get("ts_utc", "") >= since and r.get("failed_checks")]
+    for r in reversed(runs):
+        fc = r["failed_checks"]
+        reqs = sorted({q for c in fc for q in c["requirements"]})
+        if r["code_sha"] != cur or r.get("build_failed") or not reqs or set(reqs) & set(r.get("unobserved", [])) \
+                or any(q not in texts for q in reqs) \
+                or not all(c["requirements"] and c["observes"] and c["driver_call"] for c in fc):
+            continue
+        scns = {c["scenario"] for c in fc}
+        cited = {f: h for f, h in r["files"].items() if f.endswith(".robot") or f.rsplit("/", 1)[-1] in scns}
+        if any(sorted(d["requirement_ids"]) == reqs and d["test_files"] == cited for d in all_defects(ws)):
+            return None  # these exact tests were already reported, fixed, verified or rejected
+        if not all((ws / SNAPSHOTS / h).is_file() for h in r["files"].values()):
+            continue
+        restored = []
+        for f, h in sorted(r["files"].items()):
+            p = ws / f
+            if not p.is_file() or sha256_file(p) != h:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ws / SNAPSHOTS / h, p)
+                restored.append(f)
+        exprs = [f"{c['scenario']}#{c['check']}: {c['expr']}" for c in fc]
+        rec = report(ws, detected_phase=phase, reported_by=GATE_REPORTER, kind="CODE",
+                     summary=f"Filed by the route gate (the {phase} author did not report it): {'; '.join(exprs)} "
+                             f"fails against the unchanged driver code; the check calls the driver and tests what "
+                             f"{', '.join(reqs)} names. Fix the code, or reject_defect with the reason the test is "
+                             "wrong.",
+                     requirement_ids=reqs, test_files=sorted(cited),
+                     evidence_refs=[f"CHECK_EXPR:{e}"[:160] for e in exprs][:8] + [f"{INTEGRITY_LOG}@{r['ts_utc']}"],
+                     requirement_quote=texts[reqs[0]])
+        rec["auto_filed"] = {"integrity_ts": r["ts_utc"], "restored_test_files": restored,
+                             "failed_checks": fc[:10]}
+        _save(ws, rec)
+        return rec
+    return None

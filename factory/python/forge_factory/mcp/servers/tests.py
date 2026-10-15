@@ -197,6 +197,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                       ["ROBOT_NO_OUTPUT"], tool="robotframework", exit_code=r.exit_code)
     tests, issues, covered = [], [], set()
     builds: dict[str, str] = {}  # r67: one compact BUILD_FAIL per scenario, gcc's "did you mean" kept
+    failing: list[tuple[list[str], str]] = []  # (SWR tags, failure text) of runtime failures
     for t in ET.parse(xml).getroot().iter("test"):  # noqa: S314 - output.xml written by the local robot run
         tags = [x.text or "" for x in t.findall("./tags/tag")] or [x.text or "" for x in t.findall("./tag")]
         st = t.find("status")
@@ -212,6 +213,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                 issues.append(f"ROBOT_FAIL:{t.get('name').split()[0]}:build failed ({b.group(1)})")
             else:
                 issues.append(f"ROBOT_FAIL:{t.get('name')}:{full[:120]}")
+                failing.append(([g for g in tags if SWR.fullmatch(g)], full))
     req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
     reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
     issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
@@ -225,21 +227,27 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                   if not any(f" in {b}" in i for b in builds)]  # a scenario that does not build is fixed first
     if unobserved == [x for x in unobserved if x.startswith("HOW_TO_OBSERVE")]:
         unobserved = []
-    from .robot_policy import TCHECK
+    from .robot_policy import DRIVER_CALL, TCHECK, required_tokens
 
     exprs = []  # r64: authors spent their budget reading files to learn what a failed check tested - say it here
-    for i in [x for x in issues if x.startswith("ROBOT_FAIL:")]:
-        for cid, scn in re.findall(r"check (\d+) failed in ([\w-]+\.c)", i):
+    failed_checks = []  # ADR-0008 L11: structured copy for the route gate's safety net (test-integrity record)
+    for reqs_, full in failing:
+        for cid, scn in re.findall(r"check (\d+) failed in ([\w-]+\.c)", full):
             f = sdir / scn
             src = f.read_text(errors="replace") if f.is_file() else ""
             m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
+            cond = expr = ""
             if m:
-                expr = " ".join(m.group(2).split())
+                cond = expr = " ".join(m.group(2).split())
                 v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)  # r68: 'st == HAL_ERROR' - show what set st
                 setter = [x for x in re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", src[:m.start()])] if v else []
                 if setter:
                     expr = f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}"
                 exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + expr[:100])
+            named = {t for r_ in reqs_ for ts in required_tokens(texts.get(r_, "")) for t in ts}
+            failed_checks.append({"requirements": reqs_, "scenario": scn, "check": cid, "expr": expr[:200],
+                                  "observes": sorted(t for t in named if t in cond),
+                                  "driver_call": bool(DRIVER_CALL.search(expr))})
     # most fundamental first (the result is capped): build errors, failed checks with their expressions, then
     # requirements the passing checks never observe, then the per-test/coverage lines
     build_issues = [f"BUILD_FAIL:{k}:{v}" for k, v in sorted(builds.items())]
@@ -253,7 +261,9 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     asserted = sorted({sdir / m for i in issues if i.startswith("ROBOT_FAIL:") and "build failed" not in i
                        for m in re.findall(r"\b([\w-]+\.c) \[", i)})  # failing checks, not build errors
     record_integrity(ctx.workspace, ctx.phase, "run_robot", "PASS" if ok else "FAIL",
-                     integrity(ctx.workspace, [*suites, *scn], asserted))
+                     {**integrity(ctx.workspace, [*suites, *scn], asserted), "failed_checks": failed_checks,
+                      "build_failed": sorted(builds), "unobserved": sorted(
+                          {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
     return result(ctx, "PASS" if ok else "FAIL",
                   f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
                   "verified (Renode STM32N6 model + host measurements)",

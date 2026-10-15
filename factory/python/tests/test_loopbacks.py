@@ -258,3 +258,79 @@ def test_carried_over_inspection_failures_do_not_consume_this_runs_budget_r66(ws
     (ws / "inspection/SWE.5/INS-SWE.5-002.json").write_text(json.dumps(
         {"verdict": "FAIL", "recorded_at": "2026-10-15T17:10:00Z", "baseline_hash": "y"}))
     assert s.gate("SWE.5")["failed_inspections"] == 1
+
+
+# ---- per-epoch rework budget and route-gate safety net (owner decisions 2026-10-15) ----------------------------
+SCN_OK = "TCHECK(9, rc == HAL_ERROR);\n"
+SUITE = "*** Test Cases ***\nSWR-014\n    [Tags]    SWR-014\n    Run Target Scenario    scn_invalid_param.c\n"
+
+
+def _robot_run(ws, files, failed_checks, unobserved=(), status="FAIL"):
+    """What run_robot records: tool result + integrity record (with snapshots of the files as they ran)."""
+    for rel, txt in files.items():
+        (ws / rel).write_text(txt)
+    tool(ws, "SWE.6", "run_robot", status, ts=D.utc_now())
+    paths = [ws / "software/tests/software/test_rcc_requirements.robot", ws / "software/tests/software/scn_invalid_param.c"]
+    D.record_integrity(ws, "SWE.6", "run_robot", status, {**D.integrity(ws, paths, []), "failed_checks": failed_checks,
+                                                          "build_failed": [], "unobserved": list(unobserved)})
+
+
+def _check(expr, observes=("HAL_ERROR",), call=True, cid="9"):
+    return {"requirements": ["SWR-014"], "scenario": "scn_invalid_param.c", "check": cid, "expr": expr,
+            "observes": list(observes), "driver_call": call}
+
+
+def test_upstream_loop_starts_a_fresh_rework_epoch(ws):
+    for _ in range(2):
+        assert gate(ws, "SWE.4", "route").returncode == 0
+    assert gate(ws, "SWE.4", "route").returncode == 1  # 3rd failed cycle -> BLOCKED
+    (ws / D.LOOPS).parent.mkdir(parents=True, exist_ok=True)
+    (ws / D.LOOPS).write_text(json.dumps({"ts": D.utc_now(), "target": "SWE.3", "defects": ["DEF-001"]}) + "\n")
+    assert Store(ws).budget_start() > "2026"
+    for _ in range(2):  # after the upstream fix the downstream phase has its authored maximum again
+        assert gate(ws, "SWE.4", "route").returncode == 0
+    assert gate(ws, "SWE.4", "route").returncode == 1
+
+
+def test_safety_net_files_code_defect_from_evidence_and_restores_the_failing_test_r69(ws):
+    scn = "software/tests/software/scn_invalid_param.c"
+    suite = "software/tests/software/test_rcc_requirements.robot"
+    original = "rc = HAL_RCC_HSI_Enable(0U);\n" + SCN_OK
+    _robot_run(ws, {suite: SUITE, scn: original},
+               [_check("rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)")])
+    # r69: the author bent the check (no longer observes HAL_ERROR, requirement reported unobserved) and never reported
+    _robot_run(ws, {scn: "TCHECK(12, (ll_rcc_regs[0] & LL_RCC_CR_HSEON_MSK) == 0U);\n"},
+               [_check("(ll_rcc_regs[0] & LL_RCC_CR_HSEON_MSK) == 0U", (), False, "12")], unobserved=["SWR-014"])
+    assert gate(ws, "SWE.6", "route").returncode == 0 and gate(ws, "SWE.6", "route").returncode == 0
+    r = gate(ws, "SWE.6", "route")  # budget exhausted: the gate files the defect instead of BLOCKING
+    assert r.returncode == 1 and b"UPSTREAM" in r.stdout and b"DEF-001->SWE.3" in r.stdout, r.stdout
+    d = D.all_defects(ws)[0]
+    assert (d["kind"], d["reported_by"], d["status"], d["requirement_ids"]) == ("CODE", "route-gate", "OPEN", ["SWR-014"])
+    assert "rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)" in d["summary"]
+    assert (ws / scn).read_text() == original and d["auto_filed"]["restored_test_files"] == [scn]
+    assert set(d["test_files"]) == {scn, suite}  # the fix is verified with exactly the test that failed
+    assert D.verify_on_freeze(ws, "SWE.6") == []
+    assert "open_defect:DEF-001:CODE:OPEN:gate-filed" in D.gaps(ws)
+    # SWE.3 rejects it with a reason -> the same tests are never filed again
+    D.take_upstream(ws, "SWE.3")
+    D.reject(ws, "DEF-001", "swe3-author", "HAL_RCC_HSI_Enable has no invalid parameter; the scenario is wrong")
+    assert D.auto_code_defect(ws, "SWE.6", "") is None and len(D.all_defects(ws)) == 1
+
+
+def test_safety_net_never_blames_code_without_a_driver_check_that_observes_the_requirement(ws):
+    scn = "software/tests/software/scn_invalid_param.c"
+    suite = "software/tests/software/test_rcc_requirements.robot"
+    base = {suite: SUITE, scn: SCN_OK}
+    _robot_run(ws, base, [_check("rc == HAL_OK", observes=())])  # check does not test what SWR-014 names
+    assert D.auto_code_defect(ws, "SWE.6", "") is None
+    _robot_run(ws, base, [_check("(ll_rcc_regs[0] & 1U) == 0U", call=False)])  # no call into the driver
+    assert D.auto_code_defect(ws, "SWE.6", "") is None
+    _robot_run(ws, base, [_check("rc == HAL_ERROR"), _check("rc == HAL_OK", observes=(), cid="3")])  # mixed failures
+    assert D.auto_code_defect(ws, "SWE.6", "") is None
+    _robot_run(ws, base, [_check("rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)")])
+    (ws / "software/hal/stm32n6xx_hal_rcc.c").write_text("int x;\nint fixed;\n")  # code changed since: rerun first
+    assert D.auto_code_defect(ws, "SWE.6", "") is None
+    for _ in range(3):
+        r = gate(ws, "SWE.6", "route")
+    assert r.returncode == 1 and b"BLOCKED" in (ws / ".forge-run/gates/gate-log.jsonl").read_bytes()
+    assert D.all_defects(ws) == []

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_t009_inspection.py",
+    "factory/python/tests/test_t009_workflow_gates.py",
+    "factory/python/tests/test_ears.py",
+    "factory/python/tests/test_guideline_check.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 14.244,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "48f03fc9ede7e206ac82539d056dd29fe38d76e6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/T009/20261015T201616.log",
+  "log_sha256": "415d7cbcaab2df5e3955e8587815e3ed1c0eb517b1fce547919ed96e61e6ac8c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "T009",
+  "ts_utc": "2026-10-15T20:16:16.059099Z"
+}

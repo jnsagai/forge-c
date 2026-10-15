@@ -276,13 +276,26 @@ class Store:
         except (OSError, ValueError):
             return ""
 
+    def budget_start(self) -> str:
+        """Start of the current rework-budget epoch (ADR-0008, owner decision 2026-10-15): the run start, then each
+        upstream loop. Failed cycles before an upstream fix were spent on the code as it was; after the fix every
+        phase gets its authored maximum again. Bounded: 1 + upstream-loop budget epochs (workflow max_visits)."""
+        start = self.run_started()
+        loops = self.workspace / ".forge-run" / "gates" / "upstream-loops.jsonl"
+        if loops.is_file():
+            for x in loops.read_text().splitlines():
+                if x.strip():
+                    start = max(start, str(json.loads(x).get("ts") or ""))
+        return start
+
     def gate(self, phase: str) -> dict:
         checklist = load_checklist(phase)
         max_cycles = int(checklist["policy"]["maximum_rework_cycles"])
         ins = self.inspections(phase)
         bl = self.latest_baseline(phase)
-        # r66: inspections carried over by --resume-from belong to another run's budget; only this run's count
-        started = self.run_started()
+        # r66: inspections carried over by --resume-from belong to another run's budget; only this run's count, and
+        # only those of the current epoch (after the latest upstream loop)
+        started = self.budget_start()
         failed = sum(1 for i in ins if i["verdict"] != "PASS" and i.get("recorded_at", "") >= started)
         if bl is None:
             decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), "NO_BASELINE"

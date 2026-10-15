@@ -68,6 +68,7 @@ Command nodes only, local Fabro :32290. The probe is in the session scratchpad, 
 | **L8** infrastructure | supervisor probes → O8 | Repair Agent (T047) | existing |
 | **L9** inspector error | author disputes a finding | Missing or malformed verdicts are refused and resubmitted (#18). A disputed finding is answered in the next rework cycle and seen by the next inspection, bounded by L0. A separate dispute channel is **deferred**: it would let authors argue findings away. | partial (by design) |
 | **L10** format violation | `AGENT_OUTPUT_PROSE`/`_SCHEMA` while the required outputs are present and complete | **Evidence decides, not the format.** A non-empty reply that does not signal failure is frozen if the deterministic presence gate passes. The checks covered are outputs, required tool PASSes, stale PASS, defect verification and anti-bending. `AGENT_OUTPUT_CONTRACT_VIOLATION` is recorded (`FROZEN_BY_EVIDENCE`) and the inspection decides. Replies with a failure signal (BLOCKED, REWORK, turn budget, could not, incomplete…) and empty replies (dead session) are still rejected. Budgets are unchanged. | **implemented** (owner decision 2026-10-15) |
+| **L11** unreported code defect (safety net) | a test phase is about to BLOCK (rework budget exhausted) with no defect reported, while its own recorded test evidence proves a code defect | The route gate files the CODE defect itself (`reported_by: route-gate`). The evidence is the newest test run of this run where: the product code is byte-identical to now; every scenario built; **every** failed check calls the driver and tests a token the tagged requirement names (e.g. `rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)` for "shall return HAL_ERROR"); and that requirement was not reported unobserved. The run's test files are restored from the tool snapshots (same code + same tests = same result) and cited, so the fix is verified with exactly the failing test. The SWE.3 author still judges and may `reject_defect` with a reason. The same tests are never filed twice. Gate-filed defects show as `open_defect:…:gate-filed` gaps. Currently only `run_robot` records the structured failed checks. | **implemented** (owner decision 2026-10-15) |
 
 Rejected alternatives:
 - **Letting downstream authors edit upstream files.** This breaks role separation and the baseline/inspection
@@ -106,9 +107,11 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 
 **Bounds:**
 - Upstream-loop budget `U = 2` per run.
-- Per-phase rework budgets are unchanged and counted over the whole run (conservative).
+- Per-phase rework budgets are counted **per epoch** (owner decision 2026-10-15, superseding "over the whole
+  run"). An epoch starts at the run start and at every upstream loop, so after an upstream fix each phase has its
+  authored maximum (3 failed cycles) again. Failures before the fix were spent on code that no longer exists.
 - `max_visits`:
-  - loopable nodes: `4 + U`;
+  - loopable nodes: `(1 + 3) × (1 + U)` = 12;
   - single-pass nodes on the forward path (scaffolds, regmap, test authors, LL/HAL authors): `1 + U`;
   - chain nodes: `U + 1`.
 - The P2 constraint is checked by a builder test: every node reachable from a chain target has enough visits.
@@ -146,7 +149,9 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
 | Defect register: validation, status machine, gaps | `inspection/defects.py` | `test_loopbacks.py::test_report_validation_is_deterministic`, `…only_target_author_rejects…` |
 | MCP `report_defect` / `reject_defect` (v0.5 registry overlay; skills re-rendered) | `mcp/servers/evidence.py`, `config/factory/mcp-registry.v0.5-kpi.yaml` | `…mcp_report_defect_uses_node_phase_and_role` |
 | Route leaves the phase on an OPEN upstream defect; shared chain `upstream_swe1→2→3→finalize`; loop budget U=2 | `inspection/gate.py` (`route`, `upstream`), `workflow/builder.py` | `…route_leaves_phase_and_chain_routes_to_owner_within_budget`, `test_t009…upstream_chain…` |
-| `max_visits` sized for re-entry (P2) | `workflow/builder.py` (`MAX_VISITS = 4 + U`, `ONCE = 1 + U`) | `test_every_agent_node_has_visit_budget_for_upstream_reentry` |
+| `max_visits` sized for re-entry (P2) and the per-epoch budget | `workflow/builder.py` (`MAX_VISITS = (1 + 3) × (1 + U)`, `ONCE = 1 + U`) | `test_every_agent_node_has_visit_budget_for_upstream_reentry` |
+| Per-epoch rework budget (route, inspection gate); the token governor's per-node cap scales with `MAX_VISITS` | `inspection/engine.py` (`budget_start`), `inspection/gate.py`, `policy/governor.py` | `…upstream_loop_starts_a_fresh_rework_epoch` |
+| L11 safety net: structured failed checks + test-file snapshots recorded by `run_robot`; route gate files the CODE defect and restores the failing tests | `mcp/servers/tests.py`, `inspection/defects.py` (`auto_code_defect`), `inspection/gate.py` | `…safety_net_files_code_defect_from_evidence…_r69`, `…safety_net_never_blames_code…`, `test_robot_swe6…_r68` |
 | Full graph in resumed runs (`start` → restart phase) | `workflow/builder.py` | `test_resumed_graph_keeps_upstream_owners…` |
 | FIXED on the target's inspection PASS; VERIFIED at the detecting phase's freeze, with unchanged cited tests and a post-fix PASS | `gate.py` (`inspect`, `author`) | `…fix_verified_only_with_unchanged_tests…`, `…bent_test_after_fix_is_rejected…` |
 | Stale tool PASS (recorded before the current SWE.3 baseline) does not satisfy the presence gate | `inspection/engine.py` | `…stale_tool_pass_before_current_code_baseline…` |
@@ -264,3 +269,17 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   - `CHECK_EXPR` appends the last assignment of the checked variable: `st == HAL_ERROR with st =
     HAL_RCC_HSI_Enable(0U)`.
   - Test: `test_check_expr_shows_the_call_that_set_the_checked_variable_r68`.
+
+## Eighth live run (r69) and owner decisions
+- **17/18 requirements passed on the Renode target.** The first `run_robot` showed exactly the right failing check:
+  `CHECK_EXPR:scn_ready_wait.c#9:rc == HAL_ERROR with rc = HAL_RCC_HSI_Enable(0U)` (SWR-014).
+- **The author bent the test instead of reporting it.** It replaced the HAL_ERROR check with a register check
+  (`REQUIREMENT_NOT_OBSERVED:SWR-014`), never called `report_defect`, and the phase BLOCKED. Anti-bending did not
+  fire because the edited test never passed. r66 reported correctly; r67–r69 did not: the decision is not reliable
+  with this model.
+- **Owner decisions (2026-10-15):**
+  - *Safety net* (L11): the decision no longer depends on the model when the evidence is unambiguous.
+  - *Per-epoch rework budget*: `MAX_VISITS` 6 → 12; the governor's per-node token cap is per visit × `MAX_VISITS`.
+- **Prompts:** the SWE.6 test author stops at "only driver checks that test what the requirement names fail"
+  instead of "repeat until it PASSes"; both SWE.6 authors are told such a check is never changed, weakened or
+  removed.

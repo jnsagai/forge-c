@@ -186,3 +186,12 @@ def test_check_expr_shows_the_call_that_set_the_checked_variable_r68(tmp_path, m
     out = run(tmp_path, monkeypatch, {"software/tests/software/scn_hsi.c": scn,
                                       "software/tests/software/test_rcc_requirements.robot": suite})
     assert "CHECK_EXPR:scn_hsi.c#1:st == HAL_TIMEOUT with st = HAL_RCC_HSI_Enable(1000U)" in out["issues"], out["issues"]
+    # ADR-0008 L11: structured failed-check record + snapshot of the exact files for the route gate's safety net
+    import json as _json
+
+    rec = _json.loads((tmp_path / "evidence/test-integrity.jsonl").read_text().splitlines()[-1])
+    assert rec["failed_checks"] == [{"requirements": ["SWR-001"], "scenario": "scn_hsi.c", "check": "1",
+                                     "expr": "st == HAL_TIMEOUT with st = HAL_RCC_HSI_Enable(1000U)",
+                                     "observes": [], "driver_call": True}]  # SWR-001 names RCC_CR.HSION, not a status
+    assert rec["build_failed"] == [] and all((tmp_path / ".forge-run/test-snapshots" / h).is_file()
+                                             for h in rec["files"].values())
