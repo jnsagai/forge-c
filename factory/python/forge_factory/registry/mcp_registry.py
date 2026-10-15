@@ -68,8 +68,33 @@ class McpRegistry(BaseModel):
         return {k for k, o in self.ops().items() if role in o.role_grants}
 
 
+OVERLAY = CONFIG_DIR / "mcp-registry.v0.5-kpi.yaml"
+
+
+def apply_overlay(data: dict, overlay: Path = OVERLAY) -> dict:
+    """Merge the versioned v0.5 overlay (additive only: new ops; existing ops are never altered)."""
+    if not overlay.is_file():
+        return data
+    ov = yaml.safe_load(overlay.read_text(encoding="utf-8"))
+    for srv in data["server_catalog"]:
+        add = (ov.get("servers") or {}).get(srv["id"], {}).get("ops", [])
+        names = {o["name"] for o in srv["ops"]}
+        if any(o["name"] in names for o in add):
+            raise ValueError("overlay may not redefine existing ops")
+        srv["ops"] = srv["ops"] + add
+    return data
+
+
+def role_tool_additions(overlay: Path = OVERLAY) -> dict[str, list[str]]:
+    if not overlay.is_file():
+        return {}
+    return (yaml.safe_load(overlay.read_text(encoding="utf-8")) or {}).get("role_tool_additions") or {}
+
+
 def load_registry(path: Path | None = None) -> McpRegistry:
     data = yaml.safe_load((path or CONFIG_DIR / "mcp-registry.yaml").read_text(encoding="utf-8"))
+    if path is None:
+        data = apply_overlay(data)
     reg = McpRegistry.model_validate(data)
     if reg.policy != "EVERY_AGENT_TOOL_USES_MCP":
         raise ValueError("registry policy must be EVERY_AGENT_TOOL_USES_MCP")

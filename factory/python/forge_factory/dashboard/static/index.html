@@ -31,6 +31,9 @@ input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
 <div id="login" hidden><section><h2>Sign in</h2><p class="muted">Paste a dashboard token (state/dashboard/tokens.json).</p>
 <input id="tok" type="password" style="width:100%"><p><button id="go">Open read-only view</button></p></section></div>
 <main id="app" hidden>
+<section class="full"><h2>Production KPIs (deterministic, model-free; N/A shown, never guessed)</h2>
+<div class="filters"><select id="kwin"><option value="1">24 h</option><option value="7" selected>7 days</option><option value="30">30 days</option></select></div>
+<div id="kpis" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div><div id="kdrill" class="muted"></div></section>
 <section class="full"><h2>Work orders and SWE phase board</h2><div class="scroll"><table id="runs"></table></div></section>
 <section><h2>Incidents and repairs</h2><div class="scroll"><table id="inc"></table></div></section>
 <section><h2>Release packages (offline review only)</h2><div class="scroll"><table id="pkg"></table></div></section>
@@ -72,6 +75,13 @@ async function refresh(){
  const t=await api("tokens?limit=20");const mx=Math.max(1,...t.items.map(i=>(i.total_input||0)+(i.total_output||0)));
  $("tok_chart").innerHTML=t.items.map(i=>`<div>${esc(i.work_order)} <span class="muted">(${esc(i.basis)})</span> ${(i.total_input||0)+(i.total_output||0)}<div class="bar" style="width:${100*((i.total_input||0)+(i.total_output||0))/mx}%"></div></div>`).join("")||'<span class="muted">no usage yet</span>';
 }
+const FRONT=["K01","K02","K03","K04","K05","K06","K07","K09","K14","K15","K16","K20"];
+async function loadKpis(){const d=await api("kpis?window_days="+$("kwin").value);
+ $("kpis").innerHTML=d.metric_values.filter(m=>FRONT.includes(m.metric_id)).map(m=>{const f=Object.entries(m.filters).map(([k,v])=>v).join(" ");
+  const v=m.value===null?"N/A":(m.unit==="ratio"?(100*m.value).toFixed(1)+"%":m.value);
+  return `<div class="ev" style="border:1px solid var(--line);border-radius:8px;padding:6px;cursor:pointer" onclick="drill('${m.metric_id}')"><b>${esc(m.metric_id)}</b> ${esc(f)}<div style="font-size:18px">${esc(v)}</div><span class="badge ${m.status==="MEASURED"?"OK":(m.status.startsWith("INSUFFICIENT")?"DEGRADED":"PENDING")}">${esc(m.status)}</span> <span class="muted">n=${m.sample_count} ${m.numerator??""}/${m.denominator??""}</span></div>`}).join("")}
+async function drill(id){const d=await api("kpis/"+id+"/evidence?window_days="+$("kwin").value);
+ $("kdrill").innerHTML=`<b>${esc(id)}</b> ${esc(d.formula_version)} — `+d.rows.map(r=>esc(r.metric.explanation||"")+" | sources: "+r.source_events.slice(0,8).map(e=>esc(e.type+"@"+(e.attempt_id||"")+" "+(e.evidence_refs[0]||""))).join(", ")+(r.trace_runs.length?" | trace runs: "+r.trace_runs.map(esc).join(","):"")).join("<br>")}
 function evLine(e){return `<div class="ev lv-${esc(e.level)}">${esc(e.ts_utc.slice(11,19))} [${esc(e.channel)}] ${esc(e.level)} ${esc(e.message)}${e.run_id?' <span class="muted">'+esc(e.run_id.slice(-8))+'</span>':''}</div>`}
 function evQuery(){const p=prefs();const qs=new URLSearchParams({channel:p.channels.join(","),min_level:p.min_level});if(p.run)qs.set("run_id",p.run);if(p.q)qs.set("q",p.q);return qs}
 async function loadEvents(){const p=evQuery();p.set("limit","200");const d=await api("events?"+p);$("events").innerHTML=d.items.slice(-200).reverse().map(evLine).join("");lastId=d.items.length?d.items[d.items.length-1].seq:lastId;live()}
@@ -83,7 +93,7 @@ function filtersUI(){const p=prefs();$("chans").innerHTML=CH.filter(c=>me.channe
  $("lvl").value=p.min_level;$("run").value=p.run||"";$("q").value=p.q||""}
 $("apply").onclick=()=>{const p={channels:[...document.querySelectorAll("#chans input:checked")].map(x=>x.value),min_level:$("lvl").value,run:$("run").value.trim(),q:$("q").value.trim()};savePrefs(p);lastId=0;loadEvents()};
 $("go").onclick=()=>{location.href="/login?token="+encodeURIComponent($("tok").value.trim())};
-(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();setInterval(refresh,5000)}catch(e){showLogin()}})();
+(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
 </script>
 </body>
 </html>

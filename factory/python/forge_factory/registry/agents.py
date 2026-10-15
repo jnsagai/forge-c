@@ -80,7 +80,13 @@ def parse_frontmatter(text: str) -> dict | None:
 def load_agents(path: Path | None = None) -> tuple[list[AgentDefinition], list[Issue]]:
     raw = yaml.safe_load((path or CONFIG_DIR / "agents.yaml").read_text(encoding="utf-8"))
     roles, issues = [], []
+    from .mcp_registry import role_tool_additions
+
+    adds = role_tool_additions() if path is None else {}
     for item in raw.get("agents", []):
+        if item.get("id") in adds:
+            item = {**item, "allowed_tools": list(item["allowed_tools"]) + [t for t in adds[item["id"]]
+                                                                             if t not in item["allowed_tools"]]}
         try:
             roles.append(AgentDefinition.model_validate(item))
         except ValidationError as exc:

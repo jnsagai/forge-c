@@ -2,7 +2,6 @@
 finalizer on every terminal path, separated defect routing, threat-model checks."""
 import json
 import os
-import shutil
 import subprocess
 import zipfile
 from pathlib import Path

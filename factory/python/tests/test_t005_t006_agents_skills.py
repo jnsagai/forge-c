@@ -84,8 +84,11 @@ def test_unsafe_skill_path_rejected(sandbox):
 
 
 def test_skills_render_deterministically_and_match_lock():
+    from forge_factory.registry.agents import load_agents
+    merged = {a.id: a.allowed_tools for a in load_agents()[0]}
     roles = yaml.safe_load((REPO_ROOT / "config/factory/agents.yaml").read_text())["agents"]
     for role in roles:
+        role["allowed_tools"] = merged[role["id"]]
         assert (REPO_ROOT / role["skill"]).read_text() == render(role), role["id"]
 
 

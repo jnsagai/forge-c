@@ -26,6 +26,7 @@ from ..events.emit import emit, events_dir
 from ..inspection.engine import PHASES, Store
 
 POLICY_V04 = REPO_ROOT / "factory/release-manager/policies/release-package-policy-v0.4.json"
+POLICY_V05 = REPO_ROOT / "factory/release-manager/policies/release-package-policy-v0.5.json"
 POLICY_V03 = REPO_ROOT / "factory/release-manager/policies/release-package-policy.json"
 NOT_SAFETY = "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
 
@@ -316,7 +317,12 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     stage = archive_root() / "staging" / run_id
     quality = build_staging(ws, stage, run_id, fabro_run_id)
     pk = _packager()
-    res = pk.build(stage, out_dir, run_id, POLICY_V04)
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as dry:  # status under v0.4 rules (KPI files can only add, never remove gaps)
+        dry_status = pk.build(stage, Path(dry), run_id, POLICY_V04)["package_status"]
+    kpi_snapshot_into(ws, stage, dry_status)
+    res = pk.build(stage, out_dir, run_id, POLICY_V05)
     with pk.zipfile.ZipFile(res["archive"]) as z:
         gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
     for f in out_dir.iterdir():
@@ -324,7 +330,7 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
            "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
            "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
-           "scope": NOT_SAFETY, "policy": str(POLICY_V04.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
+           "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
     os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
     (out_dir / "finalize-result.json").write_text(pretty_json(out))
     os.chmod(out_dir / "finalize-result.json", 0o444)
@@ -334,6 +340,64 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
          f"Package {out['package_status']} gaps={out['gap_count']} run={run_id}", correlation_id=run_id, run_id=run_id,
          payload_ref=out["archive_ref"])
     return out
+
+
+def kpi_snapshot_into(ws: Path, stage: Path, release_status: str) -> dict:
+    """KPI-T015: order-scoped, deterministic KPI snapshot + catalog/policy/baselines/source events into the package."""
+    from ..common import KPI_CONTRACTS_DIR
+    from ..kpi.engine import serialize, snapshot
+    from ..kpi.service import load_baselines
+    from ..kpi.sources import collect_all, from_workspace, order_of
+
+    man = json.loads((ws / ".forge-run/manifest.json").read_text()) if (ws / ".forge-run/manifest.json").is_file() else {}
+    order = order_of(ws.parent.name, man) if man else ws.parent.name
+    try:
+        evs = [e for e in collect_all() if e["order_id"] in (order, "factory")]
+    except Exception:  # noqa: BLE001 - KPI collection must not prevent packaging; snapshot records the gap
+        evs = []
+    if man and not any(e["attempt_id"] == ws.parent.name for e in evs):
+        evs += from_workspace(ws)
+    start = min([e["ts_utc"] for e in evs if e["order_id"] == order] or [utc_now()[:19] + "Z"])
+    snap = snapshot(evs, start, utc_now()[:19] + "Z", release_status, load_baselines())
+    _w(stage, "operations/kpi/kpi-snapshot.json", serialize(snap))
+    _w(stage, "operations/kpi/kpi-catalog.json", (KPI_CONTRACTS_DIR / "kpi-catalog.json").read_bytes())
+    _w(stage, "operations/kpi/kpi-policy.yaml", (REPO_ROOT / "config/factory/kpi-policy.yaml").read_bytes())
+    _w(stage, "operations/kpi/kpi-baselines.json", pretty_json(load_baselines()))
+    _w(stage, "operations/kpi/kpi-source-events.jsonl",
+       "".join(json.dumps(e, sort_keys=True) + "\n" for e in evs) or "\n")
+    return snap
+
+
+def cross_check_kpis(archive: Path) -> dict:
+    """KPI-T016: archive KPI snapshot vs package status, event evidence and the no-approval rule."""
+    import zipfile
+
+    from ..kpi.sources import event_set_digest
+
+    issues = []
+    with zipfile.ZipFile(archive) as z:
+        man = json.loads(z.read("manifest.json"))
+        snap = json.loads(z.read("evidence/operations/kpi/kpi-snapshot.json"))
+        evs = [json.loads(x) for x in z.read("evidence/operations/kpi/kpi-source-events.jsonl").decode().splitlines() if x]
+        cat = json.loads(z.read("evidence/operations/kpi/kpi-catalog.json"))
+    if snap["release_status"] != man["status"]:
+        issues.append(f"STATUS_MISMATCH:{snap['release_status']}!={man['status']}")
+    win = [e for e in evs if snap["window_start"] <= e["ts_utc"] <= snap["window_end"]]
+    if event_set_digest(win) != snap["event_set_digest"]:
+        issues.append("EVENT_SET_DIGEST_MISMATCH")
+    from ..common import canonical_json, sha256_bytes
+    if sha256_bytes(canonical_json(cat)) != snap.get("source_catalog_hash"):
+        issues.append("CATALOG_HASH_MISMATCH")
+    k20 = [m for m in snap["metric_values"] if m["metric_id"] == "K20"]
+    if not k20 or k20[0]["value"] != 0:
+        issues.append(f"K20_SAFETY_PROCESS_VIOLATIONS:{k20[0]['value'] if k20 else 'missing'}")
+    blob = json.dumps(snap).replace("NOT_SAFETY_APPROVED", "")
+    if "ASIL_B_APPROVED" in blob or '"APPROVED"' in blob:
+        issues.append("APPROVAL_ASSERTION_FOUND")
+    if man["scope"] != NOT_SAFETY:
+        issues.append("PACKAGE_SCOPE_NOT_OFFLINE_REVIEW")
+    return {"archive": str(archive), "status": "PASS" if not issues else "FAIL", "issues": issues,
+            "snapshot_id": snap["snapshot_id"], "metrics": len(snap["metric_values"])}
 
 
 def verify_archive(archive: Path) -> dict:

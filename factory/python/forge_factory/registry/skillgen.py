@@ -155,7 +155,12 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
     a = ap.parse_args(argv)
+    from .agents import load_agents
+
+    merged = {a.id: a.allowed_tools for a in load_agents()[0]}  # includes versioned v0.5 overlay additions
     roles = yaml.safe_load((CONFIG_DIR / "agents.yaml").read_text())["agents"]
+    for r in roles:
+        r["allowed_tools"] = merged.get(r["id"], r["allowed_tools"])
     skills: dict[str, dict[str, str]] = {}
     lock = {"schema": "forge-c/skills-lock/0.4", "skill_version": SKILL_VERSION, "skills": skills}
     for role in roles:

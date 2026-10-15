@@ -100,6 +100,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
                     "mcp": mcp(who, 60, None), "lessons": lessons(who, 20, None), "tokens": tokens_ep(who, None, 20, None),
                     "events": st.query(["human", "workflow", "supervisor"], "INFO", limit=200,
                                        allowed_channels=ROLE_CHANNELS[who])}
+            try:
+                init["kpis"] = kpis(who, 7, None, None, None)
+            except Exception:  # noqa: BLE001,S110 - KPI tiles then load asynchronously instead
+                pass
             blob = json.dumps(init, default=str).replace("</", "<\\/")
             html = html.replace("<script>", f"<script>window.__INIT__={blob};</script>\n<script>", 1)
         return HTMLResponse(html, headers={"Cache-Control": "no-store"})
@@ -224,6 +228,55 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
                           "total_output": sum(x["tokens_output"] or 0 for x in rows),
                           "unknown_requests": sum(1 for x in rows if x["basis"] != "reported")})
         return page(items, limit, cursor)
+
+    kpi_cache: dict = {}
+
+    def kpi_events() -> list[dict]:
+        from ..kpi.sources import collect_all
+
+        now = time.monotonic()
+        if "events" not in kpi_cache or now - kpi_cache["t"] > 30:  # bounded aggregation cost (KPI-T014)
+            kpi_cache.update(events=collect_all(), t=now)
+        return kpi_cache["events"]
+
+    @app.get("/api/v1/kpis")
+    def kpis(r: str = Depends(role), window_days: int = Query(7, ge=1, le=90), order_id: str | None = None,
+             target_mcu: str | None = None, metric_id: str | None = Query(None, pattern=r"^K(0[1-9]|1[0-9]|20)$")) -> dict:
+        from ..kpi.engine import snapshot
+        from ..kpi.service import load_baselines, window
+
+        evs = kpi_events()
+        if order_id or target_mcu:  # production-class filter: numerator AND denominator recomputed together
+            keep = {e["order_id"] for e in evs if e["type"] == "work_order.admitted"
+                    and (not order_id or e["order_id"] == order_id)
+                    and (not target_mcu or e["payload"]["class"].get("target_mcu") == target_mcu)}
+            evs = [e for e in evs if e["order_id"] in keep or e["order_id"] == "factory"]
+        ws_, we_ = window(window_days)
+        snap = snapshot(evs, ws_, we_, "IN_PROGRESS", load_baselines())
+        if metric_id:
+            snap["metric_values"] = [m for m in snap["metric_values"] if m["metric_id"] == metric_id]
+        return snap
+
+    @app.get("/api/v1/kpis/{metric_id}/evidence")
+    def kpi_evidence(metric_id: str, r: str = Depends(role), window_days: int = Query(7, ge=1, le=90)) -> dict:
+        if not (len(metric_id) == 3 and metric_id[0] == "K" and metric_id[1:].isdigit() and 1 <= int(metric_id[1:]) <= 20):
+            raise HTTPException(422, "bad metric id")
+        snap = kpis(r, window_days, None, None, metric_id)
+        by_id = {e["event_id"]: e for e in kpi_events()}
+        runs = {}
+        for ws in workspaces():
+            rid = ws / ".forge-run/fabro_run_id"
+            if rid.is_file():
+                runs[ws.parent.name] = rid.read_text().strip()
+        rows = []
+        for m in snap["metric_values"]:
+            src = [by_id[x] for x in m["source_event_refs"][:50] if x in by_id]
+            rows.append({"metric": m, "source_events": [{k: e.get(k) for k in ("event_id", "type", "ts_utc", "order_id",
+                                                                                "attempt_id", "phase", "evidence_refs")}
+                                                        for e in src],
+                         "trace_runs": sorted({runs[e["attempt_id"]] for e in src if e["attempt_id"] in runs})})
+        return {"metric_id": metric_id, "snapshot_id": snap["snapshot_id"], "formula_version": snap["formula_version"],
+                "rows": rows}
 
     @app.get("/api/v1/events")
     def events(r: str = Depends(role), channel: str | None = None, min_level: str = "INFO", run_id: str | None = None,

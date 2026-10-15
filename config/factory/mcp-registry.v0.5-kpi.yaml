@@ -1,0 +1,22 @@
+# Versioned v0.5 overlay (feature 003, KPI-T012). The v0.4 design registry stays unchanged; loaders merge this.
+schema: forge-c/mcp-registry-overlay/0.5
+extends: config/factory/mcp-registry.yaml
+servers:
+  forge-observer-mcp:
+    ops:
+    - name: get_kpis
+      logical_tool: Forge KPI read API (latest immutable snapshot)
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 60
+      role_grants: [release-manager, safety-evidence-auditor]
+      notes: Read-only, bounded; no SQL, no formula/baseline mutation.
+    - name: get_kpi_evidence
+      logical_tool: Forge KPI evidence drilldown (numerator/denominator/source refs)
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 60
+      role_grants: [release-manager, safety-evidence-auditor]
+role_tool_additions:
+  release-manager: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]
+  safety-evidence-auditor: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]

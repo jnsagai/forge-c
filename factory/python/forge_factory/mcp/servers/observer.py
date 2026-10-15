@@ -77,8 +77,9 @@ def get_kpis(ctx: ToolContext, a: KpiIn) -> dict:
     snap = latest_snapshot()
     if snap is None:
         return result(ctx, "BLOCKED", "no KPI snapshot computed yet", issues=["KPI_SNAPSHOT_MISSING"], tool="forge-kpi")
-    vals = {k["kpi_id"]: k for k in snap["kpis"] if not a.kpi_id or k["kpi_id"] == a.kpi_id}
-    issues = [f"{k}:{v['status']}:{v.get('value')}"[:120] for k, v in sorted(vals.items())][:20]
+    vals = [m for m in snap["metric_values"] if not a.kpi_id or m["metric_id"] == a.kpi_id]
+    issues = [f"{m['metric_id']}{json.dumps(m['filters'], sort_keys=True)[:40]}:{m['status']}:{m['value']}"[:120]
+              for m in vals][:20]
     return result(ctx, "PASS", f"KPI snapshot {snap['snapshot_id']} ({len(vals)} KPIs)",
                   [f"kpi-snapshot:{snap['snapshot_id']}"], issues, {"kpis": len(vals)}, "forge-kpi",
                   input_obj=a.model_dump())
@@ -91,13 +92,15 @@ def get_kpi_evidence(ctx: ToolContext, a: KpiIn) -> dict:
     if snap is None or not a.kpi_id:
         return result(ctx, "BLOCKED", "kpi_id and snapshot required", issues=["KPI_EVIDENCE_UNAVAILABLE"],
                       tool="forge-kpi")
-    k = next((x for x in snap["kpis"] if x["kpi_id"] == a.kpi_id), None)
-    if k is None:
+    rows = [x for x in snap["metric_values"] if x["metric_id"] == a.kpi_id]
+    if not rows:
         return result(ctx, "BLOCKED", "unknown KPI", issues=["KPI_NOT_FOUND"], tool="forge-kpi")
-    data = json.dumps(k, sort_keys=True).encode()
-    return result(ctx, "PASS", f"{a.kpi_id} {k['status']} n={k.get('numerator')} d={k.get('denominator')}",
-                  [ctx.store(data, "json")], [], {"event_refs": len(k.get("event_refs", []))}, "forge-kpi",
-                  input_obj=a.model_dump())
+    data = json.dumps(rows, sort_keys=True).encode()
+    k = rows[0]
+    return result(ctx, "PASS", f"{a.kpi_id} {k['status']} n={k.get('numerator')} d={k.get('denominator')} rows={len(rows)}",
+                  [ctx.store(data, "json"), f"kpi-snapshot:{snap['snapshot_id']}"], [],
+                  {"event_refs": sum(len(r["source_event_refs"]) for r in rows), "snapshot": snap["snapshot_id"]},
+                  "forge-kpi", input_obj=a.model_dump())
 
 
 OPERATIONS = [

@@ -63,7 +63,7 @@ def step_author(store: Store, phase: str, text: str) -> int:
         bl = store.latest_baseline(phase)
         fresh = bl is not None and bl["frozen_at"] > _last_gate_ts(store.workspace, phase) \
             and store.stale_reason(phase, bl) is None
-        if not fresh:
+        if not fresh or bl is None:
             _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "errors": res.errors,
                                             "status": res.status, "issues": res.issues})
             return fail_code(store.workspace, phase, "author")

@@ -1,0 +1,197 @@
+{
+  "event_set_digest": "fc5aee22fa639a1e361b239161dd5be491bfdb09cc78d4f429dfbc431e0ff36f",
+  "formula_version": "kpi-engine-0.5.0+2a21e116f2c6855f",
+  "metric_values": [
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.1"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-40ab113a374d2e4824a4cf0a301b1530"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.2"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-5939de2d1fa603e3a3ac2247c96e1c50"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000002"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.3"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-bf515ea94da8b2bb14f787f5b680a478"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000003"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.4"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-c8f056d9f3709ee815e574ae1fc3b2d2"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000004"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.5"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-db4971b0dc7b15334e45b5bdd5b58b5f"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": 1,
+      "evidence_refs": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000005"
+      ],
+      "explanation": "low sample: no SLO/benchmark claim",
+      "filters": {
+        "phase": "SWE.6"
+      },
+      "metric_id": "K02",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-762b78da5340b53642a24efbdad21d1a"
+      ],
+      "status": "INSUFFICIENT_SAMPLE",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "denominator": null,
+      "evidence_refs": [],
+      "filters": {
+        "status": "READY_FOR_OFFLINE_REVIEW"
+      },
+      "metric_id": "K04",
+      "numerator": 0,
+      "sample_count": 1,
+      "source_event_refs": [],
+      "status": "MEASURED",
+      "unit": "packages_per_window",
+      "value": 0.0
+    },
+    {
+      "denominator": null,
+      "evidence_refs": [],
+      "explanation": "BLOCKED shown separately; not yield",
+      "filters": {
+        "status": "BLOCKED"
+      },
+      "metric_id": "K04",
+      "numerator": 1,
+      "sample_count": 1,
+      "source_event_refs": [
+        "kse-0e2c0a7dfe1deaa3b0342145a39ed06f"
+      ],
+      "status": "MEASURED",
+      "unit": "packages_per_window",
+      "value": 1.0
+    },
+    {
+      "denominator": 0,
+      "evidence_refs": [],
+      "explanation": "0 reported tokens across attempts; 0 READY packages -> N/A",
+      "filters": {
+        "basis": "reported"
+      },
+      "metric_id": "K15",
+      "numerator": 0,
+      "sample_count": 0,
+      "source_event_refs": [],
+      "status": "NOT_APPLICABLE",
+      "unit": "tokens_per_package",
+      "value": null
+    },
+    {
+      "denominator": null,
+      "evidence_refs": [],
+      "explanation": "availability not computable",
+      "filters": {},
+      "metric_id": "K19",
+      "numerator": null,
+      "sample_count": 0,
+      "source_event_refs": [],
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "denominator": null,
+      "evidence_refs": [],
+      "explanation": "hard zero-tolerance count, never weighted or offset by other KPIs",
+      "filters": {},
+      "metric_id": "K20",
+      "numerator": 0,
+      "sample_count": 1,
+      "source_event_refs": [],
+      "status": "MEASURED",
+      "unit": "count",
+      "value": 0.0
+    }
+  ],
+  "release_status": "BLOCKED",
+  "snapshot_id": "kpi-5d372fe6344344cc4bee16e0",
+  "source_catalog_hash": "93b8c497cc67f115813e143ffdac7bcebb0df989b9389240884b4be9381e9e63",
+  "window_end": "2026-10-15T00:00:00Z",
+  "window_start": "2026-10-14T00:00:00Z"
+}

@@ -7,8 +7,8 @@ LOG="$FORGE_DATA_ROOT/logs"; mkdir -p "$LOG"
 OLLAMA="$FORGE_DATA_ROOT/ollama-0.34.0/bin/ollama"
 start_ollama() {
   curl -s -m 2 127.0.0.1:11435/api/version >/dev/null && return 0
-  # 16k context: tool schemas + skill + section excerpts must fit (4k default truncated tools; see ADR-0005).
-  OLLAMA_HOST=127.0.0.1:11435 OLLAMA_MODELS="$FORGE_DATA_ROOT/ollama-models" OLLAMA_CONTEXT_LENGTH=16384 \
+  # 24k context (SWE.3 code generation exceeded 16k, ADR-0005): tool schemas + skill + section excerpts must fit (4k default truncated tools; see ADR-0005).
+  OLLAMA_HOST=127.0.0.1:11435 OLLAMA_MODELS="$FORGE_DATA_ROOT/ollama-models" OLLAMA_CONTEXT_LENGTH=24576 \
   OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=1 \
     setsid nohup "$OLLAMA" serve >"$LOG/ollama-11435.log" 2>&1 </dev/null &
 }

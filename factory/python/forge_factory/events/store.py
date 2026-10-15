@@ -90,7 +90,8 @@ class EventStore:
               agent_id: str | None = None, phase: str | None = None, q: str | None = None, after_seq: int = 0,
               limit: int = 100, allowed_channels: set[str] | None = None) -> dict:
         limit = max(1, min(500, limit))
-        where, args = ["seq > ?"], [after_seq]
+        where: list[str] = ["seq > ?"]
+        args: list[Any] = [after_seq]
         chans = [c for c in (channels or []) if (allowed_channels is None or c in allowed_channels)]
         if channels is not None:
             if not chans:

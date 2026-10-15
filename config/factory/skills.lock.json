@@ -28,11 +28,11 @@
     },
     "release-manager": {
       "path": ".fabro/skills/release-manager/SKILL.md",
-      "sha256": "79687b1ee60f64128cf172251d94e32757a5a3cf2f36d68a30f90c22986522e0"
+      "sha256": "143c218ca3557a2e044c6d8fd2aa8234fc1bd0bfb646fa955c671d099c55b5d8"
     },
     "safety-evidence-auditor": {
       "path": ".fabro/skills/safety-evidence-auditor/SKILL.md",
-      "sha256": "b4713f4be0932678ccf42f45495ebef3a929605fdc54f1a646ab5b58c37da147"
+      "sha256": "000f189e6f696e00946db09475d66b10e20f3a87dba0a313a1267c9babb4c1d3"
     },
     "swe1-author": {
       "path": ".fabro/skills/swe1-author/SKILL.md",

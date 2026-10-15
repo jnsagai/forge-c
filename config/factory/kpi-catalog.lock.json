@@ -1,0 +1,9 @@
+{
+  "catalog": "specs/003-manufacturing-kpis/contracts/kpi-catalog.json",
+  "catalog_version": "0.5.0",
+  "engine": "kpi-engine-0.5.0",
+  "frozen_by": "KPI-T001 deterministic review: IDs K01-K20 unique, formula/unit/source/caveat present",
+  "metrics": 20,
+  "schema": "forge-c/kpi-catalog-lock/0.5",
+  "sha256": "93b8c497cc67f115813e143ffdac7bcebb0df989b9389240884b4be9381e9e63"
+}

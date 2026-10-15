@@ -30,6 +30,8 @@ Use only the supplied read-only input manifest, versioned workproduct baselines,
 - `forge-evidence-mcp.check_inspection`
 - `forge-analysis-mcp.cppcheck`
 - `forge-observer-mcp.get_status`
+- `forge-observer-mcp.get_kpis`
+- `forge-observer-mcp.get_kpi_evidence`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. You may not use `write_file`/`edit_file`.
 

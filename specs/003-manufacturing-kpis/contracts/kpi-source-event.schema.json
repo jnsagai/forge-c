@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/v0.5/kpi-source-event.schema.json",
+  "title": "Forge-C KPI source event (v0.5, extends the 002 event model with typed production payloads)",
+  "$comment": "KPI-T002. Derived deterministically from immutable factory records; never authored by an AI agent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "event_id", "ts_utc", "type", "order_id", "attempt_id", "payload", "evidence_refs", "source"],
+  "properties": {
+    "schema": {"const": "forge-c/kpi-source-event/0.5"},
+    "event_id": {"type": "string", "pattern": "^kse-[a-f0-9]{32}$"},
+    "ts_utc": {"type": "string", "format": "date-time"},
+    "type": {"enum": ["work_order.admitted", "work_order.closed", "inspection.completed", "finding.recorded",
+                      "quality_gate.evaluated", "stage.started", "stage.completed", "package.sealed",
+                      "agent.usage_recorded", "incident.detected", "incident.resolved", "repair.completed",
+                      "supervisor.heartbeat", "firmware.footprint_measured", "misra.rule_assessed",
+                      "requirements.verification_recorded", "traceability.link_verified",
+                      "artifact.evidence_validated"]},
+    "order_id": {"type": "string", "minLength": 1, "maxLength": 120},
+    "attempt_id": {"type": "string", "minLength": 1, "maxLength": 120},
+    "phase": {"type": "string", "maxLength": 40},
+    "payload": {"type": "object"},
+    "evidence_refs": {"type": "array", "items": {"type": "string", "maxLength": 512}},
+    "source": {"type": "object", "required": ["kind", "ref"], "additionalProperties": false,
+               "properties": {"kind": {"type": "string"}, "ref": {"type": "string", "maxLength": 512}}}
+  }
+}

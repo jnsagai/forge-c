@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_kpi_003.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "kpi_t012 or t040"
+  ],
+  "duration_s": 0.945,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "973f2fc5a4e91818a278eceadb972f70971507b8",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/KPI-T012/20261015T015300.log",
+  "log_sha256": "17e14bcdc186400a95c759b64316800abdc5d6ae8d14f37935aac50b6fd0523b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "KPI-T012",
+  "ts_utc": "2026-10-15T01:53:00.948640Z"
+}

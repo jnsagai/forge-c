@@ -33,15 +33,17 @@ AUTHOR_STEPS = {
         "fix and repeat until status PASS.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.1."],
     "SWE.2": [
-        "Read workproducts/SWE.1/software_requirements.md and the memory map excerpt (RCC base 0x56028000).",
+        "Read workproducts/SWE.1/software_requirements.md and these RM0486 section files: {s1}.",
         "write_file workproducts/SWE.2/software_architecture.md with sections: Components (LL header-only stm32n6xx_ll_rcc.h, "
         "HAL stm32n6xx_hal_rcc.c/.h), Register access (volatile uint32_t at base+offset; base pointer replaceable for host "
         "tests), Interfaces (each HAL_RCC_ API with hal_status_t and parameters), Timeouts and error handling, Memory and "
-        "stack budget (flash<=4096 B, RAM<=64 B, stack<=128 B), Requirement allocation table (SWR -> function).",
+        "stack budget (flash<=4096 B, RAM<=64 B, stack<=128 B), Requirement allocation table (SWR -> function), and a "
+        "Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 page. RCC base "
+        "address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check markdown.",
         "Call mcp__forge_evidence_mcp__freeze_baseline with phase SWE.2."],
     "SWE.3": [
-        "Read workproducts/SWE.2/software_architecture.md and these RM0486 section files: {s3}.",
+        "Read workproducts/SWE.2/software_architecture.md (its register table is your only hardware source; do not read the RM).",
         "write_file software/ll/stm32n6xx_ll_rcc.h: guard STM32N6XX_LL_RCC_H, #include <stdint.h>, register offsets as "
         "LL_RCC_..._OFFSET defines, bit masks as LL_RCC_... defines, only static inline functions named LL_RCC_..., no enum, "
         "types lower case ending _t prefixed ll_.",
@@ -81,8 +83,7 @@ AUTHOR_STEPS = {
 
 def author_prompt(phase: str) -> str:
     n = phase[-1]
-    fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64"),
-             "s3": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
+    fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
     body = [x.format(**fills) if "{s" in x else x for x in AUTHOR_STEPS[phase]]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ, "read_file .forge-run/manifest.json.",
              FIX.format(p=phase)] + body + [REPLY]
