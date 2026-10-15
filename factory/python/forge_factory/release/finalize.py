@@ -226,8 +226,13 @@ def sup_reports(ws: Path, stage: Path, checks: dict, findings: list[dict], detai
        f"# SUP.8 Configuration status (generated)\n\nWorkspace commit: `{_git(ws, 'rev-parse', 'HEAD')}`\n\n"
        f"## Frozen baselines\n{bl}\n")
     fl = "\n".join(f"- `{f['id']}` ({f['severity']}): {f['detail']}" for f in findings) or "- none open"
+    from ..inspection import defects
+
+    rv = "\n".join(f"- {x}" for x in defects.review_items(ws)) or "- none"
     _w(stage, "support/SUP.9/problem_resolution_status.md",
-       f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n")
+       f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n\n"
+       "## Defects filed or declared by the deterministic gate (human review required)\n"
+       f"{rv}\n")
     revs = {p: len(store.baselines(p)) for p in PHASES}
     _w(stage, "support/SUP.10/change_request_status.md",
        "# SUP.10 Change request status (generated)\n\nBaseline revisions per phase (each revision after the first "

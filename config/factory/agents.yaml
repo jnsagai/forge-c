@@ -165,7 +165,7 @@ agents:
   model: qwen3:8b
   model_provider: ollama
   max_stage_tokens: 32000
-  max_turns: 20
+  max_turns: 35  # owner decision 2026-10-15 (r71)
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -219,7 +219,7 @@ agents:
   model: qwen3:8b
   model_provider: ollama
   max_stage_tokens: 32000
-  max_turns: 20
+  max_turns: 35  # owner decision 2026-10-15 (r71)
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline

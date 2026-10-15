@@ -44,6 +44,11 @@ INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
                   "= the clause copied verbatim) before check_inspection.")
 
+GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} and "
+                       "reported_by route-gate, the gate declared a test the author changed after an upstream fix; "
+                       "read the cited test file and the requirement and FAIL the test-related item if the changed "
+                       "test no longer checks the requirement as written.")
+
 AUTHOR_STEPS = {
     "SWE.1": [
         "read_file these RM0486 section files: {s1}.",
@@ -407,6 +412,7 @@ def inspector_prompt(phase: str) -> str:
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else []),
+             *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",

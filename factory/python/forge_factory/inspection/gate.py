@@ -93,6 +93,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
 
     missing += defects.verify_on_freeze(store.workspace, phase)
     if phase in ("SWE.4", "SWE.5", "SWE.6"):  # L4 anti-bending: a test edited until it passes must be declared
+        try:  # L13: adaptation to an upstream fix (test passed before the fix) is declared by the gate
+            for d in defects.declare_post_fix_adaptations(store.workspace, phase):
+                _state(store.workspace, phase, {"step": "test_declaration", "result": "GATE_DECLARED",
+                                                "defect": d["id"], "fix": d["gate_declared"]["fix_defect"]})
+        except defects.DefectError as exc:
+            _state(store.workspace, phase, {"step": "test_declaration", "result": "REFUSED", "error": str(exc)[:200]})
         missing += [f"{i} (restore the test and report_defect the upstream fault, or declare the correction with "
                     "report_defect kind TEST)" for i in defects.bent_tests(store.workspace, phase)]
     if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing

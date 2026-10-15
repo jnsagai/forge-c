@@ -287,13 +287,11 @@ def _integrity_runs(ws: Path) -> list[dict]:
     return [json.loads(x) for x in p.read_text().splitlines() if x.strip()] if p.is_file() else []
 
 
-def bent_tests(ws: Path, phase: str) -> list[str]:
-    """A test file that failed at runtime and passes in the newest run of the same tool after being EDITED, while
-    the product code is unchanged, is a test changed to fit the code. It needs a declared TEST defect (reason,
-    reviewed by inspector and human); otherwise the phase is not frozen (r60: SWR-014 scenario rewritten)."""
+def _bent(ws: Path, phase: str) -> list[tuple[str, dict]]:
+    """(test file, failing run) for every test changed to pass against unchanged code and not declared."""
     runs = [r for r in _integrity_runs(ws) if r.get("phase") == phase and r.get("op") in TEST_TOOLS]
     declared = [d for d in all_defects(ws) if d["kind"] == "TEST" and d["detected_phase"] == phase]
-    issues = []
+    out: list[tuple[str, dict]] = []
     for op in sorted({r["op"] for r in runs}):
         seq = [r for r in runs if r["op"] == op]
         final = seq[-1]
@@ -306,10 +304,56 @@ def bent_tests(ws: Path, phase: str) -> list[str]:
                 if f not in fin["files"] or fin["files"][f] == it["files"].get(f) or fin["code_sha"] != it["code_sha"]:
                     continue  # unchanged test, removed test, or the code changed (upstream fix): not bending
                 ok = any(f in d["test_files"] and d["history"][0]["ts"] >= r.get("ts_utc", "") for d in declared)
-                msg = f"TEST_CHANGED_AFTER_FAIL:{f}"
-                if not ok and msg not in issues:
-                    issues.append(msg)
-    return issues
+                if not ok and f not in [x for x, _ in out]:
+                    out.append((f, r))
+    return out
+
+
+def bent_tests(ws: Path, phase: str) -> list[str]:
+    """A test file that failed at runtime and passes in the newest run of the same tool after being EDITED, while
+    the product code is unchanged, is a test changed to fit the code. It needs a declared TEST defect (reason,
+    reviewed by inspector and human); otherwise the phase is not frozen (r60: SWR-014 scenario rewritten)."""
+    return [f"TEST_CHANGED_AFTER_FAIL:{f}" for f, _ in _bent(ws, phase)]
+
+
+def declare_post_fix_adaptations(ws: Path, phase: str) -> list[dict]:
+    """ADR-0008 L13 (owner decision 2026-10-15, r71): an upstream fix changed behaviour, so a test that PASSED with
+    the same content on the pre-fix code fails afterwards and the author adapts it without declaring it. The gate
+    declares it (kind TEST, reported_by route-gate) citing the fix defect's requirement clause, so the phase can
+    proceed; the inspector must check the changed test against the requirement and the package lists it for human
+    review. A test that never passed before the fix is still plain bending (blocked)."""
+    runs = [r for r in _integrity_runs(ws) if r.get("op") in TEST_TOOLS]
+    fixes = [d for d in all_defects(ws) if d["kind"] in KIND_TARGET and d["status"] in ("FIXED", "VERIFIED")]
+    out = []
+    for f, failed in _bent(ws, phase):
+        before = [r for r in runs if r["op"] == failed["op"] and r["status"] == "PASS"
+                  and r.get("ts_utc", "") < failed.get("ts_utc", "") and r["files"].get(f) == failed["files"].get(f)
+                  and r["code_sha"] != failed["code_sha"]]
+        if not before:
+            continue
+        passed = before[-1]
+        fix = next((d for d in reversed(fixes) if any(
+            h["status"] == "FIXED" and passed["ts_utc"] < h["ts"] <= failed["ts_utc"] for h in d["history"])), None)
+        if fix is None:
+            continue
+        rec = report(ws, detected_phase=phase, reported_by=GATE_REPORTER, kind="TEST",
+                     summary=f"Gate-declared: {f} passed on the pre-fix code and failed after the {fix['id']} fix "
+                             f"({fix['kind']}, {', '.join(fix['requirement_ids'])}); the author adapted it without "
+                             "declaring it. Inspector: check the changed test against the requirement; human review.",
+                     requirement_ids=fix["requirement_ids"], test_files=[f],
+                     evidence_refs=[f"{INTEGRITY_LOG}@{passed['ts_utc']}", f"{INTEGRITY_LOG}@{failed['ts_utc']}"],
+                     requirement_quote=fix.get("requirement_quote", ""))
+        rec["gate_declared"] = {"fix_defect": fix["id"], "passed_before_fix": passed["ts_utc"],
+                                "failed_after_fix": failed["ts_utc"]}
+        _save(ws, rec)
+        out.append(rec)
+    return out
+
+
+def review_items(ws: Path) -> list[str]:
+    """Defects the gate filed or declared on its own: listed for the human reviewer (not gaps by themselves)."""
+    return [f"{d['id']} {d['kind']} {d['status']} ({d['detected_phase']}): {d['summary'][:200]}"
+            for d in all_defects(ws) if d.get("reported_by") == GATE_REPORTER]
 
 
 # ---- safety net (ADR-0008 L11, owner decision 2026-10-15) -----------------------------------------------------

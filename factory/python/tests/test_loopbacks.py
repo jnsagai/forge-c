@@ -378,3 +378,39 @@ def test_partially_rejected_loop_is_fixed_by_the_owner(ws, monkeypatch):
     D.reject(ws, "DEF-002", "swe3-author", "HAL_TIMEOUT is returned; the scenario never waits")
     assert G.step_triage(Store(ws), "SWE.3") == 1  # latest loop (DEF-002) fully rejected
     assert D.all_defects(ws)[0]["status"] == "IN_FIX"  # the earlier loop's defect stays with the owner
+
+
+# ---- L13 gate-declared adaptation of a test to an upstream fix (owner decision 2026-10-15, r71) ---------------
+def _fixed_code_defect(ws):
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    code_defect(ws)
+    D.take_upstream(ws, "SWE.3")
+    D.mark_fixed(ws, "SWE.3", "BL-SWE.3-002")  # FIXED now, between the runs below
+
+
+def test_test_adapted_after_an_upstream_fix_is_declared_by_the_gate_r71(ws):
+    f = "software/tests/integration/test_rcc_integration.c"
+    (ws / f).parent.mkdir(parents=True)
+    (ws / f).write_text("/* IT-017 adapted */\n")
+    _fixed_code_defect(ws)
+    _run(ws, "SWE.5", "run_integration", "PASS", "2000-01-01T00:00:00Z", "C-old", {f: "h1"}, [])  # pre-fix code
+    _run(ws, "SWE.5", "run_integration", "FAIL", D.utc_now(), "C-fix", {f: "h1"}, [f])  # same test fails
+    _run(ws, "SWE.5", "run_integration", "PASS", D.utc_now(), "C-fix", {f: "h2"}, [])  # adapted
+    assert D.bent_tests(ws, "SWE.5") == [f"TEST_CHANGED_AFTER_FAIL:{f}"]
+    [rec] = D.declare_post_fix_adaptations(ws, "SWE.5")
+    assert (rec["kind"], rec["status"], rec["reported_by"]) == ("TEST", "DECLARED", "route-gate")
+    assert rec["gate_declared"]["fix_defect"] == "DEF-001" and rec["requirement_ids"] == ["SWR-014"]
+    assert D.bent_tests(ws, "SWE.5") == [] and D.gaps(ws) == ["open_defect:DEF-001:CODE:FIXED"]
+    assert any(x.startswith(f"{rec['id']} TEST DECLARED (SWE.5)") for x in D.review_items(ws))
+
+
+def test_test_that_never_passed_before_the_fix_is_still_bending(ws):
+    f = "software/tests/integration/test_rcc_integration.c"
+    (ws / f).parent.mkdir(parents=True)
+    (ws / f).write_text("/* rewritten */\n")
+    _fixed_code_defect(ws)
+    _run(ws, "SWE.5", "run_integration", "PASS", "2000-01-01T00:00:00Z", "C-old", {f: "h0"}, [])  # other content
+    _run(ws, "SWE.5", "run_integration", "FAIL", D.utc_now(), "C-fix", {f: "h1"}, [f])
+    _run(ws, "SWE.5", "run_integration", "PASS", D.utc_now(), "C-fix", {f: "h2"}, [])
+    assert D.declare_post_fix_adaptations(ws, "SWE.5") == []
+    assert D.bent_tests(ws, "SWE.5") == [f"TEST_CHANGED_AFTER_FAIL:{f}"]
