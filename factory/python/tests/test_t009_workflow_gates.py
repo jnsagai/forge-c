@@ -106,3 +106,9 @@ def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
     assert "AGENT_OUTPUT_CONTRACT_VIOLATION" in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
     bad = gate(tmp_path, "SWE.1", "author", '{"status":"BLOCKED","artifacts":[],"issues":["x"],"next_action":"halt"}')
     assert bad.returncode >= 10  # explicit agent BLOCKED is honoured
+
+
+def test_route_counts_author_rejections_in_rework_budget(tmp_path):
+    for _ in range(3):
+        assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # BLOCKED -> finalizer (not an endless rework loop)

@@ -92,8 +92,20 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
     return 0 if g["decision"] == "PASS" else fail_code(store.workspace, phase, "inspect")
 
 
+def author_rejections(ws: Path, phase: str) -> int:
+    log = ws / ".forge-run" / "gates" / "gate-log.jsonl"
+    if not log.is_file():
+        return 0
+    return sum(1 for x in log.read_text().splitlines()
+               if f'"phase": "{phase}"' in x and '"step": "author"' in x and '"REJECTED"' in x)
+
+
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
+    # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
+    cycles = g["failed_inspections"] + author_rejections(store.workspace, phase)
+    if g["decision"] != "PASS" and cycles >= g["max_rework_cycles"]:
+        g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)"}
     _state(store.workspace, phase, {"step": "route", "gate": g})
     if g["decision"] == "BLOCKED":
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)
