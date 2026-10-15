@@ -72,7 +72,8 @@ def markdown(d: list[dict]) -> str:
 
 def page(d: list[dict]) -> str:
     e = html.escape
-    nav = "".join(f'<a href="#{p["phase"].replace(".", "")}">{p["phase"]}</a>' for p in d) + '<a href="#release">Release</a>'
+    nav = "".join(f'<a href="#{p["phase"].replace(".", "")}">{p["phase"]}</a>' for p in d)
+    nav += '<a href="#release">Release</a>'
     secs = []
     for p in d:
         rows = "".join(
