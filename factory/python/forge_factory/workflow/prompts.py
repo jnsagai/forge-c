@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from ..inspection.engine import load_checklist
 
-READ = ("Work step by step. After every tool result, immediately continue with the next numbered step; never summarize or "
+READ = ("When you write_file, put real line breaks in the content (one C statement per line); never write \\n escape "
+        "sequences as text. Work step by step. After every tool result, immediately continue with the next numbered step; never summarize or "
         "explain tool output. Never read inputs/index.md or the large inputs/*.md documents; read only the section files "
         "named in these steps, each at most once.")
 SECTIONS: dict[str, str] = {}  # section number -> section file path, set by the workflow builder per work order
