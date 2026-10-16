@@ -72,6 +72,7 @@ Command nodes only, local Fabro :32290. The probe is in the session scratchpad, 
 | **L12** rejected loop (no cascade) | the upstream owner rejects every defect of the latest loop | Each upstream loop first runs `swe{k}_triage`, the owner role in a small edit-free step: accept, or `reject_defect` with a reason. `swe{k}_triage_gate` sends the run to the owner's fix step if any defect is accepted, or if the owner's baseline was changed anyway. If every defect was rejected and the owner's baseline is intact, it goes through the return chain `return_swe2→…→return_swe6→finalize` to the reporting phase's rework entry. Nothing upstream is re-frozen, so no downstream phase is redone. The reporter is told that a rejected defect carries the owner's reason: correct the test (declare TEST) or report REQUIREMENT. | **implemented** (owner decision 2026-10-15) |
 | **L13** test adapted to an upstream fix | a test edited after a runtime failure (anti-bending L4) had **passed with the same content on the pre-fix code**, and a CODE/ARCHITECTURE/REQUIREMENT defect was FIXED between that pass and the failure | At the author gate, the gate declares it itself: kind TEST, `reported_by: route-gate`, citing the fix defect's requirement clause and both integrity records. The phase can then freeze. Inspectors of SWE.4–6 are told to check every gate-declared test against the requirement as written and FAIL the item if it no longer checks it. SUP.9 in the package lists all gate-filed and gate-declared defects for human review. A test that never passed before the fix is still plain bending and stays blocked. | **implemented** (owner decision 2026-10-15) |
 | **L14** declaration coverage | a declared test file (L4/L13) fails again and is corrected again, while the product code is the one the declaration was made against | The declaration covers the further corrections (no new declaration). The defect records the product-code hash at declaration (`code_sha`); a declaration made before this field existed uses the code of the newest test run before it. After a code change (upstream fix) the correction needs a new declaration. The content is guarded by the requirement observability check, by the SWE.4–6 inspector, which reads the **current** version of every declared test file (author- or gate-declared) against the cited requirement, and by SUP.9. | **implemented** (owner decision 2026-10-16) |
+| **L15** reporter withdraws its blame | the reporting phase finds that its own CODE/ARCHITECTURE/REQUIREMENT defect (OPEN, IN_FIX or FIXED, not yet VERIFIED) was its test error | It corrects the test and declares kind TEST on the same test file and an overlapping requirement. The earlier defect becomes **WITHDRAWN** (no gap, listed in SUP.9 for human review). Without this, a FIXED defect requires its cited test byte-identical and passing, so a wrong blame was a dead end (BLOCKED). | **implemented** (2026-10-16, autonomy window) |
 
 Rejected alternatives:
 - **Letting downstream authors edit upstream files.** This breaks role separation and the baseline/inspection
@@ -331,3 +332,25 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   r72's integrity log (one code hash throughout, declarations at 21:22): no `TEST_CHANGED_AFTER_FAIL` remains.
   Tests: `test_loopbacks.py::…declaration_covers_later_corrections…_r72`, `…does_not_cover_corrections_after_the_code_changed`,
   `…legacy_declaration_without_code_hash…`.
+
+## Twelfth live run (r73): cost cap reached; three factory gaps found
+- **Run stopped by the gateway cost cap**, not by the factory: at 03:21 UTC the cumulative DeepSeek spend
+  (all runs r37–r73 since 2026-10-15 06:52) reached the $2.00 cap and every agent call failed; Fabro ended the run
+  on the repeated deterministic failure. Raised to $3.00 within the owner's autonomy grant (≈ $0.06 per run).
+- **SWE.3 triage accepted SWE.6's SWR-014 defect** (out-of-range timeout must return HAL_ERROR) and SWE.3 fixed
+  it in one cycle (FIXED). This is the opposite of r72's triage; both readings are defensible (requirement
+  ambiguity between SWR-014 and SWR-015), and each owner decision is recorded with its reason.
+- **SWE.4 blamed the code for its own test** (as in r70): the unit test called `HAL_RCC_PLL1..4_Disable`, which
+  the API never declared, for SWR-008 (a peripheral clock register clause). Filed as CODE, the triage accepted it
+  in 8 s and the last upstream loop was spent. **Fixed:** `report` refuses a CODE defect while the newest failing
+  test run of the phase does not build because it calls functions no product header declares
+  (`CODE_DEFECT_ON_UNDECLARED_API`, unless a SWE.3 source location is cited); a missing API is ARCHITECTURE with a
+  verbatim clause.
+- **A no-op fix was marked FIXED:** the SWE.3 fix author replied in prose without changing a file; the gate
+  re-froze the same baseline (idempotent freeze) and the unchanged inspection marked DEF-002 FIXED. **Fixed:** the
+  author gate rejects a freeze while an IN_FIX defect of the phase exists and no work product changed since it was
+  handed over (`DEFECT_NOT_ADDRESSED`): fix it, or `reject_defect` with a reason.
+- **Dead end for a wrong blame:** a FIXED defect is VERIFIED only with its cited test unchanged and passing; a
+  reporter whose test was wrong could neither change the test nor pass it. **Fixed:** L15 withdrawal.
+- Tests: `test_loopbacks.py::…undeclared_api_is_refused_r73`, `…fix_step_that_changed_nothing_is_not_frozen_r73`,
+  `…reporter_withdraws_its_own_defect…`.

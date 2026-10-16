@@ -457,3 +457,58 @@ def test_legacy_declaration_without_code_hash_uses_the_preceding_run(ws):
     _run(ws, "SWE.6", "run_robot", "FAIL", D.utc_now(), "C1", {f: "h2"}, [f])
     _run(ws, "SWE.6", "run_robot", "PASS", D.utc_now(), "C1", {f: "h3"}, [])
     assert D.bent_tests(ws, "SWE.6") == []
+
+
+# ---- r73: no blame for an undeclared API; a fix step must change something; the reporter can withdraw ---------
+def test_code_defect_on_an_undeclared_api_is_refused_r73(ws):
+    """r73: SWE.4 tests called HAL_RCC_PLL1_Disable (never declared), blamed the code and the loop was spent."""
+    (ws / "software/hal/stm32n6xx_hal_rcc.h").write_text("hal_status_t HAL_RCC_HSI_Disable(void);\n")
+    p = ws / "evidence/tool-results.jsonl"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    err = "software/tests/unit/test_rcc.c:234:11: error: call to undeclared function '{}'; ISO C99 and later do n"
+    for fn in ("HAL_RCC_PLL1_Disable", "HAL_RCC_HSI_Disable"):
+        p.write_text(json.dumps({"ts_utc": "2026-10-16T03:19:45Z", "phase": "SWE.4", "op": "run_unit",
+                                 "result": {"status": "FAIL", "issues": ["BUILD_FAIL:test_rcc.c", err.format(fn)]}})
+                     + "\n")
+        args = dict(detected_phase="SWE.4", reported_by="swe4-author", kind="CODE", summary="PLL disable missing",
+                    requirement_ids=["SWR-014"], test_files=["software/tests/software/scn_invalid_param.c"],
+                    evidence_refs=[], requirement_quote="shall return HAL_ERROR without any register write")
+        if fn == "HAL_RCC_PLL1_Disable":
+            with pytest.raises(D.DefectError, match="CODE_DEFECT_ON_UNDECLARED_API:HAL_RCC_PLL1_Disable"):
+                D.report(ws, **args)
+        else:  # declared in the header (e.g. a missing #include in the test): not refused by this rule
+            assert D.report(ws, **args)["status"] == "OPEN"
+
+
+def test_fix_step_that_changed_nothing_is_not_frozen_r73(ws, monkeypatch):
+    """r73: the fix author replied in prose, the same baseline was re-frozen and DEF-002 became FIXED unchanged."""
+    from forge_factory.inspection import gate as G
+
+    bl = {"baseline_id": "BL-SWE.3-002", "frozen_at": "2026-10-16T03:18:56Z", "baseline_hash": "H"}
+    monkeypatch.setattr(Store, "latest_baseline", lambda self, p: bl)
+    cur = {"h": "H"}
+    monkeypatch.setattr(Store, "current_hash", lambda self, p: cur["h"])
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    code_defect(ws)
+    D.take_upstream(ws, "SWE.3")  # IN_FIX after the baseline was frozen
+    assert [i.split(":")[0:2] for i in G._unaddressed_defects(Store(ws), "SWE.3")] == [["DEFECT_NOT_ADDRESSED",
+                                                                                      "DEF-001"]]
+    cur["h"] = "H2"  # the owner changed a work product
+    assert G._unaddressed_defects(Store(ws), "SWE.3") == []
+    cur["h"] = "H"
+    D.reject(ws, "DEF-001", "swe3-author", "SWR-014 as written is met; the scenario passes an allowed timeout")
+    assert G._unaddressed_defects(Store(ws), "SWE.3") == []
+
+
+def test_reporter_withdraws_its_own_defect_by_declaring_the_test_wrong(ws):
+    f = "software/tests/software/scn_invalid_param.c"
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    code_defect(ws)
+    D.take_upstream(ws, "SWE.3")
+    D.mark_fixed(ws, "SWE.3", "BL-SWE.3-002")
+    (ws / f).write_text("/* SWR-014 corrected: invalid oscillator id */\n")
+    assert D.verify_on_freeze(ws, "SWE.6") == [f"DEFECT_TEST_CHANGED:DEF-001:{f}"]  # dead end before L15
+    _declare(ws, f)
+    assert D.all_defects(ws)[0]["status"] == "WITHDRAWN"
+    assert D.verify_on_freeze(ws, "SWE.6") == [] and D.gaps(ws) == []
+    assert any(x.startswith("DEF-001 CODE WITHDRAWN (SWE.6)") for x in D.review_items(ws))

@@ -38,7 +38,9 @@ DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matche
                "itself is wrong, correct it and declare that with report_defect kind TEST (requirement_ids, "
                "test_files, requirement_quote = the clause the corrected test checks, why it was wrong). A defect you "
                "reported that is REJECTED in .forge-run/defects carries the owner's reason: correct your test (declare "
-               "it as TEST) or, if the requirement itself is wrong, report kind REQUIREMENT - never re-report it.")
+               "it as TEST) or, if the requirement itself is wrong, report kind REQUIREMENT - never re-report it. If a "
+               "defect you reported turns out to be your own test error, correct the test and declare kind TEST on "
+               "the same test file: that withdraws your defect.")
 INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
                   "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "

@@ -63,6 +63,17 @@ def _tool_results(ws: Path) -> list[dict]:
     return [json.loads(x) for x in p.read_text().splitlines() if x.strip()] if p.is_file() else []
 
 
+UNDECLARED_CALL = re.compile(r"(?:call to undeclared function|implicit declaration of function) '(\w+)'")
+
+
+def _undeclared_api_calls(ws: Path, run: dict) -> list[str]:
+    """Functions a failing test run could not build against because no product header declares them."""
+    names = sorted({m for i in run["result"].get("issues", []) for m in UNDECLARED_CALL.findall(i)})
+    heads = " ".join(p.read_text(errors="replace") for d in ("software/hal", "software/ll", "software/include")
+                     for p in sorted((ws / d).rglob("*.h")) if (ws / d).is_dir())
+    return [n for n in names if not re.search(rf"\b{re.escape(n)}\s*\(", heads)]
+
+
 def _in_paths(rel: str, phase: str) -> bool:
     return any(rel == p or rel.startswith(p.rstrip("/") + "/") for p in PHASE_PATHS[phase])
 
@@ -126,6 +137,15 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         if not (failing and test_files) and not locs:
             raise DefectError("CODE_DEFECT_NEEDS_EVIDENCE:failing test run of this phase (with test_files) or a "
                               "SWE.3 source location file:line")
+        undeclared = _undeclared_api_calls(ws, failing[-1]) if failing else []
+        if undeclared and not locs:
+            # r70/r73: SWE.4 tests called HAL_RCC_PLLx_Disable, which the API never declared, and blamed the code
+            # (r73: triage accepted it and spent the last upstream loop). Code cannot be wrong about an API the
+            # architecture does not have: the test must call declared functions, or the API gap is ARCHITECTURE.
+            raise DefectError(f"CODE_DEFECT_ON_UNDECLARED_API:{','.join(undeclared[:4])}: your test does not build "
+                              "because it calls functions the API headers do not declare. Call only declared "
+                              "functions; if a requirement clause needs a missing function, report kind "
+                              "ARCHITECTURE quoting that clause")
     if kind == "TEST" and not test_files:
         raise DefectError("TEST_DEFECT_NEEDS_TEST_FILE")
     existing = all_defects(ws)
@@ -146,6 +166,12 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
         _event(rec, "DECLARED", note="test corrected in its own phase; reviewed by the inspector and the human")
+        for d in existing:  # ADR-0008 L15: the reporter retracts its own unverified blame on the same test file
+            if d["detected_phase"] == detected_phase and d["kind"] in KIND_TARGET and \
+                    d["status"] in ("OPEN", "IN_FIX", "FIXED") and set(d["test_files"]) & set(hashes) and \
+                    set(d["requirement_ids"]) & set(requirement_ids):
+                _event(d, "WITHDRAWN", by=rec["id"], note="the reporter declared its test wrong (human review)")
+                _save(ws, d)
     else:
         _event(rec, "OPEN")
     _save(ws, rec)
@@ -232,12 +258,12 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
 
 
 def gaps(ws: Path) -> list[str]:
-    """Release finalizer: every defect not VERIFIED/REJECTED/DECLARED is a gap."""
+    """Release finalizer: every defect not VERIFIED/REJECTED/DECLARED/WITHDRAWN is a gap."""
     out = []
     for d in all_defects(ws):
         if d["status"] == "ESCALATED":
             out.append(f"escalated_defect:{d['id']}:{d['kind']}")
-        elif d["status"] not in ("VERIFIED", "REJECTED", "DECLARED"):
+        elif d["status"] not in ("VERIFIED", "REJECTED", "DECLARED", "WITHDRAWN"):
             out.append(f"open_defect:{d['id']}:{d['kind']}:{d['status']}"
                        + (":gate-filed" if d.get("reported_by") == GATE_REPORTER else ""))
     return out
@@ -373,9 +399,10 @@ def declare_post_fix_adaptations(ws: Path, phase: str) -> list[dict]:
 
 
 def review_items(ws: Path) -> list[str]:
-    """Defects the gate filed or declared on its own: listed for the human reviewer (not gaps by themselves)."""
+    """Defects the gate filed or declared on its own, and defects their reporter withdrew: listed for the human
+    reviewer (not gaps by themselves)."""
     return [f"{d['id']} {d['kind']} {d['status']} ({d['detected_phase']}): {d['summary'][:200]}"
-            for d in all_defects(ws) if d.get("reported_by") == GATE_REPORTER]
+            for d in all_defects(ws) if d.get("reported_by") == GATE_REPORTER or d["status"] == "WITHDRAWN"]
 
 
 # ---- safety net (ADR-0008 L11, owner decision 2026-10-15) -----------------------------------------------------

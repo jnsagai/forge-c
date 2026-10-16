@@ -70,6 +70,25 @@ def _trailing_contract(text: str):
     return tail if tail.ok else None
 
 
+def _unaddressed_defects(store: Store, phase: str) -> list[str]:
+    """r73: the SWE.3 fix author replied in prose without changing a file; the gate re-froze the SAME baseline, the
+    unchanged inspection passed and DEF-002 became FIXED with nothing fixed. An IN_FIX defect of this phase needs a
+    changed work product (fixed) or reject_defect with a reason (REJECTED) before the phase is frozen again."""
+    from . import defects
+
+    bl = store.latest_baseline(phase)
+    if bl is None or store.current_hash(phase) != bl["baseline_hash"]:
+        return []
+    out = []
+    for d in defects.all_defects(store.workspace):
+        if d["status"] == "IN_FIX" and d["target_phase"] == phase:
+            taken = next((h["ts"] for h in reversed(d["history"]) if h["status"] == "IN_FIX"), "")
+            if bl["frozen_at"] <= taken:
+                out.append(f"DEFECT_NOT_ADDRESSED:{d['id']}: no {phase} file changed since the defect was handed "
+                           "to you; fix it, or reject_defect with the reason it is not a defect")
+    return out
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
     prose_violation = None
@@ -92,6 +111,7 @@ def step_author(store: Store, phase: str, text: str) -> int:
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
 
     missing += defects.verify_on_freeze(store.workspace, phase)
+    missing += _unaddressed_defects(store, phase)
     if phase in ("SWE.4", "SWE.5", "SWE.6"):  # L4 anti-bending: a test edited until it passes must be declared
         try:  # L13: adaptation to an upstream fix (test passed before the fix) is declared by the gate
             for d in defects.declare_post_fix_adaptations(store.workspace, phase):
