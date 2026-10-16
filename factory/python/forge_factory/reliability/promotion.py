@@ -58,12 +58,9 @@ def _quality(base_wt: Path, cand_wt: Path) -> tuple[str, str | None, list[str]]:
         scratch = Path(tempfile.mkdtemp(prefix=f"cre-q-{label}-"))
         try:
             files = [t for t in QUALITY_TESTS if (tests_from / "factory/python" / t).is_file()]
-            run_dir = scratch / "tests"
-            run_dir.mkdir()
-            for t in files + ["tests/conftest.py"]:
-                src = tests_from / "factory/python" / t
-                if src.is_file():
-                    shutil.copyfile(src, scratch / t)
+            # the whole tests dir of that revision (tests import sibling helpers); only the gate subset is run
+            shutil.copytree(tests_from / "factory/python/tests", scratch / "tests",
+                            ignore=shutil.ignore_patterns("__pycache__"))
             env = RR._env(cand_wt, scratch)  # the CANDIDATE's code is under test in both runs
             env["PATH"] = os.environ.get("PATH", "")
             p = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-x", *files],

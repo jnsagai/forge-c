@@ -218,7 +218,9 @@
     {
       "fr": "CRE-FR-013",
       "passing_tasks": [
-        "CRE-T018"
+        "CRE-T018",
+        "CRE-T024",
+        "CRE-T025"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -232,7 +234,8 @@
     {
       "fr": "CRE-FR-014",
       "passing_tasks": [
-        "CRE-T018"
+        "CRE-T018",
+        "CRE-T024"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -245,9 +248,12 @@
     },
     {
       "fr": "CRE-FR-015",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T025",
+        "CRE-T026"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T025",
         "CRE-T026",
@@ -348,7 +354,9 @@
     {
       "fr": "CRE-FR-024",
       "passing_tasks": [
-        "CRE-T020"
+        "CRE-T020",
+        "CRE-T027",
+        "CRE-T029"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -363,7 +371,9 @@
     {
       "fr": "CRE-FR-025",
       "passing_tasks": [
-        "CRE-T019"
+        "CRE-T019",
+        "CRE-T026",
+        "CRE-T027"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -377,7 +387,9 @@
     {
       "fr": "CRE-FR-026",
       "passing_tasks": [
-        "CRE-T019"
+        "CRE-T019",
+        "CRE-T027",
+        "CRE-T029"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -403,7 +415,8 @@
     {
       "fr": "CRE-FR-028",
       "passing_tasks": [
-        "CRE-T004"
+        "CRE-T004",
+        "CRE-T027"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -415,9 +428,11 @@
     },
     {
       "fr": "CRE-FR-029",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T028"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T028",
         "CRE-T042"
@@ -426,7 +441,8 @@
     {
       "fr": "CRE-FR-030",
       "passing_tasks": [
-        "CRE-T022"
+        "CRE-T022",
+        "CRE-T029"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -582,12 +598,10 @@
     }
   ],
   "cre_p0_gaps": [
-    "CRE-FR-015",
     "CRE-FR-016",
     "CRE-FR-017",
     "CRE-FR-018",
     "CRE-FR-021",
-    "CRE-FR-029",
     "CRE-FR-033"
   ],
   "fr_matrix": [
@@ -1318,8 +1332,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T05:29:10.044225Z",
-  "git_head": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+  "generated_at": "2026-10-16T05:45:59.690117Z",
+  "git_head": "8ddf81f3a7b7376ab59473f4fd664896381c09fb",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1328,9 +1342,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 23,
+    "004_pass": 29,
     "004_total": 42,
-    "cre_fr_covered": 30,
+    "cre_fr_covered": 32,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2760,77 +2774,89 @@
       "task": "CRE-T023"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T024/latest.json"
+      ],
       "frs": [
         "CRE-FR-013",
         "CRE-FR-014"
       ],
-      "line": "- [ ] **CRE-T024 [P0]** Define versioned benchmark manifest with frozen class/complexity, input SHA, MCU/compile flags, model/temperature/seed, toolchain and expected deterministic assertions. **[CRE-",
+      "line": "- [X] **CRE-T024 [P0]** Define versioned benchmark manifest with frozen class/complexity, input SHA, MCU/compile flags, model/temperature/seed, toolchain and expected deterministic assertions. **[CRE-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T024"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T025/latest.json"
+      ],
       "frs": [
         "CRE-FR-013",
         "CRE-FR-015"
       ],
-      "line": "- [ ] **CRE-T025 [P0]** Build at least RCC and three failure fixtures (compiler/analysis, MCP timeout, recovery); include independent holdout fixtures and immutable artifact refs. **[CRE-FR-013, CRE-F",
+      "line": "- [X] **CRE-T025 [P0]** Build at least RCC and three failure fixtures (compiler/analysis, MCP timeout, recovery); include independent holdout fixtures and immutable artifact refs. **[CRE-FR-013, CRE-F",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T025"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T026/latest.json"
+      ],
       "frs": [
         "CRE-FR-015",
         "CRE-FR-025"
       ],
-      "line": "- [ ] **CRE-T026 [P0]** Implement independent benchmark/reproducer execution outside repair candidate security scope. Capture exit codes, evidence hashes, run profile and cost/quality measurements. **",
+      "line": "- [X] **CRE-T026 [P0]** Implement independent benchmark/reproducer execution outside repair candidate security scope. Capture exit codes, evidence hashes, run profile and cost/quality measurements. **",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T026"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T027/latest.json"
+      ],
       "frs": [
         "CRE-FR-024",
         "CRE-FR-025",
         "CRE-FR-026",
         "CRE-FR-028"
       ],
-      "line": "- [ ] **CRE-T027 [P0]** Implement deterministic promotion gate chain with explicit REJECTED/INCONCLUSIVE/ELIGIBLE_FOR_OFFLINE_REVIEW outcomes; hard gate precedence over metrics. **[CRE-FR-024, CRE-FR-",
+      "line": "- [X] **CRE-T027 [P0]** Implement deterministic promotion gate chain with explicit REJECTED/INCONCLUSIVE/ELIGIBLE_FOR_OFFLINE_REVIEW outcomes; hard gate precedence over metrics. **[CRE-FR-024, CRE-FR-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T027"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T028/latest.json"
+      ],
       "frs": [
         "CRE-FR-029"
       ],
-      "line": "- [ ] **CRE-T028 [P0]** Integrate atomic rollback of reversible active operational interventions and lesson-retraction/impact list; never mutate prior release archives. **[CRE-FR-029]** Test: failure ",
+      "line": "- [X] **CRE-T028 [P0]** Integrate atomic rollback of reversible active operational interventions and lesson-retraction/impact list; never mutate prior release archives. **[CRE-FR-029]** Test: failure ",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T028"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T029/latest.json"
+      ],
       "frs": [
         "CRE-FR-024",
         "CRE-FR-026",
         "CRE-FR-030"
       ],
-      "line": "- [ ] **CRE-T029 [P0]** Implement adversarial promotion tests (forged PASS, poisoned fixture, patch alters quality policy, negative result concealed) and declare no autonomous persistent-code promotio",
+      "line": "- [X] **CRE-T029 [P0]** Implement adversarial promotion tests (forged PASS, poisoned fixture, patch alters quality policy, negative result concealed) and declare no autonomous persistent-code promotio",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T029"
     },
     {

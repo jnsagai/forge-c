@@ -68,6 +68,10 @@ DEFINITIONS: dict[str, list[dict]] = {
                     "tests/reliability/holdout/fixtures/scn.c": "software/tests/software/scn.c"},
          "requirements": "specs/002-self-healing-factory/spec.md", "tags": ["holdout", "loopback"],
          "oracle": {"equals": {"result": "REQUIREMENT_QUOTE_REQUIRED"}}},
+        {"case_id": "HO-004", "driver_class": "TEST_INTEGRITY", "harness": "cases/bent_gate_scan.py",
+         "layout": {"tests/reliability/holdout/fixtures/scn.c": "software/tests/software/scn.c"},
+         "requirements": "specs/002-self-healing-factory/spec.md", "tags": ["holdout", "anti-bending", "gate"],
+         "oracle": {"contains": {"flagged": ["TEST_CHANGED_AFTER_FAIL:software/tests/software/scn.c"]}}},
     ],
 }
 

@@ -76,10 +76,13 @@ class WorktreePool:
 
 
 def _env(wt: Path, scratch: Path) -> dict:
+    from ..common import data_root
+
     env = {k: v for k, v in os.environ.items() if not k.startswith("FORGE_") or k in ("FORGE_FABRO_BIN",)}
+    # writes are isolated (state, events in scratch); the data root stays real for read-only pinned toolchains
     env.update({"PYTHONPATH": str(wt / "factory" / "python"), "FORGE_REPO_ROOT": str(wt),
                 "FORGE_STATE_DIR": str(scratch / "state"), "FORGE_EVENTS_DIR": str(scratch / "events"),
-                "FORGE_DATA_ROOT": str(scratch / "data"), "PYTHONDONTWRITEBYTECODE": "1"})
+                "FORGE_DATA_ROOT": str(data_root()), "PYTHONDONTWRITEBYTECODE": "1"})
     return env
 
 
