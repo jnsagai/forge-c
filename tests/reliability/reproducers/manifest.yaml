@@ -211,3 +211,36 @@ reproducers:
     operations: [SWE.4/author, -/package]
     root_cause: "validate_trace checked that cited test ids exist only after a SWE.4 baseline existed, but SWE.4 authors call it before the gate freezes; resource requirements were traced to UT ids that no unit test has and the finalizer BLOCKED the package on traceability."
     remedy: "SWE.4-6 always check cited test ids; Robot-suite links are planned until SWE.6; the SWE.4 procedure maps requirements without a host unit test to their Robot test."
+  - id: RPR-020
+    script: rpr020_ll_pointer_api_unmeasured.py
+    sha256: c69363c137f1f65ce6e3bfdbbefeca71a83f4c2a2ab39aa36af1cc12f67b43c9
+    symptom_signature: "measurement unit skips LL functions with parameters"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:ARCHITECTURE", "INSPECTION_FAIL:SWE3-05"]
+    operations: [SWE.3/author, SWE.6/author]
+    root_cause: "CAPA-013/016 instantiated only (void) LL functions; r84's LL took the register block as a parameter, so size and stack stayed 0 B and the stack requirement was unverifiable (DEF-005)."
+    remedy: "One measurement-unit generator instantiates LL functions with any parameter list, used by the build tools and ForgeTarget."
+  - id: RPR-021
+    script: rpr021_ll_pointer_api_accepted.py
+    sha256: 0af93f53bc158ebe0fa738cffc18c14234a79ff15f0606cd7cd3e5a55c36d97e
+    symptom_signature: "LL check accepts a pointer API without the generated register block"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:CODE", "DEFECT:ARCHITECTURE", "INSPECTION_FAIL:SWE3-01"]
+    operations: [SWE.3/author, SWE.3/inspect, SWE.2/author]
+    root_cause: "The LL example scope demanded a pointer API while the factory generates the extern ll_rcc_regs array and (void) functions, and the LL check accepted either; SWE.2 and SWE.3 contradicted each other until the upstream loop budget ran out (r84 BLOCKED)."
+    remedy: "The LL scope describes the generated register array; the LL check requires the extern register-block declaration and (void) LL signatures."
+  - id: RPR-022
+    script: rpr022_prompt_outside_write_scope.py
+    sha256: be83702181510b7825e9af8a6a450ca57830c69e56ad247ac9d718bb7a816431
+    symptom_signature: "author procedure writes outside the role write scope"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:FACTORY", "WRITE_SCOPE_DENIED"]
+    operations: [SWE.4/author]
+    root_cause: "The SWE.4 procedure told the author to rewrite traceability/requirements_to_tests.csv, which only SWE.1 may write; with the stricter SWE.4 trace check (CAPA-017) the denied write was escalated as a FACTORY defect."
+    remedy: "SWE.1 maps every requirement to its verifying test (Robot suite for size/stack/target-only); SWE.4 aligns its UT ids; every author procedure writes only inside its role scope."
