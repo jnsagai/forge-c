@@ -1,0 +1,35 @@
+# NOT AN EXECUTABLE OR VALIDATED SUITE. Claude must discover actual target/tool
+# versions, freeze hashes, construct independent oracles and real fixtures.
+schema_version: "1.0"
+suite_id: forgec-cre-embedded-pilot
+status: PENDING_FIXTURE_VALIDATION
+workload_profiles:
+  - id: rcc-host-golden
+    driver_class: RCC_HOST
+    source_path: drivers/demo_rcc
+    source_sha256: null  # cannot run until pinned
+    compiler: null       # fill actual executable and version
+    compiler_flags: []
+    target_mcu: HOST_ONLY
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    model_id: null
+    model_revision: null
+    seed: null
+    expected_oracle_id: null
+    holdout: false
+    status: NOT_RUN
+  - id: rcc-injected-compiler-error
+    driver_class: RCC_HOST
+    source_path: null
+    source_sha256: null
+    compiler: null
+    compiler_flags: []
+    target_mcu: HOST_ONLY
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    model_id: null
+    model_revision: null
+    seed: null
+    expected_oracle_id: null
+    holdout: false
+    status: NOT_RUN
+# Holdout cases must be stored separately, not exposed to repair agent grants.

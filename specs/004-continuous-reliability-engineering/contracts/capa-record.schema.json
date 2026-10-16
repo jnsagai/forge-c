@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Forge-C CRE CAPA record v1",
+  "required": [
+    "schema_version",
+    "capa_id",
+    "incident_ids",
+    "state",
+    "root_cause_status",
+    "created_at",
+    "updated_at",
+    "policy_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "capa_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "incident_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "state": {
+      "enum": [
+        "OPEN",
+        "TRIAGED",
+        "REPRODUCER_PENDING",
+        "CAUSE_VERIFIED",
+        "FIX_CANDIDATE",
+        "PREVENTION_TESTED",
+        "EFFECTIVENESS_OBSERVING",
+        "EFFECTIVE",
+        "REJECTED",
+        "UNRESOLVED",
+        "REOPENED"
+      ]
+    },
+    "root_cause_status": {
+      "enum": [
+        "UNKNOWN",
+        "HYPOTHESIS",
+        "VERIFIED"
+      ]
+    },
+    "root_cause_summary": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000
+    },
+    "root_cause_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reproducer_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prevention_test_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "candidate_patch_sha256": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "affected_versions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "lesson_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "observation_window_end": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policy_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

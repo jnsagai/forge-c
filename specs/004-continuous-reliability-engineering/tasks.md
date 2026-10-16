@@ -1,0 +1,78 @@
+# Executable Task Backlog — Feature 004 Forge-C CRE
+
+**Implementation rule:** checked means real implementation + executable test + evidence hash, never merely a file created or LLM statement. Execute prerequisites in order. `[P]` means safely parallelizable after listed dependencies. Preserve earlier 001–003 task IDs and dependencies. Each task output: `CRE-Tnnn <PASS|FAIL|BLOCKED> — <files> — <test command> — <evidence sha> — <issue code>`.
+
+**Priority:** `P0` = minimum credible CRE subsystem; `P1` = observability/statistical enhancement; `P2` = optional diagnostics. Run `Spec Kit analyze` after planning and `implement → converge` in bounded milestone groups. Converge may append tasks; never erase unresolved tasks. All tests in `acceptance-tests.md` are mandatory where tagged P0.
+
+## D0 — Baseline and architectural audit
+
+- [ ] **CRE-T001 [P0]** Inventory actual source/services for 001–003; status `IMPLEMENTED/PARTIAL/SPEC_ONLY/MISSING` and required capabilities. Document *real* Fabro API, model paths, MCP handshake, supervisor state, release manager, dashboard and KPI backend. **[CRE-FR-001, CRE-FR-002, CRE-FR-039]** Evidence: `docs/cre-capability-matrix.md` + referenced versioned test results.
+- [ ] **CRE-T002 [P0]** Run baseline tests from prior handoff, capture command, tool versions, stdout/stderr hash, exit code and observed constraints; do not alter preexisting evidence. **[CRE-FR-001, CRE-FR-039]** Evidence: `evidence/cre/baseline/...` or existing evidence store.
+- [ ] **CRE-T003 [P0]** Produce ADR-CRE-001..006 and mapping to actual modules, event schema and migrations; mark unfinished 002/003 tasks as explicit dependencies. **[CRE-FR-002, CRE-FR-040]** Acceptance: no competing control-plane architecture; clear dependency map.
+- [ ] **CRE-T004 [P0]** Add versioned `reliability-policy.yaml` with schema validation, default `OBSERVE_ONLY`, explicit protected config, bounded attempts, budgets and `disabled` auto-code-promotion. Integrate with actual current config loader. **[CRE-FR-027, CRE-FR-028, CRE-FR-039]** Tests: invalid thresholds / weakened hard gate rejected, no real code promotion in OBSERVE_ONLY. [AT-001] [AT-020]
+
+## D1 — Failure classification, observability and durable state
+
+- [ ] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Tests: schema validation and append/replay. [AT-002]
+- [ ] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-FR-011, CRE-FR-019]** Tests: replay/double dispatch. [AT-003]
+- [ ] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic compiler failure cannot invoke infrastructure repair. [AT-004]
+- [ ] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create a new incident; distinct root faults not merged. [AT-005]
+- [ ] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, CRE-FR-010, CRE-FR-019]** Test: no fabricated verification on import. [AT-006]
+- [ ] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governor. **[CRE-FR-031, CRE-FR-037, CRE-FR-038]** Test: no secrets/hidden reasoning and stable cross-run correlations. [AT-007]
+
+## D2 — Provably finite operational recovery
+
+- [ ] **CRE-T011 [P0]** Implement class-specific retry admission with request/time/token budgets, jittered backoff and non-replayable operation denylist. **[CRE-FR-005, CRE-FR-007]** Test: attempt counts never exceed configured cap under failures/restarts. [AT-008]
+- [ ] **CRE-T012 [P0]** Add circuit breaker for unhealthy dependencies and resource isolation; propagate OPEN/HALF_OPEN/CLOSED independently of agent output. **[CRE-FR-005, CRE-FR-035]** Test: failure storm is throttled; no parallel cascades. [AT-009]
+- [ ] **CRE-T013 [P0]** Persist leases/dispatch receipts and robust expiration; only one repair per incident scope; Fabro-down repair remains launchable via existing 002 independent worker. **[CRE-FR-008]** Test: simultaneous supervisor ticks and Fabro failure. [AT-010]
+- [ ] **CRE-T014 [P0]** Enforce safe restart/checkpoint recovery, monotonic/restart-safe budget accounting and `NON_REPLAYABLE` safeguards for approval, flashing and released evidence. **[CRE-FR-007, CRE-FR-008]** Test: crash midstage cannot duplicate external side effects. [AT-011]
+- [ ] **CRE-T015 [P0]** Integrate finite-state guards with existing 002 supervisor: no LLM calls on healthy polling; terminal RECOVERED or REQUIRES_OFFLINE_ATTENTION/BLOCKED state on exhaustion. **[CRE-FR-005, CRE-FR-006, CRE-FR-035]** Test: 100 healthy polls zero model calls; never orphan infinite retry. [AT-012]
+- [ ] **CRE-T016 [P0]** Add table-driven/property-based tests for invariant closure, finite transitions, retry amplification, partial store outage and supervisor watchdog restart. **[CRE-FR-005, CRE-FR-008, CRE-FR-034, CRE-FR-035]** Evidence: generated transition coverage + bounded state-model test log. [AT-013]
+
+## D3 — Corrective and preventive action / durable learning
+
+- [ ] **CRE-T017 [P0]** Implement CAPA state machine with incident mapping, direct evidence, repeated failure counts and root-cause status; keep immutable previous attempts. **[CRE-FR-009, CRE-FR-011]** Test: invalid state transition rejected. [AT-014]
+- [ ] **CRE-T018 [P0]** Add deterministic reproducer framework (baseline failing test, exact input, error signature, pinned environment) with independent executor. **[CRE-FR-010, CRE-FR-013, CRE-FR-014]** Test: unreproduced hypotheses stay unverified. [AT-015]
+- [ ] **CRE-T019 [P0]** Add causal verification check: original baseline fails, candidate passes same reproducer, check conflicting evidence, record `VERIFIED` only on independent proof. **[CRE-FR-010, CRE-FR-025, CRE-FR-026]** Test: forged agent PASS doesn't promote CAPA. [AT-016]
+- [ ] **CRE-T020 [P0]** Link existing repair worktree evidence to CAPA/candidate; ensure patch and tool provenance, protected-path enforcement at OS/runner boundary and immutable event history. **[CRE-FR-011, CRE-FR-023, CRE-FR-024]** Test: attempted safety-policy change is denied before/after agent. [AT-017]
+- [ ] **CRE-T021 [P0]** Register a durable prevention regression from each verified corrective action; record future effectiveness window, recurrence and reopen transitions. **[CRE-FR-009, CRE-FR-036]** Test: recurrence after "fixed" reopens CAPA and preserves original closure history. [AT-018]
+- [ ] **CRE-T022 [P0]** Extend 002 approved-lessons retrieval for reproducer/prevention metadata, class/version applicability and retraction; apply existing sanitized top-K budgets. **[CRE-FR-012, CRE-FR-030, CRE-FR-038]** Test: poisoned/unverified lesson cannot be reused. [AT-019]
+- [ ] **CRE-T023 [P0]** Build CAPA negative-case regression suite: wrong root cause, obsolete version, bad lesson, attempts exhausted, duplicate fingerprint. **[CRE-FR-009, CRE-FR-010, CRE-FR-012]** Evidence: validated tests and redacted examples. [AT-014..AT-019]
+
+## D4 — Controlled evolution: benchmark and independent promotion
+
+- [ ] **CRE-T024 [P0]** Define versioned benchmark manifest with frozen class/complexity, input SHA, MCU/compile flags, model/temperature/seed, toolchain and expected deterministic assertions. **[CRE-FR-013, CRE-FR-014]** Test: invalid/unpinned fixture reports INCOMPLETE. [AT-021]
+- [ ] **CRE-T025 [P0]** Build at least RCC and three failure fixtures (compiler/analysis, MCP timeout, recovery); include independent holdout fixtures and immutable artifact refs. **[CRE-FR-013, CRE-FR-015]** Test: tampered fixtures fail. [AT-022]
+- [ ] **CRE-T026 [P0]** Implement independent benchmark/reproducer execution outside repair candidate security scope. Capture exit codes, evidence hashes, run profile and cost/quality measurements. **[CRE-FR-015, CRE-FR-025]** Test: candidate cannot rewrite test oracle or report. [AT-023]
+- [ ] **CRE-T027 [P0]** Implement deterministic promotion gate chain with explicit REJECTED/INCONCLUSIVE/ELIGIBLE_FOR_OFFLINE_REVIEW outcomes; hard gate precedence over metrics. **[CRE-FR-024, CRE-FR-025, CRE-FR-026, CRE-FR-028]** Test: fast/cheap but unsafe candidate rejected. [AT-024]
+- [ ] **CRE-T028 [P0]** Integrate atomic rollback of reversible active operational interventions and lesson-retraction/impact list; never mutate prior release archives. **[CRE-FR-029]** Test: failure after health check restores last-good state. [AT-025]
+- [ ] **CRE-T029 [P0]** Implement adversarial promotion tests (forged PASS, poisoned fixture, patch alters quality policy, negative result concealed) and declare no autonomous persistent-code promotion. **[CRE-FR-024, CRE-FR-026, CRE-FR-030]** Test: every attack rejected with durable security event. [AT-026]
+
+## D5 — Quantitative metrics and reliability growth
+
+- [ ] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-016, CRE-FR-017, CRE-FR-018]** Test: retries cannot raise FPY or throughput. [AT-027]
+- [ ] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE-FR-021]** Test: small n never shows 100% guaranteed reliability. [AT-028]
+- [ ] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model fit and exposure exist. **[CRE-FR-020, CRE-FR-022]** Test: missing calibration -> INSUFFICIENT_BASELINE. [AT-029]
+- [ ] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CRE-FR-038]** Tests: repeated identical event stream yields identical metrics. [AT-030]
+- [ ] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR-020, CRE-FR-036]** Test: different MCU/optimization cannot be silently compared. [AT-031]
+
+## D6 — Operator dashboard, evidence and safety controls
+
+- [ ] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-031, CRE-FR-032]** Test: live filters do not change event capture and show denominator and data status. [AT-032]
+- [ ] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-020, CRE-FR-031, CRE-FR-032]** Test: alarm cannot change safety policy. [AT-033]
+- [ ] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** Test: BLOCKED includes valid available CRE evidence and absence explanations. [AT-034]
+- [ ] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-030, CRE-FR-031, CRE-FR-037]** Tests: zero protected-path writes; no secrets in persisted traces. [AT-035]
+
+## D7 — Fault injection, offline handover and release readiness
+
+- [ ] **CRE-T039 [P0]** Run complete fault-injection campaign covering Fabro crash, MCP outage, deadlock, full disk, DB fail, process restart, duplicate callback, invalid repair, corrupted candidate/fixture and poisoned lessons. **[CRE-FR-034, CRE-FR-035]** Evidence: pass/fail per scenario, elapsed/retry/LLM costs, preserved hashes. [AT-036]
+- [ ] **CRE-T040 [P0]** Execute real RCC end-to-end on available Fabro/local Qwen environment, using real MCP and artifacts. If unavailable, run mocks as developmental evidence **and** mark real E2E `BLOCKED`, never PASS. **[CRE-FR-001, CRE-FR-014, CRE-FR-034, CRE-FR-039]** Test: terminal READY/BLOCKED with evidence, not merely a favorable agent text. [AT-037]
+- [ ] **CRE-T041 [P0]** Produce FR→tasks→tests→evidence matrix, reproducible Ubuntu setup, runbook for escalation/rollback/restart, baseline/data-quality audit and approvals restrictions. **[CRE-FR-039, CRE-FR-040]** Evidence: docs, report and hashes. [AT-038]
+- [ ] **CRE-T042 [P0]** Execute full feature 004 verification, cross-check 001–003 regression, candidate vs frozen baseline report and dependency blockers; finish `Spec Kit converge` without hiding appended tasks. Publish `readiness-assessment.json` showing `OBSERVE_ONLY`, `PILOT_ELIGIBLE`, `ACTIVE_ELIGIBLE` or `NOT_DEMONSTRATED` with proof. **[CRE-FR-001, CRE-FR-002, CRE-FR-003, CRE-FR-004, CRE-FR-005, CRE-FR-006, CRE-FR-007, CRE-FR-008, CRE-FR-009, CRE-FR-010, CRE-FR-011, CRE-FR-012, CRE-FR-013, CRE-FR-014, CRE-FR-015, CRE-FR-016, CRE-FR-017, CRE-FR-018, CRE-FR-019, CRE-FR-020, CRE-FR-021, CRE-FR-022, CRE-FR-023, CRE-FR-024, CRE-FR-025, CRE-FR-026, CRE-FR-027, CRE-FR-028, CRE-FR-029, CRE-FR-030, CRE-FR-031, CRE-FR-032, CRE-FR-033, CRE-FR-034, CRE-FR-035, CRE-FR-036, CRE-FR-037, CRE-FR-038, CRE-FR-039, CRE-FR-040]** [AT-039]
+
+## Signoff constraints and task termination
+
+- If a P0 dependency from 002/003 is absent, note the exact `Mxx/Txxx` or `Kxx` prerequisite and mark corresponding 004 integration task **BLOCKED**. Do not invent synthetic "production" stubs, rename existing agents or claim systems ran.
+- `Spec Kit converge` finding "no missing tasks" is a **spec-implementation consistency** check, not proof of production reliability. Record actual test evidence and meaningful statistical uncertainty separately.
+- Every model-written source patch is checked with independent tests and a different inspection role/session, according to 002. Gate outputs are produced by deterministic scripts, not chat text.
+- Report progress using compact structured status/issue codes, while keeping full evidence off-context in files. No interactive human pauses during normal dark factory workflow; offline approval remains offline.
