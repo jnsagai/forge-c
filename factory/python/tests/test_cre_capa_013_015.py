@@ -77,3 +77,26 @@ def test_turn_budget_scales_with_the_allocated_work(tmp_path):
     assert GV.turn_limit("swe3-inspector", str(ws)) == GV.turn_limit("swe3-inspector")  # inspectors unchanged
     small = _ws(tmp_path / "s", arch=ALLOC.split("| SWR-013")[0])
     assert GV.turn_limit("swe3-author", str(small)) == base  # at or below the reference size: authored budget
+
+
+@pytest.mark.skipif(not shutil.which("arm-none-eabi-gcc"), reason="GNU Arm not installed")
+def test_robot_driver_keywords_measure_a_header_only_ll(tmp_path):
+    """CAPA-016 (r83 DEF-003): 'Driver Stack Should Be At Most' failed with 'no call graph produced' on an LL."""
+    import importlib.util
+
+    from forge_factory.common import REPO_ROOT
+    from forge_factory.layer import LL_HEADER, LL_TU, LL_TU_TEXT
+
+    spec = importlib.util.spec_from_file_location("ForgeTarget", REPO_ROOT / "factory/sim/stm32n6/ForgeTarget.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    ws = _ws(tmp_path)
+    for rel, txt in {LL_HEADER: LL_H, LL_TU: LL_TU_TEXT}.items():
+        (ws / rel).parent.mkdir(parents=True, exist_ok=True)
+        (ws / rel).write_text(txt)
+    lib = mod.ForgeTarget(str(ws))
+    stack, unbounded = lib._stack()
+    assert unbounded == [] and 0 <= stack <= 128  # a bounded call graph (leaf LL frames may be 0 B at -Os)
+    assert lib.driver_stack_should_be_at_most(128) == stack
+    assert 0 < lib.driver_flash_size_should_be_at_most(4096)
+    assert lib.driver_static_ram_should_be_at_most(0) == 0

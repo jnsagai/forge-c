@@ -94,7 +94,7 @@ class ForgeTarget:
         out = self.wd / sub
         out.mkdir(parents=True, exist_ok=True)
         objs = []
-        for c in sorted((self.ws / "software/hal").glob("*.c")):
+        for c in [*sorted((self.ws / "software/hal").glob("*.c")), *self._ll_units(out)]:
             o = out / (c.stem + ".o")
             r = subprocess.run([cc, "-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os",
                                 "-ffunction-sections", "-fdata-sections", f"-I{self.ws / 'software/hal'}",
@@ -104,6 +104,31 @@ class ForgeTarget:
                 raise AssertionError(f"driver build failed: {r.stderr[-300:]}")
             objs.append(str(o))
         return objs
+
+    def _ll_units(self, out: Path) -> list[Path]:
+        """CAPA-016 (r83): an LL work order has no HAL sources and its LL is header-only, so the driver measured as
+        nothing ('no call graph produced'). Its compile unit plus a generated unit (build directory only) that
+        instantiates every LL function non-inline are measured instead."""
+        import json
+
+        try:
+            layer = json.loads((self.ws / ".forge-run/manifest.json").read_text()).get("layer")
+        except (OSError, ValueError):
+            layer = None
+        hdr = self.ws / "software/ll/stm32n6xx_ll_rcc.h"
+        if layer != "LL" or not hdr.is_file():
+            return []
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", hdr.read_text(errors="replace"), flags=re.S)
+        fns = re.findall(r"static\s+inline\s+(void|uint32_t)\s+(LL_RCC_\w+)\s*\(\s*void\s*\)", code)
+        if not fns:
+            return []
+        lines = ["/* GENERATED measurement unit (build only, CAPA-016) */", '#include "stm32n6xx_ll_rcc.h"']
+        for ret, name in fns:
+            lines += [f"{ret} forge_measure_{name}(void);",
+                      f"{ret} forge_measure_{name}(void) {{ {'return ' if ret != 'void' else ''}{name}(); }}"]
+        unit = out / "forge_ll_measure.c"
+        unit.write_text("\n".join(lines) + "\n")
+        return [unit]
 
     def _sizes(self) -> dict[str, int]:
         size = shutil.which("arm-none-eabi-size")
