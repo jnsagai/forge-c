@@ -199,3 +199,41 @@ def test_reqif_robot_traced_requirement_has_distinct_ids(tmp_path):
         "SWR-019,SWR-019,software/tests/software/test_rcc_requirements.robot\n")
     out = export(ws)
     assert out["verdict"] == "PASS" and out["spec_objects"] == 4, out  # 2 SWR + 2 test objects, distinct ids
+
+
+def test_duplicate_check_ids_fail_the_run(tmp_path, monkeypatch):
+    """CAPA-022 (r86): duplicated UT ids were only found by the SWE.4 inspector (two rework cycles)."""
+    from forge_factory.layer import LL_HEADER, LL_TU, LL_TU_TEXT
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import tests as T
+    from forge_factory.workflow import scaffold as SC
+
+    ws = _ws(tmp_path)
+    for rel, txt in {LL_HEADER: LL_H, LL_TU: LL_TU_TEXT}.items():
+        (ws / rel).parent.mkdir(parents=True, exist_ok=True)
+        (ws / rel).write_text(txt)
+    for k, v in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_EVENTS_DIR": str(ws / ".ev"),
+                 "FORGE_STATE_DIR": str(ws / ".st"), "FORGE_ROLE": "swe4-author", "FORGE_PHASE": "SWE.4"}.items():
+        monkeypatch.setitem(os.environ, k, v)
+    SC.scaffold(ws)
+    ut = (ws / SC.UNIT_TEST).read_text().replace(SC.TEST_CASES_MARKER, (
+        "static void ut_a(void)\n{\n    ut_reset_regs();\n    LL_RCC_HSI_Enable();\n"
+        "    CHECK(\"UT-001\", (ll_rcc_regs[0] & 8U) != 0U);\n    CHECK(\"UT-001\", LL_RCC_HSI_IsReady() == 0U);\n}\n"
+        + SC.TEST_CASES_MARKER)).replace(SC.TEST_CALLS_MARKER, "ut_a();\n    " + SC.TEST_CALLS_MARKER)
+    (ws / SC.UNIT_TEST).write_text(ut)
+    out = sdk.invoke("forge-tests-mcp", next(o for o in T.OPERATIONS if o.name == "run_unit"), {"coverage": False})
+    assert out["status"] == "FAIL" and any(i.startswith("DUPLICATE_TEST_ID:UT-001") for i in out["issues"])
+
+
+def test_target_procedures_state_the_rcc_model_exactly():
+    """CAPA-023 (r86): authors assumed RCC_SR was plain storage; the model text must match rcc_model.py."""
+    from forge_factory.workflow import prompts
+    from forge_factory.workflow.builder import build
+
+    model = (REPO / "factory/sim/stm32n6/rcc_model.py").read_text()
+    assert "READY_MASK = 0x00000F1F" in model and "if off == 0x004:" in model
+    for layer in ("LL", "HAL", "LL+HAL"):
+        build("WO-M", layer=layer, chunk_lines=150)
+        for text in (prompts.target_test_author_prompt(), prompts.robot_test_author_prompt()):
+            assert "RCC_SR (offset 0x004), which is read-only" in text and "0x00000F1F" in text
+    prompts.LAYER["layer"] = "LL+HAL"

@@ -22,7 +22,8 @@ PLACEHOLDER = "Fail    NOT IMPLEMENTED"
 HEADER = f"""{MARKER}: one test case per SWE.1 requirement (names and tags fixed).
 # Replace every '{PLACEHOLDER}' line with ForgeTarget keywords. Only 'Library    ForgeTarget' is allowed.
 # Keywords (separate arguments with 4 spaces):
-#   Run Target Scenario    scn_<topic>.c                      (RCC model: ready flags follow enable bits)
+#   Run Target Scenario    scn_<topic>.c                      (RCC model: RCC_SR reads RCC_CR & 0xF1F, read-only;
+#                                                              other registers plain storage starting at 0)
 #   Run Target Scenario    scn_<topic>.c    scenario=never_ready   (ready flags never set: waits time out)
 #   Target Check Should Pass    <TCHECK number>
 #   All Target Checks Should Pass

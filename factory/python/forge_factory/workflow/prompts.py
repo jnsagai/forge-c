@@ -284,8 +284,13 @@ UT_STEPS = [
 ]
 
 
+TARGET_MODEL = ("The simulated RCC (factory/sim/stm32n6/rcc_model.py) is behavioural: every register starts at 0 and is "
+                "plain read/write storage EXCEPT RCC_SR (offset 0x004), which is read-only and always reads back "
+                "RCC_CR & 0x00000F1F (ready flag = enable bit at the same position: LSI 0, LSE 1, MSI 2, HSI 3, HSE 4, "
+                "PLL1..4 8..11), or 0 in scenario never_ready; writes to RCC_SR have no visible effect. Expected values "
+                "in target checks follow this model.")  # CAPA-023 (r86): authors assumed RCC_SR was writable storage
 PROVIDED = ("forge_target_test.h (TCHECK, FORGE_TEST_BEGIN/END, mailbox) and the Robot library ForgeTarget are provided by "
-            "the factory build and run tools: do not search for them.")
+            "the factory build and run tools: do not search for them. " + TARGET_MODEL)
 
 TARGET_STEPS = [
     "read_file software/hal/stm32n6xx_hal_rcc.h (the HAL API and its exact signatures). " + PROVIDED,

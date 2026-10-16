@@ -106,6 +106,17 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
             exprs = _host_check_exprs(t, r.stdout)
             issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
+    # CAPA-022 (r86): UT-015/016 were used by two test functions; an id must name exactly one check (trace and
+    # report cite ids), so duplicates fail the run deterministically instead of being found by the inspector
+    seen: dict[str, int] = {}
+    for t in tests:
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", t.read_text(errors="replace"), flags=re.S)
+        for cid in re.findall(r'\bCHECK\s*\(\s*"([A-Z]+-\d+)"', code):
+            seen[cid] = seen.get(cid, 0) + 1
+    dups = sorted(k for k, v in seen.items() if v > 1)
+    if dups:
+        failed += 1
+        issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
