@@ -5,7 +5,7 @@ import pytest
 from forge_factory.inspection.architecture import check_architecture, is_agent_reply
 from forge_factory.inspection.engine import InspectionError, Store
 
-ARCH_MIN = ("# Architecture\n## Components\n- HAL, LL\n## Interfaces\n- HAL_RCC_HSI_Enable\n## Requirement allocation\n"
+ARCH_MIN = ("# Architecture\n## Components\n- HAL, LL\n## Interfaces\n- HAL_RCC_HSI_SetConfig\n## Requirement allocation\n"
             "| SWR | Function |\n|---|---|\n| SWR-001 | HAL_RCC_HSI_SetConfig |\n## Register table\n"
             "| Name | Offset |\n|---|---|\n| RCC_CR | 0x0 |\n")  # synthetic minimum for other tests' fixtures
 STATIC_PUML = ("@startuml\npackage \"RCC driver\" {\n  component \"stm32n6xx_hal_rcc\" as HAL\n"

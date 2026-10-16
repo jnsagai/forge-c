@@ -127,6 +127,11 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         p = (ws / t).resolve()
         if not p.is_file() or ws.resolve() not in p.parents:
             raise DefectError(f"TEST_FILE_NOT_FOUND:{t[:60]}")
+        if not p.relative_to(ws.resolve()).as_posix().startswith("software/tests/"):
+            # CAPA-012 (r82): an inspector cited the LL header as a "test file"; every correct fix of the header was
+            # then rejected as DEFECT_TEST_CHANGED and SWE.3 blocked. Product code is cited in evidence_refs.
+            raise DefectError(f"TEST_FILES_MUST_BE_TESTS:{t[:60]}: cite failing test files (software/tests/**) in "
+                              "test_files; cite product code as evidence_refs 'file:line'")
         hashes[t] = sha256_file(p)
     if kind == "CODE":
         # no blame-shifting without evidence: a failing test run of the detecting phase, or a source location
@@ -239,8 +244,8 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
     for d in all_defects(ws):
         if d["detected_phase"] != phase or d["status"] not in ("FIXED", "IN_FIX"):
             continue
-        changed = [t for t, h in d["test_files"].items()
-                   if not (ws / t).is_file() or sha256_file(ws / t) != h]
+        changed = [t for t, h in d["test_files"].items() if t.startswith("software/tests/")  # CAPA-012
+                   and (not (ws / t).is_file() or sha256_file(ws / t) != h)]
         if changed and d["status"] == "FIXED":
             # r75: the author extended the cited test file before any post-fix run. The gate runs the cited
             # version itself (restored from the snapshots) against the fixed code: that is the verification.

@@ -307,3 +307,35 @@ def test_ll_is_exactly_the_allocated_register_access(tmp_path):
 def test_swe5_requires_passing_target_tests():
     """CAPA-009 (r81): SWE.5 froze while run_renode failed; the presence gate now requires it to PASS."""
     assert ("forge-sim-mcp", "run_renode") in engine.REQUIRED_TOOL_PASS["SWE.5"]
+
+
+def test_interfaces_must_match_the_allocation_and_ll_scope(tmp_path):
+    """CAPA-010/011 (r82): Interfaces listed MSI/LSI/LSE/PLL ready queries that were never allocated or coded."""
+    from forge_factory.inspection.architecture import check_architecture
+
+    ws = ws_with(tmp_path, "LL")
+    (ws / "workproducts/SWE.2").mkdir(parents=True)
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(
+        "# A\n## Components\n- LL\n## Interfaces\n- LL_RCC_HSI_Enable\n- LL_RCC_MSI_IsReady\n" + ARCH.split("\n", 1)[1])
+    f = check_architecture(ws)["major_findings"]
+    assert "SWE2:INTERFACE_NOT_ALLOCATED:LL_RCC_MSI_IsReady" in f
+    assert "SWE2:INTERFACE_NOT_ALLOCATED:LL_RCC_HSI_Enable" not in f
+    build("WO-C", layer="LL", chunk_lines=150)
+    sw2 = prompts.author_prompt("SWE.2")
+    assert "never MSI, LSI, LSE or PLLs" in sw2 and "Concurrency and reentrancy" in sw2
+
+
+def test_defect_test_files_must_be_tests(tmp_path):
+    """CAPA-012 (r82): the LL header cited as a test file made every correct header fix DEFECT_TEST_CHANGED."""
+    from forge_factory.inspection import defects as D
+
+    ws = tmp_path / "w"
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n")
+    (ws / "software/ll").mkdir(parents=True)
+    (ws / LY.LL_HEADER).write_text("x\n")
+    with pytest.raises(D.DefectError, match="TEST_FILES_MUST_BE_TESTS"):
+        D.report(ws, detected_phase="SWE.3", reported_by="swe3-inspector", kind="ARCHITECTURE", summary="s",
+                 requirement_ids=["SWR-001"], test_files=[LY.LL_HEADER], evidence_refs=[],
+                 requirement_quote="the RCC LL driver shall set RCC_CR.HSION")

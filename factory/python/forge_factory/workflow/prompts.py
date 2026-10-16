@@ -384,10 +384,11 @@ LL_UT_EXAMPLE = ("static void ut_hsi(void)\n{\n    ut_reset_regs();\n"
                  "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n"
                  "    CHECK(\"UT-003\", LL_RCC_HSI_IsReady() == 1U);\n}")
 LL_API = ("static inline functions named exactly LL_RCC_<Name>_Enable, LL_RCC_<Name>_Disable, LL_RCC_<Name>_IsReady "
-          "(oscillators/PLLs: ready flag in RCC_SR), LL_RCC_<Name>_IsEnabled (peripheral clocks), "
-          "LL_RCC_<Name>_ForceReset and LL_RCC_<Name>_ReleaseReset (peripheral resets), where <Name> is HSI, HSE, "
-          "MSI, LSI, LSE, PLL1..PLL4 or the peripheral; all take (void); Enable/Disable/Reset return void, "
-          "IsReady/IsEnabled return uint32_t 1U or 0U")
+          "(oscillators: ready flag in RCC_SR), LL_RCC_<Name>_IsEnabled (peripheral clocks), "
+          "LL_RCC_<Name>_ForceReset and LL_RCC_<Name>_ReleaseReset (peripheral resets), where <Name> is HSI or HSE "
+          "(the oscillators in the work-order scope; never MSI, LSI, LSE or PLLs) or a peripheral of the provided "
+          "RM sections; all take (void); Enable/Disable/Reset return void, IsReady/IsEnabled return uint32_t 1U or "
+          "0U; list in Interfaces exactly the functions of the allocation table")
 LL_AUTHOR_STEPS = {
     "SWE.1": [
         "read_file these RM0486 section files: {s1}.",
@@ -421,7 +422,11 @@ LL_AUTHOR_STEPS = {
         "Interfaces (each LL_RCC_ API: " + LL_API + "; one concrete function per oscillator and per peripheral, e.g. "
         "LL_RCC_GPDMA1_Enable - never a placeholder such as LL_RCC_<Peripheral>_Enable), Timing and error handling (no waiting and no error codes at "
         "LL level: each function is one register access; callers bound their own polling), Memory and stack budget "
-        "(flash<=4096 B, RAM 0 B: no state, stack<=128 B), Requirement allocation table (SWR -> the concrete LL_RCC_ "
+        "(flash<=4096 B, RAM 0 B: no state, stack<=128 B), Concurrency and reentrancy (the LL keeps no state and is "
+        "reentrant; a read-modify-write of a shared RCC register is not atomic: state whether the documented "
+        "set/clear registers are used for atomic single-bit writes or that callers serialise access, e.g. in a "
+        "critical section, and that no LL function is called from an ISR concurrently with the same register), "
+        "Requirement allocation table (SWR -> the concrete LL_RCC_ "
         "function(s); a requirement on all functions lists them or says 'all LL functions'), "
         "and a Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 "
         "page. RCC base address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
