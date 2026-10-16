@@ -392,3 +392,7 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   of each cited file. PASS = VERIFIED (`gate-reverify`), FAIL = `DEFECT_NOT_FIXED` (the fix does not make the
   reported test pass), unavailable snapshot = `DEFECT_TEST_CHANGED` as before. The edited copies stay subject to
   anti-bending. Replayed on r75: DEF-002 (unit) and DEF-001 (Robot on Renode) both PASS in 41 s.
+- **Outcome: first SWE.1–SWE.6 pass under the complete loopback design** (package BLOCKED only on the two
+  owner-deferred documents; archive sha256 a467bad9…). Robot 18/18 requirements on the Renode model; DEF-001 and
+  DEF-002 VERIFIED by gate re-verification; DEF-003 TEST declared by SWE.5 itself within one minute of the r74
+  tool-time notice (`CHECK_EXPR` named IT-026 → corrected → `HOW_TO_DECLARE` → declared → PASS).
