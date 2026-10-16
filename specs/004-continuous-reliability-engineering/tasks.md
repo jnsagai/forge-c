@@ -13,12 +13,12 @@
 
 ## D1 — Failure classification, observability and durable state
 
-- [ ] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Tests: schema validation and append/replay. [AT-002]
-- [ ] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-FR-011, CRE-FR-019]** Tests: replay/double dispatch. [AT-003]
-- [ ] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic compiler failure cannot invoke infrastructure repair. [AT-004]
-- [ ] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create a new incident; distinct root faults not merged. [AT-005]
-- [ ] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, CRE-FR-010, CRE-FR-019]** Test: no fabricated verification on import. [AT-006]
-- [ ] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governor. **[CRE-FR-031, CRE-FR-037, CRE-FR-038]** Test: no secrets/hidden reasoning and stable cross-run correlations. [AT-007]
+- [X] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Tests: schema validation and append/replay. [AT-002] ✅ Evidence: `evidence/v0.4/runs/CRE-T005/latest.json`
+- [X] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-FR-011, CRE-FR-019]** Tests: replay/double dispatch. [AT-003] ✅ Evidence: `evidence/v0.4/runs/CRE-T006/latest.json`
+- [X] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic compiler failure cannot invoke infrastructure repair. [AT-004] ✅ Evidence: `evidence/v0.4/runs/CRE-T007/latest.json`
+- [X] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create a new incident; distinct root faults not merged. [AT-005] ✅ Evidence: `evidence/v0.4/runs/CRE-T008/latest.json`
+- [X] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, CRE-FR-010, CRE-FR-019]** Test: no fabricated verification on import. [AT-006] ✅ Evidence: `evidence/v0.4/runs/CRE-T009/latest.json`
+- [X] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governor. **[CRE-FR-031, CRE-FR-037, CRE-FR-038]** Test: no secrets/hidden reasoning and stable cross-run correlations. [AT-007] ✅ Evidence: `evidence/v0.4/runs/CRE-T010/latest.json`
 
 ## D2 — Provably finite operational recovery
 

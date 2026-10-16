@@ -47,7 +47,8 @@
       "fr": "CRE-FR-002",
       "passing_tasks": [
         "CRE-T001",
-        "CRE-T003"
+        "CRE-T003",
+        "CRE-T005"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -60,9 +61,11 @@
     },
     {
       "fr": "CRE-FR-003",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T007"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T007",
         "CRE-T042"
@@ -70,9 +73,11 @@
     },
     {
       "fr": "CRE-FR-004",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T008"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T008",
         "CRE-T042"
@@ -93,9 +98,11 @@
     },
     {
       "fr": "CRE-FR-006",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T007"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T007",
         "CRE-T015",
@@ -115,9 +122,11 @@
     },
     {
       "fr": "CRE-FR-008",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T006"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T006",
         "CRE-T013",
@@ -128,9 +137,11 @@
     },
     {
       "fr": "CRE-FR-009",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T009"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T009",
         "CRE-T017",
@@ -141,9 +152,11 @@
     },
     {
       "fr": "CRE-FR-010",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T009"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T009",
         "CRE-T018",
@@ -154,9 +167,12 @@
     },
     {
       "fr": "CRE-FR-011",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T005",
+        "CRE-T006"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T005",
         "CRE-T006",
@@ -244,9 +260,12 @@
     },
     {
       "fr": "CRE-FR-019",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T006",
+        "CRE-T009"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T006",
         "CRE-T009",
@@ -383,9 +402,12 @@
     },
     {
       "fr": "CRE-FR-031",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T005",
+        "CRE-T010"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T005",
         "CRE-T010",
@@ -454,9 +476,11 @@
     },
     {
       "fr": "CRE-FR-037",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T010"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T010",
         "CRE-T038",
@@ -465,9 +489,11 @@
     },
     {
       "fr": "CRE-FR-038",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T010"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T010",
         "CRE-T022",
@@ -510,15 +536,8 @@
     }
   ],
   "cre_p0_gaps": [
-    "CRE-FR-003",
-    "CRE-FR-004",
     "CRE-FR-005",
-    "CRE-FR-006",
     "CRE-FR-007",
-    "CRE-FR-008",
-    "CRE-FR-009",
-    "CRE-FR-010",
-    "CRE-FR-011",
     "CRE-FR-012",
     "CRE-FR-013",
     "CRE-FR-014",
@@ -526,7 +545,6 @@
     "CRE-FR-016",
     "CRE-FR-017",
     "CRE-FR-018",
-    "CRE-FR-019",
     "CRE-FR-021",
     "CRE-FR-023",
     "CRE-FR-024",
@@ -534,12 +552,9 @@
     "CRE-FR-026",
     "CRE-FR-029",
     "CRE-FR-030",
-    "CRE-FR-031",
     "CRE-FR-033",
     "CRE-FR-034",
-    "CRE-FR-035",
-    "CRE-FR-037",
-    "CRE-FR-038"
+    "CRE-FR-035"
   ],
   "fr_matrix": [
     {
@@ -1269,8 +1284,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T04:42:39.272134Z",
-  "git_head": "efa6e83228c9681e46b82380744a67ca08e95ab2",
+  "generated_at": "2026-10-16T04:58:36.999595Z",
+  "git_head": "45ad78cf06df083df1f61e7dd409f768dae55667",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1279,9 +1294,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 4,
+    "004_pass": 10,
     "004_total": 42,
-    "cre_fr_covered": 6,
+    "cre_fr_covered": 17,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2435,78 +2450,90 @@
       "task": "CRE-T004"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T005/latest.json"
+      ],
       "frs": [
         "CRE-FR-002",
         "CRE-FR-011",
         "CRE-FR-031"
       ],
-      "line": "- [ ] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Te",
+      "line": "- [X] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Te",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T005"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T006/latest.json"
+      ],
       "frs": [
         "CRE-FR-008",
         "CRE-FR-011",
         "CRE-FR-019"
       ],
-      "line": "- [ ] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-",
+      "line": "- [X] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T006"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T007/latest.json"
+      ],
       "frs": [
         "CRE-FR-003",
         "CRE-FR-006"
       ],
-      "line": "- [ ] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic c",
+      "line": "- [X] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic c",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T007"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T008/latest.json"
+      ],
       "frs": [
         "CRE-FR-004"
       ],
-      "line": "- [ ] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create ",
+      "line": "- [X] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create ",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T008"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T009/latest.json"
+      ],
       "frs": [
         "CRE-FR-009",
         "CRE-FR-010",
         "CRE-FR-019"
       ],
-      "line": "- [ ] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, C",
+      "line": "- [X] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, C",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T009"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T010/latest.json"
+      ],
       "frs": [
         "CRE-FR-031",
         "CRE-FR-037",
         "CRE-FR-038"
       ],
-      "line": "- [ ] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governo",
+      "line": "- [X] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governo",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T010"
     },
     {

@@ -24,6 +24,19 @@ from .release.finalize import finalize
 from .workflow.builder import binding_for, build
 
 
+def factory_revision() -> dict:
+    """CRE-FR-014: the exact factory source revision that runs this work order (commit + dirty flag)."""
+
+    def git(*a: str) -> str:
+        try:
+            return subprocess.run(["git", *a], cwd=REPO_ROOT, capture_output=True, text=True, timeout=20).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            return ""
+    commit = git("rev-parse", "HEAD")
+    return {"commit": commit or "UNKNOWN", "dirty": bool(git("status", "--porcelain", "--untracked-files=no")),
+            "branch": git("rev-parse", "--abbrev-ref", "HEAD") or "UNKNOWN", "basis": "recorded_at_launch"}
+
+
 def register_index(md: Path) -> list[dict]:
     """Deterministic heading -> line index so agents can read_file(offset) the exact RM section."""
     out = []
@@ -125,7 +138,8 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
     manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
-                "input_baseline_commit": head, "driver": spec["driver"], "target": target,
+                "input_baseline_commit": head, "factory_revision": factory_revision(),
+                "driver": spec["driver"], "target": target,
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],

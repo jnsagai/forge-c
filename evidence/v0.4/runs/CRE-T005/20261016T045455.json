@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d1_observe.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "migration or mirrored or validate_and_reject"
+  ],
+  "duration_s": 1.497,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "45ad78cf06df083df1f61e7dd409f768dae55667",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T005/20261016T045455.log",
+  "log_sha256": "47ded1ce5790afe1e42426ea57be851cb2f5714333c8611a2ffe7614aed26b0f",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T005",
+  "ts_utc": "2026-10-16T04:54:55.112828Z"
+}

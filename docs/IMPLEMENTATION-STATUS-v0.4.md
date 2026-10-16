@@ -1,6 +1,6 @@
 # Forge-C implementation status (generated from evidence records)
 
-Generated 2026-10-16T04:42:39.272134Z at commit `efa6e83228c9`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
+Generated 2026-10-16T04:58:36.999595Z at commit `45ad78cf06df`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
 
 * Feature 002: **51/51** tasks PASS
 * Feature 003 (KPI): **20/20** tasks PASS
@@ -88,7 +88,7 @@ Generated 2026-10-16T04:42:39.272134Z at commit `efa6e83228c9`. Status is derive
 | KPI-T019 | P1 | PASS | evidence/v0.4/runs/KPI-T019/latest.json |
 | KPI-T020 | P0 | PASS | evidence/v0.4/runs/KPI-T020/latest.json |
 
-## Feature 004 (CRE) tasks — 4/42 PASS; CRE-FR covered 6/40; unmet P0: CRE-FR-003, CRE-FR-004, CRE-FR-005, CRE-FR-006, CRE-FR-007, CRE-FR-008, CRE-FR-009, CRE-FR-010, CRE-FR-011, CRE-FR-012, CRE-FR-013, CRE-FR-014, CRE-FR-015, CRE-FR-016, CRE-FR-017, CRE-FR-018, CRE-FR-019, CRE-FR-021, CRE-FR-023, CRE-FR-024, CRE-FR-025, CRE-FR-026, CRE-FR-029, CRE-FR-030, CRE-FR-031, CRE-FR-033, CRE-FR-034, CRE-FR-035, CRE-FR-037, CRE-FR-038
+## Feature 004 (CRE) tasks — 10/42 PASS; CRE-FR covered 17/40; unmet P0: CRE-FR-005, CRE-FR-007, CRE-FR-012, CRE-FR-013, CRE-FR-014, CRE-FR-015, CRE-FR-016, CRE-FR-017, CRE-FR-018, CRE-FR-021, CRE-FR-023, CRE-FR-024, CRE-FR-025, CRE-FR-026, CRE-FR-029, CRE-FR-030, CRE-FR-033, CRE-FR-034, CRE-FR-035
 
 | Task | P | Status | Evidence |
 |---|---|---|---|
@@ -96,12 +96,12 @@ Generated 2026-10-16T04:42:39.272134Z at commit `efa6e83228c9`. Status is derive
 | CRE-T002 | P0 | PASS | evidence/v0.4/runs/CRE-T002/latest.json |
 | CRE-T003 | P0 | PASS | evidence/v0.4/runs/CRE-T003/latest.json |
 | CRE-T004 | P0 | PASS | evidence/v0.4/runs/CRE-T004/latest.json |
-| CRE-T005 | P0 | NOT_RUN | - |
-| CRE-T006 | P0 | NOT_RUN | - |
-| CRE-T007 | P0 | NOT_RUN | - |
-| CRE-T008 | P0 | NOT_RUN | - |
-| CRE-T009 | P0 | NOT_RUN | - |
-| CRE-T010 | P0 | NOT_RUN | - |
+| CRE-T005 | P0 | PASS | evidence/v0.4/runs/CRE-T005/latest.json |
+| CRE-T006 | P0 | PASS | evidence/v0.4/runs/CRE-T006/latest.json |
+| CRE-T007 | P0 | PASS | evidence/v0.4/runs/CRE-T007/latest.json |
+| CRE-T008 | P0 | PASS | evidence/v0.4/runs/CRE-T008/latest.json |
+| CRE-T009 | P0 | PASS | evidence/v0.4/runs/CRE-T009/latest.json |
+| CRE-T010 | P0 | PASS | evidence/v0.4/runs/CRE-T010/latest.json |
 | CRE-T011 | P0 | NOT_RUN | - |
 | CRE-T012 | P0 | NOT_RUN | - |
 | CRE-T013 | P0 | NOT_RUN | - |
