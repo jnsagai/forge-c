@@ -90,7 +90,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         if b.exit_code != 0:
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
-            issues += _diag(b.stderr, ctx.workspace, (": error:",), 12)  # the agent cannot fix what it cannot see
+            # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
+            issues += _diag(b.stderr, ctx.workspace, (": error:", "undefined reference", "multiple definition"), 12)
             continue
         r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
                      env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)

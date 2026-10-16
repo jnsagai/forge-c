@@ -193,6 +193,9 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
     (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return undefined_symbol; }\n")
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert any("test_negative.c:1" in i and "error:" in i for i in neg["issues"]), neg["issues"]
+    (ws / "software/tests/unit/test_negative.c").write_text("int missing_fn(void);\nint main(void){ return missing_fn(); }\n")
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert any("undefined reference" in i and "missing_fn" in i for i in neg["issues"]), neg["issues"]
 
 
 # ---------------- T015 sim ----------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 18 items / 17 deselected / 1 selected
+
+factory/python/tests/test_m2_mcp.py .                                    [100%]
+
+======================= 1 passed, 17 deselected in 1.81s =======================
+
+--- stderr ---
