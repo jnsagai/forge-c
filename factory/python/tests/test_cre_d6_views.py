@@ -138,3 +138,19 @@ def test_security_privacy_and_injection_controls(env, client):
     api += "".join(c.get(f"/api/v1/reliability/failure-modes/{fp}", headers=h(t, "auditor")).text for fp in fps)
     assert CANARY not in dump and CANARY not in api  # secret never persisted nor displayed
     assert c.get("/api/v1/reliability/summary", headers={"Authorization": "Bearer forged-admin"}).status_code == 401
+
+
+# ---- CRE-T047 (convergence): model/period/category/revision filters keep numerator and denominator together ----
+def test_reliability_filters_by_model_period_and_category(env, client):
+    c, t = client
+    allm = c.get("/api/v1/reliability/failure-modes?model=deepseek-flash", headers=h(t, "viewer")).json()
+    none = c.get("/api/v1/reliability/failure-modes?model=qwen3:8b", headers=h(t, "viewer")).json()
+    late = c.get("/api/v1/reliability/failure-modes?model=deepseek-flash&since=2026-10-16T04:00:00Z",
+                 headers=h(t, "viewer")).json()
+    assert allm["items"] and none["items"] == [] and none["denominator_observations"] == 0
+    assert 0 < late["denominator_observations"] < allm["denominator_observations"]
+    assert sum(m["occurrences"] for m in late["items"]) == late["denominator_observations"]
+    cat = c.get("/api/v1/reliability/failure-modes?category=AGENT_OUTPUT", headers=h(t, "viewer")).json()
+    assert cat["items"] and all(m["category"] == "AGENT_OUTPUT" for m in cat["items"])
+    assert c.get("/api/v1/reliability/failure-modes?since=yesterday", headers=h(t, "viewer")).status_code == 422
+    assert c.get("/api/v1/reliability/promotions?decision=REJECTED", headers=h(t, "viewer")).status_code == 200

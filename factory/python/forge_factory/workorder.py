@@ -37,6 +37,20 @@ def factory_revision() -> dict:
             "branch": git("rev-parse", "--abbrev-ref", "HEAD") or "UNKNOWN", "basis": "recorded_at_launch"}
 
 
+def model_profile(model: str, provider: str, code_model: str | None, nodes: dict) -> dict:
+    return {"default": model, "provider": provider, "code_nodes": code_model,
+            "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
+            "local_only": provider == "ollama",
+            # CRE-T051 (CRE-FR-014): sampling is what the factory pins - today nothing beyond the model id
+            "sampling": {"temperature": "PROVIDER_DEFAULT (not set by the factory)",
+                         "seed": "NOT_SUPPORTED (Fabro run config has no seed)",
+                         "reproducibility": "stochastic: repeated runs of the same revision may differ"},
+            "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
+            if provider == "ollama" else "per agent registry max_stage_tokens",
+            "note": "local Ollama via gateway" if provider == "ollama" else
+            "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048"}
+
+
 def register_index(md: Path) -> list[dict]:
     """Deterministic heading -> line index so agents can read_file(offset) the exact RM section."""
     out = []
@@ -249,14 +263,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
                          phases=phases)
-    (ws / ".forge-run/model-profile.json").write_text(pretty_json(
-        {"default": model, "provider": provider, "code_nodes": code_model,
-         "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
-         "local_only": provider == "ollama",
-         "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
-         if provider == "ollama" else "per agent registry max_stage_tokens",
-         "note": "local Ollama via gateway" if provider == "ollama" else
-         "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048"}))
+    (ws / ".forge-run/model-profile.json").write_text(pretty_json(model_profile(model, provider, code_model, nodes)))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)

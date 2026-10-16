@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 31 items / 22 deselected / 9 selected
+
+factory/python/tests/test_cre_d0_adrs.py .                               [ 11%]
+factory/python/tests/test_cre_d2_recovery.py .                           [ 22%]
+factory/python/tests/test_m3_supervisor.py ......                        [ 88%]
+factory/python/tests/test_t024_systemd.py s                              [100%]
+
+================= 8 passed, 1 skipped, 22 deselected in 10.99s =================
+
+--- stderr ---

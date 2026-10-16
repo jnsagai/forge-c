@@ -130,6 +130,8 @@ def test_valid_contrast_verifies_the_cause_and_links_revisions(env):
     rec = reg.register_fix("CAPA-T")
     patch = subprocess.run(["git", "diff", full(BASE), full(FIX)], cwd=REPO_ROOT, capture_output=True).stdout
     assert rec["state"] == "FIX_CANDIDATE" and rec["candidate_patch_sha256"] == sha256_bytes(patch)
+    [ev] = store.events("cre.corrective_action_applied")  # CRE-T052
+    assert ev["payload"]["patch_sha256"] == rec["candidate_patch_sha256"] and ev["capa_id"] == "CAPA-T"
 
 
 # ---- CRE-T020 / AT-017 -------------------------------------------------------------------------------------------

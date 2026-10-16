@@ -26,3 +26,10 @@ def test_reuse_map_covers_every_existing_control_plane_component():
                       "release/finalize.py", "dashboard/app.py", "repair/promotion.py"):
         assert component in text, component
     assert "no parallel component" in text
+
+
+def test_002_changes_made_during_cre_are_reviewed():
+    text = (REPO_ROOT / "docs/adr/ADR-CRE-001-reuse-points-and-migration.md").read_text()
+    assert "Review of 002 changes made during CRE" in text
+    for f in ("supervisor/router.py", "supervisor/service.py", "test_t009_inspection.py"):
+        assert f in text

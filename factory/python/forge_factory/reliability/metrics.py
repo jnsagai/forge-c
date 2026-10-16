@@ -171,13 +171,18 @@ def compute(store: CREStore, policy: Policy, atts: list[dict] | None = None, now
                            notes=[f"orders: {sorted(by_order)}", f"attempts: {len(atts)}"],
                            provenance=["workorders:gate-logs"]))
     cohorts: dict[str, list[dict]] = defaultdict(list)
-    for a in atts:
+    censored: dict[str, int] = defaultdict(int)
+    for a in atts:  # an attempt still running (no terminal package) is censored, never counted as a failure
+        if a["package_status"] is None and not a["completed"]:
+            censored[a["cohort_key"]] += 1
+            continue
         cohorts[a["cohort_key"]].append(a)
     for ck, xs in sorted(cohorts.items()):
         # R09 attempt completion (all SWE.1-6 inspection gates PASS) - attempt-level, not an order KPI
         out.append(measurement("CRE-R09", ck, xs[0]["started"], now, sum(x["completed"] for x in xs), len(xs),
                                policy=policy, assumptions=["attempts are not independent: the factory revision changed "
                                                            "between most attempts (non-stationary process)"],
+                               notes=[f"censored (still running): {censored[ck]}"] if censored[ck] else [],
                                provenance=["workorders:gate-logs"]))
         # R02 retry amplification = author visits / (attempt, phase) pairs visited
         visits = sum(sum(x["author_visits"].values()) for x in xs)
@@ -377,6 +382,25 @@ def ewma(policy: Policy, values: list[float], calibration: dict | None) -> dict:
     return {"status": "MEASURED", "lambda": lam, "rows": rows, "signals": signals}
 
 
+def freeze_calibration(policy: Policy, atts: list[dict], cohort_substring: str, out_dir: Path | None = None) -> dict:
+    """CRE-T050: freeze a measurement-only p-chart calibration (CRE-R09) for ONE homogeneous cohort. Refused with
+    INSUFFICIENT_BASELINE below min_samples or when the substring matches several cohorts (no pooling)."""
+    keys = sorted({a["cohort_key"] for a in atts if cohort_substring in a["cohort_key"] and a["package_status"]})
+    xs = [a for a in atts if keys and a["cohort_key"] == keys[0] and a["package_status"]]
+    min_n = int(policy.get("statistics.min_samples_for_descriptive_charts"))
+    if len(keys) != 1:
+        return {"status": "REFUSED", "reason": f"{len(keys)} cohorts match; calibration needs exactly one"}
+    if len(xs) < min_n:
+        return {"status": "INSUFFICIENT_BASELINE", "reason": f"{len(xs)} terminal attempts < {min_n}", "cohort": keys[0]}
+    rec = {"cohort": keys[0], "metric": "CRE-R09", "samples": len(xs), "pbar": sum(not a["completed"] for a in xs) / len(xs),
+           "window": [xs[0]["started"], xs[-1]["started"]], "frozen_at": utc_now(), "policy_sha256": policy.sha256,
+           "note": "measurement-only; signals are diagnostic and never change gates"}
+    d = out_dir or state_dir() / "reliability" / "calibration"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"{sha256_bytes(keys[0].encode())[:16]}.json").write_text(json.dumps(rec, indent=2, sort_keys=True))
+    return {"status": "FROZEN", **rec}
+
+
 def emit_spc_signals(store: CREStore, policy: Policy, chart: str, signals: list) -> int:
     """Diagnostic only (AT-033): an event, never a repair dispatch, gate or threshold change."""
     n = 0
@@ -388,9 +412,16 @@ def emit_spc_signals(store: CREStore, policy: Policy, chart: str, signals: list)
 
 
 def main(argv: list[str] | None = None) -> int:
+    import sys
+
     from .policy import load
 
     pol = load()
+    args = argv if argv is not None else sys.argv[1:]
+    if args[:1] == ["calibrate"] and len(args) == 2:
+        r = freeze_calibration(pol, attempts(), args[1])
+        print(json.dumps(r, indent=2))
+        return 0 if r["status"] == "FROZEN" else 1
     rep = compute(CREStore(), pol)
     out = REPO_ROOT / "evidence/cre/metrics"
     out.mkdir(parents=True, exist_ok=True)

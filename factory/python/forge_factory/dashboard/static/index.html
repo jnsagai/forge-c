@@ -37,6 +37,7 @@ input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
 <section class="full"><h2>Reliability (feature 004 CRE — read-only; n, interval and status on every value)</h2>
 <div id="rsum" class="muted"></div>
 <div class="filters"><select id="rcls"><option value="">all classes</option><option>PRODUCT_QUALITY</option><option>INFRASTRUCTURE</option><option>TRANSIENT_DEPENDENCY</option><option>POLICY_SECURITY</option><option>UNKNOWN</option></select>
+<input id="rmodel" placeholder="model (e.g. deepseek-flash)" maxlength="60"><input id="rsince" placeholder="since YYYY-MM-DD" maxlength="20">
 <label><input type="checkbox" id="rrec" checked> recurring only</label><button id="rapply">Apply (display only)</button></div>
 <div class="scroll"><table id="rmodes"></table></div><div id="rdrill" class="muted"></div>
 <h3>CAPA (root cause VERIFIED only by reproducer contrast)</h3><div class="scroll"><table id="rcapa"></table></div>
@@ -86,7 +87,7 @@ async function refresh(){
 async function loadReliability(){try{
  const s=await api("reliability/summary");
  $("rsum").innerHTML=`mode ${b(s.mode)} · classifier ${esc(s.classifier_version)} · failure modes ${esc(s.failure_modes.total)} (recurring ${esc(s.failure_modes.recurring)}, observations ${esc(s.failure_modes.observations)}) · CAPA ${esc(JSON.stringify(s.capa.by_state))} · promotions ${esc(JSON.stringify(s.promotions))} · readiness ${b(s.readiness)} <span class="muted">${esc(s.note)}</span>`;
- const qs=new URLSearchParams({limit:"25"});if($("rcls").value)qs.set("failure_class",$("rcls").value);if($("rrec").checked)qs.set("recurring","true");
+ const qs=new URLSearchParams({limit:"25"});if($("rcls").value)qs.set("failure_class",$("rcls").value);if($("rrec").checked)qs.set("recurring","true");if($("rmodel").value.trim())qs.set("model",$("rmodel").value.trim());if($("rsince").value.trim())qs.set("since",$("rsince").value.trim());
  const f=await api("reliability/failure-modes?"+qs);
  rows("rmodes",["attempts","obs","class","operation","error code","Pareto","root cause"],f.items,m=>[esc(m.distinct_attempts),esc(m.occurrences),esc(m.failure_class),esc(m.operation),`<a href="#" data-fp="${esc(m.fingerprint)}">${esc(m.error_code)}</a>`,esc(m.pareto_share),b(m.root_cause_status)]);
  document.querySelectorAll("#rmodes a[data-fp]").forEach(a=>a.onclick=async e=>{e.preventDefault();const d=await api("reliability/failure-modes/"+a.dataset.fp);

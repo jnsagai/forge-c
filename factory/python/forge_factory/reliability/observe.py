@@ -259,7 +259,7 @@ def ingest(store: CREStore, policy_sha256: str, workspaces: list[Path] | None = 
     return {"observations": len(obs), "new": new, "attempts": len(wss), "retracted": retracted}
 
 
-def reduce(store: CREStore) -> list[dict]:
+def reduce(store: CREStore, policy_sha256: str | None = None, mirror: bool = True) -> list[dict]:
     """Pure projection: failure modes from the append-only observations (replay-equal by construction)."""
     groups: dict[str, list[dict]] = defaultdict(list)
     for o in store.observations():
@@ -278,7 +278,15 @@ def reduce(store: CREStore) -> list[dict]:
                      "recurring": int(len(attempts) >= 2),
                      "significant": int(len(attempts) >= 2 or any(o["outcome"] == "BLOCKED" for o in active)),
                      "data_quality": "OBSERVED" if active else "OWNER_DEFERRED_ONLY"})
+    known = {m["fingerprint"] for m in store.failure_modes()}
     store.replace_failure_modes(rows)
+    if policy_sha256:  # CRE-T052: a newly seen failure mode is a classified lifecycle event (once per fingerprint)
+        for r in rows:
+            if r["fingerprint"] not in known:
+                E.record(store, E.build("cre.failure_classified", r["fingerprint"], {
+                    "failure_class": r["failure_class"], "category": r["category"], "error_code": r["error_code"],
+                    "operation": r["operation"]}, policy_sha256=policy_sha256, correlation_id=r["fingerprint"][:40],
+                    fingerprint=r["fingerprint"], ts_utc=r["first_seen"]), mirror=mirror)
     return store.failure_modes()
 
 
@@ -288,7 +296,7 @@ def main(argv: list[str] | None = None) -> int:
     pol = load()
     store = CREStore()
     stats = ingest(store, pol.sha256)
-    modes = reduce(store)
+    modes = reduce(store, pol.sha256)
     rec = [m for m in modes if m["recurring"]]
     print(f"CRE ingest: {stats}; failure modes {len(modes)}, recurring {len(rec)}, significant "
           f"{sum(m['significant'] for m in modes)}")

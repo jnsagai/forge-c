@@ -286,9 +286,14 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
 
     @app.get("/api/v1/reliability/failure-modes")
     def rel_modes(r: str = Depends(role), failure_class: str | None = Query(None, pattern=r"^[A-Z_]{3,40}$"),
-                  recurring: bool | None = None, limit: int = Query(50, ge=1, le=200)) -> dict:
+                  recurring: bool | None = None, limit: int = Query(50, ge=1, le=200),
+                  category: str | None = Query(None, pattern=r"^[A-Z_]{3,40}$"),
+                  model: str | None = Query(None, pattern=r"^[A-Za-z0-9._:-]{1,60}$"),
+                  since: str | None = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}[T0-9:.Z]*$"),
+                  until: str | None = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}[T0-9:.Z]*$"),
+                  revision: str | None = Query(None, pattern=r"^[0-9a-f]{4,40}$")) -> dict:
         from ..reliability import dashboard_api as R
-        return R.failure_modes(failure_class, recurring, limit)
+        return R.failure_modes(failure_class, recurring, limit, category, model, since, until, revision)
 
     @app.get("/api/v1/reliability/failure-modes/{fingerprint}")
     def rel_obs(fingerprint: str, r: str = Depends(role)) -> dict:
@@ -309,9 +314,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         return R.metrics(metric, cohort)
 
     @app.get("/api/v1/reliability/promotions")
-    def rel_promotions(r: str = Depends(role)) -> dict:
+    def rel_promotions(r: str = Depends(role), candidate: str | None = Query(None, pattern=r"^[0-9a-f]{4,40}$"),
+                       decision: str | None = Query(None, pattern=r"^[A-Z_]{3,40}$")) -> dict:
         from ..reliability import dashboard_api as R
-        return R.promotions()
+        return R.promotions(candidate, decision)
 
     @app.get("/api/v1/reliability/anomalies")
     def rel_anomalies(r: str = Depends(role)) -> dict:

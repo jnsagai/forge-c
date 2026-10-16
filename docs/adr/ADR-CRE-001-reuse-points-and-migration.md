@@ -30,3 +30,14 @@ Migration rule: additive only (new tables/columns with defaults); imported histo
 One database, one ledger, one supervisor, one packager. CRE can be disabled by policy mode without schema rollback.
 Dependency limits recorded in the matrix (C02 Fabro-native crash resume; C05 repair scope = runtime config) bound
 what D2/D7 can show on real infrastructure.
+
+## Review of 002 changes made during CRE (CRE-T054, 2026-10-16)
+Two 002 behaviours were changed because CRE tests found defects in them; both keep the 002 contracts:
+
+| Change | Finding | Why it is consistent with 002 | Regression coverage |
+|---|---|---|---|
+| `supervisor/router.py`: fingerprints whose incident went to `REQUIRES_OFFLINE_ATTENTION` are *held* while the fault is unbroken | a permanent non-repairable fault (disk full) opened a new incident on every poll after the first went terminal | 002 T019 says a *recurrence* opens a new linked incident; an unbroken fault is not a recurrence. A recurrence after `stable_polls_for_recovery` healthy polls still opens a new incident linked by `previous_incident_id` | `test_cre_d2_recovery.py::test_unbroken_fault_is_one_incident…`, `test_m3_supervisor.py` (unchanged, passing) |
+| `supervisor/service.py`: a corrupted `checkpoint.json` is quarantined and counting restarts | the supervisor crashed at start on a corrupted checkpoint (fault campaign F08) | 002 T024 requires watchdog/reboot resume; crash-looping on bad state violates it. The event is audited (`audit` WARN) | fault campaign F08, `test_t024_systemd.py` |
+
+Also changed for testability without behaviour change: `test_t009_inspection.py` copies checklists into a writable
+temp tree (the hardened promotion sandbox exposed that `copytree` preserved read-only bits).

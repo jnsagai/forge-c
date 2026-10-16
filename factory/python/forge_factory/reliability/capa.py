@@ -211,8 +211,12 @@ class CapaRegistry:
         fix = self.links(capa_id, "FIX_REVISION")[-1]
         base = self.links(capa_id, "BASELINE_REVISION")[-1]
         patch = subprocess.run(["git", "diff", base, fix], cwd=REPO_ROOT, capture_output=True, timeout=120).stdout
-        return self.transition(capa_id, "FIX_CANDIDATE", f"fix {fix[:12]} (patch {len(patch)} bytes)",
-                               [f"git:{base[:12]}..{fix[:12]}"], candidate_patch_sha256=sha256_bytes(patch))
+        rec = self.transition(capa_id, "FIX_CANDIDATE", f"fix {fix[:12]} (patch {len(patch)} bytes)",
+                              [f"git:{base[:12]}..{fix[:12]}"], candidate_patch_sha256=sha256_bytes(patch))
+        E.record(self.s, E.build("cre.corrective_action_applied", f"{capa_id}|{fix}", {
+            "fix_revision": fix[:12], "baseline_revision": base[:12], "patch_sha256": rec["candidate_patch_sha256"]},
+            policy_sha256=self.p.sha256, correlation_id=capa_id, capa_id=capa_id))  # CRE-T052
+        return rec
 
     def register_prevention(self, capa_id: str, regression_run: dict) -> dict:
         """The reproducer becomes a durable prevention test; it must be absent at the regression revision."""

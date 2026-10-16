@@ -123,3 +123,16 @@ def test_comparisons_refuse_unlike_cohorts_and_report_uncertainty(env):
     assert r["verdict"] == "IMPROVEMENT_SUPPORTED" or r["verdict"] == "NO_SIGNIFICANT_DIFFERENCE"
     small = M.growth_report(pol, atts[:6] + atts[6:7], COH, "HEAD~10")
     assert small["verdict"] == "NO_SIGNIFICANT_DIFFERENCE"  # 0/6 vs 1/1: intervals overlap, no claim
+
+
+# ---- CRE-T050 (convergence): calibration freeze is refused without enough homogeneous samples ------------------
+def test_calibration_freeze_requires_one_cohort_and_enough_samples(env, tmp_path):
+    _, pol = env
+    few = [{**att(f"a{i}", "o", f"2026-10-16T00:{i:02d}:00Z", i % 4 == 0), "package_status": "BLOCKED"} for i in range(10)]
+    assert M.freeze_calibration(pol, few, "model=m", tmp_path)["status"] == "INSUFFICIENT_BASELINE"
+    mixed = few + [{**x, "attempt_id": "z" + x["attempt_id"], "cohort_key": x["cohort_key"] + "x"} for x in few]
+    assert M.freeze_calibration(pol, mixed, "model=m", tmp_path)["status"] == "REFUSED"  # never pooled
+    many = [{**att(f"b{i}", "o", f"2026-10-16T01:{i:02d}:00Z", i % 4 == 0), "package_status": "BLOCKED"} for i in range(40)]
+    r = M.freeze_calibration(pol, many, "model=m", tmp_path)
+    assert r["status"] == "FROZEN" and r["samples"] == 40 and r["pbar"] == 0.75
+    assert M.p_chart(enabled_policy(), [("g1", 5, 10)], r)["status"] == "MEASURED"

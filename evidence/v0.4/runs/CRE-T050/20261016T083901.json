@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d5_metrics.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "calibration_freeze"
+  ],
+  "duration_s": 0.809,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "0efeaa72616e8b6b39463c9de1950fe9686b186a",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T050/20261016T083901.log",
+  "log_sha256": "fa07001eb31a4c900bcd8257dda6db476e07496b66e74bb118074d7aa766611c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T050",
+  "ts_utc": "2026-10-16T08:39:01.030986Z"
+}

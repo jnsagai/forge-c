@@ -224,3 +224,17 @@ def test_superseded_observation_is_retracted_by_record_never_deleted(env):
     assert r["classifier_version"] == T.CLASSIFIER_VERSION and "superseded" in r["reason"]
     assert "cfp1-" + "0" * 40 not in {m["fingerprint"] for m in O.reduce(store)}
     assert O.ingest(store, POL, wss, incidents=False)["retracted"] == 0  # idempotent
+
+
+# ---- CRE-T051 / CRE-T052 (convergence) ---------------------------------------------------------------------------
+def test_work_orders_record_sampling_and_failure_modes_emit_one_classified_event(env):
+    from forge_factory.workorder import model_profile
+    prof = model_profile("qwen3:8b", "ollama", "qwen3-coder:30b", {"swe3_author": {"model": "qwen3-coder:30b"}})
+    assert prof["sampling"]["temperature"].startswith("PROVIDER_DEFAULT") and prof["sampling"]["seed"].startswith(
+        "NOT_SUPPORTED") and prof["local_only"] is True
+    store = CREStore(env / "k.sqlite3")
+    O.ingest(store, POL, _two_attempts(env), incidents=False)
+    modes = O.reduce(store, POL)
+    assert len(store.events("cre.failure_classified")) == len(modes)
+    O.reduce(store, POL)
+    assert len(store.events("cre.failure_classified")) == len(modes)  # once per fingerprint

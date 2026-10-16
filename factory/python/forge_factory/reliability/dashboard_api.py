@@ -69,22 +69,58 @@ def _count(xs: list) -> dict:
     return dict(sorted(out.items()))
 
 
-def failure_modes(failure_class: str | None = None, recurring: bool | None = None, limit: int = 50) -> dict:
-    q, a = "SELECT * FROM cre_failure_modes WHERE 1=1", []
-    if failure_class:
-        q += " AND failure_class=?"
-        a.append(failure_class)
-    if recurring is not None:
-        q += " AND recurring=?"
-        a.append(int(recurring))
-    rows = _q(q + " ORDER BY distinct_attempts DESC, occurrences DESC LIMIT ?", (*a, limit))
+def failure_modes(failure_class: str | None = None, recurring: bool | None = None, limit: int = 50,
+                  category: str | None = None, model: str | None = None, since: str | None = None,
+                  until: str | None = None, revision: str | None = None) -> dict:
+    """Display filters only. With model/period/revision filters the counts are re-aggregated from the matching
+    observations, so numerator (per mode) and denominator (all shown observations) always move together."""
+    if not (model or since or until or revision):
+        q, a = "SELECT * FROM cre_failure_modes WHERE 1=1", []
+        if failure_class:
+            q += " AND failure_class=?"
+            a.append(failure_class)
+        if category:
+            q += " AND category=?"
+            a.append(category)
+        if recurring is not None:
+            q += " AND recurring=?"
+            a.append(int(recurring))
+        rows = _q(q + " ORDER BY distinct_attempts DESC, occurrences DESC LIMIT ?", (*a, limit))
+    else:
+        q = ("SELECT fingerprint, failure_class, category, error_code, operation, attempt_id, ts_utc FROM "
+             "cre_failure_observations WHERE disposition='ACTIVE' AND obs_id NOT IN "
+             "(SELECT obs_id FROM cre_observation_retractions)")
+        a = []
+        for cond, val in (("cohort LIKE ?", f"%model={model}|%" if model else None), ("ts_utc >= ?", since),
+                          ("ts_utc <= ?", until), ("factory_version LIKE ?", f"{revision}%" if revision else None),
+                          ("failure_class = ?", failure_class), ("category = ?", category)):
+            if val:
+                q += f" AND {cond}"
+                a.append(val)
+        agg: dict[str, dict] = {}
+        for o in _q(q, tuple(a)):
+            m = agg.setdefault(o["fingerprint"], {**{k: o[k] for k in ("fingerprint", "failure_class", "category",
+                                                                       "error_code", "operation")},
+                                                  "occurrences": 0, "attempts": set(), "root_cause_status": None})
+            m["occurrences"] += 1
+            m["attempts"].add(o["attempt_id"])
+        rc = {r["fingerprint"]: r["root_cause_status"] for r in _q("SELECT fingerprint, root_cause_status "
+                                                                   "FROM cre_failure_modes")}
+        rows = []
+        for m in agg.values():
+            n = len(m.pop("attempts"))
+            m.update(distinct_attempts=n, recurring=int(n >= 2), root_cause_status=rc.get(m["fingerprint"], "UNKNOWN"))
+            if recurring is None or m["recurring"] == int(recurring):
+                rows.append(m)
+        rows = sorted(rows, key=lambda r: (-r["distinct_attempts"], -r["occurrences"], r["fingerprint"]))[:limit]
     total = sum(r["occurrences"] for r in rows)
     cum = 0
-    for r in rows:  # Pareto share of the displayed (filtered) set - numerator and denominator move together
+    for r in rows:  # Pareto share of the displayed (filtered) set
         cum += r["occurrences"]
         r["pareto_share"] = round(cum / total, 4) if total else None
-    return {"items": rows, "denominator_observations": total, "filters": {"class": failure_class,
-                                                                         "recurring": recurring}}
+    return {"items": rows, "denominator_observations": total,
+            "filters": {"class": failure_class, "category": category, "recurring": recurring, "model": model,
+                        "since": since, "until": until, "revision": revision}}
 
 
 def observations(fingerprint: str, limit: int = 50) -> dict:
@@ -105,9 +141,15 @@ def capas() -> dict:
     return {"items": out}
 
 
-def promotions() -> dict:
-    return {"items": [json.loads(r["record"]) for r in
-                      _q("SELECT record FROM cre_promotion_decisions ORDER BY at DESC LIMIT 50")]}
+def promotions(candidate: str | None = None, decision: str | None = None) -> dict:
+    q, a = "SELECT record FROM cre_promotion_decisions WHERE 1=1", []
+    if candidate:
+        q += " AND candidate LIKE ?"
+        a.append(f"{candidate}%")
+    if decision:
+        q += " AND decision = ?"
+        a.append(decision)
+    return {"items": [json.loads(r["record"]) for r in _q(q + " ORDER BY at DESC LIMIT 50", tuple(a))]}
 
 
 def metrics(metric: str | None = None, cohort: str | None = None) -> dict:

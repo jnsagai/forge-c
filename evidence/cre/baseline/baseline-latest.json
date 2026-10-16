@@ -1,7 +1,7 @@
 {
-  "git_head": "efa6e83228c9681e46b82380744a67ca08e95ab2",
-  "logs_dir": "evidence/cre/baseline/baseline-20261016T043928",
-  "recorded_at": "2026-10-16T04:41:26.559997Z",
+  "git_head": "a5eec8946e7535ea20c7edd9955397b90c54ce35",
+  "logs_dir": "evidence/cre/baseline/baseline-20261016T082306",
+  "recorded_at": "2026-10-16T08:30:18.718664Z",
   "restored_regenerated_evidence": [
     "docs/IMPLEMENTATION-STATUS-v0.4.md",
     "evidence/v0.4/implementation-status.json",
@@ -14,13 +14,13 @@
         "tests/spec/validate_design.py"
       ],
       "constraint": null,
-      "duration_s": 0.22,
-      "end_utc": "2026-10-16T04:39:29.026735Z",
+      "duration_s": 0.59,
+      "end_utc": "2026-10-16T08:23:07.051792Z",
       "exit_code": 0,
       "id": "design",
       "result": "PASS",
-      "start_utc": "2026-10-16T04:39:28.809917Z",
-      "stderr_sha256": "4dd168206a407f5ce9161e06ec238c40ccdd8401dc10243b1ec7965bda5260ac",
+      "start_utc": "2026-10-16T08:23:06.463325Z",
+      "stderr_sha256": "1406f51854f809f9b3db470622c60d90a1fb5e029f4055e0b008e783195d9dc7",
       "stdout_sha256": "ed46b6cc93c7738a74fdb5b7036e30a29f95fcf124ada85a88c9cd4d803063f8",
       "tail": "OK"
     },
@@ -35,13 +35,13 @@
         "-v"
       ],
       "constraint": null,
-      "duration_s": 0.07,
-      "end_utc": "2026-10-16T04:39:29.097088Z",
+      "duration_s": 0.15,
+      "end_utc": "2026-10-16T08:23:07.206600Z",
       "exit_code": 0,
       "id": "unittest-tests",
       "result": "PASS",
-      "start_utc": "2026-10-16T04:39:29.026797Z",
-      "stderr_sha256": "1d15dab7b67564a645753bb89da79f5f6647fab784cbaaff03c5317269a7310f",
+      "start_utc": "2026-10-16T08:23:07.051922Z",
+      "stderr_sha256": "05b2db030eaa12d741ab4a7378dc4bd214eb1e6f502a9510673222aea0a79c90",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tail": "OK"
     },
@@ -58,13 +58,13 @@
         "-v"
       ],
       "constraint": null,
-      "duration_s": 0.11,
-      "end_utc": "2026-10-16T04:39:29.208082Z",
+      "duration_s": 0.27,
+      "end_utc": "2026-10-16T08:23:07.478173Z",
       "exit_code": 0,
       "id": "unittest-release-manager",
       "result": "PASS",
-      "start_utc": "2026-10-16T04:39:29.097155Z",
-      "stderr_sha256": "91b2dfb4070523bda6251a40a04cecb8753dfd78139fcb52e7be246df68c3ba2",
+      "start_utc": "2026-10-16T08:23:07.206705Z",
+      "stderr_sha256": "99a1db01ef52cd3fab0d9c4caaad33970e50d9b5aab648588672c4b548a49ffd",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tail": "OK"
     },
@@ -74,15 +74,15 @@
         "scripts/verify_bundle.py"
       ],
       "constraint": "SHA256SUMS.txt is the frozen v0.5 handoff inventory (184 files, 2026-10-14) and the tree has evolved since; the script also walks .git. See CRE-T001 C19 / source-inventory.json.",
-      "duration_s": 0.12,
-      "end_utc": "2026-10-16T04:39:29.331459Z",
+      "duration_s": 0.6,
+      "end_utc": "2026-10-16T08:23:08.074842Z",
       "exit_code": 1,
       "id": "verify-bundle",
       "result": "KNOWN_CONSTRAINT",
-      "start_utc": "2026-10-16T04:39:29.208144Z",
-      "stderr_sha256": "f0036f1032683feeb87f08d3b4677140927e6585dd143eb07c443d86e14e7c2b",
+      "start_utc": "2026-10-16T08:23:07.478281Z",
+      "stderr_sha256": "db46a5fd6d9f5758a2587a3a7a08bb2b98d052fd274fbfd31103cc357ff25c5b",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tail": "FAIL (3356): hash mismatch: .fabro/skills/fabric-repair/SKILL.md; hash mismatch: .fabro/skills/footprint-optimizer/SKILL.md; hash mismatch: .fabro/skills/intake-analyst/SKILL.md; hash mismatch: .fabro"
+      "tail": "FAIL (4027): hash mismatch: .fabro/skills/fabric-repair/SKILL.md; hash mismatch: .fabro/skills/footprint-optimizer/SKILL.md; hash mismatch: .fabro/skills/intake-analyst/SKILL.md; hash mismatch: .fabro"
     },
     {
       "argv": [
@@ -90,12 +90,12 @@
         "scripts/run_oss_demo.sh"
       ],
       "constraint": null,
-      "duration_s": 0.11,
-      "end_utc": "2026-10-16T04:39:29.444197Z",
+      "duration_s": 0.19,
+      "end_utc": "2026-10-16T08:23:08.268133Z",
       "exit_code": 0,
       "id": "oss-demo",
       "result": "PASS",
-      "start_utc": "2026-10-16T04:39:29.331504Z",
+      "start_utc": "2026-10-16T08:23:08.074946Z",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_sha256": "9475d0f080f4e3c84e713f0af340970dae80ee5f7b92b37b52d64051c7bce26a",
       "tail": "DEMO PASS: Clang host build/tests/LLVM MC/DC generated. Not ASIL B, not MISRA compliance."
@@ -112,15 +112,15 @@
         "--ignore=factory/python/tests/test_cre_d0_baseline.py"
       ],
       "constraint": null,
-      "duration_s": 117.11,
-      "end_utc": "2026-10-16T04:41:26.551468Z",
+      "duration_s": 430.44,
+      "end_utc": "2026-10-16T08:30:18.704383Z",
       "exit_code": 0,
       "id": "factory-pytest",
       "result": "PASS",
-      "start_utc": "2026-10-16T04:39:29.444248Z",
+      "start_utc": "2026-10-16T08:23:08.268226Z",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "777361f98831bc8f3da492c5c4c90548447656efd964c4904c6ff01419ca4fb2",
-      "tail": "....                                                                     [100%]"
+      "stdout_sha256": "0032941a9cb63d7cfb9e04a02f081b7a6e052a14f364b5988ceb64a2660d4f81",
+      "tail": ".                                                                        [100%]"
     }
   ],
   "schema": "forge-c/cre-baseline/1.0",

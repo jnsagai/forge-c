@@ -1,0 +1,67 @@
+{
+  "assessed_at": "2026-10-16T08:47:47.902460Z",
+  "configured_mode": "OBSERVE_ONLY",
+  "git_head": "0efeaa72616e8b6b39463c9de1950fe9686b186a",
+  "levels": {
+    "ACTIVE_ELIGIBLE": {
+      "met": [],
+      "missing": [
+        "pilot_demonstrated: PILOT_ELIGIBLE not demonstrated",
+        "authorized_reversible_actions: no pre-authorized reversible actions",
+        "signed_operator_runbook: docs/cre-runbook.md exists but has no recorded owner review/sign-off"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    },
+    "OBSERVE_ONLY": {
+      "met": [
+        "baseline_and_audit",
+        "policy_observe_only",
+        "live_supervisor_zero_model_calls",
+        "failure_registry_populated"
+      ],
+      "missing": [],
+      "status": "DEMONSTRATED"
+    },
+    "PILOT_ELIGIBLE": {
+      "met": [
+        "all_other_p0_tasks_pass",
+        "fault_campaign_all_pass",
+        "real_e2e_terminal_evidence",
+        "candidate_evaluations_recorded"
+      ],
+      "missing": [
+        "pilot_authorization: no owner authorization block for PILOT in the reliability policy",
+        "live_fabro_crash_recovery_drill: a real Fabro crash -> recovery drill on the live server was not executed; restarting Fabro is outside the authorized 002 repair scope (capability matrix C02/C05)"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    }
+  },
+  "not_claimed": [
+    "universal or 100% reliability",
+    "PILOT/ACTIVE operation",
+    "ISO 26262 / ASIL B approval",
+    "Automotive SPICE capability level",
+    "production release"
+  ],
+  "p0_requirements_unmet": [],
+  "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+  "readiness": "OBSERVE_ONLY",
+  "reliability_slo_evidence": {
+    "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)",
+    "reason": "no homogeneous cohort reaches 30 comparable attempts on a fixed factory revision; workflow yield per cohort (CRE-R09): deepseek-flash/FULL: 4/30 [0.05, 0.30]; deepseek-flash/RESUMED: 2/18 [0.03, 0.33]; qwen3:8b/FULL: 0/18 [0.00, 0.18]; qwen3:8b/FULL: 1/11 [0.02, 0.38]",
+    "status": "NOT_DEMONSTRATED"
+  },
+  "safety_signoff": null,
+  "schema": "forge-c/cre-readiness/1.0",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED",
+  "supported_claims": [
+    "bounded recovery and safe termination in 18 injected fault scenarios (isolated real components)",
+    "independent promotion gate rejects unsafe, concealing and protected-path candidates",
+    "root causes VERIFIED only by reproducer contrast on real commits (5 historical fixes)",
+    "healthy supervision makes zero model calls (live + 100-poll tests)"
+  ],
+  "tasks": {
+    "pass": 48,
+    "total": 54
+  }
+}
