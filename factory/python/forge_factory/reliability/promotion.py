@@ -287,3 +287,33 @@ def apply_reversible(store: CREStore, policy: Policy, action: str, changes: dict
         raise RuntimeError("RELEASED_ARCHIVES_CHANGED")  # never expected; would be a security incident
     return {"outcome": outcome, "from": old, "candidate": cand, "main": git(infra, "rev-parse", "main"),
             "retracted_lessons": retracted, "archives_sha": arch_after}
+
+
+def main(argv: list[str] | None = None) -> int:
+    """python -m forge_factory.reliability.promotion <candidate-rev> <baseline-rev> [--kind FIX|CHANGE]
+    [--reproducer RPR-xxx ...] [--repo PATH] - prints the decision; never deploys anything."""
+    import argparse
+
+    from .policy import load
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("candidate")
+    ap.add_argument("baseline")
+    ap.add_argument("--kind", choices=["FIX", "CHANGE"], default="CHANGE")
+    ap.add_argument("--reproducer", action="append", default=[])
+    ap.add_argument("--repo", default=str(REPO_ROOT))
+    ap.add_argument("--skip-quality", action="store_true")
+    a = ap.parse_args(argv)
+    d = evaluate(a.candidate, a.baseline, CREStore(), load(), reproducers=a.reproducer, kind=a.kind, repo=Path(a.repo),
+                 skip_quality=a.skip_quality)
+    print(f"{d['decision']} {d['decision_id']} candidate {d['candidate_revision'][:12]} baseline "
+          f"{d['baseline_revision'][:12]}")
+    for g in d["hard_gates"]:
+        print(f"  {g['name']:17s} {g['result']:8s} {g.get('reason_code') or ''}")
+    for r in d["reasons"]:
+        print(f"  - {r}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
