@@ -354,3 +354,23 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   reporter whose test was wrong could neither change the test nor pass it. **Fixed:** L15 withdrawal.
 - Tests: `test_loopbacks.py::…undeclared_api_is_refused_r73`, `…fix_step_that_changed_nothing_is_not_frozen_r73`,
   `…reporter_withdraws_its_own_defect…`.
+
+## Thirteenth live run (r74): first clean fix loop; SWE.5 blocked on a late anti-bending verdict
+- **The loop worked as designed:** SWE.6 reported SWR-014 (`HAL_RCC_HSI_Enable(0xFFFFFFFFU)` returned HAL_OK),
+  SWE.3's triage accepted it, the fix author made a real change (new baseline BL-SWE.3-002: a timeout above
+  `HAL_RCC_TIMEOUT_VALUE` returns HAL_ERROR with no register write), SWE.3 and SWE.4 re-passed inspection on the
+  first try.
+- **SWE.5 BLOCKED:** on re-entry the integration author rewrote its test model before the first run; the rewrite
+  failed (IT-001/002/004/005) and was debugged blind for three cycles, because `run_integration` reported only
+  `IT-001 FAIL`. In the third cycle the test passed, but the author gate then rejected it as
+  `TEST_CHANGED_AFTER_FAIL`, so the author never had a chance to declare it.
+- **Remedies:**
+  - `run_unit`/`run_integration` report `CHECK_EXPR:<file>#<id>:<expression> with <var> = <call>` for every failed
+    `CHECK`, like `run_robot` (r64/r68); the expression lookup is shared.
+  - **Anti-bending at tool time:** `run_unit`, `run_integration`, `run_renode` and `run_robot` return FAIL when
+    every test passes but a test was edited after a runtime failure on the same driver code and not declared
+    (`HOW_TO_DECLARE` + `UNDECLARED_TEST_CHANGE:<file>`), so the author declares or restores within the same visit.
+    The gate check is unchanged; L13 post-fix adaptations are still declared by the gate. Replayed on r74: the
+    03:40 integration PASS would have been reported as this FAIL inside the last cycle.
+  - Tests: `test_m2_mcp.py::test_t014…` (real clang runs), `test_loopbacks.py::…undeclared_test_change_at_once_r74`,
+    `…leaves_post_fix_adaptations_to_the_gate`.

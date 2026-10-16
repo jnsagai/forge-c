@@ -23,7 +23,7 @@ from typing import Literal
 from pydantic import Field
 
 from ...common import REPO_ROOT
-from ...inspection.defects import integrity, record_integrity
+from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
 
@@ -141,8 +141,11 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     ok = not issues and passed > 0
     record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
                      integrity(ctx.workspace, tests, asserted))
-    return result(ctx, "PASS" if ok else "FAIL", f"renode cortex-m55: {passed} checks passed, {failed} failed "
-                  f"({len(tests)} images; behavioural RCC model)", [ctx.store(log)], issues[:30],
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_renode") if ok else []
+    return result(ctx, "PASS" if ok and not undeclared else "FAIL", f"renode cortex-m55: {passed} checks passed, "
+                  f"{failed} failed ({len(tests)} images; behavioural RCC model)"
+                  + ("; undeclared test change - declare it" if undeclared else ""), [ctx.store(log)],
+                  (undeclared + issues)[:30],
                   {"passed": passed, "failed": failed, "images": per, "cpu": "cortex-m55",
                    "platform": "forge-stm32n6-rcc-min (CPU+NVIC+AXISRAM+behavioural RCC)",
                    "target_evidence": "simulated", "silicon_verified": False}, "renode",

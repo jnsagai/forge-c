@@ -14,7 +14,7 @@ import shutil
 from pathlib import Path
 from typing import Literal
 
-from ...inspection.defects import integrity, record_integrity
+from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 from .build import INCLUDE_DIRS, SOURCE_DIRS
 
@@ -39,6 +39,32 @@ def _diag(raw: bytes, ws, markers: tuple[str, ...], limit: int) -> list[str]:
             if len(out) >= limit:
                 break
     return out
+
+
+def _with_setter(expr: str, src_before: str) -> str:
+    """r68: 'st == HAL_ERROR' -> 'st == HAL_ERROR with st = HAL_RCC_HSI_Enable(0U)' (last assignment before)."""
+    v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)
+    setter = re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", src_before) if v else []
+    return f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}" if setter else expr
+
+
+HOST_CHECK = re.compile(r'\bCHECK\(\s*"([^"]+)"\s*,(.*?)\)\s*;', re.S)
+
+
+def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
+    """r74: run_integration said only 'IT-001 FAIL'; the SWE.5 author rewrote the test model three times blind.
+    Name the failed check's expression and the call that set its variable, like run_robot's CHECK_EXPR."""
+    ids = re.findall(r"^\s*(\S+) FAIL\b", out.decode(errors="replace"), re.M)
+    src = test.read_text(errors="replace")
+    exprs = []
+    for cid in dict.fromkeys(ids):
+        m = next((m for m in HOST_CHECK.finditer(src) if m.group(1) == cid), None)
+        if m:
+            exprs.append(f"CHECK_EXPR:{test.name}#{cid}:" + _with_setter(" ".join(m.group(2).split()),
+                                                                         src[:m.start()])[:110])
+        if len(exprs) >= limit:
+            break
+    return exprs
 
 
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
@@ -76,11 +102,17 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             failed += 1
             asserted.append(t)
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
-            issues += _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
+            exprs = _host_check_exprs(t, r.stdout)
+            issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
-    record_integrity(ctx.workspace, ctx.phase, "run_unit" if level == "unit" else "run_integration",
-                     "PASS" if failed == 0 else "FAIL", integrity(ctx.workspace, tests, asserted))
-    return result(ctx, "PASS" if failed == 0 else "FAIL", f"{level}: {passed} passed, {failed} failed (HOST)",
+    op = "run_unit" if level == "unit" else "run_integration"
+    record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
+                     integrity(ctx.workspace, tests, asserted))
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, op) if failed == 0 else []
+    issues = undeclared + issues
+    return result(ctx, "PASS" if failed == 0 and not undeclared else "FAIL",
+                  f"{level}: {passed} passed, {failed} failed (HOST)"
+                  + ("; undeclared test change - declare it" if undeclared else ""),
                   [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),
                                              "environment": "host", "target_evidence": False},
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
@@ -238,11 +270,8 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
             m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
             cond = expr = ""
             if m:
-                cond = expr = " ".join(m.group(2).split())
-                v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)  # r68: 'st == HAL_ERROR' - show what set st
-                setter = [x for x in re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", src[:m.start()])] if v else []
-                if setter:
-                    expr = f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}"
+                cond = " ".join(m.group(2).split())
+                expr = _with_setter(cond, src[:m.start()])
                 exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + expr[:100])
             named = {t for r_ in reqs_ for ts in required_tokens(texts.get(r_, "")) for t in ts}
             failed_checks.append({"requirements": reqs_, "scenario": scn, "check": cid, "expr": expr[:200],
@@ -264,10 +293,12 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                      {**integrity(ctx.workspace, [*suites, *scn], asserted), "failed_checks": failed_checks,
                       "build_failed": sorted(builds), "unobserved": sorted(
                           {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
-    return result(ctx, "PASS" if ok else "FAIL",
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_robot") if ok else []
+    return result(ctx, "PASS" if ok and not undeclared else "FAIL",
                   f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
-                  "verified (Renode STM32N6 model + host measurements)",
-                  [ctx.store(xml.read_bytes(), "xml")], issues[:30],
+                  "verified (Renode STM32N6 model + host measurements)"
+                  + ("; undeclared test change - declare it" if undeclared else ""),
+                  [ctx.store(xml.read_bytes(), "xml")], (undeclared + issues)[:30],
                   {"tests": len(tests), "passed": passed, "failed": len(tests) - passed, "requirements": len(reqs),
                    "requirements_verified": len(covered & set(reqs)), "environment": "robotframework 6.1 + renode "
                    "1.17.0 (simulated cortex-m55)", "silicon_verified": False},

@@ -364,6 +364,37 @@ def bent_tests(ws: Path, phase: str) -> list[str]:
     return [f"TEST_CHANGED_AFTER_FAIL:{f}" for f, _ in _bent(ws, phase)]
 
 
+def _post_fix(f: str, failed: dict, runs: list[dict], fixes: list[dict]) -> tuple[dict, dict] | None:
+    """(pre-fix PASS run with the same test content, the fix defect in between) - an L13 adaptation - or None."""
+    before = [r for r in runs if r["op"] == failed["op"] and r["status"] == "PASS"
+              and r.get("ts_utc", "") < failed.get("ts_utc", "") and r["files"].get(f) == failed["files"].get(f)
+              and r["code_sha"] != failed["code_sha"]]
+    if not before:
+        return None
+    passed = before[-1]
+    fix = next((d for d in reversed(fixes) if any(
+        h["status"] == "FIXED" and passed["ts_utc"] < h["ts"] <= failed["ts_utc"] for h in d["history"])), None)
+    return (passed, fix) if fix is not None else None
+
+
+# tool issues are capped at 120 characters: one instruction line, then one line per file
+HOW_TO_DECLARE = ("HOW_TO_DECLARE: edited after failing on the same code: report_defect kind TEST (quote, why)"
+                  " or restore it; re-run")
+
+
+def undeclared_test_changes(ws: Path, phase: str | None, op: str) -> list[str]:
+    """r74: anti-bending was evaluated only at the author gate, after the author finished - in the last cycle, so
+    the author never had the chance to declare. The test tool now says it at once (status FAIL although every test
+    passed): the newest run of `op` passes with a test edited after a runtime failure on the same code and not
+    declared. L13 post-fix adaptations are left to the gate (it declares them itself)."""
+    if not phase:
+        return []
+    runs = [r for r in _integrity_runs(ws) if r.get("op") in TEST_TOOLS]
+    fixes = [d for d in all_defects(ws) if d["kind"] in KIND_TARGET and d["status"] in ("FIXED", "VERIFIED")]
+    files = [f for f, failed in _bent(ws, phase) if failed["op"] == op and _post_fix(f, failed, runs, fixes) is None]
+    return ([HOW_TO_DECLARE] if files else []) + [f"UNDECLARED_TEST_CHANGE:{f}" for f in files]
+
+
 def declare_post_fix_adaptations(ws: Path, phase: str) -> list[dict]:
     """ADR-0008 L13 (owner decision 2026-10-15, r71): an upstream fix changed behaviour, so a test that PASSED with
     the same content on the pre-fix code fails afterwards and the author adapts it without declaring it. The gate
@@ -374,16 +405,10 @@ def declare_post_fix_adaptations(ws: Path, phase: str) -> list[dict]:
     fixes = [d for d in all_defects(ws) if d["kind"] in KIND_TARGET and d["status"] in ("FIXED", "VERIFIED")]
     out = []
     for f, failed in _bent(ws, phase):
-        before = [r for r in runs if r["op"] == failed["op"] and r["status"] == "PASS"
-                  and r.get("ts_utc", "") < failed.get("ts_utc", "") and r["files"].get(f) == failed["files"].get(f)
-                  and r["code_sha"] != failed["code_sha"]]
-        if not before:
+        pf = _post_fix(f, failed, runs, fixes)
+        if pf is None:
             continue
-        passed = before[-1]
-        fix = next((d for d in reversed(fixes) if any(
-            h["status"] == "FIXED" and passed["ts_utc"] < h["ts"] <= failed["ts_utc"] for h in d["history"])), None)
-        if fix is None:
-            continue
+        passed, fix = pf
         rec = report(ws, detected_phase=phase, reported_by=GATE_REPORTER, kind="TEST",
                      summary=f"Gate-declared: {f} passed on the pre-fix code and failed after the {fix['id']} fix "
                              f"({fix['kind']}, {', '.join(fix['requirement_ids'])}); the author adapted it without "

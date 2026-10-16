@@ -178,6 +178,18 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
                                                          ' return 1; }\n')
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert "UT-009 FAIL" in neg["issues"]  # failing case ids are returned to the agent
+    (ws / "software/tests/unit/test_negative.c").write_text(  # r74: the failed check's expression, not just its id
+        '#include <stdio.h>\nstatic int f(int x){ return x + 1; }\n#define CHECK(id, c) do { if (c) { printf("%s PASS\\n",'
+        ' (id)); } else { printf("%s FAIL\\n", (id)); n++; } } while (0)\nint main(void){ int n = 0; int st;\n'
+        '    st = f(1);\n    CHECK("UT-010", st == 2);\n    CHECK("UT-011",\n          st == 3);\n    return n; }\n')
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert "CHECK_EXPR:test_negative.c#UT-011:st == 3 with st = f(1)" in neg["issues"], neg["issues"]
+    assert not any("UT-010" in i for i in neg["issues"])
+    (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return 0; }\n")  # bent to pass
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert neg["status"] == "FAIL" and "UNDECLARED_TEST_CHANGE:software/tests/unit/test_negative.c" in neg["issues"]
+    (ws / "software/tests/unit/test_negative.c").unlink()  # removed: not a bent test
+    assert call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")["status"] == "PASS"
     (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return undefined_symbol; }\n")
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert any("test_negative.c:1" in i and "error:" in i for i in neg["issues"]), neg["issues"]

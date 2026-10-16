@@ -512,3 +512,30 @@ def test_reporter_withdraws_its_own_defect_by_declaring_the_test_wrong(ws):
     assert D.all_defects(ws)[0]["status"] == "WITHDRAWN"
     assert D.verify_on_freeze(ws, "SWE.6") == [] and D.gaps(ws) == []
     assert any(x.startswith("DEF-001 CODE WITHDRAWN (SWE.6)") for x in D.review_items(ws))
+
+
+def test_test_tool_reports_an_undeclared_test_change_at_once_r74(ws):
+    """r74: anti-bending fired only at the gate in the last cycle; the SWE.5 author never had a chance to declare."""
+    f = "software/tests/integration/test_rcc_integration.c"
+    _run(ws, "SWE.5", "run_integration", "FAIL", "2026-10-16T03:36:16Z", "C1", {f: "h1"}, [f])
+    _run(ws, "SWE.5", "run_integration", "PASS", "2026-10-16T03:40:00Z", "C1", {f: "h2"}, [])
+    assert D.undeclared_test_changes(ws, "SWE.5", "run_integration") == [D.HOW_TO_DECLARE,
+                                                                         f"UNDECLARED_TEST_CHANGE:{f}"]
+    assert D.undeclared_test_changes(ws, "SWE.5", "run_unit") == []  # another tool's run is not this one's
+    (ws / f).parent.mkdir(parents=True, exist_ok=True)
+    (ws / f).write_text("/* IT-001 corrected */\n")
+    D.report(ws, detected_phase="SWE.5", reported_by="swe5-author", kind="TEST", summary="model stepped twice",
+             requirement_ids=["SWR-014"], test_files=[f], evidence_refs=[],
+             requirement_quote="shall return HAL_ERROR without any register write")
+    assert D.undeclared_test_changes(ws, "SWE.5", "run_integration") == []
+
+
+def test_test_tool_leaves_post_fix_adaptations_to_the_gate(ws):
+    f = "software/tests/integration/test_rcc_integration.c"
+    (ws / f).parent.mkdir(parents=True)
+    (ws / f).write_text("/* IT-017 adapted */\n")
+    _fixed_code_defect(ws)
+    _run(ws, "SWE.5", "run_integration", "PASS", "2000-01-01T00:00:00Z", "C-old", {f: "h1"}, [])
+    _run(ws, "SWE.5", "run_integration", "FAIL", D.utc_now(), "C-fix", {f: "h1"}, [f])
+    _run(ws, "SWE.5", "run_integration", "PASS", D.utc_now(), "C-fix", {f: "h2"}, [])
+    assert D.undeclared_test_changes(ws, "SWE.5", "run_integration") == []  # L13: the gate declares it
