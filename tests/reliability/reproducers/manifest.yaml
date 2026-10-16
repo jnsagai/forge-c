@@ -90,3 +90,14 @@ reproducers:
     operations: [SWE.4/inspect, SWE.5/inspect, SWE.5/author, SWE.5/route]
     root_cause: "The LL SWE.1 procedure asked for a requirement on the number of register reads/writes, which a host RAM register array cannot observe; SWE.4/SWE.5 spent their rework budget on access-counting stubs (r80 BLOCKED at SWE.5)."
     remedy: "The LL SWE.1 procedure no longer asks for access counts and requires every requirement to be verifiable on the register array or by the size/stack tools."
+  - id: RPR-009
+    script: rpr009_scope_exclusion_failed.py
+    sha256: af46b21e2eefa5f4e76b2bde41c92d8f8368a4c1340bb4de01c45b6346b50167
+    symptom_signature: "verification inspectors judge excluded work-order scope as missing tests"
+    observed_in: r80
+    baseline_revision: b9361c0bb212425b6d6d12e66aef5d4f69cdecf4
+    fix_revision: 14868f7960a0bf1db509cd052da9abd9ab1b2769
+    error_codes: ["INSPECTION_FAIL:SWE5-03"]
+    operations: [SWE.5/inspect]
+    root_cause: "Neither the SWE.5 report procedure nor the SWE.4-6 inspector procedures carried the work-order scope, so the inspector failed SWE5-03 for interrupts that the work order excludes."
+    remedy: "The SWE.5 report lists scope exclusions and SWE.4-6 inspectors judge items about excluded behaviour N/A when the report states the exclusion."

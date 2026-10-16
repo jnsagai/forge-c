@@ -328,18 +328,69 @@
           "reason": "triage by HUMAN:claude-implementation-engineer",
           "seq": 64,
           "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T10:41:08.680698Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-009 assigned",
+          "seq": 65,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T10:41:10.837356Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"reproducer-run:rr-f9393cfc5a03d3a05259\", \"reproducer-run:rr-55b146dd26aca53a38f7\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 66,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T10:41:10.856589Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"git:b9361c0bb212..14868f7960a0\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 14868f7960a0 (patch 4475 bytes)",
+          "seq": 67,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T10:41:11.887342Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"reproducer-run:rr-143f1c9da00ba850c90c\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-009 absent at 14868f7960a0",
+          "seq": 68,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T10:41:11.900800Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 69,
+          "to_state": "EFFECTIVENESS_OBSERVING"
         }
       ],
       "links": {
-        "BASELINE_REVISION": [],
+        "BASELINE_REVISION": [
+          "b9361c0bb212425b6d6d12e66aef5d4f69cdecf4"
+        ],
         "FINGERPRINT": [
           "cfp1-7a02454bbfaccd76ccbcd2c66d9d3a9f49729f34"
         ],
-        "FIX_REVISION": []
+        "FIX_REVISION": [
+          "14868f7960a0bf1db509cd052da9abd9ab1b2769"
+        ]
       },
       "record": {
-        "affected_versions": [],
-        "candidate_patch_sha256": null,
+        "affected_versions": [
+          "forge-c@<14868f7960a0"
+        ],
+        "candidate_patch_sha256": "dc8fc5cb42581f6e54ffd0a0b9241429bc14d0665dd2a466650ae92ce146ca1f",
         "capa_id": "CAPA-007",
         "created_at": "2026-10-16T10:31:32.511492Z",
         "event_ids": [],
@@ -349,18 +400,24 @@
         "lesson_ids": [],
         "observation_window_end": null,
         "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
-        "prevention_test_id": null,
-        "reproducer_id": null,
-        "root_cause_evidence_refs": [],
-        "root_cause_status": "HYPOTHESIS",
+        "prevention_test_id": "prevention:RPR-009",
+        "reproducer_id": "RPR-009",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-f9393cfc5a03d3a05259",
+          "reproducer-run:rr-55b146dd26aca53a38f7"
+        ],
+        "root_cause_status": "VERIFIED",
         "root_cause_summary": "The SWE.5 procedure and report template do not state work-order scope exclusions (interrupts, low-power), so the inspector applies the full SWE5-03 checklist item; hypothesis only, no reproducer yet.",
         "schema_version": "1.0",
-        "state": "TRIAGED",
-        "updated_at": "2026-10-16T10:31:32.535467Z"
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T10:41:11.900800Z"
       }
     }
   ],
-  "promotion_decision": "pd-71d98ae6b352329bd9aa",
+  "promotion_decisions": [
+    "pd-71d98ae6b352329bd9aa",
+    "pd-213b185e3c1aae838215"
+  ],
   "schema": "forge-c/cre-capa-export/1.0",
   "source_run": "WO-0002A-STM32N6-RCC-LL-r80"
 }
