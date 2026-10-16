@@ -241,6 +241,21 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
             continue
         changed = [t for t, h in d["test_files"].items()
                    if not (ws / t).is_file() or sha256_file(ws / t) != h]
+        if changed and d["status"] == "FIXED":
+            # r75: the author extended the cited test file before any post-fix run. The gate runs the cited
+            # version itself (restored from the snapshots) against the fixed code: that is the verification.
+            from .reverify import reverify
+
+            status, found = reverify(ws, d, ws / SNAPSHOTS)
+            if status == "PASS":
+                _event(d, "VERIFIED", tools=["gate-reverify"], note="cited tests restored from the snapshots "
+                       "passed on the fixed code; the edited copies are checked by anti-bending")
+                _save(ws, d)
+                continue
+            if status == "FAIL":
+                issues.append(f"DEFECT_NOT_FIXED:{d['id']}: the cited test (restored as reported) still fails on "
+                              f"the fixed code: {'; '.join(found)[:300]}")
+                continue
         if changed:
             issues.append(f"DEFECT_TEST_CHANGED:{d['id']}:{changed[0][:60]}")
             continue

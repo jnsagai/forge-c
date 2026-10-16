@@ -379,3 +379,16 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   with the fixes SWE.3 accepted in r66/r73/r74). The SWE.1 author prompt now names the invalid values (NULL
   pointer, unknown selector, timeout 0 or > `HAL_RCC_TIMEOUT_VALUE`) and the HAL author checks them before any
   register write. Runs resumed from r56 keep the old wording; a full run from SWE.1 applies the new one.
+
+## Fourteenth live run (r75): two loops, both caught by the layers below
+- SWE.6 reported SWR-014 again (resumed r56 wording); SWE.3 needed two fix cycles (one lost to a cppcheck MISRA
+  10.6 finding) and then invented "1000 itself is invalid" (`HAL_RCC_TIMEOUT_MAX 999U`), contradicting SWR-015. The
+  SWE.3 inspector passed it; **SWE.4's unchanged unit tests caught it** (UT-001/002 for HSI/HSE/MSI) and SWE.4
+  reported DEF-002 (CODE) - the second loop; SWE.3 fixed it.
+- **Over-strict verification:** the SWE.4 author added new tests (UT-059..) to the cited `test_rcc.c` before its
+  first post-fix run, so no run ever used the cited version and `DEFECT_TEST_CHANGED` rejected a correct fix.
+  **Fixed:** when the cited files changed, the gate verifies itself (`inspection/reverify.py`): a scratch copy of the
+  workspace with the cited files restored byte-identical from the test snapshots, the fixed code and the test tool
+  of each cited file. PASS = VERIFIED (`gate-reverify`), FAIL = `DEFECT_NOT_FIXED` (the fix does not make the
+  reported test pass), unavailable snapshot = `DEFECT_TEST_CHANGED` as before. The edited copies stay subject to
+  anti-bending. Replayed on r75: DEF-002 (unit) and DEF-001 (Robot on Renode) both PASS in 41 s.

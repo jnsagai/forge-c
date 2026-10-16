@@ -539,3 +539,50 @@ def test_test_tool_leaves_post_fix_adaptations_to_the_gate(ws):
     _run(ws, "SWE.5", "run_integration", "FAIL", D.utc_now(), "C-fix", {f: "h1"}, [f])
     _run(ws, "SWE.5", "run_integration", "PASS", D.utc_now(), "C-fix", {f: "h2"}, [])
     assert D.undeclared_test_changes(ws, "SWE.5", "run_integration") == []  # L13: the gate declares it
+
+
+# ---- r75: the gate verifies a fix with the cited tests restored from the snapshots ------------------------------
+def _unit_ws(ws, body):
+    (ws / "software/src").mkdir(parents=True, exist_ok=True)
+    (ws / "software/src/drv.c").write_text(f"int drv(void) {{ return {body}; }}\n")
+    t = ws / "software/tests/unit/test_drv.c"
+    t.parent.mkdir(parents=True, exist_ok=True)
+    t.write_text('#include <stdio.h>\nint drv(void);\nint main(void) { if (drv() == 1) { printf("UT-001 PASS\\n"); '
+                 'return 0; } printf("UT-001 FAIL\\n"); return 1; }\n')
+    snap = ws / D.SNAPSHOTS
+    snap.mkdir(parents=True, exist_ok=True)
+    h = D.sha256_file(t)
+    (snap / h).write_bytes(t.read_bytes())
+    return "software/tests/unit/test_drv.c", h
+
+
+def test_gate_reverifies_a_fix_with_the_cited_test_restored_r75(ws):
+    """r75: SWE.4 added UT-059.. to the cited test file before its first post-fix run; the fix itself was right."""
+    from forge_factory.inspection.reverify import reverify
+
+    f, h = _unit_ws(ws, "1")
+    d = {"test_files": {f: h}, "detected_phase": "SWE.4"}
+    (ws / f).write_text("int main(void) { return 0; } /* extended by the author */\n")
+    assert reverify(ws, d, ws / D.SNAPSHOTS) == ("PASS", [])  # the cited version, not the edited copy
+    (ws / "software/src/drv.c").write_text("int drv(void) { return 2; }\n")  # fix not effective
+    status, issues = reverify(ws, d, ws / D.SNAPSHOTS)
+    assert status == "FAIL" and any("UT-001" in i for i in issues), issues
+    assert (ws / f).read_text().startswith("int main(void) { return 0; }")  # the workspace itself is untouched
+
+
+def test_changed_cited_test_is_verified_by_the_gate_or_blocks(ws, monkeypatch):
+    from forge_factory.inspection import reverify as RV
+
+    f = "software/tests/software/scn_invalid_param.c"
+    tool(ws, "SWE.6", "run_robot", "FAIL")
+    code_defect(ws)
+    D.take_upstream(ws, "SWE.3")
+    D.mark_fixed(ws, "SWE.3", "BL-SWE.3-002")
+    (ws / f).write_text("/* SWR-014 plus new checks */\n")
+    monkeypatch.setattr(RV, "reverify", lambda w, d, s: ("FAIL", ["run_robot:ROBOT_FAIL:SWR-014:check 2"]))
+    [issue] = D.verify_on_freeze(ws, "SWE.6")
+    assert issue.startswith("DEFECT_NOT_FIXED:DEF-001") and D.all_defects(ws)[0]["status"] == "FIXED"
+    monkeypatch.setattr(RV, "reverify", lambda w, d, s: ("UNAVAILABLE", []))
+    assert D.verify_on_freeze(ws, "SWE.6") == [f"DEFECT_TEST_CHANGED:DEF-001:{f}"]
+    monkeypatch.setattr(RV, "reverify", lambda w, d, s: ("PASS", []))
+    assert D.verify_on_freeze(ws, "SWE.6") == [] and D.all_defects(ws)[0]["status"] == "VERIFIED"
