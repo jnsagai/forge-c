@@ -32,7 +32,8 @@
       "fr": "CRE-FR-001",
       "passing_tasks": [
         "CRE-T001",
-        "CRE-T002"
+        "CRE-T002",
+        "CRE-T040"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -235,7 +236,8 @@
       "fr": "CRE-FR-014",
       "passing_tasks": [
         "CRE-T018",
-        "CRE-T024"
+        "CRE-T024",
+        "CRE-T040"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -521,7 +523,9 @@
     {
       "fr": "CRE-FR-034",
       "passing_tasks": [
-        "CRE-T016"
+        "CRE-T016",
+        "CRE-T039",
+        "CRE-T040"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -537,7 +541,8 @@
       "passing_tasks": [
         "CRE-T012",
         "CRE-T015",
-        "CRE-T016"
+        "CRE-T016",
+        "CRE-T039"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -599,7 +604,8 @@
         "CRE-T001",
         "CRE-T002",
         "CRE-T004",
-        "CRE-T037"
+        "CRE-T037",
+        "CRE-T040"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -1358,8 +1364,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T08:06:42.030276Z",
-  "git_head": "f8c2e39cb14f0383a245f51529477c5ff1cdc324",
+  "generated_at": "2026-10-16T08:19:42.335423Z",
+  "git_head": "5a041ab16c72a2ffba2ef77c5bc77e53449e3928",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1368,7 +1374,7 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 38,
+    "004_pass": 40,
     "004_total": 42,
     "cre_fr_covered": 40,
     "cre_fr_total": 40,
@@ -3018,29 +3024,33 @@
       "task": "CRE-T038"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T039/latest.json"
+      ],
       "frs": [
         "CRE-FR-034",
         "CRE-FR-035"
       ],
-      "line": "- [ ] **CRE-T039 [P0]** Run complete fault-injection campaign covering Fabro crash, MCP outage, deadlock, full disk, DB fail, process restart, duplicate callback, invalid repair, corrupted candidate/f",
+      "line": "- [X] **CRE-T039 [P0]** Run complete fault-injection campaign covering Fabro crash, MCP outage, deadlock, full disk, DB fail, process restart, duplicate callback, invalid repair, corrupted candidate/f",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T039"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T040/latest.json"
+      ],
       "frs": [
         "CRE-FR-001",
         "CRE-FR-014",
         "CRE-FR-034",
         "CRE-FR-039"
       ],
-      "line": "- [ ] **CRE-T040 [P0]** Execute real RCC end-to-end on available Fabro/local Qwen environment, using real MCP and artifacts. If unavailable, run mocks as developmental evidence **and** mark real E2E `",
+      "line": "- [X] **CRE-T040 [P0]** Execute real RCC end-to-end on available Fabro/local Qwen environment, using real MCP and artifacts. If unavailable, run mocks as developmental evidence **and** mark real E2E `",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T040"
     },
     {

@@ -83,7 +83,18 @@ class Supervisor:
         self.finalizer_enabled = finalizer_enabled
         self.cre = None  # CRE hook (feature 004), created on first poll
         ck = self.home / "checkpoint.json"
-        self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
+        try:
+            self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
+            if not isinstance(self.ck, dict) or not isinstance(self.ck.get("polls"), int):
+                raise ValueError("checkpoint shape")
+        except (ValueError, OSError):  # CRE fault campaign F08: a corrupted checkpoint must not stop supervision
+            quarantine = ck.with_name(f"checkpoint.corrupt-{int(time.time())}.json")
+            try:
+                ck.replace(quarantine)
+            except OSError:
+                pass
+            self.ck = {"polls": 0, "started": utc_now(), "recovered_from_corrupt_checkpoint": quarantine.name}
+            emit("audit", "WARN", f"supervisor checkpoint corrupted; quarantined as {quarantine.name}, restarted counts")
 
     def poll_once(self) -> dict:
         t0 = time.monotonic()

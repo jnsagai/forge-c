@@ -7,6 +7,7 @@ content-addressed, so duplicate/replayed writes are no-ops (INSERT OR IGNORE).
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
@@ -101,9 +102,10 @@ class CREStore:
 
     @contextmanager
     def conn(self):
-        c = sqlite3.connect(self.path, timeout=30, isolation_level=None)
+        t = float(os.environ.get("FORGE_CRE_DB_TIMEOUT_S", "30"))  # lock wait before failing closed
+        c = sqlite3.connect(self.path, timeout=t, isolation_level=None)
         c.row_factory = sqlite3.Row
-        c.execute("PRAGMA busy_timeout=30000")
+        c.execute(f"PRAGMA busy_timeout={int(t * 1000)}")
         c.execute("PRAGMA synchronous=FULL")
         try:
             yield c

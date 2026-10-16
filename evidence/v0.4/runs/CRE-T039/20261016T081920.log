@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 1 item
+
+factory/python/tests/test_cre_d7_faults.py .                             [100%]
+
+============================== 1 passed in 20.86s ==============================
+
+--- stderr ---
