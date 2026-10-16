@@ -255,3 +255,25 @@ reproducers:
     operations: [SWE.1/author]
     root_cause: "CAPA-020 traces Robot-verified requirements with test_id = the SWR id; the ReqIF exporter built test-object identifiers from the same (SO, id) as requirements, so the XSD rejected a duplicate xs:ID and SWE.1 could not freeze."
     remedy: "Test ids that equal a requirement id get their own (ST, id) identifier namespace in the ReqIF export; other identifiers are unchanged."
+  - id: RPR-024
+    script: rpr024_duplicate_check_ids.py
+    sha256: 4eeeb4675b4dc2b24f24152b1cb93d19e8a9441fce88206949be18f134a4c6b5
+    symptom_signature: "host test run accepts duplicate CHECK ids"
+    observed_in: r86
+    baseline_revision: bca018ab6c88e3c2795e05f83f28eccde35dedba
+    fix_revision: 995fc2d87f47114b07acac9d81c735dc4482a47e
+    error_codes: ["INSPECTION_FAIL:SWE4-06", "INSPECTION_FAIL:SWE4-02"]
+    operations: [SWE.4/inspect]
+    root_cause: "run_unit and run_integration did not check that each CHECK id is unique; aligning UT ids with the SWE.1 trace produced duplicates that only the SWE.4 inspector found (r86: two rework cycles)."
+    remedy: "Host test runs fail with DUPLICATE_TEST_ID when a CHECK id is used by more than one check."
+  - id: RPR-025
+    script: rpr025_target_model_unstated.py
+    sha256: 700be6bcce2d8ed4347508d6841553d4242bb2b43297fd9b6a290d84aa7f13bc
+    symptom_signature: "target procedures do not state the RCC model semantics"
+    observed_in: r86
+    baseline_revision: bca018ab6c88e3c2795e05f83f28eccde35dedba
+    fix_revision: 995fc2d87f47114b07acac9d81c735dc4482a47e
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_robot", "DEFECT:CODE"]
+    operations: [SWE.6/author, SWE.5/author]
+    root_cause: "The SWE.5/SWE.6 procedures described the simulated RCC only as 'ready flags follow enable bits'; authors treated RCC_SR as writable storage, their target checks failed and they reported correct code as defective (r86 DEF-003/004, rejected by triage)."
+    remedy: "Target and Robot procedures state the model exactly (RCC_SR read-only = RCC_CR & 0xF1F, other registers plain storage from 0, never_ready), checked against rcc_model.py."
