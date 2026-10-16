@@ -101,3 +101,25 @@ reproducers:
     operations: [SWE.5/inspect]
     root_cause: "Neither the SWE.5 report procedure nor the SWE.4-6 inspector procedures carried the work-order scope, so the inspector failed SWE5-03 for interrupts that the work order excludes."
     remedy: "The SWE.5 report lists scope exclusions and SWE.4-6 inspectors judge items about excluded behaviour N/A when the report states the exclusion."
+  - id: RPR-010
+    script: rpr010_ll_unallocated_helpers.py
+    sha256: 6914a1d91d96fbdfb67eaadd3111828f2fafd572b02da7ab9f73f7d895cfad2b
+    symptom_signature: "LL implementation check accepts unallocated helpers and loops"
+    observed_in: r81
+    baseline_revision: d361ed8f81c3353596d519ecd6202681f2a69d62
+    fix_revision: 0b4cf5dd2cc9f41837f14945c3d373ba2e0bbc63
+    error_codes: ["DEFECT:CODE", "INSPECTION_FAIL:SWE6-05"]
+    operations: [SWE.5/author, SWE.6/inspect]
+    root_cause: "The LL implementation check only required every allocated function; the LL author added LL_RCC_*_WaitReady on a HAL_RCC_PollSet helper with a loop, SWE.5/6 tested those unrequired, inverted functions and spent a return and a rework on them."
+    remedy: "The LL implementation check rejects unallocated functions, HAL code and waiting loops in the LL header; the LL author procedure states it."
+  - id: RPR-011
+    script: rpr011_swe5_target_not_required.py
+    sha256: 0bcc6ef6d690572befcab173a0fc49ce2cb96123ce348f8fa509d9303d6a1b22
+    symptom_signature: "SWE.5 presence gate passes with failing target tests"
+    observed_in: r81
+    baseline_revision: d361ed8f81c3353596d519ecd6202681f2a69d62
+    fix_revision: 0b4cf5dd2cc9f41837f14945c3d373ba2e0bbc63
+    error_codes: ["PACKAGE_GAP:failed_or_missing_quality_check"]
+    operations: [SWE.5/author, -/package]
+    root_cause: "REQUIRED_TOOL_PASS for SWE.5 listed only run_integration, so SWE.5 froze and passed inspection while run_renode failed; the package was BLOCKED on target_verification only at finalization."
+    remedy: "SWE.5 also requires the latest run_renode to PASS (after the current code baseline) before it can be frozen."
