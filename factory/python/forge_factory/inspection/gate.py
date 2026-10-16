@@ -206,6 +206,25 @@ def author_rejections(ws: Path, phase: str, since: str = "") -> int:
     return sum(1 for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x and '"REJECTED"' in x)
 
 
+def _rejection_signature(line: str) -> tuple | None:
+    """Deterministic gate codes of an author rejection (None when it holds agent-output or free-text issues)."""
+    d = json.loads(line)
+    iss = [str(x) for x in (d.get("issues") or d.get("errors") or [])]
+    codes = tuple(sorted(i for i in iss if re.match(r"^[A-Z][A-Z0-9_]+(:|$)", i) and not i.startswith("AGENT_OUTPUT")))
+    return codes if codes and len(codes) == len(iss) else None
+
+
+def stuck_signature(ws: Path, phase: str, since: str = "") -> tuple | None:
+    """CAPA-014: the last two author attempts of this epoch were rejected with the identical deterministic codes.
+    Over all recorded runs (r10-r82) this never recovered on the next cycle (0 of 14), so the remaining cycle is
+    not spent: the phase stops early (the L11 safety net still runs) and the failure goes to the CAPA process."""
+    rows = [x for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x]
+    if len(rows) < 2 or '"REJECTED"' not in rows[-1] or '"REJECTED"' not in rows[-2]:
+        return None
+    a, b = _rejection_signature(rows[-2]), _rejection_signature(rows[-1])
+    return b if a is not None and a == b else None
+
+
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
@@ -217,10 +236,12 @@ def step_route(store: Store, phase: str) -> int:
     # The authored maximum applies; Fabro's identical-signature breaker no longer fires because every failed gate
     # execution prints a distinct cycle marker (ADR-0005 #5, verified with a model-free loop probe).
     budget = int(g["max_rework_cycles"])
+    stuck = stuck_signature(store.workspace, phase, since) if g["decision"] != "PASS" else None
+    exhausted = cycles >= budget or stuck is not None
     from . import defects
 
     up = defects.open_from(store.workspace, phase)
-    if not up and g["decision"] != "PASS" and cycles >= budget:
+    if not up and g["decision"] != "PASS" and exhausted:
         # ADR-0008 L11 safety net: about to BLOCK with nothing reported - file the CODE defect this phase's own
         # recorded test evidence proves (the author edited a correct failing check instead of reporting it, r67-r69)
         try:
@@ -241,8 +262,9 @@ def step_route(store: Store, phase: str) -> int:
         emit("workflow", "WARN", f"{phase} {g['reason']}", phase=phase)
         print(json.dumps(g))
         return 1
-    if g["decision"] != "PASS" and cycles >= budget:
-        g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)"}
+    if g["decision"] != "PASS" and exhausted:
+        g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
+             else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
     _state(store.workspace, phase, {"step": "route", "gate": g})
     if g["decision"] == "BLOCKED":
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)

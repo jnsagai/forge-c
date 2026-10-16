@@ -97,6 +97,12 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
     srcs = sources(ctx)
     if not srcs:
         return result(ctx, "BLOCKED", "no sources to compile", issues=["NO_SOURCES"], tool=prof["cc"])
+    from ...layer import layer_of
+
+    if layer_of(ctx.workspace) == "LL":
+        inst = ll_instances(ctx, od)
+        if inst is not None:
+            srcs = [*srcs, inst]
     for src in srcs:
         obj = od / (src.stem + ".o")
         argv = [prof["cc"], *prof["flags"], *WARN, *[f"-D{m}" for m in a.defines], *includes(ctx), "-fstack-usage",
@@ -125,6 +131,31 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
     return result(ctx, "PASS" if not failed else "FAIL", f"{len(srcs) - failed}/{len(srcs)} units compiled ({a.profile})",
                   [ref], issues, metrics, prof["cc"], tool_version(prof["cc"]),
                   0 if not failed else 1, total_ms, a.model_dump(), log)
+
+
+def ll_instances(ctx: ToolContext, od: Path) -> Path | None:
+    """CAPA-013 (r83): the header-only LL compiles to nothing, so size and stack read 0 bytes / 0 functions. For LL
+    work orders a measurement unit in the BUILD directory (never a product source) instantiates every LL access
+    function once, non-inline, so measure_elf and stack_usage measure the real code."""
+    from ...layer import LL_HEADER
+
+    hdr = ctx.workspace / LL_HEADER
+    if not hdr.is_file():
+        return None
+    from ...inspection.guideline import strip_c
+
+    code = strip_c(hdr.read_text(errors="replace"))
+    fns = re.findall(r"static\s+inline\s+(void|uint32_t)\s+(LL_RCC_\w+)\s*\(\s*void\s*\)", code)
+    if not fns:
+        return None
+    body = ["/* GENERATED measurement unit (build only, CAPA-013): one non-inline instance per LL function */",
+            '#include "stm32n6xx_ll_rcc.h"', ""]
+    for ret, name in fns:
+        body += [f"{ret} forge_measure_{name}(void);", f"{ret} forge_measure_{name}(void)", "{",
+                 f"    {'return ' if ret != 'void' else ''}{name}();", "}", ""]
+    p = od / "forge_ll_measure.c"
+    p.write_text("\n".join(body))
+    return p
 
 
 def objects(ctx: ToolContext, profile: str) -> list[Path]:

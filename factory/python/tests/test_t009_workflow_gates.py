@@ -192,11 +192,28 @@ def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(
 
 
 def test_route_counts_author_rejections_in_rework_budget(tmp_path):
-    for _ in range(2):  # authored maximum_rework_cycles = 3
+    # each cycle fails differently (an output appears between attempts): the authored 3-cycle budget applies
+    for i in range(2):  # authored maximum_rework_cycles = 3
         assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
         assert gate(tmp_path, "SWE.3", "route").returncode == 0  # failed cycle within budget: rework
+        (tmp_path / "workproducts/SWE.3").mkdir(parents=True, exist_ok=True)
+        (tmp_path / f"workproducts/SWE.3/{'detailed_design.md' if i == 0 else 'notes.md'}").write_text("x\n")
+        (tmp_path / "software/ll").mkdir(parents=True, exist_ok=True)
+        if i == 1:
+            (tmp_path / "software/ll/stm32n6xx_ll_rcc.h").write_text("x\n")
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
     assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
+
+
+def test_route_stops_early_on_an_identical_deterministic_rejection(tmp_path):
+    """CAPA-014: the same deterministic rejection twice never recovered in r10-r82 (0 of 14): stop at the 2nd."""
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    r = gate(tmp_path, "SWE.3", "route")
+    assert r.returncode == 1
+    log = (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert "STUCK: identical deterministic rejection twice" in log
 
 
 def test_route_counts_its_own_invocations_when_no_gate_ran(tmp_path):

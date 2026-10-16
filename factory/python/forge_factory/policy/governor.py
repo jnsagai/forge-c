@@ -50,12 +50,31 @@ RESERVED_FOR_INSPECTORS = 4  # r63: inspectors ran out of calls before recording
 RESERVED_TOOLS = ("mcp__forge_evidence_mcp__check_inspection", "mcp__forge_evidence_mcp__report_defect")
 
 
+SCALED_ROLES = ("swe3-author", "swe4-author", "swe5-author", "swe6-author")
+REFERENCE_FUNCTIONS = 12  # the combined-driver allocation the authored 35-turn budget was set for (r70/r71)
+
+
+def turn_limit(role: str, workspace: str | None = None) -> int:
+    """CAPA-015: authored max_turns, plus 1 turn per 2 allocated API functions above REFERENCE_FUNCTIONS for the
+    code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25."""
+    base = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    if role not in SCALED_ROLES or not workspace:
+        return base
+    try:
+        from ..inspection.implementation import allocated_functions
+
+        n = len(allocated_functions(Path(workspace)))
+    except Exception:  # noqa: BLE001 - scaling is advisory; the authored budget always applies
+        return base
+    return base + min(25, max(0, n - REFERENCE_FUNCTIONS) // 2)
+
+
 def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str,
-                    tool: str = "") -> tuple[bool, int, int, bool]:
+                    tool: str = "", workspace: str | None = None) -> tuple[bool, int, int, bool]:
     """Returns (allowed, count_after, limit, reserved_denial). For inspector roles the last RESERVED_FOR_INSPECTORS
     calls of the authored budget are only usable for check_inspection/report_defect; a denied non-reserved call
     does not consume budget (the budget itself is unchanged)."""
-    limit = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    limit = turn_limit(role, workspace)
 
     def fn(st: dict) -> tuple[bool, int, int, bool]:
         k = f"{run_id}:{node_id}"
