@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/schemas/004/reliability-policy.schema.json",
+  "title": "Forge-C CRE reliability policy (feature 004)",
+  "description": "Structural contract. Hard invariants that can never be weakened are enforced in addition by forge_factory.reliability.policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "feature_id",
+    "mode",
+    "integration",
+    "supervisor",
+    "recovery",
+    "capa",
+    "promotion",
+    "benchmark",
+    "statistics",
+    "security",
+    "telemetry",
+    "readiness"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "feature_id": {
+      "const": "004-continuous-reliability-engineering"
+    },
+    "mode": {
+      "enum": [
+        "OBSERVE_ONLY",
+        "PILOT",
+        "ACTIVE"
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runbook_ref",
+        "approved_by",
+        "approved_on"
+      ],
+      "properties": {
+        "runbook_ref": {
+          "type": "string",
+          "minLength": 3
+        },
+        "approved_by": {
+          "type": "string",
+          "minLength": 2
+        },
+        "approved_on": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "review_record": {
+          "type": "string"
+        }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "do_not_create_parallel_control_plane",
+        "reuse_existing_incident_store",
+        "reuse_existing_kpi_catalog",
+        "reuse_existing_supervisor"
+      ],
+      "properties": {
+        "reuse_existing_supervisor": {
+          "type": "boolean"
+        },
+        "reuse_existing_incident_store": {
+          "type": "boolean"
+        },
+        "reuse_existing_kpi_catalog": {
+          "type": "boolean"
+        },
+        "do_not_create_parallel_control_plane": {
+          "type": "boolean"
+        }
+      }
+    },
+    "supervisor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "health_unknown_is_healthy",
+        "invoke_model_on_healthy_poll"
+      ],
+      "properties": {
+        "invoke_model_on_healthy_poll": {
+          "type": "boolean"
+        },
+        "health_unknown_is_healthy": {
+          "type": "boolean"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "breaker_cooldown_seconds",
+        "breaker_failure_threshold",
+        "breaker_half_open_probes",
+        "exhausted_terminal_state",
+        "fail_closed_on_unknown_side_effect",
+        "initial_backoff_seconds",
+        "jitter_ratio",
+        "lease_seconds",
+        "max_backoff_seconds",
+        "max_repair_attempts_per_incident",
+        "max_repairs_per_hour",
+        "max_transient_retries_per_operation",
+        "non_replayable_operation_classes",
+        "retry_only_idempotent_operations"
+      ],
+      "properties": {
+        "retry_only_idempotent_operations": {
+          "type": "boolean"
+        },
+        "max_transient_retries_per_operation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "max_repair_attempts_per_incident": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "max_repairs_per_hour": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "initial_backoff_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 600
+        },
+        "max_backoff_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "jitter_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lease_seconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 3600
+        },
+        "breaker_failure_threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "breaker_cooldown_seconds": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 86400
+        },
+        "breaker_half_open_probes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "fail_closed_on_unknown_side_effect": {
+          "type": "boolean"
+        },
+        "non_replayable_operation_classes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "exhausted_terminal_state": {
+          "enum": [
+            "REQUIRES_OFFLINE_ATTENTION",
+            "BLOCKED"
+          ]
+        }
+      }
+    },
+    "capa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_cross_workflow_lessons",
+        "effectiveness_window_runs",
+        "max_approved_lessons_per_query",
+        "preventive_regression_required",
+        "root_cause_requires_reproduction"
+      ],
+      "properties": {
+        "root_cause_requires_reproduction": {
+          "type": "boolean"
+        },
+        "preventive_regression_required": {
+          "type": "boolean"
+        },
+        "allowed_cross_workflow_lessons": {
+          "enum": [
+            "VALIDATED_ONLY",
+            "NONE"
+          ]
+        },
+        "max_approved_lessons_per_query": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "effectiveness_window_runs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allow_auto_mutation_of_safety_rules",
+        "allowed_automatic_operational_actions",
+        "auto_promote_persistent_code",
+        "forbid_test_oracle_edits",
+        "require_authorized_offline_change_control",
+        "require_frozen_baseline",
+        "require_independent_runner",
+        "require_reproducer_and_regression",
+        "require_security_and_policy_integrity"
+      ],
+      "properties": {
+        "auto_promote_persistent_code": {
+          "type": "boolean"
+        },
+        "allow_auto_mutation_of_safety_rules": {
+          "type": "boolean"
+        },
+        "forbid_test_oracle_edits": {
+          "type": "boolean"
+        },
+        "require_independent_runner": {
+          "type": "boolean"
+        },
+        "require_frozen_baseline": {
+          "type": "boolean"
+        },
+        "require_reproducer_and_regression": {
+          "type": "boolean"
+        },
+        "require_security_and_policy_integrity": {
+          "type": "boolean"
+        },
+        "require_authorized_offline_change_control": {
+          "type": "boolean"
+        },
+        "allowed_automatic_operational_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "freeze_fixture_manifest",
+        "include_all_retry_tokens_in_cost",
+        "include_failed_first_attempts",
+        "keep_holdout_outside_candidate_permissions",
+        "require_equivalent_workload_strata"
+      ],
+      "properties": {
+        "freeze_fixture_manifest": {
+          "type": "boolean"
+        },
+        "keep_holdout_outside_candidate_permissions": {
+          "type": "boolean"
+        },
+        "require_equivalent_workload_strata": {
+          "type": "boolean"
+        },
+        "include_failed_first_attempts": {
+          "type": "boolean"
+        },
+        "include_all_retry_tokens_in_cost": {
+          "type": "boolean"
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_measurement_only",
+        "confidence_level",
+        "ewma_enabled_after_calibration",
+        "ewma_lambda",
+        "min_samples_for_descriptive_charts",
+        "p_chart_enabled_after_calibration",
+        "reliability_growth_fit_enabled",
+        "unknown_is_success"
+      ],
+      "properties": {
+        "confidence_level": {
+          "enum": [
+            0.9,
+            0.95,
+            0.99
+          ]
+        },
+        "baseline_measurement_only": {
+          "type": "boolean"
+        },
+        "min_samples_for_descriptive_charts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "p_chart_enabled_after_calibration": {
+          "type": "boolean"
+        },
+        "ewma_enabled_after_calibration": {
+          "type": "boolean"
+        },
+        "ewma_lambda": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1
+        },
+        "reliability_growth_fit_enabled": {
+          "type": "boolean"
+        },
+        "unknown_is_success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "audit_channel_min_level",
+        "deny_agent_direct_shell",
+        "deny_agent_editing_gate_results",
+        "protected_path_globs",
+        "redact_secrets_before_persistence"
+      ],
+      "properties": {
+        "protected_path_globs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "deny_agent_direct_shell": {
+          "type": "boolean"
+        },
+        "deny_agent_editing_gate_results": {
+          "type": "boolean"
+        },
+        "audit_channel_min_level": {
+          "enum": [
+            "OFF",
+            "ERROR",
+            "WARN",
+            "INFO",
+            "DEBUG",
+            "TRACE"
+          ]
+        },
+        "redact_secrets_before_persistence": {
+          "type": "boolean"
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_tool_excerpt_bytes",
+        "on_missing_token_counters",
+        "preserve_existing_capture_view_separation",
+        "raw_logs_outside_model_context",
+        "use_existing_kpi_engine",
+        "use_provider_token_counters"
+      ],
+      "properties": {
+        "preserve_existing_capture_view_separation": {
+          "type": "boolean"
+        },
+        "use_existing_kpi_engine": {
+          "type": "boolean"
+        },
+        "raw_logs_outside_model_context": {
+          "type": "boolean"
+        },
+        "max_tool_excerpt_bytes": {
+          "type": "integer",
+          "minimum": 128,
+          "maximum": 65536
+        },
+        "use_provider_token_counters": {
+          "type": "boolean"
+        },
+        "on_missing_token_counters": {
+          "enum": [
+            "UNKNOWN_OR_ESTIMATED_WITH_METHOD",
+            "UNKNOWN"
+          ]
+        }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "block_missing_p0_evidence",
+        "offline_safety_signoff_required",
+        "safety_approval_by_ai"
+      ],
+      "properties": {
+        "offline_safety_signoff_required": {
+          "type": "boolean"
+        },
+        "safety_approval_by_ai": {
+          "type": "boolean"
+        },
+        "block_missing_p0_evidence": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
