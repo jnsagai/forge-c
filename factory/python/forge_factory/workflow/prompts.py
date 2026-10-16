@@ -44,10 +44,11 @@ INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
                   "= the clause copied verbatim) before check_inspection.")
 
-GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} and "
-                       "reported_by route-gate, the gate declared a test the author changed after an upstream fix; "
-                       "read the cited test file and the requirement and FAIL the test-related item if the changed "
-                       "test no longer checks the requirement as written.")
+GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} "
+                       "(declared by the author, or by the route-gate after an upstream fix) read the CURRENT version "
+                       "of each file in its test_files (it may have been corrected again after the declaration) and "
+                       "the cited requirement, and FAIL the test-related item if the test no longer checks the "
+                       "requirement as written (weakened check, removed case, or check bent to the code).")
 
 AUTHOR_STEPS = {
     "SWE.1": [

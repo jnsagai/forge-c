@@ -414,3 +414,46 @@ def test_test_that_never_passed_before_the_fix_is_still_bending(ws):
     _run(ws, "SWE.5", "run_integration", "PASS", D.utc_now(), "C-fix", {f: "h2"}, [])
     assert D.declare_post_fix_adaptations(ws, "SWE.5") == []
     assert D.bent_tests(ws, "SWE.5") == [f"TEST_CHANGED_AFTER_FAIL:{f}"]
+
+
+# ---- L14 a TEST declaration covers later corrections on the same product code (owner decision 2026-10-16, r72) --
+def _declare(ws, f):
+    return D.report(ws, detected_phase="SWE.6", reported_by="swe6-author", kind="TEST", summary="SWR-014 scenario "
+                    "drove a timeout, not an invalid parameter", requirement_ids=["SWR-014"], test_files=[f],
+                    evidence_refs=[], requirement_quote="shall return HAL_ERROR without any register write")
+
+
+def test_declaration_covers_later_corrections_while_the_code_is_unchanged_r72(ws):
+    """r72: declared at 21:22, the scenario failed and was corrected six more times on the same code; 18/18 rejected."""
+    f, c = "software/tests/software/scn_invalid_param.c", D.code_hash(ws)
+    _run(ws, "SWE.6", "run_robot", "FAIL", "2026-10-15T10:00:00Z", c, {f: "h1"}, [f])
+    rec = _declare(ws, f)
+    assert rec["code_sha"] == c
+    _run(ws, "SWE.6", "run_robot", "FAIL", D.utc_now(), c, {f: "h2"}, [f])  # failed again after the declaration
+    _run(ws, "SWE.6", "run_robot", "FAIL", D.utc_now(), c, {f: "h3"}, [f])
+    _run(ws, "SWE.6", "run_robot", "PASS", D.utc_now(), c, {f: "h4"}, [])
+    assert D.bent_tests(ws, "SWE.6") == []
+
+
+def test_declaration_does_not_cover_corrections_after_the_code_changed(ws):
+    f, c = "software/tests/software/scn_invalid_param.c", D.code_hash(ws)
+    _run(ws, "SWE.6", "run_robot", "FAIL", "2026-10-15T10:00:00Z", c, {f: "h1"}, [f])
+    _declare(ws, f)
+    (ws / "software/hal/stm32n6xx_hal_rcc.c").write_text("int x;\nint z;\n")  # upstream fix after the declaration
+    c2 = D.code_hash(ws)
+    _run(ws, "SWE.6", "run_robot", "FAIL", D.utc_now(), c2, {f: "h2"}, [f])
+    _run(ws, "SWE.6", "run_robot", "PASS", D.utc_now(), c2, {f: "h3"}, [])
+    assert D.bent_tests(ws, "SWE.6") == [f"TEST_CHANGED_AFTER_FAIL:{f}"]
+    _declare(ws, f)  # declared again against the fixed code
+    assert D.bent_tests(ws, "SWE.6") == []
+
+
+def test_legacy_declaration_without_code_hash_uses_the_preceding_run(ws):
+    f = "software/tests/software/scn_invalid_param.c"
+    _run(ws, "SWE.6", "run_robot", "FAIL", "2026-10-15T10:00:00Z", "C1", {f: "h1"}, [f])
+    rec = _declare(ws, f)
+    rec.pop("code_sha")
+    (D._dir(ws) / f"{rec['id']}.json").write_text(json.dumps(rec))
+    _run(ws, "SWE.6", "run_robot", "FAIL", D.utc_now(), "C1", {f: "h2"}, [f])
+    _run(ws, "SWE.6", "run_robot", "PASS", D.utc_now(), "C1", {f: "h3"}, [])
+    assert D.bent_tests(ws, "SWE.6") == []

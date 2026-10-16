@@ -140,6 +140,8 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
            "detected_phase": detected_phase, "reported_by": reported_by, "target_phase": target,
            "requirement_ids": requirement_ids, "test_files": hashes, "evidence_refs": evidence_refs[:10],
            "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
+    if kind == "TEST":
+        rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
     if kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
@@ -287,9 +289,29 @@ def _integrity_runs(ws: Path) -> list[dict]:
     return [json.loads(x) for x in p.read_text().splitlines() if x.strip()] if p.is_file() else []
 
 
+def _declared_code(d: dict, runs: list[dict]) -> str:
+    """Product code a TEST declaration was made against: recorded since L14, else the newest test run before it."""
+    if d.get("code_sha"):
+        return d["code_sha"]
+    before = [r for r in runs if r.get("ts_utc", "") <= d["history"][0]["ts"]]
+    return before[-1]["code_sha"] if before else ""
+
+
+def _covers(d: dict, f: str, failed: dict, runs: list[dict]) -> bool:
+    """ADR-0008 L14 (owner decision 2026-10-16, r72): a TEST declaration of file f covers its correction after a
+    failure recorded before the declaration AND later corrections of f while the product code is the one the
+    declaration was made against (r72: declared at 21:22, edited again after six later failures, all on unchanged
+    code; the 18/18 suite was rejected). An upstream fix changes the code: a new declaration is needed. The
+    observability check, the inspector (every declared test file vs. its requirement) and SUP.9 guard the content."""
+    if f not in d["test_files"]:
+        return False
+    return d["history"][0]["ts"] >= failed.get("ts_utc", "") or _declared_code(d, runs) == failed["code_sha"]
+
+
 def _bent(ws: Path, phase: str) -> list[tuple[str, dict]]:
     """(test file, failing run) for every test changed to pass against unchanged code and not declared."""
-    runs = [r for r in _integrity_runs(ws) if r.get("phase") == phase and r.get("op") in TEST_TOOLS]
+    allruns = [r for r in _integrity_runs(ws) if r.get("op") in TEST_TOOLS]
+    runs = [r for r in allruns if r.get("phase") == phase]
     declared = [d for d in all_defects(ws) if d["kind"] == "TEST" and d["detected_phase"] == phase]
     out: list[tuple[str, dict]] = []
     for op in sorted({r["op"] for r in runs}):
@@ -303,7 +325,7 @@ def _bent(ws: Path, phase: str) -> list[tuple[str, dict]]:
             for f in it["assert_failed"]:
                 if f not in fin["files"] or fin["files"][f] == it["files"].get(f) or fin["code_sha"] != it["code_sha"]:
                     continue  # unchanged test, removed test, or the code changed (upstream fix): not bending
-                ok = any(f in d["test_files"] and d["history"][0]["ts"] >= r.get("ts_utc", "") for d in declared)
+                ok = any(_covers(d, f, r, allruns) for d in declared)
                 if not ok and f not in [x for x, _ in out]:
                     out.append((f, r))
     return out
