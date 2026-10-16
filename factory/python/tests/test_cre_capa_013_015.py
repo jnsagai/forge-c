@@ -181,3 +181,21 @@ def test_author_prompts_only_write_inside_their_role_scope():
             for path in re.findall(r"write_file ([\w./-]+)", prompts.author_prompt(ph)):
                 assert any(path.startswith(p) for p in ROLE_WRITE_PREFIXES[role]), (layer, ph, path)
     prompts.LAYER["layer"] = "LL+HAL"
+
+
+def test_reqif_robot_traced_requirement_has_distinct_ids(tmp_path):
+    """CAPA-021 (r85): test_id = SWR id (Robot-verified requirement, CAPA-020) duplicated the requirement's xs:ID."""
+    from forge_factory.inspection.reqif_export import export
+
+    ws = tmp_path / "w"
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n"
+        "  - Source: RM0486 p.479\n"
+        "- **SWR-019** The RCC LL driver shall use at most 4096 bytes of flash.\n  - Source: work-order budget\n")
+    (ws / "traceability").mkdir()
+    (ws / "traceability/requirements_to_tests.csv").write_text(
+        "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/test_rcc.c\n"
+        "SWR-019,SWR-019,software/tests/software/test_rcc_requirements.robot\n")
+    out = export(ws)
+    assert out["verdict"] == "PASS" and out["spec_objects"] == 4, out  # 2 SWR + 2 test objects, distinct ids

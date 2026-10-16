@@ -60,17 +60,24 @@ def build_xml(markdown: str, trace_csv: str, title: str) -> str:
         return (f'<ATTRIBUTE-VALUE-STRING THE-VALUE={a(v)}><DEFINITION><ATTRIBUTE-DEFINITION-STRING-REF>{ad[key]}'
                 f'</ATTRIBUTE-DEFINITION-STRING-REF></DEFINITION></ATTRIBUTE-VALUE-STRING>')
 
+    req_ids = {r.req_id for r in reqs}
+
+    def tid(t: str) -> str:
+        # CAPA-021 (r85): a requirement verified by its Robot test is traced as test_id = the SWR id (CAPA-020); the
+        # test object then had the requirement's xs:ID. Colliding test ids get their own namespace (others unchanged).
+        return _id("ST", t) if t in req_ids else _id("SO", t)
+
     objs = [f'<SPEC-OBJECT IDENTIFIER="{_id("SO", r.req_id)}" LAST-CHANGE="{T}" LONG-NAME={a(r.req_id)}><VALUES>'
             f'{val("ForeignID", r.req_id)}{val("Text", r.text)}{val("EARS", r.pattern or "NONCONFORMANT")}'
             f'{val("Source", src.get(r.req_id, ""))}</VALUES><TYPE><SPEC-OBJECT-TYPE-REF>{sot_r}'
             f'</SPEC-OBJECT-TYPE-REF></TYPE></SPEC-OBJECT>' for r in reqs]
-    objs += [f'<SPEC-OBJECT IDENTIFIER="{_id("SO", t)}" LAST-CHANGE="{T}" LONG-NAME={a(t)}><VALUES>'
+    objs += [f'<SPEC-OBJECT IDENTIFIER="{tid(t)}" LAST-CHANGE="{T}" LONG-NAME={a(t)}><VALUES>'
              f'{val("TestID", t)}</VALUES><TYPE><SPEC-OBJECT-TYPE-REF>{sot_t}</SPEC-OBJECT-TYPE-REF></TYPE>'
              f'</SPEC-OBJECT>' for t in tests]
     known = {r.req_id for r in reqs}
     rels = [f'<SPEC-RELATION IDENTIFIER="{_id("SR", r["requirement_id"].strip(), r["test_id"].strip())}" '
             f'LAST-CHANGE="{T}"><SOURCE><SPEC-OBJECT-REF>{_id("SO", r["requirement_id"].strip())}</SPEC-OBJECT-REF>'
-            f'</SOURCE><TARGET><SPEC-OBJECT-REF>{_id("SO", r["test_id"].strip())}</SPEC-OBJECT-REF></TARGET><TYPE>'
+            f'</SOURCE><TARGET><SPEC-OBJECT-REF>{tid(r["test_id"].strip())}</SPEC-OBJECT-REF></TARGET><TYPE>'
             f'<SPEC-RELATION-TYPE-REF>{srt}</SPEC-RELATION-TYPE-REF></TYPE></SPEC-RELATION>'
             for r in rows if r.get("requirement_id", "").strip() in known and (r.get("test_id") or "").strip()]
     hier = "".join(f'<SPEC-HIERARCHY IDENTIFIER="{_id("SH", r.req_id)}" LAST-CHANGE="{T}"><OBJECT><SPEC-OBJECT-REF>'
