@@ -48,6 +48,13 @@ INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or
                   "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
                   "= the clause copied verbatim) before check_inspection.")
 
+# r77: the manifest's target.hsi_contract / target.safety_allocation record the owner's scope decision while
+# upstream.status reports the unfilled approval template as NOT_PROVIDED; inspectors judged SWE1-01 both ways
+OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
+                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE), judge SWE1-01 against that "
+                    "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
+                    "recorded in traceability/upstream_gaps.md, not a failure of SWE1-01.")
+
 GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} "
                        "(declared by the author, or by the route-gate after an upstream fix) read the CURRENT version "
                        "of each file in its test_files (it may have been corrected again after the declaration) and "
@@ -420,7 +427,7 @@ def inspector_prompt(phase: str) -> str:
              "check_inspection no later than your 15th tool call.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
-             *([INSPECT_DEFECT] if phase != "SWE.1" else []),
+             *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
