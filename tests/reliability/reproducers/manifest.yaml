@@ -244,3 +244,14 @@ reproducers:
     operations: [SWE.4/author]
     root_cause: "The SWE.4 procedure told the author to rewrite traceability/requirements_to_tests.csv, which only SWE.1 may write; with the stricter SWE.4 trace check (CAPA-017) the denied write was escalated as a FACTORY defect."
     remedy: "SWE.1 maps every requirement to its verifying test (Robot suite for size/stack/target-only); SWE.4 aligns its UT ids; every author procedure writes only inside its role scope."
+  - id: RPR-023
+    script: rpr023_reqif_duplicate_test_id.py
+    sha256: 259156cc33d09f4ae0940c76943f3f3855fa90c65a07ed232c664381ff7f8c25
+    symptom_signature: "ReqIF export duplicates xs:ID for a test named like its requirement"
+    observed_in: r85
+    baseline_revision: a534719bc99feb7f6e0fd336f146c80beb88f67b
+    fix_revision: 1000bd9d102280ee117d90638ab5dafa891c95b9
+    error_codes: ["REQIF", "REQUIREMENTS_SPEC"]
+    operations: [SWE.1/author]
+    root_cause: "CAPA-020 traces Robot-verified requirements with test_id = the SWR id; the ReqIF exporter built test-object identifiers from the same (SO, id) as requirements, so the XSD rejected a duplicate xs:ID and SWE.1 could not freeze."
+    remedy: "Test ids that equal a requirement id get their own (ST, id) identifier namespace in the ReqIF export; other identifiers are unchanged."
