@@ -21,7 +21,8 @@
     },
     "metric_id": {
       "type": "string",
-      "pattern": "^(CRE-R0[1-8]|K(0[1-9]|1[0-9]|20))$"
+      "pattern": "^(CRE-R(0[1-9]|1[0-9])(-[A-Za-z0-9.]+)?|K(0[1-9]|1[0-9]|20))$",
+      "description": "CRE-R01..R08 as specified; CRE-R09..R19 additive CRE diagnostics with unique names (ADR-CRE-005); optional qualifier suffix (e.g. CRE-R04-p50, CRE-R10-SWE.3); K01..K20 only for values reused verbatim from 003."
     },
     "formula_version": {
       "type": "string",

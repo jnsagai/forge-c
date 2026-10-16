@@ -50,11 +50,11 @@
 
 ## D5 — Quantitative metrics and reliability growth
 
-- [ ] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-016, CRE-FR-017, CRE-FR-018]** Test: retries cannot raise FPY or throughput. [AT-027]
-- [ ] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE-FR-021]** Test: small n never shows 100% guaranteed reliability. [AT-028]
-- [ ] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model fit and exposure exist. **[CRE-FR-020, CRE-FR-022]** Test: missing calibration -> INSUFFICIENT_BASELINE. [AT-029]
-- [ ] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CRE-FR-038]** Tests: repeated identical event stream yields identical metrics. [AT-030]
-- [ ] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR-020, CRE-FR-036]** Test: different MCU/optimization cannot be silently compared. [AT-031]
+- [X] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-016, CRE-FR-017, CRE-FR-018]** Test: retries cannot raise FPY or throughput. [AT-027] ✅ Evidence: `evidence/v0.4/runs/CRE-T030/latest.json`
+- [X] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE-FR-021]** Test: small n never shows 100% guaranteed reliability. [AT-028] ✅ Evidence: `evidence/v0.4/runs/CRE-T031/latest.json`
+- [X] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model fit and exposure exist. **[CRE-FR-020, CRE-FR-022]** Test: missing calibration -> INSUFFICIENT_BASELINE. [AT-029] ✅ Evidence: `evidence/v0.4/runs/CRE-T032/latest.json`
+- [X] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CRE-FR-038]** Tests: repeated identical event stream yields identical metrics. [AT-030] ✅ Evidence: `evidence/v0.4/runs/CRE-T033/latest.json`
+- [X] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR-020, CRE-FR-036]** Test: different MCU/optimization cannot be silently compared. [AT-031] ✅ Evidence: `evidence/v0.4/runs/CRE-T034/latest.json`
 
 ## D6 — Operator dashboard, evidence and safety controls
 

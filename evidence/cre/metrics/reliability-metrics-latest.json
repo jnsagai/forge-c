@@ -1,0 +1,1095 @@
+{
+  "attempts": 78,
+  "computed_at": "2026-10-16T05:50:15.142147Z",
+  "formula_version": "cre-metrics-1.0",
+  "input_digest": "f8a29fa8a9b73d902457165fc404b6886147cd7d7220c44f30ac08fec00503a5",
+  "measurements": [
+    {
+      "assumptions": [
+        "unit = driver order; retries are attempts of the same order"
+      ],
+      "ci_lower": 0.0,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.793451,
+      "cohort_key": "all-orders",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R01",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "orders: ['WO-0002-STM32N6-RCC']",
+        "attempts: 78",
+        "n=1",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.0
+    },
+    {
+      "assumptions": [
+        "attempts are not independent: the factory revision changed between most attempts (non-stationary process)"
+      ],
+      "ci_lower": 0.053097,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.296813,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 30,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R09",
+      "numerator": 4,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=30"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.133333
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 92,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R02",
+      "numerator": 136,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "excess author visits 44"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "visits/phase",
+      "value": 1.478261
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.390708,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.734915,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 28,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.1",
+      "numerator": 16,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=28",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.571429
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.599994,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.923324,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 21,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.2",
+      "numerator": 17,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=21",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.809524
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.548146,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.929525,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 15,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.3",
+      "numerator": 12,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=15",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.8
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.188779,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.733349,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 9,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.4",
+      "numerator": 4,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=9",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.444444
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.510109,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 4,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.5",
+      "numerator": 4,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=4",
+        "all 4 trials succeeded: upper 95% bound on the failure probability 0.527 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.510109,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "denominator": 4,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.6",
+      "numerator": 4,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=4",
+        "all 4 trials succeeded: upper 95% bound on the failure probability 0.527 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:52:59.741496Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempts are not independent: the factory revision changed between most attempts (non-stationary process)"
+      ],
+      "ci_lower": 0.029359,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.313941,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 19,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R09",
+      "numerator": 2,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=19",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.105263
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 39,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R02",
+      "numerator": 99,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "excess author visits 60"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "visits/phase",
+      "value": 2.538462
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 0,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.1",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.34238,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 2,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.2",
+      "numerator": 2,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=2",
+        "all 2 trials succeeded: upper 95% bound on the failure probability 0.776 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.486872,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.97432,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 7,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.3",
+      "numerator": 6,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=7",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.857143
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.565518,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 5,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.4",
+      "numerator": 5,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=5",
+        "all 5 trials succeeded: upper 95% bound on the failure probability 0.451 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.094531,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.905469,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 2,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.5",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=2",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.5
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.34238,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "denominator": 2,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.6",
+      "numerator": 2,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=2",
+        "all 2 trials succeeded: upper 95% bound on the failure probability 0.776 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T13:04:59.759994Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempts are not independent: the factory revision changed between most attempts (non-stationary process)"
+      ],
+      "ci_lower": 0.0,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.175879,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 18,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R09",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=18",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.0
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 42,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R02",
+      "numerator": 60,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "excess author visits 18"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "visits/phase",
+      "value": 1.428571
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.757506,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 12,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.1",
+      "numerator": 12,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=12",
+        "all 12 trials succeeded: upper 95% bound on the failure probability 0.221 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.622642,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.983768,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 11,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.2",
+      "numerator": 10,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=11",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.909091
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.438503,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 3,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.3",
+      "numerator": 3,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=3",
+        "all 3 trials succeeded: upper 95% bound on the failure probability 0.632 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 0,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.4",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 0,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.5",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "denominator": 0,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.6",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "assumptions": [
+        "attempts are not independent: the factory revision changed between most attempts (non-stationary process)"
+      ],
+      "ci_lower": 0.016232,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.377358,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 11,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R09",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=11",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.090909
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 23,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R02",
+      "numerator": 28,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "excess author visits 5"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "visits/phase",
+      "value": 1.217391
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.358934,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.917781,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 7,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.1",
+      "numerator": 5,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=7",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.714286
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.609666,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 6,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.2",
+      "numerator": 6,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=6",
+        "all 6 trials succeeded: upper 95% bound on the failure probability 0.393 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.438503,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 3,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.3",
+      "numerator": 3,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=3",
+        "all 3 trials succeeded: upper 95% bound on the failure probability 0.632 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.206549,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.4",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=1",
+        "all 1 trials succeeded: upper 95% bound on the failure probability 0.950 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.206549,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.5",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=1",
+        "all 1 trials succeeded: upper 95% bound on the failure probability 0.950 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [
+        "attempt-level; K01 (003) remains the order-level FPY"
+      ],
+      "ci_lower": 0.206549,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 1.0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R10-SWE.6",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "workorders:gate-logs"
+      ],
+      "quality_notes": [
+        "n=1",
+        "all 1 trials succeeded: upper 95% bound on the failure probability 0.950 (~3/n) - not 100% reliability",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-15T06:08:36.997725Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "capa-verified-fixes",
+      "denominator": 3,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R03",
+      "numerator": 3,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "cre:capa_links",
+        "cre:failure_modes"
+      ],
+      "quality_notes": [
+        "recurrence = same error code + operation in an attempt containing the fix",
+        "recurring failure modes 43/69"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "recurrences/CAPA",
+      "value": 1.0
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "supervisor-incidents",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R04-p50",
+      "numerator": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "supervisor:incident_history"
+      ],
+      "quality_notes": [
+        "n=1 terminal incidents, 0 censored (unresolved)",
+        "p95 not computable below 20 incidents"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "seconds",
+      "value": 177.147197
+    },
+    {
+      "assumptions": [],
+      "ci_lower": 0.0,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.793451,
+      "cohort_key": "capa",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R05",
+      "numerator": 0,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "cre:capa"
+      ],
+      "quality_notes": [
+        "CAPAs still observing: 2",
+        "REOPENED counts as a completed, ineffective window",
+        "n=1",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.0
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "promotion-candidates",
+      "denominator": null,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R06",
+      "numerator": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "cre:promotion_decisions",
+        "cre:rollbacks"
+      ],
+      "quality_notes": [
+        "decisions {}",
+        "rollbacks 0"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "all-orders",
+      "denominator": null,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R07",
+      "numerator": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "llm-gateway:usage-cloud-deepseek.jsonl"
+      ],
+      "quality_notes": [
+        "READY packages: 0",
+        "cloud attempts with estimated usage: 48/49, total $3.67 (ESTIMATED, time-window attribution)",
+        "local-model compute cost UNKNOWN (no energy/compute meter)"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_APPLICABLE",
+      "unit": "USD/package",
+      "value": null
+    },
+    {
+      "assumptions": [
+        "origin = the defect's target (owning) phase as routed by the gate"
+      ],
+      "ci_lower": 0.551969,
+      "ci_method": "wilson_score_95",
+      "ci_upper": 0.953035,
+      "cohort_key": "defect-register",
+      "denominator": 12,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "CRE-R08",
+      "numerator": 10,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "cre:observations:DEFECT"
+      ],
+      "quality_notes": [
+        "n=12",
+        "small sample: descriptive only, no reliability claim"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 0.833333
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "kpi-003-reused",
+      "denominator": 1,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "K16",
+      "numerator": 1,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "evidence/v0.4/kpi/pilot-snapshot.json#K16"
+      ],
+      "quality_notes": [
+        "003 status INSUFFICIENT_SAMPLE: MTTR p50=177.147 s p95=177.147 s; dedup by fingerprint"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "MEASURED",
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "assumptions": [],
+      "ci_lower": null,
+      "ci_method": null,
+      "ci_upper": null,
+      "cohort_key": "kpi-003-reused",
+      "denominator": null,
+      "end_utc": "2026-10-16T05:50:15.142147Z",
+      "formula_version": "cre-metrics-1.0",
+      "metric_id": "K17",
+      "numerator": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "provenance_refs": [
+        "evidence/v0.4/kpi/pilot-snapshot.json#K17"
+      ],
+      "quality_notes": [
+        "003 status NOT_COMPUTABLE: no resolved fingerprint has a complete 7-day observation window"
+      ],
+      "schema_version": "1.0",
+      "start_utc": "2026-10-14T21:44:02.780484Z",
+      "status": "NOT_COMPUTABLE",
+      "unit": "ratio",
+      "value": null
+    }
+  ],
+  "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+  "schema": "forge-c/cre-metrics/1.0"
+}

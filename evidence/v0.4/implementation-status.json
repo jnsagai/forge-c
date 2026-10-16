@@ -262,9 +262,11 @@
     },
     {
       "fr": "CRE-FR-016",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T030"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T030",
         "CRE-T042"
@@ -272,9 +274,11 @@
     },
     {
       "fr": "CRE-FR-017",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T030"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T030",
         "CRE-T042"
@@ -282,9 +286,12 @@
     },
     {
       "fr": "CRE-FR-018",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T030",
+        "CRE-T033"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T030",
         "CRE-T033",
@@ -295,7 +302,9 @@
       "fr": "CRE-FR-019",
       "passing_tasks": [
         "CRE-T006",
-        "CRE-T009"
+        "CRE-T009",
+        "CRE-T031",
+        "CRE-T033"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -309,9 +318,12 @@
     },
     {
       "fr": "CRE-FR-020",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T032",
+        "CRE-T034"
+      ],
       "priority": "P1",
-      "status": "GAP",
+      "status": "COVERED",
       "tasks": [
         "CRE-T032",
         "CRE-T034",
@@ -321,9 +333,11 @@
     },
     {
       "fr": "CRE-FR-021",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T031"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T031",
         "CRE-T042"
@@ -331,9 +345,11 @@
     },
     {
       "fr": "CRE-FR-022",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T032"
+      ],
       "priority": "P2",
-      "status": "GAP",
+      "status": "COVERED",
       "tasks": [
         "CRE-T032",
         "CRE-T042"
@@ -525,7 +541,8 @@
     {
       "fr": "CRE-FR-036",
       "passing_tasks": [
-        "CRE-T021"
+        "CRE-T021",
+        "CRE-T034"
       ],
       "priority": "P1",
       "status": "COVERED",
@@ -552,7 +569,8 @@
       "fr": "CRE-FR-038",
       "passing_tasks": [
         "CRE-T010",
-        "CRE-T022"
+        "CRE-T022",
+        "CRE-T033"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -598,10 +616,6 @@
     }
   ],
   "cre_p0_gaps": [
-    "CRE-FR-016",
-    "CRE-FR-017",
-    "CRE-FR-018",
-    "CRE-FR-021",
     "CRE-FR-033"
   ],
   "fr_matrix": [
@@ -1332,8 +1346,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T05:45:59.690117Z",
-  "git_head": "8ddf81f3a7b7376ab59473f4fd664896381c09fb",
+  "generated_at": "2026-10-16T05:55:04.204329Z",
+  "git_head": "246948b70e122473aba9afb9701da2ef0a6732e3",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1342,9 +1356,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 29,
+    "004_pass": 34,
     "004_total": 42,
-    "cre_fr_covered": 32,
+    "cre_fr_covered": 38,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2860,65 +2874,75 @@
       "task": "CRE-T029"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T030/latest.json"
+      ],
       "frs": [
         "CRE-FR-016",
         "CRE-FR-017",
         "CRE-FR-018"
       ],
-      "line": "- [ ] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-",
+      "line": "- [X] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T030"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T031/latest.json"
+      ],
       "frs": [
         "CRE-FR-019",
         "CRE-FR-021"
       ],
-      "line": "- [ ] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE",
+      "line": "- [X] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T031"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T032/latest.json"
+      ],
       "frs": [
         "CRE-FR-020",
         "CRE-FR-022"
       ],
-      "line": "- [ ] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model",
+      "line": "- [X] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T032"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T033/latest.json"
+      ],
       "frs": [
         "CRE-FR-018",
         "CRE-FR-019",
         "CRE-FR-038"
       ],
-      "line": "- [ ] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CR",
+      "line": "- [X] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CR",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T033"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T034/latest.json"
+      ],
       "frs": [
         "CRE-FR-020",
         "CRE-FR-036"
       ],
-      "line": "- [ ] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR",
+      "line": "- [X] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T034"
     },
     {

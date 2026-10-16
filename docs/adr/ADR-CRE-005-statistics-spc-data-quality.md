@@ -17,3 +17,11 @@ Status: accepted (2026-10-16) · Tasks: CRE-T030..T034
 * **Reliability growth** (Duane/AMSAA) is off by policy; enabling it requires exposure data and goodness-of-fit.
 * **Data status** of every value: `MEASURED`, `ESTIMATED`, `UNKNOWN`, `NOT_APPLICABLE`, `NOT_COMPUTABLE`,
   `INSUFFICIENT_BASELINE`. Missing telemetry is never zero or success (INV-07).
+
+## Contract extension (2026-10-16)
+`reliability-measurement.schema.json` admitted only `CRE-R01..R08` and `K01..K20`. Two attempt-level diagnostics the
+owner asked for need unique names: **CRE-R09** attempt completion (all SWE.1–SWE.6 inspection gates PASS, "successful
+workflow yield" per cohort) and **CRE-R10-<phase>** attempt-level station first pass (K01 stays the order-level FPY).
+The `metric_id` pattern was widened additively to `CRE-R01..R19` with an optional qualifier suffix (e.g. `CRE-R04-p50`);
+every previously valid id stays valid. K-ids are used only for values copied verbatim from the 003 snapshot
+(cohort `kpi-003-reused`), never for recomputed or redefined values.
