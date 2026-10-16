@@ -1,6 +1,6 @@
 # Forge-C implementation status (generated from evidence records)
 
-Generated 2026-10-16T05:15:29.861111Z at commit `ceeda1a3a042`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
+Generated 2026-10-16T05:29:10.044225Z at commit `fab674edb953`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
 
 * Feature 002: **51/51** tasks PASS
 * Feature 003 (KPI): **20/20** tasks PASS
@@ -88,7 +88,7 @@ Generated 2026-10-16T05:15:29.861111Z at commit `ceeda1a3a042`. Status is derive
 | KPI-T019 | P1 | PASS | evidence/v0.4/runs/KPI-T019/latest.json |
 | KPI-T020 | P0 | PASS | evidence/v0.4/runs/KPI-T020/latest.json |
 
-## Feature 004 (CRE) tasks — 16/42 PASS; CRE-FR covered 21/40; unmet P0: CRE-FR-012, CRE-FR-013, CRE-FR-014, CRE-FR-015, CRE-FR-016, CRE-FR-017, CRE-FR-018, CRE-FR-021, CRE-FR-023, CRE-FR-024, CRE-FR-025, CRE-FR-026, CRE-FR-029, CRE-FR-030, CRE-FR-033
+## Feature 004 (CRE) tasks — 23/42 PASS; CRE-FR covered 30/40; unmet P0: CRE-FR-015, CRE-FR-016, CRE-FR-017, CRE-FR-018, CRE-FR-021, CRE-FR-029, CRE-FR-033
 
 | Task | P | Status | Evidence |
 |---|---|---|---|
@@ -108,13 +108,13 @@ Generated 2026-10-16T05:15:29.861111Z at commit `ceeda1a3a042`. Status is derive
 | CRE-T014 | P0 | PASS | evidence/v0.4/runs/CRE-T014/latest.json |
 | CRE-T015 | P0 | PASS | evidence/v0.4/runs/CRE-T015/latest.json |
 | CRE-T016 | P0 | PASS | evidence/v0.4/runs/CRE-T016/latest.json |
-| CRE-T017 | P0 | NOT_RUN | - |
-| CRE-T018 | P0 | NOT_RUN | - |
-| CRE-T019 | P0 | NOT_RUN | - |
-| CRE-T020 | P0 | NOT_RUN | - |
-| CRE-T021 | P0 | NOT_RUN | - |
-| CRE-T022 | P0 | NOT_RUN | - |
-| CRE-T023 | P0 | NOT_RUN | - |
+| CRE-T017 | P0 | PASS | evidence/v0.4/runs/CRE-T017/latest.json |
+| CRE-T018 | P0 | PASS | evidence/v0.4/runs/CRE-T018/latest.json |
+| CRE-T019 | P0 | PASS | evidence/v0.4/runs/CRE-T019/latest.json |
+| CRE-T020 | P0 | PASS | evidence/v0.4/runs/CRE-T020/latest.json |
+| CRE-T021 | P0 | PASS | evidence/v0.4/runs/CRE-T021/latest.json |
+| CRE-T022 | P0 | PASS | evidence/v0.4/runs/CRE-T022/latest.json |
+| CRE-T023 | P0 | PASS | evidence/v0.4/runs/CRE-T023/latest.json |
 | CRE-T024 | P0 | NOT_RUN | - |
 | CRE-T025 | P0 | NOT_RUN | - |
 | CRE-T026 | P0 | NOT_RUN | - |

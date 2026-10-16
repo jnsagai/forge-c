@@ -83,6 +83,10 @@ CREATE TABLE IF NOT EXISTS cre_rollbacks (seq INTEGER PRIMARY KEY AUTOINCREMENT,
 CREATE TABLE IF NOT EXISTS cre_observation_retractions (obs_id TEXT PRIMARY KEY, reason TEXT NOT NULL,
   classifier_version TEXT NOT NULL, at TEXT NOT NULL);
 """ + _append_only("cre_observation_retractions")),
+    (6, "D3 CAPA links (fingerprints, revisions, observations, lessons) and lesson links", """
+CREATE TABLE IF NOT EXISTS cre_capa_links (seq INTEGER PRIMARY KEY AUTOINCREMENT, capa_id TEXT NOT NULL,
+  kind TEXT NOT NULL, ref TEXT NOT NULL, at TEXT NOT NULL, UNIQUE(capa_id, kind, ref));
+""" + _append_only("cre_capa_links")),
 ]
 SCHEMA_VERSION = max(v for v, _, _ in MIGRATIONS)
 

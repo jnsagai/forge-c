@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d3_capa.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "forged or valid_contrast"
+  ],
+  "duration_s": 1.862,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T019/20261016T052517.log",
+  "log_sha256": "19e48d5951ea5a218578b9f11dc04bfa855235a1d6399b7b1ff6a1cbf0c1888b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T019",
+  "ts_utc": "2026-10-16T05:25:17.753206Z"
+}

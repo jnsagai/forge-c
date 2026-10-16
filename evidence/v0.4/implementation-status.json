@@ -150,7 +150,10 @@
     {
       "fr": "CRE-FR-009",
       "passing_tasks": [
-        "CRE-T009"
+        "CRE-T009",
+        "CRE-T017",
+        "CRE-T021",
+        "CRE-T023"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -165,7 +168,10 @@
     {
       "fr": "CRE-FR-010",
       "passing_tasks": [
-        "CRE-T009"
+        "CRE-T009",
+        "CRE-T018",
+        "CRE-T019",
+        "CRE-T023"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -181,7 +187,9 @@
       "fr": "CRE-FR-011",
       "passing_tasks": [
         "CRE-T005",
-        "CRE-T006"
+        "CRE-T006",
+        "CRE-T017",
+        "CRE-T020"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -195,9 +203,12 @@
     },
     {
       "fr": "CRE-FR-012",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T022",
+        "CRE-T023"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T022",
         "CRE-T023",
@@ -206,9 +217,11 @@
     },
     {
       "fr": "CRE-FR-013",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T018"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T018",
         "CRE-T024",
@@ -218,9 +231,11 @@
     },
     {
       "fr": "CRE-FR-014",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T018"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T018",
         "CRE-T024",
@@ -320,9 +335,11 @@
     },
     {
       "fr": "CRE-FR-023",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T020"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T020",
         "CRE-T042"
@@ -330,9 +347,11 @@
     },
     {
       "fr": "CRE-FR-024",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T020"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T020",
         "CRE-T027",
@@ -343,9 +362,11 @@
     },
     {
       "fr": "CRE-FR-025",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T019"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T019",
         "CRE-T026",
@@ -355,9 +376,11 @@
     },
     {
       "fr": "CRE-FR-026",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T019"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T019",
         "CRE-T027",
@@ -402,9 +425,11 @@
     },
     {
       "fr": "CRE-FR-030",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T022"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T022",
         "CRE-T029",
@@ -483,9 +508,11 @@
     },
     {
       "fr": "CRE-FR-036",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T021"
+      ],
       "priority": "P1",
-      "status": "GAP",
+      "status": "COVERED",
       "tasks": [
         "CRE-T021",
         "CRE-T034",
@@ -508,7 +535,8 @@
     {
       "fr": "CRE-FR-038",
       "passing_tasks": [
-        "CRE-T010"
+        "CRE-T010",
+        "CRE-T022"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -554,20 +582,12 @@
     }
   ],
   "cre_p0_gaps": [
-    "CRE-FR-012",
-    "CRE-FR-013",
-    "CRE-FR-014",
     "CRE-FR-015",
     "CRE-FR-016",
     "CRE-FR-017",
     "CRE-FR-018",
     "CRE-FR-021",
-    "CRE-FR-023",
-    "CRE-FR-024",
-    "CRE-FR-025",
-    "CRE-FR-026",
     "CRE-FR-029",
-    "CRE-FR-030",
     "CRE-FR-033"
   ],
   "fr_matrix": [
@@ -1298,8 +1318,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T05:15:29.861111Z",
-  "git_head": "ceeda1a3a042aeed9ccd2893e79a16729c54f179",
+  "generated_at": "2026-10-16T05:29:10.044225Z",
+  "git_head": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1308,9 +1328,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 16,
+    "004_pass": 23,
     "004_total": 42,
-    "cre_fr_covered": 21,
+    "cre_fr_covered": 30,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2637,92 +2657,106 @@
       "task": "CRE-T016"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T017/latest.json"
+      ],
       "frs": [
         "CRE-FR-009",
         "CRE-FR-011"
       ],
-      "line": "- [ ] **CRE-T017 [P0]** Implement CAPA state machine with incident mapping, direct evidence, repeated failure counts and root-cause status; keep immutable previous attempts. **[CRE-FR-009, CRE-FR-011]",
+      "line": "- [X] **CRE-T017 [P0]** Implement CAPA state machine with incident mapping, direct evidence, repeated failure counts and root-cause status; keep immutable previous attempts. **[CRE-FR-009, CRE-FR-011]",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T017"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T018/latest.json"
+      ],
       "frs": [
         "CRE-FR-010",
         "CRE-FR-013",
         "CRE-FR-014"
       ],
-      "line": "- [ ] **CRE-T018 [P0]** Add deterministic reproducer framework (baseline failing test, exact input, error signature, pinned environment) with independent executor. **[CRE-FR-010, CRE-FR-013, CRE-FR-01",
+      "line": "- [X] **CRE-T018 [P0]** Add deterministic reproducer framework (baseline failing test, exact input, error signature, pinned environment) with independent executor. **[CRE-FR-010, CRE-FR-013, CRE-FR-01",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T018"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T019/latest.json"
+      ],
       "frs": [
         "CRE-FR-010",
         "CRE-FR-025",
         "CRE-FR-026"
       ],
-      "line": "- [ ] **CRE-T019 [P0]** Add causal verification check: original baseline fails, candidate passes same reproducer, check conflicting evidence, record `VERIFIED` only on independent proof. **[CRE-FR-010",
+      "line": "- [X] **CRE-T019 [P0]** Add causal verification check: original baseline fails, candidate passes same reproducer, check conflicting evidence, record `VERIFIED` only on independent proof. **[CRE-FR-010",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T019"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T020/latest.json"
+      ],
       "frs": [
         "CRE-FR-011",
         "CRE-FR-023",
         "CRE-FR-024"
       ],
-      "line": "- [ ] **CRE-T020 [P0]** Link existing repair worktree evidence to CAPA/candidate; ensure patch and tool provenance, protected-path enforcement at OS/runner boundary and immutable event history. **[CRE",
+      "line": "- [X] **CRE-T020 [P0]** Link existing repair worktree evidence to CAPA/candidate; ensure patch and tool provenance, protected-path enforcement at OS/runner boundary and immutable event history. **[CRE",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T020"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T021/latest.json"
+      ],
       "frs": [
         "CRE-FR-009",
         "CRE-FR-036"
       ],
-      "line": "- [ ] **CRE-T021 [P0]** Register a durable prevention regression from each verified corrective action; record future effectiveness window, recurrence and reopen transitions. **[CRE-FR-009, CRE-FR-036]",
+      "line": "- [X] **CRE-T021 [P0]** Register a durable prevention regression from each verified corrective action; record future effectiveness window, recurrence and reopen transitions. **[CRE-FR-009, CRE-FR-036]",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T021"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T022/latest.json"
+      ],
       "frs": [
         "CRE-FR-012",
         "CRE-FR-030",
         "CRE-FR-038"
       ],
-      "line": "- [ ] **CRE-T022 [P0]** Extend 002 approved-lessons retrieval for reproducer/prevention metadata, class/version applicability and retraction; apply existing sanitized top-K budgets. **[CRE-FR-012, CRE",
+      "line": "- [X] **CRE-T022 [P0]** Extend 002 approved-lessons retrieval for reproducer/prevention metadata, class/version applicability and retraction; apply existing sanitized top-K budgets. **[CRE-FR-012, CRE",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T022"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T023/latest.json"
+      ],
       "frs": [
         "CRE-FR-009",
         "CRE-FR-010",
         "CRE-FR-012"
       ],
-      "line": "- [ ] **CRE-T023 [P0]** Build CAPA negative-case regression suite: wrong root cause, obsolete version, bad lesson, attempts exhausted, duplicate fingerprint. **[CRE-FR-009, CRE-FR-010, CRE-FR-012]** E",
+      "line": "- [X] **CRE-T023 [P0]** Build CAPA negative-case regression suite: wrong root cause, obsolete version, bad lesson, attempts exhausted, duplicate fingerprint. **[CRE-FR-009, CRE-FR-010, CRE-FR-012]** E",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T023"
     },
     {

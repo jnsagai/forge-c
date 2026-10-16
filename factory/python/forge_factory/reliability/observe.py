@@ -180,6 +180,31 @@ def from_workspace(ws: Path) -> list[dict]:
     return out
 
 
+def attempt_exposures(workspaces: list[Path] | None = None) -> list[dict]:
+    """Which operations (phase/step) each attempt exercised, with its factory revision: the exposure base for CAPA
+    effectiveness (an attempt that never reached a phase is not evidence that a fix there works)."""
+    wss = workspaces if workspaces is not None else sorted((state_dir() / "workorders").glob("*/workspace"))
+    out = []
+    for ws in wss:
+        ctx = attempt_context(ws)
+        if ctx is None:
+            continue
+        ops = set()
+        log = ws / ".forge-run/gates/gate-log.jsonl"
+        for raw in log.read_text().splitlines() if log.is_file() else []:
+            try:
+                r = json.loads(raw)
+            except ValueError:
+                continue
+            if _ts_ok(r.get("ts"), ctx["created_at"]) and r.get("phase") and r.get("step"):
+                ops.add(f"{r['phase']}/{r['step']}")
+        out.append({"attempt_id": ctx["attempt_id"], "started": ctx["created_at"],
+                    "revision": ctx["factory_revision"].get("commit", "UNKNOWN"),
+                    "revision_basis": ctx["factory_revision"].get("basis", "UNKNOWN"), "operations": sorted(ops),
+                    "cohort": ctx["cohort_key"]})
+    return sorted(out, key=lambda x: x["started"])
+
+
 def from_incidents(path: Path | None = None) -> list[dict]:
     """002 supervisor incidents -> INFRASTRUCTURE observations (the incident itself stays the 002 record)."""
     from ..supervisor.store import IncidentStore

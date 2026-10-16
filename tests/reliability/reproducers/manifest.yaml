@@ -1,0 +1,59 @@
+# Frozen reproducer manifest (CRE-T018). Scripts are run only when their SHA-256 matches. Changing a script or
+# this file is a benchmark/oracle change (protected path tests/reliability/**): re-freeze in a separate commit.
+schema_version: '1.0'
+reproducers:
+  - id: RPR-001
+    script: rpr001_declaration_coverage.py
+    sha256: 052c08c05d308b4473a9eda198098c4696c918804dd0dece6f99f8c16cb103f6
+    symptom_signature: "TEST_CHANGED_AFTER_FAIL after a declaration on unchanged code"
+    observed_in: r72
+    baseline_revision: e807e448b566d5089f8ec1c2d29702f7c2842110
+    fix_revision: 211d4fcc30b59dc3190e1820b5ebd44e61c357e7
+    error_codes: [TEST_CHANGED_AFTER_FAIL]
+    operations: [SWE.6/author, SWE.5/author, SWE.4/author]
+    root_cause: "A TEST declaration covered only failures recorded before it, so later corrections of the same file on unchanged code were treated as unexplained edits."
+    remedy: "Coverage now extends to later corrections while the product code hash equals the one at declaration (ADR-0008 L14)."
+  - id: RPR-002
+    script: rpr002_noop_fix_frozen.py
+    sha256: bb599c57a1446b9d742f0d59dafba4b729ee479c1a0b8764c82d529efc14ef06
+    symptom_signature: "author gate froze an unchanged baseline while a defect was IN_FIX"
+    observed_in: r73
+    baseline_revision: 211d4fcc30b59dc3190e1820b5ebd44e61c357e7
+    fix_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    error_codes: [DEFECT_TEST_CHANGED]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "The author gate re-froze an identical baseline after a prose reply, and the unchanged inspection marked the handed-over defect FIXED."
+    remedy: "The author gate rejects a freeze with DEFECT_NOT_ADDRESSED until a work product changed or the defect is rejected with a reason."
+  - id: RPR-003
+    script: rpr003_undeclared_change_silent.py
+    sha256: 63c39c26ed4175f5199561a7e26586072ce4964b80ea668ff1e2b89adf5b2d48
+    symptom_signature: "run_unit reported PASS for an undeclared test edited after a runtime failure"
+    observed_in: r74
+    baseline_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    fix_revision: c13240a24ec11add17e1f00fda48208c995d3617
+    error_codes: [TEST_CHANGED_AFTER_FAIL]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "Undeclared test edits were only detected at the author gate after the author finished, often in its final cycle."
+    remedy: "Test tools return FAIL with HOW_TO_DECLARE and UNDECLARED_TEST_CHANGE at once, within the same author visit."
+  - id: RPR-004
+    script: rpr004_extended_cited_test.py
+    sha256: b9bb9a04e08d6dfe8d3d11b23a27b237e75f4002e90b8f84a06eef7ff5bc9dac
+    symptom_signature: "DEFECT_TEST_CHANGED for a correct fix whose cited test was only extended"
+    observed_in: r75
+    baseline_revision: 8a1b2f1f7609085ccff63900ba7b30a418246a9e
+    fix_revision: 6d0c5dee5f63e4eecb47dd7ba4e78c111cf448f1
+    error_codes: [DEFECT_TEST_CHANGED]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "A fixed defect could only be verified with byte-identical cited tests, so extending the cited file made a correct fix unverifiable."
+    remedy: "The gate re-runs the cited tests restored from the snapshots against the fixed code (VERIFIED or DEFECT_NOT_FIXED)."
+  - id: RPR-005
+    script: rpr005_host_check_expr.py
+    sha256: a7f3ef43593be985dea17f8052d7b9f73c1809b85138b5ff3f2d14e947e4aa9d
+    symptom_signature: "failed host CHECK reported without its expression"
+    observed_in: r74
+    baseline_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    fix_revision: c13240a24ec11add17e1f00fda48208c995d3617
+    error_codes: [REWORK_BUDGET_EXHAUSTED]
+    operations: [SWE.4/route, SWE.5/route]
+    root_cause: "Host test tools reported only the failed check id, so authors spent their cycles reading files to learn what failed."
+    remedy: "run_unit and run_integration report the failed CHECK expression and the call that set the checked variable."
