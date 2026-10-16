@@ -96,8 +96,10 @@ AUTHOR_STEPS = {
         "(HSI contract, safety allocation, budgets): input | status as stated in the manifest | affected SWR IDs, and (b) "
         "a bidirectional trace table: upstream id (RM0486-<section number> or WO-BUDGET) | SWR IDs, plus for every SWR its "
         "upstream id. Never invent an allocation.",
-        "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR "
-        "(test_id UT-001.., test_file software/tests/unit/test_rcc.c).",
+        "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR: "
+        "test_id UT-001.. and test_file software/tests/unit/test_rcc.c for requirements a host unit test verifies; for "
+        "flash, static RAM, stack and target-only requirements test_id = the SWR id and test_file = "
+        "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite).",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.1/software_requirements.md and check ears; "
         "fix and repeat until status PASS.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.1 baseline."],
@@ -151,12 +153,10 @@ AUTHOR_STEPS = {
         "'## Static analysis' (cppcheck/clang results from SWE.3, deviations: none or listed); '## Coverage' (goal: 100% "
         "statement/branch of driver code; the llvm_coverage numbers exactly as reported; any shortfall listed as a "
         "deviation with reason); '## Findings' (open issues or 'none').",
-        "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
-        "with a UT id that really appears in a CHECK of software/tests/unit/test_rcc.c (never cite an id that is not "
-        "tested; add the missing test first). A requirement that no host unit test can verify (flash, static RAM, "
-        "stack, target-only behaviour) gets test_id = its SWR id and test_file = "
-        "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite). Then call "
-        "mcp__forge_evidence_mcp__validate_trace and fix until PASS.",
+        "read_file traceability/requirements_to_tests.csv (owned by SWE.1; you cannot edit it): every UT id it cites "
+        "for software/tests/unit/test_rcc.c must appear in a CHECK of that file - add or rename your tests to match "
+        "it (never cite or invent other ids). Then call mcp__forge_evidence_mcp__validate_trace and fix your tests "
+        "until PASS; if the trace itself is wrong, report_defect kind REQUIREMENT.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.4 baseline."],
     "SWE.5": [
         "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_rcc.h and software/tests/unit/test_rcc.c.",

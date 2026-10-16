@@ -13,7 +13,7 @@
     "safety_allocation": "OUT_OF_SCOPE: QM development, no safety allocation or safety claims (owner decision 2026-10-15)"
   },
   "scope": [
-    "LL (header-only, static inline): read/write RCC registers through a pointer to an ll_rcc register block type so host tests can substitute RAM",
+    "LL (header-only, static inline, (void) functions): read/write RCC registers through the generated register-block array ll_rcc_regs (extern; placed at the RCC base by the linker, defined in RAM by host tests), indexed by the generated LL_RCC_<REG>_OFFSET / 4U",
     "HSI and HSE oscillator enable/disable (RCC_CR HSION/HSEON or their set/clear registers) and ready-flag query in RCC_SR (no waiting: the caller bounds its polling)",
     "Peripheral clock enable/disable/is-enabled for AHB1-5 and APB1L/1H/2/4L/4H/5 enable registers (RCC_xxxENR, RM0486 14.10.79-14.10.90)",
     "Peripheral reset assert/release via RCC_xxxRSTR (RM0486 14.10.64-14.10.74)",

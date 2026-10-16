@@ -142,19 +142,13 @@ def ll_instances(ctx: ToolContext, od: Path) -> Path | None:
     hdr = ctx.workspace / LL_HEADER
     if not hdr.is_file():
         return None
-    from ...inspection.guideline import strip_c
+    from ...layer import ll_measure_unit
 
-    code = strip_c(hdr.read_text(errors="replace"))
-    fns = re.findall(r"static\s+inline\s+(void|uint32_t)\s+(LL_RCC_\w+)\s*\(\s*void\s*\)", code)
-    if not fns:
+    text = ll_measure_unit(hdr.read_text(errors="replace"))
+    if text is None:
         return None
-    body = ["/* GENERATED measurement unit (build only, CAPA-013): one non-inline instance per LL function */",
-            '#include "stm32n6xx_ll_rcc.h"', ""]
-    for ret, name in fns:
-        body += [f"{ret} forge_measure_{name}(void);", f"{ret} forge_measure_{name}(void)", "{",
-                 f"    {'return ' if ret != 'void' else ''}{name}();", "}", ""]
     p = od / "forge_ll_measure.c"
-    p.write_text("\n".join(body))
+    p.write_text(text)
     return p
 
 

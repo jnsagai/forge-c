@@ -5,6 +5,7 @@ import os
 import shutil
 
 import pytest
+from forge_factory.common import REPO_ROOT as REPO
 from forge_factory.inspection import gate as G
 from forge_factory.policy import governor as GV
 
@@ -130,3 +131,53 @@ def test_swe4_trace_rejects_phantom_test_ids_before_its_baseline(tmp_path, monke
                "SWR-019,SWR-019,software/tests/software/test_rcc_requirements.robot\n")
     out = sdk.invoke("forge-evidence-mcp", op, {})
     assert out["status"] == "PASS" and out["metrics"]["planned_test_links"] == 1  # Robot suite due at SWE.6
+
+
+R84_H = ("#ifndef STM32N6XX_LL_RCC_H\n#define STM32N6XX_LL_RCC_H\n#include <stdint.h>\n"
+         "static inline void LL_RCC_HSI_Enable(volatile uint32_t *rcc)\n{\n    rcc[0U] |= 8U;\n}\n"
+         "static inline uint32_t LL_RCC_HSI_IsReady(const volatile uint32_t *rcc)\n{\n"
+         "    return ((rcc[1U] & 8U) != 0U) ? 1U : 0U;\n}\n#endif /* STM32N6XX_LL_RCC_H */\n")
+
+
+def test_measurement_unit_handles_any_ll_signature():
+    """CAPA-018 (r84): pointer-parameter LL functions were not instantiated, size/stack stayed 0."""
+    from forge_factory.layer import ll_measure_unit
+
+    unit = ll_measure_unit(R84_H)
+    assert "void forge_measure_LL_RCC_HSI_Enable(volatile uint32_t *rcc) { LL_RCC_HSI_Enable(rcc); }" in unit
+    assert "return LL_RCC_HSI_IsReady(rcc);" in unit
+    assert "forge_measure_LL_RCC_HSI_Enable(void) { LL_RCC_HSI_Enable(); }" in ll_measure_unit(LL_H)
+
+
+def test_ll_check_keeps_the_generated_register_block_and_void_api(tmp_path):
+    """CAPA-019 (r84): a pointer API replaced the generated ll_rcc_regs block; SWE.2/SWE.3 then contradicted."""
+    from forge_factory.inspection.implementation import check_implementation
+    from forge_factory.layer import LL_HEADER
+
+    ws = _ws(tmp_path, arch="# A\n## Requirement allocation\n| SWR | Function |\n|---|---|\n"
+                             "| SWR-001 | LL_RCC_HSI_Enable |\n| SWR-002 | LL_RCC_HSI_IsReady |\n")
+    (ws / "software/ll").mkdir(parents=True)
+    (ws / LL_HEADER).write_text(R84_H)
+    f = check_implementation(ws)["major_findings"]
+    assert "IMPL:LL_REG_BLOCK_DECLARATION_MISSING" in f and "IMPL:LL_SIGNATURE_NOT_VOID:LL_RCC_HSI_Enable" in f
+    (ws / LL_HEADER).write_text(LL_H)
+    assert check_implementation(ws)["verdict"] == "PASS"
+    scope = json.loads((REPO / "examples/0002a-arm_55_rcc_ll/workorder.json").read_text())["scope"][0]
+    assert "ll_rcc_regs" in scope and "pointer" not in scope
+
+
+def test_author_prompts_only_write_inside_their_role_scope():
+    """CAPA-020 (r84 DEF-002): the SWE.4 procedure told the author to write traceability/, outside its write scope."""
+    import re
+
+    from forge_factory.policy.authz import ROLE_WRITE_PREFIXES
+    from forge_factory.workflow import prompts
+    from forge_factory.workflow.builder import build
+
+    for layer in ("LL", "HAL", "LL+HAL"):
+        _, nodes = build("WO-W", layer=layer, chunk_lines=150)
+        for ph in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+            role = f"swe{ph[-1]}-author"
+            for path in re.findall(r"write_file ([\w./-]+)", prompts.author_prompt(ph)):
+                assert any(path.startswith(p) for p in ROLE_WRITE_PREFIXES[role]), (layer, ph, path)
+    prompts.LAYER["layer"] = "LL+HAL"

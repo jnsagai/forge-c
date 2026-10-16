@@ -23,6 +23,18 @@ from pathlib import Path
 from robot.api.deco import keyword, library
 
 
+def _measure_unit(header_text: str) -> str | None:
+    """Same generator as forge_factory.layer.ll_measure_unit (CAPA-018); this library runs outside the package."""
+    import sys
+
+    pkg = str(Path(__file__).resolve().parents[2] / "python")  # factory/python of this checkout
+    if pkg not in sys.path:
+        sys.path.append(pkg)
+    from forge_factory.layer import ll_measure_unit
+
+    return ll_measure_unit(header_text)
+
+
 @library(scope="SUITE")
 class ForgeTarget:
     def __init__(self, workspace: str = "."):
@@ -118,16 +130,11 @@ class ForgeTarget:
         hdr = self.ws / "software/ll/stm32n6xx_ll_rcc.h"
         if layer != "LL" or not hdr.is_file():
             return []
-        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", hdr.read_text(errors="replace"), flags=re.S)
-        fns = re.findall(r"static\s+inline\s+(void|uint32_t)\s+(LL_RCC_\w+)\s*\(\s*void\s*\)", code)
-        if not fns:
+        text = _measure_unit(hdr.read_text(errors="replace"))
+        if text is None:
             return []
-        lines = ["/* GENERATED measurement unit (build only, CAPA-016) */", '#include "stm32n6xx_ll_rcc.h"']
-        for ret, name in fns:
-            lines += [f"{ret} forge_measure_{name}(void);",
-                      f"{ret} forge_measure_{name}(void) {{ {'return ' if ret != 'void' else ''}{name}(); }}"]
         unit = out / "forge_ll_measure.c"
-        unit.write_text("\n".join(lines) + "\n")
+        unit.write_text(text)
         return [unit]
 
     def _sizes(self) -> dict[str, int]:

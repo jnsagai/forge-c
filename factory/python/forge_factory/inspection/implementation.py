@@ -160,6 +160,13 @@ def _check_ll(ws: Path) -> dict:
     findings += [f"IMPL:HAL_CODE_IN_LL:{n}" for n in sorted(set(re.findall(r"\bHAL_\w+", code)))][:10]
     findings += [f"IMPL:LL_WAITS:{code.count(chr(10), 0, m.start()) + 1}"
                  for m in re.finditer(r"\b(?:while|for)\s*\(|\bdo\s*\{", code)][:10]
+    # CAPA-019 (r84): the author replaced the generated register block by a pointer API; the unit harness, regmap and
+    # measurement all use the extern array, and SWE.2/SWE.3 contradicted each other until the loop budget ran out
+    if txt and not re.search(r"\bextern\s+volatile\s+uint32_t\s+ll_rcc_regs\s*\[[^\]]+\]", code):
+        findings.append("IMPL:LL_REG_BLOCK_DECLARATION_MISSING")
+    for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(LL_RCC_\w+)\s*\(([^)]*)\)\s*\{", code, re.M):
+        if m.group(2).strip() not in ("void", ""):
+            findings.append(f"IMPL:LL_SIGNATURE_NOT_VOID:{m.group(1)}")
     findings += _reg_block_defined(ws)
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "ll_defined": len([f for f in wanted if f in ll_defs]),
