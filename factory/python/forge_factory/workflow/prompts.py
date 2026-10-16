@@ -383,7 +383,7 @@ LL_API = ("static inline functions named exactly LL_RCC_<Name>_Enable, LL_RCC_<N
 LL_AUTHOR_STEPS = {
     "SWE.1": [
         "read_file these RM0486 section files: {s1}.",
-        "write_file workproducts/SWE.1/software_requirements.md: a '# Software requirements' title, then 8-15 requirements "
+        "write_file workproducts/SWE.1/software_requirements.md: a '# Software requirements' title, then 12-26 requirements "
         "for the header-only RCC LL driver (register access only: no waiting, no timeouts, no parameters, no error "
         "codes - a separate HAL work order adds those later), one per line exactly like: - **SWR-001** When the HSI "
         "enable function is called, the RCC LL driver shall set RCC_CR.HSION. Each statement uses EARS "
@@ -391,13 +391,17 @@ LL_AUTHOR_STEPS = {
         "Put '  - Source: RM0486 p.<page>' and '  - Verification: <test method and pass criterion>' on the next lines "
         "under each requirement, and end the file with '## Open points' listing unresolved ambiguities (or 'none'). "
         "Cover: oscillator enable/disable (set/clear the enable bit), ready-flag queries (return 1U when the RCC_SR flag "
-        "is set, else 0U), peripheral clock enable/disable/is-enabled, peripheral reset assert/release, that every "
-        "write changes only the named bit and preserves all other bits of the register, that each access function "
-        "performs at most one read and one write of one RCC register and never waits, and a reset/startup "
+        "is set, else 0U), and for EACH peripheral bit documented in the RCC_AHB1ENR and RCC_AHB1RSTR section files "
+        "(name the peripheral and the bit, e.g. RCC_AHB1ENR.GPDMA1EN - never 'the named bit of the addressed "
+        "register') one requirement each for clock enable, clock disable, clock is-enabled query, reset assert and "
+        "reset release; then that every "
+        "write changes only the named bit and preserves all other bits of the register, and a reset/startup "
         "requirement (e.g. '- **SWR-0nn** While no LL function has been called after reset, the RCC LL driver shall "
         "not write any RCC register.'). Add three measurable resource requirements from the .forge-run/manifest.json "
         "budgets (flash, static RAM - the LL driver keeps no state - and stack) with '  - Source: work-order budget "
-        "(owner development target)'.",
+        "(owner development target)'. Every requirement must be verifiable by a host or target test that checks "
+        "register bits and return values on the register array, or by the size/stack tools: never require a "
+        "count of register accesses or other internal behaviour a RAM register array cannot observe.",
         AUTHOR_STEPS["SWE.1"][2], AUTHOR_STEPS["SWE.1"][3], AUTHOR_STEPS["SWE.1"][4], AUTHOR_STEPS["SWE.1"][5],
         AUTHOR_STEPS["SWE.1"][6]],
     "SWE.2": [
@@ -406,9 +410,11 @@ LL_AUTHOR_STEPS = {
         "stm32n6xx_ll_rcc.h; no HAL in this work order - a later HAL work order builds on this LL), Register access "
         "(extern volatile uint32_t register-block array placed at the RCC base by the linker, indexed by offset/4; no "
         "integer-to-pointer casts; host tests define the array; read-modify-write that preserves other bits), "
-        "Interfaces (each LL_RCC_ API: " + LL_API + "), Timing and error handling (no waiting and no error codes at "
+        "Interfaces (each LL_RCC_ API: " + LL_API + "; one concrete function per oscillator and per peripheral, e.g. "
+        "LL_RCC_GPDMA1_Enable - never a placeholder such as LL_RCC_<Peripheral>_Enable), Timing and error handling (no waiting and no error codes at "
         "LL level: each function is one register access; callers bound their own polling), Memory and stack budget "
-        "(flash<=4096 B, RAM 0 B: no state, stack<=128 B), Requirement allocation table (SWR -> LL_RCC_ function), "
+        "(flash<=4096 B, RAM 0 B: no state, stack<=128 B), Requirement allocation table (SWR -> the concrete LL_RCC_ "
+        "function(s); a requirement on all functions lists them or says 'all LL functions'), "
         "and a Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 "
         "page. RCC base address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
         AUTHOR_STEPS["SWE.2"][2],

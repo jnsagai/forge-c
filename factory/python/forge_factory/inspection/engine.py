@@ -141,7 +141,12 @@ class Store:
 
     def missing_outputs(self, phase: str) -> list[str]:
         """Presence gate used by the production author gate before a phase may be frozen (r15/r43)."""
-        out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in REQUIRED_OUTPUTS.get(phase, [])
+        from ..layer import layer_of
+
+        pats = REQUIRED_OUTPUTS.get(phase, [])
+        if phase == "SWE.3" and layer_of(self.workspace) == "LL":  # ADR-0009: an LL work order has no HAL files
+            pats = [x for x in pats if not x.startswith("software/hal/")]
+        out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in pats
                if not any(f.is_file() and f.stat().st_size > 0 for f in self.workspace.glob(pat))]
         if REQUIRED_TOOL_PASS.get(phase):
             from ..release.finalize import latest, tool_results

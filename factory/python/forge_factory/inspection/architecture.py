@@ -86,6 +86,10 @@ def check_architecture(ws: Path) -> dict:
     allocated = swr_ids(found["requirement_allocation"] or "")
     findings += [f"SWE2:SWR_NOT_ALLOCATED:{r}" for r in sorted(known - allocated)]
     findings += [f"SWE2:UNKNOWN_SWR:{r}" for r in sorted(referenced - known)] if known else []
+    # ADR-0009 (r80): a generic placeholder such as LL_RCC_<Peripheral>_Enable allocates nothing implementable;
+    # the implementation check could then pass without the requirement being implemented
+    for ph in sorted(set(re.findall(r"\b(?:LL|HAL)_RCC_\w*<[^>|]*>\w*", found["requirement_allocation"] or ""))):
+        findings.append(f"SWE2:PLACEHOLDER_API:{ph}")
     regs = _rows(found["register_table"] or "")
     if found["register_table"] is not None and not regs:
         findings.append("SWE2:EMPTY_REGISTER_TABLE")

@@ -257,3 +257,16 @@ def test_ll_runs_on_the_renode_target(tmp_path, monkeypatch):
     out = sdk.invoke("forge-sim-mcp", _op(sim, "run_renode"), {})
     assert out["status"] == "PASS", out
     assert out["metrics"]["passed"] == 4 and out["metrics"]["failed"] == 0
+
+
+def test_architecture_rejects_placeholder_apis(tmp_path):
+    from forge_factory.inspection.architecture import check_architecture
+
+    ws = ws_with(tmp_path, "LL")
+    (ws / "workproducts/SWE.2").mkdir(parents=True)
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(
+        ARCH + "| SWR-003 | `LL_RCC_<Peripheral>_Enable` |\n")
+    r = check_architecture(ws)
+    assert "SWE2:PLACEHOLDER_API:LL_RCC_<Peripheral>_Enable" in r["major_findings"]
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(ARCH + "| SWR-003 | LL_RCC_GPDMA1_Enable |\n")
+    assert not [f for f in check_architecture(ws)["major_findings"] if "PLACEHOLDER" in f]
