@@ -374,3 +374,8 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
     03:40 integration PASS would have been reported as this FAIL inside the last cycle.
   - Tests: `test_m2_mcp.py::test_t014…` (real clang runs), `test_loopbacks.py::…undeclared_test_change_at_once_r74`,
     `…leaves_post_fix_adaptations_to_the_gate`.
+- **Decision under the owner's autonomy grant (2026-10-16):** SWR-014's "invalid parameter" includes a timeout
+  argument of 0 or greater than `HAL_RCC_TIMEOUT_VALUE` (valid range 1..1000, consistent with SWR-015's bound and
+  with the fixes SWE.3 accepted in r66/r73/r74). The SWE.1 author prompt now names the invalid values (NULL
+  pointer, unknown selector, timeout 0 or > `HAL_RCC_TIMEOUT_VALUE`) and the HAL author checks them before any
+  register write. Runs resumed from r56 keep the old wording; a full run from SWE.1 applies the new one.

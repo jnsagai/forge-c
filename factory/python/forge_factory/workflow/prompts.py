@@ -67,7 +67,8 @@ AUTHOR_STEPS = {
         "subject (e.g. '- **SWR-0nn** While no oscillator enable has been requested after reset, the RCC driver shall "
         "leave RCC_CR.HSEON at its reset value 0.'), one requirement per failure response (ready timeout -> the driver clears the "
         "enable bit it set (driver fallback state: oscillator/clock off) and returns HAL_TIMEOUT; invalid parameter -> "
-        "HAL_ERROR without register writes), and one measurable timing "
+        "HAL_ERROR without register writes, naming the invalid values: a NULL pointer, an unknown selector, and a "
+        "timeout argument of 0 or greater than HAL_RCC_TIMEOUT_VALUE), and one measurable timing "
         "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
         "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
         "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
@@ -230,8 +231,8 @@ HAL_STEPS = [
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
     "function calls only LL_RCC_ functions and keeps the exact signature declared in the header. Oscillator/PLL Enable "
     "functions wait for the ready flag with a timeout like this example (adapt names; if the architecture passes a "
-    "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL first, "
-    "returning HAL_ERROR): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
+    "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL and "
+    "a timeout of 0 or greater than HAL_RCC_TIMEOUT_VALUE first, returning HAL_ERROR before any register write): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
     "way; peripheral clock enable/disable and reset functions call the LL function and return HAL_OK.",
     "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all and fix what it reports (missing functions, guideline "
     "naming such as hal_ prefixed lower-case types ending _t) before replying.",
