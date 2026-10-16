@@ -156,3 +156,58 @@ reproducers:
     operations: [SWE.3/author, SWE.3/route]
     root_cause: "report_defect accepted any workspace file as test_files; the SWE.3 inspector cited the LL header, and the anti-bending gate rejected every correct header fix as DEFECT_TEST_CHANGED until SWE.3 blocked (r82)."
     remedy: "report_defect accepts only software/tests/** as test_files (product code goes to evidence_refs) and the cited-test gate ignores non-test paths."
+  - id: RPR-015
+    script: rpr015_ll_measured_zero.py
+    sha256: 9ddb6ca7c6ea76aea5b2428eea8a775f781dc2624ab308d13d9284bcd44f08e8
+    symptom_signature: "LL size and stack measured as 0 bytes / 0 functions"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["INSPECTION_FAIL:SWE3-05"]
+    operations: [SWE.3/inspect]
+    root_cause: "The header-only LL compile unit only includes the header, so its static inline functions are never emitted and measure_elf/stack_usage report 0 bytes and 0 functions; SWE3-05 (budgets measured) failed."
+    remedy: "For LL work orders the build tools compile a generated measurement unit in the build directory that instantiates every LL function non-inline."
+  - id: RPR-016
+    script: rpr016_identical_rejection_cycles.py
+    sha256: 90e2cfff4c70e30d56954a9bf26971d0f11c1f25c92be6b2c69de8d7672b5888
+    symptom_signature: "identical deterministic rejection does not stop the phase"
+    observed_in: r82
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["REWORK_BUDGET_EXHAUSTED", "DEFECT_TEST_CHANGED", "REQUIRED_TOOL_NOT_PASS", "MISSING_REQUIRED_OUTPUT"]
+    operations: [SWE.3/route, SWE.4/route, SWE.5/route, SWE.6/route]
+    root_cause: "The route gate spent every rework cycle even when the last two author attempts were rejected with identical deterministic codes; in r10-r82 this never recovered (0 of 14) and cost a cycle each time."
+    remedy: "Two consecutive identical deterministic rejections stop the phase early (STUCK) after the L11 safety net; varied failures keep the authored 3-cycle budget."
+  - id: RPR-017
+    script: rpr017_fixed_turn_budget.py
+    sha256: 1caa684de2adccc40a519fe7312ed0b3d6e0c0222e80a7b48f56c07775dbe890
+    symptom_signature: "author turn budget ignores the allocated work"
+    observed_in: r81
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["TURN_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author, SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "The SWE.3-6 author budget was the authored 35 calls for any work size; a 16-function LL needed 36 calls and lost a rework cycle."
+    remedy: "SWE.3-6 author turn budget = authored max_turns + 1 per 2 allocated functions above 12 (cap +25)."
+  - id: RPR-018
+    script: rpr018_robot_ll_no_call_graph.py
+    sha256: 897fa4d8c03a1f1ce9b172f55e2ca0fde36001bc4b82b0e14ff68873a4fdf8a1
+    symptom_signature: "Robot driver stack keyword finds no call graph for a header-only LL"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: c1854a1b5b03926d8ac9f412aef1a0e817660734
+    error_codes: ["DEFECT:CODE", "REQUIRED_TOOL_NOT_PASS:run_robot"]
+    operations: [SWE.6/author]
+    root_cause: "ForgeTarget's driver size/stack keywords compiled only software/hal/*.c; an LL work order has none, so 'Driver Stack Should Be At Most' failed with 'no call graph produced' and the stack requirement could not be verified (r83 DEF-003)."
+    remedy: "For LL work orders ForgeTarget measures the compile unit plus a generated build-directory unit that instantiates every LL function non-inline."
+  - id: RPR-019
+    script: rpr019_swe4_trace_phantoms.py
+    sha256: d750482d99d95e7e3303cc953b7fe09ddfe24d2fcd378364109c6320610bae58
+    symptom_signature: "validate_trace accepts phantom test ids during SWE.4"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: 834bc2aea96bf98820912b90b05d081aa45f4d69
+    error_codes: ["PACKAGE_GAP:failed_or_missing_quality_check", "TEST_ID_NOT_IN_FILE"]
+    operations: [SWE.4/author, -/package]
+    root_cause: "validate_trace checked that cited test ids exist only after a SWE.4 baseline existed, but SWE.4 authors call it before the gate freezes; resource requirements were traced to UT ids that no unit test has and the finalizer BLOCKED the package on traceability."
+    remedy: "SWE.4-6 always check cited test ids; Robot-suite links are planned until SWE.6; the SWE.4 procedure maps requirements without a host unit test to their Robot test."
