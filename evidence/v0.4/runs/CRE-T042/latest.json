@@ -8,19 +8,19 @@
     "-p",
     "no:cacheprovider"
   ],
-  "duration_s": 3.011,
+  "duration_s": 1.873,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "0efeaa72616e8b6b39463c9de1950fe9686b186a",
+  "git_head": "3a14fce5a49dbdddcbb2d3f3c4ae4a9f72f08d9e",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/CRE-T042/20261016T084742.log",
-  "log_sha256": "e8cd5e13c33971584b73020490908145f772ee635cf64a53770288919ed5d894",
+  "log": "evidence/v0.4/runs/CRE-T042/20261016T084856.log",
+  "log_sha256": "509d895bea16004d6689ea2fd4127c10f5a17bb047ce0253a1d22d56b4b9369b",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "CRE-T042",
-  "ts_utc": "2026-10-16T08:47:42.282368Z"
+  "ts_utc": "2026-10-16T08:48:56.370951Z"
 }

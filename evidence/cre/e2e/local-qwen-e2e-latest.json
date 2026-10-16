@@ -1,6 +1,29 @@
 {
-  "assessed_at": "2026-10-16T08:11:39.972434Z",
+  "assessed_at": "2026-10-16T08:48:46.780579Z",
   "attempts": [
+    {
+      "archive_verification": {
+        "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002-STM32N6-RCC-r79-qwen/forge-c-WO-0002-STM32N6-RCC-r79-qwen-review.zip",
+        "integrity": "PASS",
+        "issues": []
+      },
+      "attempt": "WO-0002-STM32N6-RCC-r79-qwen",
+      "blocked_at": "SWE.1",
+      "cre_observations": 16,
+      "fabro_run_id": "01M51W0S60CKXHC1YNHR7FB6WY",
+      "fabro_server": "http://127.0.0.1:32290/api/v1",
+      "gap_count": 51,
+      "interpretation": "real end-to-end execution with a terminal deterministic package; the local model did not complete the lifecycle",
+      "model_profile": {
+        "code_nodes": "qwen3-coder:30b",
+        "default": "qwen3:8b",
+        "local_only": true,
+        "provider": "ollama"
+      },
+      "package_status": "BLOCKED",
+      "phases_passed": [],
+      "result": "PASS"
+    },
     {
       "archive_verification": {
         "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002-STM32N6-RCC-r78-qwen/forge-c-WO-0002-STM32N6-RCC-r78-qwen-review.zip",
@@ -48,29 +71,6 @@
         "SWE.1",
         "SWE.2"
       ],
-      "result": "NOT_VERIFIABLE"
-    },
-    {
-      "archive_verification": {
-        "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002-STM32N6-RCC-r50/forge-c-WO-0002-STM32N6-RCC-r50-review.zip",
-        "integrity": "PASS",
-        "issues": []
-      },
-      "attempt": "WO-0002-STM32N6-RCC-r50",
-      "blocked_at": "SWE.1",
-      "cre_observations": 4,
-      "fabro_run_id": "01M4ZQ2BX78G7X600Z9W620EM1",
-      "fabro_server": null,
-      "gap_count": 53,
-      "interpretation": "not demonstrated",
-      "model_profile": {
-        "code_nodes": "qwen3-coder:30b",
-        "default": "qwen3:8b",
-        "local_only": true,
-        "provider": "ollama"
-      },
-      "package_status": "BLOCKED",
-      "phases_passed": [],
       "result": "NOT_VERIFIABLE"
     }
   ],

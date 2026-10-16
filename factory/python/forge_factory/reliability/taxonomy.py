@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from ..common import canonical_json
 
-CLASSIFIER_VERSION = "cre-rules-1.2"  # bump on any rule change; superseded observations are retracted, not deleted
+CLASSIFIER_VERSION = "cre-rules-1.3"  # bump on any rule change; superseded observations are retracted, not deleted
 CLASSES = ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY", "POLICY_SECURITY", "UNKNOWN")
 CATEGORIES = ("INFRASTRUCTURE", "WORKFLOW_ORCHESTRATION", "MCP_TOOL", "RESOURCE_BUDGET", "TRANSIENT_ENVIRONMENT",
               "PRODUCT_ENGINEERING", "REQUIREMENTS_SPEC", "AGENT_OUTPUT", "POLICY_SECURITY", "UNKNOWN")
@@ -57,6 +57,7 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     (r"REQUIRED_TOOL_NOT_PASS:(?P<op>\w+)", "PRODUCT_ENGINEERING", "REQUIRED_TOOL_NOT_PASS:{op}"),
     # product engineering
     (r"REWORK_BUDGET_EXHAUSTED|rework budget exhausted", "PRODUCT_ENGINEERING", "REWORK_BUDGET_EXHAUSTED"),
+    (r"REQIF:", "REQUIREMENTS_SPEC", "REQIF_EXPORT_INVALID"),  # r78/r79: duplicate ids broke the ReqIF schema
     (r"INSPECTION_FAIL:(?P<item>SWE1-\d+)", "REQUIREMENTS_SPEC", "INSPECTION_FAIL:{item}"),
     (r"INSPECTION_FAIL:(?P<item>[A-Z0-9]+-\d+)", "PRODUCT_ENGINEERING", "INSPECTION_FAIL:{item}"),
     (r"DEFECT:REQUIREMENT", "REQUIREMENTS_SPEC", "DEFECT:REQUIREMENT"),

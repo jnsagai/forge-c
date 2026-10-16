@@ -1,7 +1,7 @@
 {
-  "assessed_at": "2026-10-16T08:47:47.902460Z",
+  "assessed_at": "2026-10-16T08:48:48.374748Z",
   "configured_mode": "OBSERVE_ONLY",
-  "git_head": "0efeaa72616e8b6b39463c9de1950fe9686b186a",
+  "git_head": "3a14fce5a49dbdddcbb2d3f3c4ae4a9f72f08d9e",
   "levels": {
     "ACTIVE_ELIGIBLE": {
       "met": [],
@@ -48,7 +48,7 @@
   "readiness": "OBSERVE_ONLY",
   "reliability_slo_evidence": {
     "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)",
-    "reason": "no homogeneous cohort reaches 30 comparable attempts on a fixed factory revision; workflow yield per cohort (CRE-R09): deepseek-flash/FULL: 4/30 [0.05, 0.30]; deepseek-flash/RESUMED: 2/18 [0.03, 0.33]; qwen3:8b/FULL: 0/18 [0.00, 0.18]; qwen3:8b/FULL: 1/11 [0.02, 0.38]",
+    "reason": "no homogeneous cohort reaches 30 comparable attempts on a fixed factory revision; workflow yield per cohort (CRE-R09): deepseek-flash/FULL: 4/30 [0.05, 0.30]; deepseek-flash/RESUMED: 2/18 [0.03, 0.33]; qwen3:8b/FULL: 0/18 [0.00, 0.18]; qwen3:8b/FULL: 1/12 [0.01, 0.35]",
     "status": "NOT_DEMONSTRATED"
   },
   "safety_signoff": null,

@@ -127,6 +127,7 @@ def test_duplicate_reordered_and_restarted_ingest_yields_identical_state(env):
     ("READINESS_FAILURE fabro DOWN", "INFRASTRUCTURE", "REPAIR_ELIGIBLE"),
     ("forge gateway cost cap 2.0 USD reached", "INFRASTRUCTURE", "REQUIRES_OFFLINE_ATTENTION"),
     ("WRITE_SCOPE_DENIED software/tests/target/", "POLICY_SECURITY", "REQUIRES_OFFLINE_ATTENTION"),
+    ("REQIF:XSD:failed validating '_27dc65b9' with XsdAtomicBuiltin(name='xs:ID')", "PRODUCT_QUALITY", "SWE_REWORK"),
     ("something nobody has seen", "UNKNOWN", "REQUIRES_OFFLINE_ATTENTION"),
 ])
 def test_classifier_routes_by_class_at004(raw, cls, route):
