@@ -9,9 +9,12 @@ Unity/CMock are not vendored on this host: tests are self-checking C programs (d
 from __future__ import annotations
 
 import json
+import re
 import shutil
+from pathlib import Path
 from typing import Literal
 
+from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 from .build import INCLUDE_DIRS, SOURCE_DIRS
 
@@ -38,6 +41,33 @@ def _diag(raw: bytes, ws, markers: tuple[str, ...], limit: int) -> list[str]:
     return out
 
 
+def _with_setter(expr: str, src_before: str) -> str:
+    """r68: 'st == HAL_ERROR' -> 'st == HAL_ERROR with st = HAL_RCC_HSI_Enable(0U)' (last assignment before)."""
+    v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)
+    code = re.sub(r'"(?:\\.|[^"\\\n])*"', '""', src_before)  # r76: never a 'st=%u' inside a printf format
+    setter = re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", code) if v else []
+    return f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}" if setter else expr
+
+
+HOST_CHECK = re.compile(r'\bCHECK\(\s*"([^"]+)"\s*,(.*?)\)\s*;', re.S)
+
+
+def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
+    """r74: run_integration said only 'IT-001 FAIL'; the SWE.5 author rewrote the test model three times blind.
+    Name the failed check's expression and the call that set its variable, like run_robot's CHECK_EXPR."""
+    ids = re.findall(r"^\s*(\S+) FAIL\b", out.decode(errors="replace"), re.M)
+    src = test.read_text(errors="replace")
+    exprs = []
+    for cid in dict.fromkeys(ids):
+        m = next((m for m in HOST_CHECK.finditer(src) if m.group(1) == cid), None)
+        if m:
+            exprs.append(f"CHECK_EXPR:{test.name}#{cid}:" + _with_setter(" ".join(m.group(2).split()),
+                                                                         src[:m.start()])[:110])
+        if len(exprs) >= limit:
+            break
+    return exprs
+
+
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     tdir = ctx.workspace / "software" / "tests" / level
     tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
@@ -51,6 +81,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         shutil.rmtree(bdir)
     bdir.mkdir(parents=True)
     log, passed, failed, issues, ms = b"", 0, 0, [], 0.0
+    asserted: list[Path] = []  # runtime (not build) failures - ADR-0008 test-integrity record
     for t in tests:
         exe = bdir / t.stem
         argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
@@ -60,7 +91,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         if b.exit_code != 0:
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
-            issues += _diag(b.stderr, ctx.workspace, (": error:",), 12)  # the agent cannot fix what it cannot see
+            # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
+            issues += _diag(b.stderr, ctx.workspace, (": error:", "undefined reference", "multiple definition"), 12)
             continue
         r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
                      env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
@@ -70,10 +102,19 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             passed += 1
         else:
             failed += 1
+            asserted.append(t)
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
-            issues += _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
+            exprs = _host_check_exprs(t, r.stdout)
+            issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
-    return result(ctx, "PASS" if failed == 0 else "FAIL", f"{level}: {passed} passed, {failed} failed (HOST)",
+    op = "run_unit" if level == "unit" else "run_integration"
+    record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
+                     integrity(ctx.workspace, tests, asserted))
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, op) if failed == 0 else []
+    issues = undeclared + issues
+    return result(ctx, "PASS" if failed == 0 and not undeclared else "FAIL",
+                  f"{level}: {passed} passed, {failed} failed (HOST)"
+                  + ("; undeclared test change - declare it" if undeclared else ""),
                   [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),
                                              "environment": "host", "target_evidence": False},
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
@@ -132,9 +173,146 @@ def gcov_coverage(ctx: ToolContext, a: CovIn) -> dict:
                   issues=["OPTIONAL_OP_DISABLED:gcov_coverage"], tool="gcovr", version=tool_version("gcovr"))
 
 
+class RobotIn(ToolInput):
+    pass
+
+
+def _compact_build_error(err: str) -> str:
+    """'x.c:15:53: error: 'A' undeclared (first use ...); did you mean 'A_MSK'?' -> "15: 'A' undeclared; did you
+    mean 'A_MSK'" so the fix fits in one capped issue line."""
+    u = re.search(r"undefined reference to [`'](\w+)'", err)
+    if u:  # link error: name the missing symbol (r68)
+        return f"link: undefined reference to '{u.group(1)}' (not provided by the driver or forge_target_test.h)"
+    m = re.search(r":(\d+):\d+: error: (.*)", err)
+    if not m:
+        return " ".join(err.split())[:100]
+    text = re.split(r"\s+\d+ \|", m.group(2))[0]  # drop gcc's source excerpt
+    hint = re.search(r"did you mean '[^']+'", text)
+    text = re.sub(r"\s*\(first use[^)]*\)|;?\s*did you mean '[^']+'\??", "", text).strip()
+    return f"{m.group(1)}: {text}" + (f"; {hint.group(0)}" if hint else "")
+
+
+def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
+    """SWE.6 requirement-based tests: Robot Framework suites (software/tests/software/*.robot) using the ForgeTarget
+    keyword library on the Renode STM32N6 model. PASS only if every test passes and every SWE.1 requirement is the
+    tag of at least one passing test."""
+    import os
+    import sys
+    import xml.etree.ElementTree as ET  # noqa: N817
+
+    from ...common import REPO_ROOT
+    from ...inspection.architecture import SWR
+
+    suites = sorted((ctx.workspace / "software/tests/software").glob("*.robot"))
+    if not suites:
+        return result(ctx, "BLOCKED", "no Robot suites", issues=["NO_TESTS:software/tests/software/*.robot"],
+                      tool="robotframework")
+    from .robot_policy import check_suite
+
+    policy = [i for s in suites for i in check_suite(s)]
+    if policy:  # r57: a suite is code - only the factory keyword library may run (no Process/OperatingSystem/eval)
+        return result(ctx, "FAIL", f"robot suite rejected by policy ({len(policy)} issues): use only Library "
+                      "ForgeTarget and its keywords", issues=policy[:30], tool="robotframework")
+    out = ctx.workspace / "build" / "robot"
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+    py = sys.executable
+    env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
+           **{k: os.environ[k] for k in ("FORGE_STATE_DIR", "FORGE_DATA_ROOT") if os.environ.get(k)}}
+    # -I: isolated mode, so modules in the (agent-written) workspace cannot shadow stdlib/robot/ForgeTarget imports
+    r = run_argv([py, "-I", "-m", "robot", "--pythonpath", str(REPO_ROOT / "factory/sim/stm32n6"), "--pythonpath",
+                  str(REPO_ROOT / "factory/python"), "--outputdir", str(out), "--consolecolors", "off",
+                  "--console", "dotted", *[str(s) for s in suites]], ctx.workspace, 570, {os.path.basename(py)},
+                 env_extra=env, mem_mb=65536, fsize_mb=512)
+    xml = out / "output.xml"
+    if not xml.is_file():
+        return result(ctx, "FAIL", "robot produced no output.xml", [ctx.store(r.stdout + r.stderr)],
+                      ["ROBOT_NO_OUTPUT"], tool="robotframework", exit_code=r.exit_code)
+    tests, issues, covered = [], [], set()
+    builds: dict[str, str] = {}  # r67: one compact BUILD_FAIL per scenario, gcc's "did you mean" kept
+    failing: list[tuple[list[str], str]] = []  # (SWR tags, failure text) of runtime failures
+    for t in ET.parse(xml).getroot().iter("test"):  # noqa: S314 - output.xml written by the local robot run
+        tags = [x.text or "" for x in t.findall("./tags/tag")] or [x.text or "" for x in t.findall("./tag")]
+        st = t.find("status")
+        status = st.get("status") if st is not None else "FAIL"
+        tests.append({"name": t.get("name"), "tags": tags, "status": status})
+        if status == "PASS":
+            covered |= {g for g in tags if SWR.fullmatch(g)}
+        else:
+            full = (st.text or "").strip().replace("\n", " ") if st is not None else ""
+            b = re.match(r"build failed for ([\w-]+\.c): (.*)", full)
+            if b:
+                builds.setdefault(b.group(1), _compact_build_error(b.group(2)))
+                issues.append(f"ROBOT_FAIL:{t.get('name').split()[0]}:build failed ({b.group(1)})")
+            else:
+                issues.append(f"ROBOT_FAIL:{t.get('name')}:{full[:120]}")
+                failing.append(([g for g in tags if SWR.fullmatch(g)], full))
+    req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
+    reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
+    issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
+    passed = sum(1 for t in tests if t["status"] == "PASS")
+    sdir = ctx.workspace / "software/tests/software"
+    from ...inspection.ears import extract
+    from .robot_policy import unobserved_requirements
+
+    texts = {r.req_id: r.text for r in extract(req.read_text(errors="replace"))} if req.is_file() else {}
+    unobserved = [i for s in suites for i in unobserved_requirements(s, sdir, texts)
+                  if not any(f" in {b}" in i for b in builds)]  # a scenario that does not build is fixed first
+    if unobserved == [x for x in unobserved if x.startswith("HOW_TO_OBSERVE")]:
+        unobserved = []
+    from .robot_policy import DRIVER_CALL, TCHECK, required_tokens
+
+    exprs = []  # r64: authors spent their budget reading files to learn what a failed check tested - say it here
+    failed_checks = []  # ADR-0008 L11: structured copy for the route gate's safety net (test-integrity record)
+    for reqs_, full in failing:
+        for cid, scn in re.findall(r"check (\d+) failed in ([\w-]+\.c)", full):
+            f = sdir / scn
+            src = f.read_text(errors="replace") if f.is_file() else ""
+            m = next((m for m in TCHECK.finditer(src) if m.group(1).strip() == cid), None)
+            cond = expr = ""
+            if m:
+                cond = " ".join(m.group(2).split())
+                expr = _with_setter(cond, src[:m.start()])
+                exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + expr[:100])
+            named = {t for r_ in reqs_ for ts in required_tokens(texts.get(r_, "")) for t in ts}
+            failed_checks.append({"requirements": reqs_, "scenario": scn, "check": cid, "expr": expr[:200],
+                                  "observes": sorted(t for t in named if t in cond),
+                                  "driver_call": bool(DRIVER_CALL.search(expr))})
+    # most fundamental first (the result is capped): build errors, failed checks with their expressions, then
+    # requirements the passing checks never observe, then the per-test/coverage lines
+    build_issues = [f"BUILD_FAIL:{k}:{v}" for k, v in sorted(builds.items())]
+    fails = [i for i in issues if i.startswith("ROBOT_FAIL:") and "build failed (" not in i]
+    rest = [i for i in issues if i not in fails]
+    issues = build_issues + fails + exprs + unobserved + rest
+    covered -= {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")}
+    ok = bool(tests) and passed == len(tests) and not unobserved \
+        and not [i for i in issues if i.startswith("UNCOVERED")]
+    scn = sorted(sdir.glob("*.c"))
+    asserted = sorted({sdir / m for i in issues if i.startswith("ROBOT_FAIL:") and "build failed" not in i
+                       for m in re.findall(r"\b([\w-]+\.c) \[", i)})  # failing checks, not build errors
+    record_integrity(ctx.workspace, ctx.phase, "run_robot", "PASS" if ok else "FAIL",
+                     {**integrity(ctx.workspace, [*suites, *scn], asserted), "failed_checks": failed_checks,
+                      "build_failed": sorted(builds), "unobserved": sorted(
+                          {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_robot") if ok else []
+    return result(ctx, "PASS" if ok and not undeclared else "FAIL",
+                  f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
+                  "verified (Renode STM32N6 model + host measurements)"
+                  + ("; undeclared test change - declare it" if undeclared else ""),
+                  [ctx.store(xml.read_bytes(), "xml")], (undeclared + issues)[:30],
+                  {"tests": len(tests), "passed": passed, "failed": len(tests) - passed, "requirements": len(reqs),
+                   "requirements_verified": len(covered & set(reqs)), "environment": "robotframework 6.1 + renode "
+                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False},
+                  "robotframework", tool_version(py, ("-m", "robot", "--version")), r.exit_code, r.duration_ms,
+                  a.model_dump(), r.stdout + r.stderr)
+
+
 OPERATIONS = [
     Operation("run_unit", RunIn, run_unit, "Build+run software/tests/unit/test_*.c on host (coverage optional)."),
     Operation("run_integration", RunIn, run_integration, "Build+run integration (or software-level) host tests."),
+    Operation("run_robot", RobotIn, run_robot,
+              "SWE.6: run Robot Framework requirement tests (software/tests/software/*.robot) on the Renode model."),
     Operation("llvm_coverage", CovIn, llvm_coverage, "LLVM line/branch/MC/DC coverage summary; raw data by ref."),
     Operation("gcov_coverage", CovIn, gcov_coverage, "gcov/gcovr coverage (disabled in this pilot)."),
 ]

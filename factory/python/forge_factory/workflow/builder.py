@@ -20,17 +20,35 @@ from ..common import REPO_ROOT
 from ..inspection.engine import PHASES
 from ..policy.authz import Binding
 
-MAX_VISITS = 4  # 1 + maximum_rework_cycles (3) from the v0.3 checklists
+UPSTREAM_LOOPS = 2  # ADR-0008: run-wide cross-phase loop budget (= defects.UPSTREAM_LOOP_BUDGET)
+REWORK_CYCLES = 3  # checklist policy maximum_rework_cycles
+# Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008). The rework budget is per epoch
+# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES visits again.
+MAX_VISITS = (1 + REWORK_CYCLES) * (1 + UPSTREAM_LOOPS)
+ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 
 def _q(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def gate_cmd(phase: str, step: str, check: str = "") -> str:
+def _env() -> str:
+    """Fabro command nodes do not inherit the Forge-C environment: pass code and data locations explicitly
+    (r47: the SWE.2 gate could not find the pinned PlantUML jar)."""
+    import os
+    import shlex
+
+    from ..common import state_dir
+
     pp = REPO_ROOT / "factory" / "python"
+    sd = state_dir()
+    root = os.environ.get("FORGE_DATA_ROOT") or str(sd.parent)
+    return f"PYTHONPATH={pp} FORGE_STATE_DIR={shlex.quote(str(sd))} FORGE_DATA_ROOT={shlex.quote(root)}"
+
+
+def gate_cmd(phase: str, step: str, check: str = "") -> str:
     extra = f" --check {check}" if check else ""
-    return (f"PYTHONPATH={pp} {sys.executable} -m forge_factory.inspection.gate --workspace . "
+    return (f"{_env()} {sys.executable} -m forge_factory.inspection.gate --workspace . "
             f"--phase {phase} --step {step}{extra}")
 
 
@@ -47,21 +65,23 @@ def inspector_prompt(n: int) -> str:
 
 
 def scaffold_cmd() -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.workflow.scaffold --workspace ."
+    return f"{_env()} {sys.executable} -m forge_factory.workflow.scaffold --workspace ."
+
+
+def robot_scaffold_cmd() -> str:
+    return f"{_env()} {sys.executable} -m forge_factory.workflow.robot_scaffold --workspace ."
 
 
 def regmap_cmd() -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
+    return f"{_env()} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
 
 
 def finalize_cmd(work_order: str) -> str:
-    pp = REPO_ROOT / "factory" / "python"
-    return f"PYTHONPATH={pp} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
+    return f"{_env()} {sys.executable} -m forge_factory.release.finalize --workspace . --run-id {work_order}"
 
 
-CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author")
+CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_author", "swe4_test_author", "swe4_author",
+              "swe5_target_author", "swe6_test_author")
 MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
 
 
@@ -96,8 +116,11 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
          '  start [shape=Mdiamond, label="Start"]', '  exit [shape=Msquare, label="Exit (offline review package)"]',
          f'  finalize [shape=parallelogram, label="Deterministic finalizer (READY_FOR_OFFLINE_REVIEW|BLOCKED)", '
          f'script="{_q(finalize_cmd(work_order))}"]']
+    # All six phases are always in the graph so that upstream loops (ADR-0008) can reach phases a resumed run
+    # carried over; `start` enters at the first phase still to run.
+    restart = phases[0]
     prev = "start"
-    for phase in phases:
+    for phase in PHASES:
         n = int(phase[-1])
         a, ag, ins, ig, rt = (f"swe{n}_author", f"swe{n}_author_gate", f"swe{n}_inspector", f"swe{n}_inspect_gate",
                               f"swe{n}_route")
@@ -120,8 +143,8 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                 nodes[n_] = {"role": "swe3-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.3 register map generator (RM0486, deterministic)", '
                   f'script="{_q(regmap_cmd())}"]',
-                  f'  {ll} [label="SWE.3 LL author", max_visits=1, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
-                  f'  {hal} [label="SWE.3 HAL author", max_visits=1, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
+                  f'  {ll} [label="SWE.3 LL author", max_visits={ONCE}, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
+                  f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
                   f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", max_visits={MAX_VISITS}, '
                   f'timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
                   f"  {entry} -> {ll}", f"  {ll} -> {hal}", f"  {hal} -> {fix}", f"  {fix} -> {a}"]
@@ -132,9 +155,28 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             nodes[ut] = {"role": "swe4-author", "phase": phase}
             L += [f'  {entry} [shape=parallelogram, label="SWE.4 unit-test harness generator (deterministic)", '
                   f'script="{_q(scaffold_cmd())}"]',
-                  f'  {ut} [label="SWE.4 unit-test author", max_visits=1, timeout="1200s", '
+                  f'  {ut} [label="SWE.4 unit-test author", max_visits={ONCE}, timeout="1200s", '
                   f'prompt="{_q(unit_test_author_prompt())}"]', f"  {entry} -> {ut}", f"  {ut} -> {a}"]
-        L.append(f"  {prev} -> {entry}" + (' [condition="outcome=succeeded"]' if prev != "start" else ""))
+        if phase == "SWE.5":  # Renode target tests in their own budget; rework re-enters at the SWE.5 author
+            from .prompts import target_test_author_prompt
+
+            entry = "swe5_target_author"
+            nodes[entry] = {"role": "swe5-author", "phase": phase}
+            L += [f'  {entry} [label="SWE.5 target-test author (Renode)", max_visits={ONCE}, timeout="1500s", '
+                  f'prompt="{_q(target_test_author_prompt())}"]', f"  {entry} -> {a}"]
+        if phase == "SWE.6":  # r56: Robot requirement tests in their own budget; rework re-enters at the SWE.6 author
+            from .prompts import robot_test_author_prompt
+
+            entry, ta = "swe6_scaffold", "swe6_test_author"  # r59: suite skeleton generated from the SWE.1 baseline
+            nodes[ta] = {"role": "swe6-author", "phase": phase}
+            L += [f'  {entry} [shape=parallelogram, label="SWE.6 Robot suite generator (deterministic)", '
+                  f'script="{_q(robot_scaffold_cmd())}"]',
+                  f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
+                  f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
+        if prev != "start":
+            L.append(f'  {prev} -> {entry} [condition="outcome=succeeded"]')
+        if phase == restart:
+            L.append(f"  start -> {entry}")
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":
             v = "swe3_verify"
@@ -146,8 +188,31 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             L += [f'  {ag} -> {ins} [condition="outcome=succeeded"]', f'  {ag} -> {rt}']
         L += [f"  {ins} -> {ig}", f'  {ig} -> {rt}',
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
-              f'  {rt} -> finalize']
+              f'  {rt} -> upstream_swe1']
         prev = ig
+    # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
+    # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
+    # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).
+    from .prompts import triage_prompt
+
+    for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):
+        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k < 3 else "finalize")
+        tri, tg = f"swe{k}_triage", f"swe{k}_triage_gate"
+        nodes[tri] = {"role": f"swe{k}-author", "phase": f"SWE.{k}"}
+        L += [f'  {up} [shape=parallelogram, label="Upstream loop to SWE.{k} (open defect, loop budget)", '
+              f'script="{_q(gate_cmd(f"SWE.{k}", "upstream"))}"]',
+              f'  {tri} [label="SWE.{k} defect triage (accept or reject, no edits)", max_visits={ONCE}, '
+              f'timeout="600s", prompt="{_q(triage_prompt(k))}"]',
+              f'  {tg} [shape=parallelogram, label="SWE.{k} triage gate (fix | return)", '
+              f'script="{_q(gate_cmd(f"SWE.{k}", "triage"))}"]',
+              f'  {up} -> {tri} [condition="outcome=succeeded"]', f"  {up} -> {nxt}", f"  {tri} -> {tg}",
+              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> return_swe2"]
+    for n in range(2, 7):
+        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n < 6 else "finalize")
+        entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
+        L += [f'  {ret} [shape=parallelogram, label="Return to SWE.{n} (its defects were rejected)", '
+              f'script="{_q(gate_cmd(f"SWE.{n}", "return"))}"]',
+              f'  {ret} -> {entry} [condition="outcome=succeeded"]', f"  {ret} -> {nxt}"]
     nodes["release_manager"] = {"role": "release-manager"}
     L += ['  release_manager [label="Release Manager (inventory only)", max_visits=1, prompt="Call use_skill with '
           'skill_name release-manager and follow it. Final reply: compact JSON only."]',

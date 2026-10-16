@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ...inspection.engine import InspectionError, Store
+from ...inspection.engine import InspectionError, Store, load_checklist
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
 
 Phase = Literal["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
@@ -41,7 +41,10 @@ class InspectIn(ToolInput):
     verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] | str = Field(max_length=4000)
 
 
-_ITEM = re.compile(r"\b([A-Z0-9]{2,8}-\d{2})\s*[=:]\s*(PASS|FAIL|NOT_APPLICABLE)\b", re.I)
+# r56: DeepSeek wrote "SWE5-05=Rework finding: ..." - a failure in other words. Fail synonyms map to FAIL (the
+# conservative direction); a pass is only ever the literal PASS.
+_FAIL_WORDS = "FAIL|FAILED|REWORK|REJECT|REJECTED|NOK|NOT_OK"
+_ITEM = re.compile(rf"\b([A-Z0-9]{{2,8}}-\d{{2}})\s*[=:]\s*(PASS|NOT_APPLICABLE|{_FAIL_WORDS})\b", re.I)
 
 
 def parse_verdict_string(text: str) -> dict[str, dict]:
@@ -53,13 +56,34 @@ def parse_verdict_string(text: str) -> dict[str, dict]:
     for k, m in enumerate(hits):
         end = hits[k + 1].start() if k + 1 < len(hits) else len(text)
         note = text[m.end():end].strip().lstrip(":").strip().rstrip(";.,").strip()
-        out[m.group(1).upper()] = {"verdict": m.group(2).upper(), "evidence_refs": [],
+        word = m.group(2).upper()
+        out[m.group(1).upper()] = {"verdict": word if word in ("PASS", "NOT_APPLICABLE") else "FAIL", "evidence_refs": [],
                                    "findings": [note[:120]] if note else []}
     return out
 
 
 class PackageIn(ToolInput):
     pass
+
+
+def _list(v: list[str] | str) -> list[str]:
+    """Small models send comma/space separated strings for lists; accepted and normalised."""
+    items = v if isinstance(v, list) else re.split(r"[,\s]+", v)
+    return [x.strip() for x in items if x and x.strip()]
+
+
+class DefectIn(ToolInput):
+    kind: Literal["CODE", "ARCHITECTURE", "REQUIREMENT", "TEST", "INPUT", "FACTORY"]
+    summary: str = Field(min_length=10, max_length=400)
+    requirement_ids: list[str] | str = Field(default_factory=list, max_length=400)
+    test_files: list[str] | str = Field(default_factory=list, max_length=600)
+    evidence_refs: list[str] | str = Field(default_factory=list, max_length=600)
+    requirement_quote: str = Field(default="", max_length=300)
+
+
+class RejectIn(ToolInput):
+    defect_id: str = Field(pattern=r"^DEF-\d{3}$")
+    reason: str = Field(min_length=10, max_length=400)
 
 
 def freeze_baseline(ctx: ToolContext, a: FreezeIn) -> dict:
@@ -129,6 +153,19 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
     for v in verdicts.values():
         if not v["evidence_refs"]:
             v["evidence_refs"] = [base_ref]
+    # r56: an item without a recognisable verdict used to be recorded as FAIL:MISSING_VERDICT, which lost the
+    # inspector's finding and sent the author into a rework cycle with nothing to fix. Refuse instead (nothing is
+    # recorded) so the inspector resubmits; the inspector node is bounded by max_visits and its turn cap.
+    try:
+        checklist = load_checklist(a.phase)
+    except Exception:  # noqa: BLE001 - the engine reports checklist problems itself
+        checklist = {"checks": []}
+    missing = [c["id"] for c in checklist["checks"]
+               if c.get("required") and not c.get("deterministic_check") and c["id"] not in verdicts]
+    if missing:
+        return result(ctx, "FAIL", f"inspection not recorded: no PASS/FAIL/NOT_APPLICABLE verdict for "
+                      f"{', '.join(missing)}; resubmit EVERY item as ID=PASS or ID=FAIL:<finding>"[:160],
+                      issues=[f"INCOMPLETE_VERDICTS:{m}" for m in missing][:10], tool="forge-inspection")
     try:
         rec = Store(ctx.workspace).record_inspection(a.phase, ctx.role, a.baseline_id, verdicts)
     except InspectionError as exc:
@@ -151,11 +188,45 @@ def build_package(ctx: ToolContext, a: PackageIn) -> dict:
                   {"package_status": out["package_status"], "gap_count": out["gap_count"]}, "forge-packager-v0.4")
 
 
+def report_defect(ctx: ToolContext, a: DefectIn) -> dict:
+    """ADR-0008: a defect this role may not fix (CODE->SWE.3, ARCHITECTURE->SWE.2, REQUIREMENT->SWE.1), a declared
+    correction of a test in the own phase (TEST), or an escalation (INPUT, FACTORY). Validated deterministically."""
+    from ...inspection import defects
+
+    if not ctx.phase:
+        raise ToolDenied("NO_PHASE", "report_defect needs the node's phase")
+    try:
+        rec = defects.report(ctx.workspace, detected_phase=ctx.phase, reported_by=ctx.role, kind=a.kind,
+                             summary=a.summary, requirement_ids=_list(a.requirement_ids),
+                             test_files=_list(a.test_files), evidence_refs=_list(a.evidence_refs),
+                             requirement_quote=a.requirement_quote)
+    except defects.DefectError as exc:
+        return result(ctx, "FAIL", f"defect not recorded: {exc}"[:160], issues=[str(exc)[:120]], tool="forge-defects")
+    return result(ctx, "PASS", f"{rec['id']} {rec['kind']} -> {rec['target_phase'] or 'human'} {rec['status']}",
+                  [f"{defects.DIR}/{rec['id']}.json"], [], {"target_phase": rec["target_phase"]}, "forge-defects",
+                  input_obj=a.model_dump())
+
+
+def reject_defect(ctx: ToolContext, a: RejectIn) -> dict:
+    """The target phase's author rejects a reported defect (the downstream test is wrong), with a recorded reason."""
+    from ...inspection import defects
+
+    try:
+        rec = defects.reject(ctx.workspace, a.defect_id, ctx.role, a.reason)
+    except defects.DefectError as exc:
+        return result(ctx, "FAIL", f"not rejected: {exc}"[:160], issues=[str(exc)[:120]], tool="forge-defects")
+    return result(ctx, "PASS", f"{rec['id']} REJECTED", [f"{defects.DIR}/{rec['id']}.json"], [], {}, "forge-defects",
+                  input_obj=a.model_dump())
+
+
 OPERATIONS = [
     Operation("freeze_baseline", FreezeIn, freeze_baseline, "Freeze your phase outputs to a content-hash baseline."),
     Operation("validate_trace", TraceIn, validate_trace, "Check SWR requirement <-> test traceability."),
     Operation("check_inspection", InspectIn, check_inspection, "Record an inspection of a frozen baseline (inspectors)."),
     Operation("build_package", PackageIn, build_package, "Build the offline review package (READY or BLOCKED)."),
+    Operation("report_defect", DefectIn, report_defect, "Report a defect you may not fix: CODE (SWE.3), ARCHITECTURE "
+              "(SWE.2), REQUIREMENT (SWE.1); declare a TEST correction in your phase; escalate INPUT/FACTORY."),
+    Operation("reject_defect", RejectIn, reject_defect, "Target-phase author: reject a reported defect with a reason."),
 ]
 
 if __name__ == "__main__":

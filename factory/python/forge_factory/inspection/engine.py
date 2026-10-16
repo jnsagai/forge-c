@@ -33,6 +33,20 @@ PHASE_PATHS = {
     "SWE.6": ["workproducts/SWE.6", "software/tests/software", "verification/software"],
 }
 SYSTEM_NAMES_FILE = "configuration/system_names.json"
+# Deterministic presence gate before any freeze (r15/r43: lenient inspectors passed phases with missing outputs)
+REQUIRED_OUTPUTS = {
+    "SWE.1": ["workproducts/SWE.1/software_requirements.md", "traceability/requirements_to_tests.csv",
+              "workproducts/SWE.1/software_requirements.reqif"],
+    "SWE.2": ["workproducts/SWE.2/software_architecture.md", "workproducts/SWE.2/architecture_static.puml",
+              "workproducts/SWE.2/architecture_dynamic.puml"],
+    "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
+    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
+    "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
+    "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
+}
+REQUIRED_TOOL_PASS = {"SWE.4": [("forge-tests-mcp", "run_unit")],
+                      "SWE.5": [("forge-tests-mcp", "run_integration")],
+                      "SWE.6": [("forge-tests-mcp", "run_robot")]}
 
 
 class InspectionError(ValueError):
@@ -98,6 +112,7 @@ class Store:
         files = self.files_of(phase)
         if not files:
             raise InspectionError(f"NO_WORKPRODUCTS:{phase}")
+
         from .architecture import is_agent_reply
 
         for rel in files:  # an agent's status reply written over a workproduct is never frozen
@@ -123,6 +138,24 @@ class Store:
             f.write(pretty_json(rec))
         emit("workflow", "INFO", f"{phase} baseline {rec['baseline_id']} frozen", phase=phase, agent_id=author_role)
         return rec
+
+    def missing_outputs(self, phase: str) -> list[str]:
+        """Presence gate used by the production author gate before a phase may be frozen (r15/r43)."""
+        out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in REQUIRED_OUTPUTS.get(phase, [])
+               if not any(f.is_file() and f.stat().st_size > 0 for f in self.workspace.glob(pat))]
+        if REQUIRED_TOOL_PASS.get(phase):
+            from ..release.finalize import latest, tool_results
+
+            res = tool_results(self.workspace)
+            code_bl = self.latest_baseline("SWE.3") if PHASES.index(phase) > PHASES.index("SWE.3") else None
+            for server, op in REQUIRED_TOOL_PASS[phase]:
+                r = latest(res, server, op)
+                if r is None or r["result"]["status"] != "PASS":
+                    out.append(f"REQUIRED_TOOL_NOT_PASS:{op}:{r['result']['status'] if r else 'NOT_RUN'}")
+                elif code_bl and r.get("ts_utc", "") < code_bl["frozen_at"]:
+                    # ADR-0008: a PASS recorded before the current code baseline (e.g. before an upstream fix) is stale
+                    out.append(f"REQUIRED_TOOL_STALE:{op}:before {code_bl['baseline_id']}")
+        return out
 
     def stale_reason(self, phase: str, baseline: dict) -> str | None:
         if baseline["baseline_hash"] != self.current_hash(phase):
@@ -152,13 +185,24 @@ class Store:
                                                                              .as_posix()],
                                 "findings": rep["major_findings"][:20], "source": "deterministic"}
             elif c.get("deterministic_check") in ("architecture_structure", "register_map_conformance",
-                                                  "implementation_completeness"):
+                                                  "implementation_completeness", "architecture_views", "reqif_export"):
                 from .architecture import check_architecture
                 from .implementation import check_implementation
                 from .regmap import check_regmap
+                from .reqif_export import OUT as REQIF_OUT
+                from .reqif_export import validate as reqif_validate
+                from .views import check_views
+
+                def _reqif(ws: Path) -> dict:
+                    p = ws / REQIF_OUT
+                    if not p.is_file():
+                        return {"verdict": "FAIL", "major_findings": ["REQIF:MISSING"]}
+                    v = reqif_validate(p)
+                    return {"verdict": v["verdict"], "major_findings": v["issues"], "spec_objects": v["spec_objects"]}
 
                 rep = {"architecture_structure": check_architecture, "register_map_conformance": check_regmap,
-                       "implementation_completeness": check_implementation}[c["deterministic_check"]](self.workspace)
+                       "implementation_completeness": check_implementation, "architecture_views": check_views,
+                       "reqif_export": _reqif}[c["deterministic_check"]](self.workspace)
                 rdir = self.insp / phase / "deterministic"
                 rdir.mkdir(parents=True, exist_ok=True)
                 rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"
@@ -225,12 +269,34 @@ class Store:
         d = self.insp / phase
         return [json.loads(p.read_text()) for p in sorted(d.glob("INS-*.json"))] if d.is_dir() else []
 
+    def run_started(self) -> str:
+        m = self.workspace / ".forge-run" / "manifest.json"
+        try:
+            return str(json.loads(m.read_text()).get("created_at") or "")
+        except (OSError, ValueError):
+            return ""
+
+    def budget_start(self) -> str:
+        """Start of the current rework-budget epoch (ADR-0008, owner decision 2026-10-15): the run start, then each
+        upstream loop. Failed cycles before an upstream fix were spent on the code as it was; after the fix every
+        phase gets its authored maximum again. Bounded: 1 + upstream-loop budget epochs (workflow max_visits)."""
+        start = self.run_started()
+        loops = self.workspace / ".forge-run" / "gates" / "upstream-loops.jsonl"
+        if loops.is_file():
+            for x in loops.read_text().splitlines():
+                if x.strip():
+                    start = max(start, str(json.loads(x).get("ts") or ""))
+        return start
+
     def gate(self, phase: str) -> dict:
         checklist = load_checklist(phase)
         max_cycles = int(checklist["policy"]["maximum_rework_cycles"])
         ins = self.inspections(phase)
         bl = self.latest_baseline(phase)
-        failed = sum(1 for i in ins if i["verdict"] != "PASS")
+        # r66: inspections carried over by --resume-from belong to another run's budget; only this run's count, and
+        # only those of the current epoch (after the latest upstream loop)
+        started = self.budget_start()
+        failed = sum(1 for i in ins if i["verdict"] != "PASS" and i.get("recorded_at", "") >= started)
         if bl is None:
             decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), "NO_BASELINE"
         else:

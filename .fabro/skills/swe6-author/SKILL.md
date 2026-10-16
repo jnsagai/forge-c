@@ -11,7 +11,7 @@ metadata:
   output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
   model: qwen3:8b
   max_stage_tokens: 32000
-  max_turns: 20
+  max_turns: 35
   max_mcp_output_bytes: 2048
 ---
 
@@ -43,6 +43,8 @@ Read-only input manifest for SWE.6: frozen SWE.1 requirements + all SWE.3–SWE.
 - `forge-tests-mcp.llvm_coverage`
 - `forge-sim-mcp.run_renode`
 - `forge-sim-mcp.run_hwsim`
+- `forge-tests-mcp.run_robot`
+- `forge-evidence-mcp.report_defect`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. `write_file`/`edit_file` are allowed only inside the output paths below.
 
@@ -56,7 +58,7 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 3. Verify against every SWE.1 requirement; list untested requirements as issues.
 
 ## Constraints
-Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 32000-token / 20-turn budget is near.
+Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 32000-token / 35-turn budget is near.
 
 ## Mandatory compact exit format
 Output only valid JSON matching `specs/002-self-healing-factory/contracts/agent-output.schema.json`:

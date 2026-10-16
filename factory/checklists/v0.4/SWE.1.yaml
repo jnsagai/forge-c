@@ -19,3 +19,15 @@ additional_checks:
   - workproduct_reference
   - ears_report_reference
   - recorded_verdict
+- id: SWE1-08
+  required: true
+  severity_if_failed: major
+  criterion: The software requirements are exported as ReqIF 1.2 (generated deterministically from the EARS
+    requirements, with verified-by relations to tests) and the export validates against the OMG ReqIF XSD.
+  deterministic_check: reqif_export
+  tool: forge-docs-mcp.validate_artifact
+  source: owner request 2026-10-15 (requirements as ReqIF)
+  evidence:
+  - workproduct_reference
+  - reqif_validation_reference
+  - recorded_verdict

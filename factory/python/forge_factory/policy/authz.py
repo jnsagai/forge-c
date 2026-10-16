@@ -43,7 +43,7 @@ ROLE_WRITE_PREFIXES: dict[str, list[str]] = {
     "swe2-author": ["workproducts/SWE.2/"],
     "swe3-author": ["workproducts/SWE.3/", "software/src/", "software/include/", "software/hal/", "software/ll/"],
     "swe4-author": ["workproducts/SWE.4/", "software/tests/unit/"],
-    "swe5-author": ["workproducts/SWE.5/", "software/tests/integration/"],
+    "swe5-author": ["workproducts/SWE.5/", "software/tests/integration/", "software/tests/target/"],
     "swe6-author": ["workproducts/SWE.6/", "software/tests/software/"],
     "footprint-optimizer": ["software/src/", "software/include/", "reports/footprint-optimizer/"],
     "intake-analyst": ["reports/intake-analyst/"],

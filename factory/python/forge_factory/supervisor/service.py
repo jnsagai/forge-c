@@ -161,9 +161,9 @@ class Supervisor:
             if not rid_f.is_file() or pkg.is_file():
                 continue
             try:
-                from ..fabro.client import FabroClient, load_token, run_status
+                from ..fabro.client import client_for_workspace, run_status
 
-                st = run_status(FabroClient(token=load_token(), timeout=5).get_run(rid_f.read_text().strip()))
+                st = run_status(client_for_workspace(ws).get_run(rid_f.read_text().strip()))
             except Exception as exc:  # noqa: BLE001
                 emit("supervisor", "DEBUG", f"finalizer status probe failed: {type(exc).__name__}")
                 continue

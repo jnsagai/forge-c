@@ -31,6 +31,7 @@ Read-only input manifest for SWE.2: frozen SWE.1 baseline (hash), MCU profile, r
 - `forge-repo-mcp.diff_scoped`
 - `forge-knowledge-mcp.find_lessons`
 - `forge-docs-mcp.validate_artifact`
+- `forge-evidence-mcp.report_defect`
 
 Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy hook. You may not use `write_file`/`edit_file`.
 

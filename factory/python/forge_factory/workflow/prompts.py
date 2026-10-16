@@ -19,6 +19,47 @@ def sec(*nums: str) -> str:
     return ", ".join(SECTIONS.get(n, f"(section {n} unavailable)") for n in nums)
 REPLY = 'Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],"issues":[],"next_action":"next"}'
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
+# ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
+FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
+               "fix it in your phase's work products FIRST (its requirement_ids, summary and cited test files are the "
+               "evidence; never edit the cited tests). First compare the defect with the cited requirement text in "
+               "workproducts/SWE.1/software_requirements.md: a requirement as written always wins. If the defect asks "
+               "for behaviour the requirement does not demand or contradicts, or is not in your phase, call "
+               "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason instead of changing anything.")
+DEFECT_RULE = ("When a test fails, decide where the fault is. If the test matches the SWE.1 requirement and the driver "
+               "code or the API/architecture is wrong, do NOT change the test: call "
+               "mcp__forge_evidence_mcp__report_defect with kind CODE (the code violates the requirement AS WRITTEN; "
+               "requirement_quote = the violated clause copied verbatim) or ARCHITECTURE (the API cannot express the "
+               "clause copied verbatim into requirement_quote; first check that the requirement really demands the "
+               "missing function - a test that calls a function the header does not declare is usually a TEST "
+               "error), requirement_ids, test_files (the failing test files) and a summary, then finish with "
+               "status REWORK. If you believe the requirement itself is wrong (e.g. real hardware behaves "
+               "differently), report kind REQUIREMENT - never ask for code that contradicts a requirement. If the test "
+               "itself is wrong, correct it and declare that with report_defect kind TEST (requirement_ids, "
+               "test_files, requirement_quote = the clause the corrected test checks, why it was wrong). A defect you "
+               "reported that is REJECTED in .forge-run/defects carries the owner's reason: correct your test (declare "
+               "it as TEST) or, if the requirement itself is wrong, report kind REQUIREMENT - never re-report it. If a "
+               "defect you reported turns out to be your own test error, correct the test and declare kind TEST on "
+               "the same test file: that withdraws your defect. An expected value comes from the requirement, never from what the "
+               "code produced: do not tune it until it matches (r76 tried +0, +1, +2, 12345 for a read count); if the "
+               "requirement states a bound ('at most N'), check the bound (<=), not an exact count.")
+INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or requirement - not in this phase's "
+                  "work products), also record it with mcp__forge_evidence_mcp__report_defect (kind CODE, "
+                  "ARCHITECTURE or REQUIREMENT, requirement_ids, summary; for CODE and ARCHITECTURE requirement_quote "
+                  "= the clause copied verbatim) before check_inspection.")
+
+# r77: the manifest's target.hsi_contract / target.safety_allocation record the owner's scope decision while
+# upstream.status reports the unfilled approval template as NOT_PROVIDED; inspectors judged SWE1-01 both ways
+OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
+                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE), judge SWE1-01 against that "
+                    "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
+                    "recorded in traceability/upstream_gaps.md, not a failure of SWE1-01.")
+
+GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} "
+                       "(declared by the author, or by the route-gate after an upstream fix) read the CURRENT version "
+                       "of each file in its test_files (it may have been corrected again after the declaration) and "
+                       "the cited requirement, and FAIL the test-related item if the test no longer checks the "
+                       "requirement as written (weakened check, removed case, or check bent to the code).")
 
 AUTHOR_STEPS = {
     "SWE.1": [
@@ -26,13 +67,19 @@ AUTHOR_STEPS = {
         "write_file workproducts/SWE.1/software_requirements.md: a '# Software requirements' title, then 8-15 requirements, "
         "one per line exactly like: - **SWR-001** When the HSI enable is requested, the RCC driver shall set RCC_CR.HSION. "
         "Each statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', the system name 'RCC driver', and ends "
-        "with a period. Put '  - Source: RM0486 p.<page>' on the next line under each requirement. Add three measurable "
+        "with a period. Put '  - Source: RM0486 p.<page>' and '  - Verification: <test method and pass criterion>' on "
+        "the next lines under each requirement (the pass criterion uses the requirement's own bound, e.g. 'at most "
+        "HAL_RCC_TIMEOUT_VALUE polling iterations', never an exact count of register reads or other implementation "
+        "steps), and end the file with '## Open points' listing unresolved ambiguities "
+        "(or 'none'). Add three measurable "
         "resource requirements from the .forge-run/manifest.json budgets, e.g. '- **SWR-0nn** The RCC driver shall occupy "
         "at most 4096 bytes of flash.' (likewise static RAM and stack), with '  - Source: work-order budget (owner "
-        "development target)'. Add reset/startup requirements from the register reset values in the section files (e.g. "
-        "state after reset of each enable bit), one requirement per failure response (ready timeout -> the driver clears the "
+        "development target)'. Add reset/startup requirements phrased as RCC driver behaviour with 'the RCC driver' as "
+        "subject (e.g. '- **SWR-0nn** While no oscillator enable has been requested after reset, the RCC driver shall "
+        "leave RCC_CR.HSEON at its reset value 0.'), one requirement per failure response (ready timeout -> the driver clears the "
         "enable bit it set (driver fallback state: oscillator/clock off) and returns HAL_TIMEOUT; invalid parameter -> "
-        "HAL_ERROR without register writes), and one measurable timing "
+        "HAL_ERROR without register writes, naming the invalid values: a NULL pointer, an unknown selector, and a "
+        "timeout argument of 0 or greater than HAL_RCC_TIMEOUT_VALUE), and one measurable timing "
         "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
         "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
         "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
@@ -61,6 +108,14 @@ AUTHOR_STEPS = {
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.2/software_architecture.md and check "
         "architecture; fix every finding (rewrite the file with write_file) and repeat until status PASS. Never write "
         "your JSON reply into a workproduct file.",
+        "write_file workproducts/SWE.2/architecture_static.puml: PlantUML component view between '@startuml' and "
+        "'@enduml' with components named stm32n6xx_hal_rcc (HAL) and stm32n6xx_ll_rcc (LL, header-only), the RCC register "
+        "block (0x56028000) and their dependencies (HAL -> LL -> registers).",
+        "write_file workproducts/SWE.2/architecture_dynamic.puml: PlantUML sequence view(s) between '@startuml' and "
+        "'@enduml' with participants Caller, stm32n6xx_hal_rcc, stm32n6xx_ll_rcc, RCC, showing an oscillator enable with "
+        "the ready path (HAL_OK) and the timeout path (HAL_TIMEOUT) using the allocated HAL_RCC_ function names, plus a "
+        "peripheral clock enable or reset sequence.",
+        "Call mcp__forge_docs_mcp__validate_artifact with check plantuml; fix every finding and repeat until PASS.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.2 baseline."],
     "SWE.3": [
         "read_file workproducts/SWE.2/software_architecture.md (Memory and stack budget section only, use offset/limit).",
@@ -99,14 +154,8 @@ AUTHOR_STEPS = {
         "write_file software/tests/integration/test_rcc_integration.c: self-checking host program exercising HAL+LL together "
         "(enable oscillator then peripheral clock then reset sequence, and a forced timeout).",
         "Call mcp__forge_tests_mcp__run_integration; fix failures.",
-        "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model "
-        "sets each RCC_SR ready flag when its RCC_CR enable bit is set) and software/tests/target/test_rcc_target_timeout.c "
-        "(RCC model never sets ready flags: every wait must end in HAL_TIMEOUT). Each file: '#include "
-        "\"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int "
-        "main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' "
-        "on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
-        "definition (the linker places it).",
-        "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
+        "Call mcp__forge_sim_mcp__run_renode once (the target tests were written and run by the previous step) to get "
+        "the target results for the report.",
         "write_file workproducts/SWE.5/integration_verification_report.md with sections: '## Plan' (component and "
         "integration measures), '## Integration sequence' (matches the architecture interfaces), '## Clock/reset "
         "interactions tested', '## Robustness, fault propagation, timing/resource budgets' (timeout paths, measured sizes), "
@@ -115,13 +164,25 @@ AUTHOR_STEPS = {
         "silicon verification) and '## Open defects' (or 'none').",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
-        "Read workproducts/SWE.1/software_requirements.md, the SWE.4 and SWE.5 reports and traceability/requirements_to_tests.csv.",
-        "Call mcp__forge_tests_mcp__run_integration, mcp__forge_sim_mcp__run_renode and mcp__forge_evidence_mcp__validate_trace.",
-        "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> measure (unit/integration/"
-        "target) -> test id -> pass/fail -> evidence (only ids that exist in the test files), covering normal, boundary "
-        "and failure behaviour; '## Fault responses and target constraints'; '## Regressions and defect status'; and "
-        "'## Unverified items' stating accurately: host tests plus simulated Cortex-M55 target only, no silicon/board "
-        "verification, safety allocation out of scope by owner decision.",
+        "Call mcp__forge_tests_mcp__run_robot FIRST (the scenario files and software/tests/software/"
+        "test_rcc_requirements.robot were written by the previous step). Use only run_robot and validate_trace in this "
+        "step - never run_integration, run_renode or build tools.",
+        "REQUIREMENT_NOT_OBSERVED means YOUR test never checks what the requirement demands: add exactly the named "
+        "TCHECK to the named scenario file and 'Target Check Should Pass    <n>' to that SWR test (an edit_file each), "
+        "then run_robot again - this is not a tool problem, do not search the factory. "
+        "If run_robot FAILs a check, decide BEFORE anything else, in at most 5 tool calls: read "
+        "workproducts/SWE.1/software_requirements.md and use the CHECK_EXPR / REQUIREMENT_NOT_OBSERVED issues (they "
+        "show what each failing check tests). For each failing requirement either correct the scenario/suite (and "
+        "declare it with report_defect kind TEST) or, if the test is right, call report_defect (CODE or ARCHITECTURE "
+        "with requirement_quote) and then finish immediately with status REWORK - do not write the report. A failing "
+        "check that calls the driver and tests what the requirement names (e.g. 'rc == HAL_ERROR with rc = "
+        "HAL_RCC_...(...)') is right by construction: never change, weaken or remove it - report it as CODE.",
+        "When run_robot PASSes: call mcp__forge_evidence_mcp__validate_trace, then read the SWE.4 and SWE.5 reports.",
+        "write_file workproducts/SWE.6/software_verification_report.md with: a table SWR -> Robot test -> pass/fail -> "
+        "evidence (build/robot/output.xml, log.html), covering normal, boundary and failure behaviour; '## Fault responses "
+        "and target constraints'; '## Regressions and defect status' (list every defect in .forge-run/defects); and "
+        "'## Unverified items' stating accurately: host tests plus simulated Cortex-M55 target (Renode, behavioural RCC "
+        "model) only, no silicon/board verification, safety allocation out of scope by owner decision.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.6 baseline."],
 }
 
@@ -137,6 +198,11 @@ def small() -> str:
                 "this step.")
     return (f"Keep every write_file/edit_file content under {n} lines and put SEVERAL function groups into one call "
             "(you have at most 20 tool calls in this step). Never call freeze_baseline in this step.")
+REENTRY = ("If the file you are about to write already contains functions (an upstream defect sent the run back "
+           "here), keep every existing function: only add or change what the defects in .forge-run/defects (status "
+           "IN_FIX) and the changed architecture require; never duplicate a function.")
+
+
 LL_STEPS = [
     "read_file software/ll/stm32n6xx_ll_rcc.h: its register definitions (LL_RCC_<REG>_OFFSET, LL_RCC_<REG>_<FIELD>_POS, "
     "LL_RCC_<REG>_<FIELD>_MSK) were GENERATED from RM0486; never change or add register defines. Then read "
@@ -176,8 +242,8 @@ HAL_STEPS = [
     "and new_string = that group's function definitions (at most 40 lines), a blank line, then the marker again. Each "
     "function calls only LL_RCC_ functions and keeps the exact signature declared in the header. Oscillator/PLL Enable "
     "functions wait for the ready flag with a timeout like this example (adapt names; if the architecture passes a "
-    "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL first, "
-    "returning HAL_ERROR): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
+    "timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer parameters for NULL and "
+    "a timeout of 0 or greater than HAL_RCC_TIMEOUT_VALUE first, returning HAL_ERROR before any register write): ```{hal_example}``` Disable functions wait until IsReady() == 0U the same "
     "way; peripheral clock enable/disable and reset functions call the LL function and return HAL_OK.",
     "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all and fix what it reports (missing functions, guideline "
     "naming such as hal_ prefixed lower-case types ending _t) before replying.",
@@ -206,13 +272,71 @@ UT_STEPS = [
 ]
 
 
+PROVIDED = ("forge_target_test.h (TCHECK, FORGE_TEST_BEGIN/END, mailbox) and the Robot library ForgeTarget are provided by "
+            "the factory build and run tools: do not search for them.")
+
+TARGET_STEPS = [
+    "read_file software/hal/stm32n6xx_hal_rcc.h (the HAL API and its exact signatures). " + PROVIDED,
+    "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model sets "
+    "each RCC_SR ready flag when its RCC_CR enable bit is set) and software/tests/target/test_rcc_target_timeout.c (RCC "
+    "model never sets ready flags: every wait must end in HAL_TIMEOUT). Each file: '#include \"stm32n6xx_hal_rcc.h\"', "
+    "'#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); "
+    "... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' on HAL return values and "
+    "ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs definition (the linker places it).",
+    "Call mcp__forge_sim_mcp__run_renode; fix failing checks or build errors and repeat until it PASSes.",
+    "Reply with the run_renode summary.",
+]
+
+
+ROBOT_STEPS = [
+    "read_file software/tests/software/test_rcc_requirements.robot (GENERATED: one test case per SWR with its tags and "
+    "the allowed keywords in its header; every body is a 'Fail    NOT IMPLEMENTED' placeholder), "
+    "workproducts/SWE.1/software_requirements.md and software/hal/stm32n6xx_hal_rcc.h (exact HAL signatures). "
+    + PROVIDED + " Read nothing else: no other sources, tests, reports or tools are needed in this step.",
+    "Write the C scenario files software/tests/software/scn_<topic>.c (group requirements by topic, several checks per "
+    "file) in the same form as the target tests: '#include \"stm32n6xx_hal_rcc.h\"', '#include \"forge_target_test.h\"', "
+    "'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); TCHECK(<n>, <condition>); ... FORGE_TEST_END(); "
+    "return 0; }' with conditions on HAL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & "
+    "LL_RCC_<REG>_<FIELD>_MSK bits (always the _MSK macro, e.g. LL_RCC_CR_HSION_MSK; never LL_RCC_CR_HSION). No "
+    "printf, no stdlib, no ll_rcc_regs definition.",
+    "Rewrite software/tests/software/test_rcc_requirements.robot with ONE write_file: keep the header comment, "
+    "'*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each "
+    "'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_<topic>.c' then 'Target Check Should "
+    "Pass    <n>' (add '    scenario=never_ready' for timeout behaviour; use 'Driver Flash Size Should Be At Most' / "
+    "'Driver Static RAM Should Be At Most' / 'Driver Stack Should Be At Most' for size and stack requirements; "
+    "'Target Check Should Pass    <n>' needs TCHECK(<n>, ...) in the scenario run last). Separate keyword and arguments with 4 spaces. "
+    "The suite may use ONLY ForgeTarget keywords, keywords you define in the same file and Log/Should Be Equal: "
+    "run_robot rejects any other library (Process, OperatingSystem), Resource/Variables imports, Evaluate, Run "
+    "Keyword and inline Python expressions. Never write shell scripts.",
+    "Call mcp__forge_tests_mcp__run_robot; fix build errors, UNCOVERED_REQUIREMENT and REQUIREMENT_NOT_OBSERVED "
+    "issues (add exactly the named TCHECK and its 'Target Check Should Pass' line) and failing checks your test got "
+    "wrong, and repeat until it PASSes - OR until the only failing checks call the driver and test exactly what the "
+    "requirement names (e.g. CHECK_EXPR 'rc == HAL_ERROR with rc = HAL_RCC_...(...)' for 'shall return HAL_ERROR'). "
+    "Then STOP editing: such a check is the evidence of a driver defect - never change, weaken or remove it; apply "
+    "the defect rule below (report_defect kind CODE).",
+    "Reply with the run_robot summary.",
+]
+
+
+def robot_test_author_prompt() -> str:
+    """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
+    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + ROBOT_STEPS + [DEFECT_RULE] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+def target_test_author_prompt() -> str:
+    """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + TARGET_STEPS + [DEFECT_RULE] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
 def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
-         for x in UT_STEPS] + [REPLY]
+         for x in UT_STEPS] + [DEFECT_RULE, REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -234,9 +358,31 @@ FIX3_STEPS = [
 ]
 
 
+TRIAGE_READ = {1: "workproducts/SWE.1/software_requirements.md",
+               2: "workproducts/SWE.1/software_requirements.md and workproducts/SWE.2/software_architecture.md",
+               3: "workproducts/SWE.1/software_requirements.md and software/hal/stm32n6xx_hal_rcc.h"}
+
+
+def triage_prompt(k: int) -> str:
+    """ADR-0008 L12: the upstream owner judges routed defects in a small, edit-free step before any fix."""
+    steps = [f"Call use_skill with skill_name swe{k}-author.",
+             f"This step only TRIAGES defects routed to SWE.{k}; use at most 8 tool calls and do NOT write or edit any "
+             "file (a later step fixes accepted defects).",
+             f"glob .forge-run/defects/DEF-*.json and read every defect with target_phase SWE.{k} and status IN_FIX.",
+             f"read_file {TRIAGE_READ[k]}.",
+             "For each defect: if the requirement AS WRITTEN demands what the defect asks and your phase's work product "
+             "does not provide it, ACCEPT it (do nothing). Otherwise - the requirement does not demand it, contradicts "
+             "it, or the downstream test calls something the requirement never asked for - call "
+             "mcp__forge_evidence_mcp__reject_defect with defect_id and a reason that quotes the requirement.",
+             'Finish with ONLY this JSON: {"status":"PASS","artifacts":[],"issues":["DEF-nnn ACCEPTED|REJECTED"],'
+             '"next_action":"next"}']
+    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
 def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
-    steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
+    steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
+             FIX_DEFECTS.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -245,7 +391,7 @@ def ll_author_prompt() -> str:
     from ..inspection.regmap import FUNCTIONS_MARKER
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
-        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REPLY]
+        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -253,7 +399,7 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + [REPLY]
+         for x in HAL_STEPS] + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -262,7 +408,10 @@ def author_prompt(phase: str) -> str:
     fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
     body = [x.format(**fills) if "{s" in x else x for x in AUTHOR_STEPS[phase]]
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
-    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + body + [REPLY]
+    extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
+        [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
+    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
+        + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -278,6 +427,8 @@ def inspector_prompt(phase: str) -> str:
              "check_inspection no later than your 15th tool call.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
+             *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
+             *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",

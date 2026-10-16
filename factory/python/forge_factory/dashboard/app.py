@@ -211,7 +211,7 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
             rid_f = ws / ".forge-run/fabro_run_id"
             if not rid_f.is_file() or (run_id and rid_f.read_text().strip() != run_id):
                 continue
-            u = token_usage(rid_f.read_text().strip())
+            u = token_usage(rid_f.read_text().strip(), ws)
             tr = ws / "evidence/tool-results.jsonl"
             mcp_bytes = [len(x) for x in tr.read_text().splitlines()] if tr.is_file() else []
             items.append({"work_order": ws.parent.name, "fabro_run_id": rid_f.read_text().strip(), "basis": u["basis"],
