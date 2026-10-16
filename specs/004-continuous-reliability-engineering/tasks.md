@@ -58,10 +58,10 @@
 
 ## D6 — Operator dashboard, evidence and safety controls
 
-- [ ] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-031, CRE-FR-032]** Test: live filters do not change event capture and show denominator and data status. [AT-032]
-- [ ] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-020, CRE-FR-031, CRE-FR-032]** Test: alarm cannot change safety policy. [AT-033]
-- [ ] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** Test: BLOCKED includes valid available CRE evidence and absence explanations. [AT-034]
-- [ ] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-030, CRE-FR-031, CRE-FR-037]** Tests: zero protected-path writes; no secrets in persisted traces. [AT-035]
+- [X] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-031, CRE-FR-032]** Test: live filters do not change event capture and show denominator and data status. [AT-032] ✅ Evidence: `evidence/v0.4/runs/CRE-T035/latest.json`
+- [X] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-020, CRE-FR-031, CRE-FR-032]** Test: alarm cannot change safety policy. [AT-033] ✅ Evidence: `evidence/v0.4/runs/CRE-T036/latest.json`
+- [X] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** Test: BLOCKED includes valid available CRE evidence and absence explanations. [AT-034] ✅ Evidence: `evidence/v0.4/runs/CRE-T037/latest.json`
+- [X] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-030, CRE-FR-031, CRE-FR-037]** Tests: zero protected-path writes; no secrets in persisted traces. [AT-035] ✅ Evidence: `evidence/v0.4/runs/CRE-T038/latest.json`
 
 ## D7 — Fault injection, offline handover and release readiness
 

@@ -278,6 +278,46 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         return {"metric_id": metric_id, "snapshot_id": snap["snapshot_id"], "formula_version": snap["formula_version"],
                 "rows": rows}
 
+    # ---- feature 004 CRE: read-only Reliability view (projections over the CRE tables of the 002 incident DB) ----
+    @app.get("/api/v1/reliability/summary")
+    def rel_summary(r: str = Depends(role)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.summary(r)
+
+    @app.get("/api/v1/reliability/failure-modes")
+    def rel_modes(r: str = Depends(role), failure_class: str | None = Query(None, pattern=r"^[A-Z_]{3,40}$"),
+                  recurring: bool | None = None, limit: int = Query(50, ge=1, le=200)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.failure_modes(failure_class, recurring, limit)
+
+    @app.get("/api/v1/reliability/failure-modes/{fingerprint}")
+    def rel_obs(fingerprint: str, r: str = Depends(role)) -> dict:
+        from ..reliability import dashboard_api as R
+        if not (fingerprint.startswith("cfp1-") and len(fingerprint) == 45):
+            raise HTTPException(422, "bad fingerprint")
+        return R.observations(fingerprint)
+
+    @app.get("/api/v1/reliability/capa")
+    def rel_capa(r: str = Depends(role)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.capas()
+
+    @app.get("/api/v1/reliability/metrics")
+    def rel_metrics(r: str = Depends(role), metric: str | None = Query(None, pattern=r"^(CRE-R\d{2}[A-Za-z0-9.-]*|K\d{2})$"),
+                    cohort: str | None = Query(None, max_length=200)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.metrics(metric, cohort)
+
+    @app.get("/api/v1/reliability/promotions")
+    def rel_promotions(r: str = Depends(role)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.promotions()
+
+    @app.get("/api/v1/reliability/anomalies")
+    def rel_anomalies(r: str = Depends(role)) -> dict:
+        from ..reliability import dashboard_api as R
+        return R.anomalies()
+
     @app.get("/api/v1/events")
     def events(r: str = Depends(role), channel: str | None = None, min_level: str = "INFO", run_id: str | None = None,
                agent_id: str | None = None, phase: str | None = None, q: str | None = Query(None, max_length=200),

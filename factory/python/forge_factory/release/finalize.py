@@ -340,6 +340,9 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     with tempfile.TemporaryDirectory() as dry:  # status under v0.4 rules (KPI files can only add, never remove gaps)
         dry_status = pk.build(stage, Path(dry), run_id, POLICY_V04)["package_status"]
     kpi_snapshot_into(ws, stage, dry_status)
+    from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
+
+    bundle_into(ws, stage, dry_status)
     res = pk.build(stage, out_dir, run_id, POLICY_V05)
     with pk.zipfile.ZipFile(res["archive"]) as z:
         gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]

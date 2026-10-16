@@ -320,7 +320,8 @@
       "fr": "CRE-FR-020",
       "passing_tasks": [
         "CRE-T032",
-        "CRE-T034"
+        "CRE-T034",
+        "CRE-T036"
       ],
       "priority": "P1",
       "status": "COVERED",
@@ -372,7 +373,8 @@
       "passing_tasks": [
         "CRE-T020",
         "CRE-T027",
-        "CRE-T029"
+        "CRE-T029",
+        "CRE-T038"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -458,7 +460,8 @@
       "fr": "CRE-FR-030",
       "passing_tasks": [
         "CRE-T022",
-        "CRE-T029"
+        "CRE-T029",
+        "CRE-T038"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -473,7 +476,10 @@
       "fr": "CRE-FR-031",
       "passing_tasks": [
         "CRE-T005",
-        "CRE-T010"
+        "CRE-T010",
+        "CRE-T035",
+        "CRE-T036",
+        "CRE-T038"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -488,9 +494,12 @@
     },
     {
       "fr": "CRE-FR-032",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T035",
+        "CRE-T036"
+      ],
       "priority": "P1",
-      "status": "GAP",
+      "status": "COVERED",
       "tasks": [
         "CRE-T035",
         "CRE-T036",
@@ -499,9 +508,11 @@
     },
     {
       "fr": "CRE-FR-033",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T037"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T037",
         "CRE-T042"
@@ -555,7 +566,8 @@
     {
       "fr": "CRE-FR-037",
       "passing_tasks": [
-        "CRE-T010"
+        "CRE-T010",
+        "CRE-T038"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -586,7 +598,8 @@
       "passing_tasks": [
         "CRE-T001",
         "CRE-T002",
-        "CRE-T004"
+        "CRE-T004",
+        "CRE-T037"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -603,7 +616,8 @@
     {
       "fr": "CRE-FR-040",
       "passing_tasks": [
-        "CRE-T003"
+        "CRE-T003",
+        "CRE-T037"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -615,9 +629,7 @@
       ]
     }
   ],
-  "cre_p0_gaps": [
-    "CRE-FR-033"
-  ],
+  "cre_p0_gaps": [],
   "fr_matrix": [
     {
       "fr": "FR-001",
@@ -1346,8 +1358,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T05:55:04.204329Z",
-  "git_head": "246948b70e122473aba9afb9701da2ef0a6732e3",
+  "generated_at": "2026-10-16T08:06:42.030276Z",
+  "git_head": "f8c2e39cb14f0383a245f51529477c5ff1cdc324",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1356,9 +1368,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 34,
+    "004_pass": 38,
     "004_total": 42,
-    "cre_fr_covered": 38,
+    "cre_fr_covered": 40,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2946,55 +2958,63 @@
       "task": "CRE-T034"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T035/latest.json"
+      ],
       "frs": [
         "CRE-FR-031",
         "CRE-FR-032"
       ],
-      "line": "- [ ] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-0",
+      "line": "- [X] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-0",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T035"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T036/latest.json"
+      ],
       "frs": [
         "CRE-FR-020",
         "CRE-FR-031",
         "CRE-FR-032"
       ],
-      "line": "- [ ] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-",
+      "line": "- [X] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T036"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T037/latest.json"
+      ],
       "frs": [
         "CRE-FR-033",
         "CRE-FR-039",
         "CRE-FR-040"
       ],
-      "line": "- [ ] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** T",
+      "line": "- [X] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** T",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T037"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T038/latest.json"
+      ],
       "frs": [
         "CRE-FR-024",
         "CRE-FR-030",
         "CRE-FR-031",
         "CRE-FR-037"
       ],
-      "line": "- [ ] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-0",
+      "line": "- [X] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-0",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T038"
     },
     {
