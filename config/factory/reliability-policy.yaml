@@ -82,13 +82,14 @@ security:
     - config/factory/reliability-policy.yaml
     - config/factory/supervisor-policy.yaml
     - config/factory/trace-policy.yaml
-    - factory/release-manager/policies/**
+    - factory/release-manager/**
+    - factory/checklists/**
     - evidence/**
     - specs/001-factory/**
     - specs/002-self-healing-factory/**
     - specs/003-manufacturing-kpis/**
     - specs/004-continuous-reliability-engineering/contracts/**
-    - tests/reliability/holdout/**
+    - tests/reliability/**
   deny_agent_direct_shell: true
   deny_agent_editing_gate_results: true
   audit_channel_min_level: INFO

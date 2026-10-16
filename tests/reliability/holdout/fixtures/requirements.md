@@ -1,0 +1,1 @@
+- **SWR-014** If a parameter is invalid, then the RCC driver shall return HAL_ERROR without any register write.

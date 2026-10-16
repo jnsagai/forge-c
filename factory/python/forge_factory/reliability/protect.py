@@ -28,7 +28,9 @@ def _match(rel: str, globs: list[str]) -> bool:
     return False
 
 
-def protected_changes(base: str, candidate: str, globs: list[str], repo: Path = REPO_ROOT) -> list[str]:
+def protected_changes(base: str, candidate: str, globs: list[str], repo: Path = REPO_ROOT,
+                      strict: bool = False) -> list[str]:
+    """strict (promotion candidates): no evidence change at all - evidence is produced by runs, never by patches."""
     out = subprocess.run(["git", "diff", "--name-status", "--no-renames", base, candidate], cwd=repo,
                          capture_output=True, text=True, check=True, timeout=120).stdout
     denied = []
@@ -36,7 +38,7 @@ def protected_changes(base: str, candidate: str, globs: list[str], repo: Path = 
         status, path = line.split("\t", 1)
         if not _match(path, globs):
             continue
-        if path.startswith("evidence/") and (status == "A" or (status == "M" and path.endswith("/latest.json"))):
+        if not strict and path.startswith("evidence/") and (status == "A" or (status == "M" and path.endswith("/latest.json"))):
             continue  # append-only evidence records and run pointers are not edits of frozen evidence
         denied.append(f"{status}:{path}")
     return denied

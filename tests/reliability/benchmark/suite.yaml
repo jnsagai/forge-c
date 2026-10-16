@@ -1,0 +1,203 @@
+# FROZEN CRE benchmark suite (protected path tests/reliability/**). Regenerate only with
+# `python -m forge_factory.reliability.benchmark freeze` in a dedicated oracle-change commit.
+schema_version: '1.0'
+suite_id: forgec-cre-golden-v1
+holdout: false
+frozen_at: '2026-10-16T05:32:31.649636Z'
+cases:
+- case:
+    schema_version: '1.0'
+    case_id: BC-001
+    driver_class: RCC_HOST
+    source_sha256: d3701cd973351492de93b4e855ba243e18072d6ce7c47efd52073f3978a536fb
+    requirements_sha256: 99ec41766b8e28eca7c5bbaf80d21a7ad74c69a1523a6a98f03a43eba2263b3c
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: &id001
+    - -std=c11
+    - -O0
+    - -g
+    - -Wall
+    - -Wextra
+    - -DFORGE_HOST_TEST=1
+    - -DFORGE_HOST_BUILD=1
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-001
+    oracle_sha256: 5bca0eb7a7e3118c9c1ecba59c844628e819af6e18a25e5abe9115e85ca90c4c
+    input_refs:
+    - drivers/demo_rcc/src/forge_rcc_demo.c
+    - drivers/demo_rcc/include/forge_rcc_demo.h
+    - tests/c/test_forge_rcc_demo.c
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - rcc
+    - golden
+    - host
+  harness: cases/unit_run.py
+  harness_sha256: bfd8fc450df4d9ecf449191b599819cd586b2aeaae06180ecc5ce14f03f84615
+  layout:
+    drivers/demo_rcc/src/forge_rcc_demo.c: software/src/forge_rcc_demo.c
+    drivers/demo_rcc/include/forge_rcc_demo.h: software/include/forge_rcc_demo.h
+    tests/c/test_forge_rcc_demo.c: software/tests/unit/test_forge_rcc_demo.c
+  input_sha256:
+    drivers/demo_rcc/src/forge_rcc_demo.c: 320a828716c961fec45838e088e12687a9f481d78a32b86cd51fd8a14a457c6d
+    drivers/demo_rcc/include/forge_rcc_demo.h: d1196cd7892c99eff05d4387fa0e048f544ea616e9c1565d0ad262e93112e181
+    tests/c/test_forge_rcc_demo.c: 9b77b4d9019428db15c22b39b3b78daa49ea628fa93238722b0518ee481ac52b
+  oracle:
+    equals:
+      status: PASS
+    min:
+      passed: 1
+- case:
+    schema_version: '1.0'
+    case_id: BC-002
+    driver_class: RCC_HOST
+    source_sha256: 590469e05dcf2af9401b1a7762ec97658fcac4095923ed63aeb44d28516f3ba9
+    requirements_sha256: 99ec41766b8e28eca7c5bbaf80d21a7ad74c69a1523a6a98f03a43eba2263b3c
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-002
+    oracle_sha256: 338e71852fb6383e075f886593db154ecb0115668d56d2c7757754a522c087b8
+    input_refs:
+    - drivers/demo_rcc/include/forge_rcc_demo.h
+    - tests/c/test_forge_rcc_demo.c
+    - tests/reliability/benchmark/fixtures/forge_rcc_demo_syntax_error.c
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - rcc
+    - injected-failure
+    - compiler-error
+  harness: cases/build_error_routed.py
+  harness_sha256: d0a42f45e49ddddaf446d0f9efdc76efeed28b10b2437c787df808c9edb70a46
+  layout:
+    drivers/demo_rcc/include/forge_rcc_demo.h: software/include/forge_rcc_demo.h
+    tests/c/test_forge_rcc_demo.c: software/tests/unit/test_forge_rcc_demo.c
+    tests/reliability/benchmark/fixtures/forge_rcc_demo_syntax_error.c: software/src/forge_rcc_demo.c
+  input_sha256:
+    drivers/demo_rcc/include/forge_rcc_demo.h: d1196cd7892c99eff05d4387fa0e048f544ea616e9c1565d0ad262e93112e181
+    tests/c/test_forge_rcc_demo.c: 9b77b4d9019428db15c22b39b3b78daa49ea628fa93238722b0518ee481ac52b
+    tests/reliability/benchmark/fixtures/forge_rcc_demo_syntax_error.c: 242967ddba6973dfd9848a0dd7ba6ca060510322ac8cc47404b68be80168f1b4
+  oracle:
+    equals:
+      status: FAIL
+      failure_class: PRODUCT_QUALITY
+      route: SWE_REWORK
+    contains:
+      issues:
+      - BUILD_FAIL:test_forge_rcc_demo.c
+      - forge_rcc_demo.c
+- case:
+    schema_version: '1.0'
+    case_id: BC-003
+    driver_class: STATIC_ANALYSIS_FIXTURE
+    source_sha256: e1144f1d1f01c76fbe4be46a90a966967904f052c059af71ab6a3c088953d2c9
+    requirements_sha256: 99ec41766b8e28eca7c5bbaf80d21a7ad74c69a1523a6a98f03a43eba2263b3c
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-003
+    oracle_sha256: bc21ae89b9eba41f83ac167caef0b89a54b54ff9c2117e9c3121035ffec0fb80
+    input_refs:
+    - tests/reliability/benchmark/fixtures/array_oob.c
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - static-analysis
+    - injected-failure
+  harness: cases/static_analysis.py
+  harness_sha256: 0701944a887ba56cb4e37360222c53e1c04d142427b90b4e90bc1533d1c5839b
+  layout:
+    tests/reliability/benchmark/fixtures/array_oob.c: software/src/array_oob.c
+  input_sha256:
+    tests/reliability/benchmark/fixtures/array_oob.c: 88b47c0baa63e6d23a807e52f90c3511ca98616ba11a5849183c775e8e417613
+  oracle:
+    equals:
+      status: FAIL
+    contains:
+      issues:
+      - error:arrayIndexOutOfBounds:array_oob.c:5
+- case:
+    schema_version: '1.0'
+    case_id: BC-004
+    driver_class: CRE_RECOVERY
+    source_sha256: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+    requirements_sha256: ca9a11304d4db7283096c049f5986cacb18506080575752121a7a9d20153e9ca
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-004
+    oracle_sha256: f8116a60adacf0ad3170c6c128a507073e66df719813c4ab3dc840a633ab2a58
+    input_refs:
+    - cases/retry_bounded.py
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - recovery
+    - transient
+  harness: cases/retry_bounded.py
+  harness_sha256: 39a669196096731d98f2f661d7c91b29c46977fe9be7c357edc5281f4be18c5b
+  layout: {}
+  input_sha256: {}
+  oracle:
+    equals:
+      admitted: 2
+      budget: 2
+      final_reason: RETRY_BUDGET_EXHAUSTED
+- case:
+    schema_version: '1.0'
+    case_id: BC-005
+    driver_class: CRE_RECOVERY
+    source_sha256: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+    requirements_sha256: ca9a11304d4db7283096c049f5986cacb18506080575752121a7a9d20153e9ca
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-005
+    oracle_sha256: e2b6ec21a0e8e15e1eeffd16fb5f7c217cb952b0d740136cabe09045a103202b
+    input_refs:
+    - cases/fsm_terminates.py
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - recovery
+    - termination
+  harness: cases/fsm_terminates.py
+  harness_sha256: 46b32fd2923f0c2fc05ad860b1ae32f572faf0796090db76724d8f8da5ddcb13
+  layout: {}
+  input_sha256: {}
+  oracle:
+    equals:
+      final_state: REQUIRES_OFFLINE_ATTENTION
+      within_bound: true

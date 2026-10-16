@@ -62,7 +62,8 @@ MANDATORY_PROTECTED = {
     ".specify/memory/constitution.md", "config/factory/*safety*", "config/factory/*release*",
     "config/factory/reliability-policy.yaml", "evidence/**", "specs/001-factory/**",
     "specs/002-self-healing-factory/**", "specs/003-manufacturing-kpis/**",
-    "specs/004-continuous-reliability-engineering/contracts/**", "tests/reliability/holdout/**",
+    "specs/004-continuous-reliability-engineering/contracts/**", "tests/reliability/**",
+    "factory/checklists/**", "factory/release-manager/**",
 }
 LEVEL_RANK = {"OFF": 0, "ERROR": 1, "WARN": 2, "INFO": 3, "DEBUG": 4, "TRACE": 5}
 # Reversible, pre-authorizable operational actions (ACTIVE only). Persistent code promotion is never in this list.
