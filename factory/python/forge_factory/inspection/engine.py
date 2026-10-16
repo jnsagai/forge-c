@@ -45,7 +45,8 @@ REQUIRED_OUTPUTS = {
     "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
 }
 REQUIRED_TOOL_PASS = {"SWE.4": [("forge-tests-mcp", "run_unit")],
-                      "SWE.5": [("forge-tests-mcp", "run_integration")],
+                      "SWE.5": [("forge-tests-mcp", "run_integration"),
+                                ("forge-sim-mcp", "run_renode")],  # CAPA-009 (r81): failing target tests froze SWE.5
                       "SWE.6": [("forge-tests-mcp", "run_robot")]}
 
 

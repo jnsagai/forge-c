@@ -473,7 +473,7 @@ LL_LL_STEPS = [
     "new_string = that group's functions, a blank line, then the same marker line again (so the next group can be "
     "inserted). Interfaces: " + LL_API + ". Each body is one statement on ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] using "
     "only the generated _MSK defines: Enable/ForceReset '|= MSK', Disable/ReleaseReset '&= ~MSK', IsReady/IsEnabled "
-    "'return ((ll_rcc_regs[...] & MSK) != 0U) ? 1U : 0U;'. Implement exactly the allocated functions, no more. Real "
+    "'return ((ll_rcc_regs[...] & MSK) != 0U) ? 1U : 0U;'. Implement exactly the allocated functions, no more: no helper functions, no HAL_ names, no loops or waiting (swe3_all fails IMPL:LL_NOT_ALLOCATED / HAL_CODE_IN_LL / LL_WAITS). Real "
     "line breaks only.",
     "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (register map + guideline + every allocated "
     "LL_RCC_ function defined) and fix what it reports; it must be PASS.",

@@ -152,6 +152,14 @@ def _check_ll(ws: Path) -> dict:
             findings.append(f"IMPL:LL_NOT_STATIC_INLINE:{f}")
     if not ll_defs:
         findings.append("IMPL:NO_LL_ACCESS_FUNCTIONS")
+    # CAPA-008 (r81): the LL is exactly the allocated register access - no extra helpers (HAL_RCC_PollSet,
+    # LL_RCC_*_WaitReady), no HAL code and no waiting; unrequired functions drew SWE.5/6 tests and defects
+    if wanted:
+        findings += [f"IMPL:LL_NOT_ALLOCATED:{f}" for f in sorted(set(ll_defs) - set(wanted))]
+    code = strip_c(txt)
+    findings += [f"IMPL:HAL_CODE_IN_LL:{n}" for n in sorted(set(re.findall(r"\bHAL_\w+", code)))][:10]
+    findings += [f"IMPL:LL_WAITS:{code.count(chr(10), 0, m.start()) + 1}"
+                 for m in re.finditer(r"\b(?:while|for)\s*\(|\bdo\s*\{", code)][:10]
     findings += _reg_block_defined(ws)
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "ll_defined": len([f for f in wanted if f in ll_defs]),

@@ -280,3 +280,30 @@ def test_scope_exclusions_are_reported_and_not_failed(layer):
     for ph in ("SWE.4", "SWE.5", "SWE.6"):
         assert "N/A by work-order scope" in prompts.inspector_prompt(ph)
     assert "N/A by work-order scope" not in prompts.inspector_prompt("SWE.1")
+
+
+def test_ll_is_exactly_the_allocated_register_access(tmp_path):
+    """CAPA-008 (r81): unallocated helpers, HAL code and waiting loops in the LL header are rejected."""
+    ws = ws_with(tmp_path, "LL")
+    (ws / "workproducts/SWE.2").mkdir(parents=True)
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(ARCH)
+    (ws / "software/ll").mkdir(parents=True)
+    head = "#ifndef STM32N6XX_LL_RCC_H\n#define STM32N6XX_LL_RCC_H\n#include <stdint.h>\n" \
+           "extern volatile uint32_t ll_rcc_regs[1024U];\n"
+    ok = ("static inline void LL_RCC_HSI_Enable(void)\n{\n    ll_rcc_regs[0U] |= 1U;\n}\n"
+          "static inline uint32_t LL_RCC_HSI_IsReady(void)\n{\n    return ((ll_rcc_regs[1U] & 2U) != 0U) ? 1U : 0U;\n}\n")
+    extra = ("static inline uint32_t HAL_RCC_PollSet(uint32_t t)\n{\n    uint32_t n = 0U;\n"
+             "    while ((ll_rcc_regs[1U] == 0U) && (n < t)) { n++; }\n    return n;\n}\n"
+             "static inline uint32_t LL_RCC_HSI_WaitReady(uint32_t t)\n{\n    return HAL_RCC_PollSet(t);\n}\n")
+    end = "#endif /* STM32N6XX_LL_RCC_H */\n"
+    (ws / LY.LL_HEADER).write_text(head + ok + end)
+    assert check_implementation(ws)["verdict"] == "PASS"
+    (ws / LY.LL_HEADER).write_text(head + ok + extra + end)
+    f = check_implementation(ws)["major_findings"]
+    assert "IMPL:LL_NOT_ALLOCATED:LL_RCC_HSI_WaitReady" in f and "IMPL:LL_NOT_ALLOCATED:HAL_RCC_PollSet" in f
+    assert "IMPL:HAL_CODE_IN_LL:HAL_RCC_PollSet" in f and any(x.startswith("IMPL:LL_WAITS:") for x in f)
+
+
+def test_swe5_requires_passing_target_tests():
+    """CAPA-009 (r81): SWE.5 froze while run_renode failed; the presence gate now requires it to PASS."""
+    assert ("forge-sim-mcp", "run_renode") in engine.REQUIRED_TOOL_PASS["SWE.5"]
