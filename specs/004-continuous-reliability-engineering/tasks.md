@@ -76,3 +76,18 @@
 - `Spec Kit converge` finding "no missing tasks" is a **spec-implementation consistency** check, not proof of production reliability. Record actual test evidence and meaningful statistical uncertainty separately.
 - Every model-written source patch is checked with independent tests and a different inspection role/session, according to 002. Gate outputs are produced by deterministic scripts, not chat text.
 - Report progress using compact structured status/issue codes, while keeping full evidence off-context in files. No interactive human pauses during normal dark factory workflow; offline approval remains offline.
+
+## Phase 8: Convergence
+
+- [ ] **CRE-T043 [P0]** Harden every candidate worktree (OS read-only protected paths) before the promotion runner executes candidate code per CRE-FR-023 / plan §9 (partial) — HIGH
+- [ ] **CRE-T044 [P1]** Apply CRE retry admission and deterministic jittered backoff on the 002 repair-dispatch path in PILOT/ACTIVE per CRE-FR-005 (partial) — MEDIUM
+- [ ] **CRE-T045 [P1]** Journal production side effects (archive write, infra CAS switch, work-order launch) with replay classes per CRE-FR-007 (partial) — MEDIUM
+- [ ] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM
+- [ ] **CRE-T047 [P1]** Add period/model/toolchain/candidate/fault-category filters to the Reliability view per CRE-FR-032 / US-C07 (partial) — MEDIUM
+- [ ] **CRE-T048 [P1]** Run an owner-authorized live Fabro crash -> recovery drill on the real server per CRE-FR-034 / AT-036 (partial; BLOCKED on owner authorization of a reversible restart action) — MEDIUM
+- [ ] **CRE-T049 [P1]** Separate OS users/credentials for production runs, repair worktrees and the verification runner per plan §12 / CRE-FR-023 (missing; BLOCKED on privileged host setup) — MEDIUM
+- [ ] **CRE-T050 [P2]** Provide a command that freezes a per-class SPC calibration window per CRE-FR-020 (partial) — LOW
+- [ ] **CRE-T051 [P2]** Record model sampling parameters (temperature, seed when supported) per work order per CRE-FR-014 (partial) — LOW
+- [ ] **CRE-T052 [P2]** Emit cre.failure_classified and cre.corrective_action_applied lifecycle events per CRE-FR-031 / plan §4 (partial) — LOW
+- [ ] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW
+- [ ] **CRE-T054 [P2]** Review the 002 supervisor changes made during CRE (held fingerprints for unbroken faults, checkpoint quarantine) against the 002 spec per CRE-FR-002 (unrequested) — LOW

@@ -127,7 +127,7 @@ def test_tampered_v03_checklist_detected(tmp_path, monkeypatch):
 
     from forge_factory.common import REPO_ROOT
     for rel in ["factory/checklists", "factory/release-manager/checklists"]:
-        shutil.copytree(REPO_ROOT / rel, tmp_path / rel)
+        shutil.copytree(REPO_ROOT / rel, tmp_path / rel, copy_function=shutil.copyfile)  # the copy is ours: writable
     p = tmp_path / "factory/release-manager/checklists/SWE.3.yaml"
     p.write_text(p.read_text().replace("maximum_rework_cycles: 3", "maximum_rework_cycles: 99"))
     with pytest.raises(InspectionError, match="CHECKLIST_BASE_TAMPERED"):

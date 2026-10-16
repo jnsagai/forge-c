@@ -105,6 +105,9 @@ def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, 
         else:
             gates.append(_gate("protected_files", "PASS", [f"git-diff:{base[:12]}..{cand[:12]}"]))
         cand_wt = pool.get(cand)
+        globs = policy.get("security.protected_path_globs")
+        hardened = len(pool.harden(cand, globs)) + len(pool.harden(base, globs))  # CRE-T043, before any code runs
+        reasons.append(f"sandbox: {hardened} protected paths read-only (OS) in the candidate/baseline worktrees")
         if not stopped:
             pol_issues = issues_of(load_yaml(cand_wt / "config/factory/reliability-policy.yaml"),
                                    load_yaml(cand_wt / "config/factory/supervisor-policy.yaml")) \

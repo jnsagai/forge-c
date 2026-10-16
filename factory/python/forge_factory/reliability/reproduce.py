@@ -62,8 +62,19 @@ class WorktreePool:
             self.trees[full] = wt
         return self.trees[full]
 
+    def harden(self, revision: str, globs: list[str]) -> list[str]:
+        """CRE-T043: protected paths of this worktree become read-only (OS) before candidate code runs in it."""
+        from .protect import harden_worktree
+
+        return harden_worktree(self.get(revision), globs)
+
     def close(self) -> None:
         for wt in self.trees.values():
+            for root, dirs, files in os.walk(wt):  # undo hardening so the worktree can be removed
+                for n in dirs + files:
+                    p = Path(root) / n
+                    if not p.is_symlink():
+                        p.chmod(p.stat().st_mode | 0o200)
             subprocess.run(["git", "worktree", "remove", "--force", str(wt)], cwd=self.repo, capture_output=True)
         subprocess.run(["git", "worktree", "prune"], cwd=self.repo, capture_output=True)
         shutil.rmtree(self.root, ignore_errors=True)
