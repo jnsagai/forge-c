@@ -396,3 +396,16 @@ reason) or ESCALATED. Written only by the deterministic engine via MCP:
   owner-deferred documents; archive sha256 a467bad9…). Robot 18/18 requirements on the Renode model; DEF-001 and
   DEF-002 VERIFIED by gate re-verification; DEF-003 TEST declared by SWE.5 itself within one minute of the r74
   tool-time notice (`CHECK_EXPR` named IT-026 → corrected → `HOW_TO_DECLARE` → declared → PASS).
+
+## Fifteenth live run (r76, full run from SWE.1): blocked at SWE.4 on over-specified verification
+- SWE.1 applied the SWR-014 decision as its own requirement (SWR-010: "If the timeout argument is 0 or greater than
+  HAL_RCC_TIMEOUT_VALUE, then the RCC driver shall return HAL_ERROR without performing any register write").
+  SWE.1 and SWE.2 passed in two cycles (fair inspector findings: verification criteria; concurrency analysis);
+  **SWE.3 passed first time**.
+- **SWE.4 BLOCKED:** SWR-006's verification line demanded "exactly HAL_RCC_TIMEOUT_VALUE = 1000 polling reads";
+  the author tuned exact SR-read counts in UT-040/042 by trial (+0, +1, +2, a 12345 probe with a printf), declared
+  each change, and never wrote the report.
+- **Remedies:** SWE.1 verification criteria use the requirement's own bound, never exact register-read counts;
+  the shared test-author rule says expected values come from the requirement and are never tuned to the code, and
+  a bound is tested as a bound. Tool output: host link failures name the undefined symbol; the CHECK_EXPR setter
+  lookup ignores string literals.
