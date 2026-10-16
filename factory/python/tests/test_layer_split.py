@@ -270,3 +270,13 @@ def test_architecture_rejects_placeholder_apis(tmp_path):
     assert "SWE2:PLACEHOLDER_API:LL_RCC_<Peripheral>_Enable" in r["major_findings"]
     (ws / "workproducts/SWE.2/software_architecture.md").write_text(ARCH + "| SWR-003 | LL_RCC_GPDMA1_Enable |\n")
     assert not [f for f in check_architecture(ws)["major_findings"] if "PLACEHOLDER" in f]
+
+
+@pytest.mark.parametrize("layer", ["LL", "HAL", "LL+HAL"])
+def test_scope_exclusions_are_reported_and_not_failed(layer):
+    """CAPA-007 (r80): interrupts are out of the work-order scope; SWE5-03 must not fail for not testing them."""
+    build("WO-S", layer=layer, chunk_lines=150)
+    assert "'## Scope exclusions'" in prompts.author_prompt("SWE.5")
+    for ph in ("SWE.4", "SWE.5", "SWE.6"):
+        assert "N/A by work-order scope" in prompts.inspector_prompt(ph)
+    assert "N/A by work-order scope" not in prompts.inspector_prompt("SWE.1")

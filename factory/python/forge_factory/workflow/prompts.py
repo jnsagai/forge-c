@@ -50,6 +50,12 @@ INSPECT_DEFECT = ("If a finding is caused upstream (driver code, architecture or
 
 # r77: the manifest's target.hsi_contract / target.safety_allocation record the owner's scope decision while
 # upstream.status reports the unfilled approval template as NOT_PROVIDED; inspectors judged SWE1-01 both ways
+# CAPA-007 (r80): SWE5-03 failed for "no interrupt interaction tested" although the work order excludes interrupts
+WORK_ORDER_SCOPE_NOTE = ("Read .forge-run/manifest.json 'scope' once. A checklist item about behaviour that the scope "
+                         "lists as 'Out of scope' (e.g. interrupts, PLL, low-power modes) is not applicable: judge it "
+                         "PASS with 'N/A by work-order scope' when the report states the exclusion (FAIL only if the "
+                         "report omits it or claims such behaviour was tested); never fail an item for not testing "
+                         "excluded behaviour.")
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
                     "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE), judge SWE1-01 against that "
                     "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
@@ -161,7 +167,9 @@ AUTHOR_STEPS = {
         "interactions tested', '## Robustness, fault propagation, timing/resource budgets' (timeout paths, measured sizes), "
         "'## Results' (host results and the Renode target results exactly as reported), '## Simulation vs target "
         "limitations' (simulated Cortex-M55 with a behavioural RCC model: no clock-tree timing, no security filtering, no "
-        "silicon verification) and '## Open defects' (or 'none').",
+        "silicon verification), '## Scope exclusions' (each interaction the .forge-run/manifest.json scope lists as "
+        "'Out of scope', e.g. interrupts or low-power modes, marked 'not applicable: excluded by work-order scope', or "
+        "'none') and '## Open defects' (or 'none').",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.5 baseline."],
     "SWE.6": [
         "Call mcp__forge_tests_mcp__run_robot FIRST (the scenario files and software/tests/software/"
@@ -593,6 +601,7 @@ def inspector_prompt(phase: str) -> str:
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
+             *([WORK_ORDER_SCOPE_NOTE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",
