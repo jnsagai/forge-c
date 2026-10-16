@@ -57,3 +57,36 @@ reproducers:
     operations: [SWE.4/route, SWE.5/route]
     root_cause: "Host test tools reported only the failed check id, so authors spent their cycles reading files to learn what failed."
     remedy: "run_unit and run_integration report the failed CHECK expression and the call that set the checked variable."
+  - id: RPR-006
+    script: rpr006_ll_requires_hal_outputs.py
+    sha256: ffd9eb1fd3408e2ff328ec93ac479ebb2c15367a664b4a47cf51ec9764a24bd6
+    symptom_signature: "SWE.3 presence gate requires HAL files in an LL work order"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["MISSING_REQUIRED_OUTPUT:hal/*.c", "MISSING_REQUIRED_OUTPUT:hal/*.h"]
+    operations: [SWE.3/author]
+    root_cause: "ADR-0009 made the SWE.3 chain layer-aware but the presence gate's required outputs still listed software/hal/* for every work order."
+    remedy: "SWE.3 required outputs exclude software/hal/* when the manifest layer is LL."
+  - id: RPR-007
+    script: rpr007_placeholder_api_allocated.py
+    sha256: 636596e1277da1498b8ff78d516a0e05682898a43e3924d4b25ee71fc6205574
+    symptom_signature: "architecture check accepts a placeholder API in the allocation table"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["SWE2:PLACEHOLDER_API"]
+    operations: [SWE.2/author, SWE.2/inspect]
+    root_cause: "The architecture check verified that every SWR is allocated but not that the allocated API names are concrete, so LL_RCC_<Peripheral>_Enable passed and SWE.3 could omit the peripheral functions."
+    remedy: "SWE2:PLACEHOLDER_API rejects generic API names; the LL procedures ask for one concrete function per oscillator and peripheral of the provided RM sections."
+  - id: RPR-008
+    script: rpr008_unverifiable_ll_requirement.py
+    sha256: 9116632b82a7207c8d790c109a904450303e5b66ae27c44ffc8119e17efc1b2f
+    symptom_signature: "LL SWE.1 procedure demands an access-count requirement"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["INSPECTION_FAIL:SWE4-02", "INSPECTION_FAIL:SWE5-04", "REQUIRED_TOOL_NOT_PASS:run_integration", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/inspect, SWE.5/inspect, SWE.5/author, SWE.5/route]
+    root_cause: "The LL SWE.1 procedure asked for a requirement on the number of register reads/writes, which a host RAM register array cannot observe; SWE.4/SWE.5 spent their rework budget on access-counting stubs (r80 BLOCKED at SWE.5)."
+    remedy: "The LL SWE.1 procedure no longer asks for access counts and requires every requirement to be verifiable on the register array or by the size/stack tools."
