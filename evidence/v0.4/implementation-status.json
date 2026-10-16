@@ -85,9 +85,14 @@
     },
     {
       "fr": "CRE-FR-005",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T011",
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T011",
         "CRE-T012",
@@ -99,7 +104,8 @@
     {
       "fr": "CRE-FR-006",
       "passing_tasks": [
-        "CRE-T007"
+        "CRE-T007",
+        "CRE-T015"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -111,9 +117,12 @@
     },
     {
       "fr": "CRE-FR-007",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T011",
+        "CRE-T014"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T011",
         "CRE-T014",
@@ -123,7 +132,10 @@
     {
       "fr": "CRE-FR-008",
       "passing_tasks": [
-        "CRE-T006"
+        "CRE-T006",
+        "CRE-T013",
+        "CRE-T014",
+        "CRE-T016"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -440,9 +452,11 @@
     },
     {
       "fr": "CRE-FR-034",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T016"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T016",
         "CRE-T039",
@@ -452,9 +466,13 @@
     },
     {
       "fr": "CRE-FR-035",
-      "passing_tasks": [],
+      "passing_tasks": [
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016"
+      ],
       "priority": "P0",
-      "status": "BLOCKED",
+      "status": "COVERED",
       "tasks": [
         "CRE-T012",
         "CRE-T015",
@@ -536,8 +554,6 @@
     }
   ],
   "cre_p0_gaps": [
-    "CRE-FR-005",
-    "CRE-FR-007",
     "CRE-FR-012",
     "CRE-FR-013",
     "CRE-FR-014",
@@ -552,9 +568,7 @@
     "CRE-FR-026",
     "CRE-FR-029",
     "CRE-FR-030",
-    "CRE-FR-033",
-    "CRE-FR-034",
-    "CRE-FR-035"
+    "CRE-FR-033"
   ],
   "fr_matrix": [
     {
@@ -1284,8 +1298,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T04:58:36.999595Z",
-  "git_head": "45ad78cf06df083df1f61e7dd409f768dae55667",
+  "generated_at": "2026-10-16T05:15:29.861111Z",
+  "git_head": "ceeda1a3a042aeed9ccd2893e79a16729c54f179",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1294,9 +1308,9 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 10,
+    "004_pass": 16,
     "004_total": 42,
-    "cre_fr_covered": 17,
+    "cre_fr_covered": 21,
     "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
@@ -2537,77 +2551,89 @@
       "task": "CRE-T010"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T011/latest.json"
+      ],
       "frs": [
         "CRE-FR-005",
         "CRE-FR-007"
       ],
-      "line": "- [ ] **CRE-T011 [P0]** Implement class-specific retry admission with request/time/token budgets, jittered backoff and non-replayable operation denylist. **[CRE-FR-005, CRE-FR-007]** Test: attempt cou",
+      "line": "- [X] **CRE-T011 [P0]** Implement class-specific retry admission with request/time/token budgets, jittered backoff and non-replayable operation denylist. **[CRE-FR-005, CRE-FR-007]** Test: attempt cou",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T011"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T012/latest.json"
+      ],
       "frs": [
         "CRE-FR-005",
         "CRE-FR-035"
       ],
-      "line": "- [ ] **CRE-T012 [P0]** Add circuit breaker for unhealthy dependencies and resource isolation; propagate OPEN/HALF_OPEN/CLOSED independently of agent output. **[CRE-FR-005, CRE-FR-035]** Test: failure",
+      "line": "- [X] **CRE-T012 [P0]** Add circuit breaker for unhealthy dependencies and resource isolation; propagate OPEN/HALF_OPEN/CLOSED independently of agent output. **[CRE-FR-005, CRE-FR-035]** Test: failure",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T012"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T013/latest.json"
+      ],
       "frs": [
         "CRE-FR-008"
       ],
-      "line": "- [ ] **CRE-T013 [P0]** Persist leases/dispatch receipts and robust expiration; only one repair per incident scope; Fabro-down repair remains launchable via existing 002 independent worker. **[CRE-FR-",
+      "line": "- [X] **CRE-T013 [P0]** Persist leases/dispatch receipts and robust expiration; only one repair per incident scope; Fabro-down repair remains launchable via existing 002 independent worker. **[CRE-FR-",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T013"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T014/latest.json"
+      ],
       "frs": [
         "CRE-FR-007",
         "CRE-FR-008"
       ],
-      "line": "- [ ] **CRE-T014 [P0]** Enforce safe restart/checkpoint recovery, monotonic/restart-safe budget accounting and `NON_REPLAYABLE` safeguards for approval, flashing and released evidence. **[CRE-FR-007, ",
+      "line": "- [X] **CRE-T014 [P0]** Enforce safe restart/checkpoint recovery, monotonic/restart-safe budget accounting and `NON_REPLAYABLE` safeguards for approval, flashing and released evidence. **[CRE-FR-007, ",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T014"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T015/latest.json"
+      ],
       "frs": [
         "CRE-FR-005",
         "CRE-FR-006",
         "CRE-FR-035"
       ],
-      "line": "- [ ] **CRE-T015 [P0]** Integrate finite-state guards with existing 002 supervisor: no LLM calls on healthy polling; terminal RECOVERED or REQUIRES_OFFLINE_ATTENTION/BLOCKED state on exhaustion. **[CR",
+      "line": "- [X] **CRE-T015 [P0]** Integrate finite-state guards with existing 002 supervisor: no LLM calls on healthy polling; terminal RECOVERED or REQUIRES_OFFLINE_ATTENTION/BLOCKED state on exhaustion. **[CR",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T015"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T016/latest.json"
+      ],
       "frs": [
         "CRE-FR-005",
         "CRE-FR-008",
         "CRE-FR-034",
         "CRE-FR-035"
       ],
-      "line": "- [ ] **CRE-T016 [P0]** Add table-driven/property-based tests for invariant closure, finite transitions, retry amplification, partial store outage and supervisor watchdog restart. **[CRE-FR-005, CRE-F",
+      "line": "- [X] **CRE-T016 [P0]** Add table-driven/property-based tests for invariant closure, finite transitions, retry amplification, partial store outage and supervisor watchdog restart. **[CRE-FR-005, CRE-F",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T016"
     },
     {

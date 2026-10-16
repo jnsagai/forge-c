@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from ..common import canonical_json
 
-CLASSIFIER_VERSION = "cre-rules-1.1"  # bump on any rule change; superseded observations are retracted, not deleted
+CLASSIFIER_VERSION = "cre-rules-1.2"  # bump on any rule change; superseded observations are retracted, not deleted
 CLASSES = ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY", "POLICY_SECURITY", "UNKNOWN")
 CATEGORIES = ("INFRASTRUCTURE", "WORKFLOW_ORCHESTRATION", "MCP_TOOL", "RESOURCE_BUDGET", "TRANSIENT_ENVIRONMENT",
               "PRODUCT_ENGINEERING", "REQUIREMENTS_SPEC", "AGENT_OUTPUT", "POLICY_SECURITY", "UNKNOWN")
@@ -40,7 +40,7 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     # orchestration / infrastructure
     (r"run_not_completed|deterministic failure cycle|stdin_source .* not found|max_visits|WORKFLOW_ERROR|"
      r"stage\.failed", "WORKFLOW_ORCHESTRATION", "RUN_NOT_COMPLETED"),
-    (r"READINESS_FAILURE|STAGE_STALL|QUEUE_STALL|DASHBOARD_DOWN", "INFRASTRUCTURE", "{supervisor}"),
+    (r"READINESS_FAILURE|STAGE_STALL|QUEUE_STALL|DASHBOARD_DOWN|CONFIG_INVALID", "INFRASTRUCTURE", "{supervisor}"),
     (r"STORE_NOT_WRITABLE|DB_NOT_WRITABLE|DISK_PRESSURE|RAM_PRESSURE|No space left", "INFRASTRUCTURE", "{supervisor}"),
     (r"MCP_HANDSHAKE_FAILURE|TOOL_MISSING|TOOL_UNAVAILABLE|MCP_UNAVAILABLE", "MCP_TOOL", "TOOL_UNAVAILABLE"),
     # agent output contract / behaviour (PRODUCT_QUALITY -> SWE rework)

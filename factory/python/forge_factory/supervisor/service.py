@@ -81,6 +81,7 @@ class Supervisor:
         self.router = Router(policy, self.store, self.state)
         self.dispatch_enabled, self.dry = dispatch_enabled, dry_run_dispatch
         self.finalizer_enabled = finalizer_enabled
+        self.cre = None  # CRE hook (feature 004), created on first poll
         ck = self.home / "checkpoint.json"
         self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
 
@@ -88,6 +89,7 @@ class Supervisor:
         t0 = time.monotonic()
         samples = self.probes.all(self.store.path)
         eligible = self.router.observe(samples)
+        eligible = self.cre_poll(samples, eligible)
         dispatched = []
         fabro_ok = any(s.check == "fabro_readiness" and s.status == "HEALTHY" for s in samples)
         if self.dispatch_enabled:
@@ -126,6 +128,18 @@ class Supervisor:
         emit("metrics", "INFO", f"supervisor poll_ms={health['poll_ms']} model_calls={health['model_calls']}")
         sd_notify("WATCHDOG=1")
         return health
+
+    def cre_poll(self, samples: list, eligible: list[dict]) -> list[dict]:
+        """Feature 004 CRE hook (deterministic, zero model calls). Contained: a CRE failure never stops supervision."""
+        try:
+            if self.cre is None:
+                from ..reliability.supervisor_hook import CREHook
+
+                self.cre = CREHook(self.store.path)
+            return self.cre.on_poll(samples, self.store, eligible)
+        except Exception as exc:  # noqa: BLE001 - containment boundary by design
+            emit("supervisor", "WARN", f"cre hook degraded: {type(exc).__name__}: {str(exc)[:100]}")
+            return eligible
 
     def export_dashboard_queues(self, fabro_ok: bool) -> None:
         """Queue records for the external fabro_dashboard monitor (file export only; never affects supervision)."""

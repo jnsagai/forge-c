@@ -32,3 +32,11 @@ fingerprints (AT-005).
 A CAPA links 1..n fingerprints (and their incidents/work orders). Opening policy (deterministic): a fingerprint
 observed in ≥ 2 distinct work orders, or in ≥ 1 BLOCKED outcome, is *significant*; CAPA records are opened for
 significant fingerprints in OBSERVE_ONLY as records only (no action).
+
+## Classifier versioning (live finding, 2026-10-16)
+Observations are append-only, so a rule change never edits a record: the classification (`failure_class`,
+`error_code`) is part of an observation's identity; re-import under a new `CLASSIFIER_VERSION` inserts the new
+classification and retracts the superseded record in `cre_observation_retractions` (reason + version). The first live
+import showed why: `run_not_completed` after a BLOCKED phase had been classified as an orchestration failure (53
+records), and a supervisor `CONFIG_INVALID` incident matched no rule (UNKNOWN). Both were corrected by rule updates
+(cre-rules-1.1, 1.2); the original records stay readable with `include_retracted`.

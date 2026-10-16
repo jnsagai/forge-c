@@ -81,7 +81,8 @@ def _obs(ctx: dict, *, raw: str, component: str, phase: str | None, step: str, t
     c = classify(raw)
     operation = f"{phase or '-'}/{step}"
     fp = fingerprint(c.failure_class, component, c.error_code, operation, FACTORY_MAJOR, GATE_SCHEMA)
-    key = f"{ctx['attempt_id']}|{source_ref}|{sha256_bytes(str(raw).encode())}"
+    # the classification is part of the identity: a rule change yields a new record and retracts the old one
+    key = f"{ctx['attempt_id']}|{source_ref}|{sha256_bytes(str(raw).encode())}|{c.failure_class}|{c.error_code}"
     return {"obs_id": E.event_id("cre.failure_observed", key), "obs_key": key, "fingerprint": fp,
             "failure_class": c.failure_class,
             "category": c.category, "component": component, "error_code": c.error_code, "operation": operation,

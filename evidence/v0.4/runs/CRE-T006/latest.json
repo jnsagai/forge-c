@@ -10,19 +10,19 @@
     "-k",
     "duplicate_reordered"
   ],
-  "duration_s": 2.084,
+  "duration_s": 1.47,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "45ad78cf06df083df1f61e7dd409f768dae55667",
+  "git_head": "ceeda1a3a042aeed9ccd2893e79a16729c54f179",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/CRE-T006/20261016T045456.log",
-  "log_sha256": "e2122bf0568db115360f1ec037404f821ffe07a30b03c0aa0df9ccc29ff6b5b3",
+  "log": "evidence/v0.4/runs/CRE-T006/20261016T051150.log",
+  "log_sha256": "cea861b2b84582bf60949f94cbcf738c1cbd61c46ffe240dcb5f18d270458629",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "CRE-T006",
-  "ts_utc": "2026-10-16T04:54:56.716677Z"
+  "ts_utc": "2026-10-16T05:11:50.097842Z"
 }

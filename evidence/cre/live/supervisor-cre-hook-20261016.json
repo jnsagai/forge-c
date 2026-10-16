@@ -1,0 +1,20 @@
+{
+  "check": "CRE-T015 live supervisor with CRE hook (systemd forge-supervisor restarted 2026-10-16T05:07Z)",
+  "cre_breakers": 0,
+  "cre_hook_degraded_events": 0,
+  "cre_recovery_scopes": [
+    [
+      "incident:inc-9379300402a3",
+      "RECOVERED"
+    ]
+  ],
+  "cre_schema_version": 5,
+  "git_head": "ceeda1a3a042aeed9ccd2893e79a16729c54f179",
+  "last_poll": "2026-10-16T05:10:50.299445Z",
+  "model_calls": 0,
+  "model_tokens": 0,
+  "polls_before_restart": 1788,
+  "polls_now": 1792,
+  "schema": "forge-c/cre-live-check/1.0",
+  "status": "HEALTHY"
+}
