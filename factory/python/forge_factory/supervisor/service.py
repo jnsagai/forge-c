@@ -236,7 +236,10 @@ def main(argv: list[str] | None = None) -> int:
 
     probes = Probes(pol, os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32290"), load_token(),
                     os.environ.get("FORGE_DASHBOARD_URL"), sorted(SERVER_MODULES))
-    Supervisor(pol, probes, dispatch_enabled=not a.no_dispatch).run_forever(a.max_polls)
+    # FORGE_SUPERVISOR_NO_DISPATCH=1 (systemctl --user set-environment) suspends repair dispatch reversibly, e.g. for
+    # an owner-authorized live drill where the model-based repair agent must not run; detection/triage continue
+    no_dispatch = a.no_dispatch or os.environ.get("FORGE_SUPERVISOR_NO_DISPATCH") == "1"
+    Supervisor(pol, probes, dispatch_enabled=not no_dispatch).run_forever(a.max_polls)
     return 0
 
 

@@ -65,9 +65,8 @@ def assess() -> dict:
                                            "no live REJECTED + ELIGIBLE decisions on real candidates"),
         "pilot_authorization": (bool(pol.data.get("authorization")), "no owner authorization block for PILOT in the "
                                                                     "reliability policy"),
-        "live_fabro_crash_recovery_drill": (False, "a real Fabro crash -> recovery drill on the live server was not "
-                                                   "executed; restarting Fabro is outside the authorized 002 repair "
-                                                   "scope (capability matrix C02/C05)"),
+        "live_fabro_crash_recovery_drill": (_drill_passed(), "no PASS record of an owner-authorized live Fabro "
+                                                              "crash -> recovery drill (evidence/cre/live)"),
     })
     active = level({
         "pilot_demonstrated": (pilot["status"] == "DEMONSTRATED", "PILOT_ELIGIBLE not demonstrated"),
@@ -95,10 +94,24 @@ def assess() -> dict:
                 "bounded recovery and safe termination in 18 injected fault scenarios (isolated real components)",
                 "independent promotion gate rejects unsafe, concealing and protected-path candidates",
                 "root causes VERIFIED only by reproducer contrast on real commits (5 historical fixes)",
-                "healthy supervision makes zero model calls (live + 100-poll tests)"],
+                "healthy supervision makes zero model calls (live + 100-poll tests)",
+                "one owner-authorized live Fabro crash detected and recovered by the model-free supervisor "
+                "(evidence/cre/live/fabro-crash-drill-*.json)",
+                "verification runner and repair-candidate code run as separate OS identities (rootless Podman "
+                "sub-UIDs) without network or owner credentials"],
             "not_claimed": ["universal or 100% reliability", "PILOT/ACTIVE operation", "ISO 26262 / ASIL B approval",
                             "Automotive SPICE capability level", "production release"],
             "safety_signoff": None, "scope": SCOPE}
+
+
+def _drill_passed() -> bool:
+    for p in sorted((REPO_ROOT / "evidence/cre/live").glob("fabro-crash-drill-*.json")):
+        try:
+            if json.loads(p.read_text()).get("result") == "PASS":
+                return True
+        except ValueError:
+            continue
+    return False
 
 
 def _count(xs: list) -> dict:

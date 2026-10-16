@@ -18,13 +18,13 @@ import json
 import shutil
 import subprocess
 import sys
-import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
 from ..common import REPO_ROOT, canonical_json, load_yaml, sha256_bytes, state_dir, utc_now
 from . import benchmark as BM
 from . import events as E
+from . import isolation
 from . import reproduce as RR
 from .policy import CRE_CONTRACTS_DIR, Policy, issues_of
 from .protect import deny, protected_changes
@@ -55,7 +55,7 @@ def _quality(base_wt: Path, cand_wt: Path) -> tuple[str, str | None, list[str]]:
 
     refs = []
     for label, tests_from in (("candidate-tests", cand_wt), ("baseline-tests", base_wt)):
-        scratch = Path(tempfile.mkdtemp(prefix=f"cre-q-{label}-"))
+        scratch = isolation.new_dir(f"cre-q-{label}")
         try:
             files = [t for t in QUALITY_TESTS if (tests_from / "factory/python" / t).is_file()]
             # the whole tests dir of that revision (tests import sibling helpers); only the gate subset is run
@@ -63,16 +63,22 @@ def _quality(base_wt: Path, cand_wt: Path) -> tuple[str, str | None, list[str]]:
                             ignore=shutil.ignore_patterns("__pycache__"))
             env = RR._env(cand_wt, scratch)  # the CANDIDATE's code is under test in both runs
             env["PATH"] = os.environ.get("PATH", "")
-            p = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-x", *files],
-                               cwd=scratch, env=env, capture_output=True, timeout=1800)
+            isolation.hand_over("repair", scratch)  # CRE-T049: candidate code runs as the repair OS identity
+            p = isolation.execute("repair", [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-x",
+                                             *files], cwd=scratch, env=env, writable=[scratch], timeout=1800)
             refs.append(f"{label}:exit{p.returncode}:sha256:{sha256_bytes(p.stdout)[:16]}")
             if p.returncode != 0:
                 tail = p.stdout.decode(errors="replace").strip().splitlines()[-1:] or [""]
                 return "FAIL", f"{label.upper()}_FAILED:{tail[0][:120]}", refs
         finally:
-            shutil.rmtree(scratch, ignore_errors=True)
-    d = subprocess.run([sys.executable, "tests/spec/validate_design.py"], cwd=cand_wt, capture_output=True,
-                       timeout=300, env=RR._env(cand_wt, Path(tempfile.gettempdir())))
+            isolation.discard(scratch)
+    scratch = isolation.new_dir("cre-q-design")
+    isolation.hand_over("verifier", scratch)
+    try:
+        d = isolation.execute("verifier", [sys.executable, "tests/spec/validate_design.py"], cwd=cand_wt,
+                              env=RR._env(cand_wt, scratch), writable=[scratch], timeout=300)
+    finally:
+        isolation.discard(scratch)
     refs.append(f"design:exit{d.returncode}")
     return ("PASS", None, refs) if d.returncode == 0 else ("FAIL", "DESIGN_CHECK_FAILED", refs)
 

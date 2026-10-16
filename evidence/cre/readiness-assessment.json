@@ -1,7 +1,7 @@
 {
-  "assessed_at": "2026-10-16T08:48:48.374748Z",
+  "assessed_at": "2026-10-16T09:08:10.939253Z",
   "configured_mode": "OBSERVE_ONLY",
-  "git_head": "3a14fce5a49dbdddcbb2d3f3c4ae4a9f72f08d9e",
+  "git_head": "b6d03edbc1d375761f3d88053b3b7ff1db9a0f9a",
   "levels": {
     "ACTIVE_ELIGIBLE": {
       "met": [],
@@ -27,11 +27,11 @@
         "all_other_p0_tasks_pass",
         "fault_campaign_all_pass",
         "real_e2e_terminal_evidence",
-        "candidate_evaluations_recorded"
+        "candidate_evaluations_recorded",
+        "live_fabro_crash_recovery_drill"
       ],
       "missing": [
-        "pilot_authorization: no owner authorization block for PILOT in the reliability policy",
-        "live_fabro_crash_recovery_drill: a real Fabro crash -> recovery drill on the live server was not executed; restarting Fabro is outside the authorized 002 repair scope (capability matrix C02/C05)"
+        "pilot_authorization: no owner authorization block for PILOT in the reliability policy"
       ],
       "status": "NOT_DEMONSTRATED"
     }
@@ -58,10 +58,12 @@
     "bounded recovery and safe termination in 18 injected fault scenarios (isolated real components)",
     "independent promotion gate rejects unsafe, concealing and protected-path candidates",
     "root causes VERIFIED only by reproducer contrast on real commits (5 historical fixes)",
-    "healthy supervision makes zero model calls (live + 100-poll tests)"
+    "healthy supervision makes zero model calls (live + 100-poll tests)",
+    "one owner-authorized live Fabro crash detected and recovered by the model-free supervisor (evidence/cre/live/fabro-crash-drill-*.json)",
+    "verification runner and repair-candidate code run as separate OS identities (rootless Podman sub-UIDs) without network or owner credentials"
   ],
   "tasks": {
-    "pass": 48,
+    "pass": 50,
     "total": 54
   }
 }

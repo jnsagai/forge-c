@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d7_drill.py",
+    "-v",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "duration_s": 0.266,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "b6d03edbc1d375761f3d88053b3b7ff1db9a0f9a",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T048/20261016T090548.log",
+  "log_sha256": "492978ce75bb17448b19dd6a72c82b355e0e0da64d20aa4e2031dbcdcc0c9f60",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T048",
+  "ts_utc": "2026-10-16T09:05:48.995763Z"
+}

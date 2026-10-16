@@ -12,14 +12,13 @@
 from __future__ import annotations
 
 import os
-import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 from ..common import REPO_ROOT, load_yaml, sha256_bytes, sha256_file, state_dir, utc_now
 from . import events as E
+from . import isolation
 from .policy import Policy
 from .store import CREStore
 
@@ -52,7 +51,7 @@ class WorktreePool:
     """Detached worktrees per revision, removed on exit (the main checkout is never touched)."""
 
     def __init__(self, repo: Path = REPO_ROOT):
-        self.repo, self.root, self.trees = repo, Path(tempfile.mkdtemp(prefix="cre-wt-")), {}
+        self.repo, self.root, self.trees = repo, isolation.new_dir("cre-wt"), {}
 
     def get(self, revision: str) -> Path:
         full = _git("rev-parse", f"{revision}^{{commit}}", cwd=self.repo)
@@ -77,7 +76,7 @@ class WorktreePool:
                         p.chmod(p.stat().st_mode | 0o200)
             subprocess.run(["git", "worktree", "remove", "--force", str(wt)], cwd=self.repo, capture_output=True)
         subprocess.run(["git", "worktree", "prune"], cwd=self.repo, capture_output=True)
-        shutil.rmtree(self.root, ignore_errors=True)
+        isolation.discard(self.root)
 
     def __enter__(self) -> WorktreePool:
         return self
@@ -105,17 +104,19 @@ def run(store: CREStore, policy: Policy, rid: str, revision: str, role: str, poo
         raise KeyError(f"REPRODUCER_NOT_IN_FROZEN_MANIFEST:{rid}")
     wt = pool.get(revision)
     rev = _git("rev-parse", "HEAD", cwd=wt)
-    scratch = Path(tempfile.mkdtemp(prefix="cre-repro-"))
+    scratch = isolation.new_dir("cre-repro")
+    isolation.hand_over("verifier", scratch)  # CRE-T049: the reproducer runs as the verifier OS identity
     try:
         env = _env(wt, scratch)
-        pre = subprocess.run([sys.executable, "-c", "import forge_factory, sys; print(forge_factory.__file__)"],
-                             cwd=scratch, env=env, capture_output=True, text=True, timeout=60)
-        imported = pre.stdout.strip()
+        pre = isolation.execute("verifier", [sys.executable, "-c", "import forge_factory; print(forge_factory.__file__)"],
+                                cwd=scratch, env=env, writable=[scratch], readable=[Path(rep["path"]).parent],
+                                timeout=120)
+        imported = pre.stdout.decode(errors="replace").strip()
         if not imported.startswith(str(wt)):
             verdict, code, out = "ERROR", 2, f"IMPORT_PREFLIGHT_FAILED:{imported or pre.stderr[-200:]}".encode()
         else:
-            p = subprocess.run([sys.executable, rep["path"]], cwd=scratch, env=env, capture_output=True,
-                               timeout=timeout)
+            p = isolation.execute("verifier", [sys.executable, rep["path"]], cwd=scratch, env=env,
+                                  writable=[scratch], readable=[Path(rep["path"]).parent], timeout=timeout)
             code, out = p.returncode, p.stdout + b"\n--- stderr ---\n" + p.stderr
             lines = [x for x in p.stdout.decode(errors="replace").splitlines() if x.strip()]
             last = lines[-1] if lines else ""
@@ -126,7 +127,7 @@ def run(store: CREStore, policy: Policy, rid: str, revision: str, role: str, poo
             else:
                 verdict = "ERROR"
     finally:
-        shutil.rmtree(scratch, ignore_errors=True)
+        isolation.discard(scratch)
     lines = out.decode(errors="replace").strip().splitlines()
     signature = lines[0][:200] if verdict != "SYMPTOM_ABSENT" and lines else None
     if verdict == "SYMPTOM_PRESENT":

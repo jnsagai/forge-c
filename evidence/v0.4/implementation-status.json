@@ -395,7 +395,8 @@
       "passing_tasks": [
         "CRE-T020",
         "CRE-T042",
-        "CRE-T043"
+        "CRE-T043",
+        "CRE-T049"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -576,7 +577,8 @@
         "CRE-T016",
         "CRE-T039",
         "CRE-T040",
-        "CRE-T042"
+        "CRE-T042",
+        "CRE-T048"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -1424,8 +1426,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T08:48:58.297232Z",
-  "git_head": "3a14fce5a49dbdddcbb2d3f3c4ae4a9f72f08d9e",
+  "generated_at": "2026-10-16T09:25:07.199262Z",
+  "git_head": "b6d03edbc1d375761f3d88053b3b7ff1db9a0f9a",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1434,7 +1436,7 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 48,
+    "004_pass": 50,
     "004_total": 54,
     "cre_fr_covered": 40,
     "cre_fr_total": 40,
@@ -3239,25 +3241,29 @@
       "task": "CRE-T047"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T048/latest.json"
+      ],
       "frs": [
         "CRE-FR-034"
       ],
-      "line": "- [ ] **CRE-T048 [P1]** Run an owner-authorized live Fabro crash -> recovery drill on the real server per CRE-FR-034 / AT-036 (partial; BLOCKED on owner authorization of a reversible restart action) —",
+      "line": "- [X] **CRE-T048 [P1]** Run an owner-authorized live Fabro crash -> recovery drill on the real server per CRE-FR-034 / AT-036 (partial; BLOCKED on owner authorization of a reversible restart action) —",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T048"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T049/latest.json"
+      ],
       "frs": [
         "CRE-FR-023"
       ],
-      "line": "- [ ] **CRE-T049 [P1]** Separate OS users/credentials for production runs, repair worktrees and the verification runner per plan §12 / CRE-FR-023 (missing; BLOCKED on privileged host setup) — MEDIUM",
+      "line": "- [X] **CRE-T049 [P1]** Separate OS users/credentials for production runs, repair worktrees and the verification runner per plan §12 / CRE-FR-023 (missing; BLOCKED on privileged host setup) — MEDIUM ✅",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T049"
     },
     {

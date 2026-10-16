@@ -41,6 +41,13 @@ The dashboard (`python -m forge_factory.dashboard.app --port 8765`) shows the re
   synchronous=FULL); a `NON_REPLAYABLE` action found `PENDING` after a crash is never re-executed.
 * Locked/unavailable CRE DB: operations fail closed after `FORGE_CRE_DB_TIMEOUT_S` (default 30 s).
 
+* Live Fabro crash -> recovery drill (owner-authorized, CRE-T048): suspend repair dispatch
+  (`systemctl --user set-environment FORGE_SUPERVISOR_NO_DISPATCH=1` + restart the supervisor), then from
+  `factory/python` run `python -m forge_factory.reliability.drill --authorized-by <owner> --authorized-on <date>`.
+  The record (`evidence/cre/live/fabro-crash-drill-<date>.json`) is written for every outcome; unset the variable and
+  restart the supervisor only when no Fabro incident is still active. Reference run 2026-10-16: detected in 125 s,
+  recovered (incident RESOLVED after stable polls) in 319 s, 0 model calls, run history and archives intact.
+
 ## 4. Rollback
 
 * Reversible operational actions (`restart_dashboard`, `restart_mcp_server`, `restart_llm_gateway`, `drain_queue`,
@@ -78,3 +85,16 @@ The dashboard (`python -m forge_factory.dashboard.app --port 8765`) shows the re
 * Cloud token usage is attributed to attempts by time window (ESTIMATED); local compute cost is UNKNOWN.
 * Attempts are not independent and the factory changed between most of them: intervals are descriptive, cohorts are
   never pooled across model/provider/mode.
+
+## 8. OS identity separation (CRE-T049)
+
+* The verification runner (reproducers, benchmark harnesses, design check) runs as sub-UID 2001 (host 102000) and
+  repair-candidate code (promotion quality tests) as sub-UID 2002 (host 102001) via rootless Podman
+  (`factory/python/forge_factory/reliability/isolation.py`); production (Fabro, agents, MCP tools) stays the owner
+  account. Prerequisites: `podman` (3.4+) and subordinate ID ranges for the owner in `/etc/subuid`/`/etc/subgid`.
+* All Podman storage, the stub root filesystem, worktrees and scratch live under `$FORGE_DATA_ROOT/podman`
+  (loop10); `~/.forge-podman` is a short symlink to it because Podman limits the runroot path length.
+* Enforced by the kernel: host paths are read-only, `/tmp` is private, no network, credential-like environment
+  variables are dropped and the owner's 0600 files are unreadable. Disable with `FORGE_CRE_ISOLATION=none`
+  (falls back to the same OS user; the readiness record then shows the weaker level).
+* Not covered: Fabro itself still runs as the owner, and the owner's `docker` group membership is root-equivalent.

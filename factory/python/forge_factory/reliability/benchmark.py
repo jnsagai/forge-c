@@ -13,7 +13,6 @@ import json
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
 
@@ -21,6 +20,7 @@ import yaml
 
 from ..common import REPO_ROOT, canonical_json, sha256_bytes, sha256_file, utc_now
 from . import events as E
+from . import isolation
 from .policy import CRE_CONTRACTS_DIR, Policy
 from .reproduce import WorktreePool, _env
 from .store import CREStore
@@ -182,21 +182,23 @@ def run_suite(kind: str, revision: str, pool: WorktreePool, store: CREStore | No
         if problem:
             results.append({"case_id": cid, "status": problem.split(":")[0], "reason": problem, "observed": None})
             continue
-        scratch = Path(tempfile.mkdtemp(prefix=f"cre-bench-{cid}-"))
+        scratch = isolation.new_dir(f"cre-bench-{cid}")
         try:
             for ref, dst in entry["layout"].items():
                 (scratch / "ws" / dst).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(root / ref, scratch / "ws" / dst)
             (scratch / "ws").mkdir(exist_ok=True)
-            p = subprocess.run([sys.executable, str(sp.parent / entry["harness"]), str(scratch)], cwd=scratch,
-                               env=_env(wt, scratch), capture_output=True, timeout=600)
+            isolation.hand_over("verifier", scratch)  # CRE-T049: harness runs as the verifier OS identity
+            harness = sp.parent / entry["harness"]
+            p = isolation.execute("verifier", [sys.executable, str(harness), str(scratch)], cwd=scratch,
+                                  env=_env(wt, scratch), writable=[scratch], readable=[harness.parent], timeout=600)
             out = p.stdout.decode(errors="replace").strip().splitlines()
             try:
                 observed = json.loads(out[-1])["observed"] if p.returncode == 0 and out else None
             except (ValueError, KeyError):
                 observed = None
         finally:
-            shutil.rmtree(scratch, ignore_errors=True)
+            isolation.discard(scratch)
         if observed is None:
             tail = (p.stdout + p.stderr).decode(errors="replace").strip().splitlines()[-1:] or [""]
             results.append({"case_id": cid, "status": "ERROR", "reason": f"HARNESS_ERROR:{tail[0][:160]}",
