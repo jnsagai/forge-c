@@ -44,7 +44,8 @@ def _diag(raw: bytes, ws, markers: tuple[str, ...], limit: int) -> list[str]:
 def _with_setter(expr: str, src_before: str) -> str:
     """r68: 'st == HAL_ERROR' -> 'st == HAL_ERROR with st = HAL_RCC_HSI_Enable(0U)' (last assignment before)."""
     v = re.match(r"\(?\s*([a-z_]\w*)\s*[=!<>]", expr)
-    setter = re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", src_before) if v else []
+    code = re.sub(r'"(?:\\.|[^"\\\n])*"', '""', src_before)  # r76: never a 'st=%u' inside a printf format
+    setter = re.findall(rf"\b{v.group(1)}\s*=\s*([^;=][^;]*);", code) if v else []
     return f"{expr} with {v.group(1)} = {' '.join(setter[-1].split())}" if setter else expr
 
 

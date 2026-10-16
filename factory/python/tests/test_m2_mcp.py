@@ -181,7 +181,7 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
     (ws / "software/tests/unit/test_negative.c").write_text(  # r74: the failed check's expression, not just its id
         '#include <stdio.h>\nstatic int f(int x){ return x + 1; }\n#define CHECK(id, c) do { if (c) { printf("%s PASS\\n",'
         ' (id)); } else { printf("%s FAIL\\n", (id)); n++; } } while (0)\nint main(void){ int n = 0; int st;\n'
-        '    st = f(1);\n    CHECK("UT-010", st == 2);\n    CHECK("UT-011",\n          st == 3);\n    return n; }\n')
+        '    st = f(1);\n    printf("st=%d\\n", st);\n    CHECK("UT-010", st == 2);\n    CHECK("UT-011",\n          st == 3);\n    return n; }\n')
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert "CHECK_EXPR:test_negative.c#UT-011:st == 3 with st = f(1)" in neg["issues"], neg["issues"]
     assert not any("UT-010" in i for i in neg["issues"])
