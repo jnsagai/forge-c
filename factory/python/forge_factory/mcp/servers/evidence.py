@@ -113,7 +113,11 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
         issues.append("TRACE_FILE_MISSING:traceability/requirements_to_tests.csv")
     traced = {r.get("requirement_id", "").strip() for r in rows}
     # Test files exist only from SWE.4 on: before a SWE.4 baseline, a missing file is a planned link, not a defect.
-    tests_due = any((ctx.workspace / "configuration/baselines/SWE.4").glob("BL-*.json"))
+    # CAPA-017 (r83): SWE.4 authors call this BEFORE the SWE.4 baseline is frozen, so the phantom-id check never ran
+    # and UT-019..021 (resource requirements without unit tests) reached the finalizer; SWE.4-6 always check
+    tests_due = ctx.phase in ("SWE.4", "SWE.5", "SWE.6") or \
+        any((ctx.workspace / "configuration/baselines/SWE.4").glob("BL-*.json"))
+    suite_due = any((ctx.workspace / "configuration/baselines/SWE.6").glob("BL-*.json")) or ctx.phase == "SWE.6"
     planned = 0
     for r in reqs:
         if r not in traced:
@@ -132,7 +136,9 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
                 if tests_due and test and not re.search(rf"\b{re.escape(test)}\b", tpath.read_text(errors="replace")):
                     issues.append(f"TEST_ID_NOT_IN_FILE:{test}:{tfile[:50]}")
             except ToolDenied:
-                if tests_due:
+                if tfile.startswith("software/tests/software/") and not suite_due:
+                    planned += 1  # Robot requirement suite: written in SWE.6 (size/stack/target-only requirements)
+                elif tests_due:
                     issues.append(f"TEST_FILE_MISSING:{tfile[:60]}")
                 else:
                     planned += 1

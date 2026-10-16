@@ -153,7 +153,10 @@ AUTHOR_STEPS = {
         "deviation with reason); '## Findings' (open issues or 'none').",
         "write_file traceability/requirements_to_tests.csv: header requirement_id,test_id,test_file and one row per SWR "
         "with a UT id that really appears in a CHECK of software/tests/unit/test_rcc.c (never cite an id that is not "
-        "tested; add the missing test first). Then call mcp__forge_evidence_mcp__validate_trace and fix until PASS.",
+        "tested; add the missing test first). A requirement that no host unit test can verify (flash, static RAM, "
+        "stack, target-only behaviour) gets test_id = its SWR id and test_file = "
+        "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite). Then call "
+        "mcp__forge_evidence_mcp__validate_trace and fix until PASS.",
         "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.4 baseline."],
     "SWE.5": [
         "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_rcc.h and software/tests/unit/test_rcc.c.",

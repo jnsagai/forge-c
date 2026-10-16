@@ -100,3 +100,33 @@ def test_robot_driver_keywords_measure_a_header_only_ll(tmp_path):
     assert lib.driver_stack_should_be_at_most(128) == stack
     assert 0 < lib.driver_flash_size_should_be_at_most(4096)
     assert lib.driver_static_ram_should_be_at_most(0) == 0
+
+
+def _trace(ws, rows):
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n"
+        "- **SWR-019** The RCC LL driver shall use at most 4096 bytes of flash.\n")
+    (ws / "traceability").mkdir(exist_ok=True)
+    (ws / "traceability/requirements_to_tests.csv").write_text("requirement_id,test_id,test_file\n" + rows)
+    (ws / "software/tests/unit").mkdir(parents=True, exist_ok=True)
+    (ws / "software/tests/unit/test_rcc.c").write_text('CHECK("UT-001", 1);\n')
+
+
+def test_swe4_trace_rejects_phantom_test_ids_before_its_baseline(tmp_path, monkeypatch):
+    """CAPA-017 (r83): validate_trace skipped the phantom check while SWE.4 was being authored."""
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import evidence as EV
+
+    ws = _ws(tmp_path)
+    for k, v in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_EVENTS_DIR": str(ws / ".ev"),
+                 "FORGE_STATE_DIR": str(ws / ".st"), "FORGE_ROLE": "swe4-author", "FORGE_PHASE": "SWE.4"}.items():
+        monkeypatch.setitem(os.environ, k, v)
+    op = next(o for o in EV.OPERATIONS if o.name == "validate_trace")
+    _trace(ws, "SWR-001,UT-001,software/tests/unit/test_rcc.c\nSWR-019,UT-019,software/tests/unit/test_rcc.c\n")
+    out = sdk.invoke("forge-evidence-mcp", op, {})
+    assert out["status"] == "FAIL" and any("TEST_ID_NOT_IN_FILE:UT-019" in i for i in out["issues"])
+    _trace(ws, "SWR-001,UT-001,software/tests/unit/test_rcc.c\n"
+               "SWR-019,SWR-019,software/tests/software/test_rcc_requirements.robot\n")
+    out = sdk.invoke("forge-evidence-mcp", op, {})
+    assert out["status"] == "PASS" and out["metrics"]["planned_test_links"] == 1  # Robot suite due at SWE.6
