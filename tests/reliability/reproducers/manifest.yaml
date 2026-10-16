@@ -123,3 +123,36 @@ reproducers:
     operations: [SWE.5/author, -/package]
     root_cause: "REQUIRED_TOOL_PASS for SWE.5 listed only run_integration, so SWE.5 froze and passed inspection while run_renode failed; the package was BLOCKED on target_verification only at finalization."
     remedy: "SWE.5 also requires the latest run_renode to PASS (after the current code baseline) before it can be frozen."
+  - id: RPR-012
+    script: rpr012_interface_not_allocated.py
+    sha256: 0ec98b2952546c7de8c249dab6afa252099249a2b0d508dec0610d46beb8a71a
+    symptom_signature: "architecture check accepts interfaces missing from the allocation"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["INSPECTION_FAIL:SWE3-01", "DEFECT:ARCHITECTURE"]
+    operations: [SWE.3/inspect, SWE.2/author]
+    root_cause: "The LL API naming text listed MSI, LSI, LSE and PLL1..4 although the work order covers HSI and HSE, and no check compared the Interfaces section with the allocation table; SWE.3 inspection found interfaces that were never allocated or coded."
+    remedy: "LL API naming is limited to the in-scope oscillators and provided peripherals; SWE2:INTERFACE_NOT_ALLOCATED flags interface APIs missing from the allocation."
+  - id: RPR-013
+    script: rpr013_ll_no_concurrency_section.py
+    sha256: 5bffeb47d50a7272f2d4dea6f3b67273e1a508634c0b14d9e0979561d2443181
+    symptom_signature: "LL SWE.2 procedure omits concurrency and reentrancy"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["INSPECTION_FAIL:SWE2-03"]
+    operations: [SWE.2/inspect]
+    root_cause: "The LL SWE.2 procedure asked for read-modify-write access but no concurrency/reentrancy section, so SWE2-03 (concurrency, ISR synchronisation, reentrancy) failed on a one-line note."
+    remedy: "The LL SWE.2 procedure requires a Concurrency and reentrancy section (stateless, non-atomic RMW, set/clear registers or caller serialisation, ISR use)."
+  - id: RPR-014
+    script: rpr014_product_code_as_test_file.py
+    sha256: 48dd0d67c0dd03c8d453faea37fbcecfeea029c0b6587cda4d110642c34c6e8c
+    symptom_signature: "report_defect accepts product code as a cited test file"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["DEFECT_TEST_CHANGED", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author, SWE.3/route]
+    root_cause: "report_defect accepted any workspace file as test_files; the SWE.3 inspector cited the LL header, and the anti-bending gate rejected every correct header fix as DEFECT_TEST_CHANGED until SWE.3 blocked (r82)."
+    remedy: "report_defect accepts only software/tests/** as test_files (product code goes to evidence_refs) and the cited-test gate ignores non-test paths."
