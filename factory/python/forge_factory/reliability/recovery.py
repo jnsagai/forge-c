@@ -14,9 +14,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 from ..common import utc_now
@@ -214,6 +216,73 @@ class ScopeLeases:
             c.execute("DELETE FROM cre_scope_leases WHERE scope=? AND owner=?", (scope, owner))
 
 
+class DispatchAdmission:
+    """CRE-T044 (CRE-FR-005): admission of 002 repair dispatch, durable across supervisor restarts.
+
+    Keyed by the incident FINGERPRINT (a recurrence opens a new 002 incident with attempts=0; the CRE budget does
+    not reset): at most `max_repair_attempts_per_incident` dispatches per fingerprint per RECURRENCE_WINDOW_S,
+    at most `max_repairs_per_hour` factory-wide, and a deterministic jittered exponential backoff between attempts
+    on the same fingerprint. Enforcing (PILOT/ACTIVE) ledger rows are `ADMITTED`; OBSERVE_ONLY records the same
+    decisions as `SHADOW_ADMITTED` and never filters (002 behaviour unchanged).
+    """
+
+    RECURRENCE_WINDOW_S = 86400.0
+
+    def __init__(self, store: CREStore, policy: Policy):
+        self.s, self.p, self.r = store, policy, RetryAdmission(store, policy)
+        self.enforce = policy.mode in ("PILOT", "ACTIVE")
+        self.outcome = "ADMITTED" if self.enforce else "SHADOW_ADMITTED"
+
+    def _rows(self, key: str | None, since: str = "") -> list[sqlite3.Row]:
+        """Ledger rows of this mode: one fingerprint (key) or every repair dispatch (key None) decided >= since."""
+        with self.s.conn() as c:
+            if key is not None:
+                return list(c.execute("SELECT * FROM cre_retry_attempts WHERE outcome=? AND op_key=? "
+                                      "AND decided_at >= ? ORDER BY attempt", (self.outcome, key, since)))
+            return list(c.execute("SELECT * FROM cre_retry_attempts WHERE outcome=? AND op_key LIKE "
+                                  "'repair_dispatch:%' AND decided_at >= ? ORDER BY seq", (self.outcome, since)))
+
+    clock = staticmethod(time.time)  # injectable for tests
+
+    def admit(self, fingerprint: str, now: float | None = None) -> RetryDecision:
+        now = self.clock() if now is None else now
+        r = self.p.data["recovery"]
+        key = f"repair_dispatch:{fingerprint}"
+        mine = self._rows(key)
+        since = _iso(now - self.RECURRENCE_WINDOW_S)
+        recent = [x for x in mine if x["decided_at"] >= since]
+        hour = self._rows(None, _iso(now - 3600))
+        last_nb = float(mine[-1]["not_before_epoch"]) if mine else 0.0
+        reason = ""
+        if len(recent) >= int(r["max_repair_attempts_per_incident"]):
+            reason = f"REPAIR_BUDGET_EXHAUSTED:{len(recent)}"
+        elif len(hour) >= int(r["max_repairs_per_hour"]):
+            reason = f"HOURLY_REPAIR_QUOTA:{len(hour)}"
+        elif now < last_nb:
+            reason = f"BACKOFF_PENDING:{round(last_nb - now, 3)}s"
+        attempt = (int(mine[-1]["attempt"]) if mine else 0) + 1
+        if reason:
+            if self.enforce or not reason.startswith("BACKOFF_PENDING"):  # shadow: no per-poll backoff noise
+                self._event(key, attempt - 1, f"{'' if self.enforce else 'SHADOW_'}DENIED", reason)
+            return RetryDecision(False, attempt - 1, last_nb or now, reason)
+        nb = now + self.r.backoff(key, len(recent) + 1)
+        with self.s.conn() as c:
+            c.execute("INSERT INTO cre_retry_attempts(op_key,attempt,decided_at,not_before_epoch,outcome,detail) "
+                      "VALUES (?,?,?,?,?,?)", (key, attempt, _iso(now), nb, self.outcome,
+                                               f"backoff {round(nb - now, 3)}s"))
+        self._event(key, attempt, self.outcome, f"next not before +{round(nb - now, 3)}s")
+        return RetryDecision(True, attempt, nb, self.outcome)
+
+    def _event(self, key: str, attempt: int, decision: str, detail: str) -> None:
+        E.record(self.s, E.build("cre.retry_decided", f"{key}|{decision}|{attempt}|{detail}", {
+            "op_key": key[:200], "attempt": attempt, "decision": decision, "detail": detail[:200]},
+            policy_sha256=self.p.sha256, correlation_id=key[:120]))
+
+
+def _iso(epoch: float) -> str:
+    return datetime.fromtimestamp(epoch, UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
 class SideEffectJournal:
     def __init__(self, store: CREStore, policy: Policy):
         self.s, self.p = store, policy
@@ -238,20 +307,38 @@ class SideEffectJournal:
             raise RecoveryError(f"UNKNOWN_REPLAY_CLASS:{declared}")
         return declared
 
-    def perform(self, key: str, op_class: str, declared: str, fn: Callable[[str], Any]) -> dict:
+    def decide(self, key: str, op_class: str, declared: str) -> tuple[str, str, dict | None]:
+        """Pure decision from the journal: (EXECUTE | ALREADY_DONE | REQUIRES_OFFLINE_ATTENTION, replay class, last)."""
         replay = self.replay_class(op_class, declared)
         last = self._last(key)
         if last and last["status"] == "DONE" and replay != "REPLAY_SAFE":
-            return {"executed": False, "status": "ALREADY_DONE", "receipt": json.loads(last["receipt"] or "null")}
-        if last and last["status"] == "PENDING" and replay in ("NON_REPLAYABLE", "COMPENSATABLE"):
-            self._append(key, op_class, replay, "REQUIRES_OFFLINE_ATTENTION")  # AT-011: unknown outcome, never replay
-            return {"executed": False, "status": "REQUIRES_OFFLINE_ATTENTION", "receipt": None}
+            return "ALREADY_DONE", replay, last
+        # AT-011: a PENDING (crash) or FAILED (partial) outcome is unknown -> never replayed for these classes
+        if last and last["status"] in ("PENDING", "FAILED") and replay in ("NON_REPLAYABLE", "COMPENSATABLE"):
+            return "REQUIRES_OFFLINE_ATTENTION", replay, last
         if last and last["status"] == "REQUIRES_OFFLINE_ATTENTION":
-            return {"executed": False, "status": "REQUIRES_OFFLINE_ATTENTION", "receipt": None}
+            return "REQUIRES_OFFLINE_ATTENTION", replay, last
+        return "EXECUTE", replay, last
+
+    def execute(self, key: str, op_class: str, replay: str, fn: Callable[[str], Any]) -> Any:
         self._append(key, op_class, replay, "PENDING")
-        receipt = fn(key)  # crash here => PENDING stays; the next call decides by replay class
+        try:
+            receipt = fn(key)  # crash here => PENDING stays; the next call decides by replay class
+        except Exception as exc:  # a raised error is a known (possibly partial) failure, recorded as such
+            self._append(key, op_class, replay, "FAILED", {"error": f"{type(exc).__name__}: {str(exc)[:200]}"})
+            raise
         self._append(key, op_class, replay, "DONE", receipt)
-        return {"executed": True, "status": "DONE", "receipt": receipt}
+        return receipt
+
+    def perform(self, key: str, op_class: str, declared: str, fn: Callable[[str], Any]) -> dict:
+        decision, replay, last = self.decide(key, op_class, declared)
+        if decision == "ALREADY_DONE":
+            return {"executed": False, "status": "ALREADY_DONE", "receipt": json.loads(last["receipt"] or "null")}
+        if decision == "REQUIRES_OFFLINE_ATTENTION":
+            if last["status"] != "REQUIRES_OFFLINE_ATTENTION":
+                self._append(key, op_class, replay, "REQUIRES_OFFLINE_ATTENTION")
+            return {"executed": False, "status": "REQUIRES_OFFLINE_ATTENTION", "receipt": None}
+        return {"executed": True, "status": "DONE", "receipt": self.execute(key, op_class, replay, fn)}
 
 
 class RecoveryController:

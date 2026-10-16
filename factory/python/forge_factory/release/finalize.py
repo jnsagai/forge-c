@@ -343,18 +343,30 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
 
     bundle_into(ws, stage, dry_status)
-    res = pk.build(stage, out_dir, run_id, POLICY_V05)
-    with pk.zipfile.ZipFile(res["archive"]) as z:
-        gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
-    for f in out_dir.iterdir():
-        os.chmod(f, 0o444)
-    out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
-           "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
-           "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
-           "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
-    os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
-    (out_dir / "finalize-result.json").write_text(pretty_json(out))
-    os.chmod(out_dir / "finalize-result.json", 0o444)
+    sealed: dict = {}
+
+    def seal(_key: str) -> dict:
+        res = pk.build(stage, out_dir, run_id, POLICY_V05)
+        with pk.zipfile.ZipFile(res["archive"]) as z:
+            gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
+        for f in out_dir.iterdir():
+            os.chmod(f, 0o444)
+        out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
+               "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
+               "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
+               "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
+        os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
+        (out_dir / "finalize-result.json").write_text(pretty_json(out))
+        os.chmod(out_dir / "finalize-result.json", 0o444)
+        sealed["out"] = out
+        return {"archive_sha256": res["archive_sha256"], "package_status": res["package_status"]}
+
+    from ..reliability.production import JournalRefused, guarded  # CRE-T045: archive write is journaled
+
+    j = guarded("archive_write", f"archive_write:{run_id}", seal)
+    if not j["executed"]:  # enforcing modes only: journaled DONE but no archive on disk, or unknown outcome
+        raise JournalRefused(j["status"], f"archive_write:{run_id}")
+    out = sealed["out"]
     (ws / ".forge-run").mkdir(exist_ok=True)
     (ws / ".forge-run" / "package.json").write_text(pretty_json(out))
     emit("human", "INFO" if out["package_status"] == "READY_FOR_OFFLINE_REVIEW" else "WARN",

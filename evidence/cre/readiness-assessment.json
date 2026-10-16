@@ -1,7 +1,7 @@
 {
-  "assessed_at": "2026-10-16T09:08:10.939253Z",
+  "assessed_at": "2026-10-16T09:55:33.148265Z",
   "configured_mode": "OBSERVE_ONLY",
-  "git_head": "b6d03edbc1d375761f3d88053b3b7ff1db9a0f9a",
+  "git_head": "8708ffa24d738e9ef2263d1af612273ac78cdb9c",
   "levels": {
     "ACTIVE_ELIGIBLE": {
       "met": [],
@@ -63,7 +63,7 @@
     "verification runner and repair-candidate code run as separate OS identities (rootless Podman sub-UIDs) without network or owner credentials"
   ],
   "tasks": {
-    "pass": 50,
+    "pass": 52,
     "total": 54
   }
 }

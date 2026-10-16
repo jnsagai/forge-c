@@ -1,6 +1,6 @@
 # Forge-C implementation status (generated from evidence records)
 
-Generated 2026-10-16T09:25:07.199262Z at commit `b6d03edbc1d3`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
+Generated 2026-10-16T10:10:20.758407Z at commit `8708ffa24d73`. Status is derived only from `evidence/v0.4/runs/*/latest.json`; a checkbox without a passing evidence record is not PASS.
 
 * Feature 002: **51/51** tasks PASS
 * Feature 003 (KPI): **20/20** tasks PASS
@@ -88,7 +88,7 @@ Generated 2026-10-16T09:25:07.199262Z at commit `b6d03edbc1d3`. Status is derive
 | KPI-T019 | P1 | PASS | evidence/v0.4/runs/KPI-T019/latest.json |
 | KPI-T020 | P0 | PASS | evidence/v0.4/runs/KPI-T020/latest.json |
 
-## Feature 004 (CRE) tasks — 50/54 PASS; CRE-FR covered 40/40; unmet P0: none
+## Feature 004 (CRE) tasks — 52/54 PASS; CRE-FR covered 40/40; unmet P0: none
 
 | Task | P | Status | Evidence |
 |---|---|---|---|
@@ -135,8 +135,8 @@ Generated 2026-10-16T09:25:07.199262Z at commit `b6d03edbc1d3`. Status is derive
 | CRE-T041 | P0 | PASS | evidence/v0.4/runs/CRE-T041/latest.json |
 | CRE-T042 | P0 | PASS | evidence/v0.4/runs/CRE-T042/latest.json |
 | CRE-T043 | P0 | PASS | evidence/v0.4/runs/CRE-T043/latest.json |
-| CRE-T044 | P1 | NOT_RUN | - |
-| CRE-T045 | P1 | NOT_RUN | - |
+| CRE-T044 | P1 | PASS | evidence/v0.4/runs/CRE-T044/latest.json |
+| CRE-T045 | P1 | PASS | evidence/v0.4/runs/CRE-T045/latest.json |
 | CRE-T046 | P1 | NOT_RUN | - |
 | CRE-T047 | P1 | PASS | evidence/v0.4/runs/CRE-T047/latest.json |
 | CRE-T048 | P1 | PASS | evidence/v0.4/runs/CRE-T048/latest.json |

@@ -11,7 +11,7 @@ from pathlib import Path
 
 from .observe import from_incidents
 from .policy import PolicyHolder
-from .recovery import Breaker, RecoveryController
+from .recovery import Breaker, DispatchAdmission, RecoveryController
 from .store import CREStore
 from .taxonomy import classify
 
@@ -52,5 +52,17 @@ class CREHook:
                 if inc["state"] in TERMINAL_002:
                     ctl.drive_to(scope, TERMINAL_002[inc["state"]], f"002 incident {inc['state']}")
         if pol.mode == "OBSERVE_ONLY":
+            adm = DispatchAdmission(self.store, pol)
+            for inc in eligible:  # shadow: decisions recorded (SHADOW_*), 002 dispatch unchanged
+                adm.admit(inc["fingerprint"])
             return eligible
-        return [i for i in eligible if br.allow(i["component"])]  # OPEN: none; after cooldown: bounded probes
+        allowed = [i for i in eligible if br.allow(i["component"])]  # OPEN: none; after cooldown: bounded probes
+        adm, out = DispatchAdmission(self.store, pol), []
+        for inc in allowed:  # CRE-T044: durable per-fingerprint budget, hourly quota, jittered backoff
+            d = adm.admit(inc["fingerprint"])
+            if d.allowed:
+                out.append(inc)
+            elif d.reason.startswith("REPAIR_BUDGET_EXHAUSTED"):
+                incident_store.transition(inc["incident_id"], "REQUIRES_OFFLINE_ATTENTION",
+                                          f"CRE dispatch admission: {d.reason} for this fingerprint")
+        return out

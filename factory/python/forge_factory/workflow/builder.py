@@ -87,12 +87,13 @@ MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR
 
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
           sections: dict[str, str] | None = None, code_model: str | None = None,
-          chunk_lines: int = 40) -> tuple[str, dict]:
+          chunk_lines: int = 40, layer: str = "LL+HAL") -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
+    prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     dot, nodes = _build(work_order, phases, goal, sections)
     if code_model:
         for n in CODE_NODES:
@@ -138,16 +139,24 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
         if phase == "SWE.3":  # LL header in its own fresh context first; rework re-enters at the HAL author
             from .prompts import fix3_author_prompt, hal_author_prompt, ll_author_prompt
 
-            entry, ll, hal, fix = "swe3_regmap", "swe3_ll_author", "swe3_hal_author", "swe3_fix_author"
-            for n_ in (ll, hal, fix):
-                nodes[n_] = {"role": "swe3-author", "phase": phase}
-            L += [f'  {entry} [shape=parallelogram, label="SWE.3 register map generator (RM0486, deterministic)", '
-                  f'script="{_q(regmap_cmd())}"]',
-                  f'  {ll} [label="SWE.3 LL author", max_visits={ONCE}, timeout="900s", prompt="{_q(ll_author_prompt())}"]',
-                  f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", prompt="{_q(hal_author_prompt())}"]',
-                  f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", max_visits={MAX_VISITS}, '
-                  f'timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
-                  f"  {entry} -> {ll}", f"  {ll} -> {hal}", f"  {hal} -> {fix}", f"  {fix} -> {a}"]
+            layer = prompts.LAYER["layer"]
+            regmap, ll, hal, fix = "swe3_regmap", "swe3_ll_author", "swe3_hal_author", "swe3_fix_author"
+            # ADR-0009: LL layer = regmap + LL author; HAL layer = HAL author on the PROVIDED LL (no regmap: the
+            # provided header is frozen); legacy LL+HAL = both authors
+            chain = {"LL": [regmap, ll], "HAL": [hal], "LL+HAL": [regmap, ll, hal]}[layer] + [fix]
+            entry = chain[0]
+            for n_ in chain:
+                if n_ != regmap:
+                    nodes[n_] = {"role": "swe3-author", "phase": phase}
+            spec = {regmap: f'  {regmap} [shape=parallelogram, label="SWE.3 register map generator (RM0486, '
+                            f'deterministic)", script="{_q(regmap_cmd())}"]',
+                    ll: f'  {ll} [label="SWE.3 LL author", max_visits={ONCE}, timeout="900s", '
+                        f'prompt="{_q(ll_author_prompt())}"]',
+                    hal: f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", '
+                         f'prompt="{_q(hal_author_prompt())}"]',
+                    fix: f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", '
+                         f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]'}
+            L += [spec[n_] for n_ in chain] + [f"  {x} -> {y}" for x, y in zip(chain, chain[1:] + [a], strict=True)]
         if phase == "SWE.4":  # unit tests written in their own fresh context; rework re-enters at the SWE.4 author
             from .prompts import unit_test_author_prompt
 

@@ -106,6 +106,11 @@ def generate(ws: Path) -> dict:
             authored = old.split(FUNCTIONS_MARKER, 1)[1].rsplit(end, 1)[0]
             text = text.replace(FUNCTIONS_MARKER + "\n\n" + end, FUNCTIONS_MARKER + authored + end)
     out.write_text(text, encoding="utf-8")
+    from ..layer import LL_TU, LL_TU_TEXT, layer_of
+
+    if layer_of(ws) == "LL":  # ADR-0009: compile unit of the header-only LL (build/analysis/size tools need one)
+        (ws / LL_TU).parent.mkdir(parents=True, exist_ok=True)
+        (ws / LL_TU).write_text(LL_TU_TEXT, encoding="utf-8")
     rec = {"schema": "forge-c/regmap/0.4", "generated_at": utc_now(), "header": LL_HEADER,
            "registers": {r["name"]: {"offset": r["offset"], "fields": len(r["fields"]), "source": r["source"],
                                      "source_sha256": r["sha256"]} for r in regs},

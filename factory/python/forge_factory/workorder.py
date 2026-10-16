@@ -14,7 +14,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .common import REPO_ROOT, pretty_json, sha256_file, state_dir, utc_now
+from .common import REPO_ROOT, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
 from .mcp.preflight import fabro_mcp_config
@@ -112,8 +112,32 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
     return files, index
 
 
-def prepare(example: Path, wo: str) -> tuple[Path, dict]:
+def provided_ll(source_wo: str) -> tuple[bytes, dict]:
+    """ADR-0009: the HAL work order builds on the LL header of an earlier LL work order whose six phases all passed
+    their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance."""
+    from .inspection.engine import PHASES, Store
+    from .layer import LL_HEADER, layer_of
+
+    src = state_dir() / "workorders" / source_wo / "workspace"
+    if not (src / LL_HEADER).is_file():
+        raise FileNotFoundError(f"PROVIDED_LL_MISSING:{source_wo}:{LL_HEADER}")
+    if layer_of(src) != "LL":
+        raise ValueError(f"PROVIDED_LL_NOT_FROM_LL_WORK_ORDER:{source_wo}:{layer_of(src)}")
+    st = Store(src)
+    failed = [ph for ph in PHASES if st.gate(ph)["decision"] != "PASS"]
+    if failed:
+        raise ValueError(f"PROVIDED_LL_NOT_VERIFIED:{source_wo}:{','.join(failed)}")
+    data = (src / LL_HEADER).read_bytes()
+    pkg = src / ".forge-run/package.json"
+    return data, {"path": LL_HEADER, "role": "provided_ll_driver", "sha256": sha256_bytes(data),
+                  "source_work_order": source_wo,
+                  "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
+                  "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)"}
+
+
+def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
+    layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
     inputs: dict[str, bytes] = {}
     listed = []
@@ -146,14 +170,23 @@ def prepare(example: Path, wo: str) -> tuple[Path, dict]:
                        "safety_allocation": f"PROVIDED ASIL {d['safety_allocation']['asil']} ({who})",
                        "part_number": d["target"]["part_number"], "silicon_revision": d["target"]["silicon_revision"]})
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
+    provided = []
+    if layer == "HAL":
+        if not provided_from:
+            raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
+        data, rec = provided_ll(provided_from)
+        inputs[rec["path"]] = data
+        provided.append(rec)
     head = create_workspace(ws, inputs)
+    for rec in provided:
+        (ws / rec["path"]).chmod(0o444)
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
     manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
                 "input_baseline_commit": head, "factory_revision": factory_revision(),
-                "driver": spec["driver"], "target": target,
+                "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
@@ -249,9 +282,40 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
     return remaining
 
 
+def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
+    """Start the Fabro run (CRE-T045: journaled `workorder_launch`, idempotency key = work-order id)."""
+    import os
+
+    from .reliability.production import JournalRefused, enforcing, guarded
+
+    prior = ws / ".forge-run/fabro_run_id"
+
+    def launch(_key: str) -> dict:
+        # idempotency key honoured by the receiver side (enforcing modes; observe-only keeps the 002 behaviour)
+        if enforcing() and prior.is_file() and prior.read_text().strip():
+            return {"fabro_run_id": prior.read_text().strip(), "reused": True}
+        out = subprocess.run([fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local",
+                              "--label", f"forge={wo}"], cwd=ws, env=fabro_env(), capture_output=True, text=True,
+                             timeout=180)
+        rid = (out.stdout.strip().splitlines() or [""])[-1]
+        if out.returncode != 0 or not rid:  # r58: a rejected workflow used to leave an empty run id silently
+            emit("human", "ERROR", f"{wo} Fabro launch failed (exit {out.returncode})", correlation_id=wo)
+            raise RuntimeError(f"fabro run failed (exit {out.returncode}): {(out.stderr or out.stdout)[-600:]}")
+        prior.write_text(rid)
+        return {"fabro_run_id": rid, "fabro_url": os.environ.get("FORGE_FABRO_URL", "")}
+
+    j = guarded("workorder_launch", f"workorder_launch:{wo}", launch)
+    if j["status"] == "REQUIRES_OFFLINE_ATTENTION":
+        raise JournalRefused(j["status"], f"workorder_launch:{wo}")
+    rid = j["receipt"]["fabro_run_id"]  # ALREADY_DONE (enforcing) returns the journaled run id
+    prior.write_text(rid)
+    return rid
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
-        model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None) -> dict:
-    ws, manifest = prepare(example, wo)
+        model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
+        provided_from: str | None = None) -> dict:
+    ws, manifest = prepare(example, wo, provided_from)
     phases = resume_from(ws, manifest, resume) if resume else None
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
@@ -262,7 +326,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
-                         phases=phases)
+                         phases=phases, layer=manifest.get("layer", "LL+HAL"))
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(model_profile(model, provider, code_model, nodes)))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
@@ -280,13 +344,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     import os
 
     fab = os.environ.get("FORGE_FABRO_BIN", fab)
-    out = subprocess.run([fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local", "--label",
-                          f"forge={wo}"], cwd=ws, env=fabro_env(), capture_output=True, text=True, timeout=180)
-    fabro_run_id = (out.stdout.strip().splitlines() or [""])[-1]
-    if out.returncode != 0 or not fabro_run_id:  # r58: a rejected workflow used to leave an empty run id silently
-        emit("human", "ERROR", f"{wo} Fabro launch failed (exit {out.returncode})", correlation_id=wo)
-        raise RuntimeError(f"fabro run failed (exit {out.returncode}): {(out.stderr or out.stdout)[-600:]}")
-    (ws / ".forge-run/fabro_run_id").write_text(fabro_run_id)
+    fabro_run_id = launch_run(ws, wo, toml, fab)
     # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
     # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.
     (ws / ".forge-run/fabro_server.json").write_text(json.dumps(
@@ -309,9 +367,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
     ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
     ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
+    ap.add_argument("--provided-from", default=None,
+                    help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
     a = ap.parse_args(argv)
     res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-              resume=a.resume_from)
+              resume=a.resume_from, provided_from=a.provided_from)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0

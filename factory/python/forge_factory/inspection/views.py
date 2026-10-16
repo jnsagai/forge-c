@@ -12,6 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from ..layer import components, layer_of
 from .implementation import allocated_functions
 
 STATIC = "workproducts/SWE.2/architecture_static.puml"
@@ -51,7 +52,8 @@ def check_views(ws: Path, render: bool = False) -> dict:
             findings.append(f"VIEWS:NOT_PLANTUML:{name}")
     if not re.search(r"^\s*(component|package|node|rectangle|interface)\b|\[[^\]]+\]", st, re.M):
         findings.append("VIEWS:STATIC_HAS_NO_COMPONENTS")
-    for comp in ("stm32n6xx_hal_rcc", "stm32n6xx_ll_rcc"):
+    layer = layer_of(ws)  # ADR-0009: an LL work order has no HAL component and no HAL timeout path
+    for comp in components(layer):
         if comp not in st:
             findings.append(f"VIEWS:STATIC_MISSING_COMPONENT:{comp}")
     if not re.search(r"^\s*(participant|actor|boundary|control|entity)\b|->", dy, re.M):
@@ -60,7 +62,7 @@ def check_views(ws: Path, render: bool = False) -> dict:
     shown = [f for f in apis if f in dy]
     if apis and not shown:
         findings.append("VIEWS:DYNAMIC_SHOWS_NO_ALLOCATED_API")
-    if "HAL_TIMEOUT" not in dy:
+    if layer != "LL" and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"
     if plantuml_jar() is None:

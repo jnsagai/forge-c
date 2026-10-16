@@ -25,7 +25,10 @@ _CODE_LINE = re.compile(r"^\s*(?:static\s+|inline\s+|const\s+)*(?:void|u?int\d+_
                         r"|^\s*return\b.*;\s*$|^\s*[A-Za-z_]\w*\s*\([^()]*(?:\([^()]*\)[^()]*)*\)\s*;\s*$")
 
 
-def allocated_functions(ws: Path) -> list[str]:
+def allocated_functions(ws: Path, prefix: str | None = None) -> list[str]:
+    from ..layer import api_prefix, layer_of
+
+    prefix = prefix or api_prefix(layer_of(ws))  # ADR-0009: LL work orders allocate LL_RCC_ functions
     p = ws / ARCH
     if not p.is_file():
         return []
@@ -33,8 +36,8 @@ def allocated_functions(ws: Path) -> list[str]:
     names: list[str] = []
     for row in _rows(body):
         for cell in row:
-            for n in re.findall(r"\bHAL_RCC_\w+", cell):
-                if n[len("HAL_RCC_"):] == n[len("HAL_RCC_"):].upper():  # ALL-CAPS = macro (r30: HAL_RCC_TIMEOUT_VALUE)
+            for n in re.findall(rf"\b{prefix}\w+", cell):
+                if n[len(prefix):] == n[len(prefix):].upper():  # ALL-CAPS = macro (r30: HAL_RCC_TIMEOUT_VALUE)
                     continue
                 if n not in names:
                     names.append(n)
@@ -68,7 +71,16 @@ def commented_out_code(raw: str) -> list[int]:
 
 
 def check_implementation(ws: Path) -> dict:
+    from ..common import sha256_file
+    from ..layer import layer_of, provided
+
+    layer = layer_of(ws)
+    if layer == "LL":
+        return _check_ll(ws)
     findings: list[str] = []
+    for rec in provided(ws):  # ADR-0009: the HAL work order must not change the PROVIDED, verified LL
+        if not (ws / rec["path"]).is_file() or sha256_file(ws / rec["path"]) != rec["sha256"]:
+            findings.append(f"IMPL:PROVIDED_COMPONENT_CHANGED:{rec['path']}")
     raw = {rel: (ws / rel).read_text(errors="replace") if (ws / rel).is_file() else None for rel in (HAL_H, HAL_C, LL_H)}
     for rel, txt in raw.items():
         if txt is None:
@@ -104,3 +116,43 @@ def check_implementation(ws: Path) -> dict:
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "hal_defined": len([f for f in wanted if f in hal_defs]),
                       "ll_functions": len(ll_defs), "ll_calls": len(called)}}
+
+
+def _reg_block_defined(ws: Path) -> list[str]:
+    out = []
+    for src in sorted(ws.glob("software/**/*.c")):
+        if "/tests/" in src.as_posix():
+            continue
+        code = strip_c(src.read_text(errors="replace"))
+        if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+ll_rcc_regs\s*\[", code, re.M) \
+                and not re.search(r"\bextern\b[^;]*\bll_rcc_regs\b", code):
+            out.append(f"IMPL:REG_BLOCK_DEFINED_IN_DRIVER:{src.relative_to(ws).as_posix()}")
+    return out
+
+
+def _check_ll(ws: Path) -> dict:
+    """ADR-0009 LL work order: every LL_RCC_ function allocated in SWE.2 is a static inline definition in the LL
+    header; no commented-out code; the register block is only declared (extern)."""
+    findings: list[str] = []
+    p = ws / LL_H
+    if not p.is_file():
+        findings.append(f"IMPL:MISSING_FILE:{LL_H}")
+        txt = ""
+    else:
+        txt = p.read_text(errors="replace")
+        findings += [f"IMPL:COMMENTED_OUT_CODE:{LL_H}:{n}" for n in commented_out_code(txt)[:10]]
+    ll_defs = _defs(strip_c(txt))
+    wanted = allocated_functions(ws, "LL_RCC_")
+    if not wanted:
+        findings.append("IMPL:NO_ALLOCATED_LL_FUNCTIONS_IN_SWE2")
+    for f in wanted:
+        if f not in ll_defs:
+            findings.append(f"IMPL:NOT_DEFINED:{f}")
+        elif not ("static" in ll_defs[f] and "inline" in ll_defs[f]):
+            findings.append(f"IMPL:LL_NOT_STATIC_INLINE:{f}")
+    if not ll_defs:
+        findings.append("IMPL:NO_LL_ACCESS_FUNCTIONS")
+    findings += _reg_block_defined(ws)
+    return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
+            "stats": {"allocated": len(wanted), "ll_defined": len([f for f in wanted if f in ll_defs]),
+                      "ll_functions": len(ll_defs)}}

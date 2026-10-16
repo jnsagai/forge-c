@@ -188,6 +188,7 @@ AUTHOR_STEPS = {
 
 
 CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
+LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
 
 
 def small() -> str:
@@ -320,13 +321,15 @@ ROBOT_STEPS = [
 
 def robot_test_author_prompt() -> str:
     """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
-    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + ROBOT_STEPS + [DEFECT_RULE] + [REPLY]
+    robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
+    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + [DEFECT_RULE] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def target_test_author_prompt() -> str:
     """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
-    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + TARGET_STEPS + [DEFECT_RULE] + [REPLY]
+    target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + [DEFECT_RULE] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -334,9 +337,10 @@ def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
+    ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
-        [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", UT_EXAMPLE)
-         for x in UT_STEPS] + [DEFECT_RULE, REPLY]
+        [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
+         for x in ut] + [DEFECT_RULE, REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -363,13 +367,156 @@ TRIAGE_READ = {1: "workproducts/SWE.1/software_requirements.md",
                3: "workproducts/SWE.1/software_requirements.md and software/hal/stm32n6xx_hal_rcc.h"}
 
 
+# ---- ADR-0009: LL-only work order (header-only register access; the HAL is a later, separate work order) --------
+LL_UT_EXAMPLE = ("static void ut_hsi(void)\n{\n    ut_reset_regs();\n"
+                 "    ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] = LL_RCC_CR_HSEON_MSK;\n    LL_RCC_HSI_Enable();\n"
+                 "    CHECK(\"UT-001\", ((ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK) != 0U) &&\n"
+                 "          ((ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSEON_MSK) != 0U));\n"
+                 "    CHECK(\"UT-002\", LL_RCC_HSI_IsReady() == 0U);\n"
+                 "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n"
+                 "    CHECK(\"UT-003\", LL_RCC_HSI_IsReady() == 1U);\n}")
+LL_API = ("static inline functions named exactly LL_RCC_<Name>_Enable, LL_RCC_<Name>_Disable, LL_RCC_<Name>_IsReady "
+          "(oscillators/PLLs: ready flag in RCC_SR), LL_RCC_<Name>_IsEnabled (peripheral clocks), "
+          "LL_RCC_<Name>_ForceReset and LL_RCC_<Name>_ReleaseReset (peripheral resets), where <Name> is HSI, HSE, "
+          "MSI, LSI, LSE, PLL1..PLL4 or the peripheral; all take (void); Enable/Disable/Reset return void, "
+          "IsReady/IsEnabled return uint32_t 1U or 0U")
+LL_AUTHOR_STEPS = {
+    "SWE.1": [
+        "read_file these RM0486 section files: {s1}.",
+        "write_file workproducts/SWE.1/software_requirements.md: a '# Software requirements' title, then 8-15 requirements "
+        "for the header-only RCC LL driver (register access only: no waiting, no timeouts, no parameters, no error "
+        "codes - a separate HAL work order adds those later), one per line exactly like: - **SWR-001** When the HSI "
+        "enable function is called, the RCC LL driver shall set RCC_CR.HSION. Each statement uses EARS "
+        "(The/When/While/Where/If..then), exactly one 'shall', the system name 'RCC LL driver', and ends with a period. "
+        "Put '  - Source: RM0486 p.<page>' and '  - Verification: <test method and pass criterion>' on the next lines "
+        "under each requirement, and end the file with '## Open points' listing unresolved ambiguities (or 'none'). "
+        "Cover: oscillator enable/disable (set/clear the enable bit), ready-flag queries (return 1U when the RCC_SR flag "
+        "is set, else 0U), peripheral clock enable/disable/is-enabled, peripheral reset assert/release, that every "
+        "write changes only the named bit and preserves all other bits of the register, that each access function "
+        "performs at most one read and one write of one RCC register and never waits, and a reset/startup "
+        "requirement (e.g. '- **SWR-0nn** While no LL function has been called after reset, the RCC LL driver shall "
+        "not write any RCC register.'). Add three measurable resource requirements from the .forge-run/manifest.json "
+        "budgets (flash, static RAM - the LL driver keeps no state - and stack) with '  - Source: work-order budget "
+        "(owner development target)'.",
+        AUTHOR_STEPS["SWE.1"][2], AUTHOR_STEPS["SWE.1"][3], AUTHOR_STEPS["SWE.1"][4], AUTHOR_STEPS["SWE.1"][5],
+        AUTHOR_STEPS["SWE.1"][6]],
+    "SWE.2": [
+        "Read workproducts/SWE.1/software_requirements.md and these RM0486 section files: {s1}.",
+        "write_file workproducts/SWE.2/software_architecture.md with sections: Components (only the LL header-only "
+        "stm32n6xx_ll_rcc.h; no HAL in this work order - a later HAL work order builds on this LL), Register access "
+        "(extern volatile uint32_t register-block array placed at the RCC base by the linker, indexed by offset/4; no "
+        "integer-to-pointer casts; host tests define the array; read-modify-write that preserves other bits), "
+        "Interfaces (each LL_RCC_ API: " + LL_API + "), Timing and error handling (no waiting and no error codes at "
+        "LL level: each function is one register access; callers bound their own polling), Memory and stack budget "
+        "(flash<=4096 B, RAM 0 B: no state, stack<=128 B), Requirement allocation table (SWR -> LL_RCC_ function), "
+        "and a Register table with one row per register/bit used: name | offset | bit position(s) | access | RM0486 "
+        "page. RCC base address 0x56028000 (RM0486 p.176). SWE.3 will implement only from this table.",
+        AUTHOR_STEPS["SWE.2"][2],
+        "write_file workproducts/SWE.2/architecture_static.puml: PlantUML component view between '@startuml' and "
+        "'@enduml' with a Caller, the component stm32n6xx_ll_rcc (LL, header-only) and the RCC register block "
+        "(0x56028000) and their dependencies (Caller -> LL -> registers).",
+        "write_file workproducts/SWE.2/architecture_dynamic.puml: PlantUML sequence view(s) between '@startuml' and "
+        "'@enduml' with participants Caller, stm32n6xx_ll_rcc, RCC, showing an oscillator enable followed by the "
+        "caller polling the LL ready query (the caller bounds the loop), plus a peripheral clock enable and a reset "
+        "assert/release sequence, using the allocated LL_RCC_ function names.",
+        AUTHOR_STEPS["SWE.2"][5], AUTHOR_STEPS["SWE.2"][6]],
+    "SWE.3": [AUTHOR_STEPS["SWE.3"][0],
+              AUTHOR_STEPS["SWE.3"][1].replace("then mcp__forge_build_mcp__measure_elf", "then "
+                                               "mcp__forge_build_mcp__measure_elf (the generated compile unit "
+                                               "software/src/stm32n6xx_ll_rcc.c includes the header-only LL)"),
+              "write_file workproducts/SWE.3/detailed_design.md: '# Detailed design'; a table | Function | Purpose | "
+              "Registers/bits (RM0486 page) | SWR IDs | with one row per LL_RCC_ function; '## Static analysis and "
+              "MISRA (subset)' with the cppcheck and clang results exactly as the tools reported them (rules hit, "
+              "counts; state that MISRA compliance is not claimed); '## Resource usage' with the measured flash/RAM "
+              "(measure_elf) and maximum stack frame (stack_usage) of the compile unit next to the architecture "
+              "budgets, noting that header-only inline code is accounted at its call sites.",
+              AUTHOR_STEPS["SWE.3"][3]],
+    "SWE.4": AUTHOR_STEPS["SWE.4"],
+    "SWE.5": [
+        "Read workproducts/SWE.2/software_architecture.md, software/ll/stm32n6xx_ll_rcc.h and software/tests/unit/test_rcc.c.",
+        "write_file software/tests/integration/test_rcc_integration.c: self-checking host program (define "
+        "'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' and a CHECK macro like the unit harness) exercising the LL "
+        "sequences a HAL will use: oscillator enable then a bounded poll of the ready query with the flag preset, the "
+        "same poll ending without ready when the flag is never set, peripheral clock enable then reset assert and "
+        "release, and that operations on different groups preserve each other's bits.",
+        AUTHOR_STEPS["SWE.5"][2], AUTHOR_STEPS["SWE.5"][3],
+        AUTHOR_STEPS["SWE.5"][4].replace("(timeout paths, measured sizes)", "(bounded polling by the caller, "
+                                         "measured sizes)"),
+        AUTHOR_STEPS["SWE.5"][5]],
+    "SWE.6": [AUTHOR_STEPS["SWE.6"][0],
+              AUTHOR_STEPS["SWE.6"][1].replace("'rc == HAL_ERROR with rc = HAL_RCC_...(...)'",
+                                               "'r == 1U with r = LL_RCC_..._IsReady()'"),
+              AUTHOR_STEPS["SWE.6"][2],
+              AUTHOR_STEPS["SWE.6"][3].replace("safety allocation out of scope by owner decision",
+                                               "safety allocation out of scope by owner decision, HAL not part of "
+                                               "this work order"),
+              AUTHOR_STEPS["SWE.6"][4]],
+}
+LL_LL_STEPS = [
+    LL_STEPS[0],
+    "For EACH function group of the SWE.2 Requirement allocation table make ONE edit_file call (or several groups "
+    "per call, see the size rule) on software/ll/stm32n6xx_ll_rcc.h with old_string exactly '{marker}' and "
+    "new_string = that group's functions, a blank line, then the same marker line again (so the next group can be "
+    "inserted). Interfaces: " + LL_API + ". Each body is one statement on ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] using "
+    "only the generated _MSK defines: Enable/ForceReset '|= MSK', Disable/ReleaseReset '&= ~MSK', IsReady/IsEnabled "
+    "'return ((ll_rcc_regs[...] & MSK) != 0U) ? 1U : 0U;'. Implement exactly the allocated functions, no more. Real "
+    "line breaks only.",
+    "Call mcp__forge_docs_mcp__validate_artifact with check swe3_all (register map + guideline + every allocated "
+    "LL_RCC_ function defined) and fix what it reports; it must be PASS.",
+    "Reply with the list of LL_RCC_ function names you declared.",
+]
+LL_FIX3_STEPS = [
+    "read_file software/ll/stm32n6xx_ll_rcc.h (the access functions after the register defines). Never change the "
+    "generated register defines or software/src/stm32n6xx_ll_rcc.c (generated compile unit).",
+    *FIX3_STEPS[1:],
+]
+LL_UT_STEPS = [
+    "read_file software/tests/unit/test_rcc.c (GENERATED harness: fake ll_rcc_regs, ut_reset_regs(), CHECK(id, cond), "
+    "markers; never change it), software/ll/stm32n6xx_ll_rcc.h (the LL_RCC_ functions to test) and "
+    "traceability/requirements_to_tests.csv (the UT ids per SWR).",
+    "For EACH LL_RCC_ function group make ONE edit_file call on software/tests/unit/test_rcc.c with old_string exactly "
+    "'{cases}' and new_string = ONE complete static void test function with its body, a blank line, then the marker "
+    "again. Never add prototypes or #define lines. Follow this example exactly (adapt names, registers and UT ids; use "
+    "ONLY LL_RCC_<REG>_OFFSET / _MSK defines that exist in software/ll/stm32n6xx_ll_rcc.h): ```{example}``` "
+    "Enable/Disable and ForceReset/ReleaseReset cases check the named bit AND that a preset unrelated bit of the same "
+    "register is preserved; IsReady/IsEnabled get a flag-set and a flag-clear case.",
+    UT_STEPS[2], UT_STEPS[3], UT_STEPS[4],
+]
+LL_TARGET_STEPS = [
+    "read_file software/ll/stm32n6xx_ll_rcc.h (the LL API and its exact names). " + PROVIDED,
+    "Target tests on the Renode STM32N6 (Cortex-M55) model: write software/tests/target/test_rcc_target.c (RCC model sets "
+    "each RCC_SR ready flag when its RCC_CR enable bit is set: Enable then a poll of at most 1000 iterations sees "
+    "IsReady() == 1U; Disable clears the enable bit) and software/tests/target/test_rcc_target_timeout.c (RCC model "
+    "never sets ready flags: after Enable, IsReady() stays 0U for 1000 polls). Each file: '#include "
+    "\"stm32n6xx_ll_rcc.h\"', '#include \"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int "
+    "main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' "
+    "on LL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
+    "definition (the linker places it).",
+    TARGET_STEPS[2], TARGET_STEPS[3],
+]
+LL_ROBOT_STEPS = [x.replace("software/hal/stm32n6xx_hal_rcc.h (exact HAL signatures)",
+                            "software/ll/stm32n6xx_ll_rcc.h (exact LL names)")
+                  .replace("'#include \"stm32n6xx_hal_rcc.h\"'", "'#include \"stm32n6xx_ll_rcc.h\"'")
+                  .replace("conditions on HAL return values", "conditions on LL return values")
+                  .replace("(e.g. CHECK_EXPR 'rc == HAL_ERROR with rc = HAL_RCC_...(...)' for 'shall return HAL_ERROR')",
+                           "(e.g. CHECK_EXPR 'r == 1U with r = LL_RCC_..._IsReady()' for 'shall return 1U')")
+                  for x in ROBOT_STEPS]
+HAL_ON_PROVIDED_LL = ("The LL header software/ll/stm32n6xx_ll_rcc.h is PROVIDED read-only by an earlier, verified LL "
+                      "work order (.forge-run/manifest.json 'provided'): never write or edit it; use only the LL_RCC_ "
+                      "functions it already declares.")
+
+
+def _layer() -> str:
+    return LAYER["layer"]
+
+
 def triage_prompt(k: int) -> str:
     """ADR-0008 L12: the upstream owner judges routed defects in a small, edit-free step before any fix."""
     steps = [f"Call use_skill with skill_name swe{k}-author.",
              f"This step only TRIAGES defects routed to SWE.{k}; use at most 8 tool calls and do NOT write or edit any "
              "file (a later step fixes accepted defects).",
              f"glob .forge-run/defects/DEF-*.json and read every defect with target_phase SWE.{k} and status IN_FIX.",
-             f"read_file {TRIAGE_READ[k]}.",
+             f"read_file {TRIAGE_READ[k].replace('software/hal/stm32n6xx_hal_rcc.h', 'software/ll/stm32n6xx_ll_rcc.h') if _layer() == 'LL' else TRIAGE_READ[k]}.",
              "For each defect: if the requirement AS WRITTEN demands what the defect asks and your phase's work product "
              "does not provide it, ACCEPT it (do nothing). Otherwise - the requirement does not demand it, contradicts "
              "it, or the downstream test calls something the requirement never asked for - call "
@@ -382,7 +529,8 @@ def triage_prompt(k: int) -> str:
 def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
-             FIX_DEFECTS.format(p="SWE.3")] + FIX3_STEPS + [REPLY]
+             FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
+        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -391,7 +539,8 @@ def ll_author_prompt() -> str:
     from ..inspection.regmap import FUNCTIONS_MARKER
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
-        [x.replace("{marker}", FUNCTIONS_MARKER) for x in LL_STEPS] + [REENTRY] + [REPLY]
+        [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
+        [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -399,14 +548,23 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + [REENTRY] + [REPLY]
+         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
-    body = [x.format(**fills) if "{s" in x else x for x in AUTHOR_STEPS[phase]]
+    table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
+    body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
+    if _layer() == "HAL" and phase == "SWE.2":  # ADR-0009: the HAL is designed on the PROVIDED, frozen LL
+        body = [x.replace("Read workproducts/SWE.1/software_requirements.md and",
+                          "Read workproducts/SWE.1/software_requirements.md, software/ll/stm32n6xx_ll_rcc.h (PROVIDED "
+                          "LL, frozen) and")
+                 .replace("Components (LL header-only stm32n6xx_ll_rcc.h, HAL stm32n6xx_hal_rcc.c/.h)",
+                          "Components (PROVIDED LL header-only stm32n6xx_ll_rcc.h from the verified LL work order - the "
+                          "HAL calls only the LL_RCC_ functions it declares; HAL stm32n6xx_hal_rcc.c/.h)")
+                 for x in body]
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
         [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []

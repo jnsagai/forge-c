@@ -48,6 +48,14 @@ The dashboard (`python -m forge_factory.dashboard.app --port 8765`) shows the re
   restart the supervisor only when no Fabro incident is still active. Reference run 2026-10-16: detected in 125 s,
   recovered (incident RESOLVED after stable polls) in 319 s, 0 model calls, run history and archives intact.
 
+* Production side effects (CRE-T045): archive sealing, the infra `main` compare-and-swap switch/rollback and the
+  work-order launch are journaled in `cre_side_effects` (`reliability/production.py`). In OBSERVE_ONLY the journal
+  only records (a `cre.side_effect` event with `shadow_decision` shows what enforcement would have done); in
+  PILOT/ACTIVE a DONE key is never executed twice and an unknown outcome stops at REQUIRES_OFFLINE_ATTENTION.
+* Repair-dispatch admission (CRE-T044): per fault fingerprint (recurrences do not reset it), factory-wide per hour,
+  deterministic jittered backoff; ledger `cre_retry_attempts` op_key `repair_dispatch:<fingerprint>`. OBSERVE_ONLY
+  rows are `SHADOW_ADMITTED` and never filter 002 dispatch.
+
 ## 4. Rollback
 
 * Reversible operational actions (`restart_dashboard`, `restart_mcp_server`, `restart_llm_gateway`, `drain_queue`,
