@@ -41,6 +41,34 @@ def prototypes(header: str) -> dict[str, str]:
     return {m.group(1): m.group(2).strip() for m in re.finditer(r"\b((?:HAL|LL)_RCC_\w+)\s*\(([^)]*)\)\s*[;{]", header)}
 
 
+SELECTED = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear) the selected (?P<kind>enable|reset) bit "
+                      r"of (?P<reg>RCC_[A-Z0-9]+)")
+
+
+def _selected(sid: str, sel: re.Match, fns: list[str], protos: dict[str, str], idx: dict[str, dict],
+              notes: list[str]) -> list[dict]:
+    """HAL_RCC_<P>_Enable/_Disable -> <P>EN, _Reset/_ReleaseReset -> <P>RST (or LL_RCC_<P>_ForceReset...) of the
+    register the requirement names; the bit position comes from the RM index."""
+    reg = idx.get(sel["reg"])
+    out = []
+    if reg is None:
+        notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:{sel['reg']} not in RM")
+        return out
+    suffix = "EN" if sel["kind"] == "enable" else "RST"
+    for fn in fns:
+        m = re.match(r"(?:HAL|LL)_RCC_([A-Z0-9]+)_(\w+)$", fn)
+        if not m or fn not in protos:
+            continue
+        fld = reg["fields"].get(m.group(1) + suffix)
+        if fld is None:
+            notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:{m.group(1) + suffix} not a field of {sel['reg']}")
+            continue
+        mask = ((1 << (fld["msb"] - fld["lsb"] + 1)) - 1) << fld["lsb"]
+        out.append({"swr": sid, "function": fn, "params": protos[fn], "op": sel["op"], "word": reg["offset"] // 4,
+                    "mask": mask, "register": sel["reg"], "field": m.group(1) + suffix, "ready": None})
+    return out
+
+
 def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]) -> tuple[list[dict], list[str]]:
     alloc, protos = allocation(arch_md), prototypes(header)
     cases, notes = [], []
@@ -48,6 +76,9 @@ def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]
         sid, text = m.group(1), m.group(2)
         sm = SET_CLEAR.search(text)
         if not sm:
+            sel = SELECTED.search(text)
+            if sel:  # "set the selected enable bit of RCC_AHB1ENR": field from the SWE.2 API name contract
+                cases += _selected(sid, sel, alloc.get(sid, []), protos, idx, notes)
             continue
         reg, fld = idx.get(sm["reg"]), sm["fld"]
         if reg is None or fld not in reg["fields"]:
@@ -70,6 +101,56 @@ def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]
     return cases, notes
 
 
+TIMEOUT_RQ = re.compile(r"does not set within .*?(?P<n>HAL_RCC_TIMEOUT_VALUE|\d+).*?shall clear the enable bit.*?"
+                        r"return HAL_TIMEOUT", re.I)
+INVALID_RQ = re.compile(r"invalid parameter.*?shall return HAL_ERROR without any register write.*?timeout argument of 0 "
+                        r"or greater than (?P<max>HAL_RCC_TIMEOUT_VALUE|\d+)", re.I | re.S)
+
+
+def derive_timeouts(requirements_md: str, header: str, idx: dict[str, dict]) -> list[dict]:
+    """Timeout/rollback (SWR-013/015 style) and invalid-timeout (SWR-014 style) cases for every oscillator enable
+    with a timeout parameter. Expected values: the requirement text and the RM bit positions; HAL_TIMEOUT/HAL_ERROR
+    are the API contract symbols of the interface header (SWE.2), not implementation behaviour."""
+    out = []
+    protos = prototypes(header)
+    has_to = any(TIMEOUT_RQ.search(m.group(0)) for m in re.finditer(r"\*\*SWR-\d{3}\*\*.+", requirements_md))
+    inv = INVALID_RQ.search(requirements_md)
+    cr, sr = idx.get("RCC_CR"), idx.get("RCC_SR")
+    for fn, params in sorted(protos.items()):
+        m = re.match(r"HAL_RCC_(\w+?)_Enable$", fn)
+        if not (m and cr and re.search(r"uint32_t\s+\w+", params or "")):
+            continue
+        on = cr["fields"].get(m.group(1) + "ON")
+        if on is None:
+            continue
+        mask = 1 << on["lsb"]
+        if has_to:
+            out.append({"kind": "timeout", "function": fn, "word": cr["offset"] // 4, "mask": mask,
+                        "sr_word": (sr or {"offset": 4})["offset"] // 4, "t": 5})
+        if inv:
+            out.append({"kind": "invalid", "function": fn, "arg": "0U"})
+            out.append({"kind": "invalid", "function": fn, "arg": "HAL_RCC_TIMEOUT_VALUE + 1U"})
+    return out
+
+
+def timeout_source(cases: list[dict], start: int) -> list[str]:
+    lines = []
+    for i, c in enumerate(cases, start):
+        if c["kind"] == "timeout":
+            lines += [f"    /* rollback + bound: ready never set, timeout {c['t']} (requirement text, RM bit) */",
+                      "    memset((void *)regs, 0, sizeof regs); shim_n = 0UL;",
+                      f"    {{ hal_status_t st = {c['function']}({c['t']}U);",
+                      f"      int ok = (st == HAL_TIMEOUT) && ((regs[{c['word']}U] & 0x{c['mask']:08X}U) == 0U)"
+                      f" && (shim_n <= {c['t'] + 2}UL) && (shim_n >= 2UL);",
+                      f'      printf("OR-{i:03d} TIMEOUT {c["function"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
+        else:
+            lines += ["    memset((void *)regs, 0, sizeof regs); shim_n = 0UL;",
+                      f"    {{ hal_status_t st = {c['function']}({c['arg']});",
+                      "      int ok = (st == HAL_ERROR) && (shim_n == 0UL);",
+                      f'      printf("OR-{i:03d} INVALID {c["function"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
+    return lines
+
+
 def _call(fn: str, params: str) -> str:
     if params in ("", "void"):
         return f"{fn}()"
@@ -80,7 +161,7 @@ def _call(fn: str, params: str) -> str:
     return f"{fn}({', '.join(args)})"
 
 
-def c_source(cases: list[dict], include: str) -> str:
+def c_source(cases: list[dict], include: str, extra: list[dict] | None = None) -> str:
     lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stdio.h>", "#include <string.h>",
              "volatile uint32_t regs[1024];", "unsigned long shim_n;",
              "volatile uint32_t (*shim_regs(void))[1024] { shim_n++; return &regs; }", "static int fails;",
@@ -98,6 +179,7 @@ def c_source(cases: list[dict], include: str) -> str:
                   f"    {{ int ok = ((regs[{c['word']}U] & 0x{c['mask']:08X}U) {'!=' if c['op'] == 'set' else '=='} 0U)"
                   f" && ((regs[{c['word']}U] & ~0x{c['mask']:08X}U) == (before[{c['word']}U] & ~0x{c['mask']:08X}U));",
                   f'      printf("OR-{i:03d} {c["swr"]} {c["function"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
+    lines += timeout_source(extra or [], len(cases) + 1)
     lines += ["    return fails ? 1 : 0;", "}", ""]
     return "\n".join(lines)
 
@@ -112,7 +194,8 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
     sections = ws / "inputs/sections/RM0486"
     idx = hardware.index(sections)
     cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
-    src = c_source(cases, api_header)
+    extra = derive_timeouts(req, hdr_path.read_text(errors="replace"), idx) if api_header.endswith("hal_rcc.h") else []
+    src = c_source(cases, api_header, extra)
     prov = {"oracle_id": "OR-" + hashlib.sha256(src.encode()).hexdigest()[:12], "work_order_id": ws.parent.name,
             "requirement_refs": sorted({c["swr"] for c in cases}),
             "source_digests": [hashlib.sha256(req.encode()).hexdigest()] + sorted({
@@ -123,7 +206,7 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
             "oracle_file_hash": hashlib.sha256(src.encode()).hexdigest()}
     impl = {str(p): p.read_text(errors="replace") for p in [hdr_path, *sources]}
     prov = oracle.assess(prov, test_text=src.replace("OR-", "CHECK("), impl=impl)
-    if not cases:
+    if not cases and not extra:
         return {"status": "NOT_RUN", "notes": notes, "provenance": prov}
     with tempfile.TemporaryDirectory() as td:
         t = Path(td)
@@ -140,6 +223,6 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
             objs.append(str(o))
         subprocess.run(["gcc", *objs, "-o", str(t / "oracle")], check=True, capture_output=True)
         r = subprocess.run([str(t / "oracle")], capture_output=True, text=True, timeout=60)
-    res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}) (\S+) (PASS|FAIL)$", r.stdout, re.M)
-    return {"status": "PASS" if r.returncode == 0 and res else "FAIL", "cases": len(cases), "results": res,
+    res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}|TIMEOUT|INVALID) (\S+) (PASS|FAIL)$", r.stdout, re.M)
+    return {"status": "PASS" if r.returncode == 0 and res else "FAIL", "cases": len(cases) + len(extra), "results": res,
             "notes": notes, "provenance": prov, "source": src, "output_sha256": hashlib.sha256(r.stdout.encode()).hexdigest()}
