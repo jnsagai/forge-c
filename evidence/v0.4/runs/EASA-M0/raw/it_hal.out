@@ -1,0 +1,22 @@
+IT-001 SWR-002 HSE enable sets CR bit4 only PASS
+IT-002 SWR-001 HSI enable sets CR bit3 only PASS
+IT-003 SWR-006 HSE disable clears CR bit4 only PASS
+IT-004 SWR-005 HSI disable clears CR bit3 only PASS
+IT-005 SWR-007 ADC12 enable -> AHB1ENR(0x250) bit5 only PASS
+IT-006 SWR-007 GPDMA1 enable -> AHB1ENR bit4 only PASS
+IT-007 SWR-008 ADC12 disable clears bit5 only PASS
+IT-008 SWR-008 GPDMA1 disable clears bit4 only PASS
+IT-009 SWR-009 ADC12 reset -> AHB1RSTR(0x210) bit5 only PASS
+IT-010 SWR-009 GPDMA1 reset -> AHB1RSTR bit4 only PASS
+IT-011 SWR-010 ADC12 release clears bit5 only PASS
+IT-012 SWR-010 GPDMA1 release clears bit4 only PASS
+IT-013 SWR-015/013 HSE never ready t=1: <=t polls (1), TIMEOUT, HSEON cleared PASS
+IT-013 SWR-015/013 HSE never ready t=2: <=t polls (2), TIMEOUT, HSEON cleared PASS
+IT-013 SWR-015/013 HSE never ready t=3: <=t polls (3), TIMEOUT, HSEON cleared PASS
+IT-013 SWR-015/013 HSE never ready t=30: <=t polls (30), TIMEOUT, HSEON cleared PASS
+IT-013 SWR-015/013 HSE never ready t=300: <=t polls (300), TIMEOUT, HSEON cleared PASS
+IT-014 SWR-015 bound at HAL_RCC_TIMEOUT_VALUE: <=1000 polls PASS
+IT-015 SWR-014 timeout 0 -> HAL_ERROR, no register access PASS
+IT-016 SWR-014 timeout 1001 -> HAL_ERROR, no register access PASS
+IT-017 SWR-003/013/015 HSI never ready from OFF: TIMEOUT, <=7 polls, HSION cleared PASS
+OBS-001 SWR-013 HSI already ON at reset, never ready: status=2 HSION_after=0
