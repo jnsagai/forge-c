@@ -35,6 +35,7 @@ from ..common import data_root
 from ..layer import layer_of
 
 ARCH = "workproducts/SWE.2/architecture_static.puml"
+ARCH_DOC = "workproducts/SWE.2/software_architecture.md"
 UNITS_MD = "workproducts/SWE.3/unit_specifications.md"
 UNITS_DIR = "workproducts/SWE.3/unit_specifications"
 DESIGN_DIR = "workproducts/SWE.3/detailed_design"
@@ -487,6 +488,15 @@ def latest_run(ws: Path, op: str) -> dict | None:
     return {"status": r.get("status"), "raw": raws}
 
 
+def documented_interfaces(ws: Path) -> list[str]:
+    """CAPA-036 (r119): interface ids the frozen architecture DOCUMENT defines (first cell of an interface-table row,
+    '| IF-01 | LL_RCC_HSI_Enable | ...'). Both frozen SWE.2 views are the architecture design; r119's SWE.5 stopped
+    STUCK because tests citing the per-function interfaces IF-01..IF-18 of the document were 'unknown'."""
+    p = ws / ARCH_DOC
+    text = p.read_text(errors="replace") if p.is_file() else ""
+    return sorted(set(re.findall(r"^\s*\|\s*(IF-\d{2})\s*\|", text, re.M)))
+
+
 def check_results(raws: list[Path]) -> dict[str, str]:
     """'<ID> PASS|FAIL' lines of self-checking host programs: per test id (sub-ids like UT-003b or IT-005-ADC12_EN count
     for their test; any failing sub-check fails the test). CAPA-035 (r117): '_' in a sub-id hid every check of IT-005
@@ -621,7 +631,8 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
         rep["matrices"].append(write_matrix(ws, 4, rows4, [s for s in specs if s not in ok], write=w(4)))
     if k >= 3:
         ifs = sorted({IF_RX.match(c["label"]).group(0) for c in model["interfaces"] if IF_RX.match(c["label"])})
-        elements = set(ifs) | set(model["swcs"])
+        elements = set(ifs) | set(documented_interfaces(ws)) | set(model["swcs"])
+        known = ", ".join(sorted(elements)) or "none"
         it = latest_run(ws, "run_integration")
         tt = latest_run(ws, "run_renode")
         res = check_results(it["raw"]) if it else {}
@@ -635,7 +646,7 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
                 res.get(t["test"], "NOT_RUN")
             for v in t["verifies"]:
                 if v not in elements:
-                    f5.append(f"IT:UNKNOWN_ARCH_REF:{t['test']}:{v}")
+                    f5.append(f"IT:UNKNOWN_ARCH_REF:{t['test']}:{v} (architecture elements: {known})")
                 rows5.append({"test": t["test"], "file": t["file"], "arch_element": v, "result": result,
                               "status": "VERIFIED" if result == "PASS" and v in elements else "UNVERIFIED"})
         ok = {r["arch_element"] for r in rows5 if r["status"] == "VERIFIED"}

@@ -235,7 +235,8 @@ def test_at091_interface_and_validation_trace(ws):
     _edit(ws, "software/tests/integration/test_rcc_integration.c", "@verifies IF-02", "@verifies IF-07")
     rep = swtrace.build_all(ws, render=False, doxygen=False)
     assert "IT:INTERFACE_NOT_VERIFIED:IF-02" in rep["findings"]["SWE.5"]
-    assert "IT:UNKNOWN_ARCH_REF:IT-002:IF-07" in rep["findings"]["SWE.5"]
+    assert any(x.startswith("IT:UNKNOWN_ARCH_REF:IT-002:IF-07 (architecture elements: IF-01, IF-02")
+               for x in rep["findings"]["SWE.5"])
     bad = ROBOT.replace("<tag>SWR-003</tag></tags><status status=\"PASS\"/>", "<tag>SWR-033</tag></tags><status status=\"PASS\"/>")
     with (ws / "evidence/tool-results.jsonl").open("a") as f:      # a newer, properly recorded run_robot result
         f.write(json.dumps({"op": "run_robot", "phase": "SWE.6", "result": {
@@ -477,3 +478,13 @@ def test_capa035_sub_check_ids_with_underscores_count_for_their_test(tmp_path):
     log.write_text("IT-001 PASS\nIT-005-ADC12_EN PASS\nIT-005-ADC12_RST_ASSERTED PASS\nIT-006-CR_KEPT PASS\n"
                    "IT-006-RSTR_KEPT FAIL\nIT-007_x PASS\n")
     assert swtrace.check_results([log]) == {"IT-001": "PASS", "IT-005": "PASS", "IT-006": "FAIL", "IT-007": "PASS"}
+
+
+def test_capa036_interfaces_defined_in_the_frozen_architecture_document_are_architecture_elements(ws):
+    doc = ws / swtrace.ARCH_DOC
+    doc.parent.mkdir(parents=True, exist_ok=True)
+    doc.write_text("## Interfaces\n\n| Id | Function | Register |\n|---|---|---|\n| IF-07 | HAL_RCC_HSE_Enable | RCC_CR |\n")
+    _edit(ws, "software/tests/integration/test_rcc_integration.c", "@verifies IF-02", "@verifies IF-02 IF-07 IF-08")
+    f = swtrace.build_all(ws, render=False, doxygen=False)["findings"]["SWE.5"]
+    assert not any(":IF-07" in x for x in f)                                 # defined in the document: known
+    assert any(x.startswith("IT:UNKNOWN_ARCH_REF:IT-002:IF-08 (architecture elements:") and "IF-07" in x for x in f)
