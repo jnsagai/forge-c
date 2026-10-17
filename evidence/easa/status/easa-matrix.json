@@ -109,9 +109,9 @@
   },
   "fr_counts": {
     "BLOCKED": 0,
-    "COVERED": 66,
+    "COVERED": 69,
     "OPEN": 0,
-    "PARTIAL": 6
+    "PARTIAL": 3
   },
   "fr_matrix": [
     {
@@ -1243,13 +1243,13 @@
         "EASA-AT-072",
         "EASA-AT-079"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-061",
       "priority": "P0",
       "task_status": [
         "PASS",
         "PASS",
-        "FAIL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T005",
@@ -1475,7 +1475,7 @@
         "EASA-AT-070",
         "EASA-AT-072"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-071",
       "priority": "P0",
       "task_status": [
@@ -1483,7 +1483,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "FAIL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T003",
@@ -1502,7 +1502,7 @@
         "EASA-AT-072",
         "EASA-AT-080"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-072",
       "priority": "P0",
       "task_status": [
@@ -1510,7 +1510,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "FAIL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T006",
@@ -1521,14 +1521,13 @@
       ]
     }
   ],
-  "generated_at": "2026-10-17T21:15:59.695014Z",
-  "git_head": "bb05e2c44267c3c5f7bffc48d46ddb6052abe378",
+  "generated_at": "2026-10-17T21:16:29.468128Z",
+  "git_head": "dce71374fcd71a215a86b49b752e1b4b54e6acae",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
     "BLOCKED": 1,
-    "FAIL": 1,
-    "PASS": 70
+    "PASS": 71
   },
   "tasks": {
     "EASA-T001": {
@@ -2598,9 +2597,9 @@
         "EASA-FR-071",
         "EASA-FR-072"
       ],
+      "git_head": "dce71374fcd7",
       "priority": "P0",
-      "reason": "status FAIL exit 1",
-      "status": "FAIL",
+      "status": "PASS",
       "title": "Prepare review PR without auto-merging, no claim of ISO conformance or 100% assurance."
     }
   }

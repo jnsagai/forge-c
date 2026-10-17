@@ -1,9 +1,9 @@
 # Feature 006 (EASA) status — generated from evidence records
 
-Generated 2026-10-17T21:15:59.695014Z at `bb05e2c44267`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
+Generated 2026-10-17T21:16:29.468128Z at `dce71374fcd7`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
 
-Tasks: BLOCKED 1, FAIL 1, PASS 70.
-FRs: COVERED 66, PARTIAL 6, BLOCKED 0, OPEN 0.
+Tasks: BLOCKED 1, PASS 71.
+FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0.
 
 | Task | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|
@@ -78,7 +78,7 @@ FRs: COVERED 66, PARTIAL 6, BLOCKED 0, OPEN 0.
 | EASA-T069 | P0 | BLOCKED | 069 | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending). |
 | EASA-T070 | P0 | PASS | 070 | evidence/v0.4/runs/EASA-T070/latest.json |
 | EASA-T071 | P0 | PASS | 071 | evidence/v0.4/runs/EASA-T071/latest.json |
-| EASA-T072 | P0 | FAIL | 072 | evidence/v0.4/runs/EASA-T072/latest.json |
+| EASA-T072 | P0 | PASS | 072 | evidence/v0.4/runs/EASA-T072/latest.json |
 
 ## Owner addendum 2026-10-17 (EASA-OR-001..011)
 
@@ -156,7 +156,7 @@ Tasks: PARTIAL 1, PASS 6.
 | EASA-FR-058 | P0 | COVERED | T019=PASS, T056=PASS, T063=PASS |
 | EASA-FR-059 | P0 | COVERED | T020=PASS, T047=PASS, T058=PASS, T066=PASS |
 | EASA-FR-060 | P0 | COVERED | T057=PASS, T058=PASS, T063=PASS |
-| EASA-FR-061 | P0 | PARTIAL | T005=PASS, T058=PASS, T072=FAIL |
+| EASA-FR-061 | P0 | COVERED | T005=PASS, T058=PASS, T072=PASS |
 | EASA-FR-062 | P0 | PARTIAL | T012=PASS, T059=PASS, T069=BLOCKED |
 | EASA-FR-063 | P0 | COVERED | T007=PASS, T021=PASS, T060=PASS |
 | EASA-FR-064 | P0 | COVERED | T021=PASS, T022=PASS, T060=PASS |
@@ -166,7 +166,7 @@ Tasks: PARTIAL 1, PASS 6.
 | EASA-FR-068 | P0 | PARTIAL | T014=PASS, T038=PASS, T042=PASS, T055=PASS, T069=BLOCKED |
 | EASA-FR-069 | P0 | COVERED | T023=PASS, T039=PASS, T046=PASS, T065=PASS |
 | EASA-FR-070 | P0 | COVERED | T008=PASS, T010=PASS, T015=PASS, T071=PASS |
-| EASA-FR-071 | P0 | PARTIAL | T003=PASS, T062=PASS, T064=PASS, T070=PASS, T072=FAIL |
-| EASA-FR-072 | P0 | PARTIAL | T006=PASS, T013=PASS, T023=PASS, T061=PASS, T072=FAIL |
+| EASA-FR-071 | P0 | COVERED | T003=PASS, T062=PASS, T064=PASS, T070=PASS, T072=PASS |
+| EASA-FR-072 | P0 | COVERED | T006=PASS, T013=PASS, T023=PASS, T061=PASS, T072=PASS |
 
 Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.
