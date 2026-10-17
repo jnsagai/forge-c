@@ -488,3 +488,16 @@ def test_capa036_interfaces_defined_in_the_frozen_architecture_document_are_arch
     f = swtrace.build_all(ws, render=False, doxygen=False)["findings"]["SWE.5"]
     assert not any(":IF-07" in x for x in f)                                 # defined in the document: known
     assert any(x.startswith("IT:UNKNOWN_ARCH_REF:IT-002:IF-08 (architecture elements:") and "IF-07" in x for x in f)
+
+
+@pytest.mark.parametrize("text,budget", [
+    ("The RCC LL driver shall use no more than 4096 bytes of code and constant data in the final image.", True),
+    ("The RCC LL driver shall use no more than 4096 bytes of program flash.", True),
+    ("The RCC LL driver shall not exceed 2 KiB of ROM.", True),
+    ("The RCC LL driver shall use at most 128 bytes of stack per call.", True),
+    ("When the HSE enable is requested, the RCC driver shall poll RCC_SR.HSERDY at most 1000 times.", False),
+    ("When the HSI enable is requested, the RCC LL driver shall set RCC_CR.HSION.", False),
+])
+def test_capa031_any_byte_quantity_limit_is_a_resource_budget(text, budget):
+    """CAPA-031 iteration 2 (r120): 'no more than 4096 bytes of code and constant data' was not recognised."""
+    assert bool(swtrace.BUDGET_RX.search(text)) is budget

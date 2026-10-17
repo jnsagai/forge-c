@@ -69,8 +69,10 @@ def developed_swcs(ws: Path) -> list[str]:
     return {"LL": ["SWC_LL"], "HAL": ["SWC_HAL"]}.get(layer, ["SWC_LL", "SWC_HAL"])
 
 
-BUDGET_RX = re.compile(r"\b(no more than|at most|not exceed\w*)\s+\d+\s*bytes?\s+of\s+(program\s+)?(flash|static RAM|RAM|stack)",
-                       re.I)
+# CAPA-031 iteration 2 (r120): any limit on a byte quantity is a resource budget, whatever memory it names
+# ('4096 bytes of code and constant data', '2 KiB of ROM', 'stack ... at most 128 bytes'), not only flash/RAM/stack
+BUDGET_RX = re.compile(r"\b(no more than|at most|not (?:to )?exceed\w*|a maximum of|maximum of)\s+\d+(?:[.,]\d+)?\s*"
+                       r"(?:bytes?|KiB|KB|kB|MiB|MB)\b", re.I)
 
 
 INITIAL_STATE_RX = re.compile(r"^While no\b.{0,80}\bhas been (called|requested)\b.{0,80}\bshall not\b", re.I)
