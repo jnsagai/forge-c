@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.assurance.regress",
+    "--full",
+    "--out",
+    "evidence/easa/regression/regression-a7d20ad.json"
+  ],
+  "duration_s": 544.462,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a7d20adc5e218baeb27bdf01b71b8f7b4fba6ad6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T004/20261017T121827.log",
+  "log_sha256": "a7d966734cb1f56c320372f2cff62544c23e208f752c71b7f0b394db3458ea7e",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T004",
+  "ts_utc": "2026-10-17T12:18:27.899060Z"
+}
