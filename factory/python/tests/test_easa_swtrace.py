@@ -405,3 +405,27 @@ def test_capa030_design_citation_generated_from_unit_spec(ws):
     before = t
     swtrace.check_phase(ws, "SWE.3")
     assert p.read_text() == before                                            # idempotent
+
+
+def test_capa031_budget_requirements_are_component_level_and_generated_tu_is_protected(ws):
+    """CAPA-031 (r113): flash/RAM/stack budgets are SWC constraints; forcing unit refinement made the agent invent
+    'resource units' and edit the generated LL compile unit."""
+    _edit(ws, "workproducts/SWE.1/software_requirements.md", "  - Source: owner\n",
+          "  - Source: owner\n- **SWR-004** The RCC driver shall use no more than 4096 bytes of program flash.\n  - Source: owner\n")
+    _edit(ws, "workproducts/SWE.2/architecture_static.puml", "SWR-001, SWR-002, SWR-003", "SWR-001, SWR-002, SWR-003, SWR-004")
+    assert swtrace.component_constraints(ws) == {"SWR-004"}
+    r = swtrace.check_units(ws, render=False, export=False)
+    assert not any("SWR_NOT_REFINED" in x for x in r["major_findings"])
+    rep = swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.3")
+    m2 = (ws / "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv").read_text()
+    assert ",SWR-004,COMPONENT_LEVEL" in m2 and rep["matrices"][1]["uncovered"] == []
+    from forge_factory.layer import LL_TU, LL_TU_TEXT
+
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"layer": "LL"}))
+    (ws / LL_TU).parent.mkdir(parents=True, exist_ok=True)
+    (ws / LL_TU).write_text(LL_TU_TEXT)
+    assert "CODE:GENERATED_UNIT_MODIFIED:" + LL_TU not in swtrace.check_units(ws, render=False, export=False)["major_findings"]
+    (ws / LL_TU).write_text(LL_TU_TEXT + "void probe(void) { }\n")
+    assert "CODE:GENERATED_UNIT_MODIFIED:" + LL_TU in swtrace.check_units(ws, render=False, export=False)["major_findings"]
+    u = swtrace.parse_units("## SWU-LL-07: x\n- Functions: LL_RCC_a (prose, more), `LL_RCC_b`, LL_RCC_c; no storage\n")
+    assert u[0]["functions"] == ["LL_RCC_a", "LL_RCC_b"]

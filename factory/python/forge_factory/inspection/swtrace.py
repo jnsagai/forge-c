@@ -68,6 +68,16 @@ def developed_swcs(ws: Path) -> list[str]:
     return {"LL": ["SWC_LL"], "HAL": ["SWC_HAL"]}.get(layer, ["SWC_LL", "SWC_HAL"])
 
 
+BUDGET_RX = re.compile(r"\b(no more than|at most|not exceed\w*)\s+\d+\s*bytes?\s+of\s+(program\s+)?(flash|static RAM|RAM|stack)",
+                       re.I)
+
+
+def component_constraints(ws: Path) -> set[str]:
+    """CAPA-031 (r113): resource budgets (flash/RAM/stack) constrain the whole SWC; they are verified by measurement
+    (SWE.3 tools, SWE.6 'Should Be At Most'), not refined into a software unit."""
+    return {sid for sid, text in swr_texts(ws).items() if BUDGET_RX.search(text)}
+
+
 def requirement_ids(ws: Path) -> list[str]:
     md = _read(ws, REQS)
     return sorted(set(re.findall(r"\*\*(SWR-\d{3})\*\*", md)))
@@ -144,8 +154,13 @@ def parse_units(text: str) -> list[dict]:
             k, v = kv.group(1).lower(), kv.group(2).strip()
             if k == "swc":
                 cur["swc"] = v.split()[0].strip("`")
-            elif k == "functions":
-                cur["functions"] = [x.strip(" `") for x in v.split(",") if x.strip(" `")]
+            elif k == "functions":  # CAPA-031: C identifiers only; prose and parenthesised notes are ignored
+                fns = []
+                for item in re.sub(r"\([^)]*\)", "", v).split(","):
+                    m = re.match(r"\s*`?([A-Za-z_]\w*)`?\s*$", item)
+                    if m:
+                        fns.append(m.group(1))
+                cur["functions"] = fns
             else:
                 cur["design"] = v.strip("`")
             continue
@@ -297,7 +312,13 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
                     f.append(f"UNIT:DESIGN_RENDER_FAILED:{u['id']}:{why[:80]}")
     refined = {r for u in units for s in u["specs"] for r in s["swrs"]}
     allocated_dev = {r for s in dev for r in model.get("allocation", {}).get(s, [])}
-    f += [f"UNIT:SWR_NOT_REFINED:{r}" for r in sorted(allocated_dev & reqs) if r not in refined]
+    comp = component_constraints(ws)
+    f += [f"UNIT:SWR_NOT_REFINED:{r}" for r in sorted(allocated_dev & reqs) if r not in refined and r not in comp]
+    from ..layer import LL_TU, LL_TU_TEXT, layer_of
+
+    tu = ws / LL_TU
+    if layer_of(ws) == "LL" and tu.is_file() and tu.read_text(errors="replace") != LL_TU_TEXT:
+        f.append(f"CODE:GENERATED_UNIT_MODIFIED:{LL_TU}")  # CAPA-031: the generated compile unit is not authored code
     exported = []
     if export and units:
         from .reqif_export import validate as reqif_validate
@@ -550,9 +571,11 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
              for x in u["units"] for s in x["specs"] for r in s["swrs"]]
     refined = {r["swr"] for r in rows2}
     dev_alloc = sorted({r for s in developed_swcs(ws) for r in model["allocation"].get(s, [])})
-    rows2 += [{"uspec": "", "unit": "", "swc": "", "swr": r, "status": "NOT_REFINED"} for r in dev_alloc
-              if r not in refined]
-    rep["matrices"].append(write_matrix(ws, 2, rows2, [r for r in dev_alloc if r not in refined], write=w(2)))
+    comp = component_constraints(ws)
+    rows2 += [{"uspec": "", "unit": "", "swc": "", "swr": r,
+               "status": "COMPONENT_LEVEL" if r in comp else "NOT_REFINED"} for r in dev_alloc if r not in refined]
+    rep["matrices"].append(write_matrix(ws, 2, rows2, [r for r in dev_alloc if r not in refined and r not in comp],
+                                        write=w(2)))
     rep["matrices"].append(write_matrix(ws, 3, c["rows"], [f.split(":", 2)[2] for f in c["major_findings"]
                                                           if f.startswith("CODE:SPEC_NOT_IMPLEMENTED")], write=w(3)))
     specs = sorted({s["id"] for x in u["units"] for s in x["specs"]})
