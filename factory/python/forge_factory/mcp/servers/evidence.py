@@ -99,6 +99,36 @@ def freeze_baseline(ctx: ToolContext, a: FreezeIn) -> dict:
                   input_obj=a.model_dump())
 
 
+def _allocation_map(ws) -> dict[str, list[str]]:
+    """SWR -> concrete API functions allocated to it in the SWE.2 requirement allocation table (layer prefix)."""
+    from ...inspection.architecture import ARCH, _rows, _sections, swr_ids
+    from ...layer import api_prefix, layer_of
+
+    p = ws / ARCH
+    if not p.is_file():
+        return {}
+    pre = api_prefix(layer_of(ws))
+    body = next((b for h, b in _sections(p.read_text(errors="replace")).items() if re.search(r"allocation", h)), "")
+    out: dict[str, list[str]] = {}
+    for row in _rows(body):
+        cells = " ".join(row)
+        names = [n for n in re.findall(rf"\b{pre}\w+", cells) if n[len(pre):] != n[len(pre):].upper() and "<" not in n]
+        for r in swr_ids(cells):
+            out.setdefault(r, []).extend(x for x in names if x not in out.get(r, []))
+    return out
+
+
+def _check_function_bodies(code: str) -> dict[str, str]:
+    """CHECK id -> body of the test function that contains it (comment-stripped C)."""
+    out = {}
+    heads = list(re.finditer(r"^[ \t]*(?:static\s+)?void\s+\w+\s*\(\s*void\s*\)\s*\{", code, re.M))
+    for i, h in enumerate(heads):
+        body = code[h.end():heads[i + 1].start() if i + 1 < len(heads) else len(code)]
+        for cid in re.findall(r'\bCHECK\s*\(\s*"([A-Z]+-\d+)"', body):
+            out.setdefault(cid, body)
+    return out
+
+
 def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
     req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
     tr = ctx.workspace / "traceability/requirements_to_tests.csv"
@@ -142,6 +172,23 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
                     issues.append(f"TEST_FILE_MISSING:{tfile[:60]}")
                 else:
                     planned += 1
+    # CAPA-024 (r86/r92/r93 SWE4-02): a unit/integration test traced to a requirement must exercise the API that SWE.2
+    # allocated to that requirement (r93: a mapping shift tested different functions; r86: a requirement had none)
+    alloc = _allocation_map(ctx.workspace) if tests_due else {}
+    bodies: dict[str, dict[str, str]] = {}
+    for row in rows:
+        rid, test = row.get("requirement_id", "").strip(), (row.get("test_id") or "").strip()
+        tfile = (row.get("test_file") or "").strip()
+        names = alloc.get(rid) or []
+        if not (names and test and tfile.startswith(("software/tests/unit/", "software/tests/integration/"))):
+            continue
+        if tfile not in bodies:
+            f = ctx.workspace / tfile
+            code = re.sub(r"/\*.*?\*/|//[^\n]*", "", f.read_text(errors="replace"), flags=re.S) if f.is_file() else ""
+            bodies[tfile] = _check_function_bodies(code)
+        body = bodies[tfile].get(test)
+        if body is not None and not any(re.search(rf"\b{re.escape(n)}\s*\(", body) for n in names):
+            issues.append(f"TEST_DOES_NOT_CALL_ALLOCATED_API:{test}:{rid}:{'|'.join(names)[:80]}")
     covered = len([r for r in reqs if r in traced])
     return result(ctx, "PASS" if not issues else "FAIL", f"{covered}/{len(reqs)} requirements traced"
                   + (f"; {planned} test links planned (test files are due at SWE.4)" if planned else ""), [], issues,
