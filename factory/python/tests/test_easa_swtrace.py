@@ -310,3 +310,12 @@ def test_at093_prompts_and_turn_budget_follow_the_profile(ws):
         assert "@verifies USPEC" in P.unit_test_author_prompt() and "@file" in P.target_test_author_prompt()
     finally:
         P.LAYER["layer"], P.TRACE["on"] = layer, on
+
+
+def test_capa026_multiline_allocation_note_r108(ws):
+    """CAPA-026 (r108): the agent wrapped the allocation list over four note lines; only the first was read."""
+    _edit(ws, "workproducts/SWE.2/architecture_static.puml", "  Allocated: SWR-001, SWR-002, SWR-003\n",
+          "Allocated: SWR-001,\nSWR-002,\nSWR-003\nHeader-only: stm32n6xx_hal_rcc.c\n")
+    m = swtrace.parse_architecture((ws / "workproducts/SWE.2/architecture_static.puml").read_text())
+    assert m["allocation"]["SWC_HAL"] == ["SWR-001", "SWR-002", "SWR-003"]
+    assert swtrace.check_architecture_model(ws)["major_findings"] == []

@@ -82,7 +82,9 @@ def parse_architecture(text: str) -> dict:
     alloc = {}
     for swc, ns in notes.items():
         for n in ns:
-            for a in re.finditer(r"Allocated\s*:\s*([^\n]*)", n, re.I):
+            # CAPA-026 (r108): an allocation list may wrap over several lines of the note: everything after
+            # 'Allocated:' up to the next 'Key:' line (or the end of the note) belongs to it
+            for a in re.finditer(r"Allocated\s*:\s*(.*?)(?=^\s*[A-Za-z][\w -]*:\s|\Z)", n, re.I | re.S | re.M):
                 alloc.setdefault(swc, set()).update(SWR_RX.findall(a.group(1)))
     return {"swcs": {k: v for k, v in swcs.items()}, "allocation": {k: sorted(v) for k, v in alloc.items()},
             "interfaces": conns}
