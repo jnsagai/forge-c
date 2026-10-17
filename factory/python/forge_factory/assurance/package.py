@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 
 from ..common import canonical_json, pretty_json, sha256_bytes, utc_now
-from . import capability, catalog, contracts, independence, policy, scope
+from . import capability, case, catalog, contracts, independence, policy, scope
 from . import target as T
 
 SCOPE_FILE = ".forge-run/safety_scope.json"  # written only by an owner decision (never by an agent)
@@ -138,9 +138,13 @@ def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
     files["assurance/gate-log.jsonl"] = "".join(json.dumps(d, sort_keys=True) + "\n" for d in log).encode()
     files["assurance/independence.json"] = pretty_json(att).encode()
     files["assurance/claims.json"] = pretty_json(claims).encode()
-    files["assurance/applicability.json"] = pretty_json(capability.resolve(cat)).encode()
-    files["assurance/fidelity.json"] = pretty_json({"limitations": lim, "environments": ["HOST", "RENODE"],
-                                                    "hil": "NOT_AVAILABLE", "physical": "NOT_AVAILABLE"}).encode()
+    appl = capability.resolve(cat)
+    fid = {"limitations": lim, "environments": ["HOST", "RENODE"], "hil": "NOT_AVAILABLE", "physical": "NOT_AVAILABLE"}
+    files["assurance/applicability.json"] = pretty_json(appl).encode()
+    files["assurance/fidelity.json"] = pretty_json(fid).encode()
+    md, case_meta = case.render(summary, claims, att, appl, fid)  # EASA-T063: reviewer-readable case
+    files["assurance/ASSURANCE-CASE.md"] = md.encode()
+    files["assurance/case.json"] = pretty_json(case_meta).encode()
     for rel, data in files.items():
         (stage / rel).parent.mkdir(parents=True, exist_ok=True)
         (stage / rel).write_bytes(data)
