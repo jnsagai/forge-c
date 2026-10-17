@@ -1,0 +1,2603 @@
+{
+  "addendum_counts": {
+    "NOT_RUN": 1,
+    "PASS": 6
+  },
+  "addendum_tasks": {
+    "EASA-T073": {
+      "ats": [
+        "EASA-AT-085",
+        "EASA-AT-086"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T073/latest.json",
+      "frs": [
+        "EASA-OR-001",
+        "EASA-OR-002",
+        "EASA-OR-011"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement the architecture model parser (SWC, allocation notes, interfaces) and the SWC/allocation check."
+    },
+    "EASA-T074": {
+      "ats": [
+        "EASA-AT-087",
+        "EASA-AT-088"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T074/latest.json",
+      "frs": [
+        "EASA-OR-003",
+        "EASA-OR-004",
+        "EASA-OR-005"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement the unit-specification parser, the per-unit ReqIF export with XSD validation and the PlantUML detailed-design check."
+    },
+    "EASA-T075": {
+      "ats": [
+        "EASA-AT-089"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T075/latest.json",
+      "frs": [
+        "EASA-OR-006"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement the Doxygen configuration and run, and the code-to-unit-specification check."
+    },
+    "EASA-T076": {
+      "ats": [
+        "EASA-AT-090",
+        "EASA-AT-091"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T076/latest.json",
+      "frs": [
+        "EASA-OR-007",
+        "EASA-OR-008",
+        "EASA-OR-009"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement the unit/integration/validation test trace extraction against executed results."
+    },
+    "EASA-T077": {
+      "ats": [
+        "EASA-AT-092"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T077/latest.json",
+      "frs": [
+        "EASA-OR-010"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Generate the six traceability matrices with coverage gaps."
+    },
+    "EASA-T078": {
+      "ats": [
+        "EASA-AT-093"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T078/latest.json",
+      "frs": [
+        "EASA-OR-001",
+        "EASA-OR-011"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Integrate into the SWE.2–SWE.6 workflow: prompts, required outputs, checklist checks, gate hooks and package inventory."
+    },
+    "EASA-T079": {
+      "ats": [
+        "EASA-AT-094"
+      ],
+      "frs": [
+        "EASA-OR-001",
+        "EASA-OR-011"
+      ],
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "title": "Run real DeepSeek LL then HAL work orders on the new revision and report the matrices or the blockers."
+    }
+  },
+  "fr_counts": {
+    "BLOCKED": 0,
+    "COVERED": 66,
+    "OPEN": 0,
+    "PARTIAL": 6
+  },
+  "fr_matrix": [
+    {
+      "acceptance_tests": [
+        "EASA-AT-001",
+        "EASA-AT-006",
+        "EASA-AT-071"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-001",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T001",
+        "EASA-T006",
+        "EASA-T071"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-005",
+        "EASA-AT-011"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-002",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T005",
+        "EASA-T011"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-005",
+        "EASA-AT-011"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-003",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T005",
+        "EASA-T011"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-005",
+        "EASA-AT-012",
+        "EASA-AT-059",
+        "EASA-AT-078",
+        "EASA-AT-079"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-004",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T005",
+        "EASA-T012",
+        "EASA-T059"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-002",
+        "EASA-AT-008"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-005",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T002",
+        "EASA-T008"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-002",
+        "EASA-AT-008",
+        "EASA-AT-009",
+        "EASA-AT-062",
+        "EASA-AT-083"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-006",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T002",
+        "EASA-T008",
+        "EASA-T009",
+        "EASA-T062"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-002",
+        "EASA-AT-009",
+        "EASA-AT-012",
+        "EASA-AT-015",
+        "EASA-AT-062",
+        "EASA-AT-083"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-007",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T002",
+        "EASA-T009",
+        "EASA-T012",
+        "EASA-T015",
+        "EASA-T062"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-010",
+        "EASA-AT-015"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-008",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T010",
+        "EASA-T015"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-002",
+        "EASA-AT-009",
+        "EASA-AT-010",
+        "EASA-AT-015"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-009",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T002",
+        "EASA-T009",
+        "EASA-T010",
+        "EASA-T015"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-001",
+        "EASA-AT-005"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-010",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T001",
+        "EASA-T005"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-007",
+        "EASA-AT-009",
+        "EASA-AT-013"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-011",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T007",
+        "EASA-T009",
+        "EASA-T013"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-011"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-012",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T011"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-016",
+        "EASA-AT-018",
+        "EASA-AT-022",
+        "EASA-AT-066",
+        "EASA-AT-076"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-013",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T016",
+        "EASA-T018",
+        "EASA-T022",
+        "EASA-T066"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-018",
+        "EASA-AT-020",
+        "EASA-AT-022"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-014",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T018",
+        "EASA-T020",
+        "EASA-T022"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-016",
+        "EASA-AT-018",
+        "EASA-AT-040",
+        "EASA-AT-076"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-015",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T016",
+        "EASA-T018",
+        "EASA-T040"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-016",
+        "EASA-AT-046",
+        "EASA-AT-082"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-016",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T016",
+        "EASA-T046"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-004",
+        "EASA-AT-014",
+        "EASA-AT-017",
+        "EASA-AT-066"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-017",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T004",
+        "EASA-T014",
+        "EASA-T017",
+        "EASA-T066"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-014",
+        "EASA-AT-020",
+        "EASA-AT-056",
+        "EASA-AT-065",
+        "EASA-AT-074"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-018",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T014",
+        "EASA-T020",
+        "EASA-T056",
+        "EASA-T065"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-017",
+        "EASA-AT-018",
+        "EASA-AT-023",
+        "EASA-AT-065",
+        "EASA-AT-073"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-019",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T017",
+        "EASA-T018",
+        "EASA-T023",
+        "EASA-T065"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-020"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-020",
+      "priority": "P0",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T020"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-021",
+        "EASA-AT-060",
+        "EASA-AT-077"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-021",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T021",
+        "EASA-T060"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-014",
+        "EASA-AT-036",
+        "EASA-AT-059"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-022",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T014",
+        "EASA-T036",
+        "EASA-T059"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-019",
+        "EASA-AT-056"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-023",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T019",
+        "EASA-T056"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-003",
+        "EASA-AT-004",
+        "EASA-AT-013",
+        "EASA-AT-017",
+        "EASA-AT-073"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-024",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T003",
+        "EASA-T004",
+        "EASA-T013",
+        "EASA-T017"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-024",
+        "EASA-AT-025",
+        "EASA-AT-031"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-025",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T024",
+        "EASA-T025",
+        "EASA-T031"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-026"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-026",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T026"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-024",
+        "EASA-AT-027",
+        "EASA-AT-031"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-027",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T024",
+        "EASA-T027",
+        "EASA-T031"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-012",
+        "EASA-AT-025",
+        "EASA-AT-026",
+        "EASA-AT-027"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-028",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T012",
+        "EASA-T025",
+        "EASA-T026",
+        "EASA-T027"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-028",
+        "EASA-AT-029",
+        "EASA-AT-031"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-029",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T028",
+        "EASA-T029",
+        "EASA-T031"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-028",
+        "EASA-AT-030"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-030",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T028",
+        "EASA-T030"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-029",
+        "EASA-AT-031"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-031",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T029",
+        "EASA-T031"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-030"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-032",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T030"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-032",
+        "EASA-AT-034"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-033",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T032",
+        "EASA-T034"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-033",
+        "EASA-AT-084"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-034",
+      "priority": "P0",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T033"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-033",
+        "EASA-AT-039"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-035",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T033",
+        "EASA-T039"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-035"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-036",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T035"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-032",
+        "EASA-AT-034",
+        "EASA-AT-036"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-037",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T032",
+        "EASA-T034",
+        "EASA-T036"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-037"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-038",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T037"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-035",
+        "EASA-AT-038"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-039",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T035",
+        "EASA-T038"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-039"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-040",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T039"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-040",
+        "EASA-AT-041",
+        "EASA-AT-045"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-041",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T040",
+        "EASA-T041",
+        "EASA-T045"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-041",
+        "EASA-AT-045"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-042",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T041",
+        "EASA-T045"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-042",
+        "EASA-AT-067"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-043",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T042",
+        "EASA-T067"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-043",
+        "EASA-AT-047",
+        "EASA-AT-067",
+        "EASA-AT-075"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-044",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T043",
+        "EASA-T047",
+        "EASA-T067"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-044",
+        "EASA-AT-067",
+        "EASA-AT-074"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-045",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T044",
+        "EASA-T067"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-016",
+        "EASA-AT-023",
+        "EASA-AT-045",
+        "EASA-AT-046",
+        "EASA-AT-082"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-046",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T016",
+        "EASA-T023",
+        "EASA-T045",
+        "EASA-T046"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-048"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-047",
+      "priority": "P0",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T048"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-049"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-048",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T049"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-037",
+        "EASA-AT-049",
+        "EASA-AT-050",
+        "EASA-AT-084"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-049",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T037",
+        "EASA-T049",
+        "EASA-T050"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-051"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-050",
+      "priority": "P1",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T051"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-052"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-051",
+      "priority": "P0",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T052"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-048",
+        "EASA-AT-052"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-052",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T048",
+        "EASA-T052"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-053",
+        "EASA-AT-054",
+        "EASA-AT-081"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-053",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T053",
+        "EASA-T054"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-050",
+        "EASA-AT-055",
+        "EASA-AT-065"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-054",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T050",
+        "EASA-T055",
+        "EASA-T065"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-050",
+        "EASA-AT-053",
+        "EASA-AT-055"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-055",
+      "priority": "P1",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T050",
+        "EASA-T053",
+        "EASA-T055"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-054",
+        "EASA-AT-081"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-056",
+      "priority": "P0",
+      "task_status": [
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T054"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-019",
+        "EASA-AT-057",
+        "EASA-AT-063"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-057",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T019",
+        "EASA-T057",
+        "EASA-T063"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-019",
+        "EASA-AT-056",
+        "EASA-AT-063"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-058",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T019",
+        "EASA-T056",
+        "EASA-T063"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-020",
+        "EASA-AT-047",
+        "EASA-AT-058",
+        "EASA-AT-066"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-059",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T020",
+        "EASA-T047",
+        "EASA-T058",
+        "EASA-T066"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-057",
+        "EASA-AT-058",
+        "EASA-AT-063"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-060",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T057",
+        "EASA-T058",
+        "EASA-T063"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-005",
+        "EASA-AT-058",
+        "EASA-AT-072",
+        "EASA-AT-079"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-061",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "NOT_RUN"
+      ],
+      "tasks": [
+        "EASA-T005",
+        "EASA-T058",
+        "EASA-T072"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-012",
+        "EASA-AT-059",
+        "EASA-AT-069",
+        "EASA-AT-078"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-062",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "BLOCKED"
+      ],
+      "tasks": [
+        "EASA-T012",
+        "EASA-T059",
+        "EASA-T069"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-007",
+        "EASA-AT-021",
+        "EASA-AT-060",
+        "EASA-AT-077"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-063",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T007",
+        "EASA-T021",
+        "EASA-T060"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-021",
+        "EASA-AT-022",
+        "EASA-AT-060"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-064",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T021",
+        "EASA-T022",
+        "EASA-T060"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-003",
+        "EASA-AT-064",
+        "EASA-AT-071"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-065",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T003",
+        "EASA-T064",
+        "EASA-T071"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-001",
+        "EASA-AT-004",
+        "EASA-AT-006",
+        "EASA-AT-007",
+        "EASA-AT-013",
+        "EASA-AT-061",
+        "EASA-AT-068",
+        "EASA-AT-080"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-066",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T001",
+        "EASA-T004",
+        "EASA-T006",
+        "EASA-T007",
+        "EASA-T013",
+        "EASA-T061",
+        "EASA-T068"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-062",
+        "EASA-AT-068",
+        "EASA-AT-069",
+        "EASA-AT-070"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-067",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "BLOCKED",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T062",
+        "EASA-T068",
+        "EASA-T069",
+        "EASA-T070"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-014",
+        "EASA-AT-038",
+        "EASA-AT-042",
+        "EASA-AT-055",
+        "EASA-AT-069"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-068",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "BLOCKED"
+      ],
+      "tasks": [
+        "EASA-T014",
+        "EASA-T038",
+        "EASA-T042",
+        "EASA-T055",
+        "EASA-T069"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-023",
+        "EASA-AT-039",
+        "EASA-AT-046",
+        "EASA-AT-065"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-069",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T023",
+        "EASA-T039",
+        "EASA-T046",
+        "EASA-T065"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-008",
+        "EASA-AT-010",
+        "EASA-AT-015",
+        "EASA-AT-071"
+      ],
+      "coverage": "COVERED",
+      "fr": "EASA-FR-070",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "tasks": [
+        "EASA-T008",
+        "EASA-T010",
+        "EASA-T015",
+        "EASA-T071"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-003",
+        "EASA-AT-062",
+        "EASA-AT-064",
+        "EASA-AT-070",
+        "EASA-AT-072"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-071",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "NOT_RUN"
+      ],
+      "tasks": [
+        "EASA-T003",
+        "EASA-T062",
+        "EASA-T064",
+        "EASA-T070",
+        "EASA-T072"
+      ]
+    },
+    {
+      "acceptance_tests": [
+        "EASA-AT-006",
+        "EASA-AT-013",
+        "EASA-AT-023",
+        "EASA-AT-061",
+        "EASA-AT-072",
+        "EASA-AT-080"
+      ],
+      "coverage": "PARTIAL",
+      "fr": "EASA-FR-072",
+      "priority": "P0",
+      "task_status": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "NOT_RUN"
+      ],
+      "tasks": [
+        "EASA-T006",
+        "EASA-T013",
+        "EASA-T023",
+        "EASA-T061",
+        "EASA-T072"
+      ]
+    }
+  ],
+  "generated_at": "2026-10-17T19:18:03.983177Z",
+  "git_head": "bf27061397a371393b3a6b09da693c8f1bec388e",
+  "schema": "forge-c/easa-matrix/0.1",
+  "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
+  "task_counts": {
+    "BLOCKED": 1,
+    "NOT_RUN": 1,
+    "PASS": 70
+  },
+  "tasks": {
+    "EASA-T001": {
+      "ats": [
+        "EASA-AT-001",
+        "EASA-AT-080"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T001/latest.json",
+      "frs": [
+        "EASA-FR-001",
+        "EASA-FR-010",
+        "EASA-FR-066"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Audit Features 001–005 and locked references; independently classify code, tests, contracts, toolchain and active approval modes."
+    },
+    "EASA-T002": {
+      "ats": [
+        "EASA-AT-002",
+        "EASA-AT-083"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T002/latest.json",
+      "frs": [
+        "EASA-FR-005",
+        "EASA-FR-006",
+        "EASA-FR-007",
+        "EASA-FR-009"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Record exact 2018 standard availability/access, copyright boundaries and reviewer-based normative reconciliation plan."
+    },
+    "EASA-T003": {
+      "ats": [
+        "EASA-AT-003",
+        "EASA-AT-073"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T003/latest.json",
+      "frs": [
+        "EASA-FR-024",
+        "EASA-FR-065",
+        "EASA-FR-071"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Create frozen baseline manifests for LL r101 and HAL r102 and report absent evidence without inventing it."
+    },
+    "EASA-T004": {
+      "ats": [
+        "EASA-AT-004"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T004/latest.json",
+      "frs": [
+        "EASA-FR-017",
+        "EASA-FR-024",
+        "EASA-FR-066"
+      ],
+      "git_head": "a7d20adc5e21",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Run existing regression/design checks and store actual tool/version/exit/hash evidence."
+    },
+    "EASA-T005": {
+      "ats": [
+        "EASA-AT-005",
+        "EASA-AT-078",
+        "EASA-AT-079"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T005/latest.json",
+      "frs": [
+        "EASA-FR-002",
+        "EASA-FR-003",
+        "EASA-FR-004",
+        "EASA-FR-010",
+        "EASA-FR-061"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Write ADR for profile-versus-ASIL separation, QM safety scope, release and capability claims."
+    },
+    "EASA-T006": {
+      "ats": [
+        "EASA-AT-006"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T006/latest.json",
+      "frs": [
+        "EASA-FR-001",
+        "EASA-FR-066",
+        "EASA-FR-072"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Create Feature 006 source/packages/test scaffolding and deterministic contract tooling."
+    },
+    "EASA-T007": {
+      "ats": [
+        "EASA-AT-007",
+        "EASA-AT-077"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T007/latest.json",
+      "frs": [
+        "EASA-FR-011",
+        "EASA-FR-063",
+        "EASA-FR-066"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Check existing 002/003/004/005 upgrade/migration compatibility before any gate changes."
+    },
+    "EASA-T008": {
+      "ats": [
+        "EASA-AT-008"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T008/latest.json",
+      "frs": [
+        "EASA-FR-005",
+        "EASA-FR-006",
+        "EASA-FR-070"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement versioned ISO26262 Part6 method registry and 47-entry ASIL B working-index import."
+    },
+    "EASA-T009": {
+      "ats": [
+        "EASA-AT-009"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T009/latest.json",
+      "frs": [
+        "EASA-FR-006",
+        "EASA-FR-007",
+        "EASA-FR-009",
+        "EASA-FR-011"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement controlled reconciliation workflow with per-table review and licensed edition/hash inputs."
+    },
+    "EASA-T010": {
+      "ats": [
+        "EASA-AT-010"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T010/latest.json",
+      "frs": [
+        "EASA-FR-008",
+        "EASA-FR-009",
+        "EASA-FR-070"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement applicability records, alternatives and rationale/approver state machine."
+    },
+    "EASA-T011": {
+      "ats": [
+        "EASA-AT-011"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T011/latest.json",
+      "frs": [
+        "EASA-FR-002",
+        "EASA-FR-003",
+        "EASA-FR-012"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement Standard/Enhanced/High Assurance profile selection independent of product ASIL."
+    },
+    "EASA-T012": {
+      "ats": [
+        "EASA-AT-012"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T012/latest.json",
+      "frs": [
+        "EASA-FR-004",
+        "EASA-FR-007",
+        "EASA-FR-028",
+        "EASA-FR-062"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement fail-closed normative authority and explicit QM/ASIL safety-scope handling."
+    },
+    "EASA-T013": {
+      "ats": [
+        "EASA-AT-013"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T013/latest.json",
+      "frs": [
+        "EASA-FR-011",
+        "EASA-FR-024",
+        "EASA-FR-066",
+        "EASA-FR-072"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement policy schema, profile hashes, approved version pinning and safe live reload."
+    },
+    "EASA-T014": {
+      "ats": [
+        "EASA-AT-014",
+        "EASA-AT-074"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T014/latest.json",
+      "frs": [
+        "EASA-FR-017",
+        "EASA-FR-018",
+        "EASA-FR-022",
+        "EASA-FR-068"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement method-to-evidence capability resolver using real MCP adapters only."
+    },
+    "EASA-T015": {
+      "ats": [
+        "EASA-AT-015"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T015/latest.json",
+      "frs": [
+        "EASA-FR-007",
+        "EASA-FR-008",
+        "EASA-FR-009",
+        "EASA-FR-070"
+      ],
+      "git_head": "61c3e4d60003",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Unit-test all applicability alternatives and unverified catalog safety behavior."
+    },
+    "EASA-T016": {
+      "ats": [
+        "EASA-AT-016",
+        "EASA-AT-076",
+        "EASA-AT-082"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T016/latest.json",
+      "frs": [
+        "EASA-FR-013",
+        "EASA-FR-015",
+        "EASA-FR-016",
+        "EASA-FR-046"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement versioned independent oracle provenance and immutable holdout access controls."
+    },
+    "EASA-T017": {
+      "ats": [
+        "EASA-AT-017"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T017/latest.json",
+      "frs": [
+        "EASA-FR-017",
+        "EASA-FR-019",
+        "EASA-FR-024"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement evidence reference validator with digest, tool identity, exit status and frozen baseline."
+    },
+    "EASA-T018": {
+      "ats": [
+        "EASA-AT-018"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T018/latest.json",
+      "frs": [
+        "EASA-FR-013",
+        "EASA-FR-014",
+        "EASA-FR-015",
+        "EASA-FR-019"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement agent/inspection/verifier trust-domain collision checks, including same-prompt oracle contamination."
+    },
+    "EASA-T019": {
+      "ats": [
+        "EASA-AT-019"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T019/latest.json",
+      "frs": [
+        "EASA-FR-023",
+        "EASA-FR-057",
+        "EASA-FR-058"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement CAE claim graph, node types, support/counterevidence and residual limits."
+    },
+    "EASA-T020": {
+      "ats": [
+        "EASA-AT-020"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T020/latest.json",
+      "frs": [
+        "EASA-FR-014",
+        "EASA-FR-018",
+        "EASA-FR-020",
+        "EASA-FR-059"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement assurance gate aggregation with explicit UNKNOWN/NOT_RUN/BLOCKED state."
+    },
+    "EASA-T021": {
+      "ats": [
+        "EASA-AT-021"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T021/latest.json",
+      "frs": [
+        "EASA-FR-021",
+        "EASA-FR-063",
+        "EASA-FR-064"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement change-impact invalidation of affected claims and prior inspections."
+    },
+    "EASA-T022": {
+      "ats": [
+        "EASA-AT-022"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T022/latest.json",
+      "frs": [
+        "EASA-FR-013",
+        "EASA-FR-014",
+        "EASA-FR-064"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Add independent inspector summary and separate deterministic gate authority integration."
+    },
+    "EASA-T023": {
+      "ats": [
+        "EASA-AT-023"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T023/latest.json",
+      "frs": [
+        "EASA-FR-019",
+        "EASA-FR-046",
+        "EASA-FR-069",
+        "EASA-FR-072"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Test malicious forged PASS, stale digest, reused oracle and prompt-injected evidence."
+    },
+    "EASA-T024": {
+      "ats": [
+        "EASA-AT-024"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T024/latest.json",
+      "frs": [
+        "EASA-FR-025",
+        "EASA-FR-027"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Implement upstream-source anchored requirement semantic validation and discrepancies."
+    },
+    "EASA-T025": {
+      "ats": [
+        "EASA-AT-025"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T025/latest.json",
+      "frs": [
+        "EASA-FR-025",
+        "EASA-FR-028"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Implement requirement quality and completeness checks including modes/timeouts and testability."
+    },
+    "EASA-T026": {
+      "ats": [
+        "EASA-AT-026"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T026/latest.json",
+      "frs": [
+        "EASA-FR-026",
+        "EASA-FR-028"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Implement trace edges system/HSI -> requirements -> tests with round-trip completeness."
+    },
+    "EASA-T027": {
+      "ats": [
+        "EASA-AT-027"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T027/latest.json",
+      "frs": [
+        "EASA-FR-027",
+        "EASA-FR-028"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Add requirements owner-freeze gate with source citations and no silent assumption filling."
+    },
+    "EASA-T028": {
+      "ats": [
+        "EASA-AT-028"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T028/latest.json",
+      "frs": [
+        "EASA-FR-029",
+        "EASA-FR-030"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Implement architecture structural graph invariants and allocation/interface checks."
+    },
+    "EASA-T029": {
+      "ats": [
+        "EASA-AT-029"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T029/latest.json",
+      "frs": [
+        "EASA-FR-029",
+        "EASA-FR-031"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Add optional sched/shared-resource/control/data-flow analyzers with honest limitations."
+    },
+    "EASA-T030": {
+      "ats": [
+        "EASA-AT-030"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T030/latest.json",
+      "frs": [
+        "EASA-FR-030",
+        "EASA-FR-032"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Integrate independent architectural review, PlantUML semantic model and evidence gate."
+    },
+    "EASA-T031": {
+      "ats": [
+        "EASA-AT-031"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T031/latest.json",
+      "frs": [
+        "EASA-FR-025",
+        "EASA-FR-027",
+        "EASA-FR-029",
+        "EASA-FR-031"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Run negative fixtures: contradictory requirement, invented register, architectural cycle/race."
+    },
+    "EASA-T032": {
+      "ats": [
+        "EASA-AT-032"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T032/latest.json",
+      "frs": [
+        "EASA-FR-033",
+        "EASA-FR-037"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Build C static coding policy for table1/table6 working-index methods without falsely labeling full MISRA."
+    },
+    "EASA-T033": {
+      "ats": [
+        "EASA-AT-033",
+        "EASA-AT-084"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T033/latest.json",
+      "frs": [
+        "EASA-FR-034",
+        "EASA-FR-035"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement authoritative register/access/errata semantic contract and compare generated code."
+    },
+    "EASA-T034": {
+      "ats": [
+        "EASA-AT-034"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T034/latest.json",
+      "frs": [
+        "EASA-FR-033",
+        "EASA-FR-037"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Validate type/pointer/initialization/hidden-control-flow/complexity findings with real analyzers."
+    },
+    "EASA-T035": {
+      "ats": [
+        "EASA-AT-035"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T035/latest.json",
+      "frs": [
+        "EASA-FR-036",
+        "EASA-FR-039"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Add concurrency/IRQ/reentrancy/timeout invariants and trace requirement coverage."
+    },
+    "EASA-T036": {
+      "ats": [
+        "EASA-AT-036"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T036/latest.json",
+      "frs": [
+        "EASA-FR-037",
+        "EASA-FR-022"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement static/MISRA rule family inventory, unsupported coverage and deviation control."
+    },
+    "EASA-T037": {
+      "ats": [
+        "EASA-AT-037"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T037/latest.json",
+      "frs": [
+        "EASA-FR-038",
+        "EASA-FR-049"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement resource evidence with measured-vs-estimated environment tags and configurable budgets."
+    },
+    "EASA-T038": {
+      "ats": [
+        "EASA-AT-038"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T038/latest.json",
+      "frs": [
+        "EASA-FR-039",
+        "EASA-FR-068"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Integrate optional bounded CBMC/formal proof and record completeness assumptions."
+    },
+    "EASA-T039": {
+      "ats": [
+        "EASA-AT-039"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T039/latest.json",
+      "frs": [
+        "EASA-FR-035",
+        "EASA-FR-040",
+        "EASA-FR-069"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Test RO-register write, fabricated API, stale test edit, uninitialized pointer, IRQ race."
+    },
+    "EASA-T040": {
+      "ats": [
+        "EASA-AT-040"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T040/latest.json",
+      "frs": [
+        "EASA-FR-015",
+        "EASA-FR-041"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement test-oracle derivation from frozen requirements/HSI independent of implementation."
+    },
+    "EASA-T041": {
+      "ats": [
+        "EASA-AT-041"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T041/latest.json",
+      "frs": [
+        "EASA-FR-041",
+        "EASA-FR-042"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement semantic source-and-call provenance to prove each test executes allocated API."
+    },
+    "EASA-T042": {
+      "ats": [
+        "EASA-AT-042"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T042/latest.json",
+      "frs": [
+        "EASA-FR-043",
+        "EASA-FR-068"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement statement/branch structural coverage ingestion and gap rationale."
+    },
+    "EASA-T043": {
+      "ats": [
+        "EASA-AT-043",
+        "EASA-AT-075"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T043/latest.json",
+      "frs": [
+        "EASA-FR-044"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Implement deterministic mutation harness, classification and evidence, not percentage-only reporting."
+    },
+    "EASA-T044": {
+      "ats": [
+        "EASA-AT-044"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T044/latest.json",
+      "frs": [
+        "EASA-FR-045"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Add selected MC/DC support where toolchain provides genuine condition-decision evidence."
+    },
+    "EASA-T045": {
+      "ats": [
+        "EASA-AT-045"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T045/latest.json",
+      "frs": [
+        "EASA-FR-041",
+        "EASA-FR-042",
+        "EASA-FR-046"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Integrate negative/boundary/interface tests plus check that mocks cannot fake production calls."
+    },
+    "EASA-T046": {
+      "ats": [
+        "EASA-AT-046"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T046/latest.json",
+      "frs": [
+        "EASA-FR-016",
+        "EASA-FR-046",
+        "EASA-FR-069"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Protect test oracle and holdout files using OS/MCP/role controls with tamper tests."
+    },
+    "EASA-T047": {
+      "ats": [
+        "EASA-AT-047"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T047/latest.json",
+      "frs": [
+        "EASA-FR-044",
+        "EASA-FR-059"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Inject survivor mutant and prove gate blocks unsupported claims; keep killed-mutant provenance."
+    },
+    "EASA-T048": {
+      "ats": [
+        "EASA-AT-048"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T048/latest.json",
+      "frs": [
+        "EASA-FR-047",
+        "EASA-FR-052"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement integration requirement/interface/boundary/resource verification artifacts."
+    },
+    "EASA-T049": {
+      "ats": [
+        "EASA-AT-049"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T049/latest.json",
+      "frs": [
+        "EASA-FR-048",
+        "EASA-FR-049"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement injected clock/interrupt/timeout/peripheral-model faults and oracles."
+    },
+    "EASA-T050": {
+      "ats": [
+        "EASA-AT-050"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T050/latest.json",
+      "frs": [
+        "EASA-FR-049",
+        "EASA-FR-054",
+        "EASA-FR-055"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Add source-backed target fidelity classifier HOST/SIMULATOR/RENODE/HIL/PHYSICAL with limitations."
+    },
+    "EASA-T051": {
+      "ats": [
+        "EASA-AT-051"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T051/latest.json",
+      "frs": [
+        "EASA-FR-050"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P1",
+      "status": "PASS",
+      "title": "Add back-to-back model/code comparison where applicable, or documented inapplicability."
+    },
+    "EASA-T052": {
+      "ats": [
+        "EASA-AT-052"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T052/latest.json",
+      "frs": [
+        "EASA-FR-051",
+        "EASA-FR-052"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Strengthen Renode and integration test outcome validation against observed target behavior."
+    },
+    "EASA-T053": {
+      "ats": [
+        "EASA-AT-053",
+        "EASA-AT-081"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T053/latest.json",
+      "frs": [
+        "EASA-FR-053",
+        "EASA-FR-055"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement SWE.6 operational scenarios, fail-path and degraded-mode coverage."
+    },
+    "EASA-T054": {
+      "ats": [
+        "EASA-AT-054"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T054/latest.json",
+      "frs": [
+        "EASA-FR-053",
+        "EASA-FR-056"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Implement requirements-based measured execution trace and actual coverage of observations."
+    },
+    "EASA-T055": {
+      "ats": [
+        "EASA-AT-055"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T055/latest.json",
+      "frs": [
+        "EASA-FR-054",
+        "EASA-FR-055",
+        "EASA-FR-068"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Block HIL claim for Renode-only environment and target evidence not observed."
+    },
+    "EASA-T056": {
+      "ats": [
+        "EASA-AT-056"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T056/latest.json",
+      "frs": [
+        "EASA-FR-018",
+        "EASA-FR-023",
+        "EASA-FR-058"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Extend existing 002/003/004 dashboard with assurance profile, claims, independence and gap drilldown."
+    },
+    "EASA-T057": {
+      "ats": [
+        "EASA-AT-057"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T057/latest.json",
+      "frs": [
+        "EASA-FR-057",
+        "EASA-FR-060"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Extend release/finalize.py package inventory with method applicability, CAE and attestation hashes."
+    },
+    "EASA-T058": {
+      "ats": [
+        "EASA-AT-058"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T058/latest.json",
+      "frs": [
+        "EASA-FR-059",
+        "EASA-FR-060",
+        "EASA-FR-061"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Preserve READY_FOR_OFFLINE_REVIEW/BLOCKED and separate technical success from packaging success."
+    },
+    "EASA-T059": {
+      "ats": [
+        "EASA-AT-059"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T059/latest.json",
+      "frs": [
+        "EASA-FR-004",
+        "EASA-FR-022",
+        "EASA-FR-062"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Gate missing safety analysis/tool confidence on ASIL scope; allow documented QM N/A."
+    },
+    "EASA-T060": {
+      "ats": [
+        "EASA-AT-060"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T060/latest.json",
+      "frs": [
+        "EASA-FR-021",
+        "EASA-FR-063",
+        "EASA-FR-064"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Verify all invalidated downstream artefacts must re-run upon changes."
+    },
+    "EASA-T061": {
+      "ats": [
+        "EASA-AT-061"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T061/latest.json",
+      "frs": [
+        "EASA-FR-066",
+        "EASA-FR-072"
+      ],
+      "git_head": "882215af7784",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Regress Features 001–005 with no modified audit, safety policy or archived evidence."
+    },
+    "EASA-T062": {
+      "ats": [
+        "EASA-AT-062"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T062/latest.json",
+      "frs": [
+        "EASA-FR-006",
+        "EASA-FR-007",
+        "EASA-FR-067",
+        "EASA-FR-071"
+      ],
+      "git_head": "882215af7784",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Document feature operations, standard license reconciliation, oracle independence and rollout."
+    },
+    "EASA-T063": {
+      "ats": [
+        "EASA-AT-063"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T063/latest.json",
+      "frs": [
+        "EASA-FR-057",
+        "EASA-FR-058",
+        "EASA-FR-060"
+      ],
+      "git_head": "323d2e929b9f",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Write reviewer-readable assurance case summary with remaining claims and missing evidence."
+    },
+    "EASA-T064": {
+      "ats": [
+        "EASA-AT-064"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T064/latest.json",
+      "frs": [
+        "EASA-FR-065",
+        "EASA-FR-071"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Run immutable LL r101 and HAL r102 shadow audit; list new defects and unverifiable claims."
+    },
+    "EASA-T065": {
+      "ats": [
+        "EASA-AT-065"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T065/latest.json",
+      "frs": [
+        "EASA-FR-018",
+        "EASA-FR-019",
+        "EASA-FR-054",
+        "EASA-FR-069"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Run full negative campaign: poisoned oracle, forged logs, stale evidence, hardware-fidelity mismatch."
+    },
+    "EASA-T066": {
+      "ats": [
+        "EASA-AT-066"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T066/latest.json",
+      "frs": [
+        "EASA-FR-013",
+        "EASA-FR-017",
+        "EASA-FR-059"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Run positive and negative case sets on independent verifier with real tools when available."
+    },
+    "EASA-T067": {
+      "ats": [
+        "EASA-AT-067"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T067/latest.json",
+      "frs": [
+        "EASA-FR-043",
+        "EASA-FR-044",
+        "EASA-FR-045"
+      ],
+      "git_head": "a623ccd1fb20",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Perform coverage and mutation calibration on frozen comparable test subjects."
+    },
+    "EASA-T068": {
+      "ats": [
+        "EASA-AT-068"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T068/latest.json",
+      "frs": [
+        "EASA-FR-066",
+        "EASA-FR-067"
+      ],
+      "git_head": "882215af7784",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Carry out OBSERVE_ONLY dry run and measure false positives, false negatives, additional runtime and gaps."
+    },
+    "EASA-T069": {
+      "ats": [
+        "EASA-AT-069"
+      ],
+      "frs": [
+        "EASA-FR-062",
+        "EASA-FR-067",
+        "EASA-FR-068"
+      ],
+      "priority": "P0",
+      "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW.",
+      "status": "BLOCKED",
+      "title": "Perform owner-authorized PILOT on real end-to-end driver without claiming ready if safety evidence missing."
+    },
+    "EASA-T070": {
+      "ats": [
+        "EASA-AT-070"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T070/latest.json",
+      "frs": [
+        "EASA-FR-067",
+        "EASA-FR-071"
+      ],
+      "git_head": "bf27061397a3",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Run ENFORCING readiness decision based on real evidence/authorization, not task completion alone."
+    },
+    "EASA-T071": {
+      "ats": [
+        "EASA-AT-071"
+      ],
+      "evidence": "evidence/v0.4/runs/EASA-T071/latest.json",
+      "frs": [
+        "EASA-FR-001",
+        "EASA-FR-065",
+        "EASA-FR-070"
+      ],
+      "git_head": "bf27061397a3",
+      "priority": "P0",
+      "status": "PASS",
+      "title": "Regenerate FR -> task -> acceptance -> evidence matrix and report PASS/FAIL/BLOCKED/NOT_RUN."
+    },
+    "EASA-T072": {
+      "ats": [
+        "EASA-AT-072"
+      ],
+      "frs": [
+        "EASA-FR-061",
+        "EASA-FR-071",
+        "EASA-FR-072"
+      ],
+      "priority": "P0",
+      "status": "NOT_RUN",
+      "title": "Prepare review PR without auto-merging, no claim of ISO conformance or 100% assurance."
+    }
+  }
+}

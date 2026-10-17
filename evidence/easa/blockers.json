@@ -1,0 +1,6 @@
+{
+  "EASA-T069": {
+    "status": "BLOCKED",
+    "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW."
+  }
+}

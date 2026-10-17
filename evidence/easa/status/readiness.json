@@ -1,0 +1,40 @@
+{
+  "decision": "NOT_READY",
+  "note": "Readiness only; switching the mode needs policy.request_mode with a human authorization.",
+  "pilots": {
+    "finished": 12,
+    "ready": 0,
+    "runs": {
+      "WO-0002A-STM32N6-RCC-LL-r108": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r109": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r110": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r111": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r112": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r113": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r114": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r115": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r116": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r117": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r118": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r119": "BLOCKED"
+    },
+    "yield": 0.0
+  },
+  "readiness": {
+    "blocking_items": [
+      "MODE:HUMAN_AUTHORIZATION_MISSING",
+      "MODE:VALIDATED_PILOT_MISSING",
+      "MODE:ENFORCING_REQUIRES_PILOT_FIRST",
+      "POLICY:FILE_ABSENT (built-in example policy, OBSERVE_ONLY)",
+      "CATALOG:UNVERIFIED (no licensed ISO 26262-6:2018 source, no competent-reviewer reconciliation)",
+      "E2E:NO_READY_PACKAGE (12 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
+    ],
+    "configured_mode": "OBSERVE_ONLY",
+    "e2e_product_yield": 0.0,
+    "feature": "006-enhanced-ai-software-assurance",
+    "implementation": "PARTIAL",
+    "normative_catalog_status": "UNVERIFIED",
+    "safety_approval": null,
+    "technical_gates": "NOT_DEMONSTRATED"
+  }
+}
