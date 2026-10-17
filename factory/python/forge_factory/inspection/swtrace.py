@@ -72,10 +72,15 @@ BUDGET_RX = re.compile(r"\b(no more than|at most|not exceed\w*)\s+\d+\s*bytes?\s
                        re.I)
 
 
+INITIAL_STATE_RX = re.compile(r"^While no\b.{0,80}\bhas been (called|requested)\b.{0,80}\bshall not\b", re.I)
+
+
 def component_constraints(ws: Path) -> set[str]:
     """CAPA-031 (r113): resource budgets (flash/RAM/stack) constrain the whole SWC; they are verified by measurement
-    (SWE.3 tools, SWE.6 'Should Be At Most'), not refined into a software unit."""
-    return {sid for sid, text in swr_texts(ws).items() if BUDGET_RX.search(text)}
+    (SWE.3 tools, SWE.6 'Should Be At Most'), not refined into a software unit.
+    CAPA-034 (r116): initial-state invariants ('While no ... has been called ..., shall not write ...') constrain the
+    whole SWC too (no start-up code); they are verified by the SWE.4/SWE.6 reset-state tests."""
+    return {sid for sid, text in swr_texts(ws).items() if BUDGET_RX.search(text) or INITIAL_STATE_RX.search(text)}
 
 
 def requirement_ids(ws: Path) -> list[str]:
@@ -321,7 +326,9 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
     refined = {r for u in units for s in u["specs"] for r in s["swrs"]}
     allocated_dev = {r for s in dev for r in model.get("allocation", {}).get(s, [])}
     comp = component_constraints(ws)
-    f += [f"UNIT:SWR_NOT_REFINED:{r}" for r in sorted(allocated_dev & reqs) if r not in refined and r not in comp]
+    f += [f"UNIT:SWR_NOT_REFINED:{r} (allocated to {', '.join(dev)} but no unit-spec item traces it: add 'Traces: {r}' "
+          "to the USPEC item(s) of the unit that implements it)" for r in sorted(allocated_dev & reqs)
+          if r not in refined and r not in comp]  # CAPA-034: actionable
     from ..layer import LL_TU, LL_TU_TEXT, layer_of
 
     tu = ws / LL_TU

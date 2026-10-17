@@ -193,7 +193,7 @@ def test_at088_spec_trace_rules_and_reqif_is_xsd_valid(ws):
           "Poll HSIRDY. Traces: SWR-009")
     f = swtrace.check_units(ws, render=False, export=False)["major_findings"]
     assert "UNIT:SPEC_TRACES_UNALLOCATED_SWR:USPEC-HAL-02-01:SWR-002->SWC_HAL" in f
-    assert "UNIT:UNKNOWN_SWR:USPEC-HAL-01-02:SWR-009" in f and "UNIT:SWR_NOT_REFINED:SWR-003" in f
+    assert "UNIT:UNKNOWN_SWR:USPEC-HAL-01-02:SWR-009" in f and any(x.startswith("UNIT:SWR_NOT_REFINED:SWR-003 (") for x in f)
 
 
 def test_at089_code_doc_rules(ws):
@@ -457,3 +457,16 @@ def test_capa033_render_failure_reports_the_syntax_error_line(tmp_path):
     assert not ok and "syntax: ERROR 2" in why
     p.write_text("title x\nstart\n:a;\nstop\n")
     assert "must start with @startuml" in swtrace.render_ok(p)[1]
+
+
+
+def test_capa034_initial_state_invariant_is_component_level(ws):
+    """CAPA-034 (r116): 'While no ... has been called after reset, ... shall not write any RCC register' is an SWC
+    invariant; ordinary SWRs still need a unit-spec item and the finding says what to add."""
+    _edit(ws, "workproducts/SWE.1/software_requirements.md", "  - Source: owner\n",
+          "  - Source: owner\n- **SWR-004** While no RCC driver function has been called after reset, the RCC driver shall "
+          "not write any RCC register.\n  - Source: RM0486 p.480\n")
+    _edit(ws, "workproducts/SWE.2/architecture_static.puml", "SWR-001, SWR-002, SWR-003", "SWR-001, SWR-002, SWR-003, SWR-004")
+    assert "SWR-004" in swtrace.component_constraints(ws)
+    f = swtrace.check_units(ws, render=False, export=False)["major_findings"]
+    assert not any("SWR_NOT_REFINED" in x for x in f)
