@@ -346,6 +346,12 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
 
     bundle_into(ws, stage, dry_status)
+    from ..assurance.package import bundle_into as easa_bundle  # feature 006: changes status only in ENFORCING mode
+
+    try:
+        easa_bundle(ws, stage, dry_status)
+    except Exception as exc:  # noqa: BLE001 - observe-only evidence must never break packaging
+        _w(stage, "assurance/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
     sealed: dict = {}
 
     def seal(_key: str) -> dict:

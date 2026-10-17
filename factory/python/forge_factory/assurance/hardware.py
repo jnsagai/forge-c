@@ -196,3 +196,29 @@ def simulator_mismatches(model_text: str, idx: dict[str, dict]) -> list[str]:
             if f"0x{so:03X}".lower() not in model_text.lower() and f"0x{so:x}" not in model_text.lower():
                 out.append(f"SIMULATOR_MISMATCH:{s_}/{c_} (0x{so:X}/0x{co:X}) not modelled as set/clear of {reg}")
     return out
+
+
+def check_defines(header: str, idx: dict[str, dict]) -> list[str]:
+    """Independent re-check of LL_RCC_<REG>_OFFSET/_<FIELD>_POS/_MSK defines against the RM index (a different
+    parser than inspection/regmap.py, which generates AND checks the defines - common-cause finding F-02)."""
+    f = []
+    for name, val in re.findall(r"#\s*define\s+(LL_RCC_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", header):
+        m = re.match(r"LL_RCC_([A-Z0-9]+)_(OFFSET|([A-Z0-9]+)_(POS|MSK))$", name)
+        if not m:
+            continue
+        v, reg = int(val, 0), idx.get("RCC_" + m.group(1))
+        if reg is None:
+            f.append(f"DEFINE_UNKNOWN_REGISTER:{name}")
+            continue
+        if m.group(2) == "OFFSET":
+            if v != reg["offset"]:
+                f.append(f"DEFINE_MISMATCH:{name}:0x{v:X}!=0x{reg['offset']:X}")
+            continue
+        fld = reg["fields"].get(m.group(3))
+        if fld is None:
+            f.append(f"DEFINE_UNKNOWN_FIELD:{name}")
+            continue
+        want = fld["lsb"] if m.group(4) == "POS" else ((1 << (fld["msb"] - fld["lsb"] + 1)) - 1) << fld["lsb"]
+        if v != want:
+            f.append(f"DEFINE_MISMATCH:{name}:0x{v:X}!=0x{want:X}")
+    return f

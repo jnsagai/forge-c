@@ -36,8 +36,9 @@ FIELD_REF = re.compile(r"\b(RCC_[A-Z0-9]+)\.([A-Z][A-Z0-9_]*)\b")
 REG_REF = re.compile(r"\b(RCC_[A-Z0-9]+)\b")
 ASSUME = re.compile(r"\b(TBD|TBC|to be (defined|confirmed)|assum\w*|if possible|unless otherwise|as needed|etc\.?)\b", re.I)
 TIME_WORDS = re.compile(r"\b(wait|timeout|within|bounded|poll\w*|delay|until)\b", re.I)
-OBSERVABLE = re.compile(r"\b(RCC_[A-Z0-9]+(\.[A-Z0-9_]+)?|HAL_[A-Z_]+|return\w*|\d+\s*(bytes?|iterations?|ms|us|cycles?))\b",
-                        re.I)
+# measured false positives on r101 (SWR-017/018 "register"/"write" observables) widened this vocabulary
+OBSERVABLE = re.compile(r"\b(RCC_[A-Z0-9]+(\.[A-Z0-9_]+)?|HAL_[A-Z_]+|return\w*|registers?|bits?|flags?|writes?|"
+                        r"\d+\s*(bytes?|iterations?|ms|us|cycles?))\b", re.I)
 
 
 def requirements(text: str) -> list[dict]:
@@ -83,7 +84,7 @@ def check_requirements(ws: Path) -> dict:
             f.append(f"REQ_SILENT_ASSUMPTION:{rid}:{ASSUME.search(t).group(0)}")
         if not OBSERVABLE.search(t):
             f.append(f"REQ_NOT_TESTABLE:{rid}")
-        if TIME_WORDS.search(t) and not re.search(r"\d", t) and not re.search(r"\bTIMEOUT_VALUE\b", t):
+        if TIME_WORDS.search(t) and not re.search(r"\d", t) and "TIMEOUT_VALUE" not in t:  # r102 SWR-013 FP
             f.append(f"REQ_UNBOUNDED_TIME:{rid}")
         if idx:
             for reg, fld in FIELD_REF.findall(t):

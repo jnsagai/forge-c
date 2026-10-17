@@ -76,14 +76,21 @@ def evidence_map(ws: Path, phase: str) -> dict[str, list[dict]]:
     return out
 
 
-def phase(ws: Path, phase_id: str, gate002: dict, pol: dict | None = None) -> dict | None:
+def phase(ws: Path, phase_id: str, gate002: dict, pol: dict | None = None, verify: bool = True) -> dict | None:
     ws = Path(ws)
     try:
         pol = pol or contracts.load(policy.POLICY_PATH if policy.POLICY_PATH.is_file() else contracts.POLICY_EXAMPLE)
         reqs = policy.profile_requirements(pol["profile"]).get(phase_id, [])
         bl = sha256_bytes(canonical_json(gate002.get("baseline") or gate002.get("baseline_hash") or gate002))
+        ev = evidence_map(ws, phase_id)
+        if verify:  # EASA-T066: independent deterministic verifiers produce hash-recorded reports (observe-only)
+            from .verifiers import run_for_phase
+
+            for req, items in run_for_phase(ws, phase_id, [r for r in reqs if r not in ev or not any(
+                    i.get("accepted") and i.get("kind") == "tool" for i in ev[r])]).items():
+                ev.setdefault(req, []).extend(items)
         d = gate.decide(work_order_id=ws.parent.name, phase=phase_id, mode=pol["mode"], requirements=reqs,
-                        evidence=evidence_map(ws, phase_id), inspector_text=str(gate002.get("decision")),
+                        evidence=ev, inspector_text=str(gate002.get("decision")),
                         profile_hash=policy.policy_sha(pol), catalog_hash=catalog.digest(catalog.load()),
                         baseline_hash=bl)
         d["gate_002_decision"] = gate002.get("decision")

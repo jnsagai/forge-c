@@ -94,8 +94,13 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
             if target_rel.startswith("ll/") and (t / "include").is_dir():
                 shutil.copy(t / target_rel, t / "include" / Path(target_rel).name)
             inc = sum((["-I", str(t / d)] for d in ("include", "ll", "hal") if (t / d).is_dir()), [])
-            srcs = [str(p) for p in sorted((t / "src").glob("*.c")) if not p.name.endswith("ll_rcc.c")] + \
-                [str(t / s) for s in (extra_sources or [])]
+            # driver compile units: software/src (packaged flat view) or software/hal (live workspace); the generated
+            # LL compile unit only includes the header and is skipped (the tests include the header themselves)
+            by_name = {p.name: str(p) for d in ("src", "hal") for p in sorted((t / d).glob("*.c"))
+                       if not p.name.endswith("ll_rcc.c")}  # packaged flat view duplicates hal/*.c in src/
+            if target_rel.endswith(".c"):
+                by_name[Path(target_rel).name] = str(t / target_rel)  # always the mutated copy
+            srcs = sorted(by_name.values()) + [str(t / s) for s in (extra_sources or [])]
             outcome, detail = "SURVIVED", None
             for tc in test_files:
                 exe = Path(td) / ("x_" + tc.stem)

@@ -253,9 +253,11 @@ def test_t022_observe_records_without_changing_002_decision(tmp_path):
     d = observe.phase(ws, "SWE.4", {"decision": "PASS", "baseline_hash": "x"})
     assert d["gate_002_decision"] == "PASS" and d["enforced"] is False and d["state"] == "BLOCKED"
     assert d["requirements"]["REQUIREMENTS_DERIVED_TESTS"] == "PASS"
-    assert d["requirements"]["INDEPENDENT_ORACLE"] == "NOT_RUN"
+    assert d["requirements"]["INDEPENDENT_ORACLE"] != "PASS"            # verifier ran: no RM inputs -> never PASS
+    off = observe.phase(ws, "SWE.4", {"decision": "PASS", "baseline_hash": "x"}, verify=False)
+    assert off["requirements"]["INDEPENDENT_ORACLE"] == "NOT_RUN"
     logged = [json.loads(x) for x in (ws / ".forge-run/assurance/gate-log.jsonl").read_text().splitlines()]
-    assert logged[-1]["gate_id"] == d["gate_id"]
+    assert [x["gate_id"] for x in logged] == [d["gate_id"], off["gate_id"]]   # append-only, both decisions kept
     broken = observe.phase(ws, "SWE.4", {"decision": "PASS"}, pol={"profile": "NOPE", "mode": "OBSERVE_ONLY"})
     assert broken["state"] == "UNKNOWN" and "error" in broken          # swallowed, recorded
 
