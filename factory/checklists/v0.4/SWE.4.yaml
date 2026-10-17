@@ -5,4 +5,18 @@ extends:
   path: factory/release-manager/checklists/SWE.4.yaml
   sha256: b6b0e53563c84415a5ca6e663c55ec8b1617ce402ad9da05dc0f64b29c8cd9e7
 policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
-additional_checks: []
+additional_checks:
+- id: SWE4-07
+  required: true
+  severity_if_failed: major
+  criterion: Every unit test case states @test/@verifies USPEC ids and every USPEC item is verified by an executed, passing
+    unit test (content-addressed run_unit output). Matrix 4 is generated.
+  deterministic_check: unit_test_trace
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.4 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-007, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict
+

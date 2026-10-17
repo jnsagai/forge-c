@@ -32,3 +32,17 @@ additional_checks:
   - workproduct_reference
   - views_report_reference
   - recorded_verdict
+- id: SWE2-09
+  required: true
+  severity_if_failed: major
+  criterion: The LL and the HAL are separate components, each exactly one <<SWC>> element (SWC_LL / SWC_HAL) in the static
+    architecture diagram; every SW requirement is allocated to an SWC by an 'Allocated:' note in the diagram; every connection
+    carries an interface id IF-nn. Matrix 1 (SWR -> architecture) is generated.
+  deterministic_check: swc_allocation
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.2 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-001, EASA-OR-002, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict
