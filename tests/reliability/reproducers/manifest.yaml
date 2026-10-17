@@ -299,3 +299,25 @@ reproducers:
     operations: [SWE.2/author]
     root_cause: "The owner-trace gate wrote traceability matrix 1 into traceability/, which PHASE_PATHS assigns to the frozen SWE.1 baseline; SWE.1 became stale and every SWE.2 freeze failed with UPSTREAM_NOT_FROZEN:SWE.1 (r109 BLOCKED at SWE.2)."
     remedy: "Each matrix is written into workproducts/SWE.n/traceability of the phase that produces it; the packager collects all six under traceability/matrices/."
+  - id: RPR-030
+    script: rpr030_swe3_trace_work_by_hand.py
+    sha256: efdfe2af0727f0fd8ea704567f83c3441090f6a1c9b03a958b9f3c995edbc955
+    symptom_signature: "trace-profile SWE.3 chain has no deterministic unit scaffold"
+    observed_in: r110
+    baseline_revision: 9c25965034ed776ee7a00e8f9ce19fd4520aeb53
+    fix_revision: 9e8b6253ef40d962abc3c1b626ba23da5c707b0f
+    error_codes: ["TURN_BUDGET_EXHAUSTED", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author]
+    root_cause: "With the owner trace profile the SWE.3 design author wrote unit specifications, a PlantUML design per unit and the MISRA statement by hand; in the third rework cycle it exceeded its tool budget (46 > 45) and SWE.3 was BLOCKED (r110)."
+    remedy: "A deterministic scaffold node (swe3_units) generates the unit-spec skeleton and as-built designs from the code tags; the author only replaces placeholder markers, which the gate rejects if left."
+  - id: RPR-031
+    script: rpr031_no_misra_deviation_record.py
+    sha256: 9c1c7501a6631077e23de697d574e8d00e236d4f5ee8a88f2fac64ae57ef49ac
+    symptom_signature: "no generated MISRA deviation statement"
+    observed_in: r110
+    baseline_revision: 9c25965034ed776ee7a00e8f9ce19fd4520aeb53
+    fix_revision: 9e8b6253ef40d962abc3c1b626ba23da5c707b0f
+    error_codes: ["INSPECTION_FAIL:SWE3-04"]
+    operations: [SWE.3/author]
+    root_cause: "The SWE.3 inspector failed SWE3-04 because no explicit MISRA C:2012 deviation record existed although cppcheck reported no finding (r110 INS-SWE.3-001)."
+    remedy: "The scaffold writes workproducts/SWE.3/misra_deviations.md from the recorded cppcheck result, code suppressions and approved records (none -> 'Deviations: none'), compliance NOT CLAIMED."

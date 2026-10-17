@@ -1,0 +1,201 @@
+{
+  "CAPA-028": {
+    "history": [
+      {
+        "at": "2026-10-17T16:12:38.019760Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[\"CAPA-028\"]",
+        "from_state": null,
+        "reason": "r110 SWE.3 author exceeded its tool budget (46>45) in the third cycle; BLOCKED",
+        "seq": 235,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T16:12:38.047649Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 236,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T16:12:38.093637Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-030 assigned",
+        "seq": 237,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T16:14:04.173550Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[\"reproducer-run:rr-d47cfa23964b0bc25d7c\", \"reproducer-run:rr-41ef8d473253c311b02a\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 241,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T16:14:04.229187Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[\"git:9c25965034ed..9e8b6253ef40\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 9e8b6253ef40 (patch 17813 bytes)",
+        "seq": 242,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T16:14:04.329473Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[\"reproducer-run:rr-bd82b372bc2325cf7608\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-030 absent at 9e8b6253ef40",
+        "seq": 243,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T16:14:04.370084Z",
+        "capa_id": "CAPA-028",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 244,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-7bf33c21272f215bd19f0e900f98235f022e8871",
+      "cfp1-e846045e642e16b796937c910ff30357d730ef1d",
+      "9c25965034ed776ee7a00e8f9ce19fd4520aeb53",
+      "9e8b6253ef40d962abc3c1b626ba23da5c707b0f",
+      "pd-fc29eea32100e67e3194"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<9e8b6253ef40"
+      ],
+      "candidate_patch_sha256": "b09094b092007bb10109847a4bddf06a961b011c7cb47cc104e737e6c276336f",
+      "capa_id": "CAPA-028",
+      "created_at": "2026-10-17T16:12:38.019760Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-028"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-030",
+      "reproducer_id": "RPR-030",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-d47cfa23964b0bc25d7c",
+        "reproducer-run:rr-41ef8d473253c311b02a"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "with the owner trace profile the SWE.3 design author writes unit specs, per-unit PlantUML designs and the MISRA statement by hand; the extra work exhausts the per-visit tool budget on rework",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T16:14:04.370084Z"
+    }
+  },
+  "CAPA-029": {
+    "history": [
+      {
+        "at": "2026-10-17T16:12:38.116139Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[\"CAPA-029\"]",
+        "from_state": null,
+        "reason": "r110 SWE3-04 inspection FAIL: no MISRA deviation record",
+        "seq": 238,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T16:12:38.136995Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 239,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T16:12:38.171462Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-031 assigned",
+        "seq": 240,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T16:14:04.455239Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[\"reproducer-run:rr-e888e68b1c2ac7e8afcf\", \"reproducer-run:rr-6788242b62fb41d8125c\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 245,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T16:14:04.505539Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[\"git:9c25965034ed..9e8b6253ef40\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 9e8b6253ef40 (patch 17813 bytes)",
+        "seq": 246,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T16:14:04.616715Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[\"reproducer-run:rr-8d1bf64ba5e611db9f03\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-031 absent at 9e8b6253ef40",
+        "seq": 247,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T16:14:04.653775Z",
+        "capa_id": "CAPA-029",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 248,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-f2ce1c99ba2037b801d0cc47ae0075b055d5f050",
+      "9c25965034ed776ee7a00e8f9ce19fd4520aeb53",
+      "9e8b6253ef40d962abc3c1b626ba23da5c707b0f",
+      "pd-fc29eea32100e67e3194"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<9e8b6253ef40"
+      ],
+      "candidate_patch_sha256": "b09094b092007bb10109847a4bddf06a961b011c7cb47cc104e737e6c276336f",
+      "capa_id": "CAPA-029",
+      "created_at": "2026-10-17T16:12:38.116139Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-029"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-031",
+      "reproducer_id": "RPR-031",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-e888e68b1c2ac7e8afcf",
+        "reproducer-run:rr-6788242b62fb41d8125c"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "no step produces an explicit MISRA deviation record/statement; the inspector requires one even when the analyzers report nothing",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T16:14:04.653775Z"
+    }
+  }
+}
