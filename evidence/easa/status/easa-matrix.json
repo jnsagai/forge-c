@@ -1249,7 +1249,7 @@
       "task_status": [
         "PASS",
         "PASS",
-        "NOT_RUN"
+        "FAIL"
       ],
       "tasks": [
         "EASA-T005",
@@ -1483,7 +1483,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "NOT_RUN"
+        "FAIL"
       ],
       "tasks": [
         "EASA-T003",
@@ -1510,7 +1510,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "NOT_RUN"
+        "FAIL"
       ],
       "tasks": [
         "EASA-T006",
@@ -1521,13 +1521,13 @@
       ]
     }
   ],
-  "generated_at": "2026-10-17T21:15:11.327000Z",
-  "git_head": "c9df5893e2bbf297f4ed7ccfdf1a45262509a2c4",
+  "generated_at": "2026-10-17T21:15:59.695014Z",
+  "git_head": "bb05e2c44267c3c5f7bffc48d46ddb6052abe378",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
     "BLOCKED": 1,
-    "NOT_RUN": 1,
+    "FAIL": 1,
     "PASS": 70
   },
   "tasks": {
@@ -2592,13 +2592,15 @@
       "ats": [
         "EASA-AT-072"
       ],
+      "evidence": "evidence/v0.4/runs/EASA-T072/latest.json",
       "frs": [
         "EASA-FR-061",
         "EASA-FR-071",
         "EASA-FR-072"
       ],
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "status FAIL exit 1",
+      "status": "FAIL",
       "title": "Prepare review PR without auto-merging, no claim of ISO conformance or 100% assurance."
     }
   }

@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c-easa-dev
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 2 items
+
+factory/python/tests/test_easa_pr_body.py F.                             [100%]
+
+=================================== FAILURES ===================================
+________ test_at072_pr_body_has_no_conformance_claim_and_no_auto_merge _________
+
+    def test_at072_pr_body_has_no_conformance_claim_and_no_auto_merge():
+        text = BODY.read_text()
+        assert compliance_assertions(text) == []
+        assert text.startswith("## Overview") and "### Stacked PR note" in text          # owner's sections kept
+        assert "Do not merge automatically" in text and "not a safety sign-off" in text
+>       assert "100%" not in text
+E       AssertionError: assert '100%' not in '## Overview...aude-code)\n'
+E         
+E         '100%' is contained here:
+E           ; numeric 100% coverage thresholds are not attributed to ISO 26262.
+E         ?           ++++
+E           - Start OBSERVE_ONLY; require independent evidence and owner authorization for stronger enforcement.
+E           
+E           ### Local validation...
+E         
+E         ...Full output truncated (65 lines hidden), use '-vv' to show
+
+factory/python/tests/test_easa_pr_body.py:15: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_easa_pr_body.py::test_at072_pr_body_has_no_conformance_claim_and_no_auto_merge
+========================= 1 failed, 1 passed in 0.05s ==========================
+
+--- stderr ---
