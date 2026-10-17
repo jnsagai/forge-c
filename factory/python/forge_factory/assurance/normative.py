@@ -39,11 +39,19 @@ def standard_access() -> dict:
             "normative_verification": "REQUIRES_REVIEWER_RECONCILIATION", "reason": None}
 
 
+NEGATION = re.compile(r"\b(not|no|never|without|nor|cannot|isn't|is not|does not|NOT_CLAIMED|NOT CLAIMED)\b", re.I)
+
+
 def compliance_assertions(text: str) -> list[str]:
-    """Phrases that assert ISO/ASIL/ASPICE conformance, approval or certification."""
+    """Phrases that ASSERT ISO/ASIL/ASPICE conformance, approval or certification. A phrase inside a negated clause
+    ("is not an ISO 26262 conformance statement", "no ASIL approval") is a disclaimer, not an assertion."""
     hits = []
     for rx in COMPLIANCE_PATTERNS:
-        hits += [m.group(0) for m in re.finditer(rx, text, re.I)]
+        for m in re.finditer(rx, text, re.I):
+            clause_start = max(text.rfind(c, 0, m.start()) for c in (".", ";", "\n", ":", "(", "|"))
+            if NEGATION.search(text[clause_start + 1:m.end()]):
+                continue
+            hits.append(m.group(0))
     return hits
 
 
