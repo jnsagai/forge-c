@@ -9,6 +9,7 @@ recorded and swallowed (OBSERVE_ONLY, EASA-FR-066).
 from __future__ import annotations
 
 import json
+import re
 import traceback
 from pathlib import Path
 
@@ -68,7 +69,12 @@ def evidence_map(ws: Path, phase: str) -> dict[str, list[dict]]:
             for i, r in zip(items, [r for r in res if r.get("op") in ops], strict=True):
                 last[r.get("op")] = i
             out[req] = list(last.values())
-    insp = ws / "inspection" / phase / "inspection_record.json"
+    # live workspace: inspection/<phase>/INS-<phase>-NNN.json (latest = the one the 002 gate just decided on);
+    # sealed package: inspection/<phase>/inspection_record.json. r122: only the package name was read, so every live
+    # phase reported INDEPENDENT_INSPECTION NOT_RUN although the inspection existed.
+    d = ws / "inspection" / phase
+    live = sorted(d.glob(f"INS-{phase}-*.json"), key=lambda q: int(re.sub(r"\D", "", q.stem.rsplit("-", 1)[-1]) or 0))
+    insp = live[-1] if live else d / "inspection_record.json"
     if insp.is_file():
         out.setdefault("INDEPENDENT_INSPECTION", []).append(
             {"ref": f"inspection:{phase}", "kind": "ai_inspection", "accepted": True,

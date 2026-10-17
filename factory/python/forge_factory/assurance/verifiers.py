@@ -205,6 +205,106 @@ def v_eva(ws: Path) -> dict:
     return formal.eva(ws)
 
 
+def _latest_results(ws: Path, ops: tuple[str, ...]) -> dict[str, dict]:
+    p = ws / "evidence/tool-results.jsonl"
+    out: dict[str, dict] = {}
+    for line in (p.read_text(errors="replace").splitlines() if p.is_file() else []):
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("op") in ops:
+            out[r["op"]] = r
+    return out
+
+
+_BUDGET_KIND = (("stack_bytes", r"\bstack\b"),
+                ("flash_bytes", r"\bflash\b|\bcode\b|\bROM\b|\.text|constant data|program"),
+                ("static_ram_bytes", r"\b(static )?RAM\b|(?<!constant )\bdata\b"))
+_UNIT = {"byte": 1, "bytes": 1, "kib": 1024, "kb": 1000, "mib": 1024 * 1024, "mb": 1000 * 1000}
+
+
+def budgets_from_requirements(ws: Path) -> tuple[dict[str, int], dict[str, str]]:
+    """Resource budgets stated by the frozen SWRs (component-level, swtrace.BUDGET_RX), by measured metric."""
+    out, src = {}, {}
+    for sid, text in swtrace.swr_texts(ws).items():
+        m = swtrace.BUDGET_RX.search(text)
+        if not m:
+            continue
+        q = re.search(r"(\d+(?:[.,]\d+)?)\s*(bytes?|KiB|KB|kB|MiB|MB)\b", text[m.start():])
+        kind = next((k for k, rx in _BUDGET_KIND if re.search(rx, text, re.I)), None)
+        if q and kind:
+            out[kind] = int(float(q.group(1).replace(",", ".")) * _UNIT[q.group(2).lower()])
+            src[kind] = sid
+    return out, src
+
+
+def v_resource_budgets(ws: Path) -> dict:
+    """SWE.3 RESOURCE_BUDGETS: SWR budgets against the recorded measure_elf/stack_usage results (never estimated)."""
+    budgets, src = budgets_from_requirements(ws)
+    if not budgets:
+        return {"status": "NOT_SUPPORTED", "findings": ["no resource budget stated in the frozen SWRs"]}
+    res = _latest_results(ws, ("measure_elf", "stack_usage"))
+    ev = swe3.resource_evidence({k: (v.get("result") or {}) for k, v in res.items()}, budgets)
+    f = []
+    for e in ev:
+        if e["metric"] not in budgets:
+            continue
+        if e["provenance"] != "MEASURED":
+            f.append(f"BUDGET_NOT_MEASURED:{e['metric']}:{src[e['metric']]}")
+        elif e["within_budget"] is False:
+            f.append(f"BUDGET_EXCEEDED:{e['metric']}:{e['value']}>{e['budget']}:{src[e['metric']]}")
+    st = "FAIL" if any(x.startswith("BUDGET_EXCEEDED") for x in f) else ("NOT_SUPPORTED" if f else "PASS")
+    return {"status": st, "findings": f, "budgets": budgets, "measured": ev}
+
+
+_ESCALATION = re.compile(r"[^.\n]*\b(HIL|hardware[- ]in[- ]the[- ]loop|on (?:the )?(?:real )?(?:silicon|hardware|target "
+                         r"board)|physical (?:target|hardware|board))\b[^.\n]*", re.I)
+_NEGATED = re.compile(r"\b(not|no|never|without|cannot|n't|outside|deferred|unavailable|NOT_AVAILABLE|limitation)\b", re.I)
+
+
+def v_fidelity(ws: Path, phase: str) -> dict:
+    """SWE.5/6 FIDELITY_LABEL: the report names the environment of its executed evidence and claims no higher
+    fidelity (HIL/silicon) than the producing tools provide."""
+    ops = {"SWE.5": ("run_integration", "run_renode"), "SWE.6": ("run_robot", "run_renode")}[phase]
+    res = _latest_results(ws, ops)
+    if not res:
+        return {"status": "NOT_SUPPORTED", "findings": [f"no executed {'/'.join(ops)} result recorded"]}
+    envs = sorted({T.environment_of(op) for op in res})
+    text = "\n".join(p.read_text(errors="replace") for p in sorted((ws / "workproducts" / phase).glob("*.md")))
+    f = []
+    if not re.search(r"\b(renode|host|simulat\w*|emulat\w*)\b", text, re.I):
+        f.append(f"FIDELITY_LABEL_MISSING:{phase} report does not name its execution environment ({', '.join(envs)})")
+    for m in _ESCALATION.finditer(text):
+        if not _NEGATED.search(m.group(0)):
+            f += [x for op in res for x in T.check_claim("HIL", op)][:1]
+            f.append(f"CLAIM_TEXT:{m.group(0).strip()[:120]}")
+            break
+    return {"status": _ok(f), "findings": f, "environments": envs, "hil": "NOT_AVAILABLE"}
+
+
+def v_negative_boundary(ws: Path) -> dict:
+    """SWE.4 NEGATIVE_BOUNDARY_CASES: requirement-derived invalid and boundary arguments of every parameterised API
+    call are exercised by the unit tests (static search for the literal arguments: LIMITATION)."""
+    if layer_of(ws) == "LL":
+        return {"status": "NOT_APPLICABLE", "findings": ["NOT_APPLICABLE:the LL API takes no parameters"]}
+    req = (ws / swtrace.REQS).read_text(errors="replace") if (ws / swtrace.REQS).is_file() else ""
+    hdr = next((p for p in sorted((ws / "software/hal").glob("*.h"))), None)
+    cases = oracle_gen.derive_timeouts(req, hdr.read_text(errors="replace") if hdr else "", _idx(ws))
+    if not cases:
+        return {"status": "NOT_SUPPORTED", "findings": ["no parameter boundary derivable from the requirements"]}
+    tests = "\n".join(p.read_text(errors="replace") for p in sorted((ws / "software/tests/unit").glob("*.c")))
+    alts = {"0U": r"0U?", "HAL_RCC_TIMEOUT_VALUE + 1U": r"HAL_RCC_TIMEOUT_VALUE\s*\+\s*1U?|1001U?",
+            "1U": r"1U?", "HAL_RCC_TIMEOUT_VALUE": r"HAL_RCC_TIMEOUT_VALUE|1000U?"}
+    f = []
+    for fn in sorted({c["function"] for c in cases}):
+        for arg in ("0U", "HAL_RCC_TIMEOUT_VALUE + 1U", "1U", "HAL_RCC_TIMEOUT_VALUE"):
+            if not re.search(rf"\b{fn}\s*\(\s*(?:{alts[arg]})\s*\)", tests):
+                f.append(f"BOUNDARY_NOT_EXERCISED:{fn}({arg})")
+    return {"status": _ok(f), "findings": f + ["LIMITATION:literal-argument search; a value passed through a variable "
+                                                 "is not recognised"]}
+
+
 def v_not_supported(why: str):
     return lambda ws: {"status": "NOT_SUPPORTED", "findings": [why]}
 
@@ -221,6 +321,8 @@ VERIFIERS = {
     "RAW_OUTCOME_VALIDATION": v_renode_raw, "BOUNDARY_INTEGRATION": v_integration, "FAULT_INJECTION": v_fault_injection,
     "MEASURED_REQUIREMENT_OBSERVATION": v_observation,
     "BOUNDED_PROOF_WHERE_FEASIBLE": v_bounded_proof, "STATIC_ANALYSIS": v_eva,
+    "RESOURCE_BUDGETS": v_resource_budgets, "NEGATIVE_BOUNDARY_CASES": v_negative_boundary,
+    "FIDELITY_LABEL": v_fidelity,  # takes the phase (SWE.5/SWE.6)
     "DEGRADED_TRANSITION_SCENARIOS": v_observation,
 }
 
@@ -239,7 +341,7 @@ def run_for_phase(ws: Path, phase: str, requirements: list[str]) -> dict[str, li
         if fn not in cache:
             t0 = time.monotonic()
             try:
-                res = fn(ws)
+                res = fn(ws, phase) if fn is v_fidelity else fn(ws)
             except Exception as exc:  # noqa: BLE001 - a crashing verifier is evidence of nothing, not a pass
                 res = {"status": "ERROR", "findings": [f"{type(exc).__name__}: {exc}"[:200]]}
             res = {**res, "duration_s": round(time.monotonic() - t0, 2), "at": utc_now(), "verifier": fn.__name__}
