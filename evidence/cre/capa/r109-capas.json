@@ -1,0 +1,102 @@
+{
+  "CAPA-027": {
+    "history": [
+      {
+        "at": "2026-10-17T12:24:49.102160Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[\"CAPA-027\"]",
+        "from_state": null,
+        "reason": "r109 SWE.2 FREEZE_FAILED UPSTREAM_NOT_FROZEN:SWE.1 twice, BLOCKED",
+        "seq": 228,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T12:24:49.130034Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 229,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T12:24:49.162021Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-029 assigned",
+        "seq": 230,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T12:26:21.837753Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[\"reproducer-run:rr-e94ec043045e3a044fc8\", \"reproducer-run:rr-20fab65f175b599202df\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 231,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T12:26:21.892595Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[\"git:a7d20adc5e21..72f1d51f2974\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 72f1d51f2974 (patch 9101 bytes)",
+        "seq": 232,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T12:26:22.009742Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[\"reproducer-run:rr-4257230b160eb99c9353\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-029 absent at 72f1d51f2974",
+        "seq": 233,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T12:26:22.050141Z",
+        "capa_id": "CAPA-027",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 234,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-9b842de742dded6185e5d006af00edebb95b95c1",
+      "cfp1-f83ba3ca264ba03d90fd41d0e7619cef3d6cb05a",
+      "a7d20adc5e218baeb27bdf01b71b8f7b4fba6ad6",
+      "72f1d51f29740dc3c5881e23af4aed31df5c1b65",
+      "pd-33a5fc6b2a038aed639a"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<72f1d51f2974"
+      ],
+      "candidate_patch_sha256": "ee1b4957720ee90d52cbf6a2711eb51a3e9e46fd6fe11526978de879ccf50003",
+      "capa_id": "CAPA-027",
+      "created_at": "2026-10-17T12:24:49.102160Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-027"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-029",
+      "reproducer_id": "RPR-029",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-e94ec043045e3a044fc8",
+        "reproducer-run:rr-20fab65f175b599202df"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "inspection/swtrace wrote traceability matrix 1 into traceability/, a folder of the frozen SWE.1 baseline (PHASE_PATHS), making SWE.1 stale",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T12:26:22.050141Z"
+    }
+  }
+}

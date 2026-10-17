@@ -288,3 +288,14 @@ reproducers:
     operations: [SWE.2/author]
     root_cause: "inspection/swtrace.parse_architecture read only the text on the 'Allocated:' line; the r108 SWE.2 author wrapped the complete SWR list over four note lines, so SWR-007..SWR-022 were reported unallocated and SWE.2 stopped STUCK after two identical rejections (false positive of the owner-trace gate)."
     remedy: "The allocation list extends over the following note lines up to the next 'Key:' line or the end of the note."
+  - id: RPR-029
+    script: rpr029_matrix_in_swe1_baseline.py
+    sha256: b1faa0e1d3ce0a68434569f57465250edbeb2d4c126bf8bf76a9165bb750268c
+    symptom_signature: "trace matrix written into the frozen SWE.1 baseline"
+    observed_in: r109
+    baseline_revision: a7d20adc5e218baeb27bdf01b71b8f7b4fba6ad6
+    fix_revision: 72f1d51f29740dc3c5881e23af4aed31df5c1b65
+    error_codes: ["UPSTREAM_NOT_FROZEN:SWE.1", "FREEZE_FAILED"]
+    operations: [SWE.2/author]
+    root_cause: "The owner-trace gate wrote traceability matrix 1 into traceability/, which PHASE_PATHS assigns to the frozen SWE.1 baseline; SWE.1 became stale and every SWE.2 freeze failed with UPSTREAM_NOT_FROZEN:SWE.1 (r109 BLOCKED at SWE.2)."
+    remedy: "Each matrix is written into workproducts/SWE.n/traceability of the phase that produces it; the packager collects all six under traceability/matrices/."
