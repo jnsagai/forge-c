@@ -470,3 +470,10 @@ def test_capa034_initial_state_invariant_is_component_level(ws):
     assert "SWR-004" in swtrace.component_constraints(ws)
     f = swtrace.check_units(ws, render=False, export=False)["major_findings"]
     assert not any("SWR_NOT_REFINED" in x for x in f)
+
+
+def test_capa035_sub_check_ids_with_underscores_count_for_their_test(tmp_path):
+    log = tmp_path / "run.log"
+    log.write_text("IT-001 PASS\nIT-005-ADC12_EN PASS\nIT-005-ADC12_RST_ASSERTED PASS\nIT-006-CR_KEPT PASS\n"
+                   "IT-006-RSTR_KEPT FAIL\nIT-007_x PASS\n")
+    assert swtrace.check_results([log]) == {"IT-001": "PASS", "IT-005": "PASS", "IT-006": "FAIL", "IT-007": "PASS"}

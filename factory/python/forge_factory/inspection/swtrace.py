@@ -488,12 +488,14 @@ def latest_run(ws: Path, op: str) -> dict | None:
 
 
 def check_results(raws: list[Path]) -> dict[str, str]:
-    """'<ID> PASS|FAIL' lines of self-checking host programs: per test id (sub-ids like UT-003b count for UT-003)."""
+    """'<ID> PASS|FAIL' lines of self-checking host programs: per test id (sub-ids like UT-003b or IT-005-ADC12_EN count
+    for their test; any failing sub-check fails the test). CAPA-035 (r117): '_' in a sub-id hid every check of IT-005
+    and IT-006, so Matrix 5 reported them NOT_RUN although all 17 checks had passed."""
     res: dict[str, str] = {}
     for p in raws:
         if p.suffix not in (".log", ".txt"):
             continue
-        for m in re.finditer(r"^\s*([A-Z]{2,4}-\d{3})([A-Za-z0-9-]*)\s+(PASS|FAIL)\b", p.read_text(errors="replace"), re.M):
+        for m in re.finditer(r"^\s*([A-Z]{2,4}-\d{3})([\w-]*)\s+(PASS|FAIL)\b", p.read_text(errors="replace"), re.M):
             tid, ok = m.group(1), m.group(3)
             if res.get(tid) != "FAIL":
                 res[tid] = ok
