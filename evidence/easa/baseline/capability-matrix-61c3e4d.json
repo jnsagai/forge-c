@@ -1,0 +1,254 @@
+{
+  "approval_modes": {
+    "afo_runtime_present": false,
+    "cre_authorization": false,
+    "cre_mode": "OBSERVE_ONLY",
+    "easa_mode": "OBSERVE_ONLY (no policy file: default)",
+    "easa_policy_file": false
+  },
+  "branch": "feat/006-enhanced-ai-software-assurance",
+  "capabilities": [
+    {
+      "class": "PARTIAL",
+      "feature": "001",
+      "source_packages_missing": [],
+      "source_packages_present": [
+        "tools",
+        "profiles"
+      ],
+      "spec_dir": "specs/001-factory",
+      "spec_present": true,
+      "task_status_counts": {
+        "CHECKED_WITHOUT_EVIDENCE": 2,
+        "NOT_RUN": 14,
+        "PASS": 3
+      },
+      "tasks_total": 19
+    },
+    {
+      "class": "IMPLEMENTED",
+      "feature": "002",
+      "source_packages_missing": [],
+      "source_packages_present": [
+        "factory/python/forge_factory/supervisor",
+        "factory/python/forge_factory/repair",
+        "factory/python/forge_factory/knowledge",
+        "factory/python/forge_factory/inspection",
+        "factory/python/forge_factory/release"
+      ],
+      "spec_dir": "specs/002-self-healing-factory",
+      "spec_present": true,
+      "task_status_counts": {
+        "PASS": 51
+      },
+      "tasks_total": 51
+    },
+    {
+      "class": "IMPLEMENTED",
+      "feature": "003",
+      "source_packages_missing": [],
+      "source_packages_present": [
+        "factory/python/forge_factory/kpi"
+      ],
+      "spec_dir": "specs/003-manufacturing-kpis",
+      "spec_present": true,
+      "task_status_counts": {
+        "PASS": 20
+      },
+      "tasks_total": 20
+    },
+    {
+      "class": "PARTIAL",
+      "feature": "004",
+      "source_packages_missing": [],
+      "source_packages_present": [
+        "factory/python/forge_factory/reliability"
+      ],
+      "spec_dir": "specs/004-continuous-reliability-engineering",
+      "spec_present": true,
+      "task_status_counts": {
+        "NOT_RUN": 2,
+        "PASS": 52
+      },
+      "tasks_total": 54
+    },
+    {
+      "class": "SPEC_ONLY",
+      "feature": "005",
+      "source_packages_missing": [
+        "factory/python/forge_factory/operations",
+        "factory/python/forge_factory/conductor"
+      ],
+      "source_packages_present": [],
+      "spec_dir": "specs/005-autonomous-factory-operations",
+      "spec_present": true,
+      "task_status_counts": {
+        "NOT_RUN": 75
+      },
+      "tasks_total": 75
+    },
+    {
+      "class": "PARTIAL",
+      "feature": "006",
+      "source_packages_missing": [],
+      "source_packages_present": [
+        "factory/python/forge_factory/assurance"
+      ],
+      "spec_dir": "specs/006-enhanced-ai-software-assurance",
+      "spec_present": true,
+      "task_status_counts": {
+        "NOT_RUN": 72
+      },
+      "tasks_total": 72
+    }
+  ],
+  "generated_at": "2026-10-17T11:40:48.234779Z",
+  "git_head": "61c3e4d60003037de7718f9fd09fd9a12c8993ac",
+  "locked_references": [
+    {
+      "actual": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "expected": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "ref": "hardware-input:DS14791:DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "status": "OK"
+    },
+    {
+      "actual": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+      "expected": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+      "ref": "hardware-input:RM0486:RM0486-rev4-ch14-rcc.md",
+      "status": "OK"
+    },
+    {
+      "actual": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb",
+      "expected": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb",
+      "ref": "hardware-input:RM0486:RM0486-rev4-memory-map-excerpt.md",
+      "status": "OK"
+    },
+    {
+      "actual": "8ef7a089552c63636d2c132a6270ccfc09e6c5c17b26b2ad6434b1667f681358",
+      "expected": null,
+      "ref": "easa-contracts",
+      "status": "RECORDED"
+    },
+    {
+      "actual": "1bc3103e4a84a3580969c3900bb6f2d51b1109bcecbaf0858d9f2e3e1bf4c034",
+      "expected": "1bc3103e4a84a3580969c3900bb6f2d51b1109bcecbaf0858d9f2e3e1bf4c034",
+      "ref": "archive:WO-0002A-STM32N6-RCC-LL-r101",
+      "status": "OK"
+    },
+    {
+      "actual": "bc5e59747ba622a99b2531d33e50d20d1cf3146bfc96a1afaf847478769f7679",
+      "expected": "bc5e59747ba622a99b2531d33e50d20d1cf3146bfc96a1afaf847478769f7679",
+      "ref": "archive:WO-0002B-STM32N6-RCC-HAL-r102",
+      "status": "OK"
+    }
+  ],
+  "schema": "forge-c/easa-baseline/0.1",
+  "statement": "Engineering baseline only; no ISO 26262 / Automotive SPICE conformance claim.",
+  "tools": [
+    {
+      "path": "/usr/bin/gcc",
+      "sha256": "821af3c74506283c179ca413bb33e6b528805a4dd8a5c09df125e5ad560a9e89",
+      "status": "PRESENT",
+      "tool": "gcc",
+      "version": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang",
+      "sha256": "c57e2928bc629e58da157867bb9af550edfc1195e7b003edfcfecd57faf2b71b",
+      "status": "PRESENT",
+      "tool": "clang",
+      "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/llvm-cov",
+      "sha256": "b5be0736d19f6e1c4f6805b365bbac30487dddc03b0f6a5654a7ed5183e2d669",
+      "status": "PRESENT",
+      "tool": "llvm-cov",
+      "version": "LLVM (http://llvm.org/):"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/llvm-profdata",
+      "sha256": "886f98ba36f57de06e720459686195e657384e33f3ddb34f61752ec74ee12c1f",
+      "status": "PRESENT",
+      "tool": "llvm-profdata",
+      "version": "LLVM (http://llvm.org/):"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang-tidy",
+      "sha256": "5a35629a93eb4706b3aab9b90026b2907c09baede3c550ab3ea57447ecb85324",
+      "status": "PRESENT",
+      "tool": "clang-tidy",
+      "version": "LLVM (http://llvm.org/):"
+    },
+    {
+      "path": "/usr/bin/cppcheck",
+      "sha256": "d2268c85b26850db5f36f7a3a7a2ae0106377810f4f93988bf4ab636481b4d89",
+      "status": "PRESENT",
+      "tool": "cppcheck",
+      "version": "Cppcheck 2.7"
+    },
+    {
+      "path": "/usr/bin/gcovr",
+      "sha256": "59cd3edebe1a6e9a8df26b0ffc01906c444758c58411214ff0e466c8170cfbb0",
+      "status": "PRESENT",
+      "tool": "gcovr",
+      "version": "gcovr 5.0"
+    },
+    {
+      "path": "/usr/bin/arm-none-eabi-gcc",
+      "sha256": "702dfc4dd0b34ee43ecd164a6db6ada4b5583d8945b17bbea3ebe223db765480",
+      "status": "PRESENT",
+      "tool": "arm-none-eabi-gcc",
+      "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/robot",
+      "sha256": "12636085c7c6643fd761fd25f25a9cb6e296728d80f20e569fb6b24607565160",
+      "status": "PRESENT",
+      "tool": "robot",
+      "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+      "sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d",
+      "status": "PRESENT",
+      "tool": "plantuml",
+      "version": "PlantUML version 1.2026.8 / 149874a [2026-09-05 15:59:17 UTC]"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode",
+      "sha256": "822209a27168e2ce2e5e679ed481686b555c8e154745431b25d8b4104c34138f",
+      "status": "PRESENT",
+      "tool": "renode",
+      "version": "Renode v1.17.0"
+    },
+    {
+      "path": null,
+      "sha256": null,
+      "status": "MISSING",
+      "tool": "cbmc",
+      "version": null
+    },
+    {
+      "path": null,
+      "sha256": null,
+      "status": "MISSING",
+      "tool": "frama-c",
+      "version": null
+    },
+    {
+      "path": "/usr/bin/git",
+      "sha256": "587ef21868c948b883993e23209b86a72a6ddc06aab1545c697ffc31075acd4a",
+      "status": "PRESENT",
+      "tool": "git",
+      "version": "git version 2.34.1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python3",
+      "sha256": "9907c621375bc585b55087a939f30310d5bc6e3b6b15a986f734dc24077cf968",
+      "status": "PRESENT",
+      "tool": "python3",
+      "version": "Python 3.13.13"
+    }
+  ]
+}

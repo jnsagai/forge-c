@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 34 items / 12 deselected / 22 selected
+
+factory/python/tests/test_easa_m2.py ...                                 [ 13%]
+factory/python/tests/test_t009_workflow_gates.py .........s.........     [100%]
+
+================ 21 passed, 1 skipped, 12 deselected in 10.26s =================
+
+--- stderr ---

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_easa_m2.py",
+    "factory/python/tests/test_t009_workflow_gates.py",
+    "-k",
+    "t022 or at022 or at020 or gate"
+  ],
+  "duration_s": 10.513,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d0015687574e8fa6e30c60772ed5e8177d7bcaf7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T022/20261017T114742.log",
+  "log_sha256": "bc066ce1a52411638d91d3789dc46f67ba7bcc5d9b4dd8671d4d02b9390b958a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T022",
+  "ts_utc": "2026-10-17T11:47:42.469373Z"
+}

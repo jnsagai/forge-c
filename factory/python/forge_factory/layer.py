@@ -24,6 +24,17 @@ def layer_of(ws: Path) -> str:
     return v if v in LAYERS else "LL+HAL"
 
 
+TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
+
+
+def swtrace_enabled(ws: Path) -> bool:
+    """Work orders prepared after the owner addendum carry `trace_profile`; older runs/fixtures keep their rules."""
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("trace_profile") == TRACE_PROFILE
+    except (OSError, ValueError):
+        return False
+
+
 def provided(ws: Path) -> list[dict]:
     """Components provided read-only to this work order (HAL layer: the LL header), with their sha256."""
     try:

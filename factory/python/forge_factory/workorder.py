@@ -17,6 +17,7 @@ from pathlib import Path
 from .common import REPO_ROOT, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
+from .layer import TRACE_PROFILE
 from .mcp.preflight import fabro_mcp_config
 from .mcp.preflight import preflight as mcp_preflight
 from .registry.agents import preflight as agent_preflight
@@ -187,6 +188,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
                 "input_baseline_commit": head, "factory_revision": factory_revision(),
                 "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
+                "trace_profile": TRACE_PROFILE,
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
@@ -326,7 +328,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
-                         phases=phases, layer=manifest.get("layer", "LL+HAL"))
+                         phases=phases, layer=manifest.get("layer", "LL+HAL"),
+                         trace=manifest.get("trace_profile") == TRACE_PROFILE)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(model_profile(model, provider, code_model, nodes)))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)

@@ -106,6 +106,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 
         generated += check_views(store.workspace, render=True)["major_findings"]
+    from ..layer import swtrace_enabled
+
+    if phase != "SWE.1" and swtrace_enabled(store.workspace):  # owner addendum 2026-10-17: trace relations of this phase
+        from .swtrace import check_phase
+
+        generated += check_phase(store.workspace, phase)["major_findings"]
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests

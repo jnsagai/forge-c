@@ -200,6 +200,7 @@ AUTHOR_STEPS = {
 
 CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
+TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
 
 
 def small() -> str:
@@ -338,14 +339,16 @@ ROBOT_STEPS = [
 def robot_test_author_prompt() -> str:
     """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
     robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
-    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + [DEFECT_RULE] + [REPLY]
+    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + trace_step("vt") + [DEFECT_RULE] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def target_test_author_prompt() -> str:
     """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
     target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
-    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + [DEFECT_RULE] + [REPLY]
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + trace_step("tt") + [DEFECT_RULE] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -356,7 +359,7 @@ def unit_test_author_prompt() -> str:
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
-         for x in ut] + [DEFECT_RULE, REPLY]
+         for x in ut] + trace_step("ut") + [DEFECT_RULE, REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -537,6 +540,58 @@ def _layer() -> str:
     return LAYER["layer"]
 
 
+def _t() -> tuple[str, str]:
+    """(unit/spec id infix, developed SWC) of this work order."""
+    return ("LL", "SWC_LL") if _layer() == "LL" else ("HAL", "SWC_HAL")
+
+
+def trace_step(kind: str) -> list[str]:
+    """Owner trace rules, only for work orders prepared with the owner trace profile (deterministically gated)."""
+    if not TRACE["on"]:
+        return []
+    x, swc = _t()
+    other = "the PROVIDED LL as SWC_LL (no allocation to it)" if _layer() == "HAL" else "no SWC_HAL"
+    rules = {
+        "swe2": "OWNER TRACE RULES (gate-checked, ARCH:* issues): in workproducts/SWE.2/architecture_static.puml the LL "
+                "and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype - "
+                f"'component \"RCC_{x}\" <<SWC>> as {swc}' and {other}. Allocate EVERY SWR of "
+                f"workproducts/SWE.1/software_requirements.md to {swc} with a note IN the diagram: 'note right of {swc}', "
+                "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. "
+                f"'{swc} --> RCC : IF-01 register access'" + (" and 'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* accessors'"
+                                                           if _layer() != "LL" else "") + ". The gate generates "
+                "traceability/matrix_1_swr_to_architecture.csv.",
+        "code": f"OWNER TRACE RULES: software units are the function groups of the SWE.2 allocation table (unit ids "
+                f"SWU-{x}-01, SWU-{x}-02, ... in table order; one unit per group, e.g. HSI, HSE, ADC12, GPDMA1). Put a "
+                "Doxygen block directly above EVERY function definition you write, in the same edit: '/**', ' * @brief "
+                f"<one line>', ' * @unit SWU-{x}-01', ' * @spec USPEC-{x}-01-01', ' */' - number the spec items of a "
+                f"unit USPEC-{x}-<unit nn>-01, -02, ... (one item per distinct behaviour: set, clear, query, wait, "
+                "error). Static helper functions belong to the unit that calls them and get the same block.",
+        "keep": "Keep every Doxygen /** ... @unit ... @spec ... */ block above its function when you edit code.",
+        "swe3": f"OWNER TRACE RULES (gate-checked, UNIT:*/CODE:* issues): read the @unit/@spec blocks of the code. "
+                f"write_file workproducts/SWE.3/unit_specifications.md: for each unit '## SWU-{x}-nn: <name>', "
+                f"'- SWC: {swc}', '- Functions: <exact C function names of the unit, incl. static helpers>', '- Design: "
+                f"workproducts/SWE.3/detailed_design/SWU-{x}-nn.puml' and one line per spec item used in the code: "
+                f"'- **USPEC-{x}-nn-mm** <the behaviour the unit shall implement> Traces: SWR-001, SWR-003' (only SWRs "
+                f"allocated to {swc} in the architecture diagram; every allocated SWR is traced by at least one item). "
+                "For EACH unit write_file workproducts/SWE.3/detailed_design/<unit id>.puml: a PlantUML activity "
+                "diagram between @startuml and @enduml whose title contains the unit id and which names every function "
+                "of the unit. The gate generates workproducts/SWE.3/unit_specifications/<unit>.reqif, runs Doxygen and "
+                "writes traceability/matrix_2 and matrix_3.",
+        "ut": "OWNER TRACE RULES: directly above each test function put '/** @test UT-00n @verifies USPEC-...-.. */' "
+              "with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
+              "specifications.md) it verifies. Every USPEC item must be verified by a passing test (UT:* issues).",
+        "tt": "OWNER TRACE RULES: start each target test file with '/** @file <file name> @verifies IF-01 IF-02 */' "
+              "naming the architecture interfaces (IF ids of workproducts/SWE.2/architecture_static.puml) it exercises.",
+        "it": "OWNER TRACE RULES: directly above each integration test function put '/** @test IT-00n @verifies IF-01 "
+              f"{swc} */' (interface ids and SWCs of workproducts/SWE.2/architecture_static.puml); the CHECK ids it "
+              "prints start with that IT id. Every interface must be verified by a passing integration or target test "
+              "(IT:* issues; matrix 5).",
+        "vt": "OWNER TRACE RULES: every Robot test keeps its SWR tag; every SWR needs a passing test (VT:* issues; "
+              "matrix 6).",
+    }
+    return [rules[kind]]
+
+
 def triage_prompt(k: int) -> str:
     """ADR-0008 L12: the upstream owner judges routed defects in a small, edit-free step before any fix."""
     steps = [f"Call use_skill with skill_name swe{k}-author.",
@@ -557,7 +612,7 @@ def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
-        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REPLY]
+        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -567,7 +622,7 @@ def ll_author_prompt() -> str:
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
-        [REENTRY] + [REPLY]
+        (trace_step("code") if _layer() == "LL" else []) + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -575,7 +630,8 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REENTRY] + [REPLY]
+         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + [REENTRY] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -595,6 +651,9 @@ def author_prompt(phase: str) -> str:
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
         [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
+    tr = {"SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "ut", "SWE.5": "it", "SWE.6": "vt"}.get(phase)
+    if tr and trace_step(tr):  # owner trace rules go before the final 'gate freezes the baseline' step
+        body = body[:-1] + trace_step(tr) + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
