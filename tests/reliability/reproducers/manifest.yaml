@@ -398,3 +398,14 @@ reproducers:
     operations: [SWE.5/author]
     root_cause: "The SWE.5 integration trace accepted only IF ids that label connectors of architecture_static.puml; the frozen software_architecture.md defined the per-function interfaces IF-01..IF-18 in its interface table, the r119 tests cited them, and the identical rejection twice stopped SWE.5 STUCK (r117's inspector had objected the opposite way)."
     remedy: "Interface ids defined in either frozen SWE.2 view are architecture elements; UNKNOWN_ARCH_REF lists the known elements."
+  - id: RPR-039
+    script: rpr039_trace_codes_unclassified.py
+    sha256: 8006071c185e43bca53e4fa8552d48787f99753d8908e7b39ea2b7a3291ea45e
+    symptom_signature: "trace-gate rejection classified UNCLASSIFIED"
+    observed_in: r120
+    baseline_revision: 44311731b798dbf71c242da8249ede4721852ae9
+    fix_revision: 556929a4d05bd2fdc47bb1987984ce92fe9043fa
+    error_codes: ["UNCLASSIFIED"]
+    operations: [CRE/observe]
+    root_cause: "The CRE taxonomy (cre-rules-1.3) had no rule for the owner-addendum trace-gate codes (UNIT:/CODE:/IT:/UT:/VT:/ARCH:); every such rejection since r108 was UNCLASSIFIED, so recurrence detection for CAPA-026..036 could not match their error codes and CAPA-031 reached EFFECTIVE although r120 recurred."
+    remedy: "An anchored rule maps '<RELATION>:<CODE>:...' to error code '<RELATION>:<CODE>' (PRODUCT_ENGINEERING, SWE_REWORK); classifier cre-rules-1.4."
