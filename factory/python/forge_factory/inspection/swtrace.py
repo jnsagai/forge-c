@@ -39,7 +39,12 @@ UNITS_MD = "workproducts/SWE.3/unit_specifications.md"
 UNITS_DIR = "workproducts/SWE.3/unit_specifications"
 DESIGN_DIR = "workproducts/SWE.3/detailed_design"
 REQS = "workproducts/SWE.1/software_requirements.md"
-TRACE_DIR = "traceability"
+TRACE_DIR = "traceability"  # SWE.1-owned (requirements_to_tests.csv): matrices are NOT written here
+# CAPA-027 (r109): a matrix lives in the folder of the phase that produces it, so it is part of THAT phase's frozen
+# baseline; writing into traceability/ changed the SWE.1 baseline and every later freeze failed UPSTREAM_NOT_FROZEN.
+MATRIX_DIRS = {1: "workproducts/SWE.2/traceability", 2: "workproducts/SWE.3/traceability",
+               3: "workproducts/SWE.3/traceability", 4: "workproducts/SWE.4/traceability",
+               5: "workproducts/SWE.5/traceability", 6: "workproducts/SWE.6/traceability"}
 DOXY_OUT = "build/doxygen"
 SWR_RX = re.compile(r"\bSWR-\d{3}\b")
 USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2}-\d{2}\b")
@@ -480,9 +485,9 @@ def tagged_tests(files: list[Path], ws: Path) -> list[dict]:
 def write_matrix(ws: Path, n: int, rows: list[dict], uncovered: list[str], write: bool = True) -> dict:
     name, cols = MATRICES[n]
     if not write:
-        return {"matrix": n, "file": f"{TRACE_DIR}/matrix_{n}_{name}.csv", "rows": len(rows), "uncovered": uncovered,
+        return {"matrix": n, "file": f"{MATRIX_DIRS[n]}/matrix_{n}_{name}.csv", "rows": len(rows), "uncovered": uncovered,
                 "written": False}
-    d = ws / TRACE_DIR
+    d = ws / MATRIX_DIRS[n]
     d.mkdir(parents=True, exist_ok=True)
     rows = sorted(rows, key=lambda r: tuple(str(r.get(c, "")) for c in cols))
     buf = io.StringIO()
@@ -496,7 +501,7 @@ def write_matrix(ws: Path, n: int, rows: list[dict], uncovered: list[str], write
     md += ["| " + " | ".join(str(r.get(c, "")) for c in cols) + " |" for r in rows]
     md += ["", f"Uncovered items: {', '.join(uncovered) if uncovered else 'none'}", ""]
     (d / f"matrix_{n}_{name}.md").write_text("\n".join(md), encoding="utf-8")
-    return {"matrix": n, "file": f"{TRACE_DIR}/matrix_{n}_{name}.csv", "rows": len(rows), "uncovered": uncovered}
+    return {"matrix": n, "file": f"{MATRIX_DIRS[n]}/matrix_{n}_{name}.csv", "rows": len(rows), "uncovered": uncovered}
 
 
 PHASE_MATRICES = {"SWE.2": {1}, "SWE.3": {2, 3}, "SWE.4": {4}, "SWE.5": {5}, "SWE.6": {6}}

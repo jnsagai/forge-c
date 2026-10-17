@@ -560,7 +560,7 @@ def trace_step(kind: str) -> list[str]:
                 "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. "
                 f"'{swc} --> RCC : IF-01 register access'" + (" and 'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* accessors'"
                                                            if _layer() != "LL" else "") + ". The gate generates "
-                "traceability/matrix_1_swr_to_architecture.csv.",
+                "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv.",
         "code": f"OWNER TRACE RULES: software units are the function groups of the SWE.2 allocation table (unit ids "
                 f"SWU-{x}-01, SWU-{x}-02, ... in table order; one unit per group, e.g. HSI, HSE, ADC12, GPDMA1). Put a "
                 "Doxygen block directly above EVERY function definition you write, in the same edit: '/**', ' * @brief "
@@ -577,7 +577,7 @@ def trace_step(kind: str) -> list[str]:
                 "For EACH unit write_file workproducts/SWE.3/detailed_design/<unit id>.puml: a PlantUML activity "
                 "diagram between @startuml and @enduml whose title contains the unit id and which names every function "
                 "of the unit. The gate generates workproducts/SWE.3/unit_specifications/<unit>.reqif, runs Doxygen and "
-                "writes traceability/matrix_2 and matrix_3.",
+                "writes workproducts/SWE.3/traceability/matrix_2 and matrix_3.",
         "ut": "OWNER TRACE RULES: directly above each test function put '/** @test UT-00n @verifies USPEC-...-.. */' "
               "with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
               "specifications.md) it verifies. Every USPEC item must be verified by a passing test (UT:* issues).",

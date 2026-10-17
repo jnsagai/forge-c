@@ -275,6 +275,8 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         if (tb / name).is_file():
             _w(stage, f"software/build/{name}", (tb / name).read_bytes())
     _copy_tree(ws / "build" / "doxygen" / "html", stage / "documentation" / "doxygen")  # owner addendum: code docs
+    for f in sorted(ws.glob("workproducts/SWE.*/traceability/matrix_*")):  # owner addendum: the six matrices together
+        _w(stage, f"traceability/matrices/{f.name}", f.read_bytes())
     _copy_tree(ws / "evidence" / "raw", stage / "evidence-raw")
     if (ws / "evidence/tool-results.jsonl").is_file():
         _w(stage, "verification/tool-results.jsonl", (ws / "evidence/tool-results.jsonl").read_bytes())

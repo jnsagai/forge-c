@@ -132,11 +132,11 @@ def test_at092_consistent_set_six_matrices_deterministic(ws):
     assert {k: v for k, v in rep["findings"].items() if v} == {}
     assert [m["matrix"] for m in rep["matrices"]] == [1, 2, 3, 4, 5, 6]
     assert all(m["uncovered"] == [] for m in rep["matrices"])
-    first = {p.name: p.read_bytes() for p in (ws / "traceability").iterdir()}
-    assert len(first) == 12
+    first = {p.name: p.read_bytes() for p in ws.glob("workproducts/SWE.*/traceability/matrix_*")}
+    assert len(first) == 12 and not list((ws / "traceability").glob("matrix_*"))      # SWE.1's folder untouched
     swtrace.build_all(ws, render=False, doxygen=False)
-    assert {p.name: p.read_bytes() for p in (ws / "traceability").iterdir()} == first     # byte-identical rerun
-    m4 = (ws / "traceability/matrix_4_unittest_to_unitspec.csv").read_text().splitlines()
+    assert {p.name: p.read_bytes() for p in ws.glob("workproducts/SWE.*/traceability/matrix_*")} == first
+    m4 = (ws / "workproducts/SWE.4/traceability/matrix_4_unittest_to_unitspec.csv").read_text().splitlines()
     assert m4[0] == "test,file,uspec,result,status" and "UT-002,software/tests/unit/test_rcc.c,USPEC-HAL-01-02,PASS,VERIFIED" in m4
 
 
@@ -284,7 +284,7 @@ def test_at093_deterministic_items_computed_by_engine(ws):
     (ws / ".forge-run/manifest.json").write_text(json.dumps({"layer": "HAL", "trace_profile": TRACE_PROFILE}))
     st = Store(ws)
     det = st.deterministic_items("SWE.4", st.applicable(load_checklist("SWE.4")))
-    assert det["SWE4-07"]["verdict"] == "PASS" and "traceability/matrix_4_unittest_to_unitspec.csv" in det["SWE4-07"]["evidence_refs"]
+    assert det["SWE4-07"]["verdict"] == "PASS" and "workproducts/SWE.4/traceability/matrix_4_unittest_to_unitspec.csv" in det["SWE4-07"]["evidence_refs"]
     _edit(ws, "software/tests/unit/test_rcc.c", "@verifies USPEC-HAL-02-01", "@verifies")
     det = st.deterministic_items("SWE.4", st.applicable(load_checklist("SWE.4")))
     assert det["SWE4-07"]["verdict"] == "FAIL" and "UT:SPEC_NOT_VERIFIED:USPEC-HAL-02-01" in det["SWE4-07"]["findings"]
@@ -319,3 +319,17 @@ def test_capa026_multiline_allocation_note_r108(ws):
     m = swtrace.parse_architecture((ws / "workproducts/SWE.2/architecture_static.puml").read_text())
     assert m["allocation"]["SWC_HAL"] == ["SWR-001", "SWR-002", "SWR-003"]
     assert swtrace.check_architecture_model(ws)["major_findings"] == []
+
+
+def test_capa027_matrices_never_change_the_swe1_baseline(ws):
+    """CAPA-027 (r109): writing matrix 1 into traceability/ made SWE.1 stale -> UPSTREAM_NOT_FROZEN for SWE.2."""
+    from forge_factory.inspection.engine import Store
+
+    st = Store(ws)
+    (ws / "traceability").mkdir(exist_ok=True)
+    (ws / "traceability/requirements_to_tests.csv").write_text("requirement_id,test_id,test_file\n")
+    before = st.current_hash("SWE.1")
+    for ph in ("SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+        swtrace.check_phase(ws, ph)
+        assert st.current_hash("SWE.1") == before, ph
+    assert (ws / "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv").is_file()
