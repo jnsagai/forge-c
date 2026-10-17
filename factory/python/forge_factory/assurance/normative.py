@@ -39,7 +39,7 @@ def standard_access() -> dict:
             "normative_verification": "REQUIRES_REVIEWER_RECONCILIATION", "reason": None}
 
 
-NEGATION = re.compile(r"\b(not|no|never|without|nor|cannot|isn't|is not|does not|NOT_CLAIMED|NOT CLAIMED)\b", re.I)
+NEGATION = re.compile(r"\b(not|no|never|without|nor|cannot|isn't|is not|does not|doesn't|don't|won't|aren't|NOT_CLAIMED|NOT CLAIMED)\b", re.I)
 
 
 def compliance_assertions(text: str) -> list[str]:
