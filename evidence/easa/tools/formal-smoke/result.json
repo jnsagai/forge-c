@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-10-17T18:06:58.947118+00:00",
+  "subject": "forge-c-WO-0002B-STM32N6-RCC-HAL-r102-review.zip",
+  "archive_sha256_before": "bc5e59747ba622a99b2531d33e50d20d1cf3146bfc96a1afaf847478769f7679",
+  "archive_unchanged": true,
+  "tools": {
+    "cbmc": "6.11.0 (cbmc-6.11.0)",
+    "frama-c": "33.0 (Arsenic)",
+    "why3": "Why3 platform, version 1.8.2",
+    "alt-ergo": "2.4.3-free",
+    "cvc5": "This is cvc5 version 1.2.1 [git tag 1.2.1 branch HEAD]"
+  },
+  "cbmc_hse_enable_all_inputs": {
+    "exit_code": 0,
+    "result": "VERIFICATION SUCCESSFUL",
+    "failed": [],
+    "checks": 29
+  },
+  "cbmc_hsi_on_at_reset_F04": {
+    "exit_code": 10,
+    "result": "VERIFICATION FAILED",
+    "failed": [
+      "harness_hsi_on_at_reset.assertion.1"
+    ],
+    "checks": 29
+  },
+  "eva_hal_all_api": {
+    "alarms": 0,
+    "coverage": [
+      "28 functions analyzed (out of 28)",
+      "109 statements reached (out of 109)"
+    ]
+  },
+  "wp_ll_contracts": {
+    "volatile_semantics_altergo_cvc5": "10 / 11",
+    "plain_memory_altergo": "11 / 11",
+    "plain_memory_cvc5": "11 / 11"
+  },
+  "scope": "bounded/abstract models of the C semantics; registers modelled as memory, no hardware side effects; NOT a proof about the silicon and not an ISO 26262 method-conformance claim"
+}

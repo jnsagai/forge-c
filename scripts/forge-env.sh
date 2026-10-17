@@ -23,6 +23,12 @@ export FORGE_LLVM_BIN="${FORGE_LLVM_BIN:-$FORGE_DATA_ROOT/toolchains/LLVM-19.1.7
 if [ -x "$FORGE_LLVM_BIN/clang" ]; then
   export PATH="$FORGE_LLVM_BIN:$PATH"
 fi
+# Formal tools, user space, OSS only (2026-10-17): CBMC 6.11.0 (BSD-4-Clause), Frama-C 33.0 + Why3 1.8.2 (LGPL-2.1),
+# Alt-Ergo-free 2.4.3 (CeCILL-C; the non-commercial Alt-Ergo 2.6 was removed), cvc5 1.2.1 non-GPL build (BSD-3-Clause).
+export FORGE_FORMAL_BIN="${FORGE_FORMAL_BIN:-$FORGE_DATA_ROOT/toolchains/formal/bin}"
+if [ -x "$FORGE_FORMAL_BIN/cbmc" ]; then
+  export PATH="$PATH:$FORGE_FORMAL_BIN"
+fi
 if [ -x "$FORGE_VENV/bin/python" ]; then
   export PATH="$FORGE_VENV/bin:$PATH"
 fi
