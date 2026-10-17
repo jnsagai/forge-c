@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/method-record.schema.json",
+  "title": "method-record",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "method_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "table": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 15
+    },
+    "row": {
+      "type": "string",
+      "minLength": 1
+    },
+    "process": {
+      "type": "string",
+      "minLength": 1
+    },
+    "paraphrase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recommendation_source": {
+      "type": "string",
+      "enum": [
+        "SECONDARY_WORKING_INDEX",
+        "CONTROLLED_STANDARD"
+      ]
+    },
+    "normative_checked": {
+      "type": "boolean"
+    },
+    "asil_recommendations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "A": {
+          "type": "string",
+          "enum": [
+            "++",
+            "+",
+            "o",
+            "UNVERIFIED"
+          ]
+        },
+        "B": {
+          "type": "string",
+          "enum": [
+            "++",
+            "+",
+            "o",
+            "UNVERIFIED"
+          ]
+        },
+        "C": {
+          "type": "string",
+          "enum": [
+            "++",
+            "+",
+            "o",
+            "UNVERIFIED"
+          ]
+        },
+        "D": {
+          "type": "string",
+          "enum": [
+            "++",
+            "+",
+            "o",
+            "UNVERIFIED"
+          ]
+        }
+      },
+      "required": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "verified_reviewer_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verification_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "classification_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "default_evidence_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "applicability": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "method_id",
+    "table",
+    "row",
+    "process",
+    "paraphrase",
+    "normative_checked",
+    "asil_recommendations",
+    "recommendation_source"
+  ]
+}

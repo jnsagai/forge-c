@@ -1,0 +1,17 @@
+{
+  "environment_id": "renode-cm55-01",
+  "kind": "RENODE",
+  "mcu_target": "STM32N6-Cortex-M55",
+  "simulation_version": "fixture-1.0",
+  "observed_peripherals": [
+    "RCC model subset"
+  ],
+  "limitations": [
+    "Not physical HIL",
+    "Peripheral timing fidelity unverified"
+  ],
+  "physical_hardware_verified": false,
+  "observations_refs": [
+    "sha256:renode-log"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "claim_id": "cl-rcc-01",
+  "work_order_id": "WO-EXAMPLE-006",
+  "assertion": "Unit follows approved RCC timeout requirement",
+  "argument": "Requires independent executable test observations and register semantics validation",
+  "evidence_refs": [],
+  "counterevidence_refs": [
+    "gap:hardware-fidelity"
+  ],
+  "status": "UNSUPPORTED",
+  "verifier_ref": "independent-verification-service"
+}

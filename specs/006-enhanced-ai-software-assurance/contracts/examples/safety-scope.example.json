@@ -1,0 +1,9 @@
+{
+  "scope_id": "safety-rcc-001",
+  "work_order_id": "WO-EXAMPLE-006",
+  "target_asil": "B",
+  "source_requirements_hash": "sha256:example-controlled-source",
+  "hsi_hash": "sha256:example-hsi",
+  "allocation_review_ref": null,
+  "product_asil_source": "EXTERNAL_ALLOCATED"
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/hardware-fidelity.schema.json",
+  "title": "hardware-fidelity",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "environment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "HOST",
+        "EMULATOR",
+        "RENODE",
+        "HIL",
+        "PHYSICAL"
+      ]
+    },
+    "mcu_target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "simulation_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_peripherals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "physical_hardware_verified": {
+      "type": "boolean"
+    },
+    "observations_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "environment_id",
+    "kind",
+    "mcu_target",
+    "observed_peripherals",
+    "limitations",
+    "physical_hardware_verified",
+    "observations_refs"
+  ]
+}

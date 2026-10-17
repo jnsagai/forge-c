@@ -1,0 +1,17 @@
+{
+  "campaign_id": "synthetic-mc-01",
+  "code_hash": "sha256:fixture",
+  "operator_set": [
+    "boundary-change"
+  ],
+  "eligible": 1,
+  "killed": 0,
+  "survived": 1,
+  "equivalent": 0,
+  "invalid": 0,
+  "mutant_refs": [
+    "mutant-001"
+  ],
+  "tool_version": "test-only",
+  "result": "MEASURED"
+}

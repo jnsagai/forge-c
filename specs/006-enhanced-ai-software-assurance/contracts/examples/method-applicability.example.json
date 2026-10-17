@@ -1,0 +1,9 @@
+{
+  "work_order_id": "WO-EXAMPLE-006",
+  "method_id": "ISO6-T09-1B",
+  "decision": "APPLICABLE",
+  "rationale": "ASIL B working-index ++, requires branch evidence after official review",
+  "alternative_method_ref": null,
+  "source_version": "0.1.0-provisional",
+  "reviewer_ref": null
+}

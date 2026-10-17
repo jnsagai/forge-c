@@ -1,0 +1,13 @@
+{
+  "feature": "006-enhanced-ai-software-assurance",
+  "implementation": "SPEC_ONLY",
+  "configured_mode": "OBSERVE_ONLY",
+  "normative_catalog_status": "UNVERIFIED",
+  "technical_gates": "NOT_DEMONSTRATED",
+  "e2e_product_yield": null,
+  "safety_approval": null,
+  "blocking_items": [
+    "FEATURE_NOT_IMPLEMENTED",
+    "NORMATIVE_RECONCILIATION_REQUIRED"
+  ]
+}

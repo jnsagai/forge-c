@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/gate-decision.schema.json",
+  "title": "gate-decision",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "gate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ]
+    },
+    "profile_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method_catalog_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baseline_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method_decision_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "claim_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "BLOCKED",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "verifier_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "gate_id",
+    "work_order_id",
+    "phase",
+    "profile_hash",
+    "method_catalog_hash",
+    "baseline_hash",
+    "method_decision_refs",
+    "claim_refs",
+    "evidence_refs",
+    "findings",
+    "state",
+    "verifier_ref"
+  ]
+}

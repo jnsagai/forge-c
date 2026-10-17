@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/method-applicability.schema.json",
+  "title": "method-applicability",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "work_order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "APPLICABLE",
+        "NOT_APPLICABLE_WITH_RATIONALE",
+        "ALTERNATIVE_SELECTED",
+        "NOT_SUPPORTED",
+        "UNKNOWN"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alternative_method_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "work_order_id",
+    "method_id",
+    "decision",
+    "rationale",
+    "alternative_method_ref",
+    "source_version"
+  ]
+}
