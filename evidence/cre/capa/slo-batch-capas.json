@@ -1,0 +1,200 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-17T05:23:15.284556Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[\"r93:RPR-026\"]",
+          "from_state": null,
+          "reason": "SLO-batch factory defect (validate_trace accepts a traced test that never calls the allocated API)",
+          "seq": 190,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-17T05:23:15.339441Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 191,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-17T05:23:15.375731Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-026 assigned",
+          "seq": 192,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-17T05:23:17.531728Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[\"reproducer-run:rr-8557665a38695442244a\", \"reproducer-run:rr-defea20fc0de286095df\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 193,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-17T05:23:17.549254Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[\"git:c03c0da9e771..8ec6b1668005\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 8ec6b1668005 (patch 8377 bytes)",
+          "seq": 194,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-17T05:23:18.680925Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[\"reproducer-run:rr-d3baafa060e9475d54e0\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-026 absent at 8ec6b1668005",
+          "seq": 195,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-17T05:23:18.694587Z",
+          "capa_id": "CAPA-024",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 196,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "record": {
+        "affected_versions": [
+          "forge-c@<8ec6b1668005"
+        ],
+        "candidate_patch_sha256": "499776edc0b29618ee62e1801253c55dba53880eed00d7e953fb6fe90b3ea05a",
+        "capa_id": "CAPA-024",
+        "created_at": "2026-10-17T05:23:15.284556Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r93:RPR-026"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-026",
+        "reproducer_id": "RPR-026",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-8557665a38695442244a",
+          "reproducer-run:rr-defea20fc0de286095df"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "validate_trace checked that traced test ids exist but not that the test exercises the API SWE.2 allocated to the requirement; SWE4-02 (most frequent block in the SLO batch: r86, r92, r93) was left to the inspector.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-17T05:23:18.694587Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-17T05:23:18.706807Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[\"r97:RPR-027\"]",
+          "from_state": null,
+          "reason": "SLO-batch factory defect (SWE.5 author procedure cannot recover missing target tests)",
+          "seq": 197,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-17T05:23:18.723369Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 198,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-17T05:23:18.763876Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-027 assigned",
+          "seq": 199,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-17T05:23:20.801078Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[\"reproducer-run:rr-5a33af5de59453ecdc41\", \"reproducer-run:rr-da35eea399fd94911950\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 200,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-17T05:23:20.822392Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[\"git:c03c0da9e771..8ec6b1668005\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 8ec6b1668005 (patch 8377 bytes)",
+          "seq": 201,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-17T05:23:21.871757Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[\"reproducer-run:rr-49fab17396cebb985bb3\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-027 absent at 8ec6b1668005",
+          "seq": 202,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-17T05:23:21.886311Z",
+          "capa_id": "CAPA-025",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 203,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "record": {
+        "affected_versions": [
+          "forge-c@<8ec6b1668005"
+        ],
+        "candidate_patch_sha256": "499776edc0b29618ee62e1801253c55dba53880eed00d7e953fb6fe90b3ea05a",
+        "capa_id": "CAPA-025",
+        "created_at": "2026-10-17T05:23:18.706807Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r97:RPR-027"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-027",
+        "reproducer_id": "RPR-027",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-5a33af5de59453ecdc41",
+          "reproducer-run:rr-da35eea399fd94911950"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "SWE.5 rework re-enters at the SWE.5 author, whose procedure assumed the target-test step had written the target tests; when it had not, run_renode reported NO_TESTS on every cycle.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-17T05:23:21.886311Z"
+      }
+    }
+  ],
+  "promotion_decisions": {
+    "pd-6b6a2facf62fb0f9b840": "ELIGIBLE 8ec6b16 vs c03c0da (CAPA-024, CAPA-025)"
+  },
+  "schema": "forge-c/cre-capa-export/1.0",
+  "source_runs": [
+    "r86",
+    "r92",
+    "r93",
+    "r97 (SLO batch on 70ccc9e)"
+  ]
+}

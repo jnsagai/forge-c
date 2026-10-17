@@ -277,3 +277,25 @@ reproducers:
     operations: [SWE.6/author, SWE.5/author]
     root_cause: "The SWE.5/SWE.6 procedures described the simulated RCC only as 'ready flags follow enable bits'; authors treated RCC_SR as writable storage, their target checks failed and they reported correct code as defective (r86 DEF-003/004, rejected by triage)."
     remedy: "Target and Robot procedures state the model exactly (RCC_SR read-only = RCC_CR & 0xF1F, other registers plain storage from 0, never_ready), checked against rcc_model.py."
+  - id: RPR-026
+    script: rpr026_trace_mapping_shift.py
+    sha256: 968df29c0e704858e1a46b6ff0f9e508539b131214a55ec8225f711659f13f58
+    symptom_signature: "validate_trace accepts a traced test that never calls the allocated API"
+    observed_in: r93
+    baseline_revision: c03c0da9e771eddfdfb24b02d8ec336dfa847dfa
+    fix_revision: 8ec6b166800553794c248c1568cfb17e86eeaae3
+    error_codes: ["INSPECTION_FAIL:SWE4-02", "INSPECTION_FAIL:SWE4-06", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/inspect, SWE.4/route]
+    root_cause: "validate_trace checked that traced test ids exist but not that the test exercises the API SWE.2 allocated to the requirement; SWE4-02 (most frequent block in the SLO batch: r86, r92, r93) was left to the inspector."
+    remedy: "validate_trace fails TEST_DOES_NOT_CALL_ALLOCATED_API when the test function holding a traced id never calls the requirement's allocated API."
+  - id: RPR-027
+    script: rpr027_swe5_no_target_tests.py
+    sha256: 0d7f574424602cee8715c640af336147f740e854116f713a831a4e889302e1cd
+    symptom_signature: "SWE.5 author procedure cannot recover missing target tests"
+    observed_in: r97
+    baseline_revision: c03c0da9e771eddfdfb24b02d8ec336dfa847dfa
+    fix_revision: 8ec6b166800553794c248c1568cfb17e86eeaae3
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_renode"]
+    operations: [SWE.5/author, SWE.5/route]
+    root_cause: "SWE.5 rework re-enters at the SWE.5 author, whose procedure assumed the target-test step had written the target tests; when it had not, run_renode reported NO_TESTS on every cycle."
+    remedy: "The SWE.5 author writes the target tests itself when run_renode reports NO_TESTS."
