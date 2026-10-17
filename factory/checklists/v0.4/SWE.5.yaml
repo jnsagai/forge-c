@@ -5,4 +5,18 @@ extends:
   path: factory/release-manager/checklists/SWE.5.yaml
   sha256: 87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba
 policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
-additional_checks: []
+additional_checks:
+- id: SWE5-07
+  required: true
+  severity_if_failed: major
+  criterion: Every integration/target test states @verifies architecture elements (IF-nn / SWC) and every architecture
+    interface is verified by an executed, passing integration test. Matrix 5 is generated.
+  deterministic_check: integration_test_trace
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.5 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-008, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict
+

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/assurance-policy.schema.json",
+  "title": "assurance-policy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "OBSERVE_ONLY",
+        "PILOT",
+        "ENFORCING"
+      ]
+    },
+    "profile": {
+      "type": "string",
+      "enum": [
+        "STANDARD",
+        "ENHANCED",
+        "HIGH_ASSURANCE"
+      ]
+    },
+    "standard_edition": {
+      "type": "string",
+      "enum": [
+        "ISO 26262-6:2018"
+      ]
+    },
+    "norm_catalog_status": {
+      "type": "string",
+      "enum": [
+        "SECONDARY_WORKING_INDEX_NOT_AUTHORIZED_STANDARD",
+        "CONTROLLED_RECONCILED"
+      ]
+    },
+    "allow_change_asil_from_profile": {
+      "const": false
+    },
+    "allow_sup_man_workflows": {
+      "const": false
+    },
+    "safety_signoff_by_ai": {
+      "const": false
+    },
+    "approve_missing_evidence_by_ai": {
+      "const": false
+    },
+    "authorization": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "requirements": {
+      "type": "object"
+    },
+    "last_verified_policy_sha": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "profile",
+    "standard_edition",
+    "norm_catalog_status",
+    "allow_change_asil_from_profile",
+    "allow_sup_man_workflows",
+    "safety_signoff_by_ai",
+    "approve_missing_evidence_by_ai",
+    "requirements"
+  ]
+}

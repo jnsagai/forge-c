@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/independence-attestation.schema.json",
+  "title": "independence-attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "work_order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "author_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inspector_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verifier_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "oracle_origin_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "shared_common_cause_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "independent": {
+      "type": "boolean"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "SUPPORTED",
+        "PARTIAL",
+        "NOT_INDEPENDENT",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "required": [
+    "work_order_id",
+    "author_role",
+    "inspector_role",
+    "verifier_role",
+    "oracle_origin_refs",
+    "shared_common_cause_refs",
+    "independent",
+    "decision"
+  ]
+}

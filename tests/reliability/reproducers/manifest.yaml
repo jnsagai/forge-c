@@ -277,3 +277,25 @@ reproducers:
     operations: [SWE.6/author, SWE.5/author]
     root_cause: "The SWE.5/SWE.6 procedures described the simulated RCC only as 'ready flags follow enable bits'; authors treated RCC_SR as writable storage, their target checks failed and they reported correct code as defective (r86 DEF-003/004, rejected by triage)."
     remedy: "Target and Robot procedures state the model exactly (RCC_SR read-only = RCC_CR & 0xF1F, other registers plain storage from 0, never_ready), checked against rcc_model.py."
+  - id: RPR-028
+    script: rpr028_multiline_allocation_note.py
+    sha256: 76b06ffe4effb2d41c6e307b121682f4f55f258d9ae2e57c5059f924c89f8bdc
+    symptom_signature: "multi-line SWC allocation note read partially"
+    observed_in: r108
+    baseline_revision: 76ace0458beccc3316ad8be39f0037cb203d1022
+    fix_revision: a56b38860fbdb6a0b677d025b46c0dc17400a9f4
+    error_codes: ["ARCH:SWR_NOT_ALLOCATED", "STUCK"]
+    operations: [SWE.2/author]
+    root_cause: "inspection/swtrace.parse_architecture read only the text on the 'Allocated:' line; the r108 SWE.2 author wrapped the complete SWR list over four note lines, so SWR-007..SWR-022 were reported unallocated and SWE.2 stopped STUCK after two identical rejections (false positive of the owner-trace gate)."
+    remedy: "The allocation list extends over the following note lines up to the next 'Key:' line or the end of the note."
+  - id: RPR-029
+    script: rpr029_matrix_in_swe1_baseline.py
+    sha256: b1faa0e1d3ce0a68434569f57465250edbeb2d4c126bf8bf76a9165bb750268c
+    symptom_signature: "trace matrix written into the frozen SWE.1 baseline"
+    observed_in: r109
+    baseline_revision: a7d20adc5e218baeb27bdf01b71b8f7b4fba6ad6
+    fix_revision: 72f1d51f29740dc3c5881e23af4aed31df5c1b65
+    error_codes: ["UPSTREAM_NOT_FROZEN:SWE.1", "FREEZE_FAILED"]
+    operations: [SWE.2/author]
+    root_cause: "The owner-trace gate wrote traceability matrix 1 into traceability/, which PHASE_PATHS assigns to the frozen SWE.1 baseline; SWE.1 became stale and every SWE.2 freeze failed with UPSTREAM_NOT_FROZEN:SWE.1 (r109 BLOCKED at SWE.2)."
+    remedy: "Each matrix is written into workproducts/SWE.n/traceability of the phase that produces it; the packager collects all six under traceability/matrices/."

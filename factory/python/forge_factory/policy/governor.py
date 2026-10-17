@@ -54,10 +54,19 @@ SCALED_ROLES = ("swe3-author", "swe4-author", "swe5-author", "swe6-author")
 REFERENCE_FUNCTIONS = 12  # the combined-driver allocation the authored 35-turn budget was set for (r70/r71)
 
 
+TRACE_ROLES = ("swe2-author", "swe3-author", "swe4-author", "swe5-author")
+TRACE_EXTRA_TURNS = 8
+
+
 def turn_limit(role: str, workspace: str | None = None) -> int:
     """CAPA-015: authored max_turns, plus 1 turn per 2 allocated API functions above REFERENCE_FUNCTIONS for the
     code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25."""
     base = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    if workspace and role in TRACE_ROLES:
+        from ..layer import swtrace_enabled
+
+        if swtrace_enabled(Path(workspace)):  # owner addendum 2026-10-17: unit specs, designs, trace tags
+            base += TRACE_EXTRA_TURNS
     if role not in SCALED_ROLES or not workspace:
         return base
     try:

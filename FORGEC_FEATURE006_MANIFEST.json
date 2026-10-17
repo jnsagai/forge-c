@@ -1,0 +1,189 @@
+{
+  "feature": "006-enhanced-ai-software-assurance",
+  "baseline_repo": "jnsagai/forge-c",
+  "baseline_branch": "feat/005-autonomous-factory-operations",
+  "content_file_count": 45,
+  "total_text_bytes": 182353,
+  "files": [
+    {
+      "path": "CLAUDE_FEATURE006_START.md",
+      "sha256": "475be84922aec902a3eef609827c25530d0f8af0d1326b64d49e69f712babffb"
+    },
+    {
+      "path": "FORGEC_FEATURE006_INDEX.md",
+      "sha256": "5886e40c92f9dd340cafaa131c3f110ed2da548bd62a7e950fd32566d4f2724e"
+    },
+    {
+      "path": "FORGEC_FEATURE006_SCOPE.md",
+      "sha256": "0461e02afcea736488f9710c8a8e2c85ee7f979b9241231660cd1492b48b6f96"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/acceptance-tests.md",
+      "sha256": "7ba2b849317680d4e2567f5864d61c12d4ee6b52ca0c3a22c61f470b2ecd81cd"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/architecture.md",
+      "sha256": "86faef57be5af01ec90db364574a36738c50576960fe3ac5f41bfe90e9371740"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/assurance-profiles.md",
+      "sha256": "92637a233eb328d2b4ba0c05b27114e6e16cb2ba5f962158f310a341b55c3824"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/README.md",
+      "sha256": "c8c0024602d31e7402f62cbeb670a20bf1f5c745a0bb0a6fda9bdad47b03d642"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/assurance-claim.schema.json",
+      "sha256": "075947cf6337da2fdbaaafd66dd4dd3775835f6a4f1f86a79c3b6a43014e4174"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/assurance-policy.example.yaml",
+      "sha256": "862eae3678de38f10eecf55d78ba915dad2b391dd4e302762630dc2f2d3561d4"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/assurance-policy.schema.json",
+      "sha256": "254a04729706a64ff64565d87695cf618ae78e83f800a457b45f191daed91584"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/assurance-readiness.schema.json",
+      "sha256": "4b81d9f281e73cf5199343dabfc4fc13a75bacb905b21d92b7ac79a2e1d8c323"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/coverage-evidence.schema.json",
+      "sha256": "ef78b6a598c43c545b03bb9c232fe8b36448353db97a75117ca263b61153e88d"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/enhanced-techniques.yaml",
+      "sha256": "db1cc442bb16da39593b49c7bab08db7b35b789a6c7537dd73bbf8e633e1e814"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/assurance-claim.example.json",
+      "sha256": "80c8767439d01051011b471d751f39b08482a50006441a67ba124d2bbc2d5746"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/assurance-policy.example.json",
+      "sha256": "80469cc5898c19ae1fcf4bbcaca16b889ece558b214550754b4779dba2ac84bc"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/assurance-readiness.example.json",
+      "sha256": "8cb12cf5787da83a17dc7d97a67e6262027aa744000ef1f98f2507e1f7bf5e29"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/coverage-evidence.example.json",
+      "sha256": "b5ce6b45c0459d8d57dca69715e84f38c31d482fd7da795db7f73b9aa9ebf851"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/gate-decision.example.json",
+      "sha256": "9dc5e36512371b46cea2813bc7096bd30a308356d96b4473854147af59564aff"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/hardware-fidelity.example.json",
+      "sha256": "b5b7e63287adeb2150964c55d126a79fd7925d3d53a47503d4793597b211df7f"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/independence-attestation.example.json",
+      "sha256": "b9e6c6fdfb0a6bb5c5a6dfa7351c89ae92716e9a1ec0c560babb27aece445111"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/method-applicability.example.json",
+      "sha256": "298fdf7adbc471a558ef9be082e0de42530feb8bd406ea2e3d19da3f098d38d6"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/method-record.example.json",
+      "sha256": "c5a9c5dcea82f2c134f91b4e84ca4d826d3555a3efd9abd2da55f60f6f889b77"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/mutation-campaign.example.json",
+      "sha256": "c33fac9325b5df13e3ea772a6545cc39e0895903990ab104d9bd82353ba40a0a"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/oracle-provenance.example.json",
+      "sha256": "d7f4449a6ab56e62ebfb28af3eb9776b6b915937d7a75b045741ce02b4ed68e6"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/safety-scope.example.json",
+      "sha256": "824ddddcf6b137a7ba10f1d38c110721d9a78ccabc8e4b51be1e080a7c2a12de"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/examples/verification-run.example.json",
+      "sha256": "e64ed6f74530d5876135d47c0c7d9c57a6a4d5a77a149af63ec81704e36d0ebf"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/gate-decision.schema.json",
+      "sha256": "a66e1abf15561bc28378317c8364ac1e090df180f10684d99832eafc1d7918e1"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/hardware-fidelity.schema.json",
+      "sha256": "1f4b4ecd30fe858cc40f7fad47aa46b164af2590a8aaf2b50831ab52a86287f6"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/independence-attestation.schema.json",
+      "sha256": "7fac1b4f874bdb882c2f9b3f794b0a19d850150342a561f18ed4c0d070951fdc"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/iso26262-6-2018-methods.working.yaml",
+      "sha256": "b70c03b52adbf3687c947b2c0f7f23fd967dfd3b74839ff1b77b3ebfd2b6cd12"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/method-applicability.schema.json",
+      "sha256": "edd9d032bdeca50afe78a8be2fa784a4fd9de378dbf7ec6a66501670d65d12d3"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/method-record.schema.json",
+      "sha256": "c07f3f89a6fb7a3cbccb9156afa0f89728a486c6502d3ad42435a9015fa683fa"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/mutation-campaign.schema.json",
+      "sha256": "cfeece479398efd591c21660020c0d4a4a698fe934816e08c11f533484768bfe"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/oracle-provenance.schema.json",
+      "sha256": "019b9b6b8388cc2a33ef299de06ca9357126d422092d152dbe2d772d2eef9209"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/safety-scope.schema.json",
+      "sha256": "3b8a5c88641f8e4c5463e94209f436a4ac3112923a3157cb9c99f257d4627cac"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/contracts/verification-run.schema.json",
+      "sha256": "bd4b046c5f647207ecb787f5831607e9c0bcc864a3ebf4692b549d63e1dcf91a"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/data-model.md",
+      "sha256": "e8090eb7089dcf7b3678b311f7bd48cdf4d0c5b385fd11c24ecb439258b55265"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/plan.md",
+      "sha256": "fbc9da27c1bae5391bad7c147001db23eefada1efaf07244d94ad6deda55a24f"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/planned-traceability.csv",
+      "sha256": "b632e3955eb6e1d35f419385f67d21e5d0e94761d24978ecfcb24b5af37d728f"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/quickstart.md",
+      "sha256": "132fbb6d307ec78c87bcebfd510bcfbe0a688f55ad4459bed520b7495415e000"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/requirements.csv",
+      "sha256": "b035e1e156a76bc4dcd9fa2a513480783e546221a448f4e2a74dd89ae06cf13f"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/research.md",
+      "sha256": "4b6b8edbe07ce3d186da4971a39f578fe39bef1be85890ddbd72c2a61a5c430d"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/spec.md",
+      "sha256": "600044e0abdf6d56459bfbe0acd46ac82c8d129681ae8bb822a36c58bc8d8152"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/tasks.md",
+      "sha256": "d53a573a72534925ea11e11d3de06d105cdccd4f723b8fa70ee6fb308925e3df"
+    },
+    {
+      "path": "specs/006-enhanced-ai-software-assurance/validate_spec.py",
+      "sha256": "fe0d50eb8b167f6da5c853bfb5de97e7c69de8017f7b8ad44fdc51543e9fcb36"
+    }
+  ]
+}

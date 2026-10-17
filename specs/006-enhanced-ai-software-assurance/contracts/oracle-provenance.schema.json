@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/oracle-provenance.schema.json",
+  "title": "oracle-provenance",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "oracle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "source_digests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "author_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "implementation_hash_seen": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "independence_status": {
+      "type": "string",
+      "enum": [
+        "INDEPENDENT",
+        "CONTAMINATED",
+        "UNKNOWN"
+      ]
+    },
+    "contamination_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "holdout_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "oracle_file_hash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "oracle_id",
+    "work_order_id",
+    "requirement_refs",
+    "source_digests",
+    "author_role",
+    "implementation_hash_seen",
+    "independence_status",
+    "oracle_file_hash"
+  ]
+}

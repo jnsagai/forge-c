@@ -1,0 +1,185 @@
+{
+ "schema": "forge-c/easa-m0-audit/0.1",
+ "created_at": "2026-10-17T11:25:05Z",
+ "scope": "Retrospective read-only technical audit of sealed LL r101 and HAL r102 review packages. Engineering evidence only; no ISO 26262 / ASPICE compliance or capability claim.",
+ "status": "PARTIAL",
+ "feature006_spec_status": "PRESENT on origin/feat/006-enhanced-ai-software-assurance (998a694); validate_spec.py PASS DESIGN ONLY. This audit supports EASA-T003/EASA-T064.",
+ "packages": {
+  "WO-0002A-STM32N6-RCC-LL-r101": {
+   "archive_sha256": "1bc3103e4a84a3580969c3900bb6f2d51b1109bcecbaf0858d9f2e3e1bf4c034",
+   "archive_hash_check": "OK",
+   "sha256sums_check": "OK",
+   "raw_content_addressed": "37/37 OK"
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r102": {
+   "archive_sha256": "bc5e59747ba622a99b2531d33e50d20d1cf3146bfc96a1afaf847478769f7679",
+   "archive_hash_check": "OK",
+   "sha256sums_check": "OK",
+   "raw_content_addressed": "43/43 OK",
+   "provided_ll_sha256": "efd13a999ba5d69c5bcceb7c622a3dd896b6f88d70a46783f9be42ac6b02ed9d",
+   "provided_ll_matches_r87": true
+  }
+ },
+ "authoritative_source": {
+  "doc": "RM0486 rev4 ch.14 markdown",
+  "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+  "matches_inputs_manifest": true,
+  "silicon_revision": "UNSPECIFIED",
+  "errata": "not baselined"
+ },
+ "checks": [
+  {
+   "id": "A-01",
+   "check": "archive + SHA256SUMS + content-addressed raw integrity",
+   "result": "PASS"
+  },
+  {
+   "id": "A-02",
+   "check": "independent rebuild (gcc 11.4, -Werror) and rerun of sealed unit tests vs sealed raw logs",
+   "result": "PASS",
+   "detail": "r101 51/51, r102 26/26 checks; outputs identical to sealed raw"
+  },
+  {
+   "id": "A-03",
+   "check": "independent register-map parser (tools/regcheck.py, no forge_factory import) vs RM0486",
+   "result": "PASS",
+   "detail": "48/48 defines per package; seeded-fault sensitivity 2/2 detected"
+  },
+  {
+   "id": "A-04",
+   "check": "coverage re-measured with gcov (sealed reports used llvm-cov)",
+   "result": "PASS",
+   "detail": "r101 LL lines 44/44 branches 8/8; r102 HAL lines 57/57 branches 12/12"
+  },
+  {
+   "id": "A-05",
+   "check": "trace links resolve to test sources and executed raw outputs",
+   "result": "PASS",
+   "detail": "r101 21/21 SWR, r102 18/18 SWR"
+  },
+  {
+   "id": "A-06",
+   "check": "hardware-fidelity claims",
+   "result": "PASS",
+   "detail": "Renode results labelled simulated, silicon_verified=false; no HIL claim"
+  },
+  {
+   "id": "A-07",
+   "check": "independent RM/SWR-derived oracle tests on sealed code",
+   "result": "PASS",
+   "detail": "HAL 21/21, LL 20/20 assertions; 0 false positives observed",
+   "raw": [
+    "raw/it_hal.out",
+    "raw/it_ll.out"
+   ]
+  }
+ ],
+ "measured_outcomes": {
+  "mutants_non_equivalent": 107,
+  "equivalent_excluded": 12,
+  "killed_by_sealed_factory_tests": 92,
+  "killed_by_independent_oracle": 104,
+  "killed_by_either": 104,
+  "register_definition_mutants": 12,
+  "definition_mutants_killed_by_factory_tests": 1,
+  "definition_mutants_killed_by_oracle": 12,
+  "residual_survivors": "3 in r102 provided LL header: LL_RCC_ADC12/GPDMA1_IsEnabled, never called by the HAL (unreachable in r102 scope; killed by the r101 LL oracle)",
+  "oracle_false_positives_on_sealed_code": 0,
+  "note": "mutation testing is a project engineering measure; operators in tools/mutate.py"
+ },
+ "findings": [
+  {
+   "id": "F-01",
+   "code": "TEST_ORACLE_SHARED_SOURCE",
+   "severity": "MEDIUM",
+   "verdict": "CONFIRMED",
+   "summary": "Sealed unit tests take expected register values from the generated LL macros; register-definition faults are invisible to them (r101 0/6, r102 1/6 killed) while the RM-derived oracle kills 6/6 each."
+  },
+  {
+   "id": "F-02",
+   "code": "REGMAP_CHECK_SHARES_GENERATOR_PARSER",
+   "severity": "MEDIUM",
+   "verdict": "CONFIRMED",
+   "summary": "inspection/regmap.py generate() and check_regmap() both use rm_registers()/parse_section(); a parser defect would be common-cause. No defect resulted here (independent parser agrees 48/48)."
+  },
+  {
+   "id": "F-03",
+   "code": "POLL_BOUND_BOUNDARY_UNTESTED",
+   "severity": "LOW",
+   "verdict": "CONFIRMED",
+   "summary": "Mutant count<timeout -> count<=timeout (r102 hal_rcc.c:21, would allow 1001 polls vs SWR-015) survives sealed tests; killed by access-counting oracle IT-013/014. Sealed code itself complies (polls == timeout)."
+  },
+  {
+   "id": "F-04",
+   "code": "SWR013_PRESET_ON_OSCILLATOR_CLEARED",
+   "severity": "MEDIUM",
+   "verdict": "PLAUSIBLE",
+   "summary": "On timeout the HAL clears HSION even when HSI was already ON before the call (RM0486 reset value HSION=1); SWR-013 says 'clear the enable bit it set' and the code comment says 'this call set'. Requirement/implementation ambiguity for reviewer disposition (OBS-001)."
+  },
+  {
+   "id": "F-05",
+   "code": "UNIT_SUMMARY_COUNTS_EXECUTABLES",
+   "severity": "LOW",
+   "verdict": "CONFIRMED",
+   "summary": "unit_verification_summary metrics passed=1/executables=1 count test binaries, not the 51/26 executed checks."
+  },
+  {
+   "id": "F-06",
+   "code": "MODEL_PER_ROLE_NOT_RECORDED",
+   "severity": "MEDIUM",
+   "verdict": "CONFIRMED",
+   "summary": "usage-by-agent.json reports basis unknown ('no Fabro run id'); the package cannot show author/inspector model diversity. Launch record: all roles ran deepseek-flash (correlated-AI verification threat)."
+  },
+  {
+   "id": "F-07",
+   "code": "RMW_INSTEAD_OF_SET_CLEAR_REGISTERS",
+   "severity": "LOW",
+   "verdict": "CONFIRMED",
+   "summary": "LL uses read-modify-write on RCC_CR/AHB1ENR/AHB1RSTR (rw per RM, legal) although RM0486 provides atomic set/clear registers (14.10.128 RCC_CSR, 14.10.185 RCC_CCR, 14.10.147/204 AHB1ENSR/ENCR); interrupt-concurrency hazard if called from multiple contexts (queued CAPA SWE3-03)."
+  },
+  {
+   "id": "F-08",
+   "code": "HOST_MODEL_RESET_VALUE_DIVERGES",
+   "severity": "LOW",
+   "verdict": "CONFIRMED",
+   "summary": "Sealed host tests reset the register array to 0, not the RM reset values (RCC_CR=0x00000008), so reset-state behaviour (F-04) is not exercised."
+  }
+ ],
+ "not_verifiable": [
+  "model identity per agent role from package contents",
+  "Renode behavioural RCC model fidelity vs silicon (no HIL, silicon revision UNSPECIFIED, errata not baselined)"
+ ],
+ "tools": {
+  "gcc": "gcc 11.4.0 (Ubuntu 22.04) -std=c99",
+  "python": "3.13 (-I)",
+  "gcov": "gcc gcov"
+ },
+ "files": {
+  "mutation-summary.json": "3870dfbb1cae11492377c3cd4892b52c958bba9fe970192108345df246b0e2e4",
+  "oracle/it_hal.c": "29df9396437270ccbb383092311af0687d42b6d438701dae80502aa090eb78c5",
+  "oracle/it_ll.c": "62de5f8cb20e879a0cbeea235180326f94e426cee4ab0d279a78d4b1956f57f5",
+  "oracle/rm_oracle.h": "d9308cfff337be86954c10c7091b4dba4fb7fb23eeb27c6646dc442ec8c6466e",
+  "oracle/shim.h": "90f661f75bbe52e3f9dc4a6b7ce351813aec4be81daa66667ab0a71ba39a2f2e",
+  "raw/WO-0002A-STM32N6-RCC-LL-r101-ut.out": "5cd2f8e79951981c3ad249a422dd27c7ea5c3053637899aa70707b2d2c030843",
+  "raw/WO-0002B-STM32N6-RCC-HAL-r102-ut.out": "96a145736ad9cfadf8937dc63f5861c03dcb32715d5cb5e8d8fa575a85af7a77",
+  "raw/it_hal.out": "cb6ca87b7c49432a512d2986f58a4c59f4d44b030feeb7e82024cd0b9551ab1b",
+  "raw/it_ll.out": "b43301dc97d455433bc53545a30f3dc36022e76896a6be936b3079d3f5516666",
+  "raw/mo-hal-llhdr.json": "c5c74708f65c899891193bf3af32020cbdd4c32f821d0ce482cd3d9c90c9f677",
+  "raw/mo-hal-src.json": "c87b674c785b2bc9db1e9b1edff53a0380233b4ce3a52acc41d7d3c8bc42a2e0",
+  "raw/mo-ll-hdr.json": "1cf5978f70ac1e7c76be5d1c33b275635b1486dc836002356da53465b6cc86cb",
+  "raw/mut-hal-llhdr.json": "17aa8ba4f689e9ba9e7d1893d816de7b3ca784c4a13f0e7f4831de39e51cc15d",
+  "raw/mut-hal-src.json": "674861c44264d68e218218f2a8480e4ab9a2b73cea720950cc3f8299ff103e27",
+  "raw/mut-ll-hdr.json": "9103e7379d0c933b5b2967ae827eae393865611b7ce5d89d07f8669b9a25541f",
+  "tools/mutate.py": "d71513b2fe4d5f619bfa95765787d70a8173cc9a60b7cc482c0b4feb501a0f98",
+  "tools/mutate_oracle.py": "ad0b157c16a20e9d5ac09390fd61cdee28a4b8f9ae3eb76ba7a0bc536493d5ea",
+  "tools/regcheck.py": "ab3d06b15ea4306d4f2ae9ea6d0110c28eb3eea8918325fbb0f7f42c23ff87f4"
+ },
+ "baseline": {
+  "commit": "52fe2b5 (Feature 004 head); rerun on the 006 branch head is EASA-T004",
+  "make factory-test": "429 passed, 8 skipped (exit 0)",
+  "make design-check": "14 tests OK (exit 0)",
+  "make test (v0.1 legacy)": "16 tests OK (exit 0)",
+  "validate_spec.py (006)": "PASS DESIGN ONLY (72 FR, 72 tasks, 84 AT, 47 provisional refs, 13 schemas)",
+  "logs": "session scratch (not committed); summary lines reproduced here"
+ }
+}

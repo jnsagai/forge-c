@@ -1,0 +1,23 @@
+{
+  "gate_id": "gate-SWE4-001",
+  "work_order_id": "WO-EXAMPLE-006",
+  "phase": "SWE.4",
+  "profile_hash": "sha256:profile",
+  "method_catalog_hash": "sha256:catalog",
+  "baseline_hash": "sha256:baseline",
+  "method_decision_refs": [
+    "method:ISO6-T09-1B"
+  ],
+  "claim_refs": [
+    "claim:SWE4-assurance"
+  ],
+  "evidence_refs": [
+    "sha256:real-tool-run-to-be-supplied"
+  ],
+  "findings": [
+    "UNVERIFIED_NORMATIVE_CATALOG",
+    "NO_ACTUAL_TOOL_EVIDENCE"
+  ],
+  "state": "BLOCKED",
+  "verifier_ref": "deterministic-assurance-gate"
+}

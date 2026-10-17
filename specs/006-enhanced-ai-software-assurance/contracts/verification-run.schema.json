@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/verification-run.schema.json",
+  "title": "verification-run",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ]
+    },
+    "tool_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "returncode": {
+      "type": "integer"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "HOST",
+        "EMULATOR",
+        "RENODE",
+        "HIL",
+        "PHYSICAL"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN",
+        "UNKNOWN"
+      ]
+    },
+    "observed_assertions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "run_id",
+    "phase",
+    "tool_id",
+    "tool_version",
+    "command_digest",
+    "input_hash",
+    "output_hash",
+    "returncode",
+    "environment",
+    "status",
+    "evidence_refs",
+    "timestamp_utc"
+  ]
+}

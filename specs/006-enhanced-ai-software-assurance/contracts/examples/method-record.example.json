@@ -1,0 +1,20 @@
+{
+  "method_id": "ISO6-T01-1A",
+  "table": 1,
+  "row": "1a",
+  "paraphrase": "Low complexity",
+  "process": "SWE.3",
+  "asil_recommendations": {
+    "A": "UNVERIFIED",
+    "B": "++",
+    "C": "UNVERIFIED",
+    "D": "UNVERIFIED"
+  },
+  "recommendation_source": "SECONDARY_WORKING_INDEX",
+  "normative_checked": false,
+  "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+  "default_evidence_kind": "design_review",
+  "applicability": "ASSESS_PER_WORK_ORDER",
+  "verified_reviewer_id": null,
+  "verification_ref": null
+}

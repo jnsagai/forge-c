@@ -1,0 +1,16 @@
+{
+  "oracle_id": "oracle-rcc-1",
+  "work_order_id": "WO-EXAMPLE-006",
+  "requirement_refs": [
+    "SWR-RCC-001"
+  ],
+  "source_digests": [
+    "sha256:requirement-digest"
+  ],
+  "author_role": "independent-oracle-verifier",
+  "implementation_hash_seen": null,
+  "independence_status": "INDEPENDENT",
+  "contamination_reason": null,
+  "holdout_digest": null,
+  "oracle_file_hash": "sha256:oracle-digest"
+}

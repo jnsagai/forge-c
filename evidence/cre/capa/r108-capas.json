@@ -1,0 +1,120 @@
+{
+  "CAPA-026": {
+    "history": [
+      {
+        "at": "2026-10-17T12:15:15.065553Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[\"CAPA-026\"]",
+        "from_state": null,
+        "reason": "r108 SWE.2 STUCK on ARCH:SWR_NOT_ALLOCATED although all 22 SWRs were allocated in the diagram",
+        "seq": 219,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T12:15:15.085119Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by gate-log r108 + workproducts/SWE.2/architecture_static.puml",
+        "seq": 220,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T12:15:15.137917Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-028 not in the frozen manifest",
+        "seq": 221,
+        "to_state": "UNRESOLVED"
+      },
+      {
+        "at": "2026-10-17T12:16:57.013046Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[]",
+        "from_state": "UNRESOLVED",
+        "reason": "triage by AGENT (Claude Code; first triage ran before RPR-028 was frozen)",
+        "seq": 222,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T12:16:57.053306Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-028 assigned",
+        "seq": 223,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T12:16:57.075333Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[\"reproducer-run:rr-4031883e1c8ef5107668\", \"reproducer-run:rr-32c420fe6a599cb4339c\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 224,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T12:16:57.092058Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[\"git:76ace0458bec..a56b38860fbd\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix a56b38860fbd (patch 2112 bytes)",
+        "seq": 225,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T12:16:57.130673Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[\"reproducer-run:rr-c00748e31b687958b1a8\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-028 absent at a56b38860fbd",
+        "seq": 226,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T12:16:57.145028Z",
+        "capa_id": "CAPA-026",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 227,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-85d3ebea90515aba1edb605ff57276e84b517643",
+      "cfp1-f83ba3ca264ba03d90fd41d0e7619cef3d6cb05a",
+      "76ace0458beccc3316ad8be39f0037cb203d1022",
+      "a56b38860fbdb6a0b677d025b46c0dc17400a9f4",
+      "pd-17525eba921c3d99be48"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<a56b38860fbd"
+      ],
+      "candidate_patch_sha256": "beb30195739bb108a16de6f9cec08e0c350967318372fabcd33f4b072ba2eac9",
+      "capa_id": "CAPA-026",
+      "created_at": "2026-10-17T12:15:15.065553Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-026"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-028",
+      "reproducer_id": "RPR-028",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-4031883e1c8ef5107668",
+        "reproducer-run:rr-32c420fe6a599cb4339c"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "inspection/swtrace.parse_architecture reads only the text on the 'Allocated:' line; a list wrapped over several note lines is truncated (owner-trace gate false positive)",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T12:16:57.145028Z"
+    }
+  }
+}

@@ -48,3 +48,18 @@ additional_checks:
   - workproduct_reference
   - implementation_report_reference
   - recorded_verdict
+- id: SWE3-10
+  required: true
+  severity_if_failed: major
+  criterion: Every software unit has a PlantUML detailed design that renders and a ReqIF unit specification (generated
+    from unit_specifications.md, XSD-valid); every USPEC item traces to an SWR allocated to the unit's SWC and every
+    allocated SWR is refined; every function carries Doxygen @unit/@spec tags of its unit, Doxygen runs without warnings
+    and every USPEC is referenced by code. Matrices 2 and 3 are generated.
+  deterministic_check: unit_spec_and_code_trace
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.3 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-003..006, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict

@@ -1,0 +1,156 @@
+version: 1.0.0
+status: PROJECT_DEFINED_SUPPLEMENTAL_NOT_ISO_RATINGS
+notes: This list is Forge-C engineering policy proposals, NOT additional claims of ISO ++ classification.
+  Applicability is evaluated per work order. False in the hard_gate_candidate column does not mean optional
+  on all profiles.
+techniques:
+- id: EA-01
+  process: SWE.1
+  objective: Independent semantic analysis of requirements against approved system/HSI sources
+  evidence_type: independent_source_review
+  enhanced_gate_candidate: false
+- id: EA-02
+  process: SWE.1
+  objective: Requirement contradiction, ambiguity and completeness checks
+  evidence_type: consistency_evidence
+  enhanced_gate_candidate: false
+- id: EA-03
+  process: SWE.1
+  objective: EARS syntax plus meaningful timing/fault/use-mode acceptance criteria
+  evidence_type: requirements_evidence
+  enhanced_gate_candidate: false
+- id: EA-04
+  process: SWE.1
+  objective: Forward/reverse trace across requirements, tests and safety allocation
+  evidence_type: traceability
+  enhanced_gate_candidate: false
+- id: EA-05
+  process: SWE.2
+  objective: Control- and data-flow analyses of critical paths
+  evidence_type: flow_analysis
+  enhanced_gate_candidate: false
+- id: EA-06
+  process: SWE.2
+  objective: Scheduling, shared resources, IRQ priority and concurrency examination
+  evidence_type: scheduling_analysis
+  enhanced_gate_candidate: false
+- id: EA-07
+  process: SWE.2
+  objective: Static/dynamic views match interfaces, allocated requirements and invariants
+  evidence_type: architecture_evidence
+  enhanced_gate_candidate: false
+- id: EA-08
+  process: SWE.2
+  objective: Interface contracts with explicit preconditions, failures, timing and owners
+  evidence_type: interface_contract
+  enhanced_gate_candidate: false
+- id: EA-09
+  process: SWE.3
+  objective: Independent register-map semantic validation against baselined MCU manuals/errata
+  evidence_type: hardware_contract
+  enhanced_gate_candidate: false
+- id: EA-10
+  process: SWE.3
+  objective: MISRA rule-family inventory, tool coverage, deviations and gaps
+  evidence_type: misra_coverage_matrix
+  enhanced_gate_candidate: false
+- id: EA-11
+  process: SWE.3
+  objective: Static/data-flow analysis and boundedness checks; abstract interpretation where available
+  evidence_type: static_analysis
+  enhanced_gate_candidate: false
+- id: EA-12
+  process: SWE.3
+  objective: Stack/Flash/RAM/worst-case time assessment with measured vs estimated provenance
+  evidence_type: resource_measurement
+  enhanced_gate_candidate: false
+- id: EA-13
+  process: SWE.3
+  objective: Contract and defensive programming checks at error/timeout boundaries
+  evidence_type: formal_or_contract
+  enhanced_gate_candidate: false
+- id: EA-14
+  process: SWE.4
+  objective: Test oracles derived independently from requirements, not from produced implementation
+  evidence_type: oracle_provenance
+  enhanced_gate_candidate: true
+- id: EA-15
+  process: SWE.4
+  objective: Statement and branch structural coverage with justified gaps
+  evidence_type: coverage_evidence
+  enhanced_gate_candidate: true
+- id: EA-16
+  process: SWE.4
+  objective: Mutation testing on independent, non-trivial mutants and detection evidence
+  evidence_type: mutation_evidence
+  enhanced_gate_candidate: true
+- id: EA-17
+  process: SWE.4
+  objective: Selected MC/DC for risk-relevant compound predicates when instrumentation supports it
+  evidence_type: mcdc_evidence
+  enhanced_gate_candidate: false
+- id: EA-18
+  process: SWE.4
+  objective: Negative, equivalence, boundary, fault-path and allocated-API execution tests
+  evidence_type: unit_test_evidence
+  enhanced_gate_candidate: true
+- id: EA-19
+  process: SWE.5
+  objective: Fault injection with unambiguous expected effects and controlled injection points
+  evidence_type: fault_injection
+  enhanced_gate_candidate: true
+- id: EA-20
+  process: SWE.5
+  objective: Cross-interface integration, interrupts, concurrency, timeouts and resource margins
+  evidence_type: integration_evidence
+  enhanced_gate_candidate: true
+- id: EA-21
+  process: SWE.5
+  objective: Back-to-back comparisons when model-based development is present
+  evidence_type: back_to_back
+  enhanced_gate_candidate: false
+- id: EA-22
+  process: SWE.5
+  objective: Explicit target-fidelity and peripheral-model gaps; no Renode-as-HIL claim
+  evidence_type: hardware_fidelity
+  enhanced_gate_candidate: true
+- id: EA-23
+  process: SWE.6
+  objective: End-to-end requirement observation, actual execution evidence and negative scenarios
+  evidence_type: requirements_execution
+  enhanced_gate_candidate: true
+- id: EA-24
+  process: SWE.6
+  objective: Operational modes, degraded transitions, boundary inputs and failure recovery
+  evidence_type: operational_test
+  enhanced_gate_candidate: true
+- id: EA-25
+  process: SWE.6
+  objective: Real HIL/physical MCU evidence when required; simulator coverage scoped honestly
+  evidence_type: target_environment
+  enhanced_gate_candidate: true
+- id: EA-26
+  process: SWE.1-SWE.6
+  objective: Claim-Argument-Evidence graph with independent evidence references and open rebuttals
+  evidence_type: assurance_case
+  enhanced_gate_candidate: true
+- id: EA-27
+  process: SWE.1-SWE.6
+  objective: Independent reference-derived oracle and holdout control; protect thresholds from AI authors
+  evidence_type: independence_proof
+  enhanced_gate_candidate: true
+- id: EA-28
+  process: SWE.1-SWE.6
+  objective: Actual tool capability and qualification assumptions, not hypothetical coverage
+  evidence_type: tool_confidence
+  enhanced_gate_candidate: true
+- id: EA-29
+  process: SWE.1-SWE.6
+  objective: Recheck affected upstream/downstream claims on change, rework, or model switch
+  evidence_type: impact_revalidation
+  enhanced_gate_candidate: true
+- id: EA-30
+  process: SWE.1-SWE.6
+  objective: Gate cannot PASS from AI verdict alone or from mere file presence
+  evidence_type: hard_gate
+  enhanced_gate_candidate: true

@@ -5,4 +5,18 @@ extends:
   path: factory/release-manager/checklists/SWE.6.yaml
   sha256: 78f19b6e0df8efed7190d9d6a16397708d3874636843f6eac87c49be8b8c28bb
 policy_overrides: {}  # v0.4 may only ADD checks; v0.3 policy is inherited unchanged
-additional_checks: []
+additional_checks:
+- id: SWE6-07
+  required: true
+  severity_if_failed: major
+  criterion: Every validation (Robot) test is traced to SW requirements and every SW requirement is verified by an executed,
+    passing validation test (robot output.xml). Matrix 6 is generated.
+  deterministic_check: validation_test_trace
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.6 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-009, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict
+

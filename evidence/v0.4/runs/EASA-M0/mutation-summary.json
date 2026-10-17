@@ -1,0 +1,108 @@
+{
+ "r102 HAL source": {
+  "mutants_non_equivalent": 29,
+  "equivalent_excluded": 0,
+  "killed_by_factory_tests": 28,
+  "killed_by_independent_oracle": 29,
+  "killed_by_either": 29,
+  "register_definition_mutants": 0,
+  "defs_killed_by_factory_tests": 0,
+  "defs_killed_by_oracle": 0,
+  "survive_all": [],
+  "only_oracle_kills": [
+   [
+    "LT_TO_LE",
+    21
+   ]
+  ],
+  "only_factory_kills": []
+ },
+ "r102 provided LL header": {
+  "mutants_non_equivalent": 37,
+  "equivalent_excluded": 6,
+  "killed_by_factory_tests": 29,
+  "killed_by_independent_oracle": 34,
+  "killed_by_either": 34,
+  "register_definition_mutants": 6,
+  "defs_killed_by_factory_tests": 1,
+  "defs_killed_by_oracle": 6,
+  "survive_all": [
+   [
+    "NE0_TO_EQ0",
+    140,
+    "if ((ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] & LL_RCC_AHB1ENR_ADC12EN_MSK) != 0U)"
+   ],
+   [
+    "NE0_TO_EQ0",
+    166,
+    "if ((ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] & LL_RCC_AHB1ENR_GPDMA1EN_MSK) != 0U)"
+   ],
+   [
+    "ADC_TO_DMA",
+    140,
+    "if ((ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] & LL_RCC_AHB1ENR_ADC12EN_MSK) != 0U)"
+   ]
+  ],
+  "only_oracle_kills": [
+   [
+    "DEF_BIT_SHIFT",
+    27
+   ],
+   [
+    "DEF_BIT_SHIFT",
+    48
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    36
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    57
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    64
+   ]
+  ],
+  "only_factory_kills": []
+ },
+ "r101 LL header": {
+  "mutants_non_equivalent": 41,
+  "equivalent_excluded": 6,
+  "killed_by_factory_tests": 35,
+  "killed_by_independent_oracle": 41,
+  "killed_by_either": 41,
+  "register_definition_mutants": 6,
+  "defs_killed_by_factory_tests": 0,
+  "defs_killed_by_oracle": 6,
+  "survive_all": [],
+  "only_oracle_kills": [
+   [
+    "DEF_BIT_SHIFT",
+    27
+   ],
+   [
+    "DEF_BIT_SHIFT",
+    48
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    15
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    36
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    57
+   ],
+   [
+    "DEF_OFFSET_SHIFT",
+    64
+   ]
+  ],
+  "only_factory_kills": []
+ }
+}

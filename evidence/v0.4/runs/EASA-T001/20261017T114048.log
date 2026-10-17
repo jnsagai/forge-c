@@ -1,0 +1,19 @@
+001 PARTIAL tasks=19 {'NOT_RUN': 14, 'CHECKED_WITHOUT_EVIDENCE': 2, 'PASS': 3}
+002 IMPLEMENTED tasks=51 {'PASS': 51}
+003 IMPLEMENTED tasks=20 {'PASS': 20}
+004 PARTIAL tasks=54 {'PASS': 52, 'NOT_RUN': 2}
+005 SPEC_ONLY tasks=75 {'NOT_RUN': 75}
+006 PARTIAL tasks=72 {'NOT_RUN': 72}
+locked_refs_bad=0 evidence_changed=False
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 14 items / 9 deselected / 5 selected
+
+factory/python/tests/test_easa_m0.py .....                               [100%]
+
+======================= 5 passed, 9 deselected in 0.12s ========================
+
+--- stderr ---
