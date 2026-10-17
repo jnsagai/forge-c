@@ -332,3 +332,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "The owner-trace SWE.3 gate demanded USPEC citations inside every design (stricter than the owner requirement) and ran Doxygen with preprocessing off, which warns on documented register defines; r111 completed specs, designs and tags but was rejected three times and BLOCKED."
     remedy: "The gate generates each design's citation (legend) from unit_specifications.md; Doxygen runs with preprocessing, accepts @trace, and does not count the generated, RM-verified register defines as documentation gaps."
+  - id: RPR-033
+    script: rpr033_budget_swr_forced_into_units.py
+    sha256: 15465dd28bdd507bcdaabf227ef796d0b3d4ce6166216d1d21ac442f59f6eb63
+    symptom_signature: "budget SWR reported NOT_REFINED"
+    observed_in: r113
+    baseline_revision: 8901e3820cb65359c2891009523891f5817e83e4
+    fix_revision: 309848ccfda805b23fb929eb3d4f3411f748515a
+    error_codes: ["UNIT:SWR_NOT_REFINED", "CODE:SPEC_NOT_IMPLEMENTED", "STUCK"]
+    operations: [SWE.3/author]
+    root_cause: "The owner-trace SWE.3 gate required every allocated SWR to be refined by a unit-spec item, including flash/RAM/stack budgets that constrain the whole SWC; the r113 author invented 'resource units' around a probe function written into the generated LL compile unit and SWE.3 stopped STUCK."
+    remedy: "Resource budgets are classified as component-level constraints (matrix 2 COMPONENT_LEVEL, verified by measurement); a modified generated compile unit is a finding; unit function lists are read as identifiers only."
