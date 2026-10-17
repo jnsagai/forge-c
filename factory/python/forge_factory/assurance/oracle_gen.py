@@ -1,0 +1,145 @@
+"""EASA-T040/T041 and AT-040 — independent test oracles derived from frozen requirements + the baselined RM.
+
+For every SWR of the form "When <trigger>, the <driver> shall set|clear RCC_<REG>.<FIELD>" the allocated function
+(SWE.2 allocation table) is exercised and the expected register effect is computed from the RM index: register word
+from the RM offset, bit from the RM field position, and "all other bits keep their value". The generated C test
+uses ONLY literal RM constants (never the generated LL macros), counts register accesses through a shim, and is
+compiled against the implementation under test. The oracle's provenance (requirements digest, RM section digests,
+author role oracle-builder, implementation not seen) is recorded and assessed by `oracle.assess`.
+"""
+from __future__ import annotations
+
+import hashlib
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+from . import hardware, oracle
+
+SET_CLEAR = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear) (?P<reg>RCC_[A-Z0-9]+)\.(?P<fld>[A-Z0-9_]+)")
+SHIM = ("#include <stdint.h>\nvolatile uint32_t (*shim_regs(void))[1024];\n#define ll_rcc_regs (*shim_regs())\n")
+
+
+def allocation(arch_md: str) -> dict[str, list[str]]:
+    """SWR -> allocated API functions, from the rows of the SWE.2 architecture tables."""
+    out: dict[str, list[str]] = {}
+    for line in arch_md.splitlines():
+        if not line.lstrip().startswith("|"):
+            continue
+        swrs = re.findall(r"\bSWR-\d{3}\b", line)
+        fns = re.findall(r"\b((?:HAL|LL)_RCC_[A-Za-z0-9_]+)\b", line)
+        fns = [f for f in fns if not re.search(r"_(OFFSET|MSK|POS|VALUE)$", f)]
+        for s in swrs:
+            out.setdefault(s, [])
+            out[s] += [f for f in fns if f not in out[s]]
+    return out
+
+
+def prototypes(header: str) -> dict[str, str]:
+    """Function name -> parameter list (from prototypes or static inline definitions)."""
+    return {m.group(1): m.group(2).strip() for m in re.finditer(r"\b((?:HAL|LL)_RCC_\w+)\s*\(([^)]*)\)\s*[;{]", header)}
+
+
+def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]) -> tuple[list[dict], list[str]]:
+    alloc, protos = allocation(arch_md), prototypes(header)
+    cases, notes = [], []
+    for m in re.finditer(r"\*\*(SWR-\d{3})\*\*\s*(.+)", requirements_md):
+        sid, text = m.group(1), m.group(2)
+        sm = SET_CLEAR.search(text)
+        if not sm:
+            continue
+        reg, fld = idx.get(sm["reg"]), sm["fld"]
+        if reg is None or fld not in reg["fields"]:
+            notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:{sm['reg']}.{fld} not in RM")
+            continue
+        f = reg["fields"][fld]
+        mask = ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
+        fns = [x for x in alloc.get(sid, []) if x in protos]
+        if not fns:
+            notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:no allocated function with a prototype")
+            continue
+        ready = None
+        if sm["op"] == "set" and fld.endswith("ON") and "RCC_SR" in idx:
+            rdy = idx["RCC_SR"]["fields"].get(fld[:-2] + "RDY")
+            if rdy:
+                ready = (idx["RCC_SR"]["offset"] // 4, 1 << rdy["lsb"])
+        for fn in fns:
+            cases.append({"swr": sid, "function": fn, "params": protos[fn], "op": sm["op"], "word": reg["offset"] // 4,
+                          "mask": mask, "register": sm["reg"], "field": fld, "ready": ready})
+    return cases, notes
+
+
+def _call(fn: str, params: str) -> str:
+    if params in ("", "void"):
+        return f"{fn}()"
+    args = []
+    for p in params.split(","):
+        p = p.strip()
+        args.append("10U" if re.search(r"\b(uint\d+_t|unsigned)\b", p) and not p.endswith("*") else "0")
+    return f"{fn}({', '.join(args)})"
+
+
+def c_source(cases: list[dict], include: str) -> str:
+    lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stdio.h>", "#include <string.h>",
+             "volatile uint32_t regs[1024];", "unsigned long shim_n;",
+             "volatile uint32_t (*shim_regs(void))[1024] { shim_n++; return &regs; }", "static int fails;",
+             "int main(void)", "{", "    uint32_t before[1024];"]
+    for i, c in enumerate(cases, 1):
+        pre = c["mask"] if c["op"] == "clear" else 0
+        other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
+        lines += [f"    /* {c['swr']} {c['op']} {c['register']}.{c['field']} via {c['function']} (RM-derived constants) */",
+                  "    memset((void *)regs, 0, sizeof regs);",
+                  f"    regs[{c['word']}U] = 0x{(pre | other):08X}U;"]
+        if c["ready"]:
+            lines.append(f"    regs[{c['ready'][0]}U] |= 0x{c['ready'][1]:08X}U;")
+        lines += ["    memcpy(before, (const void *)regs, sizeof before);",
+                  f"    (void){_call(c['function'], c['params'])};",
+                  f"    {{ int ok = ((regs[{c['word']}U] & 0x{c['mask']:08X}U) {'!=' if c['op'] == 'set' else '=='} 0U)"
+                  f" && ((regs[{c['word']}U] & ~0x{c['mask']:08X}U) == (before[{c['word']}U] & ~0x{c['mask']:08X}U));",
+                  f'      printf("OR-{i:03d} {c["swr"]} {c["function"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
+    lines += ["    return fails ? 1 : 0;", "}", ""]
+    return "\n".join(lines)
+
+
+def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str) -> dict:
+    ws = Path(ws)
+    req = (ws / "workproducts/SWE.1/software_requirements.md").read_text(errors="replace")
+    arch = (ws / "workproducts/SWE.2/software_architecture.md").read_text(errors="replace")
+    hdr_path = next((d / api_header for d in include_dirs if (d / api_header).is_file()), None)
+    if hdr_path is None:
+        return {"status": "BLOCKED", "reason": f"{api_header} not found"}
+    sections = ws / "inputs/sections/RM0486"
+    idx = hardware.index(sections)
+    cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
+    src = c_source(cases, api_header)
+    prov = {"oracle_id": "OR-" + hashlib.sha256(src.encode()).hexdigest()[:12], "work_order_id": ws.parent.name,
+            "requirement_refs": sorted({c["swr"] for c in cases}),
+            "source_digests": [hashlib.sha256(req.encode()).hexdigest()] + sorted({
+                hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(sections.glob("*.md"))
+                if any(f"({c['register']})" in p.read_text(errors="replace")[:400] for c in cases)}),
+            "author_role": "oracle-builder", "implementation_hash_seen": None, "independence_status": "UNKNOWN",
+            "contamination_reason": None, "holdout_digest": None,
+            "oracle_file_hash": hashlib.sha256(src.encode()).hexdigest()}
+    impl = {str(p): p.read_text(errors="replace") for p in [hdr_path, *sources]}
+    prov = oracle.assess(prov, test_text=src.replace("OR-", "CHECK("), impl=impl)
+    if not cases:
+        return {"status": "NOT_RUN", "notes": notes, "provenance": prov}
+    with tempfile.TemporaryDirectory() as td:
+        t = Path(td)
+        (t / "shim.h").write_text(SHIM)
+        (t / "oracle.c").write_text(src)
+        inc = sum((["-I", str(d)] for d in include_dirs), []) + ["-include", str(t / "shim.h")]
+        objs = []
+        for s in [*sources, t / "oracle.c"]:
+            o = t / (Path(s).stem + ".o")
+            b = subprocess.run(["gcc", "-std=c99", "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
+                               text=True)
+            if b.returncode:
+                return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov}
+            objs.append(str(o))
+        subprocess.run(["gcc", *objs, "-o", str(t / "oracle")], check=True, capture_output=True)
+        r = subprocess.run([str(t / "oracle")], capture_output=True, text=True, timeout=60)
+    res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}) (\S+) (PASS|FAIL)$", r.stdout, re.M)
+    return {"status": "PASS" if r.returncode == 0 and res else "FAIL", "cases": len(cases), "results": res,
+            "notes": notes, "provenance": prov, "source": src, "output_sha256": hashlib.sha256(r.stdout.encode()).hexdigest()}

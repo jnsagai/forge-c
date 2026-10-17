@@ -333,3 +333,26 @@ def test_capa027_matrices_never_change_the_swe1_baseline(ws):
         swtrace.check_phase(ws, ph)
         assert st.current_hash("SWE.1") == before, ph
     assert (ws / "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv").is_file()
+
+
+def test_t078_offline_gate_walk_freezes_swe1_to_swe6_without_stale_upstream(ws):
+    """Offline walk of the author->freeze sequence with the trace checks of every phase (as the author gate runs
+    them) plus the inspection-time recomputation: no phase may change an upstream frozen baseline."""
+    from forge_factory.inspection.engine import Store, load_checklist
+    from forge_factory.layer import TRACE_PROFILE
+
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"layer": "HAL", "trace_profile": TRACE_PROFILE}))
+    (ws / "traceability").mkdir(exist_ok=True)
+    (ws / "traceability/requirements_to_tests.csv").write_text("requirement_id,test_id,test_file\nSWR-001,UT-001,t.c\n")
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text("# Software architecture\n")
+    (ws / "software/tests/software").mkdir(parents=True, exist_ok=True)
+    (ws / "software/tests/software/test_rcc_requirements.robot").write_text("*** Test Cases ***\n")
+    st = Store(ws)
+    st.freeze("SWE.1", "swe1-author")
+    for ph in ("SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+        assert swtrace.check_phase(ws, ph)["verdict"] == "PASS", ph
+        bl = st.freeze(ph, f"swe{ph[-1]}-author")
+        st.deterministic_items(ph, st.applicable(load_checklist(ph)))       # inspection-time recomputation
+        assert st.stale_reason(ph, bl) is None, ph
+    for ph in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+        assert st.stale_reason(ph, st.latest_baseline(ph)) is None, ph
