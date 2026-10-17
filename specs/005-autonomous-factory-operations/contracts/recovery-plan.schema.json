@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Planner Proposal (not authorization)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "order_id",
+    "attempt_id",
+    "failure_fingerprint",
+    "strategy",
+    "affected_phase",
+    "material_difference_ref",
+    "artifact_scope",
+    "validation_tests",
+    "budget_estimate",
+    "rationale_code"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "order_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "attempt_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "failure_fingerprint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "strategy": {
+      "type": "string",
+      "enum": [
+        "REWORK_LOCAL",
+        "RESTART_FROM_LAST_VALID_CHECKPOINT",
+        "RETURN_TO_OWNING_UPSTREAM_PHASE",
+        "SWITCH_PREAPPROVED_MODEL_PROFILE",
+        "DEFER_TRANSIENT_DEPENDENCY",
+        "CLOSE_BLOCKED"
+      ]
+    },
+    "affected_phase": {
+      "type": "string",
+      "enum": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6",
+        "PREFLIGHT",
+        "RELEASE"
+      ]
+    },
+    "material_difference_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "artifact_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "validation_tests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "rationale_code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "budget_estimate": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Finite Plan Budget",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tokens_max",
+        "wall_seconds_max",
+        "turns_max"
+      ],
+      "properties": {
+        "tokens_max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wall_seconds_max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "turns_max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "model_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "owner_phase": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "upstream_invalidation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "related_capa_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "lesson_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "policy_decision_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 500
+    }
+  }
+}

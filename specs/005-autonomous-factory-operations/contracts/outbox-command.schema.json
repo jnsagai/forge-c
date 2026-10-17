@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Durable Command Outbox",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "command_id",
+    "idempotency_key",
+    "command_type",
+    "order_id",
+    "fencing_epoch",
+    "state",
+    "created_utc",
+    "payload_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "command_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "command_type": {
+      "type": "string",
+      "enum": [
+        "FABRO_LAUNCH",
+        "FABRO_RECONCILE",
+        "REPLAN",
+        "FINALIZE",
+        "EMIT_ALERT",
+        "DRAIN",
+        "RESUME"
+      ]
+    },
+    "order_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "attempt_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fencing_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "IN_FLIGHT",
+        "ACKED",
+        "UNKNOWN",
+        "FAILED",
+        "QUARANTINED"
+      ]
+    },
+    "created_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payload_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "ack_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "retry_not_before_utc": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "external_receipt_sha256": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

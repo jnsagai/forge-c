@@ -1,0 +1,61 @@
+schema_version: '1.0'
+status: SPECIFICATION_ONLY
+classes:
+  PRODUCT_QUALITY:
+    examples:
+    - compiler_fail
+    - unit_test_fail
+    - inspector_finding
+    - traceability_gap
+    route: SCOPED_SWE_RECOVERY
+  FACTORY_CODE_DEFECT:
+    examples:
+    - generator_exception
+    - mcp_wrapper_bug
+    - skill_malformed
+    route: SOURCE_MAINTAINER_CANDIDATE
+  INFRASTRUCTURE:
+    examples:
+    - fabro_down
+    - disk_pressure
+    - gateway_unhealthy
+    route: EXISTING_002_SUPERVISOR_CRE
+  TRANSIENT_DEPENDENCY:
+    examples:
+    - timeout
+    - temporary_model_busy
+    route: CRE_BOUNDED_RETRY
+  SPECIFICATION_GAP:
+    examples:
+    - missing_authoritative_hsi
+    - ambiguous_safety_requirement
+    route: BLOCKED_EXTERNAL_INPUT
+  SECURITY:
+    examples:
+    - MCP_BYPASS
+    - protected_path_write
+    route: QUARANTINE_AUDIT
+  UNKNOWN:
+    examples:
+    - ambiguous_side_effect
+    - unclassified_gate_result
+    route: BLOCKED_UNKNOWN
+fingerprint_fields:
+- phase
+- stage
+- tool
+- error_code
+- failure_class
+- normalized_message
+- tool_version
+volatile_removed:
+- uuid
+- timestamp
+- absolute_workspace
+- progress_counter
+do_not_strip:
+- required_phase
+- tool_version
+- requirement_id
+- failure_class
+- check_type

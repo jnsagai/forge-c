@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Readiness Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_utc",
+    "configured_mode",
+    "implementation_status",
+    "pilot_eligibility",
+    "active_eligibility",
+    "slo_evidence",
+    "evidence_refs",
+    "p0_gaps"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "configured_mode": {
+      "type": "string",
+      "enum": [
+        "DISABLED",
+        "OBSERVE_ONLY",
+        "PILOT",
+        "ACTIVE"
+      ]
+    },
+    "implementation_status": {
+      "type": "string",
+      "enum": [
+        "NOT_IMPLEMENTED",
+        "PARTIAL",
+        "IMPLEMENTED"
+      ]
+    },
+    "pilot_eligibility": {
+      "type": "string",
+      "enum": [
+        "NOT_DEMONSTRATED",
+        "DEMONSTRATED"
+      ]
+    },
+    "active_eligibility": {
+      "type": "string",
+      "enum": [
+        "NOT_DEMONSTRATED",
+        "DEMONSTRATED"
+      ]
+    },
+    "slo_evidence": {
+      "type": "string",
+      "enum": [
+        "NOT_DEMONSTRATED",
+        "DEMONSTRATED"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "p0_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "reliability_claims": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "not_claimed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "host_boot_drill": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "real_ready_package_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
