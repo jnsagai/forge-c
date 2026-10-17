@@ -240,7 +240,8 @@
         "CRE-T018",
         "CRE-T024",
         "CRE-T025",
-        "CRE-T042"
+        "CRE-T042",
+        "CRE-T046"
       ],
       "priority": "P0",
       "status": "COVERED",
@@ -1428,8 +1429,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-16T10:10:20.758407Z",
-  "git_head": "8708ffa24d738e9ef2263d1af612273ac78cdb9c",
+  "generated_at": "2026-10-17T08:14:17.069043Z",
+  "git_head": "7ec24f8f86f89688341714ff3e58b03f880a316e",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1438,7 +1439,7 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 52,
+    "004_pass": 53,
     "004_total": 54,
     "cre_fr_covered": 40,
     "cre_fr_total": 40,
@@ -3223,14 +3224,16 @@
       "task": "CRE-T045"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T046/latest.json"
+      ],
       "frs": [
         "CRE-FR-013"
       ],
-      "line": "- [ ] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM",
+      "line": "- [X] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM ✅ Evidence: `e",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T046"
     },
     {

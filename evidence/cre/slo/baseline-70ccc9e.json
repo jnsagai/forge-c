@@ -1,0 +1,114 @@
+{
+  "blocking_phases": {
+    "HAL": {
+      "r100": "SWE.4 (STUCK)",
+      "r104": "SWE.2",
+      "r106": "upstream loops 2/2 (SWE.3)",
+      "r107": "SWE.4 (STUCK)",
+      "r92": "SWE.4"
+    },
+    "LL": {
+      "r103": "SWE.3",
+      "r105": "SWE.3",
+      "r93": "SWE.4",
+      "r97": "SWE.5 (target tests never written)",
+      "r99": "SWE.3"
+    }
+  },
+  "capa_effectiveness_after_batch": {
+    "CAPA-004": "EFFECTIVE",
+    "CAPA-005": "EFFECTIVE",
+    "CAPA-006": "REOPENED",
+    "CAPA-007": "EFFECTIVE",
+    "CAPA-008": "REOPENED",
+    "CAPA-009": "EFFECTIVE",
+    "CAPA-010": "REOPENED",
+    "CAPA-011": "REOPENED",
+    "CAPA-012": "REOPENED",
+    "CAPA-013": "EFFECTIVE",
+    "CAPA-014": "REOPENED",
+    "CAPA-015": "REOPENED",
+    "CAPA-016": "REOPENED",
+    "CAPA-017": "EFFECTIVE",
+    "CAPA-018": "EFFECTIVE",
+    "CAPA-019": "REOPENED",
+    "CAPA-020": "EFFECTIVE",
+    "CAPA-021": "EFFECTIVE",
+    "CAPA-022": "REOPENED",
+    "CAPA-023": "REOPENED",
+    "CAPA-024": "EFFECTIVENESS_OBSERVING",
+    "CAPA-025": "EFFECTIVENESS_OBSERVING"
+  },
+  "caveats": [
+    "n=10 per cohort: 95% intervals are wide (24-76%); a measured baseline, not an SLO attainment",
+    "CAPA recurrence matching uses error code + operation; several manifest error codes are generic (REWORK_BUDGET_EXHAUSTED, INSPECTION_FAIL:SWEn-mm), so some REOPENED states reflect different causes with the same code; the frozen reproducers themselves still show SYMPTOM_ABSENT at HEAD",
+    "CAPA-024/025 (SWE.4 trace-to-API check, SWE.5 missing target tests) are merged AFTER the batch and were not in effect for these runs"
+  ],
+  "cost_usd": {
+    "batch_total_spent": 5.677,
+    "cap": 12.5
+  },
+  "decision": "owner 2026-10-17: SLO reduced to 10 runs per cohort (policy statistics.min_samples_for_slo_evidence=10)",
+  "factory_revision": "70ccc9eaff9f8c0189ae586ce2f7d02669e84dc2",
+  "model": "deepseek-flash",
+  "recorded_at": "2026-10-17T08:14:41Z",
+  "schema": "forge-c/cre-slo-baseline/1.0",
+  "slo_evidence": {
+    "attainment": "NOT_EVALUATED: no owner-approved target rate (spec section 6)",
+    "excluded_attempts": {
+      "WO-0002B-STM32N6-RCC-HAL-r98": "cancelled before it started by the owner's stop of the SLO batch (2026-10-16 'Stop all after this run finish'); the external finalizer packaged the cancelled run, which is not a factory attempt"
+    },
+    "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)",
+    "measured_cohorts": [
+      {
+        "attempts": [
+          "WO-0002B-STM32N6-RCC-HAL-r88",
+          "WO-0002B-STM32N6-RCC-HAL-r90",
+          "WO-0002B-STM32N6-RCC-HAL-r92",
+          "WO-0002B-STM32N6-RCC-HAL-r94",
+          "WO-0002B-STM32N6-RCC-HAL-r96",
+          "WO-0002B-STM32N6-RCC-HAL-r100",
+          "WO-0002B-STM32N6-RCC-HAL-r102",
+          "WO-0002B-STM32N6-RCC-HAL-r104",
+          "WO-0002B-STM32N6-RCC-HAL-r106",
+          "WO-0002B-STM32N6-RCC-HAL-r107"
+        ],
+        "cohort_key": "driver_class=STM32N6_RCC_HAL_DRIVER_ON_THE_VERIFIED_R|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+        "completed": 5,
+        "factory_revision": "70ccc9eaff9f",
+        "n": 10,
+        "wilson95": [
+          0.237,
+          0.763
+        ],
+        "workflow_yield": 0.5
+      },
+      {
+        "attempts": [
+          "WO-0002A-STM32N6-RCC-LL-r87",
+          "WO-0002A-STM32N6-RCC-LL-r89",
+          "WO-0002A-STM32N6-RCC-LL-r91",
+          "WO-0002A-STM32N6-RCC-LL-r93",
+          "WO-0002A-STM32N6-RCC-LL-r95",
+          "WO-0002A-STM32N6-RCC-LL-r97",
+          "WO-0002A-STM32N6-RCC-LL-r99",
+          "WO-0002A-STM32N6-RCC-LL-r101",
+          "WO-0002A-STM32N6-RCC-LL-r103",
+          "WO-0002A-STM32N6-RCC-LL-r105"
+        ],
+        "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+        "completed": 5,
+        "factory_revision": "70ccc9eaff9f",
+        "n": 10,
+        "wilson95": [
+          0.237,
+          0.763
+        ],
+        "workflow_yield": 0.5
+      }
+    ],
+    "min_samples": 10,
+    "reason": "workflow yield per cohort (CRE-R09): deepseek-flash/FULL: 5/11 [0.21, 0.72]; deepseek-flash/FULL: 4/30 [0.05, 0.30]; deepseek-flash/RESUMED: 2/18 [0.03, 0.33]; qwen3:8b/FULL: 0/18 [0.00, 0.18]; qwen3:8b/FULL: 1/12 [0.01, 0.35]; deepseek-flash/FULL: 7/17 [0.22, 0.64]",
+    "status": "BASELINE_MEASURED"
+  }
+}
