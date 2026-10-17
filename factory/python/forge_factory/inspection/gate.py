@@ -177,6 +177,9 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
     print(json.dumps(g))
+    from ..assurance import observe  # EASA-T022: observe-only assurance gate; never changes this decision
+
+    observe.phase(store.workspace, phase, g)
     # The agent's own PASS is never sufficient: the recorded, deterministic gate decision rules.
     if g["decision"] == "PASS":
         from . import defects
