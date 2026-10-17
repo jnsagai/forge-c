@@ -1,0 +1,101 @@
+{
+  "CAPA-036": {
+    "history": [
+      {
+        "at": "2026-10-17T19:13:05.662524Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[\"CAPA-036\"]",
+        "from_state": null,
+        "reason": "r119 SWE.5 STUCK on IT:UNKNOWN_ARCH_REF for interfaces defined in the frozen architecture document",
+        "seq": 292,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T19:13:05.737141Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 293,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T19:13:05.843503Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-038 assigned",
+        "seq": 294,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T19:15:13.531792Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[\"reproducer-run:rr-4dfbf8a50c1a00e12a5d\", \"reproducer-run:rr-dcb23260849e3723cf1a\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 295,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T19:15:13.590477Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[\"git:41f6187c03cf..2252dda51b56\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 2252dda51b56 (patch 5195 bytes)",
+        "seq": 296,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T19:15:13.724813Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[\"reproducer-run:rr-61d47ab21b6dacf9e15a\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-038 absent at 2252dda51b56",
+        "seq": 297,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T19:15:13.778293Z",
+        "capa_id": "CAPA-036",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 298,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "41f6187c03cfd3e3e51cd01c904782c2446af318",
+      "2252dda51b56ff9480f758ecb437af4f76d2d643",
+      "pd-2083fe475fe3168de8ed"
+    ],
+    "note": "r119 SWE.5 fingerprints are class-level and already owned by CAPA-035/CAPA-003; the r119 link is the reproducer RPR-038 (observed_in r119)",
+    "record": {
+      "affected_versions": [
+        "forge-c@<2252dda51b56"
+      ],
+      "candidate_patch_sha256": "8b6d96739f5ff162057445694c24d0b2941eb216170f59ff676fcc142ac493df",
+      "capa_id": "CAPA-036",
+      "created_at": "2026-10-17T19:13:05.662524Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-036"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-038",
+      "reproducer_id": "RPR-038",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-4dfbf8a50c1a00e12a5d",
+        "reproducer-run:rr-dcb23260849e3723cf1a"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the SWE.5 trace accepted only diagram connector IF ids, not the interfaces the frozen architecture document defines",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T19:15:13.778293Z"
+    }
+  }
+}

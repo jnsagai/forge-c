@@ -387,3 +387,14 @@ reproducers:
     operations: [SWE.5/inspect]
     root_cause: "swtrace.check_results accepted only [A-Za-z0-9-] after the test id; r117's integration checks were named IT-005-ADC12_EN etc., so IT-005/IT-006 were absent from the parsed results, Matrix 5 showed them NOT_RUN/UNVERIFIED, and the inspector rejected the contradiction with the PASS host run three times."
     remedy: "Sub-check ids may contain '_' (\\w); a failing sub-check still fails its test."
+  - id: RPR-038
+    script: rpr038_documented_interfaces_unknown.py
+    sha256: 060d2900e5e27050a2ab196e847f9f6eb57ca2f5d36e5a669e2d5da63f9836fc
+    symptom_signature: "documented interface rejected as unknown architecture element"
+    observed_in: r119
+    baseline_revision: 41f6187c03cfd3e3e51cd01c904782c2446af318
+    fix_revision: 2252dda51b56ff9480f758ecb437af4f76d2d643
+    error_codes: ["IT:UNKNOWN_ARCH_REF", "STUCK"]
+    operations: [SWE.5/author]
+    root_cause: "The SWE.5 integration trace accepted only IF ids that label connectors of architecture_static.puml; the frozen software_architecture.md defined the per-function interfaces IF-01..IF-18 in its interface table, the r119 tests cited them, and the identical rejection twice stopped SWE.5 STUCK (r117's inspector had objected the opposite way)."
+    remedy: "Interface ids defined in either frozen SWE.2 view are architecture elements; UNKNOWN_ARCH_REF lists the known elements."
