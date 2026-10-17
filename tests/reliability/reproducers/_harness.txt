@@ -1,0 +1,3 @@
+Reproducer contract (ADR-CRE-004): run by forge_factory.reliability.reproduce with PYTHONPATH = the factory revision
+under test; exit 1 + "SYMPTOM_PRESENT:<signature>" while the defect is present, exit 0 + "SYMPTOM_ABSENT" when it is
+not, exit 2 + "REPRODUCER_ERROR:<type>" when the harness cannot drive that revision (API drift) - never a reproduction.

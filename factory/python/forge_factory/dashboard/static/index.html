@@ -34,6 +34,15 @@ input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
 <section class="full"><h2>Production KPIs (deterministic, model-free; N/A shown, never guessed)</h2>
 <div class="filters"><select id="kwin"><option value="1">24 h</option><option value="7" selected>7 days</option><option value="30">30 days</option></select></div>
 <div id="kpis" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div><div id="kdrill" class="muted"></div></section>
+<section class="full"><h2>Reliability (feature 004 CRE — read-only; n, interval and status on every value)</h2>
+<div id="rsum" class="muted"></div>
+<div class="filters"><select id="rcls"><option value="">all classes</option><option>PRODUCT_QUALITY</option><option>INFRASTRUCTURE</option><option>TRANSIENT_DEPENDENCY</option><option>POLICY_SECURITY</option><option>UNKNOWN</option></select>
+<input id="rmodel" placeholder="model (e.g. deepseek-flash)" maxlength="60"><input id="rsince" placeholder="since YYYY-MM-DD" maxlength="20">
+<label><input type="checkbox" id="rrec" checked> recurring only</label><button id="rapply">Apply (display only)</button></div>
+<div class="scroll"><table id="rmodes"></table></div><div id="rdrill" class="muted"></div>
+<h3>CAPA (root cause VERIFIED only by reproducer contrast)</h3><div class="scroll"><table id="rcapa"></table></div>
+<h3>Workflow yield per cohort (CRE-R09) and other CRE measurements</h3><div class="scroll"><table id="rmet"></table></div>
+<h3>Promotion decisions (no automatic deployment)</h3><div class="scroll"><table id="rprom"></table></div></section>
 <section class="full"><h2>Work orders and SWE phase board</h2><div class="scroll"><table id="runs"></table></div></section>
 <section><h2>Incidents and repairs</h2><div class="scroll"><table id="inc"></table></div></section>
 <section><h2>Release packages (offline review only)</h2><div class="scroll"><table id="pkg"></table></div></section>
@@ -75,6 +84,18 @@ async function refresh(){
  const t=await api("tokens?limit=20");const mx=Math.max(1,...t.items.map(i=>(i.total_input||0)+(i.total_output||0)));
  $("tok_chart").innerHTML=t.items.map(i=>`<div>${esc(i.work_order)} <span class="muted">(${esc(i.basis)})</span> ${(i.total_input||0)+(i.total_output||0)}<div class="bar" style="width:${100*((i.total_input||0)+(i.total_output||0))/mx}%"></div></div>`).join("")||'<span class="muted">no usage yet</span>';
 }
+async function loadReliability(){try{
+ const s=await api("reliability/summary");
+ $("rsum").innerHTML=`mode ${b(s.mode)} · classifier ${esc(s.classifier_version)} · failure modes ${esc(s.failure_modes.total)} (recurring ${esc(s.failure_modes.recurring)}, observations ${esc(s.failure_modes.observations)}) · CAPA ${esc(JSON.stringify(s.capa.by_state))} · promotions ${esc(JSON.stringify(s.promotions))} · readiness ${b(s.readiness)} <span class="muted">${esc(s.note)}</span>`;
+ const qs=new URLSearchParams({limit:"25"});if($("rcls").value)qs.set("failure_class",$("rcls").value);if($("rrec").checked)qs.set("recurring","true");if($("rmodel").value.trim())qs.set("model",$("rmodel").value.trim());if($("rsince").value.trim())qs.set("since",$("rsince").value.trim());
+ const f=await api("reliability/failure-modes?"+qs);
+ rows("rmodes",["attempts","obs","class","operation","error code","Pareto","root cause"],f.items,m=>[esc(m.distinct_attempts),esc(m.occurrences),esc(m.failure_class),esc(m.operation),`<a href="#" data-fp="${esc(m.fingerprint)}">${esc(m.error_code)}</a>`,esc(m.pareto_share),b(m.root_cause_status)]);
+ document.querySelectorAll("#rmodes a[data-fp]").forEach(a=>a.onclick=async e=>{e.preventDefault();const d=await api("reliability/failure-modes/"+a.dataset.fp);
+  $("rdrill").innerHTML=d.items.slice(0,12).map(o=>esc(o.attempt_id+" "+o.ts_utc.slice(0,16)+" "+o.source_ref+" sha256:"+(o.evidence_sha256||"").slice(0,12)+" — "+o.excerpt)).join("<br>")});
+ const c=await api("reliability/capa");rows("rcapa",["CAPA","state","root cause","reproducer","prevention","lessons","last transition"],c.items,x=>[esc(x.capa_id),b(x.state),b(x.root_cause_status),esc(x.reproducer_id),esc(x.prevention_test_id),esc(x.lesson_ids.length),esc((x.history.slice(-1)[0]||{}).reason)]);
+ const m=await api("reliability/metrics");rows("rmet",["metric","cohort","status","n","value","95% interval"],m.items.filter(x=>!x.metric_id.startsWith("CRE-R10")),x=>[esc(x.metric_id),esc(x.cohort_key.replace(/driver_class=[^|]*\|target=[^|]*\|/,"").slice(0,70)),b(x.status),esc(x.numerator===null?"-":x.numerator+"/"+x.denominator),esc(x.value===null?"N/A":x.value.toFixed(3)),esc(x.ci_lower===null?"—":"["+x.ci_lower.toFixed(3)+", "+x.ci_upper.toFixed(3)+"]")]);
+ const p=await api("reliability/promotions");rows("rprom",["decision","evaluated","gates"],p.items,x=>[b(x.decision),esc(x.evaluated_at.slice(0,16)),esc(x.hard_gates.map(g=>g.name+":"+g.result).join(" "))]);
+}catch(e){$("rsum").textContent="reliability view unavailable: "+e.message}}
 const FRONT=["K01","K02","K03","K04","K05","K06","K07","K09","K14","K15","K16","K20"];
 async function loadKpis(){const d=await api("kpis?window_days="+$("kwin").value);
  $("kpis").innerHTML=d.metric_values.filter(m=>FRONT.includes(m.metric_id)).map(m=>{const f=Object.entries(m.filters).map(([k,v])=>v).join(" ");
@@ -93,7 +114,7 @@ function filtersUI(){const p=prefs();$("chans").innerHTML=CH.filter(c=>me.channe
  $("lvl").value=p.min_level;$("run").value=p.run||"";$("q").value=p.q||""}
 $("apply").onclick=()=>{const p={channels:[...document.querySelectorAll("#chans input:checked")].map(x=>x.value),min_level:$("lvl").value,run:$("run").value.trim(),q:$("q").value.trim()};savePrefs(p);lastId=0;loadEvents()};
 $("go").onclick=()=>{location.href="/login?token="+encodeURIComponent($("tok").value.trim())};
-(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
+(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;loadReliability();$("rapply").onclick=loadReliability;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
 </script>
 </body>
 </html>

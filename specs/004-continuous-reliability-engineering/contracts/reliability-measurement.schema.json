@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Forge-C CRE reliability metric evidence record",
+  "required": [
+    "schema_version",
+    "metric_id",
+    "formula_version",
+    "cohort_key",
+    "start_utc",
+    "end_utc",
+    "numerator",
+    "denominator",
+    "status",
+    "provenance_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "metric_id": {
+      "type": "string",
+      "pattern": "^(CRE-R(0[1-9]|1[0-9])(-[A-Za-z0-9.]+)?|K(0[1-9]|1[0-9]|20))$",
+      "description": "CRE-R01..R08 as specified; CRE-R09..R19 additive CRE diagnostics with unique names (ADR-CRE-005); optional qualifier suffix (e.g. CRE-R04-p50, CRE-R10-SWE.3); K01..K20 only for values reused verbatim from 003."
+    },
+    "formula_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cohort_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "numerator": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "denominator": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "unit": {
+      "type": "string"
+    },
+    "ci_method": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ci_lower": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "ci_upper": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "MEASURED",
+        "ESTIMATED",
+        "UNKNOWN",
+        "NOT_APPLICABLE",
+        "NOT_COMPUTABLE",
+        "INSUFFICIENT_BASELINE"
+      ]
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "quality_notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "provenance_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "policy_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

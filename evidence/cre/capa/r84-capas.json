@@ -1,0 +1,574 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-16T13:25:37.011930Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"r82:RPR-012\"]",
+          "from_state": null,
+          "reason": "r82 factory defect (architecture check accepts interfaces missing from the allocation)",
+          "seq": 84,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T13:25:37.061432Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 85,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T13:25:37.120740Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-012 assigned",
+          "seq": 86,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T13:25:38.912890Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"reproducer-run:rr-4a3f2812ef2997675340\", \"reproducer-run:rr-e7bde5b95f798a0e8df3\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 87,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T13:25:38.929152Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"git:14f1ab112c80..68df55037fb4\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 68df55037fb4 (patch 8980 bytes)",
+          "seq": 88,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T13:25:39.774192Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"reproducer-run:rr-26b17ba9d3dd6b096403\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-012 absent at 68df55037fb4",
+          "seq": 89,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T13:25:39.794876Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 90,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T14:39:39.997630Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"cre-observation:cre-62d78a01b090bf437f87e12f9337f21b6788168e\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "recurrence INSPECTION_FAIL:SWE3-01 SWE.3/inspect in WO-0002A-STM32N6-RCC-LL-r84 (contains fix 68df55037fb4)",
+          "seq": 161,
+          "to_state": "REOPENED"
+        },
+        {
+          "at": "2026-10-16T14:39:57.849879Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"capa:CAPA-019\", \"reproducer:RPR-021\"]",
+          "from_state": "REOPENED",
+          "reason": "r84 SWE3-01 recurrence: architecture/header contradiction caused by the LL scope text mandating a pointer API (root cause CAPA-019, RPR-021); CAPA-010's interface check itself held",
+          "seq": 162,
+          "to_state": "REOPENED"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "14f1ab112c80f21dbb0f630916df596df2e7bb4a"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "68df55037fb4ebf58cd63b705b550b81b778f182"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<68df55037fb4"
+        ],
+        "candidate_patch_sha256": "e6788f4ea42752f4735b9440854ae915773429ec23f3253ff59c8115444c5ff0",
+        "capa_id": "CAPA-010",
+        "created_at": "2026-10-16T13:25:37.011930Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r82:RPR-012"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-012",
+        "reproducer_id": "RPR-012",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-4a3f2812ef2997675340",
+          "reproducer-run:rr-e7bde5b95f798a0e8df3"
+        ],
+        "root_cause_status": "HYPOTHESIS",
+        "root_cause_summary": "The LL API naming text listed MSI, LSI, LSE and PLL1..4 although the work order covers HSI and HSE, and no check compared the Interfaces section with the allocation table; SWE.3 inspection found interfaces that were never allocated or coded.",
+        "schema_version": "1.0",
+        "state": "REOPENED",
+        "updated_at": "2026-10-16T14:39:57.849879Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T13:53:26.718972Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"r83:DEF-003\"]",
+          "from_state": null,
+          "reason": "r83 factory defect (Robot driver stack keyword finds no call graph for a header-only LL)",
+          "seq": 126,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T13:53:26.749368Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 127,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T13:53:26.808769Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-018 assigned",
+          "seq": 128,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T13:53:29.319874Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"reproducer-run:rr-ab8a1e7a617406909297\", \"reproducer-run:rr-91ee7ef8c7272ec0b1fc\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 129,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T13:53:29.340300Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"git:43fc2f823829..c1854a1b5b03\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix c1854a1b5b03 (patch 22098 bytes)",
+          "seq": 130,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T13:53:30.391009Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"reproducer-run:rr-095e15f6354cca078a81\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-018 absent at c1854a1b5b03",
+          "seq": 131,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T13:53:30.404448Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 132,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T14:39:59.908034Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"cre-observation:cre-945bd3d4582018f34e36ccbbee10176c34955626\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "recurrence REQUIRED_TOOL_NOT_PASS:run_robot SWE.6/author in WO-0002A-STM32N6-RCC-LL-r84 (contains fix c1854a1b5b03)",
+          "seq": 163,
+          "to_state": "REOPENED"
+        },
+        {
+          "at": "2026-10-16T14:40:08.424207Z",
+          "capa_id": "CAPA-016",
+          "evidence": "[\"capa:CAPA-018\", \"reproducer:RPR-020\"]",
+          "from_state": "REOPENED",
+          "reason": "r84 run_robot recurrence: the LL functions took a pointer parameter and the (void)-only measurement unit skipped them; generalised by CAPA-018 (RPR-020)",
+          "seq": 164,
+          "to_state": "REOPENED"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "43fc2f823829d94deea19b49124943c60818bf05"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "c1854a1b5b03926d8ac9f412aef1a0e817660734"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<c1854a1b5b03"
+        ],
+        "candidate_patch_sha256": "424af585a68a4ef74e040e41418b227c870ce7675e17c9292396c26b47dc8d01",
+        "capa_id": "CAPA-016",
+        "created_at": "2026-10-16T13:53:26.718972Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r83:DEF-003"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-018",
+        "reproducer_id": "RPR-018",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-ab8a1e7a617406909297",
+          "reproducer-run:rr-91ee7ef8c7272ec0b1fc"
+        ],
+        "root_cause_status": "HYPOTHESIS",
+        "root_cause_summary": "ForgeTarget's driver size/stack keywords compiled only software/hal/*.c; an LL work order has none, so 'Driver Stack Should Be At Most' failed with 'no call graph produced' and the stack requirement could not be verified (r83 DEF-003).",
+        "schema_version": "1.0",
+        "state": "REOPENED",
+        "updated_at": "2026-10-16T14:40:08.424207Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T14:39:28.393880Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[\"r84:RPR-020\"]",
+          "from_state": null,
+          "reason": "r84 factory defect (measurement unit skips LL functions with parameters)",
+          "seq": 140,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T14:39:28.412936Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 141,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T14:39:28.443135Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-020 assigned",
+          "seq": 142,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T14:39:30.384060Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[\"reproducer-run:rr-ec13647c9b2956e53a98\", \"reproducer-run:rr-375e589ae8a4d9680855\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 143,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T14:39:30.401751Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[\"git:69ec9a50b25b..7bed90b3a555\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 7bed90b3a555 (patch 14384 bytes)",
+          "seq": 144,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T14:39:31.215154Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[\"reproducer-run:rr-6896e8db875e5a813b1d\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-020 absent at 7bed90b3a555",
+          "seq": 145,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T14:39:31.226339Z",
+          "capa_id": "CAPA-018",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 146,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "69ec9a50b25b71406d20dc73bef86257ef340c08"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "7bed90b3a55504c3163c4d5bb85fbc1825a354bb"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<7bed90b3a555"
+        ],
+        "candidate_patch_sha256": "77d49c2e993b02b42d2e81112b1511f5816b5ee1bb897b6b18ae178afe8e521f",
+        "capa_id": "CAPA-018",
+        "created_at": "2026-10-16T14:39:28.393880Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r84:RPR-020"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-020",
+        "reproducer_id": "RPR-020",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-ec13647c9b2956e53a98",
+          "reproducer-run:rr-375e589ae8a4d9680855"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "CAPA-013/016 instantiated only (void) LL functions; r84's LL took the register block as a parameter, so size and stack stayed 0 B and the stack requirement was unverifiable (DEF-005).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T14:39:31.226339Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T14:39:31.237309Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[\"r84:RPR-021\"]",
+          "from_state": null,
+          "reason": "r84 factory defect (LL check accepts a pointer API without the generated register block)",
+          "seq": 147,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T14:39:31.251749Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 148,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T14:39:31.283320Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-021 assigned",
+          "seq": 149,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T14:39:33.150195Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[\"reproducer-run:rr-5ece54bdc74190b08654\", \"reproducer-run:rr-3fdb2e6e9f2091bf0001\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 150,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T14:39:33.166312Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[\"git:69ec9a50b25b..7bed90b3a555\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 7bed90b3a555 (patch 14384 bytes)",
+          "seq": 151,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T14:39:33.994167Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[\"reproducer-run:rr-c7b357545cd230872fa6\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-021 absent at 7bed90b3a555",
+          "seq": 152,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T14:39:34.009107Z",
+          "capa_id": "CAPA-019",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 153,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "69ec9a50b25b71406d20dc73bef86257ef340c08"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "7bed90b3a55504c3163c4d5bb85fbc1825a354bb"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<7bed90b3a555"
+        ],
+        "candidate_patch_sha256": "77d49c2e993b02b42d2e81112b1511f5816b5ee1bb897b6b18ae178afe8e521f",
+        "capa_id": "CAPA-019",
+        "created_at": "2026-10-16T14:39:31.237309Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r84:RPR-021"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-021",
+        "reproducer_id": "RPR-021",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-5ece54bdc74190b08654",
+          "reproducer-run:rr-3fdb2e6e9f2091bf0001"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The LL example scope demanded a pointer API while the factory generates the extern ll_rcc_regs array and (void) functions, and the LL check accepted either; SWE.2 and SWE.3 contradicted each other until the upstream loop budget ran out (r84 BLOCKED).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T14:39:34.009107Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T14:39:34.025410Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[\"r84:RPR-022\"]",
+          "from_state": null,
+          "reason": "r84 factory defect (author procedure writes outside the role write scope)",
+          "seq": 154,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T14:39:34.041632Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 155,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T14:39:34.076005Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-022 assigned",
+          "seq": 156,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T14:39:36.205436Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[\"reproducer-run:rr-c293600a60c3f32c01d3\", \"reproducer-run:rr-8e41dde1ff596e6a70e9\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 157,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T14:39:36.223908Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[\"git:69ec9a50b25b..7bed90b3a555\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 7bed90b3a555 (patch 14384 bytes)",
+          "seq": 158,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T14:39:37.384828Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[\"reproducer-run:rr-8603112d240833792ab6\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-022 absent at 7bed90b3a555",
+          "seq": 159,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T14:39:37.398669Z",
+          "capa_id": "CAPA-020",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 160,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "69ec9a50b25b71406d20dc73bef86257ef340c08"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "7bed90b3a55504c3163c4d5bb85fbc1825a354bb"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<7bed90b3a555"
+        ],
+        "candidate_patch_sha256": "77d49c2e993b02b42d2e81112b1511f5816b5ee1bb897b6b18ae178afe8e521f",
+        "capa_id": "CAPA-020",
+        "created_at": "2026-10-16T14:39:34.025410Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r84:RPR-022"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-022",
+        "reproducer_id": "RPR-022",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-c293600a60c3f32c01d3",
+          "reproducer-run:rr-8e41dde1ff596e6a70e9"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The SWE.4 procedure told the author to rewrite traceability/requirements_to_tests.csv, which only SWE.1 may write; with the stricter SWE.4 trace check (CAPA-017) the denied write was escalated as a FACTORY defect.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T14:39:37.398669Z"
+      }
+    }
+  ],
+  "effectiveness_after_r84": {
+    "CAPA-004": "EFFECTIVENESS_OBSERVING",
+    "CAPA-005": "EFFECTIVENESS_OBSERVING",
+    "CAPA-006": "EFFECTIVENESS_OBSERVING",
+    "CAPA-007": "EFFECTIVENESS_OBSERVING",
+    "CAPA-008": "EFFECTIVENESS_OBSERVING",
+    "CAPA-009": "EFFECTIVENESS_OBSERVING",
+    "CAPA-010": "REOPENED",
+    "CAPA-011": "EFFECTIVENESS_OBSERVING",
+    "CAPA-012": "EFFECTIVENESS_OBSERVING",
+    "CAPA-013": "EFFECTIVENESS_OBSERVING",
+    "CAPA-014": "EFFECTIVENESS_OBSERVING",
+    "CAPA-015": "EFFECTIVENESS_OBSERVING",
+    "CAPA-016": "REOPENED",
+    "CAPA-017": "EFFECTIVENESS_OBSERVING",
+    "CAPA-018": "EFFECTIVENESS_OBSERVING",
+    "CAPA-019": "EFFECTIVENESS_OBSERVING",
+    "CAPA-020": "EFFECTIVENESS_OBSERVING"
+  },
+  "promotion_decisions": {
+    "pd-821cab18efae9aae8368": "ELIGIBLE 7bed90b vs 69ec9a5 (CAPA-018..020)"
+  },
+  "schema": "forge-c/cre-capa-export/1.0",
+  "source_run": "WO-0002A-STM32N6-RCC-LL-r84"
+}

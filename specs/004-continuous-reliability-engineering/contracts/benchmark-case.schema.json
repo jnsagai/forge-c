@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "Forge-C CRE immutable benchmark case",
+  "required": [
+    "schema_version",
+    "case_id",
+    "driver_class",
+    "source_sha256",
+    "requirements_sha256",
+    "target_mcu",
+    "compiler_version",
+    "compiler_flags",
+    "safety_profile",
+    "oracle_id",
+    "oracle_sha256",
+    "input_refs",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "driver_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "requirements_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target_mcu": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compiler_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compiler_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "model_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "seed": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "safety_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "oracle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "oracle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "input_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "holdout": {
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "FROZEN",
+        "NOT_RUN",
+        "NOT_COMPUTABLE",
+        "RETIRED"
+      ]
+    },
+    "case_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

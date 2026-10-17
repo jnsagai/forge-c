@@ -1,0 +1,82 @@
+[
+ {
+  "text": "clang: error: linker command failed with exit code 1",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "software/hal/x.c:88:3: error: use of undeclared identifier 'RCC_CR_HSION'",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "MISRA-15.5 at stm32n6xx_hal_rcc.c:120",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "REQUIRED_TOOL_NOT_PASS:run_renode:FAIL",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "MISSING_REQUIRED_OUTPUT:workproducts/SWE.2/architecture.md",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "AGENT_OUTPUT_PROSE",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "Tool budget exhausted (21>20) before the report",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "INSPECTION_FAIL:SWE5-02",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "REQUIREMENT_NOT_OBSERVED:SWR-006:needs TCHECK on LL_RCC_SR_HSERDY_MSK",
+  "class": "PRODUCT_QUALITY"
+ },
+ {
+  "text": "upstream request timed out after 120 s",
+  "class": "TRANSIENT_DEPENDENCY"
+ },
+ {
+  "text": "HTTP 429 Too Many Requests",
+  "class": "TRANSIENT_DEPENDENCY"
+ },
+ {
+  "text": "connection reset by peer while calling forge-docs-mcp",
+  "class": "TRANSIENT_DEPENDENCY"
+ },
+ {
+  "text": "READINESS_FAILURE fabro not answering",
+  "class": "INFRASTRUCTURE"
+ },
+ {
+  "text": "STORE_NOT_WRITABLE /archives read-only",
+  "class": "INFRASTRUCTURE"
+ },
+ {
+  "text": "TOOL_MISSING:cbmc",
+  "class": "INFRASTRUCTURE"
+ },
+ {
+  "text": "TOKEN_BUDGET_EXHAUSTED swe3-author 64000>32000",
+  "class": "INFRASTRUCTURE"
+ },
+ {
+  "text": "PATH_ESCAPE ../../etc/passwd",
+  "class": "POLICY_SECURITY"
+ },
+ {
+  "text": "ROBOT_POLICY:LIBRARY_NOT_ALLOWED:Process",
+  "class": "POLICY_SECURITY"
+ },
+ {
+  "text": "WRITE_SCOPE_DENIED workproducts/SWE.1 for swe4-author",
+  "class": "POLICY_SECURITY"
+ },
+ {
+  "text": "the moon is made of cheese",
+  "class": "UNKNOWN"
+ }
+]

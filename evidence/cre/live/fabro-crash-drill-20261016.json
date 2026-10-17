@@ -1,0 +1,79 @@
+{
+  "authorization_event": "cre-0a0875bd2ad4187ad2471a8db6c4fad6cb7b4ddf",
+  "breaker_history": [],
+  "breaker_now": "CLOSED",
+  "cre_recovery_scope": {
+    "failure_class": "INFRASTRUCTURE",
+    "state": "RECOVERED",
+    "terminal_reason": "mirror 002: 002 incident RESOLVED"
+  },
+  "detection_latency_s": 125.0,
+  "dispatch_decision": {
+    "executed": false,
+    "reason": "repair dispatch suspended for the drill (owner rule: no local-model repair agent); the route for component 'fabro' is the Fabro-independent worker path",
+    "would_dispatch_via": "external_local_worker"
+  },
+  "drill": "fabro-crash-recovery",
+  "finished_at": "2026-10-16T09:04:45.246499Z",
+  "incident": "inc-bb1bdc58c2a4",
+  "invariants": {
+    "archives_unchanged": true,
+    "fabro_runs_after": 20,
+    "fabro_runs_before": 20,
+    "protected_inputs_unchanged": true
+  },
+  "preconditions": {
+    "active_runs": 0,
+    "dispatch_suspended": true,
+    "fabro_up": true,
+    "runs_count": 20,
+    "supervisor_polls": 2012,
+    "supervisor_status": "HEALTHY"
+  },
+  "result": "PASS",
+  "schema": "forge-c/cre-live-drill/1.0",
+  "started_at": "2026-10-16T08:59:25.119640Z",
+  "steps": [
+    {
+      "at": "2026-10-16T08:59:25.630463Z",
+      "pid": 1794093,
+      "signal": "SIGKILL",
+      "step": "crash"
+    },
+    {
+      "at": "2026-10-16T09:01:30.661182Z",
+      "fault": "READINESS_FAILURE",
+      "incident": "inc-bb1bdc58c2a4",
+      "latency_s": 125.0,
+      "state": "TRIAGED",
+      "step": "detected",
+      "supervisor_status": "UNAVAILABLE"
+    },
+    {
+      "action": "restart_fabro",
+      "at": "2026-10-16T09:01:30.741297Z",
+      "journal_status": "DONE",
+      "launcher_pid": 1835483,
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/reliability/drill-restart-2026-10-16T085925.log",
+      "step": "recovery_action"
+    },
+    {
+      "at": "2026-10-16T09:01:34.766989Z",
+      "elapsed_s": 129.1,
+      "step": "fabro_healthy"
+    },
+    {
+      "at": "2026-10-16T09:04:44.802863Z",
+      "elapsed_s": 319.2,
+      "step": "incident_resolved"
+    }
+  ],
+  "supervisor_after": {
+    "model_calls": 0,
+    "model_tokens": 0,
+    "polls": 2017,
+    "status": "HEALTHY"
+  },
+  "target": "http://127.0.0.1:32290",
+  "time_to_recover_s": 319.2
+}

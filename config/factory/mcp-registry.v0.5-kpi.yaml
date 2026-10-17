@@ -17,6 +17,44 @@ servers:
       status: IMPLEMENTED_V05
       timeout_seconds: 60
       role_grants: [release-manager, safety-evidence-auditor]
+  forge-tests-mcp:
+    ops:
+    - name: run_robot
+      logical_tool: Robot Framework SWE.6 requirement-based tests on the Renode STM32N6 model
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 600
+      role_grants: [swe6-author, swe6-inspector]
+      notes: Owner request 2026-10-15; PASS only if all tests pass and every SWR is a tag of a passing test.
+  forge-evidence-mcp:
+    ops:
+    - name: report_defect
+      logical_tool: Defect register (ADR-0008 cross-phase loopbacks)
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 60
+      role_grants: [swe1-author, swe1-inspector, swe2-author, swe2-inspector, swe3-author, swe3-inspector,
+                    swe4-author, swe4-inspector, swe5-author, swe5-inspector, swe6-author, swe6-inspector]
+      notes: Deterministic validation (upstream target by kind, known SWR ids, evidence for CODE); INPUT/FACTORY
+        are escalated to a human; agents never set FIXED/VERIFIED.
+    - name: reject_defect
+      logical_tool: Defect register - target-phase author rejection with reason
+      mandatory: false
+      status: IMPLEMENTED_V05
+      timeout_seconds: 60
+      role_grants: [swe1-author, swe2-author, swe3-author]
 role_tool_additions:
   release-manager: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]
   safety-evidence-auditor: [forge-observer-mcp.get_kpis, forge-observer-mcp.get_kpi_evidence]
+  swe6-author: [forge-tests-mcp.run_robot, forge-evidence-mcp.report_defect]
+  swe6-inspector: [forge-tests-mcp.run_robot, forge-evidence-mcp.report_defect]
+  swe1-author: [forge-evidence-mcp.report_defect, forge-evidence-mcp.reject_defect]
+  swe2-author: [forge-evidence-mcp.report_defect, forge-evidence-mcp.reject_defect]
+  swe3-author: [forge-evidence-mcp.report_defect, forge-evidence-mcp.reject_defect]
+  swe4-author: [forge-evidence-mcp.report_defect]
+  swe5-author: [forge-evidence-mcp.report_defect]
+  swe1-inspector: [forge-evidence-mcp.report_defect]
+  swe2-inspector: [forge-evidence-mcp.report_defect]
+  swe3-inspector: [forge-evidence-mcp.report_defect]
+  swe4-inspector: [forge-evidence-mcp.report_defect]
+  swe5-inspector: [forge-evidence-mcp.report_defect]

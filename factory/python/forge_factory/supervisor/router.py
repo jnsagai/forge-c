@@ -26,6 +26,9 @@ class RouterState:
     consecutive: dict[str, int] = field(default_factory=dict)
     healthy_streak: dict[str, int] = field(default_factory=dict)
     last_dispatch: dict[str, float] = field(default_factory=dict)
+    # CRE (feature 004): fingerprints whose incident went to offline attention while the fault is still continuous;
+    # no new incident per poll for the same unbroken fault (only a recurrence after a healthy window reopens)
+    held: dict[str, int] = field(default_factory=dict)
 
     def save(self, p: Path) -> None:
         p.write_text(json.dumps(self.__dict__))
@@ -51,9 +54,19 @@ class Router:
     def observe(self, samples: list[Sample]) -> list[dict]:
         """Update incidents from one poll; return incidents eligible for repair dispatch now."""
         failing = {self.fingerprint(s): s for s in samples if s.fault_type and s.status in ("DOWN", "DEGRADED")}
+        stable = int(self.p["thresholds"]["stable_polls_for_recovery"])
+        for fp in list(self.st.held):
+            if fp in failing:
+                self.st.held[fp] = 0
+            else:
+                self.st.held[fp] += 1
+                if self.st.held[fp] >= stable:
+                    del self.st.held[fp]  # the fault cleared: a later occurrence is a real recurrence
         for fp, s in failing.items():
             self.st.consecutive[fp] = self.st.consecutive.get(fp, 0) + 1
             self.st.healthy_streak.pop(fp, None)
+            if fp in self.st.held:
+                continue  # same unbroken fault, already in offline attention: no incident storm
             if self.st.consecutive[fp] >= self.threshold(s):
                 inc, created = self.store.open_or_dedup(fp, s.component, s.fault_type or "UNKNOWN",
                                                         SEVERITY.get(s.fault_type or "", "MEDIUM"), s.run_id,
@@ -65,9 +78,9 @@ class Router:
                     if s.fault_type in NOT_REPAIRABLE:
                         self.store.transition(inc["incident_id"], "REQUIRES_OFFLINE_ATTENTION",
                                               "outside automatic repair scope")
+                        self.st.held[fp] = 0
                     else:
                         self.store.transition(inc["incident_id"], "TRIAGED", "deterministic triage")
-        stable = int(self.p["thresholds"]["stable_polls_for_recovery"])
         for inc in self.store.active():
             fp = inc["fingerprint"]
             if fp not in failing:
@@ -92,6 +105,7 @@ class Router:
                 continue
             if inc["attempts"] >= int(rep["max_attempts_per_incident"]):
                 self.store.transition(inc["incident_id"], "REQUIRES_OFFLINE_ATTENTION", "attempt budget exhausted")
+                self.st.held[inc["fingerprint"]] = 0
                 emit("supervisor", "ERROR", f"breaker: {inc['incident_id']} requires offline attention",
                      incident_id=inc["incident_id"], correlation_id=inc["correlation_id"])
                 continue

@@ -104,7 +104,8 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     checks["misra_coverage_assessed"] = cpp is not None and (ws / "verification/static/misra_coverage_matrix.md").is_file()
     checks["unit_verification"] = ok(latest(res, "forge-tests-mcp", "run_unit"))
     checks["integration_verification"] = ok(latest(res, "forge-tests-mcp", "run_integration"))
-    checks["software_verification"] = gates["SWE.6"]["decision"] == "PASS" and checks["integration_verification"]
+    checks["software_verification"] = (gates["SWE.6"]["decision"] == "PASS" and checks["integration_verification"]
+                                       and ok(latest(res, "forge-tests-mcp", "run_robot")))  # SWE.6 Robot suite
     tr_ok, tr_issues = trace_check(ws)
     checks["traceability"] = tr_ok
     size = latest(res, "forge-build-mcp", "measure_elf", lambda r: "target" in json.dumps(r["result"]["summary"]))
@@ -145,6 +146,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
             if inc.get("run_id") == rid and inc["state"] != "RESOLVED":
                 findings.append({"id": f"INCIDENT:{inc['incident_id']}", "severity": "major",
                                  "detail": f"{inc['component']}/{inc['fault_type']} {inc['state']}"})
+    from ..inspection import defects  # ADR-0008: open/escalated defects are unresolved findings (never hidden)
+
+    findings += [{"id": g, "severity": "major", "detail": "defect register"} for g in defects.gaps(ws)]
     detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
               "target_runs": [r["result"]["status"] for r in tgt]}
     return checks, findings, detail
@@ -178,20 +182,21 @@ def operational_inventory(ws: Path, stage: Path, run_id: str, fabro_run_id: str 
        pretty_json({"event_schema": "specs/002-self-healing-factory/contracts/event.schema.json",
                     "capture_policy_sha256": sha256_bytes(pol.encode()), "segments": seg}))
     _w(stage, "operations/telemetry/capture-policy.yaml", pol)
-    usage = token_usage(fabro_run_id)
+    usage = token_usage(fabro_run_id, ws)
     _w(stage, "operations/tokens/usage-by-agent.json", pretty_json(usage))
     _w(stage, "operations/run/run-summary.json",
        pretty_json({"run_id": run_id, "fabro_run_id": fabro_run_id, "finalized_at": utc_now(),
                     "workspace_head": _git(ws, "rev-parse", "HEAD"), "dirty": bool(_git(ws, "status", "--porcelain"))}))
 
 
-def token_usage(fabro_run_id: str | None) -> dict:
+def token_usage(fabro_run_id: str | None, ws: Path | None = None) -> dict:
     if not fabro_run_id:
         return {"basis": "unknown", "reason": "no Fabro run id", "by_stage": []}
     try:
-        from ..fabro.client import FabroClient, load_token
+        from ..fabro.client import FabroClient, client_for_workspace, load_token
 
-        u = FabroClient(token=load_token(), timeout=10).usage(fabro_run_id)
+        c = client_for_workspace(ws, timeout=10) if ws is not None else FabroClient(token=load_token(), timeout=10)
+        u = c.usage(fabro_run_id)
         stages = [{"stage": s["stage"]["id"], "model": s["model"]["model_id"], "provider": s["model"]["provider"],
                    "tokens_input": s["usage"]["tokens"]["input"], "tokens_output": s["usage"]["tokens"]["output"],
                    "state": s.get("state")} for s in u.get("stages", [])]
@@ -221,8 +226,13 @@ def sup_reports(ws: Path, stage: Path, checks: dict, findings: list[dict], detai
        f"# SUP.8 Configuration status (generated)\n\nWorkspace commit: `{_git(ws, 'rev-parse', 'HEAD')}`\n\n"
        f"## Frozen baselines\n{bl}\n")
     fl = "\n".join(f"- `{f['id']}` ({f['severity']}): {f['detail']}" for f in findings) or "- none open"
+    from ..inspection import defects
+
+    rv = "\n".join(f"- {x}" for x in defects.review_items(ws)) or "- none"
     _w(stage, "support/SUP.9/problem_resolution_status.md",
-       f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n")
+       f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n\n"
+       "## Defects filed or declared by the deterministic gate (human review required)\n"
+       f"{rv}\n")
     revs = {p: len(store.baselines(p)) for p in PHASES}
     _w(stage, "support/SUP.10/change_request_status.md",
        "# SUP.10 Change request status (generated)\n\nBaseline revisions per phase (each revision after the first "
@@ -267,6 +277,8 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     _copy_tree(ws / "evidence" / "raw", stage / "evidence-raw")
     if (ws / "evidence/tool-results.jsonl").is_file():
         _w(stage, "verification/tool-results.jsonl", (ws / "evidence/tool-results.jsonl").read_bytes())
+    for f in sorted((ws / ".forge-run/defects").glob("DEF-*.json")) if (ws / ".forge-run/defects").is_dir() else []:
+        _w(stage, f"defects/{f.name}", f.read_bytes())  # full defect log incl. REJECTED reasons and TEST declarations
     for p in PHASES:
         ins = Store(ws).inspections(p)
         if ins:
@@ -328,18 +340,33 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     with tempfile.TemporaryDirectory() as dry:  # status under v0.4 rules (KPI files can only add, never remove gaps)
         dry_status = pk.build(stage, Path(dry), run_id, POLICY_V04)["package_status"]
     kpi_snapshot_into(ws, stage, dry_status)
-    res = pk.build(stage, out_dir, run_id, POLICY_V05)
-    with pk.zipfile.ZipFile(res["archive"]) as z:
-        gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
-    for f in out_dir.iterdir():
-        os.chmod(f, 0o444)
-    out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
-           "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
-           "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
-           "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
-    os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
-    (out_dir / "finalize-result.json").write_text(pretty_json(out))
-    os.chmod(out_dir / "finalize-result.json", 0o444)
+    from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
+
+    bundle_into(ws, stage, dry_status)
+    sealed: dict = {}
+
+    def seal(_key: str) -> dict:
+        res = pk.build(stage, out_dir, run_id, POLICY_V05)
+        with pk.zipfile.ZipFile(res["archive"]) as z:
+            gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
+        for f in out_dir.iterdir():
+            os.chmod(f, 0o444)
+        out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
+               "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
+               "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
+               "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
+        os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
+        (out_dir / "finalize-result.json").write_text(pretty_json(out))
+        os.chmod(out_dir / "finalize-result.json", 0o444)
+        sealed["out"] = out
+        return {"archive_sha256": res["archive_sha256"], "package_status": res["package_status"]}
+
+    from ..reliability.production import JournalRefused, guarded  # CRE-T045: archive write is journaled
+
+    j = guarded("archive_write", f"archive_write:{run_id}", seal)
+    if not j["executed"]:  # enforcing modes only: journaled DONE but no archive on disk, or unknown outcome
+        raise JournalRefused(j["status"], f"archive_write:{run_id}")
+    out = sealed["out"]
     (ws / ".forge-run").mkdir(exist_ok=True)
     (ws / ".forge-run" / "package.json").write_text(pretty_json(out))
     emit("human", "INFO" if out["package_status"] == "READY_FOR_OFFLINE_REVIEW" else "WARN",

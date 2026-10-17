@@ -1,0 +1,122 @@
+{
+  "assessed_at": "2026-10-17T08:04:25.836195Z",
+  "configured_mode": "OBSERVE_ONLY",
+  "git_head": "7ec24f8f86f89688341714ff3e58b03f880a316e",
+  "levels": {
+    "ACTIVE_ELIGIBLE": {
+      "met": [],
+      "missing": [
+        "pilot_demonstrated: PILOT_ELIGIBLE not demonstrated",
+        "authorized_reversible_actions: no pre-authorized reversible actions",
+        "signed_operator_runbook: docs/cre-runbook.md exists but has no recorded owner review/sign-off"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    },
+    "OBSERVE_ONLY": {
+      "met": [
+        "baseline_and_audit",
+        "policy_observe_only",
+        "live_supervisor_zero_model_calls",
+        "failure_registry_populated"
+      ],
+      "missing": [],
+      "status": "DEMONSTRATED"
+    },
+    "PILOT_ELIGIBLE": {
+      "met": [
+        "all_other_p0_tasks_pass",
+        "fault_campaign_all_pass",
+        "real_e2e_terminal_evidence",
+        "candidate_evaluations_recorded",
+        "live_fabro_crash_recovery_drill"
+      ],
+      "missing": [
+        "pilot_authorization: no owner authorization block for PILOT in the reliability policy"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    }
+  },
+  "not_claimed": [
+    "universal or 100% reliability",
+    "PILOT/ACTIVE operation",
+    "ISO 26262 / ASIL B approval",
+    "Automotive SPICE capability level",
+    "production release"
+  ],
+  "p0_requirements_unmet": [],
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "readiness": "OBSERVE_ONLY",
+  "reliability_slo_evidence": {
+    "attainment": "NOT_EVALUATED: no owner-approved target rate (spec section 6)",
+    "excluded_attempts": {
+      "WO-0002B-STM32N6-RCC-HAL-r98": "cancelled before it started by the owner's stop of the SLO batch (2026-10-16 'Stop all after this run finish'); the external finalizer packaged the cancelled run, which is not a factory attempt"
+    },
+    "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)",
+    "measured_cohorts": [
+      {
+        "attempts": [
+          "WO-0002B-STM32N6-RCC-HAL-r88",
+          "WO-0002B-STM32N6-RCC-HAL-r90",
+          "WO-0002B-STM32N6-RCC-HAL-r92",
+          "WO-0002B-STM32N6-RCC-HAL-r94",
+          "WO-0002B-STM32N6-RCC-HAL-r96",
+          "WO-0002B-STM32N6-RCC-HAL-r100",
+          "WO-0002B-STM32N6-RCC-HAL-r102",
+          "WO-0002B-STM32N6-RCC-HAL-r104",
+          "WO-0002B-STM32N6-RCC-HAL-r106",
+          "WO-0002B-STM32N6-RCC-HAL-r107"
+        ],
+        "cohort_key": "driver_class=STM32N6_RCC_HAL_DRIVER_ON_THE_VERIFIED_R|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+        "completed": 5,
+        "factory_revision": "70ccc9eaff9f",
+        "n": 10,
+        "wilson95": [
+          0.237,
+          0.763
+        ],
+        "workflow_yield": 0.5
+      },
+      {
+        "attempts": [
+          "WO-0002A-STM32N6-RCC-LL-r87",
+          "WO-0002A-STM32N6-RCC-LL-r89",
+          "WO-0002A-STM32N6-RCC-LL-r91",
+          "WO-0002A-STM32N6-RCC-LL-r93",
+          "WO-0002A-STM32N6-RCC-LL-r95",
+          "WO-0002A-STM32N6-RCC-LL-r97",
+          "WO-0002A-STM32N6-RCC-LL-r99",
+          "WO-0002A-STM32N6-RCC-LL-r101",
+          "WO-0002A-STM32N6-RCC-LL-r103",
+          "WO-0002A-STM32N6-RCC-LL-r105"
+        ],
+        "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+        "completed": 5,
+        "factory_revision": "70ccc9eaff9f",
+        "n": 10,
+        "wilson95": [
+          0.237,
+          0.763
+        ],
+        "workflow_yield": 0.5
+      }
+    ],
+    "min_samples": 10,
+    "reason": "workflow yield per cohort (CRE-R09): deepseek-flash/FULL: 5/11 [0.21, 0.72]; deepseek-flash/FULL: 4/30 [0.05, 0.30]; deepseek-flash/RESUMED: 2/18 [0.03, 0.33]; qwen3:8b/FULL: 0/18 [0.00, 0.18]; qwen3:8b/FULL: 1/12 [0.01, 0.35]; deepseek-flash/FULL: 7/17 [0.22, 0.64]",
+    "status": "BASELINE_MEASURED"
+  },
+  "safety_signoff": null,
+  "schema": "forge-c/cre-readiness/1.0",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED",
+  "supported_claims": [
+    "bounded recovery and safe termination in 18 injected fault scenarios (isolated real components)",
+    "independent promotion gate rejects unsafe, concealing and protected-path candidates",
+    "root causes VERIFIED only by reproducer contrast on real commits (5 historical fixes)",
+    "healthy supervision makes zero model calls (live + 100-poll tests)",
+    "one owner-authorized live Fabro crash detected and recovered by the model-free supervisor (evidence/cre/live/fabro-crash-drill-*.json)",
+    "verification runner and repair-candidate code run as separate OS identities (rootless Podman sub-UIDs) without network or owner credentials"
+  ],
+  "tasks": {
+    "pass": 53,
+    "total": 54
+  }
+}

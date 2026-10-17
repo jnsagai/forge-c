@@ -21,8 +21,8 @@ from ..sdk import Operation, ToolContext, ToolInput, build_server, result
 
 class ValidateIn(ToolInput):
     path: str = Field(default=".", max_length=200)
-    check: Literal["ears", "hal_guideline", "register_map", "implementation", "swe3_all", "architecture", "markdown",
-                   "json", "csv"] = "markdown"
+    check: Literal["ears", "hal_guideline", "register_map", "implementation", "swe3_all", "architecture", "plantuml",
+                   "markdown", "json", "csv"] = "markdown"
 
 
 class DocIn(ToolInput):
@@ -49,6 +49,12 @@ def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
                       {"guideline_violations": len(g["violations"]), "register_map_findings": len(r["major_findings"]),
                        "implementation_findings": len(i["major_findings"])}, "forge-swe3-checks",
                       input_obj=a.model_dump())
+    if a.check == "plantuml":  # SWE.2 static + dynamic views (syntax with pinned PlantUML, content vs architecture)
+        from ...inspection.views import check_views
+
+        rep = check_views(ctx.workspace)
+        return result(ctx, rep["verdict"], f"PlantUML views: {len(rep['major_findings'])} findings",
+                      [], rep["major_findings"][:30], rep["stats"], "plantuml", input_obj=a.model_dump())
     if a.check == "implementation":
         rep = check_implementation(ctx.workspace)
         return result(ctx, rep["verdict"], f"SWE.3 implementation completeness: {len(rep['major_findings'])} findings",
@@ -107,7 +113,8 @@ def unsupported(name: str):
 
 OPERATIONS = [
     Operation("validate_artifact", ValidateIn, validate_artifact,
-              "Validate a workproduct (ears|hal_guideline|register_map|implementation|swe3_all|architecture|markdown|json|csv)."),
+              "Validate a workproduct (ears|hal_guideline|register_map|implementation|swe3_all|architecture|plantuml|"
+              "markdown|json|csv)."),
     Operation("render_diagram", DocIn, unsupported("plantuml"), "Render PlantUML (disabled)."),
     Operation("build_docs", DocIn, unsupported("mkdocs"), "Build MkDocs site (disabled)."),
 ]

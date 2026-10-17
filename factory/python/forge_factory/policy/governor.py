@@ -46,14 +46,43 @@ def reset_node(binding_id: str, run_id: str, node_id: str) -> None:
     _update(binding_id, fn)
 
 
-def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str) -> tuple[bool, int, int]:
-    """Returns (allowed, count_after, limit)."""
-    limit = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+RESERVED_FOR_INSPECTORS = 4  # r63: inspectors ran out of calls before recording; the last calls are reserved
+RESERVED_TOOLS = ("mcp__forge_evidence_mcp__check_inspection", "mcp__forge_evidence_mcp__report_defect")
 
-    def fn(st: dict) -> tuple[bool, int, int]:
+
+SCALED_ROLES = ("swe3-author", "swe4-author", "swe5-author", "swe6-author")
+REFERENCE_FUNCTIONS = 12  # the combined-driver allocation the authored 35-turn budget was set for (r70/r71)
+
+
+def turn_limit(role: str, workspace: str | None = None) -> int:
+    """CAPA-015: authored max_turns, plus 1 turn per 2 allocated API functions above REFERENCE_FUNCTIONS for the
+    code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25."""
+    base = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    if role not in SCALED_ROLES or not workspace:
+        return base
+    try:
+        from ..inspection.implementation import allocated_functions
+
+        n = len(allocated_functions(Path(workspace)))
+    except Exception:  # noqa: BLE001 - scaling is advisory; the authored budget always applies
+        return base
+    return base + min(25, max(0, n - REFERENCE_FUNCTIONS) // 2)
+
+
+def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str,
+                    tool: str = "", workspace: str | None = None) -> tuple[bool, int, int, bool]:
+    """Returns (allowed, count_after, limit, reserved_denial). For inspector roles the last RESERVED_FOR_INSPECTORS
+    calls of the authored budget are only usable for check_inspection/report_defect; a denied non-reserved call
+    does not consume budget (the budget itself is unchanged)."""
+    limit = turn_limit(role, workspace)
+
+    def fn(st: dict) -> tuple[bool, int, int, bool]:
         k = f"{run_id}:{node_id}"
-        st[k] = int(st.get(k, 0)) + 1
-        return st[k] <= limit, st[k], limit
+        cur = int(st.get(k, 0))
+        if role.endswith("-inspector") and cur >= limit - RESERVED_FOR_INSPECTORS and tool not in RESERVED_TOOLS:
+            return False, cur, limit, True
+        st[k] = cur + 1
+        return st[k] <= limit, st[k], limit, False
     return _update(binding_id, fn)
 
 
@@ -79,14 +108,16 @@ def check_run(run_id: str, nodes: dict, workspace: Path | None = None, client=No
         # basis: newly processed tokens = uncached input + output (cache_read reported separately, ADR-0006)
         per_node[node] = per_node.get(node, 0) + int(t.get("input", 0)) + int(t.get("output", 0))
         cached[node] = cached.get(node, 0) + int(t.get("cache_read", 0))
+    from ..workflow.builder import MAX_VISITS
+
     exceeded = []
     for node, used in per_node.items():
         role = (nodes.get(node) or {}).get("role")
-        if role and used > budgets[role] * 4:  # budget is per visit; MAX_VISITS (4) visits per node
-            exceeded.append({"node": node, "role": role, "tokens": used, "budget_total": budgets[role] * 4})
+        if role and used > budgets[role] * MAX_VISITS:  # budget is per visit; at most MAX_VISITS visits per node
+            exceeded.append({"node": node, "role": role, "tokens": used, "budget_total": budgets[role] * MAX_VISITS})
     out = {"run_id": run_id, "status": "TOKEN_BUDGET_EXHAUSTED" if exceeded else "WITHIN_BUDGET",
            "per_node_tokens": per_node, "per_node_cache_read": cached, "exceeded": exceeded, "basis": "reported",
-           "accounting": "uncached_input+output per node across visits (cap = max_stage_tokens x 4 visits)",
+           "accounting": f"uncached_input+output per node across visits (cap = max_stage_tokens x {MAX_VISITS} visits)",
            "checked_at": utc_now()}
     if exceeded:
         emit("ai", "ERROR", f"TOKEN_BUDGET_EXHAUSTED run={run_id} nodes={','.join(e['node'] for e in exceeded)}",

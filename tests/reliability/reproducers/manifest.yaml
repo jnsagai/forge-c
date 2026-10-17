@@ -1,0 +1,301 @@
+# Frozen reproducer manifest (CRE-T018). Scripts are run only when their SHA-256 matches. Changing a script or
+# this file is a benchmark/oracle change (protected path tests/reliability/**): re-freeze in a separate commit.
+schema_version: '1.0'
+reproducers:
+  - id: RPR-001
+    script: rpr001_declaration_coverage.py
+    sha256: 052c08c05d308b4473a9eda198098c4696c918804dd0dece6f99f8c16cb103f6
+    symptom_signature: "TEST_CHANGED_AFTER_FAIL after a declaration on unchanged code"
+    observed_in: r72
+    baseline_revision: e807e448b566d5089f8ec1c2d29702f7c2842110
+    fix_revision: 211d4fcc30b59dc3190e1820b5ebd44e61c357e7
+    error_codes: [TEST_CHANGED_AFTER_FAIL]
+    operations: [SWE.6/author, SWE.5/author, SWE.4/author]
+    root_cause: "A TEST declaration covered only failures recorded before it, so later corrections of the same file on unchanged code were treated as unexplained edits."
+    remedy: "Coverage now extends to later corrections while the product code hash equals the one at declaration (ADR-0008 L14)."
+  - id: RPR-002
+    script: rpr002_noop_fix_frozen.py
+    sha256: bb599c57a1446b9d742f0d59dafba4b729ee479c1a0b8764c82d529efc14ef06
+    symptom_signature: "author gate froze an unchanged baseline while a defect was IN_FIX"
+    observed_in: r73
+    baseline_revision: 211d4fcc30b59dc3190e1820b5ebd44e61c357e7
+    fix_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    error_codes: [DEFECT_TEST_CHANGED]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "The author gate re-froze an identical baseline after a prose reply, and the unchanged inspection marked the handed-over defect FIXED."
+    remedy: "The author gate rejects a freeze with DEFECT_NOT_ADDRESSED until a work product changed or the defect is rejected with a reason."
+  - id: RPR-003
+    script: rpr003_undeclared_change_silent.py
+    sha256: 63c39c26ed4175f5199561a7e26586072ce4964b80ea668ff1e2b89adf5b2d48
+    symptom_signature: "run_unit reported PASS for an undeclared test edited after a runtime failure"
+    observed_in: r74
+    baseline_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    fix_revision: c13240a24ec11add17e1f00fda48208c995d3617
+    error_codes: [TEST_CHANGED_AFTER_FAIL]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "Undeclared test edits were only detected at the author gate after the author finished, often in its final cycle."
+    remedy: "Test tools return FAIL with HOW_TO_DECLARE and UNDECLARED_TEST_CHANGE at once, within the same author visit."
+  - id: RPR-004
+    script: rpr004_extended_cited_test.py
+    sha256: b9bb9a04e08d6dfe8d3d11b23a27b237e75f4002e90b8f84a06eef7ff5bc9dac
+    symptom_signature: "DEFECT_TEST_CHANGED for a correct fix whose cited test was only extended"
+    observed_in: r75
+    baseline_revision: 8a1b2f1f7609085ccff63900ba7b30a418246a9e
+    fix_revision: 6d0c5dee5f63e4eecb47dd7ba4e78c111cf448f1
+    error_codes: [DEFECT_TEST_CHANGED]
+    operations: [SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "A fixed defect could only be verified with byte-identical cited tests, so extending the cited file made a correct fix unverifiable."
+    remedy: "The gate re-runs the cited tests restored from the snapshots against the fixed code (VERIFIED or DEFECT_NOT_FIXED)."
+  - id: RPR-005
+    script: rpr005_host_check_expr.py
+    sha256: a7f3ef43593be985dea17f8052d7b9f73c1809b85138b5ff3f2d14e947e4aa9d
+    symptom_signature: "failed host CHECK reported without its expression"
+    observed_in: r74
+    baseline_revision: dabdbe34da124a4be97b25c59dd403aabff1f9ec
+    fix_revision: c13240a24ec11add17e1f00fda48208c995d3617
+    error_codes: [REWORK_BUDGET_EXHAUSTED]
+    operations: [SWE.4/route, SWE.5/route]
+    root_cause: "Host test tools reported only the failed check id, so authors spent their cycles reading files to learn what failed."
+    remedy: "run_unit and run_integration report the failed CHECK expression and the call that set the checked variable."
+  - id: RPR-006
+    script: rpr006_ll_requires_hal_outputs.py
+    sha256: ffd9eb1fd3408e2ff328ec93ac479ebb2c15367a664b4a47cf51ec9764a24bd6
+    symptom_signature: "SWE.3 presence gate requires HAL files in an LL work order"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["MISSING_REQUIRED_OUTPUT:hal/*.c", "MISSING_REQUIRED_OUTPUT:hal/*.h"]
+    operations: [SWE.3/author]
+    root_cause: "ADR-0009 made the SWE.3 chain layer-aware but the presence gate's required outputs still listed software/hal/* for every work order."
+    remedy: "SWE.3 required outputs exclude software/hal/* when the manifest layer is LL."
+  - id: RPR-007
+    script: rpr007_placeholder_api_allocated.py
+    sha256: 636596e1277da1498b8ff78d516a0e05682898a43e3924d4b25ee71fc6205574
+    symptom_signature: "architecture check accepts a placeholder API in the allocation table"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["SWE2:PLACEHOLDER_API"]
+    operations: [SWE.2/author, SWE.2/inspect]
+    root_cause: "The architecture check verified that every SWR is allocated but not that the allocated API names are concrete, so LL_RCC_<Peripheral>_Enable passed and SWE.3 could omit the peripheral functions."
+    remedy: "SWE2:PLACEHOLDER_API rejects generic API names; the LL procedures ask for one concrete function per oscillator and peripheral of the provided RM sections."
+  - id: RPR-008
+    script: rpr008_unverifiable_ll_requirement.py
+    sha256: 9116632b82a7207c8d790c109a904450303e5b66ae27c44ffc8119e17efc1b2f
+    symptom_signature: "LL SWE.1 procedure demands an access-count requirement"
+    observed_in: r80
+    baseline_revision: face7ca7427ede2a18904e7aa09709072b9d113b
+    fix_revision: 71b83b6b815144ab1536b223df9f6a4f89572ee6
+    error_codes: ["INSPECTION_FAIL:SWE4-02", "INSPECTION_FAIL:SWE5-04", "REQUIRED_TOOL_NOT_PASS:run_integration", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/inspect, SWE.5/inspect, SWE.5/author, SWE.5/route]
+    root_cause: "The LL SWE.1 procedure asked for a requirement on the number of register reads/writes, which a host RAM register array cannot observe; SWE.4/SWE.5 spent their rework budget on access-counting stubs (r80 BLOCKED at SWE.5)."
+    remedy: "The LL SWE.1 procedure no longer asks for access counts and requires every requirement to be verifiable on the register array or by the size/stack tools."
+  - id: RPR-009
+    script: rpr009_scope_exclusion_failed.py
+    sha256: af46b21e2eefa5f4e76b2bde41c92d8f8368a4c1340bb4de01c45b6346b50167
+    symptom_signature: "verification inspectors judge excluded work-order scope as missing tests"
+    observed_in: r80
+    baseline_revision: b9361c0bb212425b6d6d12e66aef5d4f69cdecf4
+    fix_revision: 14868f7960a0bf1db509cd052da9abd9ab1b2769
+    error_codes: ["INSPECTION_FAIL:SWE5-03"]
+    operations: [SWE.5/inspect]
+    root_cause: "Neither the SWE.5 report procedure nor the SWE.4-6 inspector procedures carried the work-order scope, so the inspector failed SWE5-03 for interrupts that the work order excludes."
+    remedy: "The SWE.5 report lists scope exclusions and SWE.4-6 inspectors judge items about excluded behaviour N/A when the report states the exclusion."
+  - id: RPR-010
+    script: rpr010_ll_unallocated_helpers.py
+    sha256: 6914a1d91d96fbdfb67eaadd3111828f2fafd572b02da7ab9f73f7d895cfad2b
+    symptom_signature: "LL implementation check accepts unallocated helpers and loops"
+    observed_in: r81
+    baseline_revision: d361ed8f81c3353596d519ecd6202681f2a69d62
+    fix_revision: 0b4cf5dd2cc9f41837f14945c3d373ba2e0bbc63
+    error_codes: ["DEFECT:CODE", "INSPECTION_FAIL:SWE6-05"]
+    operations: [SWE.5/author, SWE.6/inspect]
+    root_cause: "The LL implementation check only required every allocated function; the LL author added LL_RCC_*_WaitReady on a HAL_RCC_PollSet helper with a loop, SWE.5/6 tested those unrequired, inverted functions and spent a return and a rework on them."
+    remedy: "The LL implementation check rejects unallocated functions, HAL code and waiting loops in the LL header; the LL author procedure states it."
+  - id: RPR-011
+    script: rpr011_swe5_target_not_required.py
+    sha256: 0bcc6ef6d690572befcab173a0fc49ce2cb96123ce348f8fa509d9303d6a1b22
+    symptom_signature: "SWE.5 presence gate passes with failing target tests"
+    observed_in: r81
+    baseline_revision: d361ed8f81c3353596d519ecd6202681f2a69d62
+    fix_revision: 0b4cf5dd2cc9f41837f14945c3d373ba2e0bbc63
+    error_codes: ["PACKAGE_GAP:failed_or_missing_quality_check"]
+    operations: [SWE.5/author, -/package]
+    root_cause: "REQUIRED_TOOL_PASS for SWE.5 listed only run_integration, so SWE.5 froze and passed inspection while run_renode failed; the package was BLOCKED on target_verification only at finalization."
+    remedy: "SWE.5 also requires the latest run_renode to PASS (after the current code baseline) before it can be frozen."
+  - id: RPR-012
+    script: rpr012_interface_not_allocated.py
+    sha256: 0ec98b2952546c7de8c249dab6afa252099249a2b0d508dec0610d46beb8a71a
+    symptom_signature: "architecture check accepts interfaces missing from the allocation"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["INSPECTION_FAIL:SWE3-01", "DEFECT:ARCHITECTURE"]
+    operations: [SWE.3/inspect, SWE.2/author]
+    root_cause: "The LL API naming text listed MSI, LSI, LSE and PLL1..4 although the work order covers HSI and HSE, and no check compared the Interfaces section with the allocation table; SWE.3 inspection found interfaces that were never allocated or coded."
+    remedy: "LL API naming is limited to the in-scope oscillators and provided peripherals; SWE2:INTERFACE_NOT_ALLOCATED flags interface APIs missing from the allocation."
+  - id: RPR-013
+    script: rpr013_ll_no_concurrency_section.py
+    sha256: 5bffeb47d50a7272f2d4dea6f3b67273e1a508634c0b14d9e0979561d2443181
+    symptom_signature: "LL SWE.2 procedure omits concurrency and reentrancy"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["INSPECTION_FAIL:SWE2-03"]
+    operations: [SWE.2/inspect]
+    root_cause: "The LL SWE.2 procedure asked for read-modify-write access but no concurrency/reentrancy section, so SWE2-03 (concurrency, ISR synchronisation, reentrancy) failed on a one-line note."
+    remedy: "The LL SWE.2 procedure requires a Concurrency and reentrancy section (stateless, non-atomic RMW, set/clear registers or caller serialisation, ISR use)."
+  - id: RPR-014
+    script: rpr014_product_code_as_test_file.py
+    sha256: 48dd0d67c0dd03c8d453faea37fbcecfeea029c0b6587cda4d110642c34c6e8c
+    symptom_signature: "report_defect accepts product code as a cited test file"
+    observed_in: r82
+    baseline_revision: 14f1ab112c80f21dbb0f630916df596df2e7bb4a
+    fix_revision: 68df55037fb4ebf58cd63b705b550b81b778f182
+    error_codes: ["DEFECT_TEST_CHANGED", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author, SWE.3/route]
+    root_cause: "report_defect accepted any workspace file as test_files; the SWE.3 inspector cited the LL header, and the anti-bending gate rejected every correct header fix as DEFECT_TEST_CHANGED until SWE.3 blocked (r82)."
+    remedy: "report_defect accepts only software/tests/** as test_files (product code goes to evidence_refs) and the cited-test gate ignores non-test paths."
+  - id: RPR-015
+    script: rpr015_ll_measured_zero.py
+    sha256: 9ddb6ca7c6ea76aea5b2428eea8a775f781dc2624ab308d13d9284bcd44f08e8
+    symptom_signature: "LL size and stack measured as 0 bytes / 0 functions"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["INSPECTION_FAIL:SWE3-05"]
+    operations: [SWE.3/inspect]
+    root_cause: "The header-only LL compile unit only includes the header, so its static inline functions are never emitted and measure_elf/stack_usage report 0 bytes and 0 functions; SWE3-05 (budgets measured) failed."
+    remedy: "For LL work orders the build tools compile a generated measurement unit in the build directory that instantiates every LL function non-inline."
+  - id: RPR-016
+    script: rpr016_identical_rejection_cycles.py
+    sha256: 90e2cfff4c70e30d56954a9bf26971d0f11c1f25c92be6b2c69de8d7672b5888
+    symptom_signature: "identical deterministic rejection does not stop the phase"
+    observed_in: r82
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["REWORK_BUDGET_EXHAUSTED", "DEFECT_TEST_CHANGED", "REQUIRED_TOOL_NOT_PASS", "MISSING_REQUIRED_OUTPUT"]
+    operations: [SWE.3/route, SWE.4/route, SWE.5/route, SWE.6/route]
+    root_cause: "The route gate spent every rework cycle even when the last two author attempts were rejected with identical deterministic codes; in r10-r82 this never recovered (0 of 14) and cost a cycle each time."
+    remedy: "Two consecutive identical deterministic rejections stop the phase early (STUCK) after the L11 safety net; varied failures keep the authored 3-cycle budget."
+  - id: RPR-017
+    script: rpr017_fixed_turn_budget.py
+    sha256: 1caa684de2adccc40a519fe7312ed0b3d6e0c0222e80a7b48f56c07775dbe890
+    symptom_signature: "author turn budget ignores the allocated work"
+    observed_in: r81
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: ead01f8e00493789c596089e00cc64c3df22ee2b
+    error_codes: ["TURN_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author, SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "The SWE.3-6 author budget was the authored 35 calls for any work size; a 16-function LL needed 36 calls and lost a rework cycle."
+    remedy: "SWE.3-6 author turn budget = authored max_turns + 1 per 2 allocated functions above 12 (cap +25)."
+  - id: RPR-018
+    script: rpr018_robot_ll_no_call_graph.py
+    sha256: 897fa4d8c03a1f1ce9b172f55e2ca0fde36001bc4b82b0e14ff68873a4fdf8a1
+    symptom_signature: "Robot driver stack keyword finds no call graph for a header-only LL"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: c1854a1b5b03926d8ac9f412aef1a0e817660734
+    error_codes: ["DEFECT:CODE", "REQUIRED_TOOL_NOT_PASS:run_robot"]
+    operations: [SWE.6/author]
+    root_cause: "ForgeTarget's driver size/stack keywords compiled only software/hal/*.c; an LL work order has none, so 'Driver Stack Should Be At Most' failed with 'no call graph produced' and the stack requirement could not be verified (r83 DEF-003)."
+    remedy: "For LL work orders ForgeTarget measures the compile unit plus a generated build-directory unit that instantiates every LL function non-inline."
+  - id: RPR-019
+    script: rpr019_swe4_trace_phantoms.py
+    sha256: d750482d99d95e7e3303cc953b7fe09ddfe24d2fcd378364109c6320610bae58
+    symptom_signature: "validate_trace accepts phantom test ids during SWE.4"
+    observed_in: r83
+    baseline_revision: 43fc2f823829d94deea19b49124943c60818bf05
+    fix_revision: 834bc2aea96bf98820912b90b05d081aa45f4d69
+    error_codes: ["PACKAGE_GAP:failed_or_missing_quality_check", "TEST_ID_NOT_IN_FILE"]
+    operations: [SWE.4/author, -/package]
+    root_cause: "validate_trace checked that cited test ids exist only after a SWE.4 baseline existed, but SWE.4 authors call it before the gate freezes; resource requirements were traced to UT ids that no unit test has and the finalizer BLOCKED the package on traceability."
+    remedy: "SWE.4-6 always check cited test ids; Robot-suite links are planned until SWE.6; the SWE.4 procedure maps requirements without a host unit test to their Robot test."
+  - id: RPR-020
+    script: rpr020_ll_pointer_api_unmeasured.py
+    sha256: c69363c137f1f65ce6e3bfdbbefeca71a83f4c2a2ab39aa36af1cc12f67b43c9
+    symptom_signature: "measurement unit skips LL functions with parameters"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:ARCHITECTURE", "INSPECTION_FAIL:SWE3-05"]
+    operations: [SWE.3/author, SWE.6/author]
+    root_cause: "CAPA-013/016 instantiated only (void) LL functions; r84's LL took the register block as a parameter, so size and stack stayed 0 B and the stack requirement was unverifiable (DEF-005)."
+    remedy: "One measurement-unit generator instantiates LL functions with any parameter list, used by the build tools and ForgeTarget."
+  - id: RPR-021
+    script: rpr021_ll_pointer_api_accepted.py
+    sha256: 0af93f53bc158ebe0fa738cffc18c14234a79ff15f0606cd7cd3e5a55c36d97e
+    symptom_signature: "LL check accepts a pointer API without the generated register block"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:CODE", "DEFECT:ARCHITECTURE", "INSPECTION_FAIL:SWE3-01"]
+    operations: [SWE.3/author, SWE.3/inspect, SWE.2/author]
+    root_cause: "The LL example scope demanded a pointer API while the factory generates the extern ll_rcc_regs array and (void) functions, and the LL check accepted either; SWE.2 and SWE.3 contradicted each other until the upstream loop budget ran out (r84 BLOCKED)."
+    remedy: "The LL scope describes the generated register array; the LL check requires the extern register-block declaration and (void) LL signatures."
+  - id: RPR-022
+    script: rpr022_prompt_outside_write_scope.py
+    sha256: be83702181510b7825e9af8a6a450ca57830c69e56ad247ac9d718bb7a816431
+    symptom_signature: "author procedure writes outside the role write scope"
+    observed_in: r84
+    baseline_revision: 69ec9a50b25b71406d20dc73bef86257ef340c08
+    fix_revision: 7bed90b3a55504c3163c4d5bb85fbc1825a354bb
+    error_codes: ["DEFECT:FACTORY", "WRITE_SCOPE_DENIED"]
+    operations: [SWE.4/author]
+    root_cause: "The SWE.4 procedure told the author to rewrite traceability/requirements_to_tests.csv, which only SWE.1 may write; with the stricter SWE.4 trace check (CAPA-017) the denied write was escalated as a FACTORY defect."
+    remedy: "SWE.1 maps every requirement to its verifying test (Robot suite for size/stack/target-only); SWE.4 aligns its UT ids; every author procedure writes only inside its role scope."
+  - id: RPR-023
+    script: rpr023_reqif_duplicate_test_id.py
+    sha256: 259156cc33d09f4ae0940c76943f3f3855fa90c65a07ed232c664381ff7f8c25
+    symptom_signature: "ReqIF export duplicates xs:ID for a test named like its requirement"
+    observed_in: r85
+    baseline_revision: a534719bc99feb7f6e0fd336f146c80beb88f67b
+    fix_revision: 1000bd9d102280ee117d90638ab5dafa891c95b9
+    error_codes: ["REQIF", "REQUIREMENTS_SPEC"]
+    operations: [SWE.1/author]
+    root_cause: "CAPA-020 traces Robot-verified requirements with test_id = the SWR id; the ReqIF exporter built test-object identifiers from the same (SO, id) as requirements, so the XSD rejected a duplicate xs:ID and SWE.1 could not freeze."
+    remedy: "Test ids that equal a requirement id get their own (ST, id) identifier namespace in the ReqIF export; other identifiers are unchanged."
+  - id: RPR-024
+    script: rpr024_duplicate_check_ids.py
+    sha256: 4eeeb4675b4dc2b24f24152b1cb93d19e8a9441fce88206949be18f134a4c6b5
+    symptom_signature: "host test run accepts duplicate CHECK ids"
+    observed_in: r86
+    baseline_revision: bca018ab6c88e3c2795e05f83f28eccde35dedba
+    fix_revision: 995fc2d87f47114b07acac9d81c735dc4482a47e
+    error_codes: ["INSPECTION_FAIL:SWE4-06", "INSPECTION_FAIL:SWE4-02"]
+    operations: [SWE.4/inspect]
+    root_cause: "run_unit and run_integration did not check that each CHECK id is unique; aligning UT ids with the SWE.1 trace produced duplicates that only the SWE.4 inspector found (r86: two rework cycles)."
+    remedy: "Host test runs fail with DUPLICATE_TEST_ID when a CHECK id is used by more than one check."
+  - id: RPR-025
+    script: rpr025_target_model_unstated.py
+    sha256: 700be6bcce2d8ed4347508d6841553d4242bb2b43297fd9b6a290d84aa7f13bc
+    symptom_signature: "target procedures do not state the RCC model semantics"
+    observed_in: r86
+    baseline_revision: bca018ab6c88e3c2795e05f83f28eccde35dedba
+    fix_revision: 995fc2d87f47114b07acac9d81c735dc4482a47e
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_robot", "DEFECT:CODE"]
+    operations: [SWE.6/author, SWE.5/author]
+    root_cause: "The SWE.5/SWE.6 procedures described the simulated RCC only as 'ready flags follow enable bits'; authors treated RCC_SR as writable storage, their target checks failed and they reported correct code as defective (r86 DEF-003/004, rejected by triage)."
+    remedy: "Target and Robot procedures state the model exactly (RCC_SR read-only = RCC_CR & 0xF1F, other registers plain storage from 0, never_ready), checked against rcc_model.py."
+  - id: RPR-026
+    script: rpr026_trace_mapping_shift.py
+    sha256: 968df29c0e704858e1a46b6ff0f9e508539b131214a55ec8225f711659f13f58
+    symptom_signature: "validate_trace accepts a traced test that never calls the allocated API"
+    observed_in: r93
+    baseline_revision: c03c0da9e771eddfdfb24b02d8ec336dfa847dfa
+    fix_revision: 8ec6b166800553794c248c1568cfb17e86eeaae3
+    error_codes: ["INSPECTION_FAIL:SWE4-02", "INSPECTION_FAIL:SWE4-06", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/inspect, SWE.4/route]
+    root_cause: "validate_trace checked that traced test ids exist but not that the test exercises the API SWE.2 allocated to the requirement; SWE4-02 (most frequent block in the SLO batch: r86, r92, r93) was left to the inspector."
+    remedy: "validate_trace fails TEST_DOES_NOT_CALL_ALLOCATED_API when the test function holding a traced id never calls the requirement's allocated API."
+  - id: RPR-027
+    script: rpr027_swe5_no_target_tests.py
+    sha256: 0d7f574424602cee8715c640af336147f740e854116f713a831a4e889302e1cd
+    symptom_signature: "SWE.5 author procedure cannot recover missing target tests"
+    observed_in: r97
+    baseline_revision: c03c0da9e771eddfdfb24b02d8ec336dfa847dfa
+    fix_revision: 8ec6b166800553794c248c1568cfb17e86eeaae3
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_renode"]
+    operations: [SWE.5/author, SWE.5/route]
+    root_cause: "SWE.5 rework re-enters at the SWE.5 author, whose procedure assumed the target-test step had written the target tests; when it had not, run_renode reported NO_TESTS on every cycle."
+    remedy: "The SWE.5 author writes the target tests itself when run_renode reports NO_TESTS."

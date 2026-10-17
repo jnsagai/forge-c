@@ -1,0 +1,105 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "14f1ab112c80f21dbb0f630916df596df2e7bb4a",
+  "baseline_sha256": "bdacd8d4ec0f5e0cbee63baf6b4b9a70963330125d680f3159fdec64c4624a1d",
+  "benchmark_sha256": "7d39cc7886d4b59126c099b68f5cac6b5a063787791faf51c697af08838f9856",
+  "candidate_revision": "469514034ba3dde89720a8bc935d9d4bc6e6eb61",
+  "candidate_sha256": "c3b87a09789325dc25247ddda6021d6553c1fd74a52b547942254a127499c700",
+  "decision": "REJECTED",
+  "decision_id": "pd-2990f3ca257951030536",
+  "evaluated_at": "2026-10-16T13:23:43.995303Z",
+  "evaluator_id": "cre-promotion-runner@469514034ba3",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:14f1ab112c80..469514034ba3"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-4ab0aed0c71838b97905",
+        "reproducer-run:rr-fd2514e27ffdedeb33fb",
+        "reproducer-run:rr-fccfb54f1f6f52bdc1be",
+        "reproducer-run:rr-af8d05f33d79c916df21",
+        "reproducer-run:rr-c89e5c7b5be2d2714e71",
+        "reproducer-run:rr-be414d5fbf6a87987bce"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-8eccd419f8e95a436f8e",
+        "reproducer-run:rr-658dcd54412bc2c6d832",
+        "reproducer-run:rr-a847080face36ee02b45",
+        "reproducer-run:rr-e4943378f9f86790573f",
+        "reproducer-run:rr-7e1e2611617c6c84ae9f",
+        "reproducer-run:rr-ef5c47c3a77053fae063",
+        "reproducer-run:rr-f86e4c125cf54db01c4a",
+        "reproducer-run:rr-7f52cb18f7bd42cd2e87",
+        "reproducer-run:rr-8e8b84df099c21db3147",
+        "reproducer-run:rr-9c804f91b81055317a9c",
+        "reproducer-run:rr-f58cd004c0d6891479fd",
+        "reproducer-run:rr-e4c620d1e7afd9b42a3a",
+        "reproducer-run:rr-048c1a0a670f002f7d6c",
+        "reproducer-run:rr-536a272eff10c3bc899e"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:edfafd66822807c7",
+        "baseline-tests:exit1:sha256:b04c94c9334c62e2"
+      ],
+      "name": "quality_process",
+      "reason_code": "BASELINE-TESTS_FAILED:1 failed, 39 passed in 7.07s",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+  "reasons": [
+    "sandbox: 1604 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "quality/process: BASELINE-TESTS_FAILED:1 failed, 39 passed in 7.07s"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-4ab0aed0c71838b97905",
+    "reproducer-run:rr-fd2514e27ffdedeb33fb",
+    "reproducer-run:rr-fccfb54f1f6f52bdc1be",
+    "reproducer-run:rr-af8d05f33d79c916df21",
+    "reproducer-run:rr-c89e5c7b5be2d2714e71",
+    "reproducer-run:rr-be414d5fbf6a87987bce"
+  ],
+  "schema_version": "1.0"
+}

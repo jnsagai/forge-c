@@ -58,6 +58,12 @@ def test_escaped_newline_content_rejected_with_actionable_reason(ws):
     assert edit.code == "ESCAPED_NEWLINES" and "write_file" in edit.reason
 
 
+def test_swe5_author_may_write_renode_target_tests_only_in_its_scope(ws):
+    a = Authorizer(Binding("b5", str(ws), {"auth5": {"role": "swe5-author", "phase": "SWE.5"}}))
+    assert a.decide("auth5", "write_file", {"file_path": "software/tests/target/test_rcc_target.c"}).allow  # r46
+    assert a.decide("auth5", "write_file", {"file_path": "software/hal/x.c"}).code == "WRITE_SCOPE_DENIED"
+
+
 def test_release_manager_cannot_waive_or_mutate(ws):
     a = authz(ws)
     assert a.decide("rm", "mcp__forge_knowledge_mcp__retract_lesson", {}).allow is False

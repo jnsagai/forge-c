@@ -82,6 +82,29 @@
       "name": "gcovr",
       "license": "BSD-3-Clause",
       "role": "GCC-host-coverage"
+    },
+    {
+      "name": "PlantUML",
+      "license": "Apache-2.0 (plantuml-asl build)",
+      "role": "architecture views (SWE.2 static/dynamic)",
+      "version": "1.2026.8",
+      "artifact": "plantuml-asl-1.2026.8.jar",
+      "sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d",
+      "install": "$FORGE_DATA_ROOT/toolchains/plantuml"
+    },
+    {
+      "name": "reqif",
+      "license": "Apache-2.0",
+      "role": "ReqIF 1.2 schema validation / parsing (SWE.1 export)",
+      "version": "0.1.0",
+      "pinned_in": "requirements/forge-factory.lock (hashes)"
+    },
+    {
+      "name": "Robot Framework",
+      "license": "Apache-2.0",
+      "role": "SWE.6 requirement-based tests (ForgeTarget keywords on the Renode STM32N6 model)",
+      "version": "6.1",
+      "pinned_in": "requirements/forge-factory.lock (hashes)"
     }
   ],
   "out_of_scope": [

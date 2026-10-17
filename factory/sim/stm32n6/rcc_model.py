@@ -1,3 +1,4 @@
+# ruff: noqa: F821 - Renode injects `request` into Python peripheral scripts
 # Behavioural RCC model (RM0486 rev 4): RCC_CR (0x000) oscillator/PLL enable bits are mirrored into RCC_SR (0x004)
 # ready flags at the same bit positions (HSI 3, HSE 4, MSI 2, LSE 1, LSI 0, PLL1..4 8..11) unless SCENARIO is
 # "never_ready" (timeout path). All other registers (e.g. AHB1ENR 0x250, AHB1RSTR 0x210) are plain storage.

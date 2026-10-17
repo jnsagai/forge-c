@@ -27,6 +27,680 @@
     "AT-25": "T045",
     "AT-26": "T001,T050"
   },
+  "cre_fr_matrix": [
+    {
+      "fr": "CRE-FR-001",
+      "passing_tasks": [
+        "CRE-T001",
+        "CRE-T002",
+        "CRE-T040",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T001",
+        "CRE-T002",
+        "CRE-T040",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-002",
+      "passing_tasks": [
+        "CRE-T001",
+        "CRE-T003",
+        "CRE-T005",
+        "CRE-T042",
+        "CRE-T054"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T001",
+        "CRE-T003",
+        "CRE-T005",
+        "CRE-T042",
+        "CRE-T054"
+      ]
+    },
+    {
+      "fr": "CRE-FR-003",
+      "passing_tasks": [
+        "CRE-T007",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T007",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-004",
+      "passing_tasks": [
+        "CRE-T008",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T008",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-005",
+      "passing_tasks": [
+        "CRE-T011",
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016",
+        "CRE-T042",
+        "CRE-T044"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T011",
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016",
+        "CRE-T042",
+        "CRE-T044"
+      ]
+    },
+    {
+      "fr": "CRE-FR-006",
+      "passing_tasks": [
+        "CRE-T007",
+        "CRE-T015",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T007",
+        "CRE-T015",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-007",
+      "passing_tasks": [
+        "CRE-T011",
+        "CRE-T014",
+        "CRE-T042",
+        "CRE-T045"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T011",
+        "CRE-T014",
+        "CRE-T042",
+        "CRE-T045"
+      ]
+    },
+    {
+      "fr": "CRE-FR-008",
+      "passing_tasks": [
+        "CRE-T006",
+        "CRE-T013",
+        "CRE-T014",
+        "CRE-T016",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T006",
+        "CRE-T013",
+        "CRE-T014",
+        "CRE-T016",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-009",
+      "passing_tasks": [
+        "CRE-T009",
+        "CRE-T017",
+        "CRE-T021",
+        "CRE-T023",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T009",
+        "CRE-T017",
+        "CRE-T021",
+        "CRE-T023",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-010",
+      "passing_tasks": [
+        "CRE-T009",
+        "CRE-T018",
+        "CRE-T019",
+        "CRE-T023",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T009",
+        "CRE-T018",
+        "CRE-T019",
+        "CRE-T023",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-011",
+      "passing_tasks": [
+        "CRE-T005",
+        "CRE-T006",
+        "CRE-T017",
+        "CRE-T020",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T005",
+        "CRE-T006",
+        "CRE-T017",
+        "CRE-T020",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-012",
+      "passing_tasks": [
+        "CRE-T022",
+        "CRE-T023",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T022",
+        "CRE-T023",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-013",
+      "passing_tasks": [
+        "CRE-T018",
+        "CRE-T024",
+        "CRE-T025",
+        "CRE-T042",
+        "CRE-T046"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T018",
+        "CRE-T024",
+        "CRE-T025",
+        "CRE-T042",
+        "CRE-T046"
+      ]
+    },
+    {
+      "fr": "CRE-FR-014",
+      "passing_tasks": [
+        "CRE-T018",
+        "CRE-T024",
+        "CRE-T040",
+        "CRE-T042",
+        "CRE-T051"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T018",
+        "CRE-T024",
+        "CRE-T040",
+        "CRE-T042",
+        "CRE-T051"
+      ]
+    },
+    {
+      "fr": "CRE-FR-015",
+      "passing_tasks": [
+        "CRE-T025",
+        "CRE-T026",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T025",
+        "CRE-T026",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-016",
+      "passing_tasks": [
+        "CRE-T030",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T030",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-017",
+      "passing_tasks": [
+        "CRE-T030",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T030",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-018",
+      "passing_tasks": [
+        "CRE-T030",
+        "CRE-T033",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T030",
+        "CRE-T033",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-019",
+      "passing_tasks": [
+        "CRE-T006",
+        "CRE-T009",
+        "CRE-T031",
+        "CRE-T033",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T006",
+        "CRE-T009",
+        "CRE-T031",
+        "CRE-T033",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-020",
+      "passing_tasks": [
+        "CRE-T032",
+        "CRE-T034",
+        "CRE-T036",
+        "CRE-T042",
+        "CRE-T050"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T032",
+        "CRE-T034",
+        "CRE-T036",
+        "CRE-T042",
+        "CRE-T050"
+      ]
+    },
+    {
+      "fr": "CRE-FR-021",
+      "passing_tasks": [
+        "CRE-T031",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T031",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-022",
+      "passing_tasks": [
+        "CRE-T032",
+        "CRE-T042"
+      ],
+      "priority": "P2",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T032",
+        "CRE-T042",
+        "CRE-T053"
+      ]
+    },
+    {
+      "fr": "CRE-FR-023",
+      "passing_tasks": [
+        "CRE-T020",
+        "CRE-T042",
+        "CRE-T043",
+        "CRE-T049"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T020",
+        "CRE-T042",
+        "CRE-T043",
+        "CRE-T049"
+      ]
+    },
+    {
+      "fr": "CRE-FR-024",
+      "passing_tasks": [
+        "CRE-T020",
+        "CRE-T027",
+        "CRE-T029",
+        "CRE-T038",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T020",
+        "CRE-T027",
+        "CRE-T029",
+        "CRE-T038",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-025",
+      "passing_tasks": [
+        "CRE-T019",
+        "CRE-T026",
+        "CRE-T027",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T019",
+        "CRE-T026",
+        "CRE-T027",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-026",
+      "passing_tasks": [
+        "CRE-T019",
+        "CRE-T027",
+        "CRE-T029",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T019",
+        "CRE-T027",
+        "CRE-T029",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-027",
+      "passing_tasks": [
+        "CRE-T004",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T004",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-028",
+      "passing_tasks": [
+        "CRE-T004",
+        "CRE-T027",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T004",
+        "CRE-T027",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-029",
+      "passing_tasks": [
+        "CRE-T028",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T028",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-030",
+      "passing_tasks": [
+        "CRE-T022",
+        "CRE-T029",
+        "CRE-T038",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T022",
+        "CRE-T029",
+        "CRE-T038",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-031",
+      "passing_tasks": [
+        "CRE-T005",
+        "CRE-T010",
+        "CRE-T035",
+        "CRE-T036",
+        "CRE-T038",
+        "CRE-T042",
+        "CRE-T052"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T005",
+        "CRE-T010",
+        "CRE-T035",
+        "CRE-T036",
+        "CRE-T038",
+        "CRE-T042",
+        "CRE-T052"
+      ]
+    },
+    {
+      "fr": "CRE-FR-032",
+      "passing_tasks": [
+        "CRE-T035",
+        "CRE-T036",
+        "CRE-T042",
+        "CRE-T047"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T035",
+        "CRE-T036",
+        "CRE-T042",
+        "CRE-T047"
+      ]
+    },
+    {
+      "fr": "CRE-FR-033",
+      "passing_tasks": [
+        "CRE-T037",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T037",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-034",
+      "passing_tasks": [
+        "CRE-T016",
+        "CRE-T039",
+        "CRE-T040",
+        "CRE-T042",
+        "CRE-T048"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T016",
+        "CRE-T039",
+        "CRE-T040",
+        "CRE-T042",
+        "CRE-T048"
+      ]
+    },
+    {
+      "fr": "CRE-FR-035",
+      "passing_tasks": [
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016",
+        "CRE-T039",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T012",
+        "CRE-T015",
+        "CRE-T016",
+        "CRE-T039",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-036",
+      "passing_tasks": [
+        "CRE-T021",
+        "CRE-T034",
+        "CRE-T042"
+      ],
+      "priority": "P1",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T021",
+        "CRE-T034",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-037",
+      "passing_tasks": [
+        "CRE-T010",
+        "CRE-T038",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T010",
+        "CRE-T038",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-038",
+      "passing_tasks": [
+        "CRE-T010",
+        "CRE-T022",
+        "CRE-T033",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T010",
+        "CRE-T022",
+        "CRE-T033",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-039",
+      "passing_tasks": [
+        "CRE-T001",
+        "CRE-T002",
+        "CRE-T004",
+        "CRE-T037",
+        "CRE-T040",
+        "CRE-T041",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T001",
+        "CRE-T002",
+        "CRE-T004",
+        "CRE-T037",
+        "CRE-T040",
+        "CRE-T041",
+        "CRE-T042"
+      ]
+    },
+    {
+      "fr": "CRE-FR-040",
+      "passing_tasks": [
+        "CRE-T003",
+        "CRE-T037",
+        "CRE-T041",
+        "CRE-T042"
+      ],
+      "priority": "P0",
+      "status": "COVERED",
+      "tasks": [
+        "CRE-T003",
+        "CRE-T037",
+        "CRE-T041",
+        "CRE-T042"
+      ]
+    }
+  ],
+  "cre_p0_gaps": [],
   "fr_matrix": [
     {
       "fr": "FR-001",
@@ -755,8 +1429,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-15T09:43:28.204974Z",
-  "git_head": "1b5a3a1a59644ce369076e2484b379c87697dca4",
+  "generated_at": "2026-10-17T08:14:17.069043Z",
+  "git_head": "7ec24f8f86f89688341714ff3e58b03f880a316e",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -765,6 +1439,10 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
+    "004_pass": 53,
+    "004_total": 54,
+    "cre_fr_covered": 40,
+    "cre_fr_total": 40,
     "fr_covered": 40,
     "fr_total": 40
   },
@@ -1855,6 +2533,810 @@
       "priority": "P0",
       "status": "PASS",
       "task": "KPI-T020"
+    }
+  ],
+  "tasks_004": [
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T001/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-001",
+        "CRE-FR-002",
+        "CRE-FR-039"
+      ],
+      "line": "- [X] **CRE-T001 [P0]** Inventory actual source/services for 001–003; status `IMPLEMENTED/PARTIAL/SPEC_ONLY/MISSING` and required capabilities. Document *real* Fabro API, model paths, MCP handshake, s",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T001"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T002/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-001",
+        "CRE-FR-039"
+      ],
+      "line": "- [X] **CRE-T002 [P0]** Run baseline tests from prior handoff, capture command, tool versions, stdout/stderr hash, exit code and observed constraints; do not alter preexisting evidence. **[CRE-FR-001,",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T002"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T003/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-002",
+        "CRE-FR-040"
+      ],
+      "line": "- [X] **CRE-T003 [P0]** Produce ADR-CRE-001..006 and mapping to actual modules, event schema and migrations; mark unfinished 002/003 tasks as explicit dependencies. **[CRE-FR-002, CRE-FR-040]** Accept",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T003"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T004/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-027",
+        "CRE-FR-028",
+        "CRE-FR-039"
+      ],
+      "line": "- [X] **CRE-T004 [P0]** Add versioned `reliability-policy.yaml` with schema validation, default `OBSERVE_ONLY`, explicit protected config, bounded attempts, budgets and `disabled` auto-code-promotion.",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T004"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T005/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-002",
+        "CRE-FR-011",
+        "CRE-FR-031"
+      ],
+      "line": "- [X] **CRE-T005 [P0]** Add feature 004 event payloads to existing 002 ledger with versioned schema/migrations, originating source tags and evidence hashes. **[CRE-FR-002, CRE-FR-011, CRE-FR-031]** Te",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T005"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T006/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-008",
+        "CRE-FR-011",
+        "CRE-FR-019"
+      ],
+      "line": "- [X] **CRE-T006 [P0]** Implement durable event idempotency/outbox or existing equivalent; ensure exact aggregate equality after duplicate/reordered deliveries and service restart. **[CRE-FR-008, CRE-",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T006"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T007/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-003",
+        "CRE-FR-006"
+      ],
+      "line": "- [X] **CRE-T007 [P0]** Implement five-class deterministic fault classifier, with unknown outcome and guarded routes to SWE rework vs fabric repair. **[CRE-FR-003, CRE-FR-006]** Tests: deterministic c",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T007"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T008/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-004"
+      ],
+      "line": "- [X] **CRE-T008 [P0]** Implement normalized versioned fingerprint hash, collision/split handling and per-scope active-incident deduplication. **[CRE-FR-004]** Tests: volatile paths/time don't create ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T008"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T009/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-009",
+        "CRE-FR-010",
+        "CRE-FR-019"
+      ],
+      "line": "- [X] **CRE-T009 [P0]** Persist separate suspected vs verified root cause, canonical component/version profile and evidence data-quality states; migrate old records non-destructively. **[CRE-FR-009, C",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T009"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T010/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-031",
+        "CRE-FR-037",
+        "CRE-FR-038"
+      ],
+      "line": "- [X] **CRE-T010 [P0]** Instrument ordered failure/retry/circuit/CAPA/promotion lifecycle events and minimal bounded agent/tool summaries with existing capture, redaction, permission and token governo",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T010"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T011/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-005",
+        "CRE-FR-007"
+      ],
+      "line": "- [X] **CRE-T011 [P0]** Implement class-specific retry admission with request/time/token budgets, jittered backoff and non-replayable operation denylist. **[CRE-FR-005, CRE-FR-007]** Test: attempt cou",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T011"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T012/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-005",
+        "CRE-FR-035"
+      ],
+      "line": "- [X] **CRE-T012 [P0]** Add circuit breaker for unhealthy dependencies and resource isolation; propagate OPEN/HALF_OPEN/CLOSED independently of agent output. **[CRE-FR-005, CRE-FR-035]** Test: failure",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T012"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T013/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-008"
+      ],
+      "line": "- [X] **CRE-T013 [P0]** Persist leases/dispatch receipts and robust expiration; only one repair per incident scope; Fabro-down repair remains launchable via existing 002 independent worker. **[CRE-FR-",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T013"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T014/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-007",
+        "CRE-FR-008"
+      ],
+      "line": "- [X] **CRE-T014 [P0]** Enforce safe restart/checkpoint recovery, monotonic/restart-safe budget accounting and `NON_REPLAYABLE` safeguards for approval, flashing and released evidence. **[CRE-FR-007, ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T014"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T015/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-005",
+        "CRE-FR-006",
+        "CRE-FR-035"
+      ],
+      "line": "- [X] **CRE-T015 [P0]** Integrate finite-state guards with existing 002 supervisor: no LLM calls on healthy polling; terminal RECOVERED or REQUIRES_OFFLINE_ATTENTION/BLOCKED state on exhaustion. **[CR",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T015"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T016/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-005",
+        "CRE-FR-008",
+        "CRE-FR-034",
+        "CRE-FR-035"
+      ],
+      "line": "- [X] **CRE-T016 [P0]** Add table-driven/property-based tests for invariant closure, finite transitions, retry amplification, partial store outage and supervisor watchdog restart. **[CRE-FR-005, CRE-F",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T016"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T017/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-009",
+        "CRE-FR-011"
+      ],
+      "line": "- [X] **CRE-T017 [P0]** Implement CAPA state machine with incident mapping, direct evidence, repeated failure counts and root-cause status; keep immutable previous attempts. **[CRE-FR-009, CRE-FR-011]",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T017"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T018/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-010",
+        "CRE-FR-013",
+        "CRE-FR-014"
+      ],
+      "line": "- [X] **CRE-T018 [P0]** Add deterministic reproducer framework (baseline failing test, exact input, error signature, pinned environment) with independent executor. **[CRE-FR-010, CRE-FR-013, CRE-FR-01",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T018"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T019/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-010",
+        "CRE-FR-025",
+        "CRE-FR-026"
+      ],
+      "line": "- [X] **CRE-T019 [P0]** Add causal verification check: original baseline fails, candidate passes same reproducer, check conflicting evidence, record `VERIFIED` only on independent proof. **[CRE-FR-010",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T019"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T020/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-011",
+        "CRE-FR-023",
+        "CRE-FR-024"
+      ],
+      "line": "- [X] **CRE-T020 [P0]** Link existing repair worktree evidence to CAPA/candidate; ensure patch and tool provenance, protected-path enforcement at OS/runner boundary and immutable event history. **[CRE",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T020"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T021/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-009",
+        "CRE-FR-036"
+      ],
+      "line": "- [X] **CRE-T021 [P0]** Register a durable prevention regression from each verified corrective action; record future effectiveness window, recurrence and reopen transitions. **[CRE-FR-009, CRE-FR-036]",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T021"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T022/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-012",
+        "CRE-FR-030",
+        "CRE-FR-038"
+      ],
+      "line": "- [X] **CRE-T022 [P0]** Extend 002 approved-lessons retrieval for reproducer/prevention metadata, class/version applicability and retraction; apply existing sanitized top-K budgets. **[CRE-FR-012, CRE",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T022"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T023/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-009",
+        "CRE-FR-010",
+        "CRE-FR-012"
+      ],
+      "line": "- [X] **CRE-T023 [P0]** Build CAPA negative-case regression suite: wrong root cause, obsolete version, bad lesson, attempts exhausted, duplicate fingerprint. **[CRE-FR-009, CRE-FR-010, CRE-FR-012]** E",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T023"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T024/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-013",
+        "CRE-FR-014"
+      ],
+      "line": "- [X] **CRE-T024 [P0]** Define versioned benchmark manifest with frozen class/complexity, input SHA, MCU/compile flags, model/temperature/seed, toolchain and expected deterministic assertions. **[CRE-",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T024"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T025/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-013",
+        "CRE-FR-015"
+      ],
+      "line": "- [X] **CRE-T025 [P0]** Build at least RCC and three failure fixtures (compiler/analysis, MCP timeout, recovery); include independent holdout fixtures and immutable artifact refs. **[CRE-FR-013, CRE-F",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T025"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T026/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-015",
+        "CRE-FR-025"
+      ],
+      "line": "- [X] **CRE-T026 [P0]** Implement independent benchmark/reproducer execution outside repair candidate security scope. Capture exit codes, evidence hashes, run profile and cost/quality measurements. **",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T026"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T027/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-024",
+        "CRE-FR-025",
+        "CRE-FR-026",
+        "CRE-FR-028"
+      ],
+      "line": "- [X] **CRE-T027 [P0]** Implement deterministic promotion gate chain with explicit REJECTED/INCONCLUSIVE/ELIGIBLE_FOR_OFFLINE_REVIEW outcomes; hard gate precedence over metrics. **[CRE-FR-024, CRE-FR-",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T027"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T028/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-029"
+      ],
+      "line": "- [X] **CRE-T028 [P0]** Integrate atomic rollback of reversible active operational interventions and lesson-retraction/impact list; never mutate prior release archives. **[CRE-FR-029]** Test: failure ",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T028"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T029/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-024",
+        "CRE-FR-026",
+        "CRE-FR-030"
+      ],
+      "line": "- [X] **CRE-T029 [P0]** Implement adversarial promotion tests (forged PASS, poisoned fixture, patch alters quality policy, negative result concealed) and declare no autonomous persistent-code promotio",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T029"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T030/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-016",
+        "CRE-FR-017",
+        "CRE-FR-018"
+      ],
+      "line": "- [X] **CRE-T030 [P0]** Implement CRE-R01–R08 diagnostic definitions and reconcile with 003 K01–K20/K16/K17; preserve unique work order and immutable first-inspection denominator semantics. **[CRE-FR-",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T030"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T031/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-019",
+        "CRE-FR-021"
+      ],
+      "line": "- [X] **CRE-T031 [P0]** Implement Wilson confidence intervals, n/exposure, cohort eligibility/strata, censoring and zero-failure upper-bound notes; propagate NOT_COMPUTABLE/UNKNOWN. **[CRE-FR-019, CRE",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T031"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T032/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-020",
+        "CRE-FR-022"
+      ],
+      "line": "- [X] **CRE-T032 [P1]** Implement measurement-only p-chart and optional EWMA per homogeneous class with documented calibration/alerts, independent of release gates. Optional P2 Duane-fit only if model",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T032"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T033/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-018",
+        "CRE-FR-019",
+        "CRE-FR-038"
+      ],
+      "line": "- [X] **CRE-T033 [P0]** Verify deterministic batch/replay/incremental aggregates match; source counters for token/compute cost and label measured vs estimated vs unknown. **[CRE-FR-018, CRE-FR-019, CR",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T033"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T034/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-020",
+        "CRE-FR-036"
+      ],
+      "line": "- [X] **CRE-T034 [P1]** Build historical reliability-growth report comparing pre/post candidate cohorts with equivalent class keys and uncertainty, including reasons for invalid comparisons. **[CRE-FR",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T034"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T035/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-031",
+        "CRE-FR-032"
+      ],
+      "line": "- [X] **CRE-T035 [P1]** Extend existing dashboard read-only reliability page with incidents, CAPA, recurrence, FPY, recovery, retry, candidate gates and SPC status plus evidence drilldown. **[CRE-FR-0",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T035"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T036/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-020",
+        "CRE-FR-031",
+        "CRE-FR-032"
+      ],
+      "line": "- [X] **CRE-T036 [P1]** Add class-specific reliability anomaly alert as diagnosis cue only; forbidden to auto-adjust quality gates or trigger repairs without actual infrastructure incident. **[CRE-FR-",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T036"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T037/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-033",
+        "CRE-FR-039",
+        "CRE-FR-040"
+      ],
+      "line": "- [X] **CRE-T037 [P0]** Extend existing deterministic Release Manager to package CRE reports/ledger/versions/hashes into READY/BLOCKED; fill gaps explicitly. **[CRE-FR-033, CRE-FR-039, CRE-FR-040]** T",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T037"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T038/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-024",
+        "CRE-FR-030",
+        "CRE-FR-031",
+        "CRE-FR-037"
+      ],
+      "line": "- [X] **CRE-T038 [P0]** Run security/permission/privacy tests for sandbox escapes, path traversal, MCP bypass, forged events, credential and prompt-injection in traces/lessons. **[CRE-FR-024, CRE-FR-0",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T038"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T039/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-034",
+        "CRE-FR-035"
+      ],
+      "line": "- [X] **CRE-T039 [P0]** Run complete fault-injection campaign covering Fabro crash, MCP outage, deadlock, full disk, DB fail, process restart, duplicate callback, invalid repair, corrupted candidate/f",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T039"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T040/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-001",
+        "CRE-FR-014",
+        "CRE-FR-034",
+        "CRE-FR-039"
+      ],
+      "line": "- [X] **CRE-T040 [P0]** Execute real RCC end-to-end on available Fabro/local Qwen environment, using real MCP and artifacts. If unavailable, run mocks as developmental evidence **and** mark real E2E `",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T040"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T041/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-039",
+        "CRE-FR-040"
+      ],
+      "line": "- [X] **CRE-T041 [P0]** Produce FR→tasks→tests→evidence matrix, reproducible Ubuntu setup, runbook for escalation/rollback/restart, baseline/data-quality audit and approvals restrictions. **[CRE-FR-03",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T041"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T042/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-001",
+        "CRE-FR-002",
+        "CRE-FR-003",
+        "CRE-FR-004",
+        "CRE-FR-005",
+        "CRE-FR-006",
+        "CRE-FR-007",
+        "CRE-FR-008",
+        "CRE-FR-009",
+        "CRE-FR-010",
+        "CRE-FR-011",
+        "CRE-FR-012",
+        "CRE-FR-013",
+        "CRE-FR-014",
+        "CRE-FR-015",
+        "CRE-FR-016",
+        "CRE-FR-017",
+        "CRE-FR-018",
+        "CRE-FR-019",
+        "CRE-FR-020",
+        "CRE-FR-021",
+        "CRE-FR-022",
+        "CRE-FR-023",
+        "CRE-FR-024",
+        "CRE-FR-025",
+        "CRE-FR-026",
+        "CRE-FR-027",
+        "CRE-FR-028",
+        "CRE-FR-029",
+        "CRE-FR-030",
+        "CRE-FR-031",
+        "CRE-FR-032",
+        "CRE-FR-033",
+        "CRE-FR-034",
+        "CRE-FR-035",
+        "CRE-FR-036",
+        "CRE-FR-037",
+        "CRE-FR-038",
+        "CRE-FR-039",
+        "CRE-FR-040"
+      ],
+      "line": "- [X] **CRE-T042 [P0]** Execute full feature 004 verification, cross-check 001–003 regression, candidate vs frozen baseline report and dependency blockers; finish `Spec Kit converge` without hiding ap",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T042"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T043/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-023"
+      ],
+      "line": "- [X] **CRE-T043 [P0]** Harden every candidate worktree (OS read-only protected paths) before the promotion runner executes candidate code per CRE-FR-023 / plan §9 (partial) — HIGH ✅ Evidence: `eviden",
+      "priority": "P0",
+      "status": "PASS",
+      "task": "CRE-T043"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T044/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-005"
+      ],
+      "line": "- [X] **CRE-T044 [P1]** Apply CRE retry admission and deterministic jittered backoff on the 002 repair-dispatch path in PILOT/ACTIVE per CRE-FR-005 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/C",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T044"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T045/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-007"
+      ],
+      "line": "- [X] **CRE-T045 [P1]** Journal production side effects (archive write, infra CAS switch, work-order launch) with replay classes per CRE-FR-007 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T045"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T046/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-013"
+      ],
+      "line": "- [X] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM ✅ Evidence: `e",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T046"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T047/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-032"
+      ],
+      "line": "- [X] **CRE-T047 [P1]** Add period/model/toolchain/candidate/fault-category filters to the Reliability view per CRE-FR-032 / US-C07 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T047/latest.j",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T047"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T048/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-034"
+      ],
+      "line": "- [X] **CRE-T048 [P1]** Run an owner-authorized live Fabro crash -> recovery drill on the real server per CRE-FR-034 / AT-036 (partial; BLOCKED on owner authorization of a reversible restart action) —",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T048"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T049/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-023"
+      ],
+      "line": "- [X] **CRE-T049 [P1]** Separate OS users/credentials for production runs, repair worktrees and the verification runner per plan §12 / CRE-FR-023 (missing; BLOCKED on privileged host setup) — MEDIUM ✅",
+      "priority": "P1",
+      "status": "PASS",
+      "task": "CRE-T049"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T050/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-020"
+      ],
+      "line": "- [X] **CRE-T050 [P2]** Provide a command that freezes a per-class SPC calibration window per CRE-FR-020 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T050/latest.json`",
+      "priority": "P2",
+      "status": "PASS",
+      "task": "CRE-T050"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T051/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-014"
+      ],
+      "line": "- [X] **CRE-T051 [P2]** Record model sampling parameters (temperature, seed when supported) per work order per CRE-FR-014 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T051/latest.json`",
+      "priority": "P2",
+      "status": "PASS",
+      "task": "CRE-T051"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T052/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-031"
+      ],
+      "line": "- [X] **CRE-T052 [P2]** Emit cre.failure_classified and cre.corrective_action_applied lifecycle events per CRE-FR-031 / plan §4 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T052/latest.json`",
+      "priority": "P2",
+      "status": "PASS",
+      "task": "CRE-T052"
+    },
+    {
+      "checked": false,
+      "evidence": [],
+      "frs": [
+        "CRE-FR-022"
+      ],
+      "line": "- [ ] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW",
+      "priority": "P2",
+      "status": "NOT_RUN",
+      "task": "CRE-T053"
+    },
+    {
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T054/latest.json"
+      ],
+      "frs": [
+        "CRE-FR-002"
+      ],
+      "line": "- [X] **CRE-T054 [P2]** Review the 002 supervisor changes made during CRE (held fingerprints for unbroken faults, checkpoint quarantine) against the 002 spec per CRE-FR-002 (unrequested) — LOW ✅ Evide",
+      "priority": "P2",
+      "status": "PASS",
+      "task": "CRE-T054"
     }
   ]
 }

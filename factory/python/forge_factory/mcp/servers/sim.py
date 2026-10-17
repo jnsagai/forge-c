@@ -23,6 +23,7 @@ from typing import Literal
 from pydantic import Field
 
 from ...common import REPO_ROOT
+from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
 
@@ -56,7 +57,24 @@ def renode_bin() -> str | None:
     return next((c for c in cand if c and Path(c).is_file()), None)
 
 
-def _run_image(ctx: ToolContext, renode: str, elf: Path, scenario: str, wd: Path) -> tuple[dict | None, bytes]:
+def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]]:
+    """Build one RAM-resident Cortex-M55 test image (test source + driver sources + startup + linker script)."""
+    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ws / d).glob("*.c"))]
+    incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
+                                     "software/tests/software") if (ws / d).is_dir()]
+    b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
+                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
+    lines = b.stderr.decode(errors="replace").splitlines()
+    # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
+    errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines
+            if ("undefined reference" in ln or ": error:" in ln) and "collect2" not in ln][:8]
+    if not errs:
+        errs = [ln[:140] for ln in lines if "error" in ln][:4]
+    return b.exit_code == 0, b.stdout + b.stderr, errs
+
+
+def run_image(renode: str, elf: Path, scenario: str, wd: Path) -> tuple[dict | None, bytes]:
+    """Run an image on the Forge-C STM32N6 platform with the given RCC scenario; read the RAM mailbox."""
     model = wd / f"rcc_model_{scenario}.py"
     model.write_text(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
                             (SIM_DIR / "rcc_model.py").read_text(), flags=re.M))
@@ -89,28 +107,24 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     tests = sorted((ctx.workspace / "software/tests/target").glob("test_*.c"))
     if not tests:
         return result(ctx, "BLOCKED", "no target tests", issues=["NO_TESTS:software/tests/target"], tool="renode")
-    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ctx.workspace / d).glob("*.c"))]
-    incs = [f"-I{ctx.workspace / d}" for d in ("software/hal", "software/ll", "software/include",
-                                                "software/tests/target") if (ctx.workspace / d).is_dir()]
     wd = ctx.workspace / "build" / "renode"
     if wd.exists():
         shutil.rmtree(wd)
     wd.mkdir(parents=True)
     log, issues, per = b"", [], {}
+    asserted: list[Path] = []
     passed = failed = 0
     for t in tests:
         scenario = "never_ready" if t.stem.endswith("_timeout") else "default"
         elf = wd / f"{t.stem}.elf"
-        b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
-                      str(SIM_DIR / "startup.c"), str(t), *srcs, "-o", str(elf)], wd, 180, {"arm-none-eabi-gcc"})
-        log += b.stdout + b.stderr
-        if b.exit_code != 0:
+        ok_build, blog, errs = build_image(ctx.workspace, t, elf)
+        log += blog
+        if not ok_build:
             issues.append(f"BUILD_FAIL:{t.name}")
-            issues += [ln.split(str(ctx.workspace) + "/")[-1][:140] for ln in b.stderr.decode(errors="replace")
-                       .splitlines() if ": error:" in ln][:8]
+            issues += errs
             failed += 1
             continue
-        res, out = _run_image(ctx, renode, elf, scenario, wd)
+        res, out = run_image(renode, elf, scenario, wd)
         log += out
         if res is None or not res["magic_ok"] or not res["done"]:
             issues.append(f"NO_RESULT:{t.name}:{scenario}")
@@ -120,11 +134,18 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
         passed += res["passed"]
         failed += res["failed"]
         issues += [f"TARGET_FAIL:{t.name}:check {i}" for i in res["failed_ids"]]
+        if res["failed"]:
+            asserted.append(t)  # runtime check failures (not build errors) - ADR-0008 test-integrity record
         if res["passed"] == 0:
             issues.append(f"NO_CHECKS:{t.name}")
     ok = not issues and passed > 0
-    return result(ctx, "PASS" if ok else "FAIL", f"renode cortex-m55: {passed} checks passed, {failed} failed "
-                  f"({len(tests)} images; behavioural RCC model)", [ctx.store(log)], issues[:30],
+    record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
+                     integrity(ctx.workspace, tests, asserted))
+    undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_renode") if ok else []
+    return result(ctx, "PASS" if ok and not undeclared else "FAIL", f"renode cortex-m55: {passed} checks passed, "
+                  f"{failed} failed ({len(tests)} images; behavioural RCC model)"
+                  + ("; undeclared test change - declare it" if undeclared else ""), [ctx.store(log)],
+                  (undeclared + issues)[:30],
                   {"passed": passed, "failed": failed, "images": per, "cpu": "cortex-m55",
                    "platform": "forge-stm32n6-rcc-min (CPU+NVIC+AXISRAM+behavioural RCC)",
                    "target_evidence": "simulated", "silicon_verified": False}, "renode",

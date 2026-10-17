@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 29 items
+
+factory/python/tests/test_cre_d7_production_journal.py .........         [ 31%]
+factory/python/tests/test_m4_repair.py .......                           [ 55%]
+factory/python/tests/test_m7_governance_release.py .............         [100%]
+
+============================= 29 passed in 19.25s ==============================
+
+--- stderr ---

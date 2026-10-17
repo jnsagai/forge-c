@@ -1,0 +1,711 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-16T05:24:59.238407Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"cre-34cbdffd33663895b7b8b26ab0e1d69490f2c029\", \"cre-e24dfca0092b92b9cc643360eb92e695ab41c0fb\"]",
+          "from_state": null,
+          "reason": "significant recurring failure (r72); 2 observations",
+          "seq": 1,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T05:24:59.318371Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by RULE:frozen-manifest",
+          "seq": 2,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T05:24:59.372038Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-001 assigned",
+          "seq": 3,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T05:24:59.844509Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"reproducer-run:rr-408ff2682d482ad8e797\", \"reproducer-run:rr-5d2858993f1f5a346fb1\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 4,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T05:24:59.897813Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"git:e807e448b566..211d4fcc30b5\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 211d4fcc30b5 (patch 12967 bytes)",
+          "seq": 5,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T05:25:00.222976Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"reproducer-run:rr-a4471bc31c55fa0ce305\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-001 absent at fab674edb953",
+          "seq": 6,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T05:25:00.285184Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 7,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:00.463700Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"lesson:lesson-86feba60499b\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "lesson lesson-86feba60499b validated",
+          "seq": 8,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:00.817712Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"cre-observation:cre-95bef973d0f5634e9bca273dd68f1e4d4db42348\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "recurrence TEST_CHANGED_AFTER_FAIL SWE.5/author in WO-0002-STM32N6-RCC-r74-deepseek (contains fix 211d4fcc30b5)",
+          "seq": 9,
+          "to_state": "REOPENED"
+        },
+        {
+          "at": "2026-10-16T05:25:00.909405Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "REOPENED",
+          "reason": "triage by RULE:frozen-manifest",
+          "seq": 10,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T05:25:00.956225Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-003 assigned",
+          "seq": 11,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T05:25:02.041904Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"reproducer-run:rr-7a6445a153be6e1cac52\", \"reproducer-run:rr-4cec8c539259c6fda394\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 12,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T05:25:02.085649Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"git:dabdbe34da12..c13240a24ec1\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix c13240a24ec1 (patch 21665 bytes)",
+          "seq": 13,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T05:25:02.610560Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"reproducer-run:rr-451735b5aafcfac06c17\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-003 absent at fab674edb953",
+          "seq": 14,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T05:25:02.660045Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 15,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:02.808023Z",
+          "capa_id": "CAPA-001",
+          "evidence": "[\"lesson:lesson-8546ccdf364d\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "lesson lesson-8546ccdf364d validated",
+          "seq": 16,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "e807e448b566d5089f8ec1c2d29702f7c2842110",
+          "dabdbe34da124a4be97b25c59dd403aabff1f9ec"
+        ],
+        "FINGERPRINT": [
+          "cfp1-a06b772c3b864f9aec281ef5cd97710caf5c3a63",
+          "cfp1-b27d949eef0f7e3908e39f6664595f9fd7696b79"
+        ],
+        "FIX_REVISION": [
+          "211d4fcc30b59dc3190e1820b5ebd44e61c357e7",
+          "c13240a24ec11add17e1f00fda48208c995d3617"
+        ],
+        "LESSON": [
+          "lesson-86feba60499b",
+          "lesson-8546ccdf364d"
+        ],
+        "RECURRENCE": [
+          "cre-95bef973d0f5634e9bca273dd68f1e4d4db42348"
+        ],
+        "REPRODUCER_DONE": [
+          "RPR-001",
+          "RPR-003"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<c13240a24ec1"
+        ],
+        "candidate_patch_sha256": "b3a6e08d03afb8ba98ded8e5a1959ff9c49230fcbe0114d8e97ffdfb92d1d497",
+        "capa_id": "CAPA-001",
+        "created_at": "2026-10-16T05:24:59.238407Z",
+        "event_ids": [],
+        "incident_ids": [
+          "cre-34cbdffd33663895b7b8b26ab0e1d69490f2c029",
+          "cre-e24dfca0092b92b9cc643360eb92e695ab41c0fb"
+        ],
+        "lesson_ids": [
+          "lesson-8546ccdf364d",
+          "lesson-86feba60499b"
+        ],
+        "observation_window_end": null,
+        "policy_sha256": "8077ff2fa42d3a5058edbbb64761e0f17b6892a57b4585e61745764c33a268a3",
+        "prevention_test_id": "prevention:RPR-003",
+        "reproducer_id": "RPR-003",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-7a6445a153be6e1cac52",
+          "reproducer-run:rr-4cec8c539259c6fda394"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "Undeclared test edits were only detected at the author gate after the author finished, often in its final cycle.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T05:25:02.808023Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T05:25:03.350121Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"cre-0b31cdc6827102eb73a6e98682da4cd342c4a83c\"]",
+          "from_state": null,
+          "reason": "significant recurring failure (r73); 1 observations",
+          "seq": 17,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T05:25:03.406435Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by RULE:frozen-manifest",
+          "seq": 18,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T05:25:03.453155Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-002 assigned",
+          "seq": 19,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T05:25:03.951473Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"reproducer-run:rr-0a63e0dcc878c315257b\", \"reproducer-run:rr-d5df77ba61ac6685a3cb\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 20,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T05:25:04.029424Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"git:211d4fcc30b5..dabdbe34da12\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix dabdbe34da12 (patch 18548 bytes)",
+          "seq": 21,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T05:25:04.380968Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"reproducer-run:rr-44b6b15f79fe7f4144c7\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-002 absent at fab674edb953",
+          "seq": 22,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T05:25:04.439652Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 23,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:04.637526Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"lesson:lesson-4264e798899e\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "lesson lesson-4264e798899e validated",
+          "seq": 24,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:04.935432Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"cre-observation:cre-0b31cdc6827102eb73a6e98682da4cd342c4a83c\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "recurrence DEFECT_TEST_CHANGED SWE.4/author in WO-0002-STM32N6-RCC-r75-deepseek (contains fix dabdbe34da12)",
+          "seq": 25,
+          "to_state": "REOPENED"
+        },
+        {
+          "at": "2026-10-16T05:25:05.024412Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "REOPENED",
+          "reason": "triage by RULE:frozen-manifest",
+          "seq": 26,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T05:25:05.066009Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-004 assigned",
+          "seq": 27,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T05:25:05.734349Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"reproducer-run:rr-a6dd637788d82cf0ba20\", \"reproducer-run:rr-eff45ad0c9185bd97d87\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 28,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T05:25:05.782018Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"git:8a1b2f1f7609..6d0c5dee5f63\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 6d0c5dee5f63 (patch 10117 bytes)",
+          "seq": 29,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T05:25:06.224126Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"reproducer-run:rr-e1aa4e1a1700b2a50209\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-004 absent at fab674edb953",
+          "seq": 30,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T05:25:06.264040Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 31,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:06.382554Z",
+          "capa_id": "CAPA-002",
+          "evidence": "[\"lesson:lesson-bc01be497d3f\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "lesson lesson-bc01be497d3f validated",
+          "seq": 32,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "211d4fcc30b59dc3190e1820b5ebd44e61c357e7",
+          "8a1b2f1f7609085ccff63900ba7b30a418246a9e"
+        ],
+        "FINGERPRINT": [
+          "cfp1-c630cd48268fe94ce28f97b7627653000e73e164"
+        ],
+        "FIX_REVISION": [
+          "dabdbe34da124a4be97b25c59dd403aabff1f9ec",
+          "6d0c5dee5f63e4eecb47dd7ba4e78c111cf448f1"
+        ],
+        "LESSON": [
+          "lesson-4264e798899e",
+          "lesson-bc01be497d3f"
+        ],
+        "RECURRENCE": [
+          "cre-0b31cdc6827102eb73a6e98682da4cd342c4a83c"
+        ],
+        "REPRODUCER_DONE": [
+          "RPR-002",
+          "RPR-004"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<6d0c5dee5f63"
+        ],
+        "candidate_patch_sha256": "b5dba846b5a2b12c2ef421eaabdecac241063918328431d9f9aea9e1d0c60e80",
+        "capa_id": "CAPA-002",
+        "created_at": "2026-10-16T05:25:03.350121Z",
+        "event_ids": [],
+        "incident_ids": [
+          "cre-0b31cdc6827102eb73a6e98682da4cd342c4a83c"
+        ],
+        "lesson_ids": [
+          "lesson-4264e798899e",
+          "lesson-bc01be497d3f"
+        ],
+        "observation_window_end": null,
+        "policy_sha256": "8077ff2fa42d3a5058edbbb64761e0f17b6892a57b4585e61745764c33a268a3",
+        "prevention_test_id": "prevention:RPR-004",
+        "reproducer_id": "RPR-004",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-a6dd637788d82cf0ba20",
+          "reproducer-run:rr-eff45ad0c9185bd97d87"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "A fixed defect could only be verified with byte-identical cited tests, so extending the cited file made a correct fix unverifiable.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T05:25:06.382554Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T05:25:06.930730Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"cre-3592d046a7d519f7df2b37596ea46b695466b3be\"]",
+          "from_state": null,
+          "reason": "significant recurring failure (r74); 1 observations",
+          "seq": 33,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T05:25:07.007501Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by RULE:frozen-manifest",
+          "seq": 34,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T05:25:07.051726Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-005 assigned",
+          "seq": 35,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T05:25:07.880055Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"reproducer-run:rr-d5eac74fbc8580406aa8\", \"reproducer-run:rr-e10235c7b145161ac8f5\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 36,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T05:25:07.942306Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"git:dabdbe34da12..c13240a24ec1\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix c13240a24ec1 (patch 21665 bytes)",
+          "seq": 37,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T05:25:08.389187Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"reproducer-run:rr-716464c822401bbee711\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-005 absent at fab674edb953",
+          "seq": 38,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T05:25:08.429274Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 39,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:08.560144Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"lesson:lesson-44aa8ddfdd8b\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "lesson lesson-44aa8ddfdd8b validated",
+          "seq": 40,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        },
+        {
+          "at": "2026-10-16T05:25:08.838577Z",
+          "capa_id": "CAPA-003",
+          "evidence": "[\"cre-observation:cre-cf6aad2c0605f209cdf26ca27ee99daba4726ad8\"]",
+          "from_state": "EFFECTIVENESS_OBSERVING",
+          "reason": "recurrence REWORK_BUDGET_EXHAUSTED SWE.4/route in WO-0002-STM32N6-RCC-r76-deepseek (contains fix c13240a24ec1)",
+          "seq": 41,
+          "to_state": "REOPENED"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "dabdbe34da124a4be97b25c59dd403aabff1f9ec"
+        ],
+        "FINGERPRINT": [
+          "cfp1-4d23507fabf5ad04868088bc8373c686279dcc97",
+          "cfp1-f611549ee2de585b548defc4542b80169c0bce1f"
+        ],
+        "FIX_REVISION": [
+          "c13240a24ec11add17e1f00fda48208c995d3617"
+        ],
+        "LESSON": [
+          "lesson-44aa8ddfdd8b"
+        ],
+        "RECURRENCE": [
+          "cre-cf6aad2c0605f209cdf26ca27ee99daba4726ad8"
+        ],
+        "REPRODUCER_DONE": [
+          "RPR-005"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<c13240a24ec1"
+        ],
+        "candidate_patch_sha256": "b3a6e08d03afb8ba98ded8e5a1959ff9c49230fcbe0114d8e97ffdfb92d1d497",
+        "capa_id": "CAPA-003",
+        "created_at": "2026-10-16T05:25:06.930730Z",
+        "event_ids": [],
+        "incident_ids": [
+          "cre-3592d046a7d519f7df2b37596ea46b695466b3be"
+        ],
+        "lesson_ids": [
+          "lesson-44aa8ddfdd8b"
+        ],
+        "observation_window_end": null,
+        "policy_sha256": "8077ff2fa42d3a5058edbbb64761e0f17b6892a57b4585e61745764c33a268a3",
+        "prevention_test_id": "prevention:RPR-005",
+        "reproducer_id": "RPR-005",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-d5eac74fbc8580406aa8",
+          "reproducer-run:rr-e10235c7b145161ac8f5"
+        ],
+        "root_cause_status": "HYPOTHESIS",
+        "root_cause_summary": "Host test tools reported only the failed check id, so authors spent their cycles reading files to learn what failed.",
+        "schema_version": "1.0",
+        "state": "REOPENED",
+        "updated_at": "2026-10-16T05:25:08.838577Z"
+      }
+    }
+  ],
+  "generated_at": "2026-10-16T05:25:09.151330Z",
+  "reproducer_runs": [
+    {
+      "at": "2026-10-16T05:24:59.572975Z",
+      "exit_code": 1,
+      "log_sha256": "2a37b5675ba5ccd65bcfe0842fe17d4c0ac8dad932668270fb02e301b2767069",
+      "reproducer_id": "RPR-001",
+      "revision": "e807e448b566d5089f8ec1c2d29702f7c2842110",
+      "role": "BASELINE",
+      "run_id": "rr-408ff2682d482ad8e797",
+      "signature": "TEST_CHANGED_AFTER_FAIL after a declaration on unchanged code",
+      "verdict": "SYMPTOM_PRESENT"
+    },
+    {
+      "at": "2026-10-16T05:24:59.767080Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-001",
+      "revision": "211d4fcc30b59dc3190e1820b5ebd44e61c357e7",
+      "role": "CANDIDATE",
+      "run_id": "rr-5d2858993f1f5a346fb1",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:00.114730Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-001",
+      "revision": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+      "role": "REGRESSION",
+      "run_id": "rr-a4471bc31c55fa0ce305",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:01.472857Z",
+      "exit_code": 1,
+      "log_sha256": "e34ef9407275e336d653926eb95bf53c5619cb9d894f0121eed97e0c24fc5be7",
+      "reproducer_id": "RPR-003",
+      "revision": "dabdbe34da124a4be97b25c59dd403aabff1f9ec",
+      "role": "BASELINE",
+      "run_id": "rr-7a6445a153be6e1cac52",
+      "signature": "run_unit reported PASS for an undeclared test edited after a runtime failure",
+      "verdict": "SYMPTOM_PRESENT"
+    },
+    {
+      "at": "2026-10-16T05:25:01.965395Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-003",
+      "revision": "c13240a24ec11add17e1f00fda48208c995d3617",
+      "role": "CANDIDATE",
+      "run_id": "rr-4cec8c539259c6fda394",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:02.524564Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-003",
+      "revision": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+      "role": "REGRESSION",
+      "run_id": "rr-451735b5aafcfac06c17",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:03.644552Z",
+      "exit_code": 1,
+      "log_sha256": "68c7d9500a2c10b0e8dcb68c3bd5f0830aae455a6a64da22f682b801e8863de4",
+      "reproducer_id": "RPR-002",
+      "revision": "211d4fcc30b59dc3190e1820b5ebd44e61c357e7",
+      "role": "BASELINE",
+      "run_id": "rr-0a63e0dcc878c315257b",
+      "signature": "author gate froze an unchanged baseline while a defect was IN_FIX",
+      "verdict": "SYMPTOM_PRESENT"
+    },
+    {
+      "at": "2026-10-16T05:25:03.849880Z",
+      "exit_code": 0,
+      "log_sha256": "793fad6b8223a018546fc069f48fa286322eaffd4494b6ffc3a511184aaa75f0",
+      "reproducer_id": "RPR-002",
+      "revision": "dabdbe34da124a4be97b25c59dd403aabff1f9ec",
+      "role": "CANDIDATE",
+      "run_id": "rr-d5df77ba61ac6685a3cb",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:04.249205Z",
+      "exit_code": 0,
+      "log_sha256": "793fad6b8223a018546fc069f48fa286322eaffd4494b6ffc3a511184aaa75f0",
+      "reproducer_id": "RPR-002",
+      "revision": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+      "role": "REGRESSION",
+      "run_id": "rr-44b6b15f79fe7f4144c7",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:05.257508Z",
+      "exit_code": 1,
+      "log_sha256": "8a05b087a2f5031f635b9fe1dc60c24539136b78f24f67968a12504a1ddf7e0b",
+      "reproducer_id": "RPR-004",
+      "revision": "8a1b2f1f7609085ccff63900ba7b30a418246a9e",
+      "role": "BASELINE",
+      "run_id": "rr-a6dd637788d82cf0ba20",
+      "signature": "DEFECT_TEST_CHANGED for a correct fix whose cited test was only extended",
+      "verdict": "SYMPTOM_PRESENT"
+    },
+    {
+      "at": "2026-10-16T05:25:05.662837Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-004",
+      "revision": "6d0c5dee5f63e4eecb47dd7ba4e78c111cf448f1",
+      "role": "CANDIDATE",
+      "run_id": "rr-eff45ad0c9185bd97d87",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:06.141976Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-004",
+      "revision": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+      "role": "REGRESSION",
+      "run_id": "rr-e1aa4e1a1700b2a50209",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:07.385286Z",
+      "exit_code": 1,
+      "log_sha256": "983b7e6444e4fd3255d2000df5ab010e321e6ab4f1b080c83d9a149363ecc89a",
+      "reproducer_id": "RPR-005",
+      "revision": "dabdbe34da124a4be97b25c59dd403aabff1f9ec",
+      "role": "BASELINE",
+      "run_id": "rr-d5eac74fbc8580406aa8",
+      "signature": "failed host CHECK reported without its expression",
+      "verdict": "SYMPTOM_PRESENT"
+    },
+    {
+      "at": "2026-10-16T05:25:07.758496Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-005",
+      "revision": "c13240a24ec11add17e1f00fda48208c995d3617",
+      "role": "CANDIDATE",
+      "run_id": "rr-e10235c7b145161ac8f5",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    },
+    {
+      "at": "2026-10-16T05:25:08.308545Z",
+      "exit_code": 0,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "reproducer_id": "RPR-005",
+      "revision": "fab674edb9537581b8fbc4fb74294ff6e82cc5bc",
+      "role": "REGRESSION",
+      "run_id": "rr-716464c822401bbee711",
+      "signature": null,
+      "verdict": "SYMPTOM_ABSENT"
+    }
+  ],
+  "schema": "forge-c/cre-capa-snapshot/1.0"
+}

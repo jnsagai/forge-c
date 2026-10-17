@@ -1,0 +1,175 @@
+{
+  "candidates": {
+    "A": "normalize UUID session ids in failure fingerprints (benign CHANGE)",
+    "B": "drop the tool-time undeclared-change notice (re-introduces the r74 defect)"
+  },
+  "decisions": [
+    {
+      "allowed_auto_deployment": false,
+      "baseline_sha256": "ff6c493872843736f1df7f88d9ec3d4e03d8a76dd5c5fc987e7697336f157509",
+      "benchmark_sha256": "7d39cc7886d4b59126c099b68f5cac6b5a063787791faf51c697af08838f9856",
+      "candidate_sha256": "760c522ae11248d2da85b0bb17d8a6f0b7d29e1ff4fb7aa33d7f2684416e6a90",
+      "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+      "decision_id": "pd-81f1e4aa68193b839cd7",
+      "evaluated_at": "2026-10-16T08:22:54.421144Z",
+      "evaluator_id": "cre-promotion-runner@a5eec8946e75",
+      "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+      "hard_gates": [
+        {
+          "evidence_refs": [
+            "git-diff:a5eec8946e75..bf9c31688519"
+          ],
+          "name": "protected_files",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "policy:candidate"
+          ],
+          "name": "policy_integrity",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "gate:reproducer"
+          ],
+          "name": "reproducer",
+          "reason_code": "NOT_APPLICABLE_FOR_CHANGE",
+          "result": "NOT_RUN"
+        },
+        {
+          "evidence_refs": [
+            "reproducer-run:rr-30471b5d888d5b174316",
+            "reproducer-run:rr-161db905fe1599f8aa95",
+            "reproducer-run:rr-2a3d2f3ad12425a5517a",
+            "reproducer-run:rr-7646a5292168ec0e1a63",
+            "reproducer-run:rr-09202c203e85199677bd"
+          ],
+          "name": "prevention",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "candidate-tests:exit0:sha256:c395aafa0dbbe242",
+            "baseline-tests:exit0:sha256:932a9b89a8981c17",
+            "design:exit0"
+          ],
+          "name": "quality_process",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "benchmark-run:br-5e6dabbd0f37e47f6073",
+            "benchmark-run:br-345ff3cb1bb1937c5168"
+          ],
+          "name": "golden_benchmark",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "benchmark-run:br-984ede4bc628babb39be",
+            "benchmark-run:br-44db78f76f84ab58ef10"
+          ],
+          "name": "holdout",
+          "reason_code": null,
+          "result": "PASS"
+        }
+      ],
+      "metrics_snapshot_ref": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "reasons": [
+        "efficiency (informational, n=1 run each, not a gate): golden duration 3.8s -> 3.5s; model tokens 0 -> 0",
+        "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+      ],
+      "reproducer_evidence_refs": [],
+      "schema_version": "1.0"
+    },
+    {
+      "allowed_auto_deployment": false,
+      "baseline_sha256": "ff6c493872843736f1df7f88d9ec3d4e03d8a76dd5c5fc987e7697336f157509",
+      "benchmark_sha256": "7d39cc7886d4b59126c099b68f5cac6b5a063787791faf51c697af08838f9856",
+      "candidate_sha256": "3e6d212aaae310d74b2a0ba374b21a11786a8037e3e6b4f15883e40bbe3e14a6",
+      "decision": "REJECTED",
+      "decision_id": "pd-702f7ab59bc94bdef467",
+      "evaluated_at": "2026-10-16T08:22:58.033080Z",
+      "evaluator_id": "cre-promotion-runner@a5eec8946e75",
+      "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+      "hard_gates": [
+        {
+          "evidence_refs": [
+            "git-diff:a5eec8946e75..8bb6f1252896"
+          ],
+          "name": "protected_files",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "policy:candidate"
+          ],
+          "name": "policy_integrity",
+          "reason_code": null,
+          "result": "PASS"
+        },
+        {
+          "evidence_refs": [
+            "gate:reproducer"
+          ],
+          "name": "reproducer",
+          "reason_code": "NOT_APPLICABLE_FOR_CHANGE",
+          "result": "NOT_RUN"
+        },
+        {
+          "evidence_refs": [
+            "reproducer-run:rr-ed7ede8ecb6583b329a2",
+            "reproducer-run:rr-5717c6f81682d489d1cd",
+            "reproducer-run:rr-d8d55db8773fb3b97594",
+            "reproducer-run:rr-c36471cffa3f4b415edc",
+            "reproducer-run:rr-1c18f33a45c24844afaf"
+          ],
+          "name": "prevention",
+          "reason_code": "RESOLVED_FAILURE_REAPPEARED",
+          "result": "FAIL"
+        },
+        {
+          "evidence_refs": [
+            "gate:quality_process"
+          ],
+          "name": "quality_process",
+          "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+          "result": "NOT_RUN"
+        },
+        {
+          "evidence_refs": [
+            "gate:golden_benchmark"
+          ],
+          "name": "golden_benchmark",
+          "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+          "result": "NOT_RUN"
+        },
+        {
+          "evidence_refs": [
+            "gate:holdout"
+          ],
+          "name": "holdout",
+          "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+          "result": "NOT_RUN"
+        }
+      ],
+      "metrics_snapshot_ref": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "reasons": [
+        "previously resolved failures reappear: RPR-003:SYMPTOM_PRESENT"
+      ],
+      "reproducer_evidence_refs": [],
+      "schema_version": "1.0"
+    }
+  ],
+  "generated_at": "2026-10-16T08:23:06.362369Z",
+  "schema": "forge-c/cre-promotion-demo/1.0"
+}

@@ -1,0 +1,144 @@
+[
+  {
+    "cohort": {
+      "driver_class": "STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER",
+      "target": "Arm Cortex-M55",
+      "model": "deepseek-flash",
+      "code_model": "-",
+      "provider": "deepseek",
+      "mode": "RESUMED"
+    },
+    "split_revision": "f109f39",
+    "pre": {
+      "n": 5,
+      "completed": 1,
+      "rate": 0.2,
+      "wilson": [
+        0.03622410863243014,
+        0.6244653702374747
+      ]
+    },
+    "post": {
+      "n": 14,
+      "completed": 1,
+      "rate": 0.0714,
+      "wilson": [
+        0.012722215247890939,
+        0.31468704424151117
+      ]
+    },
+    "verdict": "NO_SIGNIFICANT_DIFFERENCE",
+    "excluded_other_cohorts": 59,
+    "excluded_unknown_revision": 0,
+    "assumptions": [
+      "non-overlapping Wilson intervals as a conservative criterion",
+      "attempts treated as independent although revisions and prompts changed between them"
+    ],
+    "split_label": "ADR-0008 loopbacks"
+  },
+  {
+    "cohort": {
+      "driver_class": "STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER",
+      "target": "Arm Cortex-M55",
+      "model": "deepseek-flash",
+      "code_model": "-",
+      "provider": "deepseek",
+      "mode": "RESUMED"
+    },
+    "split_revision": "fab674e",
+    "pre": {
+      "n": 19,
+      "completed": 2,
+      "rate": 0.1053,
+      "wilson": [
+        0.02935856029887013,
+        0.31394082711109006
+      ]
+    },
+    "post": {
+      "n": 0,
+      "completed": 0,
+      "rate": null,
+      "wilson": null
+    },
+    "verdict": "NOT_COMPUTABLE",
+    "excluded_other_cohorts": 59,
+    "excluded_unknown_revision": 0,
+    "assumptions": [
+      "non-overlapping Wilson intervals as a conservative criterion",
+      "attempts treated as independent although revisions and prompts changed between them"
+    ],
+    "split_label": "CRE D2 + router fix"
+  },
+  {
+    "cohort": {
+      "driver_class": "STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER",
+      "target": "Arm Cortex-M55",
+      "model": "deepseek-flash",
+      "code_model": "-",
+      "provider": "deepseek",
+      "mode": "FULL"
+    },
+    "split_revision": "f109f39",
+    "pre": {
+      "n": 28,
+      "completed": 4,
+      "rate": 0.1429,
+      "wilson": [
+        0.05699005319749392,
+        0.31489802163525293
+      ]
+    },
+    "post": {
+      "n": 2,
+      "completed": 0,
+      "rate": 0.0,
+      "wilson": [
+        0.0,
+        0.6576197724933469
+      ]
+    },
+    "verdict": "NO_SIGNIFICANT_DIFFERENCE",
+    "excluded_other_cohorts": 48,
+    "excluded_unknown_revision": 0,
+    "assumptions": [
+      "non-overlapping Wilson intervals as a conservative criterion",
+      "attempts treated as independent although revisions and prompts changed between them"
+    ],
+    "split_label": "ADR-0008 loopbacks"
+  },
+  {
+    "cohort": {
+      "driver_class": "STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER",
+      "target": "Arm Cortex-M55",
+      "model": "deepseek-flash",
+      "code_model": "-",
+      "provider": "deepseek",
+      "mode": "FULL"
+    },
+    "split_revision": "fab674e",
+    "pre": {
+      "n": 30,
+      "completed": 4,
+      "rate": 0.1333,
+      "wilson": [
+        0.053096554840547455,
+        0.296813266820363
+      ]
+    },
+    "post": {
+      "n": 0,
+      "completed": 0,
+      "rate": null,
+      "wilson": null
+    },
+    "verdict": "NOT_COMPUTABLE",
+    "excluded_other_cohorts": 48,
+    "excluded_unknown_revision": 0,
+    "assumptions": [
+      "non-overlapping Wilson intervals as a conservative criterion",
+      "attempts treated as independent although revisions and prompts changed between them"
+    ],
+    "split_label": "CRE D2 + router fix"
+  }
+]
