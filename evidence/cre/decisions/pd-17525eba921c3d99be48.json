@@ -1,0 +1,113 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "76ace0458beccc3316ad8be39f0037cb203d1022",
+  "baseline_sha256": "009071806d33b713377efaea3b09484ec43bb02e9feeaf48dfd070f0ea0705c9",
+  "benchmark_sha256": "7d39cc7886d4b59126c099b68f5cac6b5a063787791faf51c697af08838f9856",
+  "candidate_revision": "a56b38860fbdb6a0b677d025b46c0dc17400a9f4",
+  "candidate_sha256": "2cb9619a9438b3d70d0d18d4134dc7fde23205db1bbccd2c14f4d7a10f0ee5d6",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "decision_id": "pd-17525eba921c3d99be48",
+  "evaluated_at": "2026-10-17T12:16:06.911595Z",
+  "evaluator_id": "cre-promotion-runner@a56b38860fbd",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:76ace0458bec..a56b38860fbd"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-4031883e1c8ef5107668",
+        "reproducer-run:rr-32c420fe6a599cb4339c"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-4ef9bd70c0d102afc5bc",
+        "reproducer-run:rr-4157375ba8097041d61d",
+        "reproducer-run:rr-5a9ca951acd5814ecba1",
+        "reproducer-run:rr-60a3567258ae3104bacb",
+        "reproducer-run:rr-de3ca1563adfb90a8945",
+        "reproducer-run:rr-4d57060d5687a9bd7d82",
+        "reproducer-run:rr-03bfe5c5b3a9a281df36",
+        "reproducer-run:rr-3218824f3c86160f49f3",
+        "reproducer-run:rr-dd9e7cfbebc54899c31f",
+        "reproducer-run:rr-015845dc293746efb416",
+        "reproducer-run:rr-d6faf2e1c6c7ee001684",
+        "reproducer-run:rr-c30eea22796a1fcbb9ab",
+        "reproducer-run:rr-ecff6143e41367cbd5cf",
+        "reproducer-run:rr-868d9b4c084d6883f1e8",
+        "reproducer-run:rr-f25549f521880ed1843b",
+        "reproducer-run:rr-306f6db876bc6155625e",
+        "reproducer-run:rr-7ecab972b7069fc581ec",
+        "reproducer-run:rr-66704e867730af0f6b4f",
+        "reproducer-run:rr-277f399db59bd99c5b7f",
+        "reproducer-run:rr-837ecbf36b65b6eadea7",
+        "reproducer-run:rr-84be84600b7b2660ad41",
+        "reproducer-run:rr-c5af370d9d495cdbb32a",
+        "reproducer-run:rr-71923aa7a5dbac638500",
+        "reproducer-run:rr-af5109db17d722fde91b",
+        "reproducer-run:rr-93d0eda524a975c39478",
+        "reproducer-run:rr-c00748e31b687958b1a8"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:dd39fd574bd178c6",
+        "baseline-tests:exit0:sha256:bd9da8bb3cf40d45",
+        "design:exit0"
+      ],
+      "name": "quality_process",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-50d6c5e7c5f2a501dd29",
+        "benchmark-run:br-e7839d1f99d1de4e16e9"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-4387ef6d94f1f905b8ab",
+        "benchmark-run:br-0b683574a26708523f0d"
+      ],
+      "name": "holdout",
+      "reason_code": null,
+      "result": "PASS"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+  "reasons": [
+    "sandbox: 1904 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "efficiency (informational, n=1 run each, not a gate): golden duration 4.1s -> 4.2s; model tokens 0 -> 0",
+    "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-4031883e1c8ef5107668",
+    "reproducer-run:rr-32c420fe6a599cb4339c"
+  ],
+  "schema_version": "1.0"
+}
