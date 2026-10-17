@@ -390,3 +390,18 @@ def test_capa028_scaffold_node_only_with_trace_profile():
         P.LAYER["layer"], P.TRACE["on"] = layer, on
     assert "swe3_units" in dot_on and "swe3_fix_author -> swe3_units" in dot_on and "swe3_units -> swe3_author" in dot_on
     assert "swe3_units" not in dot_off and "swe3_fix_author -> swe3_author" in dot_off
+
+
+def test_capa030_design_citation_generated_from_unit_spec(ws):
+    """CAPA-030 (r111): complete designs without USPEC ids are cited by the gate (legend), and still render."""
+    p = ws / "workproducts/SWE.3/detailed_design/SWU-HAL-01.puml"
+    p.write_text("@startuml SWU-HAL-01\ntitle SWU-HAL-01 HSI enable\nstart\n:HAL_RCC_HSI_Enable;\nstop\n@enduml\n")
+    assert any(x.startswith("UNIT:DESIGN_MISSING_SPEC_REF:SWU-HAL-01")
+               for x in swtrace.check_units(ws, render=False, export=False)["major_findings"])
+    r = swtrace.check_phase(ws, "SWE.3")
+    assert not any("DESIGN_MISSING_SPEC_REF" in x or "DESIGN_RENDER_FAILED" in x for x in r["major_findings"])
+    t = p.read_text()
+    assert "legend top left" in t and "USPEC-HAL-01-01, USPEC-HAL-01-02" in t and ":HAL_RCC_HSI_Enable;" in t
+    before = t
+    swtrace.check_phase(ws, "SWE.3")
+    assert p.read_text() == before                                            # idempotent

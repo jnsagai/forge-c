@@ -141,3 +141,32 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def cite_specs(ws: Path) -> list[str]:
+    """CAPA-030 (r111): the design author wrote complete designs but did not cite the unit's USPEC ids, and SWE.3 was
+    rejected three times for that alone. The citation is a FACT of unit_specifications.md, so the gate adds it as a
+    generated PlantUML legend (or fills the scaffold's 'USPEC: TODO' note) and never changes the design itself."""
+    ws = Path(ws)
+    md = ws / UNITS_MD
+    if not md.is_file():
+        return []
+    changed = []
+    for u in parse_units(md.read_text(errors="replace")):
+        ids = [s["id"] for s in u["specs"]]
+        p = ws / (u["design"] or f"{DESIGN_DIR}/{u['id']}.puml")
+        if not ids or not p.is_file():
+            continue
+        t = p.read_text(errors="replace")
+        if all(i in t for i in ids):
+            continue
+        cite = ", ".join(ids)
+        if "USPEC: TODO" in t:
+            t = t.replace("USPEC: TODO", f"USPEC: {cite}")
+        else:
+            legend = f"legend top left\n  Unit specification (generated from {UNITS_MD}): {cite}\nendlegend\n"
+            head = re.search(r"@startuml[^\n]*\n", t)
+            t = t[:head.end()] + legend + t[head.end():] if head else legend + t
+        p.write_text(t)
+        changed.append(u["id"])
+    return changed
