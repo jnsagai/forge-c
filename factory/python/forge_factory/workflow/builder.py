@@ -72,6 +72,10 @@ def robot_scaffold_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.workflow.robot_scaffold --workspace ."
 
 
+def unit_scaffold_cmd() -> str:
+    return f"{_env()} {sys.executable} -m forge_factory.inspection.unit_scaffold --workspace ."
+
+
 def regmap_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
 
@@ -145,9 +149,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             # ADR-0009: LL layer = regmap + LL author; HAL layer = HAL author on the PROVIDED LL (no regmap: the
             # provided header is frozen); legacy LL+HAL = both authors
             chain = {"LL": [regmap, ll], "HAL": [hal], "LL+HAL": [regmap, ll, hal]}[layer] + [fix]
+            units = "swe3_units"  # CAPA-028/029: deterministic unit-spec/design/MISRA scaffold (trace profile only)
+            if prompts.TRACE["on"]:
+                chain = chain + [units]
             entry = chain[0]
             for n_ in chain:
-                if n_ != regmap:
+                if n_ not in (regmap, units):
                     nodes[n_] = {"role": "swe3-author", "phase": phase}
             spec = {regmap: f'  {regmap} [shape=parallelogram, label="SWE.3 register map generator (RM0486, '
                             f'deterministic)", script="{_q(regmap_cmd())}"]',
@@ -156,7 +163,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                     hal: f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", '
                          f'prompt="{_q(hal_author_prompt())}"]',
                     fix: f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", '
-                         f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]'}
+                         f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
+                    units: f'  {units} [shape=parallelogram, label="SWE.3 unit specification and design scaffold '
+                           f'(deterministic)", script="{_q(unit_scaffold_cmd())}"]'}
             L += [spec[n_] for n_ in chain] + [f"  {x} -> {y}" for x, y in zip(chain, chain[1:] + [a], strict=True)]
         if phase == "SWE.4":  # unit tests written in their own fresh context; rework re-enters at the SWE.4 author
             from .prompts import unit_test_author_prompt

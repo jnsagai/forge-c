@@ -38,7 +38,7 @@ UNITS = """# Unit specifications
 - Design: workproducts/SWE.3/detailed_design/SWU-HAL-02.puml
 - **USPEC-HAL-02-01** Clear HSION through LL_RCC_HSI_Disable. Traces: SWR-002
 """
-DESIGN = "@startuml\ntitle {u} {fn}\nstart\n:{fn};\nstop\n@enduml\n"
+DESIGN = "@startuml\ntitle {u} {fn}\nnote right\n  USPEC: {specs}\nend note\nstart\n:{fn};\nstop\n@enduml\n"
 CODE = """/**
  * @file stm32n6xx_hal_rcc.c
  * @brief RCC HAL.
@@ -102,8 +102,8 @@ def ws(tmp_path):
              "workproducts/SWE.1/software_requirements.md": REQS,
              "workproducts/SWE.2/architecture_static.puml": ARCH,
              "workproducts/SWE.3/unit_specifications.md": UNITS,
-             "workproducts/SWE.3/detailed_design/SWU-HAL-01.puml": DESIGN.format(u="SWU-HAL-01", fn="HAL_RCC_HSI_Enable"),
-             "workproducts/SWE.3/detailed_design/SWU-HAL-02.puml": DESIGN.format(u="SWU-HAL-02", fn="HAL_RCC_HSI_Disable"),
+             "workproducts/SWE.3/detailed_design/SWU-HAL-01.puml": DESIGN.format(u="SWU-HAL-01", fn="HAL_RCC_HSI_Enable", specs="USPEC-HAL-01-01, USPEC-HAL-01-02"),
+             "workproducts/SWE.3/detailed_design/SWU-HAL-02.puml": DESIGN.format(u="SWU-HAL-02", fn="HAL_RCC_HSI_Disable", specs="USPEC-HAL-02-01"),
              "software/hal/stm32n6xx_hal_rcc.c": CODE,
              "software/tests/unit/test_rcc.c": UT,
              "software/tests/integration/test_rcc_integration.c": IT}
@@ -356,3 +356,37 @@ def test_t078_offline_gate_walk_freezes_swe1_to_swe6_without_stale_upstream(ws):
         assert st.stale_reason(ph, bl) is None, ph
     for ph in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
         assert st.stale_reason(ph, st.latest_baseline(ph)) is None, ph
+
+
+def test_capa028_029_unit_scaffold_preserves_author_text_and_markers_are_rejected(ws):
+    """CAPA-028/029 (r110): deterministic unit-spec/design/MISRA scaffold before the SWE.3 design author."""
+    from forge_factory.inspection import unit_scaffold
+
+    before = (ws / "workproducts/SWE.3/unit_specifications.md").read_text()
+    designs = {p.name: p.read_text() for p in (ws / "workproducts/SWE.3/detailed_design").glob("*.puml")}
+    unit_scaffold.scaffold(ws)
+    after = swtrace.parse_units((ws / "workproducts/SWE.3/unit_specifications.md").read_text())
+    assert after == swtrace.parse_units(before)                                      # author text kept
+    assert {p.name: p.read_text() for p in (ws / "workproducts/SWE.3/detailed_design").glob("*.puml")} == designs
+    m = (ws / "workproducts/SWE.3/misra_deviations.md").read_text()
+    assert "- Deviations: none" in m and "compliance: NOT CLAIMED" in m
+    (ws / "workproducts/SWE.3/unit_specifications.md").unlink()
+    shutil.rmtree(ws / "workproducts/SWE.3/detailed_design")
+    unit_scaffold.scaffold(ws)
+    f = swtrace.check_units(ws, render=False, export=False)["major_findings"]
+    assert "UNIT:SPEC_TODO:USPEC-HAL-01-01" in f and "UNIT:DESIGN_TODO:SWU-HAL-01" in f
+    assert "UNIT:DESIGN_MISSING_SPEC_REF:SWU-HAL-02:USPEC-HAL-02-01" in f
+
+
+def test_capa028_scaffold_node_only_with_trace_profile():
+    from forge_factory.workflow import prompts as P
+    from forge_factory.workflow.builder import build
+
+    layer, on = P.LAYER["layer"], P.TRACE["on"]
+    try:
+        dot_on, _ = build("WO-T", layer="LL", trace=True)
+        dot_off, _ = build("WO-T", layer="LL", trace=False)
+    finally:
+        P.LAYER["layer"], P.TRACE["on"] = layer, on
+    assert "swe3_units" in dot_on and "swe3_fix_author -> swe3_units" in dot_on and "swe3_units -> swe3_author" in dot_on
+    assert "swe3_units" not in dot_off and "swe3_fix_author -> swe3_author" in dot_off

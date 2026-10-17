@@ -568,8 +568,13 @@ def trace_step(kind: str) -> list[str]:
                 f"unit USPEC-{x}-<unit nn>-01, -02, ... (one item per distinct behaviour: set, clear, query, wait, "
                 "error). Static helper functions belong to the unit that calls them and get the same block.",
         "keep": "Keep every Doxygen /** ... @unit ... @spec ... */ block above its function when you edit code.",
-        "swe3": f"OWNER TRACE RULES (gate-checked, UNIT:*/CODE:* issues): read the @unit/@spec blocks of the code. "
-                f"write_file workproducts/SWE.3/unit_specifications.md: for each unit '## SWU-{x}-nn: <name>', "
+        "swe3": "OWNER TRACE RULES (gate-checked, UNIT:*/CODE:* issues): the factory GENERATED "
+                "workproducts/SWE.3/unit_specifications.md, one as-built PlantUML design per unit under "
+                "workproducts/SWE.3/detailed_design/ and workproducts/SWE.3/misra_deviations.md from the code tags and "
+                "tool results. Replace EVERY 'TODO' (one edit_file per unit): each spec item gets the behaviour text and "
+                "'Traces: SWR-...'; each design's 'USPEC: TODO' note lists that unit's USPEC ids. Do not rewrite these "
+                "files from scratch. Format reference: "
+                f"for each unit '## SWU-{x}-nn: <name>', "
                 f"'- SWC: {swc}', '- Functions: <exact C function names of the unit, incl. static helpers>', '- Design: "
                 f"workproducts/SWE.3/detailed_design/SWU-{x}-nn.puml' and one line per spec item used in the code: "
                 f"'- **USPEC-{x}-nn-mm** <the behaviour the unit shall implement> Traces: SWR-001, SWR-003' (only SWRs "

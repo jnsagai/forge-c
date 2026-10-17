@@ -255,6 +255,9 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
     specs = [s["id"] for u in units for s in u["specs"]]
     f += [f"UNIT:DUPLICATE_SPEC:{i}" for i in sorted({i for i in specs if specs.count(i) > 1})]
     texts = swr_texts(ws)
+    # CAPA-028: the scaffold's placeholder markers must all be replaced by the author
+    f += [f"UNIT:SPEC_TODO:{s['id']}" for u in units for s in u["specs"] if "TODO" in s["text"]]
+    f += [f"UNIT:UNIT_TODO:{u['id']}" for u in units if "TODO" in u["name"]]
     for u in units:
         if u["swc"] not in dev:
             f.append(f"UNIT:SWC_NOT_DEVELOPED_HERE:{u['id']}:{u['swc']}")
@@ -283,6 +286,11 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
             missing_fn = [fn for fn in u["functions"] if fn not in dt]
             if missing_fn:
                 f.append(f"UNIT:DESIGN_OMITS_FUNCTION:{u['id']}:{','.join(missing_fn[:3])}")
+            if "TODO" in dt:
+                f.append(f"UNIT:DESIGN_TODO:{u['id']}")
+            missing_spec = [s["id"] for s in u["specs"] if s["id"] not in dt]
+            if missing_spec:  # the design is traceable to the unit specification it realises
+                f.append(f"UNIT:DESIGN_MISSING_SPEC_REF:{u['id']}:{','.join(missing_spec[:3])}")
             if render:
                 ok, why = render_ok(design)
                 if not ok:
