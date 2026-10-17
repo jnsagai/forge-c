@@ -321,3 +321,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "The SWE.3 inspector failed SWE3-04 because no explicit MISRA C:2012 deviation record existed although cppcheck reported no finding (r110 INS-SWE.3-001)."
     remedy: "The scaffold writes workproducts/SWE.3/misra_deviations.md from the recorded cppcheck result, code suppressions and approved records (none -> 'Deviations: none'), compliance NOT CLAIMED."
+  - id: RPR-032
+    script: rpr032_swe3_trace_gate_overstrict.py
+    sha256: 97d680979b175f2c7a3437b97d770b99dc56387b121b20e9881cb76436363646
+    symptom_signature: "SWE.3 trace gate rejects complete work (citation / Doxygen config)"
+    observed_in: r111
+    baseline_revision: f4a303342824c90aec2e7c2c12632c159be020f9
+    fix_revision: bd666fbb9fc65845aa7c97fd741e28b48fce2a23
+    error_codes: ["UNIT:DESIGN_MISSING_SPEC_REF", "CODE:DOXYGEN_WARNING", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author]
+    root_cause: "The owner-trace SWE.3 gate demanded USPEC citations inside every design (stricter than the owner requirement) and ran Doxygen with preprocessing off, which warns on documented register defines; r111 completed specs, designs and tags but was rejected three times and BLOCKED."
+    remedy: "The gate generates each design's citation (legend) from unit_specifications.md; Doxygen runs with preprocessing, accepts @trace, and does not count the generated, RM-verified register defines as documentation gaps."

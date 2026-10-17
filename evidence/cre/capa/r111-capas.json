@@ -1,0 +1,101 @@
+{
+  "CAPA-030": {
+    "history": [
+      {
+        "at": "2026-10-17T16:31:59.519634Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[\"CAPA-030\"]",
+        "from_state": null,
+        "reason": "r111 SWE.3 rejected 3x on UNIT:DESIGN_MISSING_SPEC_REF and CODE:DOXYGEN_WARNING with complete work; BLOCKED",
+        "seq": 249,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T16:31:59.544966Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 250,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T16:31:59.586863Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-032 assigned",
+        "seq": 251,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T16:33:20.968879Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[\"reproducer-run:rr-48aab917d4e30f6aeb88\", \"reproducer-run:rr-38aca8d03e285f2e6fdb\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 252,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T16:33:20.993784Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[\"git:f4a303342824..bd666fbb9fc6\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix bd666fbb9fc6 (patch 8003 bytes)",
+        "seq": 253,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T16:33:21.028274Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[\"reproducer-run:rr-efcb2de40105935afc6e\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-032 absent at bd666fbb9fc6",
+        "seq": 254,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T16:33:21.043781Z",
+        "capa_id": "CAPA-030",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 255,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-de0da04eca0c97c2a78e12ab7724e653730dd0b7",
+      "f4a303342824c90aec2e7c2c12632c159be020f9",
+      "bd666fbb9fc65845aa7c97fd741e28b48fce2a23",
+      "pd-a10e1865f51baf0f5b81"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<bd666fbb9fc6"
+      ],
+      "candidate_patch_sha256": "fa44a554dd280c52d6f4cad513817b7f09efdaae9437edb69899f32769108cd3",
+      "capa_id": "CAPA-030",
+      "created_at": "2026-10-17T16:31:59.519634Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-030"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-032",
+      "reproducer_id": "RPR-032",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-48aab917d4e30f6aeb88",
+        "reproducer-run:rr-38aca8d03e285f2e6fdb"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the owner-trace SWE.3 gate is stricter than the owner requirement (design citations) and Doxygen preprocessing was off",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T16:33:21.043781Z"
+    }
+  }
+}
