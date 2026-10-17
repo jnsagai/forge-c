@@ -376,3 +376,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "The SWE.3 trace gate required unit refinement of an initial-state invariant of the whole SWC (no register write before any call after reset); the r116 author could not map it to a unit and SWE.3 stopped STUCK."
     remedy: "Initial-state invariants are classified as component-level (like resource budgets); SWR_NOT_REFINED states what to add for ordinary SWRs."
+  - id: RPR-037
+    script: rpr037_sub_check_ids_with_underscore_not_run.py
+    sha256: 42e5931fd2206eabd3e4755ec79051eda55e465e40556162867f9ef803ff01dc
+    symptom_signature: "passed sub-checks with '_' reported NOT_RUN"
+    observed_in: r117
+    baseline_revision: 488010608118f1d4c3ed6a136fe8dd333ff90208
+    fix_revision: cef7e4757d47855d75a6acb055097e096b6d87a6
+    error_codes: ["SWE5-05", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.5/inspect]
+    root_cause: "swtrace.check_results accepted only [A-Za-z0-9-] after the test id; r117's integration checks were named IT-005-ADC12_EN etc., so IT-005/IT-006 were absent from the parsed results, Matrix 5 showed them NOT_RUN/UNVERIFIED, and the inspector rejected the contradiction with the PASS host run three times."
+    remedy: "Sub-check ids may contain '_' (\\w); a failing sub-check still fails its test."
