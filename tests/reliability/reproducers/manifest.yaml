@@ -354,3 +354,14 @@ reproducers:
     operations: [SWE.1/author, SWE.1/inspect]
     root_cause: "The deterministic EARS check reported only EARS_UNKNOWN_SYSTEM_NAME for a subject with qualifiers ('The RCC LL driver compiled for the Cortex-M55 target shall ...'); the SWE.1 author could not see what was wrong and repeated it for three cycles (r112 SWR-024, r114 SWR-020)."
     remedy: "A major EARS_SYSTEM_NAME_HINT finding names the parsed subject, lists the allowed system names and says to move qualifiers into the condition clause; the original issue code is unchanged."
+  - id: RPR-035
+    script: rpr035_trace_feedback_not_actionable.py
+    sha256: b6c7c84b92db95e65d73aea9ee60abdd6eca64f2dd681846942cbcd238b9c274
+    symptom_signature: "SWE.3 trace feedback not actionable"
+    observed_in: r115
+    baseline_revision: d2aa1f4398b426e0cbeffeff2f4b8a76108b9a5c
+    fix_revision: e7752c412235cbcbc4af3ad00fe7470bf39bb319
+    error_codes: ["UNIT:DESIGN_RENDER_FAILED", "CODE:SPEC_NOT_IMPLEMENTED", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author]
+    root_cause: "SWE.3 trace rejections gave no actionable detail: every design failed with PlantUML's bare 'No diagram found' and CODE:SPEC_NOT_IMPLEMENTED named only the spec id; r115 spent its three SWE.3 cycles and was BLOCKED."
+    remedy: "SPEC_NOT_IMPLEMENTED names the unit and the functions whose @spec line should carry the item; DESIGN_RENDER_FAILED includes the PlantUML -syntax result and a start/end hint."
