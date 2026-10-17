@@ -41,6 +41,10 @@ def assess() -> dict:
     metrics = compute(CREStore(), pol)
     r09 = [m for m in metrics["measurements"] if m["metric_id"] == "CRE-R09"]
     min_n = int(pol.get("statistics.min_samples_for_descriptive_charts"))
+    try:
+        slo_n = int(pol.get("statistics.min_samples_for_slo_evidence"))
+    except KeyError:
+        slo_n = min_n
 
     def level(checks: dict[str, tuple[bool, str]]) -> dict:
         return {"status": "DEMONSTRATED" if all(ok for ok, _ in checks.values()) else "NOT_DEMONSTRATED",
@@ -83,7 +87,7 @@ def assess() -> dict:
     return {"schema": "forge-c/cre-readiness/1.0", "assessed_at": utc_now(), "git_head": head,
             "configured_mode": pol.mode, "policy_sha256": pol.sha256, "readiness": readiness,
             "levels": {"OBSERVE_ONLY": observe, "PILOT_ELIGIBLE": pilot, "ACTIVE_ELIGIBLE": active},
-            "reliability_slo_evidence": slo_evidence(min_n, small),
+            "reliability_slo_evidence": slo_evidence(slo_n, small),
             "tasks": {"pass": sum(s == "PASS" for s in status.values()), "total": len(status)},
             "p0_requirements_unmet": p0_gaps,
             "supported_claims": [
@@ -112,7 +116,8 @@ def _drill_passed() -> bool:
 
 def slo_evidence(min_n: int, small: list[str]) -> dict:
     """Reliability-SLO evidence: packaged work-order attempts grouped by cohort AND recorded factory revision (a
-    homogeneous sample). A group with >= min_n attempts is a measured BASELINE (yield with a Wilson interval); it is
+    homogeneous sample). min_n = statistics.min_samples_for_slo_evidence (else the descriptive-chart minimum).
+    A group with >= min_n attempts is a measured BASELINE (yield with a Wilson interval); it is
     not an SLO attainment claim - spec section 6: targets are owner-approved after observing comparable cohorts.
     Attempts excluded by a recorded owner decision (evidence/cre/slo/exclusions.json) are not counted."""
     from collections import defaultdict
