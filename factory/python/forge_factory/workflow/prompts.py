@@ -554,7 +554,8 @@ def trace_step(kind: str) -> list[str]:
     rules = {
         "swe2": "OWNER TRACE RULES (gate-checked, ARCH:* issues): in workproducts/SWE.2/architecture_static.puml the LL "
                 "and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype - "
-                f"'component \"RCC_{x}\" <<SWC>> as {swc}' and {other}. Allocate EVERY SWR of "
+                f"'component \"RCC_{x}\\nstm32n6xx_{x.lower()}_rcc\" <<SWC>> as {swc}' (keep the module name "
+                f"stm32n6xx_{x.lower()}_rcc in the label: the view check requires it) and {other}. Allocate EVERY SWR of "
                 f"workproducts/SWE.1/software_requirements.md to {swc} with a note IN the diagram: 'note right of {swc}', "
                 "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. "
                 f"'{swc} --> RCC : IF-01 register access'" + (" and 'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* accessors'"

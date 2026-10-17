@@ -1,0 +1,198 @@
+"""EASA-T033/T035/T036/T038 and AT-038/AT-084 — register access semantics from the baselined reference manual.
+
+Independent of `inspection/regmap.py` (which generates AND checks the LL defines with one parser — common-cause
+finding F-02): this module parses the RM section files itself, including the per-bit ACCESS row of the bit diagram,
+and checks the C code's register writes against it:
+  RO_REGISTER_WRITE / RO_FIELD_WRITE   write to a register/field whose RM access is read-only (r)
+  RESERVED_BIT_WRITE / UNKNOWN_FIELD   a written mask touches reserved bits or names no RM field
+  UNKNOWN_REGISTER                     an offset that is not an RM register
+  NON_ATOMIC_RMW                       read-modify-write where the RM provides atomic set/clear registers (concurrency)
+Errata are NOT baselined for this project: every errata-dependent conclusion is UNKNOWN, never assumed clean.
+Simulator semantics are compared with the RM and differences are reported (Renode is not silicon or HIL).
+"""
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+ACCESS = {"r", "w", "rw", "rs", "rc_w1", "rc_w0", "rc_r", "t", "w1", "rt_w1", "rt_w0", "rw1"}
+WRITEABLE = {"w", "rw", "rs", "rc_w1", "rc_w0", "w1", "rt_w1", "rt_w0", "rw1", "t"}
+
+
+def _bit_columns(line: str) -> dict[int, int] | None:
+    toks = list(re.finditer(r"\d+", line))
+    if len(toks) != 16 or line.strip(" 0123456789") != "":
+        return None
+    return {int(m.group(0)): (m.start() + m.end()) // 2 for m in toks}
+
+
+def parse_section(text: str) -> dict | None:
+    name = re.search(r"^#+ .*\((RCC_[A-Z0-9_]+)\)\s*$", text, re.M)
+    off = re.search(r"Address offset:\s*(0x[0-9a-fA-F]+)", text)
+    if not (name and off):
+        return None
+    reset = re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text)
+    fields: dict[str, dict] = {}
+    for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", text, re.M):
+        msb, lsb = int(m.group(1)), int(m.group(2) or m.group(1))
+        if lsb <= msb <= 31:
+            fields.setdefault(m.group(3), {"msb": msb, "lsb": lsb, "access": set()})
+    access_by_bit: dict[int, str] = {}
+    lines = text.splitlines()
+    cols = None
+    for line in lines:
+        c = _bit_columns(line)
+        if c:
+            cols = c
+            continue
+        toks = [m for m in re.finditer(r"\S+", line)]
+        if cols and toks and all(t.group(0) in ACCESS for t in toks):
+            for t in toks:
+                center = (t.start() + t.end()) // 2
+                bit = min(cols, key=lambda b: abs(cols[b] - center))
+                access_by_bit[bit] = t.group(0)
+    for f in fields.values():
+        f["access"] = sorted({access_by_bit[b] for b in range(f["lsb"], f["msb"] + 1) if b in access_by_bit})
+    used = 0
+    for f in fields.values():
+        used |= ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
+    return {"name": name.group(1), "offset": int(off.group(1), 16),
+            "reset": int(reset.group(1).replace(" ", ""), 16) if reset else None, "fields": fields,
+            "reserved_mask": (~used) & 0xFFFFFFFF, "access_by_bit": access_by_bit,
+            "read_only": bool(access_by_bit) and all(a == "r" for a in access_by_bit.values())}
+
+
+def index(sections_dir: Path) -> dict[str, dict]:
+    out: dict[str, dict] = {}
+    for p in sorted(Path(sections_dir).glob("*.md")):
+        r = parse_section(p.read_text(errors="replace"))
+        if r and r["name"] not in out:
+            out[r["name"]] = r
+    return out
+
+
+def set_clear_aliases(idx: dict[str, dict]) -> dict[str, tuple[str, str]]:
+    """RCC_CR -> (RCC_CSR, RCC_CCR), RCC_AHB1ENR -> (RCC_AHB1ENSR, RCC_AHB1ENCR) ... where the RM provides them."""
+    out = {}
+    for n in idx:
+        if n == "RCC_CR" and "RCC_CSR" in idx and "RCC_CCR" in idx:
+            out[n] = ("RCC_CSR", "RCC_CCR")
+        m = re.match(r"RCC_(\w+?)(ENR|RSTR|LPENR)$", n)
+        if m:
+            s, c = f"RCC_{m.group(1)}{m.group(2)[:-1]}SR", f"RCC_{m.group(1)}{m.group(2)[:-1]}CR"
+            if s in idx and c in idx:
+                out[n] = (s, c)
+    return out
+
+
+# ---- code scan -------------------------------------------------------------------------------------------------
+DEFINE = re.compile(r"^\s*#\s*define\s+(LL_RCC_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", re.M)
+WRITE = re.compile(r"ll_rcc_regs\s*\[\s*([^\]]+?)\s*\]\s*(\|=|&=|=)(?!=)\s*([^;]+);")
+
+
+def _eval_index(expr: str, defs: dict[str, int]) -> int | None:
+    e = expr
+    for k, v in sorted(defs.items(), key=lambda kv: -len(kv[0])):
+        e = re.sub(rf"\b{k}\b", str(v), e)
+    e = re.sub(r"(\d+)[uUlL]+\b", r"\1", e)
+    if not re.fullmatch(r"[\d\s()+*/x0-9A-Fa-f-]+", e):
+        return None
+    try:
+        return int(eval(e.replace("/", "//"), {"__builtins__": {}}))  # noqa: S307 - digits/operators only
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def scan_writes(code: str, header_defs: str) -> list[dict]:
+    defs = {m.group(1): int(m.group(2), 0) for m in DEFINE.finditer(header_defs)}
+    out = []
+    for m in WRITE.finditer(code):
+        word = _eval_index(m.group(1), defs)
+        rhs = m.group(3)
+        masks = re.findall(r"LL_RCC_\w+_MSK", rhs)
+        lit = [] if masks else [int(re.sub(r"[uUlL]+$", "", x), 0)
+                                for x in re.findall(r"\b(?:0x[0-9A-Fa-f]+|\d+)[uUlL]*\b", rhs)]
+        value = 0
+        for mk in masks:
+            value |= defs.get(mk, 0)
+        for v in lit:
+            value |= v
+        out.append({"line": code.count("\n", 0, m.start()) + 1, "word": word, "op": m.group(2), "masks": masks,
+                    "value": value, "text": m.group(0)[:120]})
+    return out
+
+
+def check_writes(code: str, header_defs: str, idx: dict[str, dict]) -> list[str]:
+    by_off = {r["offset"]: r for r in idx.values()}
+    aliases = set_clear_aliases(idx)
+    f = []
+    for w in scan_writes(code, header_defs):
+        if w["word"] is None:
+            f.append(f"UNRESOLVED_REGISTER_INDEX:line {w['line']}")
+            continue
+        reg = by_off.get(w["word"] * 4)
+        if reg is None:
+            f.append(f"UNKNOWN_REGISTER:offset 0x{w['word'] * 4:X}:line {w['line']}")
+            continue
+        if reg["read_only"]:
+            f.append(f"RO_REGISTER_WRITE:{reg['name']}:line {w['line']}")
+            continue
+        touched = w["value"]
+        if touched & reg["reserved_mask"]:
+            f.append(f"RESERVED_BIT_WRITE:{reg['name']}:0x{touched & reg['reserved_mask']:08X}:line {w['line']}")
+        for b in range(32):
+            if touched >> b & 1 and b in reg["access_by_bit"] and reg["access_by_bit"][b] not in WRITEABLE:
+                f.append(f"RO_FIELD_WRITE:{reg['name']}:bit {b}:line {w['line']}")
+        known = {f"LL_RCC_{reg['name'][4:]}_{fld}_MSK" for fld in reg["fields"]}
+        for mk in w["masks"]:
+            if mk not in known:
+                f.append(f"UNKNOWN_FIELD:{mk}:for {reg['name']}:line {w['line']}")
+        if w["op"] in ("|=", "&=") and reg["name"] in aliases:
+            s, c = aliases[reg["name"]]
+            f.append(f"NON_ATOMIC_RMW:{reg['name']}:line {w['line']}:RM provides {s}/{c}")
+    return f
+
+
+def errata_status(ws: Path) -> dict:
+    """Errata are part of the hardware baseline only if the work-order inputs list them."""
+    man = Path(ws) / "inputs" / "inputs-manifest.json"
+    import json
+
+    docs = json.loads(man.read_text())["documents"] if man.is_file() else []
+    er = [d for d in docs if re.search(r"\bES\d{4}|errata", f"{d.get('doc', '')} {d.get('markdown', '')}", re.I)]
+    return {"status": "BASELINED" if er else "UNKNOWN", "documents": [d.get("doc") for d in er],
+            "consequence": None if er else "errata-dependent behaviour is UNKNOWN (no errata sheet in the inputs)"}
+
+
+SIM_READY = re.compile(r"READY_MASK\s*=\s*(0x[0-9A-Fa-f]+)|RCC_SR.*?RCC_CR\s*&\s*(0x[0-9A-Fa-f]+)", re.S)
+
+
+def simulator_mismatches(model_text: str, idx: dict[str, dict]) -> list[str]:
+    """AT-084: compare the behavioural Renode RCC model with the RM (ready-flag derivation, reset values, set/clear
+    registers). Every difference is a fidelity limitation of simulated evidence, never hidden."""
+    out = []
+    m = SIM_READY.search(model_text)
+    sr, cr = idx.get("RCC_SR"), idx.get("RCC_CR")
+    if not (m and sr and cr):
+        return ["SIMULATOR_MODEL_NOT_COMPARABLE"]
+    model_mask = int(m.group(1) or m.group(2), 16)
+    rm_mask = 0
+    for f, d in sr["fields"].items():
+        on = f.replace("RDY", "ON")
+        if f.endswith("RDY") and on in cr["fields"] and cr["fields"][on]["lsb"] == d["lsb"]:
+            rm_mask |= 1 << d["lsb"]
+    if model_mask != rm_mask:
+        out.append(f"SIMULATOR_MISMATCH:RCC_SR ready mask model 0x{model_mask:X} != RM 0x{rm_mask:X}")
+    zero_reset = bool(re.search(r"regs\.get\(\s*\w+\s*,\s*0\s*\)|every register starts at 0", model_text, re.I))
+    if zero_reset:
+        for name in ("RCC_CR", "RCC_SR", "RCC_AHB1ENR", "RCC_AHB1RSTR"):
+            r = idx.get(name)
+            if r and r["reset"]:
+                out.append(f"SIMULATOR_MISMATCH:{name} reset value model 0x0 != RM 0x{r['reset']:08X}")
+    aliases = set_clear_aliases(idx)
+    for reg, (s_, c_) in sorted(aliases.items()):
+        if reg in ("RCC_CR", "RCC_AHB1ENR", "RCC_AHB1RSTR"):
+            so, co = idx[s_]["offset"], idx[c_]["offset"]
+            if f"0x{so:03X}".lower() not in model_text.lower() and f"0x{so:x}" not in model_text.lower():
+                out.append(f"SIMULATOR_MISMATCH:{s_}/{c_} (0x{so:X}/0x{co:X}) not modelled as set/clear of {reg}")
+    return out
