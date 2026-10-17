@@ -166,7 +166,11 @@ def invariant_findings(code: dict[str, str], header_defs: str, idx: dict[str, di
                     rmw_by_reg.setdefault(w.split(":")[1], set()).add(fm.group(1))
             for lm in LOOP.finditer(body):
                 cond = lm.group(2)
-                if re.search(r"IsReady|IsEnabled|ll_rcc_regs", cond) and not re.search(r"(<|<=)\s*\w+", cond):
+                counters = re.findall(r"\b([a-z_]\w*)\s*(?:<=|<|>=|>|!=)\s*\w+|\w+\s*(?:<=|<|>=|>)\s*([a-z_]\w*)\b", cond)
+                names = {a or b for a, b in counters} - {"LL_RCC_HSI_IsReady", "LL_RCC_HSE_IsReady"}
+                stepped = any(re.search(rf"\b{re.escape(n)}\s*(\+\+|--|\+=|-=)|(\+\+|--){re.escape(n)}\b", body)
+                              for n in names)  # dry-run FP r96: a down-counter (count != 0U; count--) is a bound
+                if re.search(r"IsReady|IsEnabled|ll_rcc_regs", cond) and not stepped:
                     f.append(f"LOOP_UNBOUNDED:{fm.group(1)}@{Path(path).name}")
         for m in re.finditer(r"^\s*static\s+(?!inline|const|hal_status_t|void|uint32_t\s+\w+\s*\()[\w\s]+\b(\w+)\s*(=[^;]*)?;",
                              text, re.M):

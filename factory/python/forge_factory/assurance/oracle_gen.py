@@ -57,7 +57,7 @@ def _selected(sid: str, sel: re.Match, fns: list[str], protos: dict[str, str], i
     suffix = "EN" if sel["kind"] == "enable" else "RST"
     for fn in fns:
         m = re.match(r"(?:HAL|LL)_RCC_([A-Z0-9]+)_(\w+)$", fn)
-        if not m or fn not in protos:
+        if not m or fn not in protos or "*" in protos[fn]:
             continue
         fld = reg["fields"].get(m.group(1) + suffix)
         if fld is None:
@@ -86,7 +86,10 @@ def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]
             continue
         f = reg["fields"][fld]
         mask = ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
-        fns = [x for x in alloc.get(sid, []) if x in protos]
+        fns = [x for x in alloc.get(sid, []) if x in protos and "*" not in protos[x]]
+        for x in alloc.get(sid, []):  # dry-run FP r96: a struct-pointer argument is not derivable from requirements
+            if x in protos and "*" in protos[x]:
+                notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:{x} takes a pointer argument")
         if not fns:
             notes.append(f"ORACLE_NOT_DERIVABLE:{sid}:no allocated function with a prototype")
             continue
@@ -118,7 +121,7 @@ def derive_timeouts(requirements_md: str, header: str, idx: dict[str, dict]) -> 
     cr, sr = idx.get("RCC_CR"), idx.get("RCC_SR")
     for fn, params in sorted(protos.items()):
         m = re.match(r"HAL_RCC_(\w+?)_Enable$", fn)
-        if not (m and cr and re.search(r"uint32_t\s+\w+", params or "")):
+        if not (m and cr and re.search(r"uint32_t\s+\w+", params or "")) or "*" in (params or ""):
             continue
         on = cr["fields"].get(m.group(1) + "ON")
         if on is None:

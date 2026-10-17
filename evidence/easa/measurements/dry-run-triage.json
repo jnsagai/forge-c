@@ -1,0 +1,69 @@
+{
+ "schema": "forge-c/easa-dry-run-triage/0.1",
+ "reviewer": "coding agent (Claude Code) - NOT an independent human review",
+ "v1": {
+  "file": "dry-run-observe-only.json",
+  "false_positives": [
+   "r89 SWR-027 REQ_NOT_TESTABLE (build/map-file requirement)",
+   "r96 SWR-007/008 REQ_UNBOUNDED_TIME ('requested timeout')",
+   "r88 ARCH_VIEW_INCONSISTENT RCC (non-component element)",
+   "r90 ARCH_VIEW_INCONSISTENT H/L (aliases compared)",
+   "r94 ARCH_IRQ_OWNER_MISSING (negated 'no interrupt handlers')",
+   "r96 LOOP_UNBOUNDED x2 (down-counter bound)",
+   "r96 ORACLE_FAIL x3 (struct-pointer API called with NULL)",
+   "r90 INDEPENDENT_ORACLE FAIL (non-derivable notes counted as failure)"
+  ],
+  "false_positive_count": 11
+ },
+ "v2": {
+  "file": "dry-run-observe-only-v2.json",
+  "aggregate": {
+   "FAIL": 12,
+   "PASS": 197,
+   "UNKNOWN": 11
+  },
+  "true_positives": [
+   "r88 ARCH_LAYER_BYPASS: HAL reads ll_rcc_regs directly 3x (architecture rule: HAL uses only LL functions); the sealed package passed all six SWE gates"
+  ],
+  "test_adequacy_findings": {
+   "r101": [
+    "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+    "SURVIVOR:DEF_BIT_SHIFT@48:#define LL_RCC_SR_HSIRDY_MSK 0x00000008U"
+   ],
+   "-r87": [
+    "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+    "SURVIVOR:DEF_BIT_SHIFT@29:#define LL_RCC_CR_MSION_MSK 0x00000004U"
+   ],
+   "-r89": [
+    "SURVIVOR:DEF_BIT_SHIFT@29:#define LL_RCC_CR_MSION_MSK 0x00000004U",
+    "SURVIVOR:DEF_BIT_SHIFT@31:#define LL_RCC_CR_LSEON_MSK 0x00000002U"
+   ],
+   "-r91": [
+    "SURVIVOR:DEF_BIT_SHIFT@31:#define LL_RCC_CR_LSEON_MSK 0x00000002U",
+    "SURVIVOR:DEF_BIT_SHIFT@33:#define LL_RCC_CR_LSION_MSK 0x00000001U"
+   ],
+   "-r95": [
+    "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+    "SURVIVOR:DEF_BIT_SHIFT@54:#define LL_RCC_SR_LSIRDY_MSK 0x00000001U"
+   ],
+   "r102": [
+    "SURVIVOR:LT_TO_LE@21:while ((count < timeout) && (status != HAL_OK))"
+   ],
+   "-r88": [
+    "SURVIVOR:EQ0_TO_NE0@16:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti",
+    "SURVIVOR:EQ0_TO_NE0@63:while ((LL_RCC_HSE_IsReady() == 0U) && (count < ti"
+   ],
+   "-r94": [
+    "SURVIVOR:EQ0_TO_NE0@19:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti",
+    "SURVIVOR:EQ0_TO_NE0@63:while ((LL_RCC_HSE_IsReady() == 0U) && (count < ti"
+   ]
+  },
+  "false_positives": [],
+  "two_regressions_found_and_fixed_during_v2": [
+   "r96 oracle NO_REQUIREMENT_REFERENCE when no case derivable",
+   "r102 SWR-013 PARAM_BOUND word-boundary"
+  ]
+ },
+ "caveat": "v2 heuristics were corrected on the same 10 packages (calibration, not independent validation); the false-positive rate on unseen work orders is NOT_MEASURED",
+ "unknown": "FLOW_SCHEDULING_ANALYSIS has no installed analyzer (10x UNKNOWN); r96 pointer-argument API not derivable by the oracle generator"
+}

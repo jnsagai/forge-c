@@ -93,12 +93,12 @@ def v_oracle(ws: Path) -> dict:
     hdr = "stm32n6xx_ll_rcc.h" if layer == "LL" else "stm32n6xx_hal_rcc.h"
     srcs = [] if layer == "LL" else sorted((ws / "software/hal").glob("*.c"))
     r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], srcs, hdr)
-    f = [f"ORACLE_FAIL:{x[1]}:{x[2]}" for x in r.get("results", []) if x[3] == "FAIL"] + r.get("notes", [])
-    if r["provenance"]["independence_status"] != "INDEPENDENT":
+    f = [f"ORACLE_FAIL:{x[1]}:{x[2]}" for x in r.get("results", []) if x[3] == "FAIL"]
+    if r["status"] in ("PASS", "FAIL") and r["provenance"]["independence_status"] != "INDEPENDENT":
         f.append("ORACLE_NOT_INDEPENDENT:" + str(r["provenance"]["contamination_reason"]))
+    limits = [f"LIMITATION:{n}" for n in r.get("notes", [])]  # not derivable from requirements: stated, not a failure
     st = r["status"] if r["status"] in ("PASS", "FAIL") else "NOT_SUPPORTED"
-    return {"status": "FAIL" if st == "PASS" and any(x.startswith("ORACLE_") for x in f) else st, "findings": f,
-            "cases": r.get("cases", 0)}
+    return {"status": "FAIL" if f else st, "findings": f + limits, "cases": r.get("cases", 0)}
 
 
 def _unit_test(ws: Path) -> Path | None:

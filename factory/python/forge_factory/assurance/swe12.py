@@ -38,7 +38,8 @@ ASSUME = re.compile(r"\b(TBD|TBC|to be (defined|confirmed)|assum\w*|if possible|
 TIME_WORDS = re.compile(r"\b(wait|timeout|within|bounded|poll\w*|delay|until)\b", re.I)
 # measured false positives on r101 (SWR-017/018 "register"/"write" observables) widened this vocabulary
 OBSERVABLE = re.compile(r"\b(RCC_[A-Z0-9]+(\.[A-Z0-9_]+)?|HAL_[A-Z_]+|return\w*|registers?|bits?|flags?|writes?|"
-                        r"\d+\s*(bytes?|iterations?|ms|us|cycles?))\b", re.I)
+                        r"map file|image|compiled|linked|\d+\s*(bytes?|iterations?|ms|us|cycles?))\b", re.I)
+PARAM_BOUND = re.compile(r"(requested timeout|timeout (argument|parameter)|TIMEOUT_VALUE)", re.I)  # dry-run FP r96
 
 
 def requirements(text: str) -> list[dict]:
@@ -84,7 +85,7 @@ def check_requirements(ws: Path) -> dict:
             f.append(f"REQ_SILENT_ASSUMPTION:{rid}:{ASSUME.search(t).group(0)}")
         if not OBSERVABLE.search(t):
             f.append(f"REQ_NOT_TESTABLE:{rid}")
-        if TIME_WORDS.search(t) and not re.search(r"\d", t) and "TIMEOUT_VALUE" not in t:  # r102 SWR-013 FP
+        if TIME_WORDS.search(t) and not re.search(r"\d", t) and not PARAM_BOUND.search(t):  # r102/r96 FPs
             f.append(f"REQ_UNBOUNDED_TIME:{rid}")
         if idx:
             for reg, fld in FIELD_REF.findall(t):
@@ -203,6 +204,9 @@ def check_architecture(ws: Path) -> dict:
     model = parse_architecture(st)
     f = []
     declared = set(re.findall(r"\bas\s+(\w+)", st)) | set(model["swcs"])
+    labels = set(re.findall(r'^\s*(?:component|node|rectangle|database|interface|package|artifact|folder|frame|cloud|'
+                            r'queue|card|collections|agent|storage)\s+"([^"\\]+)', st, re.M)) | \
+        set(re.findall(r"^\s*\[([^\]\\]+)\]", st, re.M))
     for c in model["interfaces"]:
         for end in (c["from"], c["to"]):
             if end not in declared:
@@ -213,19 +217,22 @@ def check_architecture(ws: Path) -> dict:
     shared = shared_registers(ws)
     if shared and not re.search(r"(shared[- ]resource|interrupt|IRQ|concurren|reentran)", md, re.I):
         f += [f"ARCH_SHARED_RESOURCE_UNOWNED:{r} written by {', '.join(fn)}" for r, fn in sorted(shared.items())]
-    if re.search(r"\bIRQ|interrupt handler|_IRQHandler\b", md) and not re.search(r"(IRQ|interrupt)[^.\n]{0,60}\bowner\b",
-                                                                              md, re.I):
+    from .normative import NEGATION
+
+    irq = [m for m in re.finditer(r"\bIRQ\w*|interrupt handlers?|_IRQHandler\b", md)
+           if not NEGATION.search(md[max(md.rfind(".", 0, m.start()), md.rfind("\n", 0, m.start())) + 1:m.end()])]
+    if irq and not re.search(r"(IRQ|interrupt)[^.\n]{0,60}\bowner\b", md, re.I):  # dry-run FP r94: negation aware
         f.append("ARCH_IRQ_OWNER_MISSING")
     # PlantUML semantics (AT-029 / T030): dynamic participants must be static elements
-    parts = set(re.findall(r"^\s*(?:participant|actor|boundary|control|entity)\s+\"?([\w .]+?)\"?(?:\s+as\s+(\w+))?\s*$",
-                           dy, re.M))
-    names = {(a or b).strip() for b, a in parts}
-    static_names = declared | {lbl for v in model["swcs"].values() for lbl in v} | set(re.findall(r'component\s+"([^"\\]+)', st))
-    for n in sorted(names):
-        if n.lower() in ("caller", "app", "application", "user", "client", "test"):
+    parts = re.findall(r"^\s*(?:participant|actor|boundary|control|entity)\s+\"?([\w .]+?)\"?(?:\s+as\s+(\w+))?\s*$",
+                       dy, re.M)
+    static_names = declared | labels | {lbl for v in model["swcs"].values() for lbl in v}
+    for name, alias in sorted(set(parts)):  # dry-run FP r90: compare the participant NAME (and its alias)
+        name = name.strip()
+        if name.lower() in ("caller", "app", "application", "user", "client", "test"):
             continue
-        if not any(n == s or n in s or s in n for s in static_names):
-            f.append(f"ARCH_VIEW_INCONSISTENT:dynamic participant {n} not in static view")
+        if not any(c and (c == x or c in x or x in c) for c in (name, alias) for x in static_names):
+            f.append(f"ARCH_VIEW_INCONSISTENT:dynamic participant {name} not in static view")
     hal = list((ws / "software/hal").glob("*.c")) if (ws / "software/hal").is_dir() else []
     for p in hal:
         if "ll_rcc_regs[" in p.read_text(errors="replace"):

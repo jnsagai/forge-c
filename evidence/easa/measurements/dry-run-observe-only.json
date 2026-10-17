@@ -1,0 +1,249 @@
+{
+ "aggregate_status_counts": {
+  "FAIL": 29,
+  "PASS": 181,
+  "UNKNOWN": 10
+ },
+ "generated_at": "2026-10-17T16:18:41.069352Z",
+ "mode": "OBSERVE_ONLY",
+ "note": "copy-based shadow audit of complete sealed packages; archives re-verified after each run",
+ "packages": {
+  "WO-0002A-STM32N6-RCC-LL-r101": {
+   "archive_unchanged": true,
+   "duration_s": 3.3,
+   "failures": {
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+     "SURVIVOR:DEF_BIT_SHIFT@48:#define LL_RCC_SR_HSIRDY_MSK 0x00000008U",
+     "SURVIVOR:DEF_OFFSET_SHIFT@15:#define LL_RCC_CR_OFFSET 0x000U"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 1,
+    "PASS": 20,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002A-STM32N6-RCC-LL-r87": {
+   "archive_unchanged": true,
+   "duration_s": 2.9,
+   "failures": {
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+     "SURVIVOR:DEF_BIT_SHIFT@29:#define LL_RCC_CR_MSION_MSK 0x00000004U",
+     "SURVIVOR:DEF_BIT_SHIFT@33:#define LL_RCC_CR_LSION_MSK 0x00000001U"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 1,
+    "PASS": 20,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002A-STM32N6-RCC-LL-r89": {
+   "archive_unchanged": true,
+   "duration_s": 3.0,
+   "failures": {
+    "SWE.1:SOURCE_CONTRADICTION_CHECK": [
+     "REQ_NOT_TESTABLE:SWR-027"
+    ],
+    "SWE.1:SOURCE_LINKED_REQUIREMENTS": [
+     "REQ_NOT_TESTABLE:SWR-027"
+    ],
+    "SWE.1:TESTABILITY_CHECK": [
+     "REQ_NOT_TESTABLE:SWR-027"
+    ],
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:DEF_BIT_SHIFT@29:#define LL_RCC_CR_MSION_MSK 0x00000004U",
+     "SURVIVOR:DEF_BIT_SHIFT@31:#define LL_RCC_CR_LSEON_MSK 0x00000002U",
+     "SURVIVOR:DEF_BIT_SHIFT@33:#define LL_RCC_CR_LSION_MSK 0x00000001U"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 4,
+    "PASS": 17,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002A-STM32N6-RCC-LL-r91": {
+   "archive_unchanged": true,
+   "duration_s": 3.1,
+   "failures": {
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:DEF_BIT_SHIFT@31:#define LL_RCC_CR_LSEON_MSK 0x00000002U",
+     "SURVIVOR:DEF_BIT_SHIFT@33:#define LL_RCC_CR_LSION_MSK 0x00000001U",
+     "SURVIVOR:DEF_BIT_SHIFT@50:#define LL_RCC_SR_MSIRDY_MSK 0x00000004U"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 1,
+    "PASS": 20,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002A-STM32N6-RCC-LL-r95": {
+   "archive_unchanged": true,
+   "duration_s": 2.9,
+   "failures": {
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:DEF_BIT_SHIFT@27:#define LL_RCC_CR_HSION_MSK 0x00000008U",
+     "SURVIVOR:DEF_BIT_SHIFT@54:#define LL_RCC_SR_LSIRDY_MSK 0x00000001U",
+     "SURVIVOR:DEF_OFFSET_SHIFT@36:#define LL_RCC_SR_OFFSET 0x004U"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 1,
+    "PASS": 20,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r102": {
+   "archive_unchanged": true,
+   "duration_s": 13.1,
+   "failures": {
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:LT_TO_LE@21:while ((count < timeout) && (status != HAL_OK))"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 1,
+    "PASS": 20,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r88": {
+   "archive_unchanged": true,
+   "duration_s": 15.8,
+   "failures": {
+    "SWE.2:COMPONENT_ALLOCATION": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant RCC not in static view",
+     "ARCH_LAYER_BYPASS:stm32n6xx_hal_rcc.c accesses registers directly",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:INTERFACE_DEFINITION": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant RCC not in static view",
+     "ARCH_LAYER_BYPASS:stm32n6xx_hal_rcc.c accesses registers directly",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:IRQ_RESOURCE_OWNERSHIP": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant RCC not in static view",
+     "ARCH_LAYER_BYPASS:stm32n6xx_hal_rcc.c accesses registers directly",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:PLANTUML_SEMANTIC_CONSISTENCY": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant RCC not in static view",
+     "ARCH_LAYER_BYPASS:stm32n6xx_hal_rcc.c accesses registers directly",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:EQ0_TO_NE0@16:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti",
+     "SURVIVOR:EQ0_TO_NE0@63:while ((LL_RCC_HSE_IsReady() == 0U) && (count < ti",
+     "SURVIVOR:LT_TO_LE@16:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 5,
+    "PASS": 16,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r90": {
+   "archive_unchanged": true,
+   "duration_s": 7.4,
+   "failures": {
+    "SWE.2:COMPONENT_ALLOCATION": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant H not in static view",
+     "ARCH_VIEW_INCONSISTENT:dynamic participant L not in static view",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:INTERFACE_DEFINITION": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant H not in static view",
+     "ARCH_VIEW_INCONSISTENT:dynamic participant L not in static view",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:IRQ_RESOURCE_OWNERSHIP": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant H not in static view",
+     "ARCH_VIEW_INCONSISTENT:dynamic participant L not in static view",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:PLANTUML_SEMANTIC_CONSISTENCY": [
+     "ARCH_VIEW_INCONSISTENT:dynamic participant H not in static view",
+     "ARCH_VIEW_INCONSISTENT:dynamic participant L not in static view",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.4:INDEPENDENT_ORACLE": []
+   },
+   "status_counts": {
+    "FAIL": 5,
+    "PASS": 16,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r94": {
+   "archive_unchanged": true,
+   "duration_s": 12.9,
+   "failures": {
+    "SWE.2:COMPONENT_ALLOCATION": [
+     "ARCH_IRQ_OWNER_MISSING",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:INTERFACE_DEFINITION": [
+     "ARCH_IRQ_OWNER_MISSING",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:IRQ_RESOURCE_OWNERSHIP": [
+     "ARCH_IRQ_OWNER_MISSING",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.2:PLANTUML_SEMANTIC_CONSISTENCY": [
+     "ARCH_IRQ_OWNER_MISSING",
+     "NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"
+    ],
+    "SWE.4:MUTATION_EVIDENCE": [
+     "SURVIVOR:EQ0_TO_NE0@19:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti",
+     "SURVIVOR:EQ0_TO_NE0@63:while ((LL_RCC_HSE_IsReady() == 0U) && (count < ti",
+     "SURVIVOR:LT_TO_LE@19:while ((LL_RCC_HSI_IsReady() == 0U) && (count < ti"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 5,
+    "PASS": 16,
+    "UNKNOWN": 1
+   }
+  },
+  "WO-0002B-STM32N6-RCC-HAL-r96": {
+   "archive_unchanged": true,
+   "duration_s": 3.0,
+   "failures": {
+    "SWE.1:SOURCE_CONTRADICTION_CHECK": [
+     "REQ_UNBOUNDED_TIME:SWR-007",
+     "REQ_UNBOUNDED_TIME:SWR-008"
+    ],
+    "SWE.1:SOURCE_LINKED_REQUIREMENTS": [
+     "REQ_UNBOUNDED_TIME:SWR-007",
+     "REQ_UNBOUNDED_TIME:SWR-008"
+    ],
+    "SWE.1:TESTABILITY_CHECK": [
+     "REQ_UNBOUNDED_TIME:SWR-007",
+     "REQ_UNBOUNDED_TIME:SWR-008"
+    ],
+    "SWE.3:CONCURRENCY_ANALYSIS": [
+     "LOOP_UNBOUNDED:HAL_RCC_HSI_Enable@stm32n6xx_hal_rcc.c",
+     "LOOP_UNBOUNDED:HAL_RCC_HSE_Enable@stm32n6xx_hal_rcc.c"
+    ],
+    "SWE.4:INDEPENDENT_ORACLE": [
+     "ORACLE_FAIL:SWR-001:HAL_RCC_HSI_Enable",
+     "ORACLE_FAIL:SWR-001:HAL_RCC_HSI_Disable",
+     "ORACLE_FAIL:SWR-002:HAL_RCC_HSI_Disable"
+    ]
+   },
+   "status_counts": {
+    "FAIL": 5,
+    "PASS": 16,
+    "UNKNOWN": 1
+   }
+  }
+ },
+ "profile": "ENHANCED",
+ "schema": "forge-c/easa-dry-run/0.1"
+}
