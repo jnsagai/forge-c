@@ -429,3 +429,16 @@ def test_capa031_budget_requirements_are_component_level_and_generated_tu_is_pro
     assert "CODE:GENERATED_UNIT_MODIFIED:" + LL_TU in swtrace.check_units(ws, render=False, export=False)["major_findings"]
     u = swtrace.parse_units("## SWU-LL-07: x\n- Functions: LL_RCC_a (prose, more), `LL_RCC_b`, LL_RCC_c; no storage\n")
     assert u[0]["functions"] == ["LL_RCC_a", "LL_RCC_b"]
+
+
+def test_capa032_unknown_system_name_comes_with_an_actionable_hint():
+    """CAPA-032 (r112/r114): 'The RCC LL driver compiled for the Cortex-M55 target shall ...' was rejected 3x with
+    a bare EARS_UNKNOWN_SYSTEM_NAME; the finding now names the parsed subject and the allowed names."""
+    from forge_factory.inspection.ears import check_document
+
+    md = ("- **SWR-020** The RCC LL driver compiled for the Cortex-M55 target shall use no more than 4096 bytes of "
+          "flash.\n")
+    f = check_document(md, {"RCC LL driver", "RCC driver"})["major_findings"]
+    assert "SWR-020:EARS_UNKNOWN_SYSTEM_NAME" in f                     # unchanged code (002 regression keeps it)
+    hint = next(x for x in f if x.startswith("SWR-020:EARS_SYSTEM_NAME_HINT"))
+    assert "RCC LL driver compiled for the Cortex-M55 target" in hint and "RCC LL driver, RCC driver" in hint

@@ -85,8 +85,13 @@ def check_statement(req: Requirement, systems: set[str] | None = None) -> Requir
     if not text.endswith("."):
         req.findings.append(f"{req.req_id}:EARS_MISSING_TERMINATOR")
     if systems and found:
-        if found[1].group("system").strip().lower() not in {s.lower() for s in systems}:
+        name = found[1].group("system").strip()
+        if name.lower() not in {s.lower() for s in systems}:
             req.findings.append(f"{req.req_id}:EARS_UNKNOWN_SYSTEM_NAME")
+            # CAPA-032 (r112/r114): the bare code gave no clue and the author repeated a qualified subject 3x
+            req.findings.append(f"{req.req_id}:EARS_SYSTEM_NAME_HINT:subject '{name[:60]}' is not a system name; write "
+                                f"'the <name> shall' with <name> exactly one of: {', '.join(sorted(systems))}; move "
+                                "qualifiers (target, call chain, build) into the condition clause")
     return req
 
 
@@ -113,7 +118,8 @@ def check_document(markdown: str, systems: set[str] | None = None) -> dict:
     for r in reqs:
         counts[r.pattern or "NONCONFORMANT"] = counts.get(r.pattern or "NONCONFORMANT", 0) + 1
     major = [f for f in findings if any(k in f for k in ("NO_SHALL", "NOT_ATOMIC", "NONCONFORMANT",
-                                                          "DUPLICATE", "NO_REQUIREMENTS", "UNKNOWN_SYSTEM"))]
+                                                          "DUPLICATE", "NO_REQUIREMENTS", "UNKNOWN_SYSTEM",
+                                                          "SYSTEM_NAME_HINT"))]  # CAPA-032: hint reaches author
     return {
         "check_id": "SWE1-07",
         "verdict": "PASS" if not major else "FAIL",
