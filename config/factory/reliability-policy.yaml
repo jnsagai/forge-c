@@ -67,6 +67,7 @@ statistics:
   confidence_level: 0.95
   baseline_measurement_only: true
   min_samples_for_descriptive_charts: 30   # descriptive only; no universal statistical guarantee
+  min_samples_for_slo_evidence: 10   # owner decision 2026-10-17 ("the SLO seems too heavy, reduce to 10 runs"); baseline measurement only, wide intervals
   p_chart_enabled_after_calibration: false
   ewma_enabled_after_calibration: false
   ewma_lambda: 0.2
