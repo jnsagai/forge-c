@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "\nimport json, sys\nfrom pathlib import Path\nfrom forge_factory.common import data_root, sha256_file\nv2 = json.loads(Path('evidence/easa/measurements/dry-run-observe-only-v2.json').read_text())\ntri = json.loads(Path('evidence/easa/measurements/dry-run-triage.json').read_text())\npk = v2['packages']; ok = len(pk) == 10 and all(p['archive_unchanged'] for p in pk.values())\narch = [wo for wo in pk if not (lambda d: (d / next(d.glob('*.zip.sha256')).name[:-7]).is_file() and sha256_file(d / next(d.glob('*.zip.sha256')).name[:-7]) == next(d.glob('*.zip.sha256')).read_text().split()[0])(data_root()/'archives'/wo)]\nprint(json.dumps(v2['aggregate_status_counts']), 'fp_v1', tri['v1']['false_positive_count'], 'fp_v2', len(tri['v2']['false_positives']), 'archives_changed', arch)\nsys.exit(0 if ok and not arch and tri['v2']['false_positives'] == [] else 1)"
+  ],
+  "duration_s": 0.043,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "882215af778462b2b5eaca52ec23b60b4e748a10",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T068/20261017T163806.log",
+  "log_sha256": "93b8925d250773f989ac26b9d1c61212be50344c8bc536e6622dc64a86cdec3a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T068",
+  "ts_utc": "2026-10-17T16:38:06.221281Z"
+}

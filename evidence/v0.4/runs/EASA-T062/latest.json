@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "\nimport sys\nfrom pathlib import Path\nfrom forge_factory.assurance.normative import compliance_assertions\ndocs = ['docs/assurance/OPERATIONS.md','docs/assurance/normative-reconciliation-plan.md','docs/adr/ADR-0010-assurance-profile-vs-asil.md','specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md']\nneed = {'OPERATIONS.md': ['OBSERVE_ONLY','PILOT','ENFORCING','Oracle independence','owner'], 'normative-reconciliation-plan.md': ['NOT AVAILABLE','Copyright','reviewer']}\nbad = []\nfor d in docs:\n    t = Path(d).read_text(); bad += [f'{d}:{x}' for x in compliance_assertions(t)]\n    bad += [f'{d}: missing {w}' for w in need.get(Path(d).name, []) if w not in t]\nprint('docs', len(docs), 'issues', bad); sys.exit(1 if bad else 0)"
+  ],
+  "duration_s": 0.031,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "882215af778462b2b5eaca52ec23b60b4e748a10",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T062/20261017T163806.log",
+  "log_sha256": "60c6478590cacd4b8e47e6ff2b1fc6517e18efdea96cc868f74144ea46f7a8e2",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T062",
+  "ts_utc": "2026-10-17T16:38:06.142665Z"
+}

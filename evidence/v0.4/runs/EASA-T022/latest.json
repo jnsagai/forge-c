@@ -11,19 +11,19 @@
     "-k",
     "t022 or at022 or at020 or gate"
   ],
-  "duration_s": 10.513,
+  "duration_s": 10.567,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "d0015687574e8fa6e30c60772ed5e8177d7bcaf7",
+  "git_head": "a623ccd1fb20d60fc9959ca4d5e807166c24802b",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/EASA-T022/20261017T114742.log",
-  "log_sha256": "bc066ce1a52411638d91d3789dc46f67ba7bcc5d9b4dd8671d4d02b9390b958a",
+  "log": "evidence/v0.4/runs/EASA-T022/20261017T163610.log",
+  "log_sha256": "6de4eb89ff3f544363ad7f96d87a87444db49f4049bb7dec5f5668dc951845d2",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "EASA-T022",
-  "ts_utc": "2026-10-17T11:47:42.469373Z"
+  "ts_utc": "2026-10-17T16:36:10.701772Z"
 }

@@ -11,19 +11,19 @@
     "-k",
     "t021 or at077"
   ],
-  "duration_s": 0.834,
+  "duration_s": 0.744,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "d0015687574e8fa6e30c60772ed5e8177d7bcaf7",
+  "git_head": "a623ccd1fb20d60fc9959ca4d5e807166c24802b",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/EASA-T021/20261017T114741.log",
-  "log_sha256": "029d5d00fae208e4e04e60c737491f60c67ff22b3b74cb37f338ee2bdba2bfea",
+  "log": "evidence/v0.4/runs/EASA-T021/20261017T163609.log",
+  "log_sha256": "f2eb13442758a47c6c5c0cbba067c998c9bae9da952934190b8c2b20cea01e4f",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "EASA-T021",
-  "ts_utc": "2026-10-17T11:47:41.537423Z"
+  "ts_utc": "2026-10-17T16:36:09.839101Z"
 }

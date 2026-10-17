@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_easa_swtrace.py",
+    "factory/python/tests/test_t009_workflow_gates.py",
+    "factory/python/tests/test_layer_split.py",
+    "-k",
+    "at093 or gate_walk or capa028 or gate or layer or prepare"
+  ],
+  "duration_s": 21.237,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a623ccd1fb20d60fc9959ca4d5e807166c24802b",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T078/20261017T163725.log",
+  "log_sha256": "d6f5365a32fb0bb2c968ada4240c7cdc84536f195d109367f18d9609ec195fd5",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T078",
+  "ts_utc": "2026-10-17T16:37:25.860520Z"
+}
