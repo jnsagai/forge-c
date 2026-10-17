@@ -343,3 +343,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "The owner-trace SWE.3 gate required every allocated SWR to be refined by a unit-spec item, including flash/RAM/stack budgets that constrain the whole SWC; the r113 author invented 'resource units' around a probe function written into the generated LL compile unit and SWE.3 stopped STUCK."
     remedy: "Resource budgets are classified as component-level constraints (matrix 2 COMPONENT_LEVEL, verified by measurement); a modified generated compile unit is a finding; unit function lists are read as identifiers only."
+  - id: RPR-034
+    script: rpr034_unknown_system_name_no_hint.py
+    sha256: b8b4920c85c8f155198327ea16580e30e12148fd33bbecb4e9a41f3577f4c713
+    symptom_signature: "unknown EARS system name without an actionable major hint"
+    observed_in: r112, r114
+    baseline_revision: 6896be1881fa2fa11e4a5ef0363eea416b1652b8
+    fix_revision: 99f0fb2bfc471432b7697c6f57c95b007fa283e1
+    error_codes: ["INSPECTION_FAIL:SWE1-07", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.1/author, SWE.1/inspect]
+    root_cause: "The deterministic EARS check reported only EARS_UNKNOWN_SYSTEM_NAME for a subject with qualifiers ('The RCC LL driver compiled for the Cortex-M55 target shall ...'); the SWE.1 author could not see what was wrong and repeated it for three cycles (r112 SWR-024, r114 SWR-020)."
+    remedy: "A major EARS_SYSTEM_NAME_HINT finding names the parsed subject, lists the allowed system names and says to move qualifiers into the condition clause; the original issue code is unchanged."
