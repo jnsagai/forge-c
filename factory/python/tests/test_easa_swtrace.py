@@ -203,7 +203,9 @@ def test_at089_code_doc_rules(ws):
     f = swtrace.check_code(ws, doxygen=False)["major_findings"]
     assert any(x.startswith("CODE:UNDOCUMENTED_FUNCTION:HAL_RCC_HSI_Disable") for x in f)
     assert "CODE:UNKNOWN_SPEC_REF:HAL_RCC_HSI_Enable:USPEC-HAL-07-01" in f
-    assert {"CODE:SPEC_NOT_IMPLEMENTED:USPEC-HAL-01-02", "CODE:SPEC_NOT_IMPLEMENTED:USPEC-HAL-02-01"} <= set(f)
+    assert any(x.startswith("CODE:SPEC_NOT_IMPLEMENTED:USPEC-HAL-01-02 (add USPEC-HAL-01-02 to the @spec line of the "
+                            "SWU-HAL-01 function(s) implementing it: HAL_RCC_HSI_Enable)") for x in f)
+    assert any(x.startswith("CODE:SPEC_NOT_IMPLEMENTED:USPEC-HAL-02-01") for x in f)
 
 
 @pytest.mark.skipif(shutil.which("doxygen") is None, reason="doxygen not installed")
@@ -442,3 +444,16 @@ def test_capa032_unknown_system_name_comes_with_an_actionable_hint():
     assert "SWR-020:EARS_UNKNOWN_SYSTEM_NAME" in f                     # unchanged code (002 regression keeps it)
     hint = next(x for x in f if x.startswith("SWR-020:EARS_SYSTEM_NAME_HINT"))
     assert "RCC LL driver compiled for the Cortex-M55 target" in hint and "RCC LL driver, RCC driver" in hint
+
+
+
+def test_capa033_render_failure_reports_the_syntax_error_line(tmp_path):
+    """CAPA-033 (r115): a bare 'No diagram found' gave the author nothing to act on."""
+    if swtrace._plantuml_jar() is None or shutil.which("java") is None:
+        pytest.skip("plantuml not installed")
+    p = tmp_path / "x.puml"
+    p.write_text("@startuml\nstart\nif (x\n@enduml\n")
+    ok, why = swtrace.render_ok(p)
+    assert not ok and "syntax: ERROR 2" in why
+    p.write_text("title x\nstart\n:a;\nstop\n")
+    assert "must start with @startuml" in swtrace.render_ok(p)[1]

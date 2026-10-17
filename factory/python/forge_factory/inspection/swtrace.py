@@ -185,7 +185,15 @@ def render_ok(puml: Path) -> tuple[bool, str]:
     with tempfile.TemporaryDirectory() as td:
         r = subprocess.run(["java", "-Djava.awt.headless=true", "-jar", str(jar), "-tsvg", "-failfast2", "-o", td,
                             str(puml)], capture_output=True, text=True, timeout=120)
-    return r.returncode == 0, (r.stderr or r.stdout)[-200:]
+    if r.returncode == 0:
+        return True, ""
+    # CAPA-033 (r115): 'No diagram found' alone did not tell the author what to fix: add the syntax-check line
+    syn = subprocess.run(["java", "-Djava.awt.headless=true", "-jar", str(jar), "-syntax"], input=puml.read_text(
+        errors="replace"), capture_output=True, text=True, timeout=120)
+    detail = " ".join(syn.stdout.split())[:120]
+    first = puml.read_text(errors="replace").lstrip()[:12]
+    hint = "" if first.startswith("@startuml") else " (the file must start with @startuml and end with @enduml)"
+    return False, f"{' '.join((r.stderr or r.stdout).split())[:80]}; syntax: {detail}{hint}"
 
 
 def unit_reqif(unit: dict, swr_text: dict[str, str]) -> str:
@@ -423,7 +431,11 @@ def check_code(ws: Path, units: list[dict] | None = None, doxygen: bool = True) 
                 rows.append({"function": fn["function"], "file": rel, "unit": u, "uspec": s,
                              "status": "TRACED" if spec_unit.get(s) == u else "INVALID"})
     referenced = {r["uspec"] for r in rows if r["status"] == "TRACED"}
-    f += [f"CODE:SPEC_NOT_IMPLEMENTED:{s}" for s in sorted(spec_unit) if s not in referenced]
+    fns_of = {u["id"]: u["functions"] for u in units}
+    # CAPA-033 (r115): name the unit and the functions whose @spec line should carry the missing item
+    f += [f"CODE:SPEC_NOT_IMPLEMENTED:{s} (add {s} to the @spec line of the {spec_unit[s]} function(s) implementing "
+          f"it: {', '.join(fns_of.get(spec_unit[s], [])[:6]) or 'none listed'})" for s in sorted(spec_unit)
+          if s not in referenced]
     for u in units:
         for fn in u["functions"]:
             if not any(r["function"] == fn for r in rows):
