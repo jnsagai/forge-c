@@ -409,3 +409,14 @@ reproducers:
     operations: [CRE/observe]
     root_cause: "The CRE taxonomy (cre-rules-1.3) had no rule for the owner-addendum trace-gate codes (UNIT:/CODE:/IT:/UT:/VT:/ARCH:); every such rejection since r108 was UNCLASSIFIED, so recurrence detection for CAPA-026..036 could not match their error codes and CAPA-031 reached EFFECTIVE although r120 recurred."
     remedy: "An anchored rule maps '<RELATION>:<CODE>:...' to error code '<RELATION>:<CODE>' (PRODUCT_ENGINEERING, SWE_REWORK); classifier cre-rules-1.4."
+  - id: RPR-040
+    script: rpr040_budget_wording_not_component_level.py
+    sha256: 0b6e853b7f821ad351c811ecdd997e00145f6ad3a2206ab1300409e59df7dab9
+    symptom_signature: "byte budget not recognised as component-level"
+    observed_in: r120
+    baseline_revision: 6e2c1ef2569d1feb2b56f31a5a7d6dcdad4fdbee
+    fix_revision: 5487244a28d0a5e6cb12f6c33c7823bbf0f02f52
+    error_codes: ["UNIT:SWR_NOT_REFINED", "STUCK"]
+    operations: [SWE.3/author]
+    root_cause: "Recurrence of CAPA-031: BUDGET_RX recognised only 'bytes of (program) flash|RAM|static RAM|stack'; r120's SWR-021 budget 'no more than 4096 bytes of code and constant data' was treated as a unit-level requirement and SWE.3 stopped STUCK on UNIT:SWR_NOT_REFINED."
+    remedy: "Any limit on a byte quantity (bytes/KiB/KB/MiB, 'no more than'/'at most'/'not exceed'/'maximum of') is a component-level resource budget."
