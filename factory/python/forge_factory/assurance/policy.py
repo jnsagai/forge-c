@@ -128,11 +128,9 @@ class PolicyHolder:
         return True, []
 
 
-def request_mode(store, pol: dict, target: str, authorization: dict | None = None,
-                 pilot_record_id: str | None = None) -> dict:
-    """AT-067: OBSERVE_ONLY -> PILOT needs human authorization; -> ENFORCING also needs a PASS pilot record with a
-    measured false-positive/negative analysis and an independent review. Downgrades are always allowed."""
-    cur = pol["mode"]
+def mode_preconditions(cur: str, target: str, authorization: dict | None, pilot_rec: dict | None) -> list[str]:
+    """Pure check (no record written): what blocks the switch cur -> target. Used by request_mode and, read-only, by
+    the EASA-T070 readiness decision."""
     issues = []
     if target not in MODES:
         issues.append(f"UNKNOWN_MODE:{target}")
@@ -140,9 +138,8 @@ def request_mode(store, pol: dict, target: str, authorization: dict | None = Non
         if not _authorized(authorization):
             issues.append("HUMAN_AUTHORIZATION_MISSING")
         if target == "ENFORCING":
-            rec = store.get(pilot_record_id) if pilot_record_id else None
-            r = (rec or {}).get("record", {})
-            if not rec or rec["kind"] != "mode" or r.get("pilot_status") != "PASS":
+            r = (pilot_rec or {}).get("record", {})
+            if not pilot_rec or pilot_rec["kind"] != "mode" or r.get("pilot_status") != "PASS":
                 issues.append("VALIDATED_PILOT_MISSING")
             elif r.get("false_positive_rate") is None or r.get("false_negative_rate") is None:
                 issues.append("PILOT_ERROR_RATES_NOT_MEASURED")
@@ -150,6 +147,16 @@ def request_mode(store, pol: dict, target: str, authorization: dict | None = Non
                 issues.append("PILOT_INDEPENDENT_REVIEW_MISSING")
             if cur != "PILOT":
                 issues.append("ENFORCING_REQUIRES_PILOT_FIRST")
+    return issues
+
+
+def request_mode(store, pol: dict, target: str, authorization: dict | None = None,
+                 pilot_record_id: str | None = None) -> dict:
+    """AT-067: OBSERVE_ONLY -> PILOT needs human authorization; -> ENFORCING also needs a PASS pilot record with a
+    measured false-positive/negative analysis and an independent review. Downgrades are always allowed."""
+    cur = pol["mode"]
+    pilot = store.get(pilot_record_id) if pilot_record_id and target == "ENFORCING" else None
+    issues = mode_preconditions(cur, target, authorization, pilot)
     decision = {"from": cur, "to": target, "decision": "REJECTED" if issues else "ACCEPTED", "issues": issues,
                 "policy_sha": policy_sha(pol), "authorization": authorization, "pilot_record": pilot_record_id}
     store.append("mode", "transition", decision, actor=(authorization or {}).get("approved_by") or "unauthorized")
