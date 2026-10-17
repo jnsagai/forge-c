@@ -1,6 +1,6 @@
 {
   "addendum_counts": {
-    "NOT_RUN": 1,
+    "PARTIAL": 1,
     "PASS": 6
   },
   "addendum_tasks": {
@@ -96,12 +96,14 @@
       "ats": [
         "EASA-AT-094"
       ],
+      "evidence": "evidence/v0.4/runs/EASA-T079/latest.json",
       "frs": [
         "EASA-OR-001",
         "EASA-OR-011"
       ],
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "LL r122 and HAL r124 pass AT-094 (six matrices, nothing uncovered); packages BLOCKED on the two safety documents pending the owner's QM/ASIL scope decision, so no READY package yet.",
+      "status": "PARTIAL",
       "title": "Run real DeepSeek LL then HAL work orders on the new revision and report the matrices or the blockers."
     }
   },
@@ -1519,8 +1521,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-17T19:18:03.983177Z",
-  "git_head": "bf27061397a371393b3a6b09da693c8f1bec388e",
+  "generated_at": "2026-10-17T21:15:11.327000Z",
+  "git_head": "c9df5893e2bbf297f4ed7ccfdf1a45262509a2c4",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
@@ -2553,7 +2555,7 @@
         "EASA-FR-068"
       ],
       "priority": "P0",
-      "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW.",
+      "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending).",
       "status": "BLOCKED",
       "title": "Perform owner-authorized PILOT on real end-to-end driver without claiming ready if safety evidence missing."
     },

@@ -1,6 +1,6 @@
 # Feature 006 assurance case summary (generated)
 
-Generated 2026-10-17T19:18:04.729294Z at `bf27061397a3`.
+Generated 2026-10-17T21:15:12.148957Z at `c9df5893e2bb`.
 
 This is bounded engineering evidence for offline human review. It is not an ISO 26262 or Automotive SPICE conformance statement, not an ASIL approval and not a safety sign-off.
 
@@ -18,15 +18,15 @@ This is bounded engineering evidence for offline human review. It is not an ISO 
 - MODE:ENFORCING_REQUIRES_PILOT_FIRST
 - POLICY:FILE_ABSENT (built-in example policy, OBSERVE_ONLY)
 - CATALOG:UNVERIFIED (no licensed ISO 26262-6:2018 source, no competent-reviewer reconciliation)
-- E2E:NO_READY_PACKAGE (12 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)
+- E2E:NO_READY_PACKAGE (17 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)
 
 ## Top-level claims
 
 | Claim | Status | Evidence / counterevidence |
 |---|---|---|
-| EASA-T069 | BLOCKED | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW. |
+| EASA-T069 | BLOCKED | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending). |
 | EASA-T072 | NOT_RUN | - |
-| EASA-T079 | NOT_RUN | - |
+| EASA-T079 | PARTIAL | LL r122 and HAL r124 pass AT-094 (six matrices, nothing uncovered); packages BLOCKED on the two safety documents pending the owner's QM/ASIL scope decision, so no READY package yet. |
 
 ## Stated limitations
 

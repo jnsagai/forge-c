@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.assurance.pilot",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002A-STM32N6-RCC-LL-r122/forge-c-WO-0002A-STM32N6-RCC-LL-r122-review.zip",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r124/forge-c-WO-0002B-STM32N6-RCC-HAL-r124-review.zip",
+    "--out",
+    "evidence/easa/pilots/pilot-check-r122-r124.json"
+  ],
+  "duration_s": 0.045,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c9df5893e2bbf297f4ed7ccfdf1a45262509a2c4",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T079/20261017T211511.log",
+  "log_sha256": "50b65ed04d71851feab1e4a4f5dc756e39d610f88233fb59f2137b8ef019822c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T079",
+  "ts_utc": "2026-10-17T21:15:11.050721Z"
+}

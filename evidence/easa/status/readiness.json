@@ -2,7 +2,7 @@
   "decision": "NOT_READY",
   "note": "Readiness only; switching the mode needs policy.request_mode with a human authorization.",
   "pilots": {
-    "finished": 12,
+    "finished": 17,
     "ready": 0,
     "runs": {
       "WO-0002A-STM32N6-RCC-LL-r108": "BLOCKED",
@@ -16,7 +16,12 @@
       "WO-0002A-STM32N6-RCC-LL-r116": "BLOCKED",
       "WO-0002A-STM32N6-RCC-LL-r117": "BLOCKED",
       "WO-0002A-STM32N6-RCC-LL-r118": "BLOCKED",
-      "WO-0002A-STM32N6-RCC-LL-r119": "BLOCKED"
+      "WO-0002A-STM32N6-RCC-LL-r119": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r120": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r121": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r122": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r123": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r124": "BLOCKED"
     },
     "yield": 0.0
   },
@@ -27,7 +32,7 @@
       "MODE:ENFORCING_REQUIRES_PILOT_FIRST",
       "POLICY:FILE_ABSENT (built-in example policy, OBSERVE_ONLY)",
       "CATALOG:UNVERIFIED (no licensed ISO 26262-6:2018 source, no competent-reviewer reconciliation)",
-      "E2E:NO_READY_PACKAGE (12 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
+      "E2E:NO_READY_PACKAGE (17 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
     ],
     "configured_mode": "OBSERVE_ONLY",
     "e2e_product_yield": 0.0,

@@ -1,6 +1,6 @@
 # Feature 006 (EASA) status — generated from evidence records
 
-Generated 2026-10-17T19:18:03.983177Z at `bf27061397a3`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
+Generated 2026-10-17T21:15:11.327000Z at `c9df5893e2bb`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
 
 Tasks: BLOCKED 1, NOT_RUN 1, PASS 70.
 FRs: COVERED 66, PARTIAL 6, BLOCKED 0, OPEN 0.
@@ -75,14 +75,14 @@ FRs: COVERED 66, PARTIAL 6, BLOCKED 0, OPEN 0.
 | EASA-T066 | P0 | PASS | 066 | evidence/v0.4/runs/EASA-T066/latest.json |
 | EASA-T067 | P0 | PASS | 067 | evidence/v0.4/runs/EASA-T067/latest.json |
 | EASA-T068 | P0 | PASS | 068 | evidence/v0.4/runs/EASA-T068/latest.json |
-| EASA-T069 | P0 | BLOCKED | 069 | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW. |
+| EASA-T069 | P0 | BLOCKED | 069 | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending). |
 | EASA-T070 | P0 | PASS | 070 | evidence/v0.4/runs/EASA-T070/latest.json |
 | EASA-T071 | P0 | PASS | 071 | evidence/v0.4/runs/EASA-T071/latest.json |
 | EASA-T072 | P0 | NOT_RUN | 072 | - |
 
 ## Owner addendum 2026-10-17 (EASA-OR-001..011)
 
-Tasks: NOT_RUN 1, PASS 6.
+Tasks: PARTIAL 1, PASS 6.
 
 | Task | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|
@@ -92,7 +92,7 @@ Tasks: NOT_RUN 1, PASS 6.
 | EASA-T076 | P0 | PASS | 090, 091 | evidence/v0.4/runs/EASA-T076/latest.json |
 | EASA-T077 | P0 | PASS | 092 | evidence/v0.4/runs/EASA-T077/latest.json |
 | EASA-T078 | P0 | PASS | 093 | evidence/v0.4/runs/EASA-T078/latest.json |
-| EASA-T079 | P0 | NOT_RUN | 094 | - |
+| EASA-T079 | P0 | PARTIAL | 094 | evidence/v0.4/runs/EASA-T079/latest.json |
 
 | FR | P | Coverage | Tasks |
 |---|---|---|---|
