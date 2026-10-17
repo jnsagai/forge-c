@@ -365,3 +365,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "SWE.3 trace rejections gave no actionable detail: every design failed with PlantUML's bare 'No diagram found' and CODE:SPEC_NOT_IMPLEMENTED named only the spec id; r115 spent its three SWE.3 cycles and was BLOCKED."
     remedy: "SPEC_NOT_IMPLEMENTED names the unit and the functions whose @spec line should carry the item; DESIGN_RENDER_FAILED includes the PlantUML -syntax result and a start/end hint."
+  - id: RPR-036
+    script: rpr036_initial_state_swr_forced_into_units.py
+    sha256: 0deb0f1a7e39dddbe8946dbfe509231c56d84a7a31ca08ecf837345a16691e23
+    symptom_signature: "initial-state invariant reported NOT_REFINED"
+    observed_in: r116
+    baseline_revision: 4c658080a84b98e5e3f7d038ddc8d7de47c8e3d5
+    fix_revision: cd66e3483b52dfe90958d33db2053c58b23eefd2
+    error_codes: ["UNIT:SWR_NOT_REFINED", "STUCK"]
+    operations: [SWE.3/author]
+    root_cause: "The SWE.3 trace gate required unit refinement of an initial-state invariant of the whole SWC (no register write before any call after reset); the r116 author could not map it to a unit and SWE.3 stopped STUCK."
+    remedy: "Initial-state invariants are classified as component-level (like resource budgets); SWR_NOT_REFINED states what to add for ordinary SWRs."
