@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Source Maintainer Candidate (proposal only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "proposal_id",
+    "source_incident_id",
+    "reproducer_id",
+    "baseline_commit",
+    "candidate_commit",
+    "changed_paths",
+    "tests_ref",
+    "cre_promotion_id",
+    "outcome",
+    "auto_deployment_allowed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "proposal_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "source_incident_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "capa_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reproducer_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "baseline_commit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "candidate_commit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "changed_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "tests_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "cre_promotion_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "REJECTED",
+        "INCONCLUSIVE",
+        "ELIGIBLE_FOR_OFFLINE_REVIEW",
+        "QUARANTINED"
+      ]
+    },
+    "auto_deployment_allowed": {
+      "const": false
+    },
+    "branch_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pr_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "protected_changes_count": {
+      "type": "integer",
+      "const": 0
+    },
+    "authorization_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Bounded Authoritative Failure Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "order_id",
+    "attempt_id",
+    "phase",
+    "failure_class",
+    "fingerprint",
+    "gate_result",
+    "artifact_refs",
+    "input_digests",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "order_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "attempt_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "PREFLIGHT",
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6",
+        "RELEASE",
+        "INFRA",
+        "UNKNOWN"
+      ]
+    },
+    "failure_class": {
+      "type": "string",
+      "enum": [
+        "PRODUCT_QUALITY",
+        "FACTORY_CODE_DEFECT",
+        "INFRASTRUCTURE",
+        "TRANSIENT_DEPENDENCY",
+        "SPECIFICATION_GAP",
+        "SECURITY",
+        "UNKNOWN"
+      ]
+    },
+    "fingerprint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "gate_result": {
+      "type": "string",
+      "enum": [
+        "FAIL",
+        "BLOCKED",
+        "UNKNOWN"
+      ]
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "input_digests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "requirements_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    },
+    "candidate_diff_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "redacted_summary": {
+      "type": "string",
+      "maxLength": 1600
+    },
+    "context_truncated": {
+      "type": "boolean"
+    },
+    "untrusted_source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2
+      },
+      "uniqueItems": true
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "command_id": "CMD-EXAMPLE-001",
+  "idempotency_key": "fixture:launch:WO-EXAMPLE-001:ATT-EXAMPLE-001",
+  "command_type": "FABRO_LAUNCH",
+  "order_id": "WO-EXAMPLE-001",
+  "attempt_id": "ATT-EXAMPLE-001",
+  "fencing_epoch": 1,
+  "state": "PENDING",
+  "created_utc": "2026-10-17T00:00:00Z",
+  "payload_ref": "fixture:launch-intent",
+  "attempts": 0
+}

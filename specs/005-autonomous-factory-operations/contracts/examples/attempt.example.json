@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "order_id": "WO-EXAMPLE-001",
+  "attempt_id": "ATT-EXAMPLE-001",
+  "attempt_seq": 1,
+  "state": "PREPARED",
+  "workspace_ref": "fixture:/nonexistent/workspace",
+  "factory_revision": "example_revision",
+  "created_utc": "2026-10-17T00:00:00Z",
+  "fabro_run_id": null,
+  "terminal_package_status": null,
+  "checkpoint_refs": [],
+  "evidence_refs": []
+}

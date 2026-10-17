@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "request_id": "EXAMPLE-WO-001",
+  "tenant_scope": "local",
+  "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "input_manifest_ref": "fixture:synthetic-only",
+  "approved_by": "EXAMPLE_NOT_REAL_APPROVAL",
+  "authorization_ref": "fixture:unauthorized-example",
+  "driver_class": "generic RCC demo",
+  "target": "host-x86_64",
+  "safety_scope": "QM-DEMO",
+  "model_profile": "qwen3:8b",
+  "submitted_utc": "2026-10-17T00:00:00Z",
+  "priority": "NORMAL"
+}

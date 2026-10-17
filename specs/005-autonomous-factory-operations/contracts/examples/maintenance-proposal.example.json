@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "proposal_id": "PROPOSAL-EXAMPLE-001",
+  "source_incident_id": "inc-EXAMPLE",
+  "reproducer_id": "RPR-EXAMPLE",
+  "baseline_commit": "BASE-EXAMPLE",
+  "candidate_commit": "CAND-EXAMPLE",
+  "changed_paths": [
+    "factory/python/forge_factory/nonprotected.py"
+  ],
+  "tests_ref": "fixture:tests.json",
+  "cre_promotion_id": "pd-EXAMPLE",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "auto_deployment_allowed": false,
+  "protected_changes_count": 0,
+  "branch_ref": "fixture/review-only"
+}

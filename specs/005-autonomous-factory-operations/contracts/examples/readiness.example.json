@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_utc": "2026-10-17T00:00:00Z",
+  "configured_mode": "OBSERVE_ONLY",
+  "implementation_status": "NOT_IMPLEMENTED",
+  "pilot_eligibility": "NOT_DEMONSTRATED",
+  "active_eligibility": "NOT_DEMONSTRATED",
+  "slo_evidence": "NOT_DEMONSTRATED",
+  "evidence_refs": [
+    "fixture:design-only"
+  ],
+  "p0_gaps": [
+    "fixture:no-runtime"
+  ],
+  "not_claimed": [
+    "24/7 reliability",
+    "ASIL B approval"
+  ]
+}

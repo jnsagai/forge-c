@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "case_id": "CASE-EXAMPLE-001",
+  "order_id": "WO-EXAMPLE-001",
+  "reason_code": "MISSING_HSI",
+  "required_action": "Provide externally approved hardware reference",
+  "incident_ref": "fixture:inc-001",
+  "artifact_refs": [
+    "fixture:blocked.zip"
+  ],
+  "created_utc": "2026-10-17T00:00:00Z",
+  "notification_dedupe_key": "fixture:deadletter-001",
+  "package_status": "BLOCKED"
+}
