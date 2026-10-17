@@ -1,6 +1,10 @@
 {
   "EASA-T069": {
     "status": "BLOCKED",
-    "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real end-to-end LL pilots r108-r120 are recorded; none reached READY_FOR_OFFLINE_REVIEW."
+    "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending)."
+  },
+  "EASA-T079": {
+    "status": "PARTIAL",
+    "reason": "LL r122 and HAL r124 pass AT-094 (six matrices, nothing uncovered); packages BLOCKED on the two safety documents pending the owner's QM/ASIL scope decision, so no READY package yet."
   }
 }
