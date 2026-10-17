@@ -4,20 +4,61 @@
   "location": "$FORGE_DATA_ROOT/toolchains (data SSD; root disk 94% full); symlinks in toolchains/formal/bin, appended to PATH by scripts/forge-env.sh (appended, so nothing shadows a system tool)",
   "privileges": "user space only, no sudo, no system package changed",
   "packages": [
-    {"name": "cbmc", "version": "6.11.0", "licence": "BSD-4-Clause", "source": "https://github.com/diffblue/cbmc/releases/download/cbmc-6.11.0/ubuntu-22.04-cbmc-6.11.0-Linux.deb",
-     "download_sha256": "de9fa1cc4cf51c493e708a1c7608b192ad4956717b684d9c4501e22fd22d88a0", "method": "dpkg-deb -x into toolchains/cbmc-6.11.0 (release of 2026-08-21)"},
-    {"name": "opam", "version": "2.5.2", "licence": "LGPL-2.1-only WITH OCaml-LGPL-linking-exception", "source": "https://github.com/ocaml/opam/releases/download/2.5.2/opam-2.5.2-x86_64-linux",
-     "download_sha256": "edfca2630c373b44b7ee1c2f81cd8dcf67468d0db57d6c02158de553ac63dbd4", "method": "static binary; 2.6.1 skipped (10 days old)"},
-    {"name": "ocaml-base-compiler", "version": "5.2.1", "licence": "LGPL-2.1-or-later WITH OCaml-LGPL-linking-exception", "method": "opam switch forge-c, OPAMROOT=toolchains/opam/root, depext=false"},
-    {"name": "frama-c", "version": "33.0 (Arsenic)", "licence": "LGPL-2.1-only", "method": "opam install frama-c (GUI not finalised; not needed)"},
-    {"name": "why3", "version": "1.8.2", "licence": "LGPL-2.1-only", "method": "opam dependency of frama-c; prover config in ~/.why3.conf"},
-    {"name": "alt-ergo-free", "version": "2.4.3", "licence": "CECILL-C", "method": "opam; replaces alt-ergo 2.6.4 which opam installed by default but which is OCamlPro-Non-Commercial (not OSS) and was removed"},
-    {"name": "cvc5", "version": "1.2.1", "licence": "BSD-3-Clause (non-GPL static build)", "source": "https://github.com/cvc5/cvc5/releases/download/cvc5-1.2.1/cvc5-Linux-x86_64-static.zip",
-     "download_sha256": "6d44abc233980a14d72cc5809287d27c3335b1d6ee863381d0b5ffcbd0d8de56", "method": "unzip; 1.3.4 tried first and rejected because Why3 1.8.2 accepts cvc5 1.0-1.2 only"}
+    {
+      "name": "cbmc",
+      "version": "6.11.0",
+      "licence": "BSD-4-Clause",
+      "source": "https://github.com/diffblue/cbmc/releases/download/cbmc-6.11.0/ubuntu-22.04-cbmc-6.11.0-Linux.deb",
+      "download_sha256": "de9fa1cc4cf51c493e708a1c7608b192ad4956717b684d9c4501e22fd22d88a0",
+      "method": "dpkg-deb -x into toolchains/cbmc-6.11.0 (release of 2026-08-21)"
+    },
+    {
+      "name": "opam",
+      "version": "2.5.2",
+      "licence": "LGPL-2.1-only WITH OCaml-LGPL-linking-exception",
+      "source": "https://github.com/ocaml/opam/releases/download/2.5.2/opam-2.5.2-x86_64-linux",
+      "download_sha256": "edfca2630c373b44b7ee1c2f81cd8dcf67468d0db57d6c02158de553ac63dbd4",
+      "method": "static binary; 2.6.1 skipped (10 days old)"
+    },
+    {
+      "name": "ocaml-base-compiler",
+      "version": "5.2.1",
+      "licence": "LGPL-2.1-or-later WITH OCaml-LGPL-linking-exception",
+      "method": "opam switch forge-c, OPAMROOT=toolchains/opam/root, depext=false"
+    },
+    {
+      "name": "frama-c",
+      "version": "33.0 (Arsenic)",
+      "licence": "LGPL-2.1-only",
+      "method": "opam install frama-c (GUI not finalised; not needed)"
+    },
+    {
+      "name": "why3",
+      "version": "1.8.2",
+      "licence": "LGPL-2.1-only",
+      "method": "opam dependency of frama-c; prover config in ~/.why3.conf"
+    },
+    {
+      "name": "alt-ergo-free",
+      "version": "2.4.3",
+      "licence": "CECILL-C",
+      "method": "opam; replaces alt-ergo 2.6.4 which opam installed by default but which is OCamlPro-Non-Commercial (not OSS) and was removed"
+    },
+    {
+      "name": "cvc5",
+      "version": "1.2.1",
+      "licence": "BSD-3-Clause (non-GPL static build)",
+      "source": "https://github.com/cvc5/cvc5/releases/download/cvc5-1.2.1/cvc5-Linux-x86_64-static.zip",
+      "download_sha256": "6d44abc233980a14d72cc5809287d27c3335b1d6ee863381d0b5ffcbd0d8de56",
+      "method": "unzip; 1.3.4 tried first and rejected because Why3 1.8.2 accepts cvc5 1.0-1.2 only"
+    }
   ],
   "not_installed": [
-    {"name": "z3", "reason": "official 4.16-5.3 binaries need glibc 2.39; host is Ubuntu 22.04 (glibc 2.35)"}
+    {
+      "name": "z3",
+      "reason": "official 4.16-5.3 binaries need glibc 2.39; host is Ubuntu 22.04 (glibc 2.35)"
+    }
   ],
   "smoke_test": "evidence/easa/tools/formal-smoke/result.json (run.sh against a copy of sealed r102; archive hash unchanged)",
-  "integration_state": "available on PATH; assurance/swe3.bounded_proof finds CBMC. The production MCP operation forge-analysis-mcp.frama_check is still the 'unavailable' stub and EASA stays OBSERVE_ONLY: wiring Frama-C into agents/verifiers is a separate change"
+  "integration_state": "available on PATH. assurance/formal.py runs CBMC (BOUNDED_PROOF_WHERE_FEASIBLE) and Frama-C Eva (STATIC_ANALYSIS fallback) as observe-only EASA verifiers. The production MCP operation forge-analysis-mcp.frama_check is still the 'unavailable' stub: agents do not call the formal tools."
 }

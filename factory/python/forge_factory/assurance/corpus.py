@@ -5,6 +5,8 @@ Each variant injects ONE realistic defect class into the copy; detectors:
   factory  the package's own host unit + integration tests (as sealed), built with gcc and run
   easa     independent register-define and register-write checks (RM index), the requirement/RM-derived oracle
            (set/clear, timeout rollback + poll bound, invalid parameter) and the clang analyzer/warnings
+  formal   CBMC bounded proof + Frama-C Eva over the public API (runtime errors, bounded termination only); kept as
+           a separate column so the v2 easa numbers stay comparable
 A detector "catches" a variant if it reports a failure that it does not report on the unmodified copy; findings on
 the unmodified copy are false positives. Nothing here touches the archive.
 """
@@ -16,7 +18,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from . import hardware, oracle_gen, shadow
+from . import formal, hardware, oracle_gen, shadow
 
 LL = "software/ll/stm32n6xx_ll_rcc.h"
 HAL = "software/hal/stm32n6xx_hal_rcc.c"
@@ -86,6 +88,12 @@ def _easa(ws: Path) -> dict[str, list[str]]:
     return found
 
 
+def _formal(ws: Path) -> list[str]:
+    c, e = formal.cbmc(ws), formal.eva(ws)
+    out = [f for f in c.get("findings", []) + e.get("findings", []) if not f.startswith("LIMITATION")]
+    return out + [f"{n}:{r['status']}" for n, r in (("cbmc", c), ("eva", e)) if r["status"] not in ("PASS", "FAIL")]
+
+
 def run(zip_path: Path, inputs_from: Path) -> dict:
     with tempfile.TemporaryDirectory() as td:
         x = Path(td) / "x"
@@ -93,7 +101,7 @@ def run(zip_path: Path, inputs_from: Path) -> dict:
             z.extractall(x)
         base = shadow._workspace_from_package(x, inputs_from)
         (base / "software/hal").mkdir(exist_ok=True)
-        ref_f, ref_e = _factory_tests(base), _easa(base)
+        ref_f, ref_e, ref_x = _factory_tests(base), _easa(base), _formal(base)
         rows = []
         for vid, rel, old, new, cls in VARIANTS:
             ws = Path(td) / vid
@@ -106,15 +114,19 @@ def run(zip_path: Path, inputs_from: Path) -> dict:
             p.write_text(t.replace(old, new, 1))
             f = [x for x in _factory_tests(ws) if x not in ref_f]
             e = {k: [x for x in v if x not in ref_e.get(k, [])] for k, v in _easa(ws).items()}
+            fx = [x for x in _formal(ws) if x not in ref_x]
             rows.append({"id": vid, "class": cls, "factory_detected": bool(f), "factory_evidence": f[:4],
                          "easa_detected": any(e.values()), "easa_by": sorted(k for k, v in e.items() if v),
-                         "easa_evidence": {k: v[:3] for k, v in e.items() if v}})
+                         "easa_evidence": {k: v[:3] for k, v in e.items() if v},
+                         "formal_detected": bool(fx), "formal_evidence": fx[:4]})
     applicable = [r for r in rows if "factory_detected" in r]
     return {"subject": str(zip_path.name), "variants": rows,
-            "false_positives_on_correct": {"factory": ref_f, **{k: v for k, v in ref_e.items() if v}},
+            "false_positives_on_correct": {"factory": ref_f, **{k: v for k, v in ref_e.items() if v},
+                                           **({"formal": ref_x} if ref_x else {})},
             "summary": {"variants": len(applicable),
                         "factory_caught": sum(r["factory_detected"] for r in applicable),
                         "easa_caught": sum(r["easa_detected"] for r in applicable),
+                        "formal_caught": sum(r["formal_detected"] for r in applicable),
                         "either": sum(r["factory_detected"] or r["easa_detected"] for r in applicable),
                         "neither": [r["id"] for r in applicable if not (r["factory_detected"] or r["easa_detected"])],
                         "easa_only": [r["id"] for r in applicable if r["easa_detected"] and not r["factory_detected"]],

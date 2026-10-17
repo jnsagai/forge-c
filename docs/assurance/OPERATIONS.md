@@ -59,13 +59,31 @@ authored `tasks.md` keeps its boxes unchecked by design, because `validate_spec.
 - Holdout expectations live in a vault owned by the verifier sub-UID (rootless Podman). Author processes are refused by
   the policy check and by the kernel.
 
-## 5. Normative status
+## 5. Formal verifiers (CBMC, Frama-C)
+
+- Installed in user space (`evidence/easa/tools/formal-tools-install.json`), OSS only.
+- `assurance/formal.py` builds the harness from facts: the layer's public API and the register file the LL header
+  declares. Every argument and register word is unconstrained.
+  - **CBMC** (`BOUNDED_PROOF_WHERE_FEASIBLE`, HIGH_ASSURANCE profile): runtime-error freedom and bounded termination.
+    A loop that needs more than the unwind bound is INCONCLUSIVE, never PASS; busy-wait loops are not assumed to exit.
+  - **Frama-C Eva** (`STATIC_ANALYSIS`, used only when no accepted agent tool result exists): possible runtime errors
+    (alarms) for all inputs.
+- The verdict assumes valid pointer arguments. An informational CBMC run per pointer function records whether NULL is
+  handled.
+- Model limits: registers are plain memory (a register does not change between two reads), single thread, no
+  interrupts. These are proofs about the C code, not about the silicon, and they say nothing about functional register
+  semantics (that is the independent oracle).
+- Measured (`evidence/easa/measurements/formal-survey-v1.json`, `corpus-r102-v3-formal.json`): 11 sealed packages
+  PASS/0 alarms; on the seeded corpus formal catches 1/10 (the uninitialised variable) with 0 false positives.
+- Re-run: `python -m forge_factory.assurance.formal <review.zip>... --inputs <RM inputs> --out <file>`.
+
+## 6. Normative status
 
 - The ISO 26262-6:2018 method list is a 47-entry provisional secondary working index.
 - No licensed copy is registered, so normative verification is BLOCKED.
 - The procedure to change this is in `docs/assurance/normative-reconciliation-plan.md`.
 
-## 6. Decisions that only the owner can take
+## 7. Decisions that only the owner can take
 
 1. **Product safety scope of the RCC work orders (QM or ASIL) as an approved record (`.forge-run/safety_scope.json`).**
    - Without it, the two safety documents stay required and every package stays BLOCKED.

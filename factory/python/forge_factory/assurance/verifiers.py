@@ -191,6 +191,20 @@ def v_observation(ws: Path) -> dict:
     return {"status": _ok(f), "findings": f, "verified": o["verified"], "total": o["total"]}
 
 
+def v_bounded_proof(ws: Path) -> dict:
+    """CBMC over every public API function: runtime-error freedom and bounded termination (assurance/formal.py)."""
+    from . import formal
+
+    return formal.cbmc(ws)
+
+
+def v_eva(ws: Path) -> dict:
+    """Frama-C Eva over every public API function: possible runtime errors (alarms) for all inputs/register states."""
+    from . import formal
+
+    return formal.eva(ws)
+
+
 def v_not_supported(why: str):
     return lambda ws: {"status": "NOT_SUPPORTED", "findings": [why]}
 
@@ -206,6 +220,7 @@ VERIFIERS = {
     "INDEPENDENT_ORACLE": v_oracle, "MUTATION_EVIDENCE": v_mutation, "API_EXECUTION_PROOF": v_api_execution,
     "RAW_OUTCOME_VALIDATION": v_renode_raw, "BOUNDARY_INTEGRATION": v_integration, "FAULT_INJECTION": v_fault_injection,
     "MEASURED_REQUIREMENT_OBSERVATION": v_observation,
+    "BOUNDED_PROOF_WHERE_FEASIBLE": v_bounded_proof, "STATIC_ANALYSIS": v_eva,
     "DEGRADED_TRANSITION_SCENARIOS": v_observation,
 }
 

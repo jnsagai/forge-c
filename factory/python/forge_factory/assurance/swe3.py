@@ -213,8 +213,11 @@ def bounded_proof(harness: Path, includes: list[Path], unwind: int = 1001, funct
     if exe is None:
         return {"status": "NOT_SUPPORTED", "tool": "cbmc", "reason": "CBMC is not installed on this host",
                 "assumptions": [], "claims": []}
+    # --no-self-loops-to-assumptions: by default CBMC turns an empty busy-wait 'while (!ready) {}' into an assumption
+    # that it exits, which would let an unbounded register poll pass; driver code is full of such loops.
     argv = [exe, str(harness), "--function", function, "--unwind", str(unwind), "--unwinding-assertions",
-            "--bounds-check", "--pointer-check", "--signed-overflow-check", "--unsigned-overflow-check"]
+            "--no-self-loops-to-assumptions", "--bounds-check", "--pointer-check", "--signed-overflow-check",
+            "--unsigned-overflow-check"]
     for i in includes:
         argv += ["-I", str(i)]
     r = subprocess.run(argv, capture_output=True, text=True, timeout=900)
@@ -222,8 +225,9 @@ def bounded_proof(harness: Path, includes: list[Path], unwind: int = 1001, funct
     ok = r.returncode == 0 and "VERIFICATION SUCCESSFUL" in r.stdout
     return {"status": "PASS" if ok else ("FAIL" if "VERIFICATION FAILED" in r.stdout else "ERROR"), "tool": "cbmc",
             "version": ver, "argv": argv, "exit_code": r.returncode,
-            "assumptions": [f"loops unwound to {unwind} (unwinding assertions on)", "registers modelled as plain "
-                            "nondeterministic memory (no hardware side effects)", "single-threaded, no interrupts"],
+            "assumptions": [f"loops unwound to {unwind} (unwinding assertions on, busy-wait loops not assumed to exit)",
+                            "registers modelled as plain memory with any initial value: a register does not change "
+                            "between two reads (no hardware side effects)", "single-threaded, no interrupts"],
             "claims": re.findall(r"\[(\S+)\] .*?: (SUCCESS|FAILURE)", r.stdout)[:50],
             "scope": "bounded model of the C semantics, NOT physical hardware behaviour"}
 
