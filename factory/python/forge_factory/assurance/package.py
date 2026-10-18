@@ -121,6 +121,11 @@ def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
     scope_rec = scope_dispositions(ws, stage)
     model_txt = (Path(__file__).resolve().parents[3] / "sim/stm32n6/rcc_model.py")
     lim = T.limitations(ws, model_txt.read_text() if model_txt.is_file() else "")
+    from ..inspection.defects import all_defects, owner_dispositions
+
+    used = {e.get("disposition") for d in all_defects(ws) for e in d.get("history") or [] if e.get("disposition")}
+    lim += [f"OWNER_DISPOSITION {o['id']} ({o['approved_by']}, {o['approved_at']}): {' '.join(str(o['limitation']).split())}"
+            + ("" if o["id"] in used else " [not invoked in this run]") for o in owner_dispositions(ws)]
     matrices = sorted(p.name for p in ws.glob("workproducts/SWE.*/traceability/matrix_*.csv"))
     blocking = []
     if att["decision"] in ("NOT_INDEPENDENT", "UNKNOWN"):

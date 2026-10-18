@@ -136,6 +136,21 @@ def provided_ll(source_wo: str) -> tuple[bytes, dict]:
                   "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)"}
 
 
+def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[dict]:
+    """Owner dispositions (config/factory/verification-dispositions.yaml) that apply to this example work order.
+    Refuses a disposition without a human approver and date: an agent never settles an input issue."""
+    from .assurance.policy import _human
+    from .common import load_yaml
+
+    p = Path(repo) / "config/factory/verification-dispositions.yaml"
+    ods = [d for d in ((load_yaml(p) or {}).get("dispositions") or [] if p.is_file() else [])
+           if example_name in (d.get("examples") or [])]
+    bad = [d.get("id") for d in ods if not (_human(d.get("approved_by")) and d.get("approved_at"))]
+    if bad:
+        raise ValueError(f"OWNER_DISPOSITION_NOT_HUMAN_APPROVED:{bad}")
+    return ods
+
+
 def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
     layer = spec.get("layer", "LL+HAL")
@@ -209,6 +224,14 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     from .assurance.scope import owner_scope  # owner safety-scope decision (never derived by an agent)
 
     sc = owner_scope(example.name, wo, sha256_bytes(canonical_json(sorted((i["path"], i.get("sha256")) for i in listed))))
+    from .inspection.defects import DISPOSITIONS
+
+    ods = owner_dispositions_for(example.name)
+    if ods:  # owner dispositions of known input issues (never written by an agent)
+        manifest["owner_dispositions"] = [{"id": d["id"], "disposition": d["disposition"],
+                                           "limitation": " ".join(str(d["limitation"]).split())} for d in ods]
+        (ws / DISPOSITIONS).write_text(pretty_json(ods))
+        (ws / DISPOSITIONS).chmod(0o444)
     if sc:
         manifest["safety_target"] = sc["scope"]["target_asil"]
         (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
