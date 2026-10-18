@@ -21,6 +21,10 @@ FAKE_DIR = "software/tests/unit/ll_fake"
 FAKE_HEADER = f"{FAKE_DIR}/stm32n6xx_ll_rcc.h"
 LOG_CAPACITY = 4096
 _FN = re.compile(r"static\s+inline\s+(void|uint32_t)\s+(LL_\w+)\s*\(([^)]*)\)\s*\{")
+_REG = r"ll_rcc_regs\[\s*(\w+)\s*/\s*4U?\s*\]"
+_SET = re.compile(_REG + r"\s*\|=\s*(\w+)\s*;")
+_CLR = re.compile(_REG + r"\s*&=\s*~\s*\(?\s*(\w+)\s*\)?\s*;")
+_GET = re.compile(r"\(\s*" + _REG + r"\s*&\s*(\w+)\s*\)")
 _REGS = re.compile(r"^[ \t]*extern\s+volatile\s+uint32_t\s+\w+\s*\[[^\]]*\]\s*;[ \t]*\n?", re.M)
 
 
@@ -55,9 +59,12 @@ typedef enum
     LL_FAKE_COUNT
 }} ll_fake_fn_t;
 
-/** Clear the call log, the counters and every script: each query then returns 0U (flag never set). */
+/** Clear the call log, counters, scripts and bit state. A query that reads a bit an LL function writes (e.g.
+ *  IsEnabled after Enable/Disable, reset state after ForceReset/ReleaseReset) then follows that bit, as the LL
+ *  does; a flag that only hardware sets (e.g. IsReady) returns 0U until scripted. */
 void ll_fake_reset(void);
-/** From the nth call on (1 = first call) the query fn returns value (e.g. ready after 3 polls: (fn, 3U, 1U)). */
+/** From the nth call on (1 = first call) the query fn returns value (e.g. ready after 3 polls: (fn, 3U, 1U));
+ *  a script overrides the bit state of a state query. */
 void ll_fake_return_from(ll_fake_fn_t fn, uint32_t nth_call, uint32_t value);
 /** Number of calls of fn since the last reset. */
 uint32_t ll_fake_calls(ll_fake_fn_t fn);
@@ -72,6 +79,8 @@ uint32_t ll_fake_last_arg(ll_fake_fn_t fn, uint32_t j);
 
 void ll_fake_record(ll_fake_fn_t fn, uint32_t a0, uint32_t a1);
 uint32_t ll_fake_query(ll_fake_fn_t fn, uint32_t a0, uint32_t a1);
+void ll_fake_set_bit(uint32_t k, uint32_t v);
+uint32_t ll_fake_query_bit(ll_fake_fn_t fn, uint32_t k);
 
 #ifdef LL_FAKE_IMPLEMENTATION
 static ll_fake_fn_t ll_fake_log_[{cap}U];
@@ -80,6 +89,7 @@ static uint32_t ll_fake_calls_[LL_FAKE_COUNT];
 static uint32_t ll_fake_from_[LL_FAKE_COUNT];
 static uint32_t ll_fake_value_[LL_FAKE_COUNT];
 static uint32_t ll_fake_args_[LL_FAKE_COUNT][2];
+static uint32_t ll_fake_bits_[{nbits}U];
 
 void ll_fake_reset(void)
 {{
@@ -92,6 +102,10 @@ void ll_fake_reset(void)
         ll_fake_value_[i] = 0U;
         ll_fake_args_[i][0] = 0U;
         ll_fake_args_[i][1] = 0U;
+    }}
+    for (i = 0U; i < {nbits}U; i++)
+    {{
+        ll_fake_bits_[i] = 0U;
     }}
 }}
 
@@ -142,6 +156,14 @@ uint32_t ll_fake_query(ll_fake_fn_t fn, uint32_t a0, uint32_t a1)
     ll_fake_record(fn, a0, a1);
     return ((ll_fake_from_[fn] != 0U) && (ll_fake_calls_[fn] >= ll_fake_from_[fn])) ? ll_fake_value_[fn] : 0U;
 }}
+
+void ll_fake_set_bit(uint32_t k, uint32_t v) {{ ll_fake_bits_[k] = v; }}
+
+uint32_t ll_fake_query_bit(ll_fake_fn_t fn, uint32_t k)
+{{
+    ll_fake_record(fn, 0U, 0U);
+    return ((ll_fake_from_[fn] != 0U) && (ll_fake_calls_[fn] >= ll_fake_from_[fn])) ? ll_fake_value_[fn] : ll_fake_bits_[k];
+}}
 #endif /* LL_FAKE_IMPLEMENTATION */
 """
 
@@ -150,17 +172,31 @@ def generate(ll_header: str) -> str:
     fns = [(m.group(1), m.group(2), _params(m.group(3)), m.start(), m.end() - 1) for m in _FN.finditer(ll_header)]
     if not fns:
         raise ValueError("no static inline LL function in the provided header")
+    bodies = {name: ll_header[brace:_body_end(ll_header, brace)] for _, name, _, _, brace in fns}
+    written = {}  # (register offset macro, mask macro) -> state bit index: bits some LL function writes
+    for b in bodies.values():
+        for m in list(_SET.finditer(b)) + list(_CLR.finditer(b)):
+            written.setdefault((m.group(1), m.group(2)), len(written))
     out, pos = [], 0
     for ret, name, params, _start, brace in fns:
         end = _body_end(ll_header, brace)
+        b = bodies[name]
         args = ", ".join([f"(uint32_t)({p})" for p in params[:2]] + ["0U"] * (2 - min(2, len(params))))
-        call = (f"return ll_fake_query(LL_FAKE_{name}, {args});" if ret == "uint32_t"
-                else f"ll_fake_record(LL_FAKE_{name}, {args});")
+        get = _GET.search(b)
+        if ret == "uint32_t" and get and (get.group(1), get.group(2)) in written:  # state query (IsEnabled ...)
+            call = f"return ll_fake_query_bit(LL_FAKE_{name}, {written[(get.group(1), get.group(2))]}U);"
+        elif ret == "uint32_t":  # a flag only hardware sets (IsReady ...): scripted, default 0U
+            call = f"return ll_fake_query(LL_FAKE_{name}, {args});"
+        else:
+            sets = [f"ll_fake_set_bit({written[(m.group(1), m.group(2))]}U, 1U); " for m in _SET.finditer(b)]
+            clrs = [f"ll_fake_set_bit({written[(m.group(1), m.group(2))]}U, 0U); " for m in _CLR.finditer(b)]
+            call = "".join(sets + clrs) + f"ll_fake_record(LL_FAKE_{name}, {args});"
         out.append(ll_header[pos:brace] + "{\n    " + "".join(f"(void)({p}); " for p in params[2:]) + call + "\n}")
         pos = end
     body = "".join(out) + ll_header[pos:]
     body = _REGS.sub("/* register array not declared: HAL unit tests observe the LL API only (CAPA-038) */\n", body)
-    api = API.format(enum="\n".join(f"    LL_FAKE_{n}," for _, n, _, _, _ in fns), cap=LOG_CAPACITY)
+    api = API.format(enum="\n".join(f"    LL_FAKE_{n}," for _, n, _, _, _ in fns), cap=LOG_CAPACITY,
+                     nbits=max(1, len(written)))
     banner = ("/* GENERATED by forge_factory.workflow.ll_fake from the provided LL header - HAL unit-test double, do "
               "not edit (run_unit regenerates and compares it). */\n")
     # the API (enum + prototypes) goes before the first LL function (and its doc comment): the text before it is

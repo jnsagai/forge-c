@@ -20,6 +20,23 @@ extern volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];
 #define LL_RCC_CR_HSEON_MSK 0x00000010U
 #define LL_RCC_SR_OFFSET 0x004U
 #define LL_RCC_SR_HSERDY_MSK 0x00000010U
+#define LL_RCC_AHB1ENR_OFFSET 0x250U
+#define LL_RCC_AHB1ENR_ADC12EN_MSK 0x00000020U
+/** @brief Set AHB1ENR.ADC12EN. */
+static inline void LL_RCC_ADC12_Enable(void)
+{
+  ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] |= LL_RCC_AHB1ENR_ADC12EN_MSK;
+}
+/** @brief Clear AHB1ENR.ADC12EN. */
+static inline void LL_RCC_ADC12_Disable(void)
+{
+  ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] &= ~LL_RCC_AHB1ENR_ADC12EN_MSK;
+}
+/** @brief 1U when AHB1ENR.ADC12EN is set. */
+static inline uint32_t LL_RCC_ADC12_IsEnabled(void)
+{
+  return ((ll_rcc_regs[LL_RCC_AHB1ENR_OFFSET / 4U] & LL_RCC_AHB1ENR_ADC12EN_MSK) != 0U) ? 1U : 0U;
+}
 /** @brief Set RCC_CR.HSEON. */
 static inline void LL_RCC_HSE_Enable(void)
 {
@@ -149,3 +166,29 @@ def test_capa038_easa_mutation_and_api_execution_build_on_the_double(ws):
     assert m["campaign"]["invalid"] < m["campaign"]["eligible"] and m["campaign"]["killed"] >= 1, m
     a = V.v_api_execution(ws)
     assert a["status"] in ("PASS", "FAIL") and not any("build" in f.lower() for f in a["findings"]), a
+
+
+STATE = """static void ut_state(void)
+{
+    ut_reset();
+    CHECK("UT-003", LL_RCC_ADC12_IsEnabled() == 0U);
+    LL_RCC_ADC12_Enable();
+    CHECK("UT-003-ON", LL_RCC_ADC12_IsEnabled() == 1U);
+    LL_RCC_ADC12_Disable();
+    CHECK("UT-003-OFF", LL_RCC_ADC12_IsEnabled() == 0U);
+    ll_fake_return_from(LL_FAKE_LL_RCC_ADC12_IsEnabled, 1U, 1U);
+    CHECK("UT-003-SCRIPT", LL_RCC_ADC12_IsEnabled() == 1U);
+    ut_reset();
+    LL_RCC_HSE_Enable();
+    CHECK("UT-004", LL_RCC_HSE_IsReady() == 0U);
+}
+"""
+
+
+def test_capa038_iteration2_state_queries_follow_the_bits_hardware_flags_stay_scripted(ws):
+    """CAPA-038 iteration 2 (r135 DEF-001/DEF-004): IsEnabled always returned 0U after Enable; a query of a bit an
+    LL function writes now follows it, a hardware-set flag (IsReady) stays scripted, a script still overrides."""
+    scaffold.scaffold(ws)
+    _insert(ws, STATE, "ut_state();")
+    out = _run_unit()
+    assert out["status"] == "PASS", out
