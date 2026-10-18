@@ -2,7 +2,7 @@
   "decision": "NOT_READY",
   "note": "Readiness only; switching the mode needs policy.request_mode with a human authorization.",
   "pilots": {
-    "finished": 21,
+    "finished": 26,
     "ready": 0,
     "runs": {
       "WO-0002A-STM32N6-RCC-LL-r108": "BLOCKED",
@@ -25,12 +25,18 @@
       "WO-0002B-STM32N6-RCC-HAL-r124": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r126": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r127": "BLOCKED",
-      "WO-0002B-STM32N6-RCC-HAL-r128": "BLOCKED"
+      "WO-0002B-STM32N6-RCC-HAL-r128": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r129": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r130": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r131": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r135": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r136": "BLOCKED"
     },
     "technical_pass": [
       "WO-0002A-STM32N6-RCC-LL-r122",
       "WO-0002B-STM32N6-RCC-HAL-r124",
-      "WO-0002A-STM32N6-RCC-LL-r125"
+      "WO-0002A-STM32N6-RCC-LL-r125",
+      "WO-0002B-STM32N6-RCC-HAL-r136"
     ],
     "yield": 0.0
   },
@@ -38,12 +44,12 @@
     "blocking_items": [
       "MODE:HUMAN_AUTHORIZATION_MISSING",
       "MODE:VALIDATED_PILOT_MISSING",
-      "E2E:NO_READY_PACKAGE (21 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
+      "E2E:NO_READY_PACKAGE (26 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
     ],
     "configured_mode": "PILOT",
     "e2e_product_yield": 0.0,
     "feature": "006-enhanced-ai-software-assurance",
-    "implementation": "PARTIAL",
+    "implementation": "COMPLETE",
     "normative_catalog_status": "RECONCILED",
     "safety_approval": null,
     "technical_gates": "DEMONSTRATED"

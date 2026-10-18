@@ -102,16 +102,16 @@
         "EASA-OR-011"
       ],
       "priority": "P0",
-      "reason": "LL r122/r125 and HAL r124 pass AT-094 (six matrices, nothing uncovered). Product scope decided ASIL (B): packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package.",
+      "reason": "LL r122/r125 and HAL r124/r136 pass AT-094 (six matrices, nothing uncovered). Scope ASIL B: packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package; HAL r136 also escalated DEF-005 (Renode RCC_CR reset value vs RM) for an owner decision.",
       "status": "PARTIAL",
       "title": "Run real DeepSeek LL then HAL work orders on the new revision and report the matrices or the blockers."
     }
   },
   "fr_counts": {
     "BLOCKED": 0,
-    "COVERED": 69,
+    "COVERED": 72,
     "OPEN": 0,
-    "PARTIAL": 3
+    "PARTIAL": 0
   },
   "fr_matrix": [
     {
@@ -1264,13 +1264,13 @@
         "EASA-AT-069",
         "EASA-AT-078"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-062",
       "priority": "P0",
       "task_status": [
         "PASS",
         "PASS",
-        "PARTIAL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T012",
@@ -1379,13 +1379,13 @@
         "EASA-AT-069",
         "EASA-AT-070"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-067",
       "priority": "P0",
       "task_status": [
         "PASS",
         "PASS",
-        "PARTIAL",
+        "PASS",
         "PASS"
       ],
       "tasks": [
@@ -1403,7 +1403,7 @@
         "EASA-AT-055",
         "EASA-AT-069"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-068",
       "priority": "P0",
       "task_status": [
@@ -1411,7 +1411,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "PARTIAL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T014",
@@ -1521,13 +1521,12 @@
       ]
     }
   ],
-  "generated_at": "2026-10-18T09:54:20.701139Z",
-  "git_head": "00068f7907cd610ff8c70e68c1a7acf34554bd81",
+  "generated_at": "2026-10-18T11:34:47.865947Z",
+  "git_head": "5b9154a0770dd605297fac808904b0f16e5bba15",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
-    "PARTIAL": 1,
-    "PASS": 71
+    "PASS": 72
   },
   "tasks": {
     "EASA-T001": {
@@ -2554,9 +2553,9 @@
         "EASA-FR-067",
         "EASA-FR-068"
       ],
+      "git_head": "5b9154a0770d",
       "priority": "P0",
-      "reason": "Owner-authorized PILOT active since 2026-10-18 (policy sha approved and PILOT transition ACCEPTED, Jefferson Nascimento). LL r125 (ASIL B scope) passes SWE.1-SWE.6 with all six matrices; its package is BLOCKED on the ASIL B safety evidence (HSI, allocation review, safety analysis, tool assessment) and READY is not claimed. HAL PILOT r126/r127 (SWE.4) and r128 (SWE.3) BLOCKED by agent quality (failing unit tests, design render errors); pilot false-positive/false-negative rates are not yet measured.",
-      "status": "PARTIAL",
+      "status": "PASS",
       "title": "Perform owner-authorized PILOT on real end-to-end driver without claiming ready if safety evidence missing."
     },
     "EASA-T070": {
