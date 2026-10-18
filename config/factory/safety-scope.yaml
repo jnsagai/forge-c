@@ -1,0 +1,16 @@
+# Owner decisions on the PRODUCT safety scope (ADR-0010). Only the owner writes this file; an agent never derives an
+# ASIL. workorder.prepare copies the matching decision, read-only, into .forge-run/safety_scope.json.
+# Recording a target ASIL is not a safety approval: ASIL work orders need the HSI, the allocation review, a software
+# safety analysis and a tool assurance assessment, written by competent humans; until then the package stays BLOCKED.
+schema_version: '1.0'
+decisions:
+  - scope_id: SC-RCC-2026-10-18
+    examples: [0002a-arm_55_rcc_ll, 0002b-arm_55_rcc_hal]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-18 by Jefferson Nascimento ("consider RCC as ASIL"); letter B taken from the
+      ASIL B target of Feature 006 (47-entry ASIL B ++ method index) - owner to confirm or change the letter
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-18'
+    hsi_hash: null
+    allocation_review_ref: null
