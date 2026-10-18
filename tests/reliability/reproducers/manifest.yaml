@@ -420,3 +420,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "Recurrence of CAPA-031: BUDGET_RX recognised only 'bytes of (program) flash|RAM|static RAM|stack'; r120's SWR-021 budget 'no more than 4096 bytes of code and constant data' was treated as a unit-level requirement and SWE.3 stopped STUCK on UNIT:SWR_NOT_REFINED."
     remedy: "Any limit on a byte quantity (bytes/KiB/KB/MiB, 'no more than'/'at most'/'not exceed'/'maximum of') is a component-level resource budget."
+  - id: RPR-041
+    script: rpr041_hal_unit_tests_cannot_observe_ll.py
+    sha256: cea80073e8dbdbd06ee7fd032797dd798f303d34cd05e54e3c87cbbb5524d6c9
+    symptom_signature: "HAL unit test cannot observe LL polls"
+    observed_in: r126
+    baseline_revision: 034f39d59eff00bdc811928acd55b3e43e158efe
+    fix_revision: 7efa69fde63d6f51d85464b4b0fa5f90531fb2fc
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_unit", "UT:SPEC_NOT_VERIFIED", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/author]
+    root_cause: "HAL unit tests ran on a plain RAM register array (generated harness): an LL status query could never become set after N polls and the HAL's LL call order was invisible, so the SWE.4 authors (r123, r126, r127) invented write-capture helpers that saw only their own writes, the inspector's demands (number of polls, set-then-clear order) could not be met and SWE.4 failed in 3 of 4 HAL runs."
+    remedy: "HAL work orders get a generated, read-only test double of the provided LL API (call log, call counts, order, scripted query results; no register array) and a harness/prompt that use it; run_unit, the EASA mutation campaign and API-execution check build against it; an edited double fails run_unit."

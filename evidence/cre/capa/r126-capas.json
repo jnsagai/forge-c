@@ -1,0 +1,107 @@
+{
+  "CAPA-038": {
+    "history": [
+      {
+        "at": "2026-10-18T10:29:01.654186Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[\"CAPA-038\"]",
+        "from_state": null,
+        "reason": "HAL SWE.4 failed in r123/r126/r127: unit tests on a RAM register array cannot observe LL polls or call order",
+        "seq": 314,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-18T10:29:01.715281Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 315,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-18T10:29:01.765387Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-041 assigned",
+        "seq": 316,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-18T10:30:32.003545Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[\"reproducer-run:rr-56eb9e97f14abee41e79\", \"reproducer-run:rr-faa9e2ae39b8f7325f21\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 317,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-18T10:30:32.051794Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[\"git:034f39d59eff..7efa69fde63d\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 7efa69fde63d (patch 29614 bytes)",
+        "seq": 318,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-18T10:30:32.158589Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[\"reproducer-run:rr-adc0f0f06aafd2d1b44a\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-041 absent at 7efa69fde63d",
+        "seq": 319,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-18T10:30:32.202939Z",
+        "capa_id": "CAPA-038",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 320,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-25fea4df9fe37db3d1a71f0c8c044cb9c0201a68",
+      "cfp1-2997b9b2bc5622f9b9033216e4a1d1b1ce077960",
+      "cfp1-43d0e05742ffef6849ae843715f00766157a9bc8",
+      "cfp1-441c6a2099dc63ae5678c8466bfc5a24843bfb9a",
+      "cfp1-485cec52c865f36dd61b9319ad2264d2a1fb1b88",
+      "cfp1-f23ccf931fdc0dd787f21ce44ab75b8801617a9d",
+      "cfp1-f44d86ad3c4d00053d61d3950347d7ca083d040e",
+      "034f39d59eff00bdc811928acd55b3e43e158efe",
+      "7efa69fde63d6f51d85464b4b0fa5f90531fb2fc",
+      "pd-72b55f120d6a561bd059"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<7efa69fde63d"
+      ],
+      "candidate_patch_sha256": "ea491594165d9c7ccc5e85c2b21c26e1c7d734a2214cc43c03c62d13e8fba228",
+      "capa_id": "CAPA-038",
+      "created_at": "2026-10-18T10:29:01.654186Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-038"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-041",
+      "reproducer_id": "RPR-041",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-56eb9e97f14abee41e79",
+        "reproducer-run:rr-faa9e2ae39b8f7325f21"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "HAL unit tests had no way to observe or script the LL API (plain RAM register array harness)",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-18T10:30:32.202939Z"
+    }
+  }
+}
