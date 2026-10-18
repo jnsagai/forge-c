@@ -620,6 +620,10 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
         for t in tests:
             if not t["verifies"]:
                 f4.append(f"UT:TEST_WITHOUT_TRACE:{t['test']}")
+            if run is not None and t["test"] not in res:  # CAPA-039 (r126): checks printed under other ids
+                f4.append(f"UT:TEST_NOT_OBSERVED:{t['test']} (the executed output has no result line for {t['test']}: "
+                          f"name the checks inside the function tagged @test {t['test']} '{t['test']}' or "
+                          f"'{t['test']}-<suffix>')")
             for v in t["verifies"]:
                 if v not in specs:
                     f4.append(f"UT:UNKNOWN_SPEC_REF:{t['test']}:{v}")
@@ -644,6 +648,10 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
         for t in tests:
             if not t["verifies"]:
                 f5.append(f"IT:TEST_WITHOUT_TRACE:{t['test']}")
+            if it is not None and not (t["file_level"] or "/target/" in t["file"]) and t["test"] not in res:  # CAPA-039
+                f5.append(f"IT:TEST_NOT_OBSERVED:{t['test']} (the executed output has no result line for {t['test']}: "
+                          f"name the checks inside the function tagged @test {t['test']} '{t['test']}' or "
+                          f"'{t['test']}-<suffix>')")
             result = (tt or {}).get("status", "NOT_RUN") if t["file_level"] or "/target/" in t["file"] else \
                 res.get(t["test"], "NOT_RUN")
             for v in t["verifies"]:

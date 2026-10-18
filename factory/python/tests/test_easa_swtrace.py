@@ -501,3 +501,12 @@ def test_capa036_interfaces_defined_in_the_frozen_architecture_document_are_arch
 def test_capa031_any_byte_quantity_limit_is_a_resource_budget(text, budget):
     """CAPA-031 iteration 2 (r120): 'no more than 4096 bytes of code and constant data' was not recognised."""
     assert bool(swtrace.BUDGET_RX.search(text)) is budget
+
+
+def test_capa039_tagged_test_without_its_own_result_line_is_named(ws):
+    """CAPA-039 (r126): '@test UT-010' printed its checks as UT-100/UT-106; Matrix 4 showed NOT_RUN and the inspector
+    rejected the contradiction. The trace gate now names the test and says how to name its checks."""
+    _edit(ws, "software/tests/unit/test_rcc.c", "@test UT-002", "@test UT-009")
+    f = swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.4")["findings"]["SWE.4"]
+    hit = [x for x in f if x.startswith("UT:TEST_NOT_OBSERVED:UT-009")]
+    assert hit and "'UT-009-<suffix>'" in hit[0]
