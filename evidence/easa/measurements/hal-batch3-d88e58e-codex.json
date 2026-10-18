@@ -1,0 +1,96 @@
+{
+  "schema": "forge-c/easa-measurement/0.1",
+  "subject": "HAL batch 3: Codex gpt-6.1-sol authors + deepseek-flash inspectors, frozen rev d88e58e (CAPA-038 it.3 LL fake preset API + progress-aware rework budget), ASIL B scope SC-RCC-2026-10-18, PILOT, provided LL r125",
+  "decision_rule": ">=3/5 runs pass SWE.1-SWE.6 (set before launch)",
+  "runs": {
+    "r148": {
+      "phases_passed": 2,
+      "package_status": "BLOCKED",
+      "gaps": 28
+    },
+    "r149": {
+      "phases_passed": 6,
+      "package_status": "BLOCKED",
+      "gaps": 2
+    },
+    "r150": {
+      "phases_passed": 6,
+      "package_status": "BLOCKED",
+      "gaps": 2
+    },
+    "r151": {
+      "phases_passed": 6,
+      "package_status": "BLOCKED",
+      "gaps": 2
+    },
+    "r152": {
+      "phases_passed": 6,
+      "package_status": "BLOCKED",
+      "gaps": 2
+    }
+  },
+  "result": {
+    "all_six": 4,
+    "of": 5,
+    "mean_phases_passed": 5.2,
+    "rule_met_for_engineering_phases": true
+  },
+  "previous": {
+    "deepseek rev 26702e6": "0/5, mean 1.6",
+    "codex rev ce039ad": "2/5, mean 4.0"
+  },
+  "mechanisms_observed": {
+    "progress_extension": {
+      "r148": "SWE.3 cycle 1 refused (no progress) -> BLOCKED",
+      "r149": "SWE.4 cycle 1 granted -> passed",
+      "r152": "SWE.3 cycle 1 granted -> passed"
+    },
+    "upstream_loop": {
+      "r150": "SWE.5 STUCK (IT:TEST_NOT_OBSERVED twice) -> DEF-003 to SWE.3 -> SWE.5 PASS"
+    },
+    "LL_FAKE_INTERNAL_CALL_rejections": 0
+  },
+  "pilot_check": "evidence/easa/pilots/pilot-check-r149-r152-codex.json: 4/4 PASS, archives unchanged, six matrices complete; packages BLOCKED only on safety/software_safety_analysis.md and safety/tool_assurance_assessment.md (owner-postponed)",
+  "FINDING_safety_scope_inconsistency": {
+    "status": "OPEN - reported to owner 2026-10-19, not fixed",
+    "what": "The HAL example workorder.json target.safety_allocation still reads 'OUT_OF_SCOPE: QM development ... (owner decision 2026-10-15)'; the SWE.1 prompt turns that into 'QM development scope: no software safety requirements are allocated'. The ASIL B owner scope (SC-RCC-2026-10-18, manifest safety_target B) does not override it, so ASIL B packages state QM development.",
+    "affected_files_with_QM_text": {
+      "r144": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ],
+      "r147": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ],
+      "r149": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ],
+      "r150": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ],
+      "r151": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ],
+      "r152": [
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.6/software_verification_report.md"
+      ]
+    },
+    "impact": "No package is READY (all BLOCKED on safety documents), but the packaged safety requirements contradict the approved scope; the EASA pilot check did not detect it.",
+    "consequence_for_this_measurement": "4/5 is an engineering-phase result only; it is not evidence of a correct ASIL B safety allocation."
+  },
+  "spend": {
+    "deepseek_cumulative_usd": 8.87,
+    "codex": "owner ChatGPT plan, not metered by the factory"
+  }
+}
