@@ -79,13 +79,16 @@ authored `tasks.md` keeps its boxes unchecked by design, because `validate_spec.
 
 ## 6. Normative status
 
-- The ISO 26262-6:2018 method list is a 47-entry provisional secondary working index.
-- No licensed copy is registered, so normative verification is BLOCKED.
-- The procedure to change this is in `docs/assurance/normative-reconciliation-plan.md`.
+- 2026-10-18: the owner registered an ISO 26262-6:2018 copy (outside the repository, by hash) and, as the named
+  reviewer, signed all 15 method tables. The catalog is CONTROLLED_RECONCILED. See
+  `docs/assurance/normative-reconciliation-plan.md`.
+- This changes which method ratings EASA uses. It does not authorize any ISO 26262 conformance, ASIL approval or
+  certification statement by the factory.
 
 ## 7. Decisions that only the owner can take
 
-1. **Product safety scope of the RCC work orders (QM or ASIL) as an approved record (`.forge-run/safety_scope.json`).**
+1. **Product safety scope of the RCC work orders.** Decided 2026-10-18: ASIL (recorded as B, letter to be confirmed), in
+   `config/factory/safety-scope.yaml`; copied read-only into each work order.
    - Without it, the two safety documents stay required and every package stays BLOCKED.
    - With an approved QM scope (human approver, written rationale), the package states the documents as not applicable.
      The unchanged release policy can then give READY_FOR_OFFLINE_REVIEW. This was measured on a copy of sealed r102.
