@@ -1,6 +1,6 @@
 # Feature 006 (EASA) status — generated from evidence records
 
-Generated 2026-10-18T11:34:47.865947Z at `5b9154a0770d`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
+Generated 2026-10-18T11:52:07.897231Z at `07f6bd9108cd`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
 
 Tasks: PASS 72.
 FRs: COVERED 72, PARTIAL 0, BLOCKED 0, OPEN 0.
