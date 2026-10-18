@@ -453,3 +453,14 @@ reproducers:
     operations: [WORKORDER/resume]
     root_cause: "resume_from copied every file of the carried phases, including the HAL work order's provided read-only LL header; the new work order already holds its own verified 0444 copy, so the copy failed with Permission denied and the run never started (first HAL resume, r132/r133)."
     remedy: "Provided files are never copied; the source's copy must match the new work order's provided sha256, otherwise the resume is refused (RESUME_PROVIDED_MISMATCH)."
+  - id: RPR-044
+    script: rpr044_fake_state_query_constant.py
+    sha256: 4e93207dad589b447753c172dfdd2f6f53a10bc9a0fe6a42bd3b0419f5ac4466
+    symptom_signature: "state query of the LL test double ignores Enable"
+    observed_in: r135
+    baseline_revision: 2b03bc5b4eae90386f00ab7ec94bdc0385b29e9b
+    fix_revision: ca9b5c084f003e5f4f54978e8176c0df76b8bbac
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_unit", "DEFECT:TEST", "TURN_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/author, SWE.3/author]
+    root_cause: "CAPA-038 iteration 1 made every LL uint32_t query scripted (default 0U); a state query such as LL_RCC_ADC12_IsEnabled() therefore read 0U right after LL_RCC_ADC12_Enable(), unlike the LL; r135's authors declared TEST defects (DEF-001, DEF-004) to work around it and the SWE.3 rework loop ran out of turns."
+    remedy: "Queries of a register bit that an LL function writes follow that bit (shadow state); flags no LL function writes (IsReady) stay scripted; ll_fake_return_from overrides both."
