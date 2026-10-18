@@ -29,6 +29,11 @@ export FORGE_FORMAL_BIN="${FORGE_FORMAL_BIN:-$FORGE_DATA_ROOT/toolchains/formal/
 if [ -x "$FORGE_FORMAL_BIN/cbmc" ]; then
   export PATH="$PATH:$FORGE_FORMAL_BIN"
 fi
+# ISO 26262-6:2018 copy provided by the owner (2026-10-18), registered by path OUTSIDE the repository (only its sha256
+# is recorded; no text enters the repo). Licence status is the owner's responsibility (not verified by the factory).
+if [ -z "${FORGE_ISO26262_6_2018_PATH:-}" ] && [ -f "$FORGE_DATA_ROOT/standards/iso26262-6-2018/part6.md" ]; then
+  export FORGE_ISO26262_6_2018_PATH="$FORGE_DATA_ROOT/standards/iso26262-6-2018/part6.md"
+fi
 if [ -x "$FORGE_VENV/bin/python" ]; then
   export PATH="$FORGE_VENV/bin:$PATH"
 fi

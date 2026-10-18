@@ -14,7 +14,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .common import REPO_ROOT, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
+from .common import REPO_ROOT, canonical_json, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
 from .layer import TRACE_PROFILE
@@ -205,6 +205,13 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     (ws / ".forge-run/index").mkdir(parents=True, exist_ok=True)
     for k, v in idx.items():
         (ws / f".forge-run/index/{Path(k).stem}.json").write_text(json.dumps(v))
+    from .assurance.scope import owner_scope  # owner safety-scope decision (never derived by an agent)
+
+    sc = owner_scope(example.name, wo, sha256_bytes(canonical_json(sorted((i["path"], i.get("sha256")) for i in listed))))
+    if sc:
+        manifest["safety_target"] = sc["scope"]["target_asil"]
+        (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
+        (ws / ".forge-run/safety_scope.json").chmod(0o444)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 

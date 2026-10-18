@@ -78,6 +78,8 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
         return {"status": "NO_APPROVED_SCOPE", "note": "product ASIL/QM scope not recorded by the owner; safety "
                 "documents stay required (gaps unchanged)"}
     rec = json.loads(p.read_text())
+    (stage / "configuration").mkdir(parents=True, exist_ok=True)  # the approved scope travels with the package
+    (stage / "configuration/safety_scope.json").write_text(pretty_json(rec))
     sc, na, docs = rec.get("scope") or {}, rec.get("na") or {}, {}
     for key, rel in SAFETY_FILES.items():
         f = stage / rel

@@ -68,3 +68,32 @@ def claim_text_findings(scope: dict, text: str) -> list[str]:
         if asil == "QM" or m.group(1) != asil:
             out.append(f"ASIL_MISMATCH_TEXT:{m.group(0)}!={asil}")
     return out
+
+
+DECISIONS = "config/factory/safety-scope.yaml"
+
+
+def owner_scope(example: str, work_order_id: str, source_requirements_hash: str, repo=None) -> dict | None:
+    """The owner's scope decision for an example work order, as a safety-scope record (None if none recorded).
+    Refuses (ValueError) a decision that is not human-approved or whose ASIL source is not an approved allocation."""
+    from pathlib import Path
+
+    from ..common import REPO_ROOT, load_yaml
+
+    p = Path(repo or REPO_ROOT) / DECISIONS
+    if not p.is_file():
+        return None
+    for d in (load_yaml(p) or {}).get("decisions") or []:
+        if example not in (d.get("examples") or []):
+            continue
+        if not _human(d.get("approved_by")) or not d.get("approved_at"):
+            raise ValueError(f"SCOPE_DECISION_NOT_HUMAN_APPROVED:{d.get('scope_id')}")
+        rec = {"scope_id": d["scope_id"], "work_order_id": work_order_id, "target_asil": d["target_asil"],
+               "source_requirements_hash": source_requirements_hash, "hsi_hash": d.get("hsi_hash"),
+               "allocation_review_ref": d.get("allocation_review_ref"),
+               "product_asil_source": " ".join(str(d["product_asil_source"]).split())}
+        issues = validate(rec)
+        if issues:
+            raise ValueError(f"SCOPE_DECISION_INVALID:{issues}")
+        return {"scope": rec, "na": d.get("na") or {}, "approved_by": d["approved_by"], "approved_at": d["approved_at"]}
+    return None

@@ -11,7 +11,7 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from ..common import canonical_json, sha256_bytes
+from ..common import REPO_ROOT, canonical_json, sha256_bytes
 from . import contracts
 from .normative import standard_access
 
@@ -20,8 +20,23 @@ EXPECTED_ENTRIES = 47
 TABLES = set(range(1, 16))
 
 
+DERIVED_DIR = REPO_ROOT / "evidence/easa/normative"
+
+
 def load(path=None) -> dict:
-    return contracts.load(path or contracts.CATALOG)
+    """The authored working catalog, or the newest reviewer-reconciled derived version (catalog-vNN.json, append-only)
+    when it was reconciled against the currently registered source copy."""
+    if path is not None:
+        return contracts.load(path)
+    derived = sorted(DERIVED_DIR.glob("catalog-v*.json")) if DERIVED_DIR.is_dir() else []
+    if derived:
+        import json
+
+        cat = json.loads(derived[-1].read_text())
+        acc = standard_access()
+        if acc["licensed_copy"] == "REGISTERED" and cat.get("reconciled_against_sha256") == acc["sha256"]:
+            return cat
+    return contracts.load(contracts.CATALOG)
 
 
 def digest(cat: dict) -> str:
@@ -90,7 +105,7 @@ def reconcile(cat: dict, rec: dict, store=None) -> tuple[dict | None, dict]:
     table = rec.get("table")
     rows = rec.get("rows") or {}
     in_table = {m["method_id"] for m in cat.get("methods", []) if m.get("table") == table}
-    if table not in TABLES or not in_table:
+    if table not in TABLES:  # a table without ASIL-B ++ rows (Table 12) is reconciled by confirming rows == {}
         issues.append(f"UNKNOWN_TABLE:{table}")
     elif set(rows) != in_table:
         issues.append(f"PARTIAL_TABLE_REVIEW:{sorted(in_table ^ set(rows))}")
