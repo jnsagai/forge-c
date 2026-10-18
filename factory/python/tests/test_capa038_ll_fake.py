@@ -128,7 +128,8 @@ def test_capa038_poll_count_order_and_rollback_are_observable(ws):
     assert r["ll_fake"] and not ll_fake.modified(ws)
     fake = (ws / ll_fake.FAKE_HEADER).read_text()
     assert "extern volatile uint32_t ll_rcc_regs" not in fake and "#define LL_RCC_CR_HSEON_MSK 0x00000010U" in fake
-    assert fake.count("ll_fake_record(LL_FAKE_LL_RCC_HSE_") == 2 and "return ll_fake_query(LL_FAKE_LL_RCC_HSE_IsReady" in fake
+    assert (fake.count("ll_fake_internal_record(LL_FAKE_LL_RCC_HSE_") == 2
+            and "return ll_fake_internal_query(LL_FAKE_LL_RCC_HSE_IsReady" in fake)
     assert "ll_rcc_regs" not in (ws / scaffold.UNIT_TEST).read_text()
     _insert(ws)
     out = _run_unit()
@@ -192,3 +193,35 @@ def test_capa038_iteration2_state_queries_follow_the_bits_hardware_flags_stay_sc
     _insert(ws, STATE, "ut_state();")
     out = _run_unit()
     assert out["status"] == "PASS", out
+
+
+PRESET = """static void ut_preset(void)
+{
+    ut_reset();
+    CHECK("UT-005", ll_fake_set_state(LL_FAKE_LL_RCC_ADC12_IsEnabled, 1U) == 1U);
+    CHECK("UT-005-ON", LL_RCC_ADC12_IsEnabled() == 1U);
+    CHECK("UT-005-NOCALL", ll_fake_calls(LL_FAKE_LL_RCC_ADC12_Enable) == 0U);
+    CHECK("UT-005-FLAG", ll_fake_set_state(LL_FAKE_LL_RCC_HSE_IsReady, 1U) == 0U);
+    CHECK("UT-005-FLAG0", LL_RCC_HSE_IsReady() == 0U);
+    LL_RCC_ADC12_Disable();
+    CHECK("UT-005-OFF", LL_RCC_ADC12_IsEnabled() == 0U);
+}
+"""
+
+
+def test_capa043_state_preset_api_and_internal_helpers_are_refused(ws):
+    """CAPA-043 (r146 UT-009, r144): tests preset 'already enabled' through the internal bit helper with magic
+    indices; the fake offers ll_fake_set_state(query_fn, value) and run_unit fails a test calling the internals."""
+    scaffold.scaffold(ws)
+    _insert(ws, PRESET, "ut_preset();")
+    out = _run_unit()
+    assert out["status"] == "PASS", out
+    _insert(ws, "static void ut_magic(void)\n{\n    ut_reset();\n    /* ll_fake_set_bit(9U, 1U); in a comment is fine */\n"
+                "    ll_fake_internal_set_bit(0U, 1U);\n    CHECK(\"UT-006\", LL_RCC_ADC12_IsEnabled() == 1U);\n}\n",
+            "ut_magic();")
+    out = _run_unit()
+    assert out["status"] == "FAIL" and out["issues"][0].startswith(
+        "LL_FAKE_INTERNAL_CALL:test_rcc.c:ll_fake_internal_set_bit"), out
+    assert ll_fake.internal_calls("x = ll_fake_query_bit(LL_FAKE_A, 0U); ll_fake_set_bit (1U, 0U);") == [
+        "ll_fake_query_bit", "ll_fake_set_bit"]
+    assert ll_fake.internal_calls("ll_fake_set_state(LL_FAKE_A, 1U); ll_fake_return_from(LL_FAKE_B, 1U, 1U);") == []
