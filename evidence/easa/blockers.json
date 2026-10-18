@@ -1,10 +1,10 @@
 {
   "EASA-T069": {
-    "status": "BLOCKED",
-    "reason": "Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending)."
+    "status": "PARTIAL",
+    "reason": "Owner-authorized PILOT active since 2026-10-18 (policy sha approved and PILOT transition ACCEPTED, Jefferson Nascimento). LL r125 (ASIL B scope) passes SWE.1-SWE.6 with all six matrices; its package is BLOCKED on the ASIL B safety evidence (HSI, allocation review, safety analysis, tool assessment) and READY is not claimed. HAL PILOT r126/r127 (SWE.4) and r128 (SWE.3) BLOCKED by agent quality (failing unit tests, design render errors); pilot false-positive/false-negative rates are not yet measured."
   },
   "EASA-T079": {
     "status": "PARTIAL",
-    "reason": "LL r122 and HAL r124 pass AT-094 (six matrices, nothing uncovered); packages BLOCKED on the two safety documents pending the owner's QM/ASIL scope decision, so no READY package yet."
+    "reason": "LL r122/r125 and HAL r124 pass AT-094 (six matrices, nothing uncovered). Product scope decided ASIL (B): packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package."
   }
 }

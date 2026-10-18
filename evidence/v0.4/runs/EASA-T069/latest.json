@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.assurance.pilot",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002A-STM32N6-RCC-LL-r125/forge-c-WO-0002A-STM32N6-RCC-LL-r125-review.zip",
+    "--pilot",
+    "--out",
+    "evidence/easa/pilots/pilot-check-r125-pilot.json"
+  ],
+  "duration_s": 0.04,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d6039a45a47ac8080e9da8dd595e72dd2cd9c335",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T069/20261018T093746.log",
+  "log_sha256": "be478fa8a5134cf90d4f24e9c0697941246152079c14ab0f169be6b7a82e4399",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T069",
+  "ts_utc": "2026-10-18T09:37:46.487341Z"
+}

@@ -1,8 +1,8 @@
 # Feature 006 (EASA) status — generated from evidence records
 
-Generated 2026-10-17T21:16:29.468128Z at `dce71374fcd7`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
+Generated 2026-10-18T09:37:46.795327Z at `d6039a45a47a`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
 
-Tasks: BLOCKED 1, PASS 71.
+Tasks: PARTIAL 1, PASS 71.
 FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0.
 
 | Task | P | Status | ATs | Evidence / reason |
@@ -75,7 +75,7 @@ FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0.
 | EASA-T066 | P0 | PASS | 066 | evidence/v0.4/runs/EASA-T066/latest.json |
 | EASA-T067 | P0 | PASS | 067 | evidence/v0.4/runs/EASA-T067/latest.json |
 | EASA-T068 | P0 | PASS | 068 | evidence/v0.4/runs/EASA-T068/latest.json |
-| EASA-T069 | P0 | BLOCKED | 069 | Owner-authorized PILOT not granted: EASA stays OBSERVE_ONLY as the kickoff requires (policy.request_mode needs a human authorization record). Real pilots: LL r122 and HAL r124 pass SWE.1-SWE.6 with all six matrices covered; both packages BLOCKED only on the two safety documents (owner QM/ASIL scope decision pending). |
+| EASA-T069 | P0 | PARTIAL | 069 | evidence/v0.4/runs/EASA-T069/latest.json |
 | EASA-T070 | P0 | PASS | 070 | evidence/v0.4/runs/EASA-T070/latest.json |
 | EASA-T071 | P0 | PASS | 071 | evidence/v0.4/runs/EASA-T071/latest.json |
 | EASA-T072 | P0 | PASS | 072 | evidence/v0.4/runs/EASA-T072/latest.json |
@@ -157,13 +157,13 @@ Tasks: PARTIAL 1, PASS 6.
 | EASA-FR-059 | P0 | COVERED | T020=PASS, T047=PASS, T058=PASS, T066=PASS |
 | EASA-FR-060 | P0 | COVERED | T057=PASS, T058=PASS, T063=PASS |
 | EASA-FR-061 | P0 | COVERED | T005=PASS, T058=PASS, T072=PASS |
-| EASA-FR-062 | P0 | PARTIAL | T012=PASS, T059=PASS, T069=BLOCKED |
+| EASA-FR-062 | P0 | PARTIAL | T012=PASS, T059=PASS, T069=PARTIAL |
 | EASA-FR-063 | P0 | COVERED | T007=PASS, T021=PASS, T060=PASS |
 | EASA-FR-064 | P0 | COVERED | T021=PASS, T022=PASS, T060=PASS |
 | EASA-FR-065 | P0 | COVERED | T003=PASS, T064=PASS, T071=PASS |
 | EASA-FR-066 | P0 | COVERED | T001=PASS, T004=PASS, T006=PASS, T007=PASS, T013=PASS, T061=PASS, T068=PASS |
-| EASA-FR-067 | P0 | PARTIAL | T062=PASS, T068=PASS, T069=BLOCKED, T070=PASS |
-| EASA-FR-068 | P0 | PARTIAL | T014=PASS, T038=PASS, T042=PASS, T055=PASS, T069=BLOCKED |
+| EASA-FR-067 | P0 | PARTIAL | T062=PASS, T068=PASS, T069=PARTIAL, T070=PASS |
+| EASA-FR-068 | P0 | PARTIAL | T014=PASS, T038=PASS, T042=PASS, T055=PASS, T069=PARTIAL |
 | EASA-FR-069 | P0 | COVERED | T023=PASS, T039=PASS, T046=PASS, T065=PASS |
 | EASA-FR-070 | P0 | COVERED | T008=PASS, T010=PASS, T015=PASS, T071=PASS |
 | EASA-FR-071 | P0 | COVERED | T003=PASS, T062=PASS, T064=PASS, T070=PASS, T072=PASS |
