@@ -237,3 +237,24 @@ def test_target_procedures_state_the_rcc_model_exactly():
         for text in (prompts.target_test_author_prompt(), prompts.robot_test_author_prompt()):
             assert "RCC_SR (offset 0x004), which is read-only" in text and "0x00000F1F" in text
     prompts.LAYER["layer"] = "LL+HAL"
+
+
+def test_capa041_fix_loop_visit_gets_extra_turns_first_pass_does_not(tmp_path):
+    """CAPA-041 (r135/r136/r137): all three HAL SWE.3 fix visits ran out of turns; while a defect targeted at
+    SWE.3 is IN_FIX the SWE.3 author gets LOOP_EXTRA_TURNS; first passes and other roles are unchanged."""
+    import json
+
+    from forge_factory.inspection import defects
+    from forge_factory.policy import governor as GV
+
+    ws = tmp_path / "WO" / "workspace"
+    (ws / defects.DIR).mkdir(parents=True)
+    first = GV.turn_limit("swe3-author", str(ws))
+    (ws / defects.DIR / "DEF-001.json").write_text(json.dumps({"id": "DEF-001", "status": "IN_FIX",
+                                                                "target_phase": "SWE.3", "kind": "CODE"}))
+    assert GV.turn_limit("swe3-author", str(ws)) == first + GV.LOOP_EXTRA_TURNS
+    assert GV.turn_limit("swe4-author", str(ws)) == GV.turn_limit("swe4-author")       # not the target phase
+    assert GV.turn_limit("swe3-inspector", str(ws)) == GV.turn_limit("swe3-inspector")
+    (ws / defects.DIR / "DEF-001.json").write_text(json.dumps({"id": "DEF-001", "status": "FIXED",
+                                                                "target_phase": "SWE.3", "kind": "CODE"}))
+    assert GV.turn_limit("swe3-author", str(ws)) == first

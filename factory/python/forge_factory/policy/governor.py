@@ -56,6 +56,22 @@ REFERENCE_FUNCTIONS = 12  # the combined-driver allocation the authored 35-turn 
 
 TRACE_ROLES = ("swe2-author", "swe3-author", "swe4-author", "swe5-author")
 TRACE_EXTRA_TURNS = 8
+# CAPA-041 (r135/r136/r137): a phase re-entered to fix an upstream defect must re-read its context, fix the code AND
+# re-validate the specs/designs/trace; all three HAL fix visits of SWE.3 ran out of turns. Extra turns apply only
+# while a defect targeted at the author's phase is IN_FIX (an upstream loop), never on a first pass.
+LOOP_EXTRA_TURNS = 15
+
+
+def _in_fix_loop(workspace: str, role: str) -> bool:
+    phase = {"swe1-author": "SWE.1", "swe2-author": "SWE.2", "swe3-author": "SWE.3"}.get(role)
+    if not phase:
+        return False
+    try:
+        from ..inspection.defects import all_defects
+
+        return any(d.get("status") == "IN_FIX" and d.get("target_phase") == phase for d in all_defects(Path(workspace)))
+    except Exception:  # noqa: BLE001 - advisory: the authored budget always applies
+        return False
 
 
 def turn_limit(role: str, workspace: str | None = None) -> int:
@@ -67,6 +83,8 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
 
         if swtrace_enabled(Path(workspace)):  # owner addendum 2026-10-17: unit specs, designs, trace tags
             base += TRACE_EXTRA_TURNS
+    if workspace and _in_fix_loop(workspace, role):
+        base += LOOP_EXTRA_TURNS
     if role not in SCALED_ROLES or not workspace:
         return base
     try:
