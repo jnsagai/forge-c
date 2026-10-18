@@ -486,3 +486,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "A unit's 'Functions:' list in unit_specifications.md is a fact of the code (@unit tags) but was kept by hand; after code changes in SWE.3 rework it still named removed functions, the trace gate rejected UNIT_FUNCTION_NOT_IN_CODE and rework cycles went to bookkeeping (r129; r113 same class)."
     remedy: "sync_trace sets a unit's Functions list to the functions the code tags @unit <id> (units the code tags at all) before the SWE.3 trace check; changes are logged; specs, designs and code are untouched."
+  - id: RPR-047
+    script: rpr047_fake_state_preset_internal.py
+    sha256: b3ff13ab9bed37521d8522752ad5a8ed8048898bd0dda9800224ae77cea9ed9b
+    symptom_signature: "LL test double has no state preset and accepts internal helper calls"
+    observed_in: r146
+    baseline_revision: 567f0c602aaa96fed5ba5c8b1e0cd060d3849416
+    fix_revision: 353bc4bdb97007de3dee46826fd731a292adcb71
+    error_codes: ["INSPECTION_FAIL:SWE4-02", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/author, SWE.4/inspect]
+    root_cause: "The generated LL test double (CAPA-038) documented no way to preset the state a state query reads (e.g. a peripheral already enabled), and its bit helpers were public; r146's SWE.4 author called ll_fake_set_bit()/ll_fake_query_bit() with magic indices tied to the generated enum order (14 calls; r144: 2), the inspector rejected UT-009 (abstract bits, vacuous test) and the SWE.4 rework budget ran out."
+    remedy: "ll_fake_set_state(query_fn, value) presets the state of a state query without an LL call (returns 0U for scripted flags); the helpers are named ll_fake_internal_* and run_unit fails a unit test that calls them (LL_FAKE_INTERNAL_CALL); the SWE.4 prompt names the preset call."
