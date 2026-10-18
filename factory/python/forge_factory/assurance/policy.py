@@ -134,7 +134,7 @@ def accepted_mode(store) -> str:
     return acc[-1]["to"] if acc and acc[-1].get("to") in MODES else "OBSERVE_ONLY"
 
 
-def active(store=None, path: Path = POLICY_PATH) -> dict:
+def active(store=None, path: Path | None = None) -> dict:
     """The policy the gates actually use. Fail closed: only a schema-valid policy whose sha a human approved
     (PolicyHolder), and its mode only if the latest recorded mode transition ACCEPTED that mode
     (request_mode with a human authorization); otherwise the last accepted mode, or OBSERVE_ONLY.
@@ -143,7 +143,10 @@ def active(store=None, path: Path = POLICY_PATH) -> dict:
     from .store import AssuranceStore
 
     store = store or AssuranceStore()
-    pol = dict(PolicyHolder(store, path).active)
+    holder = PolicyHolder(store, path or POLICY_PATH)
+    pol = dict(holder.active)
+    if holder.source == "builtin-default":  # no approved policy file: the built-in OBSERVE_ONLY default, whatever
+        return pol                          # mode history the store holds
     last = accepted_mode(store)
     if pol.get("mode") != last:
         pol["mode_requested_in_file"] = pol.get("mode")
