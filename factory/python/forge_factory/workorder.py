@@ -355,7 +355,15 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
 
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
-        provided_from: str | None = None) -> dict:
+        provided_from: str | None = None, acp_authors: str | None = None) -> dict:
+    if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
+        from .acp import codex_home
+
+        if acp_authors != "codex":
+            raise ValueError(f"unknown ACP author backend: {acp_authors}")
+        codex_home.ensure()
+        if not codex_home.logged_in():
+            raise RuntimeError(f"CODEX_HOME {codex_home.home()} is not logged in (run: CODEX_HOME=<it> codex login)")
     ws, manifest = prepare(example, wo, provided_from)
     phases = resume_from(ws, manifest, resume) if resume else None
     if phases == []:
@@ -370,7 +378,18 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION)
-    (ws / ".forge-run/model-profile.json").write_text(pretty_json(model_profile(model, provider, code_model, nodes)))
+    prof = model_profile(model, provider, code_model, nodes)
+    if acp_authors:
+        from . import acp
+        from .acp import codex_home
+
+        graph, acp_nodes = acp.attach(graph, nodes, ws)
+        prof["acp_authors"] = {"nodes": acp_nodes, "model": codex_home.MODEL, "reasoning_effort": codex_home.EFFORT,
+                               "provider": acp.ACP_PROVIDER, "codex": codex_home.CODEX,
+                               "note": "author roles on Codex; inspectors and every other node on the run model"}
+        manifest["acp_authors"] = acp_nodes
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)
@@ -412,9 +431,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
     ap.add_argument("--provided-from", default=None,
                     help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
+    ap.add_argument("--acp-authors", choices=["codex"], default=None,
+                    help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates")
     a = ap.parse_args(argv)
     res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-              resume=a.resume_from, provided_from=a.provided_from)
+              resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0

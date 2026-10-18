@@ -1,0 +1,33 @@
+{
+  "installed_at": "2026-10-18",
+  "requested_by": "owner (option 3: Codex via ChatGPT login under the factory policy)",
+  "packages": [
+    {
+      "name": "@agentclientprotocol/codex-acp",
+      "version": "2.1.1",
+      "licence": "Apache-2.0",
+      "published": "2026-10-01",
+      "method": "npm install --prefix toolchains/codex-acp-2.1.1 (2.2.2 skipped: 8 days old)",
+      "bundled_codex": "0.159.3 (unused: CODEX_PATH points to the pinned 0.162.1)"
+    },
+    {
+      "name": "codex CLI (standalone)",
+      "version": "0.162.1",
+      "licence": "Apache-2.0 (openai/codex)",
+      "method": "copied from the owner's installed release into toolchains/codex-0.162.1 (pinned; the owner's auto-updating 'current' link is not used)",
+      "sha256": {
+        "bin/codex": "628e35487d888a28f0427fc37501da529dd3d81fcbad7a2c3421c1e8670d92e1",
+        "bin/codex-code-mode-host": "ec71830690a7c0024916ee0c99fbdc635bc6e747ff665ea4f03a8389bbcb6b30"
+      }
+    },
+    {
+      "name": "zed-industries/codex-acp",
+      "version": "0.16.0",
+      "licence": "Apache-2.0",
+      "status": "installed for the probe, NOT used: rejected for gpt-6.1-sol with a ChatGPT account; development moved to agentclientprotocol/codex-acp",
+      "download_sha256": "2e123b97871846fa2e01e835a921f0d7a373a6fc91e76a556dc7cf7eb3910587"
+    }
+  ],
+  "login": "factory CODEX_HOME = $FORGE_DATA_ROOT/codex-home; own login required (owner runs codex login into it)",
+  "design": "docs/adr/ADR-0011-codex-acp-under-factory-policy.md"
+}

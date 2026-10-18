@@ -47,8 +47,10 @@ def attestation(ws: Path) -> dict:
     p = json.loads(prof.read_text()) if prof.is_file() else {}
     model, prov = p.get("default"), p.get("provider")
     over = set(p.get("nodes") or [])
-    au = {"agent_id": "swe-author-nodes", "role": "author", "model": model, "provider": prov}
-    ins = {"agent_id": "swe-inspector-nodes", "role": "inspector",
+    acp = p.get("acp_authors") or {}
+    au = {"agent_id": "swe-author-nodes", "role": "author", "model": acp.get("model") or model,
+          "provider": acp.get("provider") or prov}
+    ins = {"agent_id": "swe-inspector-nodes", "role": "inspector",  # inspectors stay on the run model
            "model": None if over else model, "provider": None if over else prov}
     return independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
 
