@@ -14,7 +14,7 @@ import traceback
 from pathlib import Path
 
 from ..common import canonical_json, sha256_bytes, sha256_file, utc_now
-from . import catalog, contracts, gate, policy
+from . import catalog, gate, policy
 
 # requirement -> (MCP ops whose PASS result is tool evidence)
 REQ_OPS = {
@@ -85,7 +85,7 @@ def evidence_map(ws: Path, phase: str) -> dict[str, list[dict]]:
 def phase(ws: Path, phase_id: str, gate002: dict, pol: dict | None = None, verify: bool = True) -> dict | None:
     ws = Path(ws)
     try:
-        pol = pol or contracts.load(policy.POLICY_PATH if policy.POLICY_PATH.is_file() else contracts.POLICY_EXAMPLE)
+        pol = pol or policy.active()
         reqs = policy.profile_requirements(pol["profile"]).get(phase_id, [])
         bl = sha256_bytes(canonical_json(gate002.get("baseline") or gate002.get("baseline_hash") or gate002))
         ev = evidence_map(ws, phase_id)

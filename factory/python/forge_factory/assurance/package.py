@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 
 from ..common import canonical_json, pretty_json, sha256_bytes, utc_now
-from . import capability, case, catalog, contracts, independence, policy, scope
+from . import capability, case, catalog, independence, policy, scope
 from . import target as T
 
 SCOPE_FILE = ".forge-run/safety_scope.json"  # written only by an owner decision (never by an agent)
@@ -28,7 +28,7 @@ PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
 
 
 def _policy() -> dict:
-    return contracts.load(policy.POLICY_PATH if policy.POLICY_PATH.is_file() else contracts.POLICY_EXAMPLE)
+    return policy.active()
 
 
 def _gate_log(ws: Path) -> list[dict]:

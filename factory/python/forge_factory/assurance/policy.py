@@ -128,6 +128,29 @@ class PolicyHolder:
         return True, []
 
 
+def accepted_mode(store) -> str:
+    """The mode of the latest ACCEPTED recorded transition (never the file's own claim); OBSERVE_ONLY if none."""
+    acc = [r["record"] for r in store.history("mode", "transition") if (r.get("record") or {}).get("decision") == "ACCEPTED"]
+    return acc[-1]["to"] if acc and acc[-1].get("to") in MODES else "OBSERVE_ONLY"
+
+
+def active(store=None, path: Path = POLICY_PATH) -> dict:
+    """The policy the gates actually use. Fail closed: only a schema-valid policy whose sha a human approved
+    (PolicyHolder), and its mode only if the latest recorded mode transition ACCEPTED that mode
+    (request_mode with a human authorization); otherwise the last accepted mode, or OBSERVE_ONLY.
+    Found while enabling the owner-authorized PILOT (2026-10-18): observe/package/readiness had read the file directly,
+    so writing a mode into it would have bypassed both checks."""
+    from .store import AssuranceStore
+
+    store = store or AssuranceStore()
+    pol = dict(PolicyHolder(store, path).active)
+    last = accepted_mode(store)
+    if pol.get("mode") != last:
+        pol["mode_requested_in_file"] = pol.get("mode")
+        pol["mode"] = last if last in MODES else "OBSERVE_ONLY"
+    return pol
+
+
 def mode_preconditions(cur: str, target: str, authorization: dict | None, pilot_rec: dict | None) -> list[str]:
     """Pure check (no record written): what blocks the switch cur -> target. Used by request_mode and, read-only, by
     the EASA-T070 readiness decision."""
@@ -154,7 +177,7 @@ def request_mode(store, pol: dict, target: str, authorization: dict | None = Non
                  pilot_record_id: str | None = None) -> dict:
     """AT-067: OBSERVE_ONLY -> PILOT needs human authorization; -> ENFORCING also needs a PASS pilot record with a
     measured false-positive/negative analysis and an independent review. Downgrades are always allowed."""
-    cur = pol["mode"]
+    cur = accepted_mode(store)  # not pol["mode"]: a file claiming PILOT must not make 'PILOT -> PILOT' a no-op
     pilot = store.get(pilot_record_id) if pilot_record_id and target == "ENFORCING" else None
     issues = mode_preconditions(cur, target, authorization, pilot)
     decision = {"from": cur, "to": target, "decision": "REJECTED" if issues else "ACCEPTED", "issues": issues,

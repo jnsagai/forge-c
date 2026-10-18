@@ -25,7 +25,7 @@ def record(mode: str, e2e_yield: float | None, blocking: list[str]) -> dict:
 
 def case_summary(readiness: dict, findings: list[dict], limitations: list[str]) -> str:
     rep = matrix.build()
-    pol = contracts.load(policy.POLICY_PATH if policy.POLICY_PATH.is_file() else contracts.POLICY_EXAMPLE)
+    pol = policy.active()
     lines = ["# Feature 006 assurance case summary (generated)", "", f"Generated {utc_now()} at `{rep['git_head'][:12]}`.",
              "", "This is bounded engineering evidence for offline human review. It is not an ISO 26262 or Automotive "
              "SPICE conformance statement, not an ASIL approval and not a safety sign-off.", "",
@@ -69,7 +69,7 @@ def decide(work_orders: list[str], store=None) -> dict:
     the mode, never approves safety."""
     from .store import AssuranceStore
 
-    pol = contracts.load(policy.POLICY_PATH if policy.POLICY_PATH.is_file() else contracts.POLICY_EXAMPLE)
+    pol = policy.active()
     store = store or AssuranceStore()
     modes = [r for r in store.history("mode") if '"pilot_status"' in str(r.get("record") or "")]
     pilot = modes[-1] if modes else None
