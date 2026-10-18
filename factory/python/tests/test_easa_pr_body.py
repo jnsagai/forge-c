@@ -5,7 +5,7 @@ from pathlib import Path
 from forge_factory.assurance.normative import compliance_assertions
 from forge_factory.common import REPO_ROOT
 
-BODY = REPO_ROOT / "evidence/easa/pr/pr3-body-2026-10-17.md"
+BODY = sorted((REPO_ROOT / "evidence/easa/pr").glob("pr3-body-*.md"))[-1]  # the latest published body
 
 
 def test_at072_pr_body_has_no_conformance_claim_and_no_auto_merge():

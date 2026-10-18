@@ -8,19 +8,19 @@
     "no:cacheprovider",
     "factory/python/tests/test_easa_pr_body.py"
   ],
-  "duration_s": 0.258,
+  "duration_s": 0.265,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "dce71374fcd71a215a86b49b752e1b4b54e6acae",
+  "git_head": "00068f7907cd610ff8c70e68c1a7acf34554bd81",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/EASA-T072/20261017T211621.log",
+  "log": "evidence/v0.4/runs/EASA-T072/20261018T095420.log",
   "log_sha256": "0125affd8d0a20a221352d7edf9658b06de8b033b8aaf6cc0292c745832948a9",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "EASA-T072",
-  "ts_utc": "2026-10-17T21:16:21.021521Z"
+  "ts_utc": "2026-10-18T09:54:20.055223Z"
 }

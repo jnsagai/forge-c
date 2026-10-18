@@ -1521,8 +1521,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-18T09:37:46.795327Z",
-  "git_head": "d6039a45a47ac8080e9da8dd595e72dd2cd9c335",
+  "generated_at": "2026-10-18T09:54:20.701139Z",
+  "git_head": "00068f7907cd610ff8c70e68c1a7acf34554bd81",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
@@ -2598,7 +2598,7 @@
         "EASA-FR-071",
         "EASA-FR-072"
       ],
-      "git_head": "dce71374fcd7",
+      "git_head": "00068f7907cd",
       "priority": "P0",
       "status": "PASS",
       "title": "Prepare review PR without auto-merging, no claim of ISO conformance or 100% assurance."

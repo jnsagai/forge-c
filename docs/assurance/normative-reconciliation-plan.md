@@ -6,7 +6,7 @@
 |---|---|---|
 | Copy of ISO 26262-6:2018 | NOT AVAILABLE | Registered by the owner by path outside the repository (`FORGE_ISO26262_6_2018_PATH`), sha256 `5faf4306eaed584c614e0751ba28318099aeb1943bf2bbc14fe4653527f2ca40`. OCR text conversion; licence status asserted by the owner, not verified by the factory. |
 | Reviewer worksheet | - | `evidence/easa/normative/worksheet-5faf4306eaed584c.json`: 15/15 tables identical to the catalog (row ids and rating symbols only; footnotes, alternatives and combinations left to the reviewer) |
-| Reconciliation | BLOCKED | All 15 tables signed by Jefferson Nascimento (Safety Authority, ISO 26262 certification, owner statement 2026-10-18) through `catalog.reconcile()`; decisions in `evidence/easa/normative/reconciliation-decisions-2026-10-18.json`, derived versions `catalog-v01..v15.json` |
+| Reconciliation | BLOCKED | All 15 tables signed by Jefferson Nascimento (Safety Authority; ISO 26262 personal qualification as stated by the reviewer, 2026-10-18) through `catalog.reconcile()`; decisions in `evidence/easa/normative/reconciliation-decisions-2026-10-18.json`, derived versions `catalog-v01..v15.json` |
 | Catalog status | SECONDARY_WORKING_INDEX | CONTROLLED_RECONCILED (47/47 entries normatively checked) |
 
 ## Copyright boundary
