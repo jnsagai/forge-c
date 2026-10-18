@@ -104,5 +104,110 @@
       "state": "EFFECTIVENESS_OBSERVING",
       "updated_at": "2026-10-18T15:07:50.530519Z"
     }
+  },
+  "CAPA-042": {
+    "history": [
+      {
+        "at": "2026-10-18T15:10:24.931234Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[\"CAPA-042\"]",
+        "from_state": null,
+        "reason": "r129 SWE.3: stale unit Functions list rejected as UNIT_FUNCTION_NOT_IN_CODE during rework",
+        "seq": 349,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-18T15:10:25.094782Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 350,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-18T15:10:25.173232Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-046 assigned",
+        "seq": 351,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-18T15:12:37.212259Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[\"reproducer-run:rr-0603df8539fb8480843f\", \"reproducer-run:rr-d282d77243142bdc8ca1\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 352,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-18T15:12:37.256896Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[\"git:724d3f2cb053..b2a6a925c2b9\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix b2a6a925c2b9 (patch 5420 bytes)",
+        "seq": 353,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-18T15:12:37.360178Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[\"reproducer-run:rr-e529711fc4721115b1c5\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-046 absent at b2a6a925c2b9",
+        "seq": 354,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-18T15:12:37.404062Z",
+        "capa_id": "CAPA-042",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 355,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-2c153957c47b4b8dd98ccb4d1d4eac5a5b16cedf",
+      "cfp1-36cf3f6b87d01ac93eeefa0d2c09da46422496dd",
+      "cfp1-55b78717a60bb123e251e97f74de21a784a995cf",
+      "cfp1-55c8b038cc8fe7b03d059226d3c9df98bc47eacb",
+      "cfp1-6f92de8aebcb70effc8b0ea4c5a789ac3dcf5ea9",
+      "cfp1-7185477eaea463660fc1e1ecfbe8a7686de699c5",
+      "cfp1-bf22dec299c60de8bcf18f56005e79d7216c020f",
+      "724d3f2cb053721c37e1467588659d5a9f74f7e7",
+      "b2a6a925c2b955af636e6c2ab0cc20786433e846",
+      "pd-f64039664b2eca9b3a3d"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<b2a6a925c2b9"
+      ],
+      "candidate_patch_sha256": "da623bb391dffe53593d8232947a66e9e67904a6f2eb50f5256aa578822f9b70",
+      "capa_id": "CAPA-042",
+      "created_at": "2026-10-18T15:10:24.931234Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-042"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-046",
+      "reproducer_id": "RPR-046",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-0603df8539fb8480843f",
+        "reproducer-run:rr-d282d77243142bdc8ca1"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "unit Functions lists were maintained by hand instead of following the code @unit tags",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-18T15:12:37.404062Z"
+    }
   }
 }

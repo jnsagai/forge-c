@@ -475,3 +475,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "A phase re-entered by an upstream loop to fix a reported defect had the first-pass turn budget although the visit must re-read its context, fix the code and re-validate unit specs, designs and trace tags; all three HAL SWE.3 fix visits (r135, r136, r137) ended TURN_BUDGET_EXHAUSTED and two of the runs then exhausted the rework budget."
     remedy: "While a defect targeted at the author's phase is IN_FIX, its author gets LOOP_EXTRA_TURNS (15) on top of the authored budget; first passes and inspectors are unchanged."
+  - id: RPR-046
+    script: rpr046_stale_unit_function_list.py
+    sha256: b396d6e896d4ff9db8796711f1c9f965606e658a8859a9b52c4814a3f7c240da
+    symptom_signature: "unit function list not synchronised with the code"
+    observed_in: r129
+    baseline_revision: 724d3f2cb053721c37e1467588659d5a9f74f7e7
+    fix_revision: b2a6a925c2b955af636e6c2ab0cc20786433e846
+    error_codes: ["CODE:UNIT_FUNCTION_NOT_IN_CODE", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/author]
+    root_cause: "A unit's 'Functions:' list in unit_specifications.md is a fact of the code (@unit tags) but was kept by hand; after code changes in SWE.3 rework it still named removed functions, the trace gate rejected UNIT_FUNCTION_NOT_IN_CODE and rework cycles went to bookkeeping (r129; r113 same class)."
+    remedy: "sync_trace sets a unit's Functions list to the functions the code tags @unit <id> (units the code tags at all) before the SWE.3 trace check; changes are logged; specs, designs and code are untouched."
