@@ -510,3 +510,20 @@ def test_capa039_tagged_test_without_its_own_result_line_is_named(ws):
     f = swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.4")["findings"]["SWE.4"]
     hit = [x for x in f if x.startswith("UT:TEST_NOT_OBSERVED:UT-009")]
     assert hit and "'UT-009-<suffix>'" in hit[0]
+
+
+def test_capa042_unit_function_list_follows_the_code_tags(ws):
+    """CAPA-042 (r129): a unit's Functions list kept a function the code no longer had (UNIT_FUNCTION_NOT_IN_CODE)."""
+    from forge_factory.inspection import unit_scaffold
+
+    md = ws / swtrace.UNITS_MD
+    t = md.read_text()
+    line = next(x for x in t.splitlines() if x.lstrip("-* ").lower().startswith("functions"))
+    md.write_text(t.replace(line, line + ", HAL_RCC_Gone", 1))
+    assert any("UNIT_FUNCTION_NOT_IN_CODE" in x for x in swtrace.check_units(ws, render=False, export=False)["major_findings"]
+               + swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.3")["findings"]["SWE.3"])
+    r = unit_scaffold.sync_trace(ws)
+    assert r["functions"] and r["functions"][0]["removed"] == ["HAL_RCC_Gone"]
+    assert not any("UNIT_FUNCTION_NOT_IN_CODE" in x
+                   for x in swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.3")["findings"]["SWE.3"])
+    assert (ws / unit_scaffold.SYNC_LOG).is_file() and unit_scaffold.sync_trace(ws)["functions"] == []   # idempotent

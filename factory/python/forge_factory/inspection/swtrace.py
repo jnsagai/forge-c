@@ -693,8 +693,9 @@ def check_phase(ws: Path, phase: str) -> dict:
     """Deterministic checklist entry point: builds matrices up to `phase`, verdict from that phase's relation."""
     own = phase == "SWE.3"  # unit ReqIF, PlantUML rendering and Doxygen belong to the SWE.3 baseline
     if own:
-        from .unit_scaffold import cite_specs
+        from .unit_scaffold import cite_specs, sync_trace
 
+        sync_trace(ws)  # CAPA-042: unit function lists and unambiguous @spec tags follow the code facts
         cite_specs(ws)  # CAPA-030: design -> unit-spec citation is generated from facts before the check
     rep = build_all(ws, upto=phase, write=PHASE_MATRICES[phase], render=own, doxygen=own, export=own)
     f = rep["findings"].get(phase, [])

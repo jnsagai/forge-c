@@ -170,3 +170,52 @@ def cite_specs(ws: Path) -> list[str]:
         p.write_text(t)
         changed.append(u["id"])
     return changed
+
+
+SYNC_LOG = ".forge-run/gates/trace-sync.jsonl"
+
+
+def sync_trace(ws: Path) -> dict:
+    """CAPA-042 (r129): after code changes in SWE.3 rework, a unit's 'Functions:' list kept functions the code no
+    longer has (CODE:UNIT_FUNCTION_NOT_IN_CODE) and missed new ones, costing rework cycles on bookkeeping. The list is
+    a FACT of the code: it is set to the functions the code tags '@unit <id>' (only for units the code tags at all).
+    Spec items, behaviour text, designs and code are never changed (a spec item rarely names its function, so @spec
+    tags stay the author's). Every change is logged in .forge-run/gates/trace-sync.jsonl."""
+    from ..common import utc_now
+
+    ws = Path(ws)
+    md = ws / UNITS_MD
+    if not md.is_file():
+        return {"functions": []}
+    tagged: dict[str, list[str]] = {}
+    for p in code_files(ws):
+        for fn in functions_with_docs(p.read_text(errors="replace")):
+            for u in fn["units"][:1]:
+                tagged.setdefault(u, [])
+                if fn["function"] not in tagged[u]:
+                    tagged[u].append(fn["function"])
+    text = md.read_text(errors="replace")
+    units = parse_units(text)
+    fn_changes = []
+    lines, cur = text.splitlines(keepends=True), None
+    for i, line in enumerate(lines):
+        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2})\b", line)
+        if h:
+            cur = h.group(1)
+            continue
+        m = re.match(r"^(\s*[-*]\s*Functions\s*:\s*)(.+?)(\s*)$", line, re.I)
+        if cur in tagged and m:
+            old = next(u["functions"] for u in units if u["id"] == cur)
+            new = [f for f in old if f in tagged[cur]] + [f for f in tagged[cur] if f not in old]
+            if new != old:
+                lines[i] = m.group(1) + ", ".join(new) + "\n"
+                fn_changes.append({"unit": cur, "removed": [f for f in old if f not in new],
+                                   "added": [f for f in new if f not in old]})
+    if fn_changes:
+        md.write_text("".join(lines))
+        log = ws / SYNC_LOG
+        log.parent.mkdir(parents=True, exist_ok=True)
+        with log.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts": utc_now(),
+                                "functions": fn_changes}) + "\n")
+    return {"functions": fn_changes}
