@@ -85,7 +85,18 @@ authored `tasks.md` keeps its boxes unchecked by design, because `validate_spec.
 - This changes which method ratings EASA uses. It does not authorize any ISO 26262 conformance, ASIL approval or
   certification statement by the factory.
 
-## 7. Decisions that only the owner can take
+## 7. Owner dispositions of input issues
+
+- `config/factory/verification-dispositions.yaml` records how the owner settled an escalated INPUT issue. Each entry
+  has a requirement-text match, a disposition, the limitation, a human approver and a date. An entry without a human
+  approver is refused.
+- An INPUT defect that a disposition settles is recorded as DISPOSITIONED: it is not escalated again and is not a
+  package gap. The limitation is stated in every package (`assurance/fidelity.json`, ASSURANCE-CASE.md).
+- OD-2026-10-18-01 (Jefferson Nascimento): SWR-015-type requirements on the RCC_CR.HSION reset value are verified
+  against the documented reset value only. The Renode model resets RCC_CR to 0, and there is no HIL or physical
+  observation (EASA audit F-08, r136 DEF-005).
+
+## 8. Decisions that only the owner can take
 
 1. **Product safety scope of the RCC work orders.** Decided 2026-10-18: ASIL B (confirmed by the owner), in
    `config/factory/safety-scope.yaml`; copied read-only into each work order.

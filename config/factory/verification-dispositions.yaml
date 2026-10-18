@@ -1,0 +1,17 @@
+# Owner dispositions of escalated verification INPUT issues (an approved input or the simulation environment cannot
+# show what a requirement states). Only the owner writes this file. workorder.prepare copies the matching entries,
+# read-only, into .forge-run/owner_dispositions.json; an INPUT defect that a disposition settles is recorded as
+# DISPOSITIONED (not a package gap) and the limitation is stated in every package. Not a safety approval.
+schema_version: '1.0'
+dispositions:
+  - id: OD-2026-10-18-01
+    examples: [0002a-arm_55_rcc_ll, 0002b-arm_55_rcc_hal]
+    requirement_text_regex: 'RCC_CR\.HSION\b.*\breset value\b|\breset value\b.*\bRCC_CR\.HSION\b|\bHSI\b.*\bon at reset\b'
+    disposition: VERIFIED_AGAINST_DOCUMENTED_RESET_VALUE_ONLY
+    limitation: >-
+      The RCC_CR.HSION reset value (1, RM0486) is verified against the documented reset value only: the Renode
+      behavioural RCC model resets every register to 0, so the reset state is not observable in simulation, and no
+      physical target or HIL observation exists (EASA audit finding F-08; r136 DEF-005).
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-18'
+    reference: "owner instruction 2026-10-18 on DEF-005: 'go with 2'"
