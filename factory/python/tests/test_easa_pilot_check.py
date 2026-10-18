@@ -26,3 +26,11 @@ def test_at094_missing_or_uncovered_relation_is_named(tmp_path):
     assert r["status"] == "FAIL" and r["failing_relations"] == ["MATRIX_MISSING:matrix_3_code_to_unitspec"]
     r = pilot.check(_zip(tmp_path / "b", uncovered="IF-03"))
     assert r["failing_relations"] == ["MATRIX_UNCOVERED:matrix_5_integrationtest_to_architecture:IF-03"]
+
+
+def test_t069_pilot_package_never_ready_with_unsatisfied_asil_scope():
+    ok = {"easa_mode": "PILOT", "package_status": "BLOCKED", "safety_scope": {"status": "BLOCKED", "target_asil": "B"}}
+    assert pilot.pilot_findings(ok) == []
+    assert pilot.pilot_findings({**ok, "easa_mode": "OBSERVE_ONLY"}) == ["NOT_A_PILOT_PACKAGE:OBSERVE_ONLY"]
+    assert pilot.pilot_findings({**ok, "package_status": "READY_FOR_OFFLINE_REVIEW"}) == \
+        ["READY_CLAIMED_WITH_SAFETY_SCOPE_BLOCKED"]

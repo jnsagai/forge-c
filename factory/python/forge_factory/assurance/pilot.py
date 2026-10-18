@@ -28,6 +28,8 @@ def check(zip_path: Path) -> dict:
         names = set(z.namelist())
         pkg = next((n for n in names if n.endswith("quality/final-gates.json")), None)
         gates = json.loads(z.read(pkg)) if pkg else {}
+        summ = json.loads(z.read("evidence/assurance/summary.json")) if "evidence/assurance/summary.json" in names else {}
+        man = json.loads(z.read("manifest.json")) if "manifest.json" in names else {}  # the package root manifest
         for m in MATRICES:
             csv_n, md_n = PREFIX + m + ".csv", PREFIX + m + ".md"
             if csv_n not in names or md_n not in names:
@@ -49,16 +51,36 @@ def check(zip_path: Path) -> dict:
     return {"schema": "forge-c/easa-pilot-check/0.1", "checked_at": utc_now(), "package": zip_path.name,
             "archive_sha256": before, "archive_unchanged": before == after, "matrices": rows,
             "failing_relations": failing, "package_gates": {k: v for k, v in (gates.get("checks") or {}).items()},
+            "easa_mode": summ.get("mode"), "safety_scope": summ.get("safety_scope"),
+            "package_status": man.get("status"), "gap_count": man.get("gap_count"),
             "status": "PASS" if not failing and before == after else "FAIL",
             "scope": "trace completeness of a real pilot package; not a safety or release decision"}
+
+
+def pilot_findings(r: dict) -> list[str]:
+    """EASA-T069: an owner-authorized PILOT package records findings in PILOT mode and never claims READY while the
+    product safety scope is not satisfied."""
+    f = []
+    if r.get("easa_mode") != "PILOT":
+        f.append(f"NOT_A_PILOT_PACKAGE:{r.get('easa_mode')}")
+    sc = r.get("safety_scope") or {}
+    if str(r.get("package_status", "")).startswith("READY") and sc.get("status") != "SATISFIED":
+        f.append(f"READY_CLAIMED_WITH_SAFETY_SCOPE_{sc.get('status')}")
+    return f
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.assurance.pilot")
     ap.add_argument("zips", nargs="+", type=Path)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--pilot", action="store_true", help="EASA-T069: also require PILOT mode and no unjustified READY")
     a = ap.parse_args(argv)
     res = {z.parent.name: check(z) for z in a.zips}
+    if a.pilot:
+        for v in res.values():
+            v["pilot_findings"] = pilot_findings(v)
+            if v["pilot_findings"]:
+                v["status"] = "FAIL"
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(pretty_json(res))
     for k, v in res.items():
