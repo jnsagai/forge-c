@@ -431,3 +431,14 @@ reproducers:
     operations: [SWE.4/author]
     root_cause: "HAL unit tests ran on a plain RAM register array (generated harness): an LL status query could never become set after N polls and the HAL's LL call order was invisible, so the SWE.4 authors (r123, r126, r127) invented write-capture helpers that saw only their own writes, the inspector's demands (number of polls, set-then-clear order) could not be met and SWE.4 failed in 3 of 4 HAL runs."
     remedy: "HAL work orders get a generated, read-only test double of the provided LL API (call log, call counts, order, scripted query results; no register array) and a harness/prompt that use it; run_unit, the EASA mutation campaign and API-execution check build against it; an edited double fails run_unit."
+  - id: RPR-042
+    script: rpr042_test_checks_under_other_ids.py
+    sha256: 505cf18b00e7ff905aeaf07be1affb7a0fe112d19fee2c5909a6284a78af9471
+    symptom_signature: "test without its own result line not named"
+    observed_in: r126
+    baseline_revision: 6c57530d8d6c157444a4bfafaa7cd41b50740841
+    fix_revision: 6fcbcb43c6a53c201d22c2455f8822ddf994f499
+    error_codes: ["INSPECTION_FAIL:SWE4-06", "UT:SPEC_NOT_VERIFIED"]
+    operations: [SWE.4/author, SWE.4/inspect]
+    root_cause: "A tagged test whose checks print under other ids (r126: @test UT-010 -> UT-100, UT-106..UT-113) appeared only as NOT_RUN rows in Matrix 4; the deterministic gate gave no actionable finding and the inspector rejected the contradiction with the PASS run."
+    remedy: "The trace gate reports UT:/IT:TEST_NOT_OBSERVED for such a test and states how its checks must be named (<id> or <id>-<suffix>)."

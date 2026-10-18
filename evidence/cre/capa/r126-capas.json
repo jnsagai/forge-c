@@ -103,5 +103,103 @@
       "state": "EFFECTIVENESS_OBSERVING",
       "updated_at": "2026-10-18T10:30:32.202939Z"
     }
+  },
+  "CAPA-039": {
+    "history": [
+      {
+        "at": "2026-10-18T10:31:49.800433Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[\"CAPA-039\"]",
+        "from_state": null,
+        "reason": "r126 SWE.4: tagged tests whose checks printed under other ids showed as NOT_RUN in Matrix 4 without an actionable gate finding",
+        "seq": 321,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-18T10:31:49.824787Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 322,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-18T10:31:49.914547Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-042 assigned",
+        "seq": 323,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-18T10:33:19.515256Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[\"reproducer-run:rr-7012babe29040017b977\", \"reproducer-run:rr-1239328d0aadc563b36f\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 324,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-18T10:33:19.537145Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[\"git:6c57530d8d6c..6fcbcb43c6a5\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 6fcbcb43c6a5 (patch 3026 bytes)",
+        "seq": 325,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-18T10:33:19.643158Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[\"reproducer-run:rr-d51b917bbf5436bc0183\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-042 absent at 6fcbcb43c6a5",
+        "seq": 326,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-18T10:33:19.680097Z",
+        "capa_id": "CAPA-039",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 327,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "6c57530d8d6c157444a4bfafaa7cd41b50740841",
+      "6fcbcb43c6a53c201d22c2455f8822ddf994f499",
+      "pd-1f08e782b0beea79cc99"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<6fcbcb43c6a5"
+      ],
+      "candidate_patch_sha256": "2b92fa4fd3685d2c2a399f476433e2d7158527a736ec57554878719cdff3550b",
+      "capa_id": "CAPA-039",
+      "created_at": "2026-10-18T10:31:49.800433Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-039"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-042",
+      "reproducer_id": "RPR-042",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-7012babe29040017b977",
+        "reproducer-run:rr-1239328d0aadc563b36f"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the trace gate did not name a tagged test missing its own result lines",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-18T10:33:19.680097Z"
+    }
   }
 }
