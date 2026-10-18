@@ -1,0 +1,101 @@
+{
+  "CAPA-040": {
+    "history": [
+      {
+        "at": "2026-10-18T10:54:42.227818Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[\"CAPA-040\"]",
+        "from_state": null,
+        "reason": "r132/r133: HAL resume failed with Permission denied copying the provided LL header",
+        "seq": 328,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-18T10:54:42.247836Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 329,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-18T10:54:42.300916Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-043 assigned",
+        "seq": 330,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-18T10:56:41.998172Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[\"reproducer-run:rr-32e3ecd11b238cff8557\", \"reproducer-run:rr-b167a6d0424d6e3fe6de\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 331,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-18T10:56:42.043494Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[\"git:7427cf165442..591d62addd25\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 591d62addd25 (patch 4540 bytes)",
+        "seq": 332,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-18T10:56:42.154894Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[\"reproducer-run:rr-e7511a4ed6d44d2ff1eb\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-043 absent at 591d62addd25",
+        "seq": 333,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-18T10:56:42.195826Z",
+        "capa_id": "CAPA-040",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 334,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "7427cf165442e53393aa9ba0d5c9541b26147951",
+      "591d62addd25eef8048edbd5e8bb87ca00f4b015",
+      "pd-f78c49caf9f3a4c2888f"
+    ],
+    "note": "first promotion pd-4644996e998cf1289563 REJECTED: the reproducer printed a suffix after the symptom signature (BASELINE_NOT_REPRODUCED); fixed before the second gate",
+    "record": {
+      "affected_versions": [
+        "forge-c@<591d62addd25"
+      ],
+      "candidate_patch_sha256": "5b74803da030b9b9a64c38e9c491d8767c2e85f53375433f1f8e8cda3e68f009",
+      "capa_id": "CAPA-040",
+      "created_at": "2026-10-18T10:54:42.227818Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-040"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-043",
+      "reproducer_id": "RPR-043",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-32e3ecd11b238cff8557",
+        "reproducer-run:rr-b167a6d0424d6e3fe6de"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "resume_from copied over the work order's provided read-only files",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-18T10:56:42.195826Z"
+    }
+  }
+}

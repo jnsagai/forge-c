@@ -442,3 +442,14 @@ reproducers:
     operations: [SWE.4/author, SWE.4/inspect]
     root_cause: "A tagged test whose checks print under other ids (r126: @test UT-010 -> UT-100, UT-106..UT-113) appeared only as NOT_RUN rows in Matrix 4; the deterministic gate gave no actionable finding and the inspector rejected the contradiction with the PASS run."
     remedy: "The trace gate reports UT:/IT:TEST_NOT_OBSERVED for such a test and states how its checks must be named (<id> or <id>-<suffix>)."
+  - id: RPR-043
+    script: rpr043_resume_overwrites_provided.py
+    sha256: ff1923291f0df9f95a670c493c6b39b95e331ee2bf294effdbb2f514022be790
+    symptom_signature: "resume overwrites provided read-only file"
+    observed_in: r132
+    baseline_revision: 7427cf165442e53393aa9ba0d5c9541b26147951
+    fix_revision: 591d62addd25eef8048edbd5e8bb87ca00f4b015
+    error_codes: ["RESUME_FAILED"]
+    operations: [WORKORDER/resume]
+    root_cause: "resume_from copied every file of the carried phases, including the HAL work order's provided read-only LL header; the new work order already holds its own verified 0444 copy, so the copy failed with Permission denied and the run never started (first HAL resume, r132/r133)."
+    remedy: "Provided files are never copied; the source's copy must match the new work order's provided sha256, otherwise the resume is refused (RESUME_PROVIDED_MISMATCH)."
