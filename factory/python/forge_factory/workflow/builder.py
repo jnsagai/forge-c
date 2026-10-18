@@ -22,9 +22,10 @@ from ..policy.authz import Binding
 
 UPSTREAM_LOOPS = 2  # ADR-0008: run-wide cross-phase loop budget (= defects.UPSTREAM_LOOP_BUDGET)
 REWORK_CYCLES = 3  # checklist policy maximum_rework_cycles
+PROGRESS_EXTRA_CYCLES = 2  # owner decision 2026-10-18: rework-policy.yaml max_extra_cycles (gate.extra_cycles)
 # Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008). The rework budget is per epoch
-# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES visits again.
-MAX_VISITS = (1 + REWORK_CYCLES) * (1 + UPSTREAM_LOOPS)
+# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES (+ progress extension) visits.
+MAX_VISITS = (1 + REWORK_CYCLES + PROGRESS_EXTRA_CYCLES) * (1 + UPSTREAM_LOOPS)
 ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 

@@ -84,7 +84,7 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
 def test_t042_token_exhaustion_cancels_and_blocks_never_false_pass(env, tmp_path):
     ws = tmp_path / "ws"
     (ws / ".forge-run").mkdir(parents=True)
-    fake = FakeFabro([("swe3_author", 450_000, 2_000), ("swe1_author", 1000, 100)])  # cap 32000 x MAX_VISITS (12)
+    fake = FakeFabro([("swe3_author", 650_000, 2_000), ("swe1_author", 1000, 100)])  # cap 32000 x MAX_VISITS (18)
     out = G.check_run("RUN-X", {"swe3_author": {"role": "swe3-author"}, "swe1_author": {"role": "swe1-author"}}, ws, fake)
     assert out["status"] == "TOKEN_BUDGET_EXHAUSTED" and fake.cancelled and out["basis"] == "reported"
     assert [e["node"] for e in out["exceeded"]] == ["swe3_author"]
@@ -311,7 +311,7 @@ def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path)
     from forge_factory.workflow.builder import MAX_VISITS
 
     # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step); ADR-0008: per-epoch budget, 1 + 2 upstream epochs
-    assert MAX_VISITS == 12 and dot.count(f"max_visits={MAX_VISITS}") == 13
+    assert MAX_VISITS == 18 and dot.count(f"max_visits={MAX_VISITS}") == 13
 
 
 # ---------------- T049 ------------------------------------------------------------------------------------
