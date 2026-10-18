@@ -1,0 +1,17 @@
+schema: forge-c/rework-policy/v0.4
+version: '0.4'
+# Owner decision 2026-10-18 (Jefferson Nascimento, owner): the authored rework budget of each phase stays the
+# inspection checklist's maximum_rework_cycles (3; the v0.3 checklists are not changed). On top of it a phase may
+# get up to `max_extra_cycles` more failed cycles, one at a time, only while it makes measurable progress; the
+# CAPA-014 stuck rule (identical deterministic rejection twice) still stops a phase early. Inspectors and every
+# deterministic gate are unchanged: an extra cycle is one more attempt, never a relaxed check.
+progress_extension:
+  max_extra_cycles: 2
+  progress_rule: >-
+    Compare the last two failed cycles of the phase's current budget epoch. Progress when the author's
+    deterministic gate rejected the earlier attempt and the later one reached inspection; or, for two cycles of
+    the same kind, when at least one finding/issue of the earlier cycle (check or issue code with the item ids it
+    names) is gone and the later cycle has no more findings/issues than the earlier one. Anything else (growing,
+    identical, or regressing from inspection back to a gate rejection) is no progress: the phase is BLOCKED as before.
+approved_by: Jefferson Nascimento (owner)
+approved_on: '2026-10-18'
