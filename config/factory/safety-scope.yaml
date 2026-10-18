@@ -8,8 +8,8 @@ decisions:
     examples: [0002a-arm_55_rcc_ll, 0002b-arm_55_rcc_hal]
     target_asil: B
     product_asil_source: >-
-      approved:owner-decision-2026-10-18 by Jefferson Nascimento ("consider RCC as ASIL"); letter B taken from the
-      ASIL B target of Feature 006 (47-entry ASIL B ++ method index) - owner to confirm or change the letter
+      approved:owner-decision-2026-10-18 by Jefferson Nascimento - RCC work orders are ASIL B ("consider RCC as
+      ASIL", letter confirmed: "it is ASIL B")
     approved_by: Jefferson Nascimento
     approved_at: '2026-10-18'
     hsi_hash: null

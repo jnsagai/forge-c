@@ -87,7 +87,7 @@ authored `tasks.md` keeps its boxes unchecked by design, because `validate_spec.
 
 ## 7. Decisions that only the owner can take
 
-1. **Product safety scope of the RCC work orders.** Decided 2026-10-18: ASIL (recorded as B, letter to be confirmed), in
+1. **Product safety scope of the RCC work orders.** Decided 2026-10-18: ASIL B (confirmed by the owner), in
    `config/factory/safety-scope.yaml`; copied read-only into each work order.
    - Without it, the two safety documents stay required and every package stays BLOCKED.
    - With an approved QM scope (human approver, written rationale), the package states the documents as not applicable.
