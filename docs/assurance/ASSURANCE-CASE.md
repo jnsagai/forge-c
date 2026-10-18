@@ -1,14 +1,14 @@
 # Feature 006 assurance case summary (generated)
 
-Generated 2026-10-18T09:37:47.543097Z at `d6039a45a47a`.
+Generated 2026-10-18T09:44:36.105749Z at `036dcad96b18`.
 
 This is bounded engineering evidence for offline human review. It is not an ISO 26262 or Automotive SPICE conformance statement, not an ASIL approval and not a safety sign-off.
 
 ## Readiness
 
 - Implementation: PARTIAL; configured mode: PILOT (profile ENHANCED).
-- Normative method catalog: RECONCILED (47-entry secondary working index; no licensed ISO 26262-6:2018 copy registered).
-- Technical gates end to end: NOT_DEMONSTRATED; product yield: 0.0.
+- Normative method catalog: RECONCILED (47 entries reconciled table by table against the owner-registered ISO 26262-6:2018 copy by the named human reviewer).
+- Technical gates end to end: DEMONSTRATED; product yield: 0.0.
 - Safety approval: none (outside the factory).
 
 ## Blocking items

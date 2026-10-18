@@ -9,13 +9,14 @@ from ..common import utc_now
 from . import catalog, contracts, matrix, policy
 
 
-def record(mode: str, e2e_yield: float | None, blocking: list[str]) -> dict:
+def record(mode: str, e2e_yield: float | None, blocking: list[str], technical_pass: bool | None = None) -> dict:
     rep = matrix.build()
     counts = rep["task_counts"]
     impl = "COMPLETE" if counts.get("PASS", 0) == len(rep["tasks"]) else ("PARTIAL" if counts.get("PASS") else "SPEC_ONLY")
     rec = {"feature": "006-enhanced-ai-software-assurance", "implementation": impl, "configured_mode": mode,
            "normative_catalog_status": "RECONCILED" if catalog.status(catalog.load()) == "RECONCILED" else "UNVERIFIED",
-           "technical_gates": "DEMONSTRATED" if e2e_yield else "NOT_DEMONSTRATED", "e2e_product_yield": e2e_yield,
+           "technical_gates": "DEMONSTRATED" if (technical_pass if technical_pass is not None else e2e_yield)
+           else "NOT_DEMONSTRATED", "e2e_product_yield": e2e_yield,
            "safety_approval": None, "blocking_items": blocking}
     issues = contracts.errors("assurance-readiness", rec)
     if issues:
@@ -31,8 +32,10 @@ def case_summary(readiness: dict, findings: list[dict], limitations: list[str]) 
              "SPICE conformance statement, not an ASIL approval and not a safety sign-off.", "",
              "## Readiness", "", f"- Implementation: {readiness['implementation']}; configured mode: "
              f"{readiness['configured_mode']} (profile {pol['profile']}).",
-             f"- Normative method catalog: {readiness['normative_catalog_status']} (47-entry secondary working index; "
-             "no licensed ISO 26262-6:2018 copy registered).",
+             f"- Normative method catalog: {readiness['normative_catalog_status']} " + (
+                 "(47 entries reconciled table by table against the owner-registered ISO 26262-6:2018 copy by the "
+                 "named human reviewer)." if readiness["normative_catalog_status"] == "RECONCILED" else
+                 "(47-entry secondary working index; no ISO 26262-6:2018 copy reconciled)."),
              f"- Technical gates end to end: {readiness['technical_gates']}; product yield: "
              f"{readiness['e2e_product_yield'] if readiness['e2e_product_yield'] is not None else 'not measured'}.",
              "- Safety approval: none (outside the factory).", "", "## Blocking items", ""]
@@ -59,7 +62,11 @@ def pilot_yield(work_orders: list[str]) -> dict:
         if p.is_file():
             seen[wo] = json.loads(p.read_text()).get("package_status")
     ready = [w for w, s in seen.items() if s == "READY_FOR_OFFLINE_REVIEW"]
-    return {"runs": seen, "finished": len(seen), "ready": len(ready),
+    from ..inspection.engine import PHASES, Store
+
+    wsd = state_dir() / "workorders"
+    technical = [w for w in seen if all(Store(wsd / w / "workspace").gate(ph)["decision"] == "PASS" for ph in PHASES)]
+    return {"runs": seen, "finished": len(seen), "ready": len(ready), "technical_pass": technical,
             "yield": round(len(ready) / len(seen), 3) if seen else None}
 
 
@@ -81,7 +88,7 @@ def decide(work_orders: list[str], store=None) -> dict:
     y = pilot_yield(work_orders)
     if not y["ready"]:
         blocking.append(f"E2E:NO_READY_PACKAGE ({y['finished']} finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)")
-    rec = record(pol["mode"], y["yield"], blocking)  # 0.0 is a measurement, not "not measured"
+    rec = record(pol["mode"], y["yield"], blocking, technical_pass=bool(y["technical_pass"]))  # yield 0.0 is measured
     return {"decision": "NOT_READY" if blocking else "ELIGIBLE_FOR_OWNER_DECISION", "readiness": rec, "pilots": y,
             "note": "Readiness only; switching the mode needs policy.request_mode with a human authorization."}
 

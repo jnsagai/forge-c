@@ -27,6 +27,11 @@
       "WO-0002B-STM32N6-RCC-HAL-r127": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r128": "BLOCKED"
     },
+    "technical_pass": [
+      "WO-0002A-STM32N6-RCC-LL-r122",
+      "WO-0002B-STM32N6-RCC-HAL-r124",
+      "WO-0002A-STM32N6-RCC-LL-r125"
+    ],
     "yield": 0.0
   },
   "readiness": {
@@ -41,6 +46,6 @@
     "implementation": "PARTIAL",
     "normative_catalog_status": "RECONCILED",
     "safety_approval": null,
-    "technical_gates": "NOT_DEMONSTRATED"
+    "technical_gates": "DEMONSTRATED"
   }
 }
