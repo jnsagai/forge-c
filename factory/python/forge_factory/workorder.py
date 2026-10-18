@@ -252,14 +252,22 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
         if g["decision"] != "PASS":
             break
         stable.append(ph)
+    # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
+    # they are never overwritten, and the source's copy must be byte-identical or its carried phases do not apply
+    provided = {r["path"]: r["sha256"] for r in manifest.get("provided") or []}
+    for rel, sha in provided.items():
+        if (src / rel).is_file() and sha256_file(src / rel) != sha:
+            raise ValueError(f"RESUME_PROVIDED_MISMATCH:{rel}:{source_wo} built on a different provided file")
     copied = []
     for ph in stable:
         for rel in PHASE_PATHS[ph]:
             if (src / rel).exists():
                 (ws / rel).parent.mkdir(parents=True, exist_ok=True)
                 if (src / rel).is_dir():
-                    shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
-                else:
+                    base = src / rel
+                    shutil.copytree(base, ws / rel, dirs_exist_ok=True, ignore=lambda d, names, base=base, rel=rel: [
+                        n for n in names if f"{rel}/{(Path(d) / n).relative_to(base)}" in provided])
+                elif rel not in provided:
                     shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
     if stable:
