@@ -91,7 +91,8 @@ MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR
 
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
           sections: dict[str, str] | None = None, code_model: str | None = None,
-          chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False) -> tuple[str, dict]:
+          chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
+          isolation: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
     from . import prompts
@@ -99,6 +100,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.CHUNK["lines"] = chunk_lines
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
+    prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
     dot, nodes = _build(work_order, phases, goal, sections)
     if code_model:
         for n in CODE_NODES:

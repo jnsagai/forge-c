@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 UNIT_TEST = "software/tests/unit/test_rcc.c"
@@ -45,13 +46,27 @@ int main(void)
 """
 
 
+_RESET_FAKE = ("/* Reset the LL test double: empty call log, every LL query returns 0U until scripted (CAPA-038). */\n"
+               "static void ut_reset(void)\n{\n    ll_fake_reset();\n}")
+HARNESS_FAKE = re.sub(r"static void ut_reset_regs\(void\)\n\{.*?\n\}", lambda _m: _RESET_FAKE, HARNESS.replace(
+    '#include "stm32n6xx_hal_rcc.h"\n\nvolatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];\n',
+    '#define LL_FAKE_IMPLEMENTATION /* defines the LL test double state once, here */\n'
+    '#include "stm32n6xx_hal_rcc.h" /* its LL include resolves to software/tests/unit/ll_fake */\n'), count=1, flags=re.S)
+
+
 def scaffold(ws: Path) -> dict:
-    from ..layer import layer_of
+    from ..layer import hal_unit_isolation, layer_of
 
     p = ws / UNIT_TEST
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
     p.parent.mkdir(parents=True, exist_ok=True)
+    if hal_unit_isolation(ws):  # CAPA-038: generated LL test double + harness that uses it
+        from .ll_fake import write
+
+        write(ws)
+        p.write_text(HARNESS_FAKE, encoding="utf-8")
+        return {"status": "PASS", "created": True, "file": UNIT_TEST, "ll_fake": True}
     text = HARNESS if layer_of(ws) != "LL" else HARNESS.replace('#include "stm32n6xx_hal_rcc.h"',
                                                                   '#include "stm32n6xx_ll_rcc.h"')  # ADR-0009
     p.write_text(text, encoding="utf-8")

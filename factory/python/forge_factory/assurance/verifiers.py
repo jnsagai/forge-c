@@ -135,7 +135,9 @@ def v_api_execution(ws: Path) -> dict:
         srcs = sorted((ws / "software/hal").glob("*.c"))
     if not srcs:
         return {"status": "NOT_RUN", "findings": ["no compile unit for the code under test"]}
-    r = coverage.measure(srcs, ut, [ws / "software/hal", ws / "software/ll", ws / "software/include"])
+    fake = ws / "software/tests/unit/ll_fake"  # CAPA-038: HAL unit tests on the LL test double
+    r = coverage.measure(srcs, ut, ([fake] if fake.is_dir() else []) + [ws / "software/hal", ws / "software/ll",
+                                                                        ws / "software/include"])
     if r["status"] != "MEASURED":
         return {"status": "NOT_SUPPORTED", "findings": [str(r.get("reason", ""))[:160]]}
     counts: dict[str, int] = {}

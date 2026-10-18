@@ -93,7 +93,7 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
             (t / target_rel).write_text(mu["text"])
             if target_rel.startswith("ll/") and (t / "include").is_dir():
                 shutil.copy(t / target_rel, t / "include" / Path(target_rel).name)
-            inc = sum((["-I", str(t / d)] for d in ("include", "ll", "hal") if (t / d).is_dir()), [])
+            inc = sum((["-I", str(t / d)] for d in ("tests/unit/ll_fake", "include", "ll", "hal") if (t / d).is_dir()), [])
             # driver compile units: software/src (packaged flat view) or software/hal (live workspace); the generated
             # LL compile unit only includes the header and is skipped (the tests include the header themselves)
             by_name = {p.name: str(p) for d in ("src", "hal") for p in sorted((t / d).glob("*.c"))

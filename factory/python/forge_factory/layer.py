@@ -25,6 +25,16 @@ def layer_of(ws: Path) -> str:
 
 
 TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
+HAL_UNIT_ISOLATION = "ll-fake-v1"  # CAPA-038: HAL unit tests run on a generated test double of the provided LL API
+
+
+def hal_unit_isolation(ws: Path) -> bool:
+    """HAL work orders prepared after CAPA-038 carry `hal_unit_isolation`; older runs keep the RAM register array."""
+    try:
+        m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    except (OSError, ValueError):
+        return False
+    return m.get("layer") == "HAL" and m.get("hal_unit_isolation") == HAL_UNIT_ISOLATION
 
 
 def swtrace_enabled(ws: Path) -> bool:

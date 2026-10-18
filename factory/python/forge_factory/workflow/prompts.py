@@ -201,6 +201,7 @@ AUTHOR_STEPS = {
 CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
 TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
+ISOLATION = {"on": False}  # CAPA-038: HAL unit tests run on the generated LL test double (set by the builder)
 
 
 def small() -> str:
@@ -268,6 +269,25 @@ UT_EXAMPLE = ("static void ut_hsi_enable(void)\n{\n    hal_status_t st;\n    ut_
               "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n    st = HAL_RCC_HSI_Enable();\n"
               "    CHECK(\"UT-001\", (st == HAL_OK) && ((ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK) != 0U));\n"
               "    ut_reset_regs();\n    st = HAL_RCC_HSI_Enable();\n    CHECK(\"UT-002\", st == HAL_TIMEOUT);\n}")
+FAKE_UT_EXAMPLE = ("static void ut_hse_enable(void)\n{\n    hal_status_t st;\n    ut_reset();\n"
+                   "    ll_fake_return_from(LL_FAKE_LL_RCC_HSE_IsReady, 3U, 1U);  /* ready from the 3rd poll on */\n"
+                   "    st = HAL_RCC_HSE_Enable(10U);\n"
+                   "    CHECK(\"UT-001\", st == HAL_OK);\n"
+                   "    CHECK(\"UT-001-ENABLED\", ll_fake_calls(LL_FAKE_LL_RCC_HSE_Enable) == 1U);\n"
+                   "    CHECK(\"UT-001-ORDER\", ll_fake_index_of(LL_FAKE_LL_RCC_HSE_Enable, 1U) < "
+                   "ll_fake_index_of(LL_FAKE_LL_RCC_HSE_IsReady, 1U));\n"
+                   "    ut_reset();  /* never ready */\n    st = HAL_RCC_HSE_Enable(10U);\n"
+                   "    CHECK(\"UT-002\", st == HAL_TIMEOUT);\n"
+                   "    CHECK(\"UT-002-ROLLBACK\", ll_fake_calls(LL_FAKE_LL_RCC_HSE_Disable) == 1U);\n}")
+FAKE_UT_FIRST = (
+    "read_file software/tests/unit/test_rcc.c (GENERATED harness: CHECK(id, cond), ut_reset(), markers; never change "
+    "it), software/tests/unit/ll_fake/stm32n6xx_ll_rcc.h (GENERATED test double of the provided LL API - read its "
+    "'test double API' block: ll_fake_return_from(fn, n, value) makes an LL query return value from its n-th call on "
+    "(default 0U = flag never set), ll_fake_calls(fn), ll_fake_index_of(fn, k) for call order, ll_fake_last_arg; never "
+    "change it), software/hal/stm32n6xx_hal_rcc.h and traceability/requirements_to_tests.csv. HAL unit tests observe "
+    "the HAL only through these LL calls (there is no register array); register effects are verified with the real LL "
+    "in SWE.5. Count polls and order exactly as the HAL code does them and assert what the requirement states. Name "
+    "every check of a test with that test's id: 'UT-007' or 'UT-007-<suffix>' inside the function tagged @test UT-007.")
 UT_STEPS = [
     "read_file software/tests/unit/test_rcc.c (GENERATED harness: fake ll_rcc_regs, ut_reset_regs(), CHECK(id, cond), "
     "markers; never change it), software/hal/stm32n6xx_hal_rcc.h (the HAL_RCC_ functions to test) and "
@@ -357,6 +377,12 @@ def unit_test_author_prompt() -> str:
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
+    if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
+        ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
+                                                  "_MSK defines that exist in software/ll/stm32n6xx_ll_rcc.h - never "
+                                                  "registers from other STM32 families such as BDCR",
+                                                  "adapt names and UT ids; use ONLY LL_FAKE_<LL function> ids from the "
+                                                  "test double") for x in UT_STEPS[1:]], FAKE_UT_EXAMPLE
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
          for x in ut] + trace_step("ut") + [DEFECT_RULE, REPLY]
