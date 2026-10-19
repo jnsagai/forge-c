@@ -1,0 +1,100 @@
+{
+  "CAPA-050": {
+    "history": [
+      {
+        "at": "2026-10-19T13:19:01.092162Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[\"CAPA-050\"]",
+        "from_state": null,
+        "reason": "LL r166 BLOCKED at SWE.3: the register map generator found no register in register.field table rows (RCC_CR.HSION) and wrote no LL compile unit; the author's own compile unit was rejected (CAPA-046) and could not be deleted (run completed BLOCKED, so the CRE importer recorded no fingerprint)",
+        "seq": 411,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T13:19:01.139947Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 412,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T13:19:01.221363Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-054 assigned",
+        "seq": 413,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T13:21:09.406496Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[\"reproducer-run:rr-f048fc67bb7560a9e51d\", \"reproducer-run:rr-646a52634c0f3ed9e0ed\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 414,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T13:21:09.428714Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[\"git:533b7e0109e0..98f6f095bfa7\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 98f6f095bfa7 (patch 5534 bytes)",
+        "seq": 415,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T13:21:09.475462Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[\"reproducer-run:rr-3907ead53750b200044e\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-054 absent at 98f6f095bfa7",
+        "seq": 416,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T13:21:09.495667Z",
+        "capa_id": "CAPA-050",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 417,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "533b7e0109e03f1e08be9462cccdff9469211578",
+      "98f6f095bfa7d75489eeb584daf6c606dabaaed9",
+      "pd-a9509c69739816143e57"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<98f6f095bfa7"
+      ],
+      "candidate_patch_sha256": "c92ebcb83284281c37c36faa25f825064ad05a507229ef518d58e6f4c0be3c27",
+      "capa_id": "CAPA-050",
+      "created_at": "2026-10-19T13:19:01.092162Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-050"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-054",
+      "reproducer_id": "RPR-054",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-f048fc67bb7560a9e51d",
+        "reproducer-run:rr-646a52634c0f3ed9e0ed"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the register-table name parser accepted only bare RCC_ names and the compile unit was written only after a successful map",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T13:21:09.495667Z"
+    }
+  }
+}
