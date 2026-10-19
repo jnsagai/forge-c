@@ -1,0 +1,12 @@
+# External Conductor watchdog (AFO-T013): alerts on a stale or missing heartbeat; restarts are systemd's job only.
+[Unit]
+Description=Forge-C AFO external watchdog (heartbeat check)
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=oneshot
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+ExecStart=@VENV@/bin/python -m forge_factory.afo.watchdog --max-age 300

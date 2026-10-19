@@ -1,0 +1,25 @@
+# Forge-C cloud-benchmark Fabro server (:32291, own storage under fabro-cloud). AFO-T007.
+[Unit]
+Description=Forge-C Fabro 0.362 cloud server (:32291)
+After=forge-llm-gateway-cloud.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=exec
+WorkingDirectory=@DATA@/fabro-cloud
+ExecStart=@FABRO@ server start --foreground --no-web --no-upgrade-check --config @DATA@/fabro-cloud/settings.toml --storage-dir @DATA@/fabro-cloud/storage
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target

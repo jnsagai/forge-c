@@ -1,0 +1,28 @@
+# Forge-C cloud gateway (:11437 -> DeepSeek API, cost-capped, metered). AFO-T007. The API key is held only in the
+# isolated Fabro server's vault (scripts/forge_cloud_bench.sh); this unit never reads it.
+[Unit]
+Description=Forge-C cloud LLM gateway (:11437, DeepSeek)
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=exec
+ExecStart=@VENV@/bin/python -m forge_factory.llm_gateway --port 11437 --upstream https://api.deepseek.com --meter @DATA@/state/llm-gateway/usage-cloud-deepseek.jsonl
+Environment=FORGE_GATEWAY_COST_CAP_USD=@CLOUD_CAP@
+Environment=FORGE_GATEWAY_PRICE_MISS_PER_M=0.14
+Environment=FORGE_GATEWAY_PRICE_HIT_PER_M=0.0028
+Environment=FORGE_GATEWAY_PRICE_OUT_PER_M=0.28
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target
