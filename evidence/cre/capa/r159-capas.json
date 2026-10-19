@@ -1,0 +1,101 @@
+{
+  "CAPA-046": {
+    "history": [
+      {
+        "at": "2026-10-19T09:06:07.546326Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[\"CAPA-046\"]",
+        "from_state": null,
+        "reason": "SWE.3 inspector failed the mandated register access (extern ll_rcc_regs placed by the linker) for lacking the RCC base address (r103 SWE3-02, r159 SWE3-01); the LL author added an integer-to-pointer address unit and SWE.3 blocked on rework budget. The inspection fingerprints are generic and already ",
+        "seq": 383,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T09:06:07.571661Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 384,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T09:06:07.634264Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-050 assigned",
+        "seq": 385,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T09:08:26.815330Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[\"reproducer-run:rr-47f9c8d112fcaeb128de\", \"reproducer-run:rr-134346e4c08d7097f15e\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 386,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T09:08:26.838561Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[\"git:5053d0e54d42..41823779b83c\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 41823779b83c (patch 9108 bytes)",
+        "seq": 387,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T09:08:26.884645Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[\"reproducer-run:rr-4a042113457526614830\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-050 absent at 41823779b83c",
+        "seq": 388,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T09:08:26.904751Z",
+        "capa_id": "CAPA-046",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 389,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-e27a4fc51552440bd330e5eb5a00540a9fac303d",
+      "5053d0e54d42e73f173e969c6201ee58ae0f16de",
+      "41823779b83caf2f7446c9ee8df7c4f92af25a98",
+      "pd-07dbdc337fd55ae4a25d"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<41823779b83c"
+      ],
+      "candidate_patch_sha256": "74a5c4facd2cc6a75dcd1b2276ff0b597211bf6f86cf7909144714dd1df38eae",
+      "capa_id": "CAPA-046",
+      "created_at": "2026-10-19T09:06:07.546326Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-046"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-050",
+      "reproducer_id": "RPR-050",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-47f9c8d112fcaeb128de",
+        "reproducer-run:rr-134346e4c08d7097f15e"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the SWE.2/SWE.3 inspector prompts do not state the mandated register-block design and the LL gate does not enforce header-only, so a false inspector finding drives the author out of the design",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T09:08:26.904751Z"
+    }
+  }
+}
