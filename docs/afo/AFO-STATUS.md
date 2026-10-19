@@ -1,9 +1,9 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T10:22:25.658136Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-19T10:46:21.598384Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
 
-Tasks: BLOCKED 6, NOT_RUN 5, PARTIAL 3, PASS 61.
-FRs: COVERED 54, OPEN 2, PARTIAL 16.
+Tasks: BLOCKED 6, NOT_RUN 1, PARTIAL 3, PASS 65.
+FRs: COVERED 58, OPEN 1, PARTIAL 13.
 
 | Task | M | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|---|
@@ -77,20 +77,20 @@ FRs: COVERED 54, OPEN 2, PARTIAL 16.
 | AFO-T068 | M7 | P0 | BLOCKED | AT-062 | Actual 24 h / 72 h / 168 h soak needs an operator authorization and the deferred restart/boot work (data volume mounts only at login; owner decision 2026-10-19 defers restart/reboot). Runner ready (AFO-T067): python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>; then: python -m forge_factory.afo.soak run soak-24h-1 (report: ... report soak-24h-1). Elapsed hours are never simulated. |
 | AFO-T069 | M7 | P0 | BLOCKED | AT-054, AT-059, AT-062, AT-063, AT-064 | The recovery drill matrix includes service restarts on the live shared host and a machine reboot; owner decision 2026-10-19 defers restart/reboot drills (see AFO-T014/T015/T034). Crash windows are covered with injected faults (AFO-T033, AFO-T065). |
 | AFO-T070 | M7 | P0 | BLOCKED | AT-054, AT-063, AT-064, AT-065, AT-066 | Needs the owner's signed operator readiness review before any ACTIVE mode change; the review input is forge_factory.afo.readiness.assess() (no level above IMPLEMENTED can be demonstrated before the deferred drills and a PILOT authorization). No ACTIVE change is requested. |
-| AFO-T071 | M8 | P0 | NOT_RUN | AT-064, AT-065 |  |
-| AFO-T072 | M8 | P0 | NOT_RUN | AT-065, AT-066 |  |
-| AFO-T073 | M8 | P0 | NOT_RUN | AT-037, AT-056 |  |
-| AFO-T074 | M8 | P0 | NOT_RUN | AT-059, AT-062, AT-063 |  |
+| AFO-T071 | M8 | P0 | PASS | AT-064, AT-065 | evidence/v0.4/runs/AFO-T071/latest.json |
+| AFO-T072 | M8 | P0 | PASS | AT-065, AT-066 | evidence/v0.4/runs/AFO-T072/latest.json |
+| AFO-T073 | M8 | P0 | PASS | AT-037, AT-056 | evidence/v0.4/runs/AFO-T073/latest.json |
+| AFO-T074 | M8 | P0 | PASS | AT-059, AT-062, AT-063 | evidence/v0.4/runs/AFO-T074/latest.json |
 | AFO-T075 | M8 | P0 | NOT_RUN | AT-065, AT-066 |  |
 
 | FR | P | Coverage | Tasks |
 |---|---|---|---|
 | AFO-FR-001 | P0 | PARTIAL | AFO-T001=PASS, AFO-T002=PASS, AFO-T075=NOT_RUN |
-| AFO-FR-002 | P0 | PARTIAL | AFO-T003=PASS, AFO-T004=PASS, AFO-T071=NOT_RUN |
+| AFO-FR-002 | P0 | COVERED | AFO-T003=PASS, AFO-T004=PASS, AFO-T071=PASS |
 | AFO-FR-003 | P0 | COVERED | AFO-T004=PASS, AFO-T006=PASS |
 | AFO-FR-004 | P0 | COVERED | AFO-T003=PASS, AFO-T004=PASS |
-| AFO-FR-005 | P0 | PARTIAL | AFO-T001=PASS, AFO-T071=NOT_RUN |
-| AFO-FR-006 | P0 | PARTIAL | AFO-T004=PASS, AFO-T018=PASS, AFO-T072=NOT_RUN |
+| AFO-FR-005 | P0 | COVERED | AFO-T001=PASS, AFO-T071=PASS |
+| AFO-FR-006 | P0 | COVERED | AFO-T004=PASS, AFO-T018=PASS, AFO-T072=PASS |
 | AFO-FR-007 | P0 | COVERED | AFO-T005=PASS, AFO-T038=PASS, AFO-T045=PASS |
 | AFO-FR-008 | P0 | COVERED | AFO-T032=PASS, AFO-T062=PASS |
 | AFO-FR-009 | P0 | PARTIAL | AFO-T007=PASS, AFO-T008=PASS, AFO-T009=PASS, AFO-T014=PARTIAL |
@@ -148,12 +148,12 @@ FRs: COVERED 54, OPEN 2, PARTIAL 16.
 | AFO-FR-061 | P1 | PARTIAL | AFO-T056=PASS, AFO-T057=PARTIAL |
 | AFO-FR-062 | P1 | COVERED | AFO-T056=PASS, AFO-T058=PASS |
 | AFO-FR-063 | P0 | PARTIAL | AFO-T057=PARTIAL, AFO-T061=PASS |
-| AFO-FR-064 | P0 | PARTIAL | AFO-T059=PASS, AFO-T073=NOT_RUN |
+| AFO-FR-064 | P0 | COVERED | AFO-T059=PASS, AFO-T073=PASS |
 | AFO-FR-065 | P0 | COVERED | AFO-T062=PASS, AFO-T063=PASS |
 | AFO-FR-066 | P0 | COVERED | AFO-T062=PASS, AFO-T063=PASS |
 | AFO-FR-067 | P0 | PARTIAL | AFO-T064=PASS, AFO-T066=BLOCKED |
 | AFO-FR-068 | P0 | COVERED | AFO-T065=PASS |
 | AFO-FR-069 | P1 | PARTIAL | AFO-T067=PASS, AFO-T068=BLOCKED |
-| AFO-FR-070 | P0 | PARTIAL | AFO-T064=PASS, AFO-T069=BLOCKED, AFO-T074=NOT_RUN |
-| AFO-FR-071 | P0 | OPEN | AFO-T070=BLOCKED, AFO-T072=NOT_RUN, AFO-T075=NOT_RUN |
+| AFO-FR-070 | P0 | PARTIAL | AFO-T064=PASS, AFO-T069=BLOCKED, AFO-T074=PASS |
+| AFO-FR-071 | P0 | PARTIAL | AFO-T070=BLOCKED, AFO-T072=PASS, AFO-T075=NOT_RUN |
 | AFO-FR-072 | P0 | OPEN | AFO-T069=BLOCKED, AFO-T070=BLOCKED |

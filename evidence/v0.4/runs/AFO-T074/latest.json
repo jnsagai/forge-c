@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "\nimport json; from forge_factory.afo import readiness\nt=open('docs/afo/LIMITATIONS-AFO.md').read()\nfor s in ('No AFO-launched real model order','AFO-M01 is UNKNOWN','Restart and reboot drills are deferred','ISO 26262 or Automotive SPICE conformance statement','no READY package exists','index.json'): assert s in t, s\nr=readiness.assess(); assert r['configured_mode']=='OBSERVE_ONLY' and r['levels']['SLO_DEMONSTRATED']['status']=='NOT_DEMONSTRATED'\nopen('evidence/afo/readiness.json','w').write(json.dumps(r,indent=2,sort_keys=True)+'\\n')\nprint('limitations recorded; readiness highest', r['highest_demonstrated'], '- SLO NOT_DEMONSTRATED; mode', r['configured_mode'])"
+  ],
+  "duration_s": 0.123,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c75414ac2ea80c58c38ca8b21de2630f27162b0c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T074/20261019T104541.log",
+  "log_sha256": "6afa7f9ca7fda4a254d33238f8689e359e9216a48bd83490886dca29a3b4120b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T074",
+  "ts_utc": "2026-10-19T10:45:41.586734Z"
+}

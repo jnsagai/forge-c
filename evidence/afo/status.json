@@ -1,10 +1,10 @@
 {
   "fr_counts": {
-    "COVERED": 54,
-    "OPEN": 2,
-    "PARTIAL": 16
+    "COVERED": 58,
+    "OPEN": 1,
+    "PARTIAL": 13
   },
-  "generated_at": "2026-10-19T10:22:25.658136Z",
+  "generated_at": "2026-10-19T10:46:21.598384Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -26,13 +26,13 @@
         "AT-064",
         "AT-065"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-002",
       "priority": "P0",
       "tasks": {
         "AFO-T003": "PASS",
         "AFO-T004": "PASS",
-        "AFO-T071": "NOT_RUN"
+        "AFO-T071": "PASS"
       }
     },
     {
@@ -65,25 +65,25 @@
       "acceptance": [
         "AT-065"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-005",
       "priority": "P0",
       "tasks": {
         "AFO-T001": "PASS",
-        "AFO-T071": "NOT_RUN"
+        "AFO-T071": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-066"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-006",
       "priority": "P0",
       "tasks": {
         "AFO-T004": "PASS",
         "AFO-T018": "PASS",
-        "AFO-T072": "NOT_RUN"
+        "AFO-T072": "PASS"
       }
     },
     {
@@ -835,12 +835,12 @@
         "AT-037",
         "AT-056"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-064",
       "priority": "P0",
       "tasks": {
         "AFO-T059": "PASS",
-        "AFO-T073": "NOT_RUN"
+        "AFO-T073": "PASS"
       }
     },
     {
@@ -917,7 +917,7 @@
       "tasks": {
         "AFO-T064": "PASS",
         "AFO-T069": "BLOCKED",
-        "AFO-T074": "NOT_RUN"
+        "AFO-T074": "PASS"
       }
     },
     {
@@ -925,12 +925,12 @@
         "AT-065",
         "AT-066"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-071",
       "priority": "P0",
       "tasks": {
         "AFO-T070": "BLOCKED",
-        "AFO-T072": "NOT_RUN",
+        "AFO-T072": "PASS",
         "AFO-T075": "NOT_RUN"
       }
     },
@@ -952,9 +952,9 @@
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
     "BLOCKED": 6,
-    "NOT_RUN": 5,
+    "NOT_RUN": 1,
     "PARTIAL": 3,
-    "PASS": 61
+    "PASS": 65
   },
   "tasks": {
     "AFO-T001": {
@@ -1731,43 +1731,47 @@
       "task_id": "AFO-T070"
     },
     "AFO-T071": {
+      "evidence": "evidence/v0.4/runs/AFO-T071/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M8",
       "planned_requirement_refs": "AFO-FR-002;AFO-FR-005",
       "planned_test_refs": "AT-064;AT-065",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T071"
     },
     "AFO-T072": {
+      "evidence": "evidence/v0.4/runs/AFO-T072/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M8",
       "planned_requirement_refs": "AFO-FR-006;AFO-FR-071",
       "planned_test_refs": "AT-065;AT-066",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T072"
     },
     "AFO-T073": {
+      "evidence": "evidence/v0.4/runs/AFO-T073/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M8",
       "planned_requirement_refs": "AFO-FR-064",
       "planned_test_refs": "AT-037;AT-056",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T073"
     },
     "AFO-T074": {
+      "evidence": "evidence/v0.4/runs/AFO-T074/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M8",
       "planned_requirement_refs": "AFO-FR-070",
       "planned_test_refs": "AT-059;AT-062;AT-063",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T074"
     },
     "AFO-T075": {

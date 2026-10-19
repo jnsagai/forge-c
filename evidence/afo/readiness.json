@@ -1,0 +1,43 @@
+{
+  "configured_mode": "OBSERVE_ONLY",
+  "generated_utc": "2026-10-19T10:45:41.698307Z",
+  "highest_demonstrated": "NONE",
+  "levels": {
+    "ACTIVE_ELIGIBLE": {
+      "missing": [
+        "previous level not demonstrated",
+        "72 h soak DEMONSTRATED",
+        "AFO-T070 signed operator readiness review PASS"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    },
+    "IMPLEMENTED": {
+      "missing": [
+        "AFO-T014 PARTIAL",
+        "AFO-T044 PARTIAL",
+        "AFO-T057 PARTIAL"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    },
+    "PILOT_ELIGIBLE": {
+      "missing": [
+        "previous level not demonstrated",
+        "AFO-T015 reboot/mount drill PASS",
+        "AFO-T034 reboot with in-flight run PASS",
+        "AFO-T066 real READY + deliberate BLOCKED PASS",
+        "AFO-T069 restart drill matrix PASS",
+        "signed PILOT authorization valid"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    },
+    "SLO_DEMONSTRATED": {
+      "missing": [
+        "previous level not demonstrated",
+        "168 h soak DEMONSTRATED"
+      ],
+      "status": "NOT_DEMONSTRATED"
+    }
+  },
+  "schema": "forge-c/afo-readiness/0.1",
+  "statement": "Readiness is evidence-derived and separate from the configured mode; it never switches a mode, approves safety or certifies anything."
+}

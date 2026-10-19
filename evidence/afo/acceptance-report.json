@@ -1,0 +1,997 @@
+{
+  "acceptance": [
+    {
+      "at": "AT-001",
+      "requirements": [
+        "AFO-FR-009"
+      ],
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T009": "PASS",
+        "AFO-T014": "PARTIAL"
+      },
+      "title": "systemd dry-run render",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-002",
+      "requirements": [
+        "AFO-FR-012"
+      ],
+      "tasks": {
+        "AFO-T011": "PASS",
+        "AFO-T015": "BLOCKED"
+      },
+      "title": "headless logout",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-003",
+      "requirements": [
+        "AFO-FR-010",
+        "AFO-FR-014"
+      ],
+      "tasks": {
+        "AFO-T008": "PASS",
+        "AFO-T012": "PASS",
+        "AFO-T013": "PASS"
+      },
+      "title": "supervisor Conductor crash",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-004",
+      "requirements": [
+        "AFO-FR-009",
+        "AFO-FR-013"
+      ],
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T009": "PASS",
+        "AFO-T014": "PARTIAL",
+        "AFO-T021": "PASS"
+      },
+      "title": "Fabro service crash",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-005",
+      "requirements": [
+        "AFO-FR-009",
+        "AFO-FR-013",
+        "AFO-FR-015"
+      ],
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T009": "PASS",
+        "AFO-T013": "PASS",
+        "AFO-T014": "PARTIAL",
+        "AFO-T021": "PASS"
+      },
+      "title": "model server crash",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-006",
+      "requirements": [
+        "AFO-FR-011"
+      ],
+      "tasks": {
+        "AFO-T010": "PASS"
+      },
+      "title": "absent mount",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-007",
+      "requirements": [
+        "AFO-FR-009",
+        "AFO-FR-015"
+      ],
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T009": "PASS",
+        "AFO-T013": "PASS",
+        "AFO-T014": "PARTIAL",
+        "AFO-T021": "PASS"
+      },
+      "title": "service start storm",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-008",
+      "requirements": [
+        "AFO-FR-012"
+      ],
+      "tasks": {
+        "AFO-T011": "PASS",
+        "AFO-T015": "BLOCKED"
+      },
+      "title": "boot without login",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-009",
+      "requirements": [
+        "AFO-FR-010",
+        "AFO-FR-014"
+      ],
+      "tasks": {
+        "AFO-T008": "PASS",
+        "AFO-T012": "PASS",
+        "AFO-T013": "PASS"
+      },
+      "title": "watchdog stalled Conductor",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-010",
+      "requirements": [
+        "AFO-FR-017",
+        "AFO-FR-021"
+      ],
+      "tasks": {
+        "AFO-T017": "PASS",
+        "AFO-T021": "PASS",
+        "AFO-T022": "PASS"
+      },
+      "title": "valid approved order",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-011",
+      "requirements": [
+        "AFO-FR-018",
+        "AFO-FR-019",
+        "AFO-FR-022"
+      ],
+      "tasks": {
+        "AFO-T016": "PASS",
+        "AFO-T017": "PASS",
+        "AFO-T018": "PASS",
+        "AFO-T019": "PASS",
+        "AFO-T023": "PASS"
+      },
+      "title": "same request replay",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-012",
+      "requirements": [
+        "AFO-FR-017",
+        "AFO-FR-018"
+      ],
+      "tasks": {
+        "AFO-T017": "PASS",
+        "AFO-T022": "PASS",
+        "AFO-T023": "PASS"
+      },
+      "title": "hash conflict",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-013",
+      "requirements": [
+        "AFO-FR-018",
+        "AFO-FR-019",
+        "AFO-FR-022",
+        "AFO-FR-023"
+      ],
+      "tasks": {
+        "AFO-T016": "PASS",
+        "AFO-T017": "PASS",
+        "AFO-T018": "PASS",
+        "AFO-T019": "PASS",
+        "AFO-T023": "PASS",
+        "AFO-T024": "PASS"
+      },
+      "title": "parallel submit",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-014",
+      "requirements": [
+        "AFO-FR-020",
+        "AFO-FR-021",
+        "AFO-FR-024",
+        "AFO-FR-026"
+      ],
+      "tasks": {
+        "AFO-T020": "PASS",
+        "AFO-T021": "PASS",
+        "AFO-T022": "PASS",
+        "AFO-T023": "PASS",
+        "AFO-T058": "PASS"
+      },
+      "title": "worker capacity",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-015",
+      "requirements": [
+        "AFO-FR-019",
+        "AFO-FR-024"
+      ],
+      "tasks": {
+        "AFO-T016": "PASS",
+        "AFO-T018": "PASS",
+        "AFO-T020": "PASS",
+        "AFO-T021": "PASS"
+      },
+      "title": "idle zero models",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-016",
+      "requirements": [
+        "AFO-FR-025"
+      ],
+      "tasks": {
+        "AFO-T020": "PASS",
+        "AFO-T024": "PASS"
+      },
+      "title": "queue starvation/fairness",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-017",
+      "requirements": [
+        "AFO-FR-027",
+        "AFO-FR-033"
+      ],
+      "tasks": {
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS",
+        "AFO-T033": "PASS"
+      },
+      "title": "launch-before-call crash",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-018",
+      "requirements": [
+        "AFO-FR-027",
+        "AFO-FR-028",
+        "AFO-FR-029"
+      ],
+      "tasks": {
+        "AFO-T026": "PASS",
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS",
+        "AFO-T029": "PASS"
+      },
+      "title": "launch-after-accept crash",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-019",
+      "requirements": [
+        "AFO-FR-027",
+        "AFO-FR-028",
+        "AFO-FR-030"
+      ],
+      "tasks": {
+        "AFO-T026": "PASS",
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS",
+        "AFO-T029": "PASS",
+        "AFO-T034": "BLOCKED"
+      },
+      "title": "Fabro unreachable and unknown",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-020",
+      "requirements": [
+        "AFO-FR-029"
+      ],
+      "tasks": {
+        "AFO-T028": "PASS",
+        "AFO-T029": "PASS"
+      },
+      "title": "duplicate Fabro run label",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-021",
+      "requirements": [
+        "AFO-FR-023",
+        "AFO-FR-036"
+      ],
+      "tasks": {
+        "AFO-T019": "PASS",
+        "AFO-T024": "PASS",
+        "AFO-T025": "PASS",
+        "AFO-T034": "BLOCKED"
+      },
+      "title": "lease takeover",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-022",
+      "requirements": [
+        "AFO-FR-030",
+        "AFO-FR-032",
+        "AFO-FR-035"
+      ],
+      "tasks": {
+        "AFO-T029": "PASS",
+        "AFO-T030": "PASS",
+        "AFO-T031": "PASS",
+        "AFO-T033": "PASS",
+        "AFO-T034": "BLOCKED"
+      },
+      "title": "reboot mid SWE phase",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-023",
+      "requirements": [
+        "AFO-FR-031",
+        "AFO-FR-032",
+        "AFO-FR-047"
+      ],
+      "tasks": {
+        "AFO-T030": "PASS",
+        "AFO-T031": "PASS",
+        "AFO-T040": "PASS",
+        "AFO-T043": "PASS"
+      },
+      "title": "downstream invalidation",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-024",
+      "requirements": [
+        "AFO-FR-034",
+        "AFO-FR-035"
+      ],
+      "tasks": {
+        "AFO-T031": "PASS",
+        "AFO-T032": "PASS",
+        "AFO-T033": "PASS"
+      },
+      "title": "archive-before-status crash",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-025",
+      "requirements": [
+        "AFO-FR-033"
+      ],
+      "tasks": {
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS",
+        "AFO-T033": "PASS"
+      },
+      "title": "non-replayable effect",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-026",
+      "requirements": [
+        "AFO-FR-037",
+        "AFO-FR-038"
+      ],
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T036": "PASS"
+      },
+      "title": "real compiler rejection",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-027",
+      "requirements": [
+        "AFO-FR-037"
+      ],
+      "tasks": {
+        "AFO-T035": "PASS"
+      },
+      "title": "independent inspection failure",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-028",
+      "requirements": [
+        "AFO-FR-039",
+        "AFO-FR-044"
+      ],
+      "tasks": {
+        "AFO-T036": "PASS",
+        "AFO-T042": "PASS"
+      },
+      "title": "same fingerprint cross-attempt",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-029",
+      "requirements": [
+        "AFO-FR-040"
+      ],
+      "tasks": {
+        "AFO-T037": "PASS"
+      },
+      "title": "validated lesson first",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-030",
+      "requirements": [
+        "AFO-FR-007",
+        "AFO-FR-041"
+      ],
+      "tasks": {
+        "AFO-T005": "PASS",
+        "AFO-T038": "PASS",
+        "AFO-T045": "PASS"
+      },
+      "title": "recovery planner output schema",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-031",
+      "requirements": [
+        "AFO-FR-042",
+        "AFO-FR-043",
+        "AFO-FR-047"
+      ],
+      "tasks": {
+        "AFO-T039": "PASS",
+        "AFO-T040": "PASS",
+        "AFO-T043": "PASS"
+      },
+      "title": "scoped local rework",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-032",
+      "requirements": [
+        "AFO-FR-042",
+        "AFO-FR-043",
+        "AFO-FR-047"
+      ],
+      "tasks": {
+        "AFO-T039": "PASS",
+        "AFO-T040": "PASS",
+        "AFO-T043": "PASS"
+      },
+      "title": "upstream rework mapping",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-033",
+      "requirements": [
+        "AFO-FR-039",
+        "AFO-FR-042",
+        "AFO-FR-044"
+      ],
+      "tasks": {
+        "AFO-T036": "PASS",
+        "AFO-T039": "PASS",
+        "AFO-T040": "PASS",
+        "AFO-T042": "PASS"
+      },
+      "title": "identical strategy",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-034",
+      "requirements": [
+        "AFO-FR-045"
+      ],
+      "tasks": {
+        "AFO-T041": "PASS",
+        "AFO-T042": "PASS"
+      },
+      "title": "cumulative budget and reboot",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-035",
+      "requirements": [
+        "AFO-FR-038",
+        "AFO-FR-046"
+      ],
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T036": "PASS",
+        "AFO-T039": "PASS",
+        "AFO-T044": "PARTIAL"
+      },
+      "title": "missing authoritative HSI",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-036",
+      "requirements": [
+        "AFO-FR-046",
+        "AFO-FR-048"
+      ],
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T038": "PASS",
+        "AFO-T039": "PASS",
+        "AFO-T044": "PARTIAL"
+      },
+      "title": "model profile authorization",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-037",
+      "requirements": [
+        "AFO-FR-008",
+        "AFO-FR-034",
+        "AFO-FR-058",
+        "AFO-FR-059",
+        "AFO-FR-064"
+      ],
+      "tasks": {
+        "AFO-T032": "PASS",
+        "AFO-T033": "PASS",
+        "AFO-T054": "PASS",
+        "AFO-T055": "PASS",
+        "AFO-T059": "PASS",
+        "AFO-T060": "PASS",
+        "AFO-T062": "PASS",
+        "AFO-T073": "PASS"
+      },
+      "title": "terminal blocked archive",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-038",
+      "requirements": [
+        "AFO-FR-058",
+        "AFO-FR-060"
+      ],
+      "tasks": {
+        "AFO-T054": "PASS",
+        "AFO-T055": "PASS",
+        "AFO-T060": "PASS"
+      },
+      "title": "DLQ exact once",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-039",
+      "requirements": [
+        "AFO-FR-056",
+        "AFO-FR-058"
+      ],
+      "tasks": {
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS",
+        "AFO-T054": "PASS",
+        "AFO-T060": "PASS"
+      },
+      "title": "continue other work",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-040",
+      "requirements": [
+        "AFO-FR-059"
+      ],
+      "tasks": {
+        "AFO-T054": "PASS",
+        "AFO-T055": "PASS"
+      },
+      "title": "unknown side-effect stop",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-041",
+      "requirements": [
+        "AFO-FR-036"
+      ],
+      "tasks": {
+        "AFO-T025": "PASS",
+        "AFO-T034": "BLOCKED"
+      },
+      "title": "queue event replay",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-042",
+      "requirements": [
+        "AFO-FR-060",
+        "AFO-FR-063"
+      ],
+      "tasks": {
+        "AFO-T055": "PASS",
+        "AFO-T057": "PARTIAL",
+        "AFO-T061": "PASS"
+      },
+      "title": "secrets and privacy",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-043",
+      "requirements": [
+        "AFO-FR-038",
+        "AFO-FR-049"
+      ],
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T036": "PASS",
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
+      },
+      "title": "source-defect routing",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-044",
+      "requirements": [
+        "AFO-FR-051"
+      ],
+      "tasks": {
+        "AFO-T047": "PASS"
+      },
+      "title": "maintainer reproducer",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-045",
+      "requirements": [
+        "AFO-FR-007",
+        "AFO-FR-016",
+        "AFO-FR-050",
+        "AFO-FR-053"
+      ],
+      "tasks": {
+        "AFO-T005": "PASS",
+        "AFO-T011": "PASS",
+        "AFO-T038": "PASS",
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS",
+        "AFO-T048": "PASS",
+        "AFO-T050": "PASS"
+      },
+      "title": "protected-path denial",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-046",
+      "requirements": [
+        "AFO-FR-007",
+        "AFO-FR-016",
+        "AFO-FR-050"
+      ],
+      "tasks": {
+        "AFO-T005": "PASS",
+        "AFO-T011": "PASS",
+        "AFO-T038": "PASS",
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
+      },
+      "title": "unprivileged credentials",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-047",
+      "requirements": [
+        "AFO-FR-052",
+        "AFO-FR-053"
+      ],
+      "tasks": {
+        "AFO-T048": "PASS",
+        "AFO-T050": "PASS",
+        "AFO-T051": "PASS"
+      },
+      "title": "CRE independent promotion",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-048",
+      "requirements": [
+        "AFO-FR-052",
+        "AFO-FR-055"
+      ],
+      "tasks": {
+        "AFO-T048": "PASS",
+        "AFO-T050": "PASS",
+        "AFO-T051": "PASS",
+        "AFO-T052": "PASS"
+      },
+      "title": "holdout regression",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-049",
+      "requirements": [
+        "AFO-FR-053",
+        "AFO-FR-054"
+      ],
+      "tasks": {
+        "AFO-T048": "PASS",
+        "AFO-T049": "PASS",
+        "AFO-T050": "PASS"
+      },
+      "title": "proposal PR only",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-050",
+      "requirements": [
+        "AFO-FR-056",
+        "AFO-FR-057"
+      ],
+      "tasks": {
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS"
+      },
+      "title": "human approval pending",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-051",
+      "requirements": [
+        "AFO-FR-055"
+      ],
+      "tasks": {
+        "AFO-T050": "PASS",
+        "AFO-T052": "PASS"
+      },
+      "title": "rejected candidate",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-052",
+      "requirements": [
+        "AFO-FR-061"
+      ],
+      "tasks": {
+        "AFO-T056": "PASS",
+        "AFO-T057": "PARTIAL"
+      },
+      "title": "dashboard read-only",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-053",
+      "requirements": [
+        "AFO-FR-026",
+        "AFO-FR-062"
+      ],
+      "tasks": {
+        "AFO-T023": "PASS",
+        "AFO-T056": "PASS",
+        "AFO-T058": "PASS"
+      },
+      "title": "operator pause and drain",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-054",
+      "requirements": [
+        "AFO-FR-026",
+        "AFO-FR-062",
+        "AFO-FR-072"
+      ],
+      "tasks": {
+        "AFO-T023": "PASS",
+        "AFO-T056": "PASS",
+        "AFO-T058": "PASS",
+        "AFO-T069": "BLOCKED",
+        "AFO-T070": "BLOCKED"
+      },
+      "title": "authorization negative",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-055",
+      "requirements": [
+        "AFO-FR-061",
+        "AFO-FR-063"
+      ],
+      "tasks": {
+        "AFO-T056": "PASS",
+        "AFO-T057": "PARTIAL",
+        "AFO-T061": "PASS"
+      },
+      "title": "capture vs display",
+      "verdict": "PARTIAL"
+    },
+    {
+      "at": "AT-056",
+      "requirements": [
+        "AFO-FR-064"
+      ],
+      "tasks": {
+        "AFO-T059": "PASS",
+        "AFO-T073": "PASS"
+      },
+      "title": "packaged AFO evidence",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-057",
+      "requirements": [
+        "AFO-FR-008",
+        "AFO-FR-034",
+        "AFO-FR-065"
+      ],
+      "tasks": {
+        "AFO-T032": "PASS",
+        "AFO-T033": "PASS",
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
+      },
+      "title": "separate KPI semantics",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-058",
+      "requirements": [
+        "AFO-FR-065",
+        "AFO-FR-066"
+      ],
+      "tasks": {
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
+      },
+      "title": "denominator and CI",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-059",
+      "requirements": [
+        "AFO-FR-067",
+        "AFO-FR-070"
+      ],
+      "tasks": {
+        "AFO-T064": "PASS",
+        "AFO-T066": "BLOCKED",
+        "AFO-T069": "BLOCKED",
+        "AFO-T074": "PASS"
+      },
+      "title": "pilot readiness negative",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-060",
+      "requirements": [
+        "AFO-FR-068"
+      ],
+      "tasks": {
+        "AFO-T065": "PASS"
+      },
+      "title": "real model trial positive",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-061",
+      "requirements": [
+        "AFO-FR-068"
+      ],
+      "tasks": {
+        "AFO-T065": "PASS"
+      },
+      "title": "real model negative",
+      "verdict": "PASS"
+    },
+    {
+      "at": "AT-062",
+      "requirements": [
+        "AFO-FR-069",
+        "AFO-FR-070"
+      ],
+      "tasks": {
+        "AFO-T064": "PASS",
+        "AFO-T067": "PASS",
+        "AFO-T068": "BLOCKED",
+        "AFO-T069": "BLOCKED",
+        "AFO-T074": "PASS"
+      },
+      "title": "168h actual soak",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-063",
+      "requirements": [
+        "AFO-FR-003",
+        "AFO-FR-004",
+        "AFO-FR-067",
+        "AFO-FR-070",
+        "AFO-FR-072"
+      ],
+      "tasks": {
+        "AFO-T003": "PASS",
+        "AFO-T004": "PASS",
+        "AFO-T006": "PASS",
+        "AFO-T064": "PASS",
+        "AFO-T066": "BLOCKED",
+        "AFO-T069": "BLOCKED",
+        "AFO-T070": "BLOCKED",
+        "AFO-T074": "PASS"
+      },
+      "title": "reliability operating envelope",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-064",
+      "requirements": [
+        "AFO-FR-002",
+        "AFO-FR-003",
+        "AFO-FR-004",
+        "AFO-FR-072"
+      ],
+      "tasks": {
+        "AFO-T003": "PASS",
+        "AFO-T004": "PASS",
+        "AFO-T006": "PASS",
+        "AFO-T069": "BLOCKED",
+        "AFO-T070": "BLOCKED",
+        "AFO-T071": "PASS"
+      },
+      "title": "constitution invariants",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-065",
+      "requirements": [
+        "AFO-FR-001",
+        "AFO-FR-002",
+        "AFO-FR-005",
+        "AFO-FR-071"
+      ],
+      "tasks": {
+        "AFO-T001": "PASS",
+        "AFO-T002": "PASS",
+        "AFO-T003": "PASS",
+        "AFO-T004": "PASS",
+        "AFO-T070": "BLOCKED",
+        "AFO-T071": "PASS",
+        "AFO-T072": "NOT_RUN",
+        "AFO-T075": "NOT_RUN"
+      },
+      "title": "legacy regressions",
+      "verdict": "BLOCKED"
+    },
+    {
+      "at": "AT-066",
+      "requirements": [
+        "AFO-FR-001",
+        "AFO-FR-006",
+        "AFO-FR-071"
+      ],
+      "tasks": {
+        "AFO-T001": "PASS",
+        "AFO-T002": "PASS",
+        "AFO-T004": "PASS",
+        "AFO-T018": "PASS",
+        "AFO-T070": "BLOCKED",
+        "AFO-T072": "NOT_RUN",
+        "AFO-T075": "NOT_RUN"
+      },
+      "title": "implementation traceability",
+      "verdict": "BLOCKED"
+    }
+  ],
+  "counts": {
+    "BLOCKED": 13,
+    "NOT_RUN": 0,
+    "PARTIAL": 9,
+    "PASS": 44
+  },
+  "fr_counts": {
+    "COVERED": 57,
+    "OPEN": 2,
+    "PARTIAL": 13
+  },
+  "generated_utc": "2026-10-19T10:46:07.733380Z",
+  "schema": "forge-c/afo-acceptance/0.1",
+  "statement": "Derived from executed evidence and the blocker register only. BLOCKED/PARTIAL/NOT_RUN are reported as such; no compliance, safety approval or production-readiness claim.",
+  "task_counts": {
+    "BLOCKED": 6,
+    "NOT_RUN": 2,
+    "PARTIAL": 3,
+    "PASS": 64
+  }
+}

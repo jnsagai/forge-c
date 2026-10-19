@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "\nimport re; t=open('docs/afo/OPERATIONS-AFO.md').read()\nneed={'install':'## 4. Install the units','boot mount':'## 2. Make the data volume available at boot','credentials':'## 3. Credentials','modes':'## 5. Modes','backup/restore/rollback':'## 10. Backup, restore and rollback','security':'## 11. Security','incidents':'## 12. Incidents','maintenance':'## 13. Maintenance window','operator controls':'## 9. Dashboard Autonomy view and operator controls','dead letters':'## 8. Dead letters and alerts','readiness/soak':'## 14. Readiness and soak'}\nmiss=[k for k,v in need.items() if v not in t]; assert not miss, miss\nfor cmd in ('afo.cli backup','Store.restore','afo.cli operator-token','afo.soak start','afo.cli dead-letter-ack','afo.cli external-change','afo.services install','afo.host init'): assert cmd in t, cmd\nassert 'pkill' in t and 'Never use' in t\nprint('runbook sections', len(need), 'and commands present for the actual host (sudo steps are operator-only)')"
+  ],
+  "duration_s": 0.019,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c75414ac2ea80c58c38ca8b21de2630f27162b0c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T073/20261019T104531.log",
+  "log_sha256": "f5c2121e034b5f8058d3d92374961ee84a47117e21a17dccf3e708b4c64d9184",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T073",
+  "ts_utc": "2026-10-19T10:45:31.351054Z"
+}

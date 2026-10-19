@@ -1,0 +1,22 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "python -m pytest -q -p no:cacheprovider factory/python/tests/test_afo_m0_audit.py factory/python/tests/test_afo_m0_contracts_status.py factory/python/tests/test_afo_m0_policy_authz.py factory/python/tests/test_afo_m1_services.py factory/python/tests/test_afo_m2_queue.py factory/python/tests/test_afo_m3_reconcile.py factory/python/tests/test_afo_m4_recovery.py factory/python/tests/test_afo_m5_maintainer.py factory/python/tests/test_afo_m6_operations.py factory/python/tests/test_afo_m7_readiness.py factory/python/tests/test_afo_m8_acceptance.py && python -m forge_factory.afo.acceptance"
+  ],
+  "duration_s": 25.974,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c75414ac2ea80c58c38ca8b21de2630f27162b0c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T072/20261019T104541.log",
+  "log_sha256": "37db1f35769ab15b19e7b2d0787aca6547a5716cc6d44d7163c1d547f461b0cf",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T072",
+  "ts_utc": "2026-10-19T10:45:41.764561Z"
+}
