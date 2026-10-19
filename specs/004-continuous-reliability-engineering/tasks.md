@@ -82,12 +82,12 @@
 - [X] **CRE-T043 [P0]** Harden every candidate worktree (OS read-only protected paths) before the promotion runner executes candidate code per CRE-FR-023 / plan §9 (partial) — HIGH ✅ Evidence: `evidence/v0.4/runs/CRE-T043/latest.json`
 - [X] **CRE-T044 [P1]** Apply CRE retry admission and deterministic jittered backoff on the 002 repair-dispatch path in PILOT/ACTIVE per CRE-FR-005 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T044/latest.json`
 - [X] **CRE-T045 [P1]** Journal production side effects (archive write, infra CAS switch, work-order launch) with replay classes per CRE-FR-007 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T045/latest.json`
-- [ ] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM
+- [X] **CRE-T046 [P1]** Add a GPIO/UART register-level driver fixture with an interrupt boundary and an SWE.1–SWE.6 + packager benchmark case per CRE-FR-013 / plan §7 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T046/latest.json`
 - [X] **CRE-T047 [P1]** Add period/model/toolchain/candidate/fault-category filters to the Reliability view per CRE-FR-032 / US-C07 (partial) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T047/latest.json`
 - [X] **CRE-T048 [P1]** Run an owner-authorized live Fabro crash -> recovery drill on the real server per CRE-FR-034 / AT-036 (partial; BLOCKED on owner authorization of a reversible restart action) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T048/latest.json`
 - [X] **CRE-T049 [P1]** Separate OS users/credentials for production runs, repair worktrees and the verification runner per plan §12 / CRE-FR-023 (missing; BLOCKED on privileged host setup) — MEDIUM ✅ Evidence: `evidence/v0.4/runs/CRE-T049/latest.json`
 - [X] **CRE-T050 [P2]** Provide a command that freezes a per-class SPC calibration window per CRE-FR-020 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T050/latest.json`
 - [X] **CRE-T051 [P2]** Record model sampling parameters (temperature, seed when supported) per work order per CRE-FR-014 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T051/latest.json`
 - [X] **CRE-T052 [P2]** Emit cre.failure_classified and cre.corrective_action_applied lifecycle events per CRE-FR-031 / plan §4 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T052/latest.json`
-- [ ] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW
+- [X] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T053/latest.json`
 - [X] **CRE-T054 [P2]** Review the 002 supervisor changes made during CRE (held fingerprints for unbroken faults, checkpoint quarantine) against the 002 spec per CRE-FR-002 (unrequested) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T054/latest.json`

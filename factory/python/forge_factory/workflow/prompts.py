@@ -168,7 +168,10 @@ AUTHOR_STEPS = {
         "(enable oscillator then peripheral clock then reset sequence, and a forced timeout).",
         "Call mcp__forge_tests_mcp__run_integration; fix failures.",
         "Call mcp__forge_sim_mcp__run_renode once (the target tests were written and run by the previous step) to get "
-        "the target results for the report.",
+        "the target results for the report. If it reports NO_TESTS (no software/tests/target/test_*.c - e.g. on rework "
+        "after the target-test step wrote none), write software/tests/target/test_rcc_target.c and "
+        "test_rcc_target_timeout.c yourself as described for the target-test step (TCHECK checks on the API return "
+        "values and register bits, scenario never_ready for the timeout file) and run run_renode until it PASSes.",
         "write_file workproducts/SWE.5/integration_verification_report.md with sections: '## Plan' (component and "
         "integration measures), '## Integration sequence' (matches the architecture interfaces), '## Clock/reset "
         "interactions tested', '## Robustness, fault propagation, timing/resource budgets' (timeout paths, measured sizes), "

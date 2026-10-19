@@ -41,6 +41,10 @@ def assess() -> dict:
     metrics = compute(CREStore(), pol)
     r09 = [m for m in metrics["measurements"] if m["metric_id"] == "CRE-R09"]
     min_n = int(pol.get("statistics.min_samples_for_descriptive_charts"))
+    try:
+        slo_n = int(pol.get("statistics.min_samples_for_slo_evidence"))
+    except KeyError:
+        slo_n = min_n
 
     def level(checks: dict[str, tuple[bool, str]]) -> dict:
         return {"status": "DEMONSTRATED" if all(ok for ok, _ in checks.values()) else "NOT_DEMONSTRATED",
@@ -83,11 +87,7 @@ def assess() -> dict:
     return {"schema": "forge-c/cre-readiness/1.0", "assessed_at": utc_now(), "git_head": head,
             "configured_mode": pol.mode, "policy_sha256": pol.sha256, "readiness": readiness,
             "levels": {"OBSERVE_ONLY": observe, "PILOT_ELIGIBLE": pilot, "ACTIVE_ELIGIBLE": active},
-            "reliability_slo_evidence": {
-                "status": "NOT_DEMONSTRATED",
-                "reason": f"no homogeneous cohort reaches {min_n} comparable attempts on a fixed factory revision; "
-                          "workflow yield per cohort (CRE-R09): " + "; ".join(small),
-                "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)"},
+            "reliability_slo_evidence": slo_evidence(slo_n, small),
             "tasks": {"pass": sum(s == "PASS" for s in status.values()), "total": len(status)},
             "p0_requirements_unmet": p0_gaps,
             "supported_claims": [
@@ -112,6 +112,41 @@ def _drill_passed() -> bool:
         except ValueError:
             continue
     return False
+
+
+def slo_evidence(min_n: int, small: list[str]) -> dict:
+    """Reliability-SLO evidence: packaged work-order attempts grouped by cohort AND recorded factory revision (a
+    homogeneous sample). min_n = statistics.min_samples_for_slo_evidence (else the descriptive-chart minimum).
+    A group with >= min_n attempts is a measured BASELINE (yield with a Wilson interval); it is
+    not an SLO attainment claim - spec section 6: targets are owner-approved after observing comparable cohorts.
+    Attempts excluded by a recorded owner decision (evidence/cre/slo/exclusions.json) are not counted."""
+    from collections import defaultdict
+
+    from .metrics import attempts as _attempts
+    from .metrics import wilson
+
+    excluded = (_read("evidence/cre/slo/exclusions.json") or {}).get("excluded", {})
+    groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for a in _attempts():
+        if a["attempt_id"] in excluded or not a.get("finished") or a.get("revision_basis") != "recorded_at_launch":
+            continue
+        groups[(a["cohort_key"], a["revision"])].append(a)
+    measured = []
+    for (ck, rev), xs in sorted(groups.items()):
+        if len(xs) >= min_n:
+            k, n = sum(bool(x["completed"]) for x in xs), len(xs)
+            lo, hi = wilson(k, n)
+            measured.append({"cohort_key": ck, "factory_revision": rev[:12], "n": n, "completed": k,
+                             "workflow_yield": round(k / n, 3), "wilson95": [round(lo, 3), round(hi, 3)],
+                             "attempts": [x["attempt_id"] for x in xs]})
+    largest = max(((len(v), k) for k, v in groups.items()), default=(0, ("-", "-")))
+    return {"status": "BASELINE_MEASURED" if measured else "NOT_DEMONSTRATED",
+            "min_samples": min_n, "measured_cohorts": measured,
+            "attainment": "NOT_EVALUATED: no owner-approved target rate (spec section 6)",
+            "reason": ("" if measured else f"no cohort reaches {min_n} packaged attempts on one recorded factory "
+                       f"revision (largest: {largest[0]}); ") + "workflow yield per cohort (CRE-R09): " + "; ".join(small),
+            "excluded_attempts": excluded,
+            "growth": "no statistically supported improvement (evidence/cre/metrics/growth-report-latest.json)"}
 
 
 def _count(xs: list) -> dict:

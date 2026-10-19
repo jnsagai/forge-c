@@ -44,5 +44,5 @@ def test_every_checked_task_has_passing_evidence_and_open_findings_stay_visible(
         assert rec["status"] == "PASS" and rec["exit_code"] == 0, m.group(1)
     assert "## Phase 8: Convergence" in text
     open_tasks = re.findall(r"^- \[ \] \*\*(CRE-T\d{3})", text, re.M)
-    assert {"CRE-T046"} <= set(open_tasks)  # unfinished work stays visible, not hidden
+    assert open_tasks == []  # all 54 closed with evidence (CRE-T053 last, 2026-10-19); a reopened task shows here
     assert all(r["status"] == "COVERED" for r in trace.rows() if r["priority"] == "P0")
