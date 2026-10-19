@@ -1,0 +1,100 @@
+{
+  "CAPA-049": {
+    "history": [
+      {
+        "at": "2026-10-19T12:11:16.129320Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[\"CAPA-049\"]",
+        "from_state": null,
+        "reason": "LL r165 failed as a cancelled pipeline: the ACP proxy answered Codex's native 'Edit files' permission request with outcome 'cancelled', which ends the prompt turn",
+        "seq": 404,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T12:11:16.210739Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 405,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T12:11:16.357407Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-053 assigned",
+        "seq": 406,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T12:13:10.484979Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[\"reproducer-run:rr-36d9fa4fe6b586555611\", \"reproducer-run:rr-ba6e519bc23e42044f2d\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 407,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T12:13:10.519481Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[\"git:d3a06d191c34..ca4959ec721f\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix ca4959ec721f (patch 5915 bytes)",
+        "seq": 408,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T12:13:10.625551Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[\"reproducer-run:rr-aed770706268aee99be2\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-053 absent at ca4959ec721f",
+        "seq": 409,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T12:13:10.663391Z",
+        "capa_id": "CAPA-049",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 410,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "d3a06d191c349222d0b08915aec1938a9ff3ea11",
+      "ca4959ec721f98b1cd99522afd841fa641070662",
+      "pd-f589a9b77e1f2eac80c4"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<ca4959ec721f"
+      ],
+      "candidate_patch_sha256": "d06588edb52dc814788440dbffcd310fb5041fb808355342e1aec16e29fc59a5",
+      "capa_id": "CAPA-049",
+      "created_at": "2026-10-19T12:11:16.129320Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-049"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-053",
+      "reproducer_id": "RPR-053",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-36d9fa4fe6b586555611",
+        "reproducer-run:rr-ba6e519bc23e42044f2d"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "denying a permission with 'cancelled' cancels the ACP turn; the reject option must be selected",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T12:13:10.663391Z"
+    }
+  }
+}

@@ -574,3 +574,14 @@ reproducers:
     operations: [T-015/optimization, sim.build_image]
     root_cause: "sim.build_image collected every .c of software/hal and software/src; a workspace rebuilt from a sealed package holds the HAL unit in both (packaged flat view), so the target image linked each HAL function twice. The link-error summary dropped 'multiple definition' lines and optimization.collect reported MEASURED although no case had a count."
     remedy: "One compile unit per file name (software/hal first); 'multiple definition' kept in the error summary; NOT_MEASURED:<reason> when no case produced a count."
+  - id: RPR-053
+    script: rpr053_permission_denial_cancels_run.py
+    sha256: bcf3bcd576d581f75f349dd91841a60a7954e89172e22af9323647e01fec4cb5
+    symptom_signature: "denied permission answered as a cancelled turn"
+    observed_in: r165
+    baseline_revision: d3a06d191c349222d0b08915aec1938a9ff3ea11
+    fix_revision: ca4959ec721f98b1cd99522afd841fa641070662
+    error_codes: ["run_not_completed:INCOMPLETE", "agent.acp.cancelled"]
+    operations: [SWE.3/author]
+    root_cause: "The forge ACP proxy denied every session/request_permission with outcome 'cancelled', which ACP defines as 'the prompt turn was cancelled'; when the Codex SWE.3 author asked to edit files natively (LL r165), Codex ended the turn and Fabro failed the whole run as 'Pipeline cancelled'."
+    remedy: "Deny by selecting the request's reject option (reject_once, else reject_always); 'cancelled' only when the request offers no reject option."
