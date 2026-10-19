@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m3_reconcile.py::test_recovery_is_a_new_budgeted_attempt_resuming_from_the_previous_one"
+  ],
+  "duration_s": 0.796,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "397a8c24cc19f28964a7a7afe31e0c00886b04be",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T031/20261019T084033.log",
+  "log_sha256": "a0468d1316915329906c2051b065b0439af2db2cc05b7e36f577759ce943bda3",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T031",
+  "ts_utc": "2026-10-19T08:40:33.410940Z"
+}

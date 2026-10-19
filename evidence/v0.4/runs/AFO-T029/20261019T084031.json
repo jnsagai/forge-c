@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m3_reconcile.py::test_run_absent_on_reachable_server_blocks_and_missing_package_times_out",
+    "factory/python/tests/test_afo_m3_reconcile.py::test_run_terminal_goes_through_validation_and_only_a_verified_archive_is_ready"
+  ],
+  "duration_s": 1.592,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "397a8c24cc19f28964a7a7afe31e0c00886b04be",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T029/20261019T084031.log",
+  "log_sha256": "9a115371047ef69b026dd4214503347ff19adbc58755f1aebee61b2e638b3b35",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T029",
+  "ts_utc": "2026-10-19T08:40:31.092838Z"
+}
