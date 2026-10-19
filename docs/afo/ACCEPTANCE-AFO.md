@@ -1,8 +1,8 @@
 # Feature 005 (AFO) acceptance report - generated
 
-Generated 2026-10-19T10:46:07.733380Z. Derived from executed evidence and the blocker register only. BLOCKED/PARTIAL/NOT_RUN are reported as such; no compliance, safety approval or production-readiness claim.
+Generated 2026-10-19T10:46:31.760883Z. Derived from executed evidence and the blocker register only. BLOCKED/PARTIAL/NOT_RUN are reported as such; no compliance, safety approval or production-readiness claim.
 
-Acceptance tests: PASS 44, PARTIAL 9, BLOCKED 13, NOT_RUN 0. Tasks: {'BLOCKED': 6, 'NOT_RUN': 2, 'PARTIAL': 3, 'PASS': 64}. FRs: {'COVERED': 57, 'OPEN': 2, 'PARTIAL': 13}.
+Acceptance tests: PASS 44, PARTIAL 9, BLOCKED 13, NOT_RUN 0. Tasks: {'BLOCKED': 6, 'PARTIAL': 3, 'PASS': 66}. FRs: {'COVERED': 59, 'OPEN': 1, 'PARTIAL': 12}.
 
 | AT | Title | Verdict | Tasks | FRs |
 |---|---|---|---|---|
@@ -70,5 +70,5 @@ Acceptance tests: PASS 44, PARTIAL 9, BLOCKED 13, NOT_RUN 0. Tasks: {'BLOCKED': 
 | AT-062 | 168h actual soak | BLOCKED | AFO-T064=PASS, AFO-T067=PASS, AFO-T068=BLOCKED, AFO-T069=BLOCKED, AFO-T074=PASS | AFO-FR-069, AFO-FR-070 |
 | AT-063 | reliability operating envelope | BLOCKED | AFO-T003=PASS, AFO-T004=PASS, AFO-T006=PASS, AFO-T064=PASS, AFO-T066=BLOCKED, AFO-T069=BLOCKED, AFO-T070=BLOCKED, AFO-T074=PASS | AFO-FR-003, AFO-FR-004, AFO-FR-067, AFO-FR-070, AFO-FR-072 |
 | AT-064 | constitution invariants | BLOCKED | AFO-T003=PASS, AFO-T004=PASS, AFO-T006=PASS, AFO-T069=BLOCKED, AFO-T070=BLOCKED, AFO-T071=PASS | AFO-FR-002, AFO-FR-003, AFO-FR-004, AFO-FR-072 |
-| AT-065 | legacy regressions | BLOCKED | AFO-T001=PASS, AFO-T002=PASS, AFO-T003=PASS, AFO-T004=PASS, AFO-T070=BLOCKED, AFO-T071=PASS, AFO-T072=NOT_RUN, AFO-T075=NOT_RUN | AFO-FR-001, AFO-FR-002, AFO-FR-005, AFO-FR-071 |
-| AT-066 | implementation traceability | BLOCKED | AFO-T001=PASS, AFO-T002=PASS, AFO-T004=PASS, AFO-T018=PASS, AFO-T070=BLOCKED, AFO-T072=NOT_RUN, AFO-T075=NOT_RUN | AFO-FR-001, AFO-FR-006, AFO-FR-071 |
+| AT-065 | legacy regressions | BLOCKED | AFO-T001=PASS, AFO-T002=PASS, AFO-T003=PASS, AFO-T004=PASS, AFO-T070=BLOCKED, AFO-T071=PASS, AFO-T072=PASS, AFO-T075=PASS | AFO-FR-001, AFO-FR-002, AFO-FR-005, AFO-FR-071 |
+| AT-066 | implementation traceability | BLOCKED | AFO-T001=PASS, AFO-T002=PASS, AFO-T004=PASS, AFO-T018=PASS, AFO-T070=BLOCKED, AFO-T072=PASS, AFO-T075=PASS | AFO-FR-001, AFO-FR-006, AFO-FR-071 |

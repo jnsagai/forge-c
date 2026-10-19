@@ -1,0 +1,22 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "set -e; L=$(git rev-parse HEAD); R=$(git ls-remote origin refs/heads/feat/005-afo-implementation | cut -f1); test \"$L\" = \"$R\"; grep -q \"no new task appended\" evidence/afo/converge-report.md; git diff --quiet origin/main -- specs/005-autonomous-factory-operations/tasks.md; python specs/005-autonomous-factory-operations/validate_spec.py >/dev/null; python -c \"from forge_factory.afo import readiness; r=readiness.assess(); print(\\\"pushed\\\", \\\"$(git rev-parse --short HEAD)\\\", \\\"readiness\\\", r[\\\"highest_demonstrated\\\"], \\\"mode\\\", r[\\\"configured_mode\\\"])\""
+  ],
+  "duration_s": 2.288,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4df6f7b9428b24c4d3039a2126061869dac351d4",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T075/20261019T104629.log",
+  "log_sha256": "8699271bcf76c2d99f6f531b6123a80ccbe25fbd8e97c82e547bd58a6274d45a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T075",
+  "ts_utc": "2026-10-19T10:46:29.363240Z"
+}

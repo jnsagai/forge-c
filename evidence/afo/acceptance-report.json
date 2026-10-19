@@ -948,8 +948,8 @@
         "AFO-T004": "PASS",
         "AFO-T070": "BLOCKED",
         "AFO-T071": "PASS",
-        "AFO-T072": "NOT_RUN",
-        "AFO-T075": "NOT_RUN"
+        "AFO-T072": "PASS",
+        "AFO-T075": "PASS"
       },
       "title": "legacy regressions",
       "verdict": "BLOCKED"
@@ -967,8 +967,8 @@
         "AFO-T004": "PASS",
         "AFO-T018": "PASS",
         "AFO-T070": "BLOCKED",
-        "AFO-T072": "NOT_RUN",
-        "AFO-T075": "NOT_RUN"
+        "AFO-T072": "PASS",
+        "AFO-T075": "PASS"
       },
       "title": "implementation traceability",
       "verdict": "BLOCKED"
@@ -981,17 +981,16 @@
     "PASS": 44
   },
   "fr_counts": {
-    "COVERED": 57,
-    "OPEN": 2,
-    "PARTIAL": 13
+    "COVERED": 59,
+    "OPEN": 1,
+    "PARTIAL": 12
   },
-  "generated_utc": "2026-10-19T10:46:07.733380Z",
+  "generated_utc": "2026-10-19T10:46:31.760883Z",
   "schema": "forge-c/afo-acceptance/0.1",
   "statement": "Derived from executed evidence and the blocker register only. BLOCKED/PARTIAL/NOT_RUN are reported as such; no compliance, safety approval or production-readiness claim.",
   "task_counts": {
     "BLOCKED": 6,
-    "NOT_RUN": 2,
     "PARTIAL": 3,
-    "PASS": 64
+    "PASS": 66
   }
 }

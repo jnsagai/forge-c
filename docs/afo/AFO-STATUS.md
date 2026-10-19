@@ -1,9 +1,9 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T10:46:21.598384Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-19T10:46:31.708084Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
 
-Tasks: BLOCKED 6, NOT_RUN 1, PARTIAL 3, PASS 65.
-FRs: COVERED 58, OPEN 1, PARTIAL 13.
+Tasks: BLOCKED 6, PARTIAL 3, PASS 66.
+FRs: COVERED 59, OPEN 1, PARTIAL 12.
 
 | Task | M | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|---|
@@ -81,11 +81,11 @@ FRs: COVERED 58, OPEN 1, PARTIAL 13.
 | AFO-T072 | M8 | P0 | PASS | AT-065, AT-066 | evidence/v0.4/runs/AFO-T072/latest.json |
 | AFO-T073 | M8 | P0 | PASS | AT-037, AT-056 | evidence/v0.4/runs/AFO-T073/latest.json |
 | AFO-T074 | M8 | P0 | PASS | AT-059, AT-062, AT-063 | evidence/v0.4/runs/AFO-T074/latest.json |
-| AFO-T075 | M8 | P0 | NOT_RUN | AT-065, AT-066 |  |
+| AFO-T075 | M8 | P0 | PASS | AT-065, AT-066 | evidence/v0.4/runs/AFO-T075/latest.json |
 
 | FR | P | Coverage | Tasks |
 |---|---|---|---|
-| AFO-FR-001 | P0 | PARTIAL | AFO-T001=PASS, AFO-T002=PASS, AFO-T075=NOT_RUN |
+| AFO-FR-001 | P0 | COVERED | AFO-T001=PASS, AFO-T002=PASS, AFO-T075=PASS |
 | AFO-FR-002 | P0 | COVERED | AFO-T003=PASS, AFO-T004=PASS, AFO-T071=PASS |
 | AFO-FR-003 | P0 | COVERED | AFO-T004=PASS, AFO-T006=PASS |
 | AFO-FR-004 | P0 | COVERED | AFO-T003=PASS, AFO-T004=PASS |
@@ -155,5 +155,5 @@ FRs: COVERED 58, OPEN 1, PARTIAL 13.
 | AFO-FR-068 | P0 | COVERED | AFO-T065=PASS |
 | AFO-FR-069 | P1 | PARTIAL | AFO-T067=PASS, AFO-T068=BLOCKED |
 | AFO-FR-070 | P0 | PARTIAL | AFO-T064=PASS, AFO-T069=BLOCKED, AFO-T074=PASS |
-| AFO-FR-071 | P0 | PARTIAL | AFO-T070=BLOCKED, AFO-T072=PASS, AFO-T075=NOT_RUN |
+| AFO-FR-071 | P0 | PARTIAL | AFO-T070=BLOCKED, AFO-T072=PASS, AFO-T075=PASS |
 | AFO-FR-072 | P0 | OPEN | AFO-T069=BLOCKED, AFO-T070=BLOCKED |

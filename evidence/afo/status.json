@@ -1,10 +1,10 @@
 {
   "fr_counts": {
-    "COVERED": 58,
+    "COVERED": 59,
     "OPEN": 1,
-    "PARTIAL": 13
+    "PARTIAL": 12
   },
-  "generated_at": "2026-10-19T10:46:21.598384Z",
+  "generated_at": "2026-10-19T10:46:31.708084Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -12,13 +12,13 @@
         "AT-065",
         "AT-066"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-001",
       "priority": "P0",
       "tasks": {
         "AFO-T001": "PASS",
         "AFO-T002": "PASS",
-        "AFO-T075": "NOT_RUN"
+        "AFO-T075": "PASS"
       }
     },
     {
@@ -931,7 +931,7 @@
       "tasks": {
         "AFO-T070": "BLOCKED",
         "AFO-T072": "PASS",
-        "AFO-T075": "NOT_RUN"
+        "AFO-T075": "PASS"
       }
     },
     {
@@ -952,9 +952,8 @@
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
     "BLOCKED": 6,
-    "NOT_RUN": 1,
     "PARTIAL": 3,
-    "PASS": 65
+    "PASS": 66
   },
   "tasks": {
     "AFO-T001": {
@@ -1775,13 +1774,14 @@
       "task_id": "AFO-T074"
     },
     "AFO-T075": {
+      "evidence": "evidence/v0.4/runs/AFO-T075/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M8",
       "planned_requirement_refs": "AFO-FR-001;AFO-FR-071",
       "planned_test_refs": "AT-065;AT-066",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T075"
     }
   }
