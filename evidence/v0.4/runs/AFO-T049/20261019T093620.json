@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_broker_guard_refuses_merge_force_main_and_non_draft"
+  ],
+  "duration_s": 1.152,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "80932a2fdb7c90d38bc81a247419f9740c6e8a74",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T049/20261019T093620.log",
+  "log_sha256": "342b8510034af21f0c76391a4d571cbced1004aaa895e147689305d9a2983e1a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T049",
+  "ts_utc": "2026-10-19T09:36:20.737475Z"
+}

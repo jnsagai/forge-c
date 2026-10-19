@@ -1,0 +1,24 @@
+# Forge-C read-only dashboard (:8765, loopback). AFO-T008.
+[Unit]
+Description=Forge-C dashboard (:8765, read-only)
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=exec
+WorkingDirectory=@REPO@
+ExecStart=@VENV@/bin/python -m forge_factory.dashboard.app --port 8765
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target

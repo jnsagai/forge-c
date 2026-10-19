@@ -1,0 +1,25 @@
+# Forge-C local Fabro server (:32290). Rendered by scripts/afo_services.sh. AFO-T007.
+[Unit]
+Description=Forge-C Fabro 0.362 server (:32290)
+After=forge-llm-gateway.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=exec
+WorkingDirectory=@DATA@
+ExecStart=@FABRO@ server start --foreground --no-web --no-upgrade-check --config @DATA@/fabro/settings.toml --storage-dir @DATA@/fabro/storage
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target

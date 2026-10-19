@@ -1,0 +1,67 @@
+{
+  "host": {
+    "data_root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c",
+    "data_root_mount": "/dev/loop10 ext4   11c42dee-73a3-4c2b-ab42-a0440011d9e0",
+    "node": "master",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "systemd_user_manager": "degraded",
+    "user_linger": "Linger=yes"
+  },
+  "note": "observed facts only; MISSING means not found on this host, not fixed by this record",
+  "python": {
+    "executable": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "packages": {
+      "PyYAML": {
+        "license": "MIT",
+        "version": "6.0.3"
+      },
+      "fastapi": {
+        "license": "MIT",
+        "version": "0.143.1"
+      },
+      "jsonschema": {
+        "license": "MIT",
+        "version": "4.26.0"
+      },
+      "pydantic": {
+        "license": "MIT",
+        "version": "2.13.4"
+      },
+      "pytest": {
+        "license": "MIT",
+        "version": "9.0.3"
+      },
+      "ruff": {
+        "license": "MIT",
+        "version": "0.17.0"
+      },
+      "uvicorn": {
+        "license": "BSD-3-Clause",
+        "version": "0.54.0"
+      }
+    },
+    "version": "3.13.13"
+  },
+  "recorded_at": "2026-10-19T08:12:31.146165Z",
+  "schema": "forge-c/afo-baseline-inventory/0.1",
+  "source": {
+    "branch": "feat/005-afo-implementation",
+    "branch_head": "a6917716ac150b87e0f715624f86294d4b61df7a",
+    "dirty": true,
+    "feature_004_head": "092f5ab3b8444e9cee40094dd4d0179853691784"
+  },
+  "sqlite": {
+    "library": "3.37.2"
+  },
+  "tools": {
+    "arm-none-eabi-gcc": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
+    "clang": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)",
+    "fabro": "fabro 0.362.0-nightly.0 (a192bce 2026-09-20)",
+    "git": "git version 2.34.1",
+    "loginctl": "systemd 249 (249.11-0ubuntu3.23)",
+    "podman": "podman version 3.4.4",
+    "renode": "renode_1.17.0-portable",
+    "ssh-keygen": "OpenSSH_8.9p1 Ubuntu-3ubuntu0.18, OpenSSL 3.0.2 15 Mar 2022",
+    "systemctl": "systemd 249 (249.11-0ubuntu3.23)"
+  }
+}

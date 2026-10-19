@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m3_reconcile.py::test_clean_launch_persists_intent_then_receipt",
+    "factory/python/tests/test_afo_m3_reconcile.py::test_crash_after_fabro_accepted_is_adopted_not_relaunched"
+  ],
+  "duration_s": 1.165,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "397a8c24cc19f28964a7a7afe31e0c00886b04be",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T027/20261019T084028.log",
+  "log_sha256": "2d648351d3e67cb578371d4907352e6cc44a7aec0e0e41901ac2fef9894fe3dc",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T027",
+  "ts_utc": "2026-10-19T08:40:28.313075Z"
+}

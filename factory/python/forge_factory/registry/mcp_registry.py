@@ -91,10 +91,29 @@ def role_tool_additions(overlay: Path = OVERLAY) -> dict[str, list[str]]:
     return (yaml.safe_load(overlay.read_text(encoding="utf-8")) or {}).get("role_tool_additions") or {}
 
 
-def load_registry(path: Path | None = None) -> McpRegistry:
+AFO_OVERLAY = CONFIG_DIR / "mcp-registry.afo.yaml"
+
+
+def apply_afo_overlay(data: dict, overlay: Path = AFO_OVERLAY) -> dict:
+    """Feature 005: add NEW servers only (an existing server id is refused); their ops grant AFO roles only."""
+    if not overlay.is_file():
+        return data
+    ov = yaml.safe_load(overlay.read_text(encoding="utf-8")) or {}
+    have = {s["id"] for s in data["server_catalog"]}
+    for s in ov.get("new_servers") or []:
+        if s["id"] in have:
+            raise ValueError(f"AFO overlay may not redefine server {s['id']}")
+        data["server_catalog"].append(s)
+    return data
+
+
+def load_registry(path: Path | None = None, include_afo: bool = False) -> McpRegistry:
+    """The 002/003 registry view (unchanged by Feature 005); `include_afo` adds the AFO overlay servers."""
     data = yaml.safe_load((path or CONFIG_DIR / "mcp-registry.yaml").read_text(encoding="utf-8"))
     if path is None:
         data = apply_overlay(data)
+        if include_afo:
+            data = apply_afo_overlay(data)
     reg = McpRegistry.model_validate(data)
     if reg.policy != "EVERY_AGENT_TOOL_USES_MCP":
         raise ValueError("registry policy must be EVERY_AGENT_TOOL_USES_MCP")

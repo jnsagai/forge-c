@@ -1,0 +1,29 @@
+# Forge-C AFO Conductor (Feature 005). Type=notify: READY after the first completed cycle, WATCHDOG=1 only after
+# each completed cycle, so a hung cycle is restarted by systemd. Bounded restarts (no restart storm). AFO-T008/T012/T013.
+[Unit]
+Description=Forge-C AFO Conductor (model-free scheduler/reconciler)
+After=forge-fabro-cloud.service forge-supervisor.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=@VENV@/bin/python -m forge_factory.afo.conductor --interval 15
+WorkingDirectory=@REPO@
+WatchdogSec=120
+TimeoutStartSec=120
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target

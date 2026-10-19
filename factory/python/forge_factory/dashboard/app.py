@@ -2,7 +2,8 @@
 
 * Auth: bearer token or `forge_dashboard_session` cookie. Roles: viewer (no security/audit channels) and
   auditor (all channels). Tokens live in $FORGE_STATE_DIR/dashboard/tokens.json (0600).
-* All /api/v1 endpoints are GET/read-only projections; no SQL or file paths are exposed to the browser.
+* All /api/v1 endpoints are GET/read-only projections; no SQL or file paths are exposed to the browser. Single
+  exception (AFO-T058): POST /api/v1/afo/operator/{pause,drain,resume}, bearer operator token only, audited.
 * Display filters (channels, severity, run, agent, phase, search) never alter capture policy (T039).
 * SSE `/api/v1/events/stream` resumes from Last-Event-ID; `/api/v1/events` is the polling fallback (T040).
 """
@@ -340,6 +341,68 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         from ..assurance import dashboard_api as A
         try:
             return A.workorder(wo)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    # ---- feature 005 AFO: Autonomy view (read-only projections; operator controls need the operator token) ----
+    @app.get("/api/v1/afo/summary")
+    def afo_summary(r: str = Depends(role)) -> dict:
+        from ..afo import dashboard_api as F
+        return F.summary()
+
+    @app.get("/api/v1/afo/orders")
+    def afo_orders(r: str = Depends(role), state: str | None = Query(None, pattern=r"^[A-Z_]{4,30}$"),
+                   limit: int = Query(50, ge=1, le=200), cursor: str | None = None) -> dict:
+        from ..afo import dashboard_api as F
+        try:
+            return page(F.orders(state), limit, cursor)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @app.get("/api/v1/afo/orders/{oid}")
+    def afo_order(oid: str, r: str = Depends(role)) -> dict:
+        from ..afo import dashboard_api as F
+        try:
+            return F.order(oid, auditor=r == "auditor")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        except KeyError as exc:
+            raise HTTPException(404, "no such order") from exc
+
+    @app.get("/api/v1/afo/dead-letters")
+    def afo_dlq(r: str = Depends(role), state: str | None = Query(None, pattern=r"^(OPEN|ACKNOWLEDGED|CLOSED)$"),
+                limit: int = Query(50, ge=1, le=200), cursor: str | None = None) -> dict:
+        from ..afo import dashboard_api as F
+        return page(F.dead_letters(state), limit, cursor)
+
+    @app.get("/api/v1/afo/proposals")
+    def afo_proposals(r: str = Depends(role), limit: int = Query(50, ge=1, le=200), cursor: str | None = None) -> dict:
+        from ..afo import dashboard_api as F
+        return page(F.proposals(), limit, cursor)
+
+    @app.get("/api/v1/afo/operations")
+    def afo_operations(r: str = Depends(role)) -> dict:
+        from ..afo import dashboard_api as F
+        return F.operations(auditor=r == "auditor")
+
+    @app.post("/api/v1/afo/operator/{action}")
+    async def afo_operator(action: str, request: Request, authorization: str | None = Header(default=None)) -> dict:
+        """AFO-T058: pause/drain/resume. Bearer operator token ONLY (never the session cookie, so a cross-site form
+        cannot ride a browser session: CSRF-safe by construction), JSON body with a reason; every denial is audited."""
+        from ..afo import dashboard_api as F
+        if action not in ("pause", "drain", "resume"):
+            raise HTTPException(404, "unknown action")
+        if not F.operator_ok(authorization):
+            who = "cookie-session" if request.cookies.get("forge_dashboard_session") else (
+                "bearer" if authorization else "anonymous")
+            F.audit_denied(action, who, "no valid operator bearer token")
+            raise HTTPException(403 if authorization else 401, "operator token required")
+        try:
+            body = await request.json()
+        except ValueError:
+            body = {}
+        try:
+            return {"control": F.control(action, "dashboard-operator", str(body.get("reason", ""))[:300])}
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
 

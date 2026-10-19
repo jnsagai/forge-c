@@ -1,0 +1,1788 @@
+{
+  "fr_counts": {
+    "COVERED": 59,
+    "OPEN": 1,
+    "PARTIAL": 12
+  },
+  "generated_at": "2026-10-19T10:46:31.708084Z",
+  "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
+  "requirements": [
+    {
+      "acceptance": [
+        "AT-065",
+        "AT-066"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-001",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T001": "PASS",
+        "AFO-T002": "PASS",
+        "AFO-T075": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-064",
+        "AT-065"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-002",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T003": "PASS",
+        "AFO-T004": "PASS",
+        "AFO-T071": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-063",
+        "AT-064"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-003",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T004": "PASS",
+        "AFO-T006": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-063",
+        "AT-064"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-004",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T003": "PASS",
+        "AFO-T004": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-065"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-005",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T001": "PASS",
+        "AFO-T071": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-066"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-006",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T004": "PASS",
+        "AFO-T018": "PASS",
+        "AFO-T072": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-030",
+        "AT-045",
+        "AT-046"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-007",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T005": "PASS",
+        "AFO-T038": "PASS",
+        "AFO-T045": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-037",
+        "AT-057"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-008",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T032": "PASS",
+        "AFO-T062": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-001",
+        "AT-004",
+        "AT-005",
+        "AT-007"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-009",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T009": "PASS",
+        "AFO-T014": "PARTIAL"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-003",
+        "AT-009"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-010",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T008": "PASS",
+        "AFO-T012": "PASS",
+        "AFO-T013": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-006"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-011",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T010": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-002",
+        "AT-008"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-012",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T011": "PASS",
+        "AFO-T015": "BLOCKED"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-004",
+        "AT-005"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-013",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T007": "PASS",
+        "AFO-T008": "PASS",
+        "AFO-T021": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-003",
+        "AT-009"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-014",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T012": "PASS",
+        "AFO-T013": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-005",
+        "AT-007"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-015",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T013": "PASS",
+        "AFO-T021": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-045",
+        "AT-046"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-016",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T011": "PASS",
+        "AFO-T045": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-010",
+        "AT-012"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-017",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T017": "PASS",
+        "AFO-T022": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-011",
+        "AT-012",
+        "AT-013"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-018",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T017": "PASS",
+        "AFO-T023": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-011",
+        "AT-013",
+        "AT-015"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-019",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T016": "PASS",
+        "AFO-T018": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-014"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-020",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T020": "PASS",
+        "AFO-T022": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-010",
+        "AT-014"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-021",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T021": "PASS",
+        "AFO-T022": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-011",
+        "AT-013"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-022",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T016": "PASS",
+        "AFO-T019": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-013",
+        "AT-021"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-023",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T019": "PASS",
+        "AFO-T024": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-014",
+        "AT-015"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-024",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T020": "PASS",
+        "AFO-T021": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-016"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-025",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T020": "PASS",
+        "AFO-T024": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-014",
+        "AT-053",
+        "AT-054"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-026",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T023": "PASS",
+        "AFO-T058": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-017",
+        "AT-018",
+        "AT-019"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-027",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-018",
+        "AT-019"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-028",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T026": "PASS",
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-018",
+        "AT-020"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-029",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T028": "PASS",
+        "AFO-T029": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-019",
+        "AT-022"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-030",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T029": "PASS",
+        "AFO-T034": "BLOCKED"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-023"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-031",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T030": "PASS",
+        "AFO-T031": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-022",
+        "AT-023"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-032",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T030": "PASS",
+        "AFO-T031": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-017",
+        "AT-025"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-033",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T027": "PASS",
+        "AFO-T028": "PASS",
+        "AFO-T033": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-024",
+        "AT-037",
+        "AT-057"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-034",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T032": "PASS",
+        "AFO-T033": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-022",
+        "AT-024"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-035",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T031": "PASS",
+        "AFO-T033": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-021",
+        "AT-041"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-036",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T025": "PASS",
+        "AFO-T034": "BLOCKED"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-026",
+        "AT-027"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-037",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T035": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-026",
+        "AT-035",
+        "AT-043"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-038",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T036": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-028",
+        "AT-033"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-039",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T036": "PASS",
+        "AFO-T042": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-029"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-040",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T037": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-030"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-041",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T038": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-031",
+        "AT-032",
+        "AT-033"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-042",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T039": "PASS",
+        "AFO-T040": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-031",
+        "AT-032"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-043",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T040": "PASS",
+        "AFO-T043": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-028",
+        "AT-033"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-044",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T036": "PASS",
+        "AFO-T042": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-034"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-045",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T041": "PASS",
+        "AFO-T042": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-035",
+        "AT-036"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-046",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T035": "PASS",
+        "AFO-T039": "PASS",
+        "AFO-T044": "PARTIAL"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-023",
+        "AT-031",
+        "AT-032"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-047",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T040": "PASS",
+        "AFO-T043": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-036"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-048",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T038": "PASS",
+        "AFO-T039": "PASS",
+        "AFO-T044": "PARTIAL"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-043"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-049",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-045",
+        "AT-046"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-050",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-044"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-051",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T047": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-047",
+        "AT-048"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-052",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T048": "PASS",
+        "AFO-T051": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-045",
+        "AT-047",
+        "AT-049"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-053",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T048": "PASS",
+        "AFO-T050": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-049"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-054",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T049": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-048",
+        "AT-051"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-055",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T050": "PASS",
+        "AFO-T052": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-039",
+        "AT-050"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-056",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-050"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-057",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-037",
+        "AT-038",
+        "AT-039"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-058",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T054": "PASS",
+        "AFO-T060": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-037",
+        "AT-040"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-059",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T054": "PASS",
+        "AFO-T055": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-038",
+        "AT-042"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-060",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T055": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-052",
+        "AT-055"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-061",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T056": "PASS",
+        "AFO-T057": "PARTIAL"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-053",
+        "AT-054"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-062",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T056": "PASS",
+        "AFO-T058": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-042",
+        "AT-055"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-063",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T057": "PARTIAL",
+        "AFO-T061": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-037",
+        "AT-056"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-064",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T059": "PASS",
+        "AFO-T073": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-057",
+        "AT-058"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-065",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-058"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-066",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-059",
+        "AT-063"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-067",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T064": "PASS",
+        "AFO-T066": "BLOCKED"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-060",
+        "AT-061"
+      ],
+      "coverage": "COVERED",
+      "id": "AFO-FR-068",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T065": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-062"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-069",
+      "priority": "P1",
+      "tasks": {
+        "AFO-T067": "PASS",
+        "AFO-T068": "BLOCKED"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-059",
+        "AT-062",
+        "AT-063"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-070",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T064": "PASS",
+        "AFO-T069": "BLOCKED",
+        "AFO-T074": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-065",
+        "AT-066"
+      ],
+      "coverage": "PARTIAL",
+      "id": "AFO-FR-071",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T070": "BLOCKED",
+        "AFO-T072": "PASS",
+        "AFO-T075": "PASS"
+      }
+    },
+    {
+      "acceptance": [
+        "AT-054",
+        "AT-063",
+        "AT-064"
+      ],
+      "coverage": "OPEN",
+      "id": "AFO-FR-072",
+      "priority": "P0",
+      "tasks": {
+        "AFO-T069": "BLOCKED",
+        "AFO-T070": "BLOCKED"
+      }
+    }
+  ],
+  "schema": "forge-c/afo-status/0.1",
+  "task_counts": {
+    "BLOCKED": 6,
+    "PARTIAL": 3,
+    "PASS": 66
+  },
+  "tasks": {
+    "AFO-T001": {
+      "evidence": "evidence/v0.4/runs/AFO-T001/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-001;AFO-FR-005",
+      "planned_test_refs": "AT-065;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T001"
+    },
+    "AFO-T002": {
+      "evidence": "evidence/v0.4/runs/AFO-T002/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-001",
+      "planned_test_refs": "AT-065;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T002"
+    },
+    "AFO-T003": {
+      "evidence": "evidence/v0.4/runs/AFO-T003/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-002;AFO-FR-004",
+      "planned_test_refs": "AT-063;AT-064;AT-065",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T003"
+    },
+    "AFO-T004": {
+      "evidence": "evidence/v0.4/runs/AFO-T004/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-002;AFO-FR-003;AFO-FR-004;AFO-FR-006",
+      "planned_test_refs": "AT-063;AT-064;AT-065;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T004"
+    },
+    "AFO-T005": {
+      "evidence": "evidence/v0.4/runs/AFO-T005/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-007",
+      "planned_test_refs": "AT-030;AT-045;AT-046",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T005"
+    },
+    "AFO-T006": {
+      "evidence": "evidence/v0.4/runs/AFO-T006/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M0",
+      "planned_requirement_refs": "AFO-FR-003",
+      "planned_test_refs": "AT-063;AT-064",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T006"
+    },
+    "AFO-T007": {
+      "evidence": "evidence/v0.4/runs/AFO-T007/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-009;AFO-FR-013",
+      "planned_test_refs": "AT-001;AT-004;AT-005;AT-007",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T007"
+    },
+    "AFO-T008": {
+      "evidence": "evidence/v0.4/runs/AFO-T008/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-009;AFO-FR-010;AFO-FR-013",
+      "planned_test_refs": "AT-001;AT-003;AT-004;AT-005;AT-007;AT-009",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T008"
+    },
+    "AFO-T009": {
+      "evidence": "evidence/v0.4/runs/AFO-T009/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-009",
+      "planned_test_refs": "AT-001;AT-004;AT-005;AT-007",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T009"
+    },
+    "AFO-T010": {
+      "evidence": "evidence/v0.4/runs/AFO-T010/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-011",
+      "planned_test_refs": "AT-006",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T010"
+    },
+    "AFO-T011": {
+      "evidence": "evidence/v0.4/runs/AFO-T011/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-012;AFO-FR-016",
+      "planned_test_refs": "AT-002;AT-008;AT-045;AT-046",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T011"
+    },
+    "AFO-T012": {
+      "evidence": "evidence/v0.4/runs/AFO-T012/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-010;AFO-FR-014",
+      "planned_test_refs": "AT-003;AT-009",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T012"
+    },
+    "AFO-T013": {
+      "evidence": "evidence/v0.4/runs/AFO-T013/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-010;AFO-FR-014;AFO-FR-015",
+      "planned_test_refs": "AT-003;AT-005;AT-007;AT-009",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T013"
+    },
+    "AFO-T014": {
+      "evidence": "evidence/v0.4/runs/AFO-T014/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-009",
+      "planned_test_refs": "AT-001;AT-004;AT-005;AT-007",
+      "priority": "P0",
+      "reason": "Conductor restart drill PASS on real systemd (SIGKILL, watchdog hang, SIGTERM, bounded crash loop); the gateways, Fabro servers, dashboard and Ollama get the same drill when their units are installed in an owner-approved maintenance window (they are live and shared with running batches) Owner decision 2026-10-19: the install-time drills of the other services are deferred with the restart work.",
+      "status": "PARTIAL",
+      "task_id": "AFO-T014"
+    },
+    "AFO-T015": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M1",
+      "planned_requirement_refs": "AFO-FR-012",
+      "planned_test_refs": "AT-002;AT-008",
+      "priority": "P0",
+      "reason": "real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
+      "status": "BLOCKED",
+      "task_id": "AFO-T015"
+    },
+    "AFO-T016": {
+      "evidence": "evidence/v0.4/runs/AFO-T016/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-019;AFO-FR-022",
+      "planned_test_refs": "AT-011;AT-013;AT-015",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T016"
+    },
+    "AFO-T017": {
+      "evidence": "evidence/v0.4/runs/AFO-T017/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-017;AFO-FR-018",
+      "planned_test_refs": "AT-010;AT-011;AT-012;AT-013",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T017"
+    },
+    "AFO-T018": {
+      "evidence": "evidence/v0.4/runs/AFO-T018/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-006;AFO-FR-019",
+      "planned_test_refs": "AT-011;AT-013;AT-015;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T018"
+    },
+    "AFO-T019": {
+      "evidence": "evidence/v0.4/runs/AFO-T019/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-022;AFO-FR-023",
+      "planned_test_refs": "AT-011;AT-013;AT-021",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T019"
+    },
+    "AFO-T020": {
+      "evidence": "evidence/v0.4/runs/AFO-T020/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-020;AFO-FR-024;AFO-FR-025",
+      "planned_test_refs": "AT-014;AT-015;AT-016",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T020"
+    },
+    "AFO-T021": {
+      "evidence": "evidence/v0.4/runs/AFO-T021/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-013;AFO-FR-015;AFO-FR-021;AFO-FR-024",
+      "planned_test_refs": "AT-004;AT-005;AT-007;AT-010;AT-014;AT-015",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T021"
+    },
+    "AFO-T022": {
+      "evidence": "evidence/v0.4/runs/AFO-T022/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-017;AFO-FR-020;AFO-FR-021",
+      "planned_test_refs": "AT-010;AT-012;AT-014",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T022"
+    },
+    "AFO-T023": {
+      "evidence": "evidence/v0.4/runs/AFO-T023/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-018;AFO-FR-026",
+      "planned_test_refs": "AT-011;AT-012;AT-013;AT-014;AT-053;AT-054",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T023"
+    },
+    "AFO-T024": {
+      "evidence": "evidence/v0.4/runs/AFO-T024/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-023;AFO-FR-025",
+      "planned_test_refs": "AT-013;AT-016;AT-021",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T024"
+    },
+    "AFO-T025": {
+      "evidence": "evidence/v0.4/runs/AFO-T025/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M2",
+      "planned_requirement_refs": "AFO-FR-036",
+      "planned_test_refs": "AT-021;AT-041",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T025"
+    },
+    "AFO-T026": {
+      "evidence": "evidence/v0.4/runs/AFO-T026/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-028",
+      "planned_test_refs": "AT-018;AT-019",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T026"
+    },
+    "AFO-T027": {
+      "evidence": "evidence/v0.4/runs/AFO-T027/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-027;AFO-FR-028;AFO-FR-033",
+      "planned_test_refs": "AT-017;AT-018;AT-019;AT-025",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T027"
+    },
+    "AFO-T028": {
+      "evidence": "evidence/v0.4/runs/AFO-T028/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-027;AFO-FR-028;AFO-FR-029;AFO-FR-033",
+      "planned_test_refs": "AT-017;AT-018;AT-019;AT-020;AT-025",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T028"
+    },
+    "AFO-T029": {
+      "evidence": "evidence/v0.4/runs/AFO-T029/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-029;AFO-FR-030",
+      "planned_test_refs": "AT-018;AT-019;AT-020;AT-022",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T029"
+    },
+    "AFO-T030": {
+      "evidence": "evidence/v0.4/runs/AFO-T030/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-031;AFO-FR-032",
+      "planned_test_refs": "AT-022;AT-023",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T030"
+    },
+    "AFO-T031": {
+      "evidence": "evidence/v0.4/runs/AFO-T031/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-031;AFO-FR-032;AFO-FR-035",
+      "planned_test_refs": "AT-022;AT-023;AT-024",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T031"
+    },
+    "AFO-T032": {
+      "evidence": "evidence/v0.4/runs/AFO-T032/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-008;AFO-FR-034",
+      "planned_test_refs": "AT-024;AT-037;AT-057",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T032"
+    },
+    "AFO-T033": {
+      "evidence": "evidence/v0.4/runs/AFO-T033/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-033;AFO-FR-034;AFO-FR-035",
+      "planned_test_refs": "AT-017;AT-022;AT-024;AT-025;AT-037;AT-057",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T033"
+    },
+    "AFO-T034": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M3",
+      "planned_requirement_refs": "AFO-FR-030;AFO-FR-036",
+      "planned_test_refs": "AT-019;AT-021;AT-022;AT-041",
+      "priority": "P0",
+      "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
+      "status": "BLOCKED",
+      "task_id": "AFO-T034"
+    },
+    "AFO-T035": {
+      "evidence": "evidence/v0.4/runs/AFO-T035/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-037;AFO-FR-038;AFO-FR-046",
+      "planned_test_refs": "AT-026;AT-027;AT-035;AT-036;AT-043",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T035"
+    },
+    "AFO-T036": {
+      "evidence": "evidence/v0.4/runs/AFO-T036/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-038;AFO-FR-039;AFO-FR-044",
+      "planned_test_refs": "AT-026;AT-028;AT-033;AT-035;AT-043",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T036"
+    },
+    "AFO-T037": {
+      "evidence": "evidence/v0.4/runs/AFO-T037/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-040",
+      "planned_test_refs": "AT-029",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T037"
+    },
+    "AFO-T038": {
+      "evidence": "evidence/v0.4/runs/AFO-T038/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-007;AFO-FR-041;AFO-FR-048",
+      "planned_test_refs": "AT-030;AT-036;AT-045;AT-046",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T038"
+    },
+    "AFO-T039": {
+      "evidence": "evidence/v0.4/runs/AFO-T039/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-042;AFO-FR-046;AFO-FR-048",
+      "planned_test_refs": "AT-031;AT-032;AT-033;AT-035;AT-036",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T039"
+    },
+    "AFO-T040": {
+      "evidence": "evidence/v0.4/runs/AFO-T040/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-042;AFO-FR-043;AFO-FR-047",
+      "planned_test_refs": "AT-023;AT-031;AT-032;AT-033",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T040"
+    },
+    "AFO-T041": {
+      "evidence": "evidence/v0.4/runs/AFO-T041/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-045",
+      "planned_test_refs": "AT-034",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T041"
+    },
+    "AFO-T042": {
+      "evidence": "evidence/v0.4/runs/AFO-T042/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-039;AFO-FR-044;AFO-FR-045",
+      "planned_test_refs": "AT-028;AT-033;AT-034",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T042"
+    },
+    "AFO-T043": {
+      "evidence": "evidence/v0.4/runs/AFO-T043/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-043;AFO-FR-047",
+      "planned_test_refs": "AT-023;AT-031;AT-032",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T043"
+    },
+    "AFO-T044": {
+      "evidence": "evidence/v0.4/runs/AFO-T044/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M4",
+      "planned_requirement_refs": "AFO-FR-046;AFO-FR-048",
+      "planned_test_refs": "AT-035;AT-036",
+      "priority": "P0",
+      "reason": "real failed gates ingested and routed for SWE.1 (HAL r153), SWE.2 (HAL r142), SWE.3 (HAL r148, LL r153), SWE.4 (HAL r146) and READY/BLOCKED discrimination (HAL r154 reached its package); no real SWE.5/SWE.6 gate failure exists on this host yet and conflicting HSI is covered synthetically (SPECIFICATION_GAP class test); the planner's live Fabro run is disabled by policy",
+      "status": "PARTIAL",
+      "task_id": "AFO-T044"
+    },
+    "AFO-T045": {
+      "evidence": "evidence/v0.4/runs/AFO-T045/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-007;AFO-FR-016;AFO-FR-049;AFO-FR-050",
+      "planned_test_refs": "AT-030;AT-043;AT-045;AT-046",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T045"
+    },
+    "AFO-T046": {
+      "evidence": "evidence/v0.4/runs/AFO-T046/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-049;AFO-FR-050",
+      "planned_test_refs": "AT-043;AT-045;AT-046",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T046"
+    },
+    "AFO-T047": {
+      "evidence": "evidence/v0.4/runs/AFO-T047/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-051",
+      "planned_test_refs": "AT-044",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T047"
+    },
+    "AFO-T048": {
+      "evidence": "evidence/v0.4/runs/AFO-T048/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-052;AFO-FR-053",
+      "planned_test_refs": "AT-045;AT-047;AT-048;AT-049",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T048"
+    },
+    "AFO-T049": {
+      "evidence": "evidence/v0.4/runs/AFO-T049/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-054",
+      "planned_test_refs": "AT-049",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T049"
+    },
+    "AFO-T050": {
+      "evidence": "evidence/v0.4/runs/AFO-T050/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-053;AFO-FR-055",
+      "planned_test_refs": "AT-045;AT-047;AT-048;AT-049;AT-051",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T050"
+    },
+    "AFO-T051": {
+      "evidence": "evidence/v0.4/runs/AFO-T051/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-052;AFO-FR-056;AFO-FR-057",
+      "planned_test_refs": "AT-039;AT-047;AT-048;AT-050",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T051"
+    },
+    "AFO-T052": {
+      "evidence": "evidence/v0.4/runs/AFO-T052/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-055",
+      "planned_test_refs": "AT-048;AT-051",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T052"
+    },
+    "AFO-T053": {
+      "evidence": "evidence/v0.4/runs/AFO-T053/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M5",
+      "planned_requirement_refs": "AFO-FR-056;AFO-FR-057",
+      "planned_test_refs": "AT-039;AT-050",
+      "priority": "P1",
+      "status": "PASS",
+      "task_id": "AFO-T053"
+    },
+    "AFO-T054": {
+      "evidence": "evidence/v0.4/runs/AFO-T054/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-058;AFO-FR-059",
+      "planned_test_refs": "AT-037;AT-038;AT-039;AT-040",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T054"
+    },
+    "AFO-T055": {
+      "evidence": "evidence/v0.4/runs/AFO-T055/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-059;AFO-FR-060",
+      "planned_test_refs": "AT-037;AT-038;AT-040;AT-042",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T055"
+    },
+    "AFO-T056": {
+      "evidence": "evidence/v0.4/runs/AFO-T056/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-061;AFO-FR-062",
+      "planned_test_refs": "AT-052;AT-053;AT-054;AT-055",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T056"
+    },
+    "AFO-T057": {
+      "evidence": "evidence/v0.4/runs/AFO-T057/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-061;AFO-FR-063",
+      "planned_test_refs": "AT-042;AT-052;AT-055",
+      "priority": "P0",
+      "reason": "Autonomy section and order drilldown are wired to the read-only API and tested (routes exist, page calls only them, viewer/auditor projections); the page reuses the existing responsive layout, but it has not been rendered and checked on a phone or desktop browser by a person.",
+      "status": "PARTIAL",
+      "task_id": "AFO-T057"
+    },
+    "AFO-T058": {
+      "evidence": "evidence/v0.4/runs/AFO-T058/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-026;AFO-FR-062",
+      "planned_test_refs": "AT-014;AT-053;AT-054",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T058"
+    },
+    "AFO-T059": {
+      "evidence": "evidence/v0.4/runs/AFO-T059/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-064",
+      "planned_test_refs": "AT-037;AT-056",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T059"
+    },
+    "AFO-T060": {
+      "evidence": "evidence/v0.4/runs/AFO-T060/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-058",
+      "planned_test_refs": "AT-037;AT-038;AT-039",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T060"
+    },
+    "AFO-T061": {
+      "evidence": "evidence/v0.4/runs/AFO-T061/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M6",
+      "planned_requirement_refs": "AFO-FR-063",
+      "planned_test_refs": "AT-042;AT-055",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T061"
+    },
+    "AFO-T062": {
+      "evidence": "evidence/v0.4/runs/AFO-T062/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-008;AFO-FR-065;AFO-FR-066",
+      "planned_test_refs": "AT-037;AT-057;AT-058",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T062"
+    },
+    "AFO-T063": {
+      "evidence": "evidence/v0.4/runs/AFO-T063/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-065;AFO-FR-066",
+      "planned_test_refs": "AT-057;AT-058",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T063"
+    },
+    "AFO-T064": {
+      "evidence": "evidence/v0.4/runs/AFO-T064/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-067;AFO-FR-070",
+      "planned_test_refs": "AT-059;AT-062;AT-063",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T064"
+    },
+    "AFO-T065": {
+      "evidence": "evidence/v0.4/runs/AFO-T065/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-068",
+      "planned_test_refs": "AT-060;AT-061",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T065"
+    },
+    "AFO-T066": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-067",
+      "planned_test_refs": "AT-059;AT-063",
+      "priority": "P0",
+      "reason": "A real-model READY + deliberate BLOCKED pair launched BY THE CONDUCTOR needs AFO in PILOT mode: a signed owner PILOT authorization (config/factory/afo-authorizations/, launch_workorder + submit_workorder for the driver class) bound to the policy sha256; the policy is OBSERVE_ONLY. Models follow the owner decisions (DeepSeek; Sol 6.1 Codex authors since 2026-10-19), not local Qwen. Factory runs outside AFO (e.g. HAL r161, rc-v1, six phases PASS, BLOCKED only on the owner-postponed ASIL B safety documents) are not AFO-launched orders and are not counted.",
+      "status": "BLOCKED",
+      "task_id": "AFO-T066"
+    },
+    "AFO-T067": {
+      "evidence": "evidence/v0.4/runs/AFO-T067/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-069",
+      "planned_test_refs": "AT-062",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T067"
+    },
+    "AFO-T068": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-069",
+      "planned_test_refs": "AT-062",
+      "priority": "P0",
+      "reason": "Actual 24 h / 72 h / 168 h soak needs an operator authorization and the deferred restart/boot work (data volume mounts only at login; owner decision 2026-10-19 defers restart/reboot). Runner ready (AFO-T067): python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>; then: python -m forge_factory.afo.soak run soak-24h-1 (report: ... report soak-24h-1). Elapsed hours are never simulated.",
+      "status": "BLOCKED",
+      "task_id": "AFO-T068"
+    },
+    "AFO-T069": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-070;AFO-FR-072",
+      "planned_test_refs": "AT-054;AT-059;AT-062;AT-063;AT-064",
+      "priority": "P0",
+      "reason": "The recovery drill matrix includes service restarts on the live shared host and a machine reboot; owner decision 2026-10-19 defers restart/reboot drills (see AFO-T014/T015/T034). Crash windows are covered with injected faults (AFO-T033, AFO-T065).",
+      "status": "BLOCKED",
+      "task_id": "AFO-T069"
+    },
+    "AFO-T070": {
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M7",
+      "planned_requirement_refs": "AFO-FR-071;AFO-FR-072",
+      "planned_test_refs": "AT-054;AT-063;AT-064;AT-065;AT-066",
+      "priority": "P0",
+      "reason": "Needs the owner's signed operator readiness review before any ACTIVE mode change; the review input is forge_factory.afo.readiness.assess() (no level above IMPLEMENTED can be demonstrated before the deferred drills and a PILOT authorization). No ACTIVE change is requested.",
+      "status": "BLOCKED",
+      "task_id": "AFO-T070"
+    },
+    "AFO-T071": {
+      "evidence": "evidence/v0.4/runs/AFO-T071/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M8",
+      "planned_requirement_refs": "AFO-FR-002;AFO-FR-005",
+      "planned_test_refs": "AT-064;AT-065",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T071"
+    },
+    "AFO-T072": {
+      "evidence": "evidence/v0.4/runs/AFO-T072/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M8",
+      "planned_requirement_refs": "AFO-FR-006;AFO-FR-071",
+      "planned_test_refs": "AT-065;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T072"
+    },
+    "AFO-T073": {
+      "evidence": "evidence/v0.4/runs/AFO-T073/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M8",
+      "planned_requirement_refs": "AFO-FR-064",
+      "planned_test_refs": "AT-037;AT-056",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T073"
+    },
+    "AFO-T074": {
+      "evidence": "evidence/v0.4/runs/AFO-T074/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M8",
+      "planned_requirement_refs": "AFO-FR-070",
+      "planned_test_refs": "AT-059;AT-062;AT-063",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T074"
+    },
+    "AFO-T075": {
+      "evidence": "evidence/v0.4/runs/AFO-T075/latest.json",
+      "evidence_refs": "",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "milestone": "M8",
+      "planned_requirement_refs": "AFO-FR-001;AFO-FR-071",
+      "planned_test_refs": "AT-065;AT-066",
+      "priority": "P0",
+      "status": "PASS",
+      "task_id": "AFO-T075"
+    }
+  }
+}

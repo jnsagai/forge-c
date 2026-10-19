@@ -1,0 +1,3 @@
+{"result": "FAIL", "outcomes": {"A_protected_path": "QUARANTINED", "B_unsupported_claim": "REJECTED", "C_reintroduced_defect": "REJECTED", "D_safe_proposal": "REJECTED"}, "after": {"head_unchanged": true, "main_unchanged": true}}
+
+--- stderr ---

@@ -45,6 +45,11 @@ input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
 <h3>Promotion decisions (no automatic deployment)</h3><div class="scroll"><table id="rprom"></table></div></section>
 <section class="full"><h2>Assurance (feature 006 EASA — OBSERVE_ONLY; bounded engineering evidence, no ISO/ASPICE/ASIL claim)</h2>
 <div id="asum" class="muted"></div><div class="scroll"><table id="awo"></table></div></section>
+<section class="full"><h2>Autonomy (feature 005 AFO — read-only; READY only from a verified sealed archive)</h2>
+<div id="fsum" class="muted"></div><div class="scroll"><table id="forders"></table></div><div id="fdrill" class="muted"></div>
+<h3>Dead-letter cases (BLOCKED bookkeeping, never a release state)</h3><div class="scroll"><table id="fdlq"></table></div>
+<h3>Factory Maintainer proposals (offline review only; no automatic merge or deployment)</h3><div class="scroll"><table id="fprop"></table></div>
+<h3>Operations</h3><div id="fops" class="muted"></div></section>
 <section class="full"><h2>Work orders and SWE phase board</h2><div class="scroll"><table id="runs"></table></div></section>
 <section><h2>Incidents and repairs</h2><div class="scroll"><table id="inc"></table></div></section>
 <section><h2>Release packages (offline review only)</h2><div class="scroll"><table id="pkg"></table></div></section>
@@ -102,6 +107,15 @@ async function loadAssurance(){try{
  const s=await api("assurance/summary");$("asum").textContent="EASA tasks "+JSON.stringify(s.task_counts)+" · FRs "+JSON.stringify(s.fr_counts)+" @ "+s.git_head+" — "+s.statement;
  const w=await api("assurance/workorders");rows("awo",["work order","assurance gates (observe-only)","matrices"],w.items,x=>[esc(x.work_order),esc(Object.entries(x.assurance_gates).map(([k,v])=>k+":"+v).join(" ")),esc(x.matrices)]);
 }catch(e){$("asum").textContent="assurance view unavailable: "+e.message}}
+async function loadAutonomy(){try{
+ const s=await api("afo/summary");$("fsum").innerHTML=`mode ${b(s.mode)} · orders ${esc(JSON.stringify(s.orders))} · open dead letters ${esc(s.dead_letters_open)} · pending notices ${esc(s.notifications_pending)} · proposals ${esc(JSON.stringify(s.proposals))} · control ${esc(JSON.stringify(s.control))} <span class="muted">${esc(s.statement)}</span>`;
+ const o=await api("afo/orders?limit=30");rows("forders",["order","request","state","priority","deferred","terminal reason"],o.items,x=>[`<a href="#" data-oid="${esc(x.order_id)}">${esc(x.order_id.slice(0,16))}</a>`,esc(x.request_id),b(x.state),esc(x.priority),esc(x.defer_count),esc(x.terminal_reason||"")]);
+ document.querySelectorAll("#forders a[data-oid]").forEach(a=>a.onclick=async e=>{e.preventDefault();const d=await api("afo/orders/"+a.dataset.oid);
+  $("fdrill").innerHTML=d.attempts.map(x=>esc(x.attempt_id+" "+x.state+" run "+(x.fabro_run_id||"-")+" rev "+(x.factory_revision||"").slice(0,12)+" package "+(x.terminal_package_status||"-"))).join("<br>")+"<br>"+d.events.slice(-15).map(x=>esc(x.occurred_utc.slice(11,19)+" "+x.type+" "+(x.attempt_id||""))).join("<br>")});
+ const q=await api("afo/dead-letters?limit=30");rows("fdlq",["case","order","reason","required action","state"],q.items,x=>[esc(x.case_id),esc(x.order_id.slice(0,16)),esc(x.reason_code),esc(x.required_action),b(x.state)]);
+ const p=await api("afo/proposals?limit=30");rows("fprop",["proposal","outcome","CAPA","candidate","CRE decision","branch / PR"],p.items,x=>[esc(x.proposal_id),b(x.outcome),esc(x.capa_id||"-"),esc(x.candidate_commit),esc(x.cre_promotion_id),esc((x.branch_ref||"-")+" "+(x.pr_url||""))]);
+ const ops=await api("afo/operations");$("fops").textContent="leases "+JSON.stringify(ops.leases.map(l=>l.scope+"@"+l.epoch))+" · outbox "+JSON.stringify(ops.outbox)+(ops.operator_actions_visible?" · last operator actions "+ops.operator_actions.slice(0,5).map(x=>x.utc.slice(0,16)+" "+x.action+" by "+x.actor).join("; "):" · operator actions: auditor only")+" · controls: CLI or POST with the operator token";
+}catch(e){$("fsum").textContent="autonomy view unavailable: "+e.message}}
 const FRONT=["K01","K02","K03","K04","K05","K06","K07","K09","K14","K15","K16","K20"];
 async function loadKpis(){const d=await api("kpis?window_days="+$("kwin").value);
  $("kpis").innerHTML=d.metric_values.filter(m=>FRONT.includes(m.metric_id)).map(m=>{const f=Object.entries(m.filters).map(([k,v])=>v).join(" ");
@@ -120,7 +134,7 @@ function filtersUI(){const p=prefs();$("chans").innerHTML=CH.filter(c=>me.channe
  $("lvl").value=p.min_level;$("run").value=p.run||"";$("q").value=p.q||""}
 $("apply").onclick=()=>{const p={channels:[...document.querySelectorAll("#chans input:checked")].map(x=>x.value),min_level:$("lvl").value,run:$("run").value.trim(),q:$("q").value.trim()};savePrefs(p);lastId=0;loadEvents()};
 $("go").onclick=()=>{location.href="/login?token="+encodeURIComponent($("tok").value.trim())};
-(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;loadReliability();loadAssurance();$("rapply").onclick=loadReliability;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
+(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;loadReliability();loadAssurance();loadAutonomy();$("rapply").onclick=loadReliability;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
 </script>
 </body>
 </html>

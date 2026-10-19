@@ -59,7 +59,10 @@ SERVER_MODULES = {
     "forge-observer-mcp": "forge_factory.mcp.servers.observer",
     "forge-knowledge-mcp": "forge_factory.mcp.servers.knowledge",
     "forge-docs-mcp": "forge_factory.mcp.servers.docs",
+    "forge-afo-mcp": "forge_factory.mcp.servers.afo",  # Feature 005 overlay (load_registry(include_afo=True))
+    "forge-maintainer-mcp": "forge_factory.mcp.servers.maintainer",  # Feature 005 overlay (AFO-T045)
 }
+AFO_SERVERS = ("forge-afo-mcp", "forge-maintainer-mcp")
 
 
 def _op_model(tool_name: str) -> type[BaseModel] | None:
@@ -268,7 +271,7 @@ class Operation:
 def _authorize(server: str, op: str, args: dict) -> tuple[str, str | None, Path, str]:
     from ..registry.mcp_registry import fabro_tool_name
 
-    reg = load_registry()
+    reg = load_registry(include_afo=server in AFO_SERVERS)  # AFO ops exist only for the AFO servers
     key = f"{server}.{op}"
     if key not in reg.ops():
         raise ToolDenied("OP_NOT_REGISTERED", key)

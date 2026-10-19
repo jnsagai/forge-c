@@ -1,0 +1,29 @@
+# Versioned Feature 005 (AFO) overlay. The v0.4 design registry and the v0.5 overlay stay unchanged; loaders add
+# these servers (additive only: a server id that already exists is refused). Ops are granted to AFO roles only.
+schema: forge-c/mcp-registry-overlay-afo/0.1
+extends: config/factory/mcp-registry.yaml
+new_servers:
+- id: forge-afo-mcp
+  transport: stdio
+  lifecycle: IMPLEMENTED_AFO
+  open_source_only: true
+  description: AFO recovery case - bounded reads of one frozen case and the PROPOSED-plan broker
+  server_mandatory: false
+  ops:
+  - {name: read_failure_bundle, logical_tool: AFO frozen case, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-recovery-planner]}
+  - {name: list_gate_findings, logical_tool: AFO frozen case, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-recovery-planner]}
+  - {name: read_requirement_excerpt, logical_tool: AFO frozen requirements, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-recovery-planner]}
+  - {name: read_budget_snapshot, logical_tool: AFO budget, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-recovery-planner]}
+  - {name: submit_recovery_plan, logical_tool: AFO deterministic plan broker, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-recovery-planner]}
+- id: forge-maintainer-mcp
+  transport: stdio
+  lifecycle: IMPLEMENTED_AFO
+  open_source_only: true
+  description: AFO Factory Maintainer - one isolated candidate worktree (allowlisted writes, sandboxed candidate tests, broker hand-off)
+  server_mandatory: false
+  ops:
+  - {name: read_case, logical_tool: AFO maintainer case, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
+  - {name: read_source, logical_tool: AFO candidate worktree read, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
+  - {name: write_source, logical_tool: AFO candidate worktree write, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
+  - {name: run_candidate_tests, logical_tool: AFO sandboxed candidate tests, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 600, role_grants: [afo-factory-maintainer]}
+  - {name: submit_candidate, logical_tool: AFO deterministic candidate broker, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 120, role_grants: [afo-factory-maintainer]}

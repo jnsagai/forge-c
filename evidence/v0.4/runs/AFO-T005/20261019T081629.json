@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m0_contracts_status.py"
+  ],
+  "duration_s": 0.358,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "44f306cd8c4a3c57176e3d1b471e6c1f52cf8a62",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T005/20261019T081629.log",
+  "log_sha256": "496de802b29126c86aebfe050c1e181dac8efbe3393ac2d794f116cc8cda272a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T005",
+  "ts_utc": "2026-10-19T08:16:29.308548Z"
+}

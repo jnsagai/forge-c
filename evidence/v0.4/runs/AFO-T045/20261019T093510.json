@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_maintainer_role_grants_are_distinct_from_fabric_repair",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_maintainer_mcp_is_the_only_surface_and_is_role_scoped",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_path_policy_separates_maintainer_from_protected_and_decider_paths"
+  ],
+  "duration_s": 1.092,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "7eae2e070e58a43cdaf6de061f137362b3331e83",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T045/20261019T093510.log",
+  "log_sha256": "2db3e64e8ba5294aa8e63983d68d24f7b653ef019dc2f013ef31595571239605",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T045",
+  "ts_utc": "2026-10-19T09:35:10.518921Z"
+}

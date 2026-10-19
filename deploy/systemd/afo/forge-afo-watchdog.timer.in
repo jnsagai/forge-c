@@ -1,0 +1,11 @@
+# Runs the external Conductor watchdog every 2 minutes (AFO-T013).
+[Unit]
+Description=Forge-C AFO external watchdog timer
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=2min
+AccuracySec=15s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+
+--- stderr ---
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    for s in ('No AFO-launched real model order','AFO-M01 is UNKNOWN','Restart and reboot drills are deferred','not an ISO 26262','no READY package exists','index.json'): assert s in t, s
+                                                                                                                                                                                  ^^^^^^
+AssertionError: not an ISO 26262

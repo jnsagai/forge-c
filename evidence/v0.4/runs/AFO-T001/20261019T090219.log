@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "requirements": 72,
+  "tasks": 75,
+  "tests": 66,
+  "schemas": 11,
+  "examples": 8
+}
+design-006: PASS exit=0 out=b8f881a26f0b
+design-006-negative-46-methods: PASS exit=1 out=4224b30b893c
+design-006-negative-checked-entry: PASS exit=1 out=fbdb42cd2175
+design-check-002: PASS exit=0 out=842413c9c966
+legacy-v0.1: PASS exit=0 out=2f36ef60371a
+factory-test: PASS exit=0 out=52e2c1c2a78d
+
+--- stderr ---

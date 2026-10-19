@@ -1,0 +1,24 @@
+# Forge-C local model gateway (:11436 -> Ollama :11435). Rendered by scripts/afo_services.sh. AFO-T007.
+[Unit]
+Description=Forge-C LLM gateway (:11436)
+After=forge-ollama.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=exec
+ExecStart=@VENV@/bin/python -m forge_factory.llm_gateway --port 11436
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=PATH=@PATH@
+ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
+
+[Install]
+WantedBy=default.target

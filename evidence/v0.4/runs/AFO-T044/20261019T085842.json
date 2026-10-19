@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m4_recovery.py"
+  ],
+  "duration_s": 4.853,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "61f67c3ec97b83e71818968cdaa900a26b665f1a",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T044/20261019T085842.log",
+  "log_sha256": "58efc86314e56ac7848b861d18f4449227e1dc52bbda6361f697cc4efa8ffe86",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T044",
+  "ts_utc": "2026-10-19T08:58:42.330905Z"
+}

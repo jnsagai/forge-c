@@ -1,0 +1,3 @@
+real CRE runner: C pd-d88063add77a989da933 REJECTED (prevention); D pd-8accbb77f752e786ddaf ELIGIBLE_FOR_OFFLINE_REVIEW; append-only history {'mnt-drill-a-protected': ['QUARANTINED'], 'mnt-drill-b-claim': ['REJECTED'], 'mnt-drill-c-regress': ['REJECTED'], 'mnt-drill-d-safe': ['ELIGIBLE_FOR_OFFLINE_REVIEW', 'PUBLISHED']}
+
+--- stderr ---

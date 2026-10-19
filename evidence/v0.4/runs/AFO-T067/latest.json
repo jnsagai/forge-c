@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m7_readiness.py::test_soak_counts_only_real_contiguous_healthy_time",
+    "factory/python/tests/test_afo_m7_readiness.py::test_soak_holes_clock_jumps_and_reboots_are_never_up_time",
+    "factory/python/tests/test_afo_m7_readiness.py::test_soak_fake_24h_in_a_minute_is_rejected_and_real_samples_are_honest"
+  ],
+  "duration_s": 0.383,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c85e4d89f08f47a9cabdc4a685f36d7642340b98",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T067/20261019T102217.log",
+  "log_sha256": "dd060c163df9ad15395a6516d9ed79fbdc2aefffb3d814f31af3856645b9e87f",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T067",
+  "ts_utc": "2026-10-19T10:22:17.633592Z"
+}
