@@ -10,7 +10,7 @@ from pathlib import Path
 from ..common import data_root
 
 ADAPTER = "toolchains/claude-agent-acp-0.85.1/node_modules/.bin/claude-agent-acp"  # pinned, Apache-2.0
-MODEL = "claude-opus-5"  # owner choice 2026-10-19
+MODEL = "claude-opus-5-5"  # owner choice 2026-10-19 (Opus 5.5)
 # API credentials are never used: the session authenticates with the owner's account login only.
 API_ENV = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "CLAUDE_CODE_OAUTH_TOKEN",
            "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CONFIG_DIR")

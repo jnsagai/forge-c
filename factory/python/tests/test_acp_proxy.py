@@ -166,7 +166,7 @@ def test_claude_proxy_gets_gate_servers_only_no_builtin_tools_and_no_api_key(tmp
                {"name": "PYTHONPATH", "value": s["env"][0]["value"]} in s["env"] for s in new["mcpServers"])
     opts = new["_meta"]["claudeCode"]["options"]
     assert opts["tools"] == [] and opts["settingSources"] == [] and opts["strictMcpConfig"] is True
-    assert opts["model"] == "claude-opus-5" and new["_meta"]["disableBuiltInTools"] is True
+    assert opts["model"] == "claude-opus-5-5" and new["_meta"]["disableBuiltInTools"] is True
     assert sorted(opts["allowedTools"]) == ["mcp__forge_build_mcp", "mcp__forge_fs"]
     replies = {m["id"]: m for m in to_agent if "id" in m and "method" not in m}
     assert replies[900]["result"] == {"outcome": {"outcome": "selected", "optionId": "deny"}}
