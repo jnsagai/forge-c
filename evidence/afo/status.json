@@ -1,10 +1,10 @@
 {
   "fr_counts": {
-    "COVERED": 34,
-    "OPEN": 25,
-    "PARTIAL": 13
+    "COVERED": 45,
+    "OPEN": 15,
+    "PARTIAL": 12
   },
-  "generated_at": "2026-10-19T08:59:08.531886Z",
+  "generated_at": "2026-10-19T09:40:01.067827Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -16,7 +16,7 @@
       "id": "AFO-FR-001",
       "priority": "P0",
       "tasks": {
-        "AFO-T001": "FAIL",
+        "AFO-T001": "PASS",
         "AFO-T002": "PASS",
         "AFO-T075": "NOT_RUN"
       }
@@ -65,11 +65,11 @@
       "acceptance": [
         "AT-065"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-005",
       "priority": "P0",
       "tasks": {
-        "AFO-T001": "FAIL",
+        "AFO-T001": "PASS",
         "AFO-T071": "NOT_RUN"
       }
     },
@@ -92,13 +92,13 @@
         "AT-045",
         "AT-046"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-007",
       "priority": "P0",
       "tasks": {
         "AFO-T005": "PASS",
         "AFO-T038": "PASS",
-        "AFO-T045": "NOT_RUN"
+        "AFO-T045": "PASS"
       }
     },
     {
@@ -214,12 +214,12 @@
         "AT-045",
         "AT-046"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-016",
       "priority": "P1",
       "tasks": {
         "AFO-T011": "PASS",
-        "AFO-T045": "NOT_RUN"
+        "AFO-T045": "PASS"
       }
     },
     {
@@ -644,12 +644,12 @@
       "acceptance": [
         "AT-043"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-049",
       "priority": "P0",
       "tasks": {
-        "AFO-T045": "NOT_RUN",
-        "AFO-T046": "NOT_RUN"
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
       }
     },
     {
@@ -657,23 +657,23 @@
         "AT-045",
         "AT-046"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-050",
       "priority": "P1",
       "tasks": {
-        "AFO-T045": "NOT_RUN",
-        "AFO-T046": "NOT_RUN"
+        "AFO-T045": "PASS",
+        "AFO-T046": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-044"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-051",
       "priority": "P1",
       "tasks": {
-        "AFO-T047": "NOT_RUN"
+        "AFO-T047": "PASS"
       }
     },
     {
@@ -681,12 +681,12 @@
         "AT-047",
         "AT-048"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-052",
       "priority": "P1",
       "tasks": {
-        "AFO-T048": "NOT_RUN",
-        "AFO-T051": "NOT_RUN"
+        "AFO-T048": "PASS",
+        "AFO-T051": "PASS"
       }
     },
     {
@@ -695,23 +695,23 @@
         "AT-047",
         "AT-049"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-053",
       "priority": "P0",
       "tasks": {
-        "AFO-T048": "NOT_RUN",
-        "AFO-T050": "NOT_RUN"
+        "AFO-T048": "PASS",
+        "AFO-T050": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-049"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-054",
       "priority": "P1",
       "tasks": {
-        "AFO-T049": "NOT_RUN"
+        "AFO-T049": "PASS"
       }
     },
     {
@@ -719,12 +719,12 @@
         "AT-048",
         "AT-051"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-055",
       "priority": "P1",
       "tasks": {
-        "AFO-T050": "NOT_RUN",
-        "AFO-T052": "NOT_RUN"
+        "AFO-T050": "PASS",
+        "AFO-T052": "PASS"
       }
     },
     {
@@ -732,24 +732,24 @@
         "AT-039",
         "AT-050"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-056",
       "priority": "P0",
       "tasks": {
-        "AFO-T051": "NOT_RUN",
-        "AFO-T053": "NOT_RUN"
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-050"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-057",
       "priority": "P1",
       "tasks": {
-        "AFO-T051": "NOT_RUN",
-        "AFO-T053": "NOT_RUN"
+        "AFO-T051": "PASS",
+        "AFO-T053": "PASS"
       }
     },
     {
@@ -952,10 +952,9 @@
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
     "BLOCKED": 2,
-    "FAIL": 1,
-    "NOT_RUN": 31,
+    "NOT_RUN": 22,
     "PARTIAL": 2,
-    "PASS": 39
+    "PASS": 49
   },
   "tasks": {
     "AFO-T001": {
@@ -966,8 +965,7 @@
       "planned_requirement_refs": "AFO-FR-001;AFO-FR-005",
       "planned_test_refs": "AT-065;AT-066",
       "priority": "P0",
-      "reason": "exit 1",
-      "status": "FAIL",
+      "status": "PASS",
       "task_id": "AFO-T001"
     },
     "AFO-T002": {
@@ -1446,93 +1444,102 @@
       "task_id": "AFO-T044"
     },
     "AFO-T045": {
+      "evidence": "evidence/v0.4/runs/AFO-T045/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-007;AFO-FR-016;AFO-FR-049;AFO-FR-050",
       "planned_test_refs": "AT-030;AT-043;AT-045;AT-046",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T045"
     },
     "AFO-T046": {
+      "evidence": "evidence/v0.4/runs/AFO-T046/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-049;AFO-FR-050",
       "planned_test_refs": "AT-043;AT-045;AT-046",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T046"
     },
     "AFO-T047": {
+      "evidence": "evidence/v0.4/runs/AFO-T047/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-051",
       "planned_test_refs": "AT-044",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T047"
     },
     "AFO-T048": {
+      "evidence": "evidence/v0.4/runs/AFO-T048/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-052;AFO-FR-053",
       "planned_test_refs": "AT-045;AT-047;AT-048;AT-049",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T048"
     },
     "AFO-T049": {
+      "evidence": "evidence/v0.4/runs/AFO-T049/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-054",
       "planned_test_refs": "AT-049",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T049"
     },
     "AFO-T050": {
+      "evidence": "evidence/v0.4/runs/AFO-T050/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-053;AFO-FR-055",
       "planned_test_refs": "AT-045;AT-047;AT-048;AT-049;AT-051",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T050"
     },
     "AFO-T051": {
+      "evidence": "evidence/v0.4/runs/AFO-T051/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-052;AFO-FR-056;AFO-FR-057",
       "planned_test_refs": "AT-039;AT-047;AT-048;AT-050",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T051"
     },
     "AFO-T052": {
+      "evidence": "evidence/v0.4/runs/AFO-T052/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-055",
       "planned_test_refs": "AT-048;AT-051",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T052"
     },
     "AFO-T053": {
+      "evidence": "evidence/v0.4/runs/AFO-T053/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M5",
       "planned_requirement_refs": "AFO-FR-056;AFO-FR-057",
       "planned_test_refs": "AT-039;AT-050",
       "priority": "P1",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T053"
     },
     "AFO-T054": {

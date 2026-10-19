@@ -1,0 +1,153 @@
+{
+  "after": {
+    "head_unchanged": true,
+    "main_unchanged": true
+  },
+  "cases": {
+    "A_protected_path": {
+      "record": {
+        "authorization_ref": null,
+        "auto_deployment_allowed": false,
+        "baseline_commit": "7037a75377444c6cd5e2265da38d7b4b3c1a58b0",
+        "branch_ref": null,
+        "candidate_commit": "590b0ba66f285cffc1156bb5bbbf70e38fc5e170",
+        "capa_id": null,
+        "changed_paths": [
+          "factory/python/forge_factory/afo_drill_calc.py",
+          "factory/python/tests/afo_candidate/rpr_drill.py",
+          "factory/python/tests/afo_candidate/test_drill.py",
+          "tests/reliability/reproducers/manifest.yaml"
+        ],
+        "cre_promotion_id": "NOT_EVALUATED",
+        "evidence_refs": [
+          "veto:PROTECTED_PATH:M:tests/reliability/reproducers/manifest.yaml"
+        ],
+        "outcome": "QUARANTINED",
+        "pr_url": null,
+        "proposal_id": "mnt-drill-a-protected",
+        "reproducer_id": "NONE",
+        "schema_version": "1.0",
+        "source_incident_id": "INC-AFO-M5-DRILL",
+        "tests_ref": "NOT_RUN"
+      },
+      "veto": [
+        "PROTECTED_PATH:M:tests/reliability/reproducers/manifest.yaml"
+      ]
+    },
+    "B_unsupported_claim": {
+      "record": {
+        "authorization_ref": null,
+        "auto_deployment_allowed": false,
+        "baseline_commit": "7037a75377444c6cd5e2265da38d7b4b3c1a58b0",
+        "branch_ref": null,
+        "candidate_commit": "14b878c64dbfe9975298a619027b92f914edf912",
+        "capa_id": null,
+        "changed_paths": [
+          "factory/python/forge_factory/afo_drill_calc.py",
+          "factory/python/tests/afo_candidate/rpr_drill.py",
+          "factory/python/tests/afo_candidate/test_drill.py"
+        ],
+        "cre_promotion_id": "NOT_EVALUATED:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR",
+        "evidence_refs": [
+          "triage:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR"
+        ],
+        "outcome": "REJECTED",
+        "pr_url": null,
+        "proposal_id": "mnt-drill-b-claim",
+        "protected_changes_count": 0,
+        "reproducer_id": "AFO-mnt-drill-b-claim",
+        "schema_version": "1.0",
+        "source_incident_id": "INC-AFO-M5-DRILL",
+        "tests_ref": "NOT_RUN"
+      }
+    },
+    "C_reintroduced_defect": {
+      "record": {
+        "authorization_ref": null,
+        "auto_deployment_allowed": false,
+        "baseline_commit": "7037a75377444c6cd5e2265da38d7b4b3c1a58b0",
+        "branch_ref": null,
+        "candidate_commit": "2c1daff9f85acbbae4f8e46b6ffd3e8d76f7b34c",
+        "capa_id": null,
+        "changed_paths": [
+          "factory/python/forge_factory/acp/codex_home.py",
+          "factory/python/forge_factory/afo_drill_calc.py",
+          "factory/python/tests/afo_candidate/rpr_drill.py",
+          "factory/python/tests/afo_candidate/test_drill.py"
+        ],
+        "cre_promotion_id": "NOT_EVALUATED:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR",
+        "evidence_refs": [
+          "triage:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR"
+        ],
+        "outcome": "REJECTED",
+        "pr_url": null,
+        "proposal_id": "mnt-drill-c-regress",
+        "protected_changes_count": 0,
+        "reproducer_id": "AFO-mnt-drill-c-regress",
+        "schema_version": "1.0",
+        "source_incident_id": "INC-AFO-M5-DRILL",
+        "tests_ref": "NOT_RUN"
+      },
+      "seconds": 1
+    },
+    "D_safe_proposal": {
+      "candidate_tests": {
+        "exit_code": 0,
+        "isolation": "podman-rootless-subuid",
+        "output_sha256": "a0468d1316915329906c2051b065b0439af2db2cc05b7e36f577759ce943bda3",
+        "passed": true
+      },
+      "record": {
+        "authorization_ref": null,
+        "auto_deployment_allowed": false,
+        "baseline_commit": "7037a75377444c6cd5e2265da38d7b4b3c1a58b0",
+        "branch_ref": null,
+        "candidate_commit": "d5310ad10bd4695752a2a094e621b13b9840206c",
+        "capa_id": null,
+        "changed_paths": [
+          "factory/python/forge_factory/afo_drill_calc.py",
+          "factory/python/tests/afo_candidate/rpr_drill.py",
+          "factory/python/tests/afo_candidate/test_drill.py"
+        ],
+        "cre_promotion_id": "NOT_EVALUATED:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR",
+        "evidence_refs": [
+          "triage:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR"
+        ],
+        "outcome": "REJECTED",
+        "pr_url": null,
+        "proposal_id": "mnt-drill-d-safe",
+        "protected_changes_count": 0,
+        "reproducer_id": "AFO-mnt-drill-d-safe",
+        "schema_version": "1.0",
+        "source_incident_id": "INC-AFO-M5-DRILL",
+        "tests_ref": "maint-tests:a0468d1316915329"
+      },
+      "seconds": 2
+    }
+  },
+  "deleted_drill_refs": [
+    "refs/afo-drill/seed"
+  ],
+  "factory_head": "7eae2e070e58a43cdaf6de061f137362b3331e83",
+  "finished_utc": "2026-10-19T09:35:01.615785Z",
+  "history": {
+    "mnt-drill-a-protected": [
+      "QUARANTINED"
+    ],
+    "mnt-drill-b-claim": [
+      "REJECTED"
+    ],
+    "mnt-drill-c-regress": [
+      "REJECTED"
+    ],
+    "mnt-drill-d-safe": [
+      "REJECTED"
+    ]
+  },
+  "isolation": "podman-rootless-subuid",
+  "schema": "forge-c/afo-m5-drill/0.1",
+  "seconds": 7,
+  "seeded_baseline": "7037a75377444c6cd5e2265da38d7b4b3c1a58b0",
+  "started_utc": "2026-10-19T09:34:54.602487Z",
+  "state_dir": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/afo-m5-drill-state-1792402494"
+}

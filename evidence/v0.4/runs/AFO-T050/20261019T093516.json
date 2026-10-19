@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_veto_judges_the_git_diff_not_the_agent",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_malicious_and_regressing_candidates_are_quarantined_append_only",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_broker_guard_refuses_merge_force_main_and_non_draft",
+    "factory/python/tests/test_afo_m5_maintainer.py::test_isolated_worktree_os_hardening_and_canonical_writes"
+  ],
+  "duration_s": 1.495,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "7eae2e070e58a43cdaf6de061f137362b3331e83",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T050/20261019T093516.log",
+  "log_sha256": "98b5cd4e072223e93e282322b693cf13caa2480e622254fd726970a9db1e4ff8",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T050",
+  "ts_utc": "2026-10-19T09:35:16.343712Z"
+}

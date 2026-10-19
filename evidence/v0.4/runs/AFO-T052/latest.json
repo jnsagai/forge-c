@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.afo.m5drill",
+    "--out",
+    "evidence/afo/m5/drill-80932a2.json"
+  ],
+  "duration_s": 214.502,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "80932a2fdb7c90d38bc81a247419f9740c6e8a74",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T052/20261019T093605.log",
+  "log_sha256": "ef2f225eed2652392d99452f40723f43a5779aa1a599bc996dd6c86c3d16563e",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T052",
+  "ts_utc": "2026-10-19T09:36:05.067126Z"
+}
