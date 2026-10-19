@@ -127,7 +127,9 @@ def collect(zip_path: Path, inputs_from: Path | None = None) -> dict:
             res[c["case"]] = {"instructions": n - b0 if n is not None and b0 is not None else None,
                               "status": st if base[scen][1] == "OK" else "BASE_" + base[scen][1], "scenario": scen,
                               "function": c["function"]}
-        out.update(instructions=res, instructions_status="MEASURED", contract_notes=notes,
+        got = [v for v in res.values() if v["instructions"] is not None]
+        status = "MEASURED" if got else ("NOT_MEASURED:" + (next(iter(res.values()))["status"] if res else "NO_CASES"))[:160]
+        out.update(instructions=res, instructions_status=status, contract_notes=notes,
                    empty_image_instructions={k: v[0] for k, v in base.items()})
     return {**out, "archive_unchanged": sha256_file(zip_path) == before}
 
