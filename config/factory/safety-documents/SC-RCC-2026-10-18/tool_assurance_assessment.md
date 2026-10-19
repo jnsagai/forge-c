@@ -2,18 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Document | TAA-RCC-001, version 0.1 |
-| Status | **DRAFT — AI-drafted, not reviewed, not approved** |
+| Document | TAA-RCC-001, version 1.0 |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-19 |
 | Safety scope | SC-RCC-2026-10-18, target ASIL B (owner decision 2026-10-18) |
 | Product | RCC LL driver (example `0002a-arm_55_rcc_ll`) and RCC HAL driver (example `0002b-arm_55_rcc_hal`) |
 | Basis | Work order inputs, source requirements hash `c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4`; toolchain as used by LL `WO-0002A-STM32N6-RCC-LL-r168` (factory commit c9f836a) |
 | Drafted by | Claude Opus 5.5 (Claude Code), 2026-10-19, from the factory records listed in section 8 |
-| Responsible engineer | _to be completed by the reviewer (section 9)_ |
+| Responsible engineer | Jefferson Nascimento (owner) |
 
-> This draft becomes a factory input only when the responsible engineer has reviewed it, corrected it and signed
-> section 9, and the signed version is registered in `config/factory/safety-scope.yaml`. Until then every RCC
-> package stays BLOCKED on this document. It is a tool confidence assessment, not a tool qualification
-> certificate. The classifications below are the drafter's **proposals**; each needs the reviewer's judgement.
+> Signed version (owner decision OD-2026-10-19-12). It applies to RCC work orders whose inputs match the basis
+> above. Any edit to this file, or a change to the work order inputs, un-signs it until it is re-reviewed. It
+> records the reviewer's engineering judgement; it is not a safety approval or certification.
+> It is a tool confidence assessment, not a tool qualification certificate.
 
 ## 1. Purpose and scope
 
@@ -125,11 +125,12 @@ manifest.json, gates/gate-log.jsonl, assurance/}` and `evidence/tool-results.jso
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Answers to Q-01 to Q-05 | |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I approve and sign all" (2026-10-19) |
+| Answers to Q-01 to Q-05 | Q-01: the approach for the AI models is accepted. Q-02: the proposed TI, TD and TCL are accepted as drafted. Q-03: the measures for the TCL2 and TCL3 tools are not chosen at signing; they remain open. Q-04: the findings in section 6 are not fixed before signing; they stay open and are listed with the package. Q-05: not answered at signing; it remains open. |
+| Changes made during review | None to the assessment; status, version and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-19 |
 
 Signing records the reviewer's engineering judgement on the confidence in these tools for the stated use cases. It
 is not a tool qualification certificate, a safety approval or a certification.

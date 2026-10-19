@@ -21,14 +21,14 @@ decisions:
       software_safety_analysis:
         path: config/factory/safety-documents/SC-RCC-2026-10-18/software_safety_analysis.md
         basis: c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4
-        sha256: null
-        approved_by: null
-        approved_at: null
-        decision: null
+        sha256: 1795badc064854e0cd56ba8cc1dd0e8694c19e4d60cfc9edf38d982510c5407a
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-19'
+        decision: OD-2026-10-19-12
       tool_assurance_assessment:
         path: config/factory/safety-documents/SC-RCC-2026-10-18/tool_assurance_assessment.md
         basis: c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4
-        sha256: null
-        approved_by: null
-        approved_at: null
-        decision: null
+        sha256: 38b778bd62aa1b3a1b247ea1f8784c285c6ade9512206f8167791a3fe965671c
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-19'
+        decision: OD-2026-10-19-12
