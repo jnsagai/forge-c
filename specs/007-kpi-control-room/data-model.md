@@ -127,7 +127,7 @@ Acknowledgement: `{alert_id, acknowledged_at}` in the viewer's browser storage o
 | `staleness_s` | 120 | |
 | `idle_threshold_s` | 600 | |
 | `lead_time_limit_s` | 21600 | 6 h, the default work-order timeout |
-| `rework_near_ratio` | 0.67 | 2 of 3 cycles used |
+| `rework_near_ratio` | 0.66 | 2 of 3 cycles used (2/3 = 0.667) |
 | `yield_threshold` | 0.5 | per-station FPY |
 | `spc` | `{min_subgroups: 10, min_n: 50, min_points: 15, rules: [WE1, WE2, WE3]}` | |
 | `prices` | `{}` | `{model_id: {input_per_mtok, output_per_mtok, currency}}`; absent = NOT_MEASURED |

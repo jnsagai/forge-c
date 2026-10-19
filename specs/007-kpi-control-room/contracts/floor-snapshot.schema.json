@@ -172,7 +172,8 @@
           "package",
           "run",
           "models",
-          "reason"
+          "reason",
+          "rework_budget"
         ],
         "additionalProperties": false,
         "properties": {
@@ -282,6 +283,74 @@
               "null"
             ],
             "maxLength": 300
+          },
+          "rework_budget": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "alert_id",
+          "condition",
+          "severity",
+          "subject",
+          "reason",
+          "since",
+          "evidence",
+          "filterable"
+        ],
+        "properties": {
+          "alert_id": {
+            "type": "string",
+            "pattern": "^al-[0-9a-f]{16}$"
+          },
+          "condition": {
+            "enum": [
+              "STATION_BLOCKED",
+              "LEAD_TIME_OVER_LIMIT",
+              "REWORK_BUDGET_NEAR",
+              "YIELD_BELOW_THRESHOLD",
+              "YIELD_OUT_OF_CONTROL",
+              "SAFETY_PROCESS_VIOLATION",
+              "FEED_STALE"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "warning",
+              "info"
+            ]
+          },
+          "subject": {
+            "type": "object"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "since": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "filterable": {
+            "type": "boolean"
           }
         }
       }

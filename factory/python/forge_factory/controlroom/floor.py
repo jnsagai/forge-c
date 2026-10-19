@@ -197,6 +197,8 @@ def unit(ws: Path, rows: list[dict], now: float, run: dict | None) -> dict:
         first_pass[p] = None if not ins else ("PASS" if decision(ins[0])[1] == "PASS" else "FAIL")
     rework = {p: sum(1 for r in by_phase[p] if r.get("step") == "route" and decision(r)[1] in
                      ("REWORK", "UPSTREAM", "REINSPECT")) for p in PHASES}
+    budget = {p: max([int((r.get("gate") or {}).get("max_rework_cycles") or 0) for r in by_phase[p]] or [0]) or None
+              for p in PHASES}  # the gate's own max_rework_cycles, as recorded
     started = [p for p in PHASES if by_phase[p]]
     last_started = started[-1] if started else None
     # current station: the first phase not passed up to the last phase with records (carried-over phases of a
@@ -239,7 +241,7 @@ def unit(ws: Path, rows: list[dict], now: float, run: dict | None) -> dict:
                       "target_mcu": (man.get("target") or {}).get("part_number")},
             "admitted_at": man.get("created_at") or "", "station": station, "status": status,
             "station_since": _iso(since), "elapsed_s": max(0.0, round((done_t or now) - (admitted or now), 1)),
-            "rework_cycles": rework, "first_pass": first_pass,
+            "rework_cycles": rework, "rework_budget": budget, "first_pass": first_pass,
             "package": None if not pkg else {k: pkg.get(k) for k in ("package_status", "finalized_at",
                                                                       "archive_sha256", "gap_count")},
             "run": {"fabro_run_id": (run or {}).get("run_id"), "lifecycle": life, "current_node": (run or {}).get("node"),

@@ -6,7 +6,7 @@ from pathlib import Path
 
 CFG = {"schema": "forge-c/controlroom-config/0.1", "tz": "Europe/Lisbon",
        "shifts": [{"name": "Day", "start": "00:00", "end": "24:00"}], "staleness_s": 120, "idle_threshold_s": 600,
-       "lead_time_limit_s": 21600, "rework_near_ratio": 0.67, "yield_threshold": 0.5,
+       "lead_time_limit_s": 21600, "rework_near_ratio": 0.66, "yield_threshold": 0.5,
        "spc": {"min_subgroups": 10, "min_n": 50, "min_points": 15, "rules": ["WE1", "WE2", "WE3"]}, "prices": {}}
 
 
@@ -30,7 +30,8 @@ def inspect(phase, m, decision="PASS"):
 
 
 def route(phase, m, decision="REWORK", reason="NO_BASELINE"):
-    return {"phase": phase, "step": "route", "gate": {"phase": phase, "decision": decision, "reason": reason}, "ts": ts(m)}
+    return {"phase": phase, "step": "route", "gate": {"phase": phase, "decision": decision, "reason": reason,
+                                                      "max_rework_cycles": 3}, "ts": ts(m)}
 
 
 def passed(phase, m):

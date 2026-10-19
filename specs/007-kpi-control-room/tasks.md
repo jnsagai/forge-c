@@ -18,7 +18,7 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
 ## Phase 1: Setup
 
 - [ ] CR-T001 Create the package `factory/python/forge_factory/controlroom/__init__.py` with a module docstring stating the model-free, read-only contract (FR-020, FR-026)
-- [ ] CR-T002 [P] Create `config/factory/controlroom.yaml` with the defaults from data-model.md (tz Europe/Lisbon, one 24 h Day shift, staleness_s 120, idle_threshold_s 600, lead_time_limit_s 21600, rework_near_ratio 0.67, yield_threshold 0.5, spc block, empty prices)
+- [ ] CR-T002 [P] Create `config/factory/controlroom.yaml` with the defaults from data-model.md (tz Europe/Lisbon, one 24 h Day shift, staleness_s 120, idle_threshold_s 600, lead_time_limit_s 21600, rework_near_ratio 0.66, yield_threshold 0.5, spc block, empty prices)
 - [ ] CR-T003 [P] Implement `factory/python/forge_factory/controlroom/config.py`: load and validate `config/factory/controlroom.yaml` against `specs/007-kpi-control-room/contracts/controlroom-config.schema.json`, and fail closed with a clear error on an invalid file
 
 ## Phase 2: Foundational (blocking for all stories)

@@ -39,8 +39,36 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
         except ValueError as exc:  # fail closed and say why
             raise HTTPException(500, str(exc)) from exc
 
+    memo: dict = {}
+
+    def cached(key: str, ttl: float, fn):
+        hit = memo.get(key)
+        if hit and time.monotonic() - hit[0] < ttl:
+            return hit[1]
+        try:
+            val = fn()
+        except Exception:  # noqa: BLE001 - an unavailable input only removes its alerts; the floor stays live
+            val = None
+        memo[key] = (time.monotonic(), val)
+        return val
+
+    def today_score() -> dict | None:
+        if not cache.ready.is_set():
+            return None
+        return cached("score", 30.0, lambda: scorecard(cache, W.window("today", cfg()), "all"))
+
+    def quality_30d() -> dict | None:
+        return cached("quality", 60.0, lambda: cr_quality("viewer", "30d", None))
+
     def floor_snapshot() -> dict:
-        return fl.snapshot(cfg())
+        from ..controlroom.alerts import collect, from_scorecard
+
+        c = cfg()
+        sc, q = today_score(), quality_30d()
+        viol = sum(1 for a in from_scorecard(sc, c) if a["condition"] == "SAFETY_PROCESS_VIOLATION")
+        snap = fl.snapshot(c, violations_open=viol)  # an open violation decides the factory status (FR-017)
+        snap["alerts"] = collect(snap, c, sc, q)["alerts"]
+        return snap
 
     @app.get("/control-room")
     def control_room_page(request: Request) -> HTMLResponse:
@@ -115,6 +143,13 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
             return {"status": "WARMING_UP", "window": w, "cohort": cohort}
         return {"status": "OK", "window": w, "cohort": cohort,
                 **window_usage(cache, w["start_utc"], w["end_utc"], cohort, cfg()["prices"])}
+
+    @app.get("/api/v1/control-room/alerts")
+    def cr_alerts(r: str = Depends(role)) -> dict:
+        snap = floor_snapshot()
+        return {"generated_at": snap["generated_at"], "alerts": snap["alerts"],
+                "violations_open": snap.get("violations_open", 0),
+                "acknowledgement": "per viewer, in the browser only; no factory state changes"}
 
     @app.get("/api/v1/control-room/stream")
     async def cr_stream(request: Request, r: str = Depends(role), max_seconds: int = Query(60, ge=1, le=300)):

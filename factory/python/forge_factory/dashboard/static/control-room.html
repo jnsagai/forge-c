@@ -69,6 +69,13 @@ table.k td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .seg button{border:0;border-radius:0;padding:5px 9px}
 .seg button.on{background:var(--accent);color:#fff}
 @media (max-width:900px){.qgrid{grid-template-columns:1fr}}
+.alerts{display:grid;gap:6px}
+.al{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;
+border:1px solid var(--line);font-size:13px}
+.al.critical{background:var(--blk-bg);border-color:transparent}.al.warning{background:var(--rew-bg);border-color:transparent}
+.al .ic{font-weight:800}.al.critical .ic{color:var(--blk)}.al.warning .ic{color:var(--rew)}
+.al .tx{word-break:break-word}.al .tx small{color:var(--muted)}
+.al.acked{opacity:.6}
 .nm-badge{font-size:11px;font-weight:650;color:var(--muted);background:var(--idle-bg);border-radius:5px;padding:1px 5px}
 .station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -121,6 +128,12 @@ button:hover{border-color:var(--accent)}
 </div>
 <main id="app" hidden>
   <div id="banners"></div>
+  <section class="panel" aria-labelledby="h-att">
+    <h2 id="h-att">Attention <span class="muted" id="att-sub"></span>
+      <span class="ctrl"><label class="muted"><input type="checkbox" id="showack"> show acknowledged</label>
+        <button id="notif" title="Browser notifications for new critical alerts">Enable notifications</button></span></h2>
+    <div class="alerts" id="alerts"></div>
+  </section>
   <section class="panel" aria-labelledby="h-score">
     <h2 id="h-score">Production scorecard <span class="muted" id="score-sub"></span>
       <span class="ctrl"><select id="win" aria-label="window"><option value="shift">Current shift</option>
@@ -228,6 +241,7 @@ function renderFloor(f) {
     </div>`;
   }).join("");
   renderShipped(f);
+  renderAlerts(f.alerts || []);
   renderBanners();
 }
 
@@ -243,6 +257,41 @@ function renderShipped(f) {
       <span class="muted">lead ${dur(u.elapsed_s)}</span>
       <span class="muted">${dur(sinceIso(u.package.finalized_at))} ago</span></div>`).join("") || '<div class="empty">nothing shipped in the last 24 h</div>';
 }
+
+// ---------------------------------------------------------------- alerts (US5)
+const ACK_KEY = "cr-acks";
+function acks() { try { return JSON.parse(localStorage.getItem(ACK_KEY) || "{}"); } catch (e) { return {}; } }
+function setAck(id, on) {
+  const a = acks(); if (on) a[id] = new Date().toISOString(); else delete a[id];
+  try { localStorage.setItem(ACK_KEY, JSON.stringify(a)); } catch (e) { /* per-viewer only; nothing reaches the factory */ }
+  if (state.floor) renderAlerts(state.floor.alerts || []);
+}
+const notified = new Set();
+function renderAlerts(list) {
+  const a = acks(), show = $("showack").checked;
+  const open = list.filter((x) => !a[x.alert_id] || !x.filterable);  // a violation is never hidden
+  const acked = list.filter((x) => a[x.alert_id] && x.filterable);
+  $("att-sub").textContent = list.length ? `${open.length} open${acked.length ? ` · ${acked.length} acknowledged` : ""}` : "";
+  const row = (x, isAck) => `<div class="al ${x.severity}${isAck ? " acked" : ""}" role="status">
+      <span class="ic">${x.severity === "critical" ? "■" : "▲"} ${esc(x.condition.replace(/_/g, " "))}</span>
+      <span class="tx">${esc(x.reason)}${x.subject && x.subject.work_order ? ` <small>· ${esc(short(x.subject.work_order))}</small>` : ""}${x.since ? ` <small>· since ${dur(sinceIso(x.since))}</small>` : ""}${!x.filterable ? " <small>· cannot be hidden</small>" : ""}</span>
+      <button data-ack="${esc(x.alert_id)}" data-on="${isAck || a[x.alert_id] ? 0 : 1}">${isAck || a[x.alert_id] ? "Unacknowledge" : "Acknowledge"}</button></div>`;
+  $("alerts").innerHTML = (open.map((x) => row(x, false)).join("") + (show ? acked.map((x) => row(x, true)).join("") : "")) ||
+    '<div class="empty">No open alerts. (A stopped station, a lead time over limit, a rework budget nearly used, a yield problem, a stale feed or a safety/process violation would appear here.)</div>';
+  for (const x of open) {
+    if (x.severity === "critical" && !notified.has(x.alert_id)) {
+      notified.add(x.alert_id);
+      try { if (window.Notification && Notification.permission === "granted") new Notification("Forge-C: " + x.condition.replace(/_/g, " "), {body: x.reason}); } catch (e) { /* optional */ }
+    }
+  }
+}
+$("alerts").onclick = (e) => { const id = e.target.dataset && e.target.dataset.ack; if (id) setAck(id, e.target.dataset.on === "1"); };
+$("showack").onchange = () => state.floor && renderAlerts(state.floor.alerts || []);
+$("notif").onclick = async () => {
+  try { const p = await Notification.requestPermission(); $("notif").textContent = p === "granted" ? "Notifications on" : "Notifications blocked"; }
+  catch (e) { $("notif").textContent = "Notifications unavailable"; }
+};
+try { if (window.Notification && Notification.permission === "granted") $("notif").textContent = "Notifications on"; } catch (e) { /* ignore */ }
 
 // ---------------------------------------------------------------- scorecard (US2)
 const WINLABEL = {shift: "this shift", today: "today", "7d": "7 days", "30d": "30 days"};
