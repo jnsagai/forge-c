@@ -60,14 +60,39 @@ def evaluate(scope: dict, docs: dict[str, str | None], na: dict[str, dict] | Non
             "dispositions": dispositions, "safety_approval": None}
 
 
-def claim_text_findings(scope: dict, text: str) -> list[str]:
-    """AT-079: reject compliance/approval text, and any ASIL level different from the approved scope."""
-    out = [f"FALSE_COMPLIANCE_TEXT:{h}" for h in compliance_assertions(text)]
+# CAPA-044 (r144-r152): ASIL B work products stated "QM development scope" from a stale example manifest field
+QM_CLAIM = re.compile(r"\bQM (?:development|scope)\b|OUT_OF_SCOPE:\s*QM\b|\bQM\b[^.\n]{0,40}\bno (?:software )?safety "
+                      r"(?:requirements?|allocation)", re.I)
+
+
+def scope_level_findings(scope: dict, text: str) -> list[str]:
+    """Any ASIL level different from the approved scope, and a QM claim inside an ASIL A-D scope."""
+    out = []
     asil = scope.get("target_asil")
     for m in re.finditer(r"\bASIL[ _-]?([A-D])\b", text):
         if asil == "QM" or m.group(1) != asil:
             out.append(f"ASIL_MISMATCH_TEXT:{m.group(0)}!={asil}")
+    if asil in ("A", "B", "C", "D"):
+        out += [f"QM_CLAIM_IN_ASIL_SCOPE:{' '.join(m.group(0).split())[:60]}!=ASIL {asil}" for m in QM_CLAIM.finditer(text)]
     return out
+
+
+def claim_text_findings(scope: dict, text: str) -> list[str]:
+    """AT-079: reject compliance/approval text, and any ASIL level different from the approved scope."""
+    return [f"FALSE_COMPLIANCE_TEXT:{h}" for h in compliance_assertions(text)] + scope_level_findings(scope, text)
+
+
+def allocation_status(rec: dict) -> str:
+    """manifest target.safety_allocation for an owner scope (CAPA-044): the approved target, and the allocation
+    review state - PENDING until the owner records an allocation review reference (never derived by an agent)."""
+    sc = rec["scope"]
+    head = f"ASIL {sc['target_asil']}" if sc["target_asil"] != "QM" else "QM"
+    who = f"{sc['scope_id']}, approved by {rec['approved_by']} on {rec['approved_at']}"
+    if sc["target_asil"] == "QM":
+        return f"OUT_OF_SCOPE: QM development, no safety allocation or safety claims ({who})"
+    if not sc.get("allocation_review_ref"):
+        return f"{head} ({who}); software safety allocation PENDING owner allocation review"
+    return f"{head} ({who}); allocation review {sc['allocation_review_ref']}"
 
 
 DECISIONS = "config/factory/safety-scope.yaml"
@@ -97,3 +122,27 @@ def owner_scope(example: str, work_order_id: str, source_requirements_hash: str,
             raise ValueError(f"SCOPE_DECISION_INVALID:{issues}")
         return {"scope": rec, "na": d.get("na") or {}, "approved_by": d["approved_by"], "approved_at": d["approved_at"]}
     return None
+
+
+SCOPE_FILE = ".forge-run/safety_scope.json"
+
+
+def workspace_scope_findings(ws, phase: str) -> list[str]:
+    """CAPA-044 author gate: the phase's markdown work products (and the safety/upstream-gap files) must state the
+    owner's approved safety level - no other ASIL, no QM claim in an ASIL scope. [] without an owner scope."""
+    import json
+    from pathlib import Path
+
+    ws = Path(ws)
+    p = ws / SCOPE_FILE
+    if not p.is_file():
+        return []
+    sc = json.loads(p.read_text()).get("scope") or {}
+    files = sorted((ws / "workproducts" / phase).rglob("*.md")) if (ws / "workproducts" / phase).is_dir() else []
+    if phase == "SWE.1":
+        files += sorted((ws / "safety").glob("*.md")) + [ws / "traceability/upstream_gaps.md"]
+    out = []
+    for f in files:
+        if f.is_file():
+            out += [f"SAFETY_SCOPE:{x}:{f.relative_to(ws)}" for x in scope_level_findings(sc, f.read_text(errors="replace"))]
+    return sorted(set(out))[:10]

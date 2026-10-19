@@ -30,6 +30,17 @@ def check(zip_path: Path) -> dict:
         gates = json.loads(z.read(pkg)) if pkg else {}
         summ = json.loads(z.read("evidence/assurance/summary.json")) if "evidence/assurance/summary.json" in names else {}
         man = json.loads(z.read("manifest.json")) if "manifest.json" in names else {}  # the package root manifest
+        scope_texts = []  # CAPA-044: packaged text must state the approved safety level (no QM claim in ASIL scope)
+        sc_n = next((n for n in names if n.endswith("configuration/safety_scope.json")), None)
+        if sc_n:
+            from .scope import scope_level_findings
+
+            sc = (json.loads(z.read(sc_n)).get("scope") or {})
+            for n in sorted(names):
+                if n.endswith(".md") and not n.startswith(PREFIX):
+                    scope_texts += [f"SAFETY_SCOPE_TEXT:{x}:{n}" for x in
+                                    scope_level_findings(sc, z.read(n).decode(errors="replace"))]
+        failing += sorted(set(scope_texts))[:20]
         for m in MATRICES:
             csv_n, md_n = PREFIX + m + ".csv", PREFIX + m + ".md"
             if csv_n not in names or md_n not in names:

@@ -168,6 +168,18 @@ def test_ll_prepare_records_the_layer(env):
     assert man["layer"] == "LL" and man["provided"] == [] and LY.layer_of(ws) == "LL"
 
 
+def test_capa044_owner_asil_scope_supersedes_the_example_qm_allocation(env):
+    """CAPA-044 (r144-r152): the example's target.safety_allocation said 'OUT_OF_SCOPE: QM development' while the owner
+    scope is ASIL B, and SWE.1 wrote QM into ASIL B work products."""
+    from forge_factory.assurance import scope
+
+    _ws, man = WO.prepare(LL_EX, "WO-LL-S")
+    alloc = man["target"]["safety_allocation"]
+    assert man["safety_target"] == "B" and "QM" not in alloc
+    assert alloc.startswith("ASIL B (SC-RCC-2026-10-18") and alloc.endswith("PENDING owner allocation review")
+    assert scope.scope_level_findings({"target_asil": "B"}, alloc) == []
+
+
 # ---- real tools on an LL-only workspace (no HAL sources) ---------------------------------------------------------
 LL_H = """#ifndef STM32N6XX_LL_RCC_H
 #define STM32N6XX_LL_RCC_H

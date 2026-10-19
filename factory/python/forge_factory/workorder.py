@@ -233,7 +233,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         (ws / DISPOSITIONS).write_text(pretty_json(ods))
         (ws / DISPOSITIONS).chmod(0o444)
     if sc:
+        from .assurance.scope import allocation_status
+
         manifest["safety_target"] = sc["scope"]["target_asil"]
+        # CAPA-044: the owner scope supersedes the example's target.safety_allocation (it said QM while the scope is
+        # ASIL B, and SWE.1 wrote "QM development scope" into ASIL B work products)
+        manifest["target"]["safety_allocation"] = allocation_status(sc)
         (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
         (ws / ".forge-run/safety_scope.json").chmod(0o444)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))

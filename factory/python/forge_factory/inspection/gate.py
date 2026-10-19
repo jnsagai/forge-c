@@ -112,6 +112,9 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .swtrace import check_phase
 
         generated += check_phase(store.workspace, phase)["major_findings"]
+    from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
+
+    generated += workspace_scope_findings(store.workspace, phase)
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests

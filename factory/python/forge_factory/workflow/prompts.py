@@ -57,7 +57,8 @@ WORK_ORDER_SCOPE_NOTE = ("Read .forge-run/manifest.json 'scope' once. A checklis
                          "report omits it or claims such behaviour was tested); never fail an item for not testing "
                          "excluded behaviour.")
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
-                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE), judge SWE1-01 against that "
+                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE or PENDING owner allocation review), "
+                    "judge SWE1-01 against that "
                     "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
                     "recorded in traceability/upstream_gaps.md, not a failure of SWE1-01.")
 
@@ -89,7 +90,10 @@ AUTHOR_STEPS = {
         "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
         "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
         "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
-        "safety items; otherwise list the safety-relevant SWR IDs.",
+        "safety items; if it says 'software safety allocation PENDING owner allocation review', state 'Target <the ASIL "
+        "from target.safety_allocation> (<its scope id>): software safety allocation PENDING owner allocation review - no "
+        "software safety requirement is allocated yet; this is an open gap, not a QM claim', list no safety items and "
+        "never write QM; otherwise list the safety-relevant SWR IDs.",
         "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it and write "
         "one requirement per allocated software safety requirement with '  - Source: <SSR id>'. write_file "
         "traceability/upstream_gaps.md: '# Upstream coverage', (a) one row per upstream input from the manifest target "
