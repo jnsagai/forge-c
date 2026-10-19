@@ -1,0 +1,68 @@
+schema_version: '1.0'
+status: SPECIFICATION_ONLY
+order_states:
+- SUBMITTED
+- REJECTED_INTAKE
+- QUEUED
+- ADMITTED
+- RUNNING
+- WAITING_RECOVERY
+- WAITING_EXTERNAL_CHANGE
+- VALIDATING
+- READY_FOR_OFFLINE_REVIEW
+- BLOCKED
+- PAUSED
+order_terminal:
+- REJECTED_INTAKE
+- READY_FOR_OFFLINE_REVIEW
+- BLOCKED
+events:
+- submitted
+- admitted
+- run_receipted
+- gate_failed
+- plan_validated
+- run_terminal
+- ready_verified
+- blocked_verified
+- pause_authorized
+- resume_authorized
+invariants:
+- no_ready_without_six_independent_gates
+- no_hidden_reentry_after_terminal
+- new_attempt_for_recovery
+- owner_authorization_for_modes
+- no_duplicate_side_effect
+allowed_order_edges:
+  SUBMITTED:
+  - QUEUED
+  - REJECTED_INTAKE
+  QUEUED:
+  - ADMITTED
+  - PAUSED
+  - BLOCKED
+  ADMITTED:
+  - RUNNING
+  - PAUSED
+  - BLOCKED
+  RUNNING:
+  - WAITING_RECOVERY
+  - WAITING_EXTERNAL_CHANGE
+  - VALIDATING
+  - BLOCKED
+  WAITING_RECOVERY:
+  - RUNNING
+  - WAITING_EXTERNAL_CHANGE
+  - BLOCKED
+  WAITING_EXTERNAL_CHANGE:
+  - QUEUED
+  - BLOCKED
+  VALIDATING:
+  - READY_FOR_OFFLINE_REVIEW
+  - BLOCKED
+  PAUSED:
+  - QUEUED
+  - BLOCKED
+  REJECTED_INTAKE: []
+  READY_FOR_OFFLINE_REVIEW: []
+  BLOCKED: []

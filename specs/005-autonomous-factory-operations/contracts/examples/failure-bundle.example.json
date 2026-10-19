@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "bundle_id": "BUNDLE-EXAMPLE-001",
+  "order_id": "WO-EXAMPLE-001",
+  "attempt_id": "ATT-EXAMPLE-001",
+  "phase": "SWE.3",
+  "failure_class": "PRODUCT_QUALITY",
+  "fingerprint": "compiler:SWE.3:missing-type:gcc-demo",
+  "gate_result": "FAIL",
+  "artifact_refs": [
+    "fixture:compile.log"
+  ],
+  "input_digests": {
+    "approved_requirements": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "evidence_refs": [
+    "fixture:gate-fail.json"
+  ],
+  "tool_versions": {
+    "clang": "synthetic-example"
+  },
+  "redacted_summary": "Synthetic fixture, not a real incident"
+}

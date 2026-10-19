@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "plan_id": "PLAN-EXAMPLE-001",
+  "order_id": "WO-EXAMPLE-001",
+  "attempt_id": "ATT-EXAMPLE-001",
+  "failure_fingerprint": "compiler:SWE.3:missing-type:gcc-demo",
+  "strategy": "REWORK_LOCAL",
+  "affected_phase": "SWE.3",
+  "material_difference_ref": "fixture:diff-ref",
+  "artifact_scope": [
+    "fixture:software/source/demo.c"
+  ],
+  "validation_tests": [
+    "fixture:compile-check"
+  ],
+  "budget_estimate": {
+    "tokens_max": 1000,
+    "wall_seconds_max": 180,
+    "turns_max": 2
+  },
+  "rationale_code": "SYNTHETIC_EXAMPLE_NOT_APPROVED"
+}

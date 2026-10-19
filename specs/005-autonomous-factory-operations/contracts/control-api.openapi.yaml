@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Forge-C AFO Control API
+  version: 0.1.0
+  description: Specification; not implemented. Bind loopback by default. Write controls
+    require operator authorization, never agent MCP.
+servers:
+- url: http://127.0.0.1:8765
+paths:
+  /api/v1/autonomy/health:
+    get:
+      operationId: getAfoHealth
+      responses:
+        '200':
+          description: Deterministic health; UNKNOWN explicitly surfaced
+  /api/v1/autonomy/workorders:
+    get:
+      operationId: listAfoWorkOrders
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Paginated orders
+    post:
+      operationId: submitAfoWorkOrder
+      security:
+      - OperatorAuthorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./work-order.schema.json
+      responses:
+        '202':
+          description: Admitted to queue, not running yet
+        '409':
+          description: Same request key, differing manifest
+  /api/v1/autonomy/workorders/{order_id}:
+    get:
+      operationId: getAfoWorkOrder
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Order state, attempts and evidence
+  /api/v1/autonomy/dead-letters:
+    get:
+      operationId: listAfoDeadLetters
+      responses:
+        '200':
+          description: Paginated terminal cases
+  /api/v1/autonomy/metrics:
+    get:
+      operationId: getAfoMetrics
+      responses:
+        '200':
+          description: Cohort-scoped metrics and provenance
+  /api/v1/autonomy/readiness:
+    get:
+      operationId: getAfoReadiness
+      responses:
+        '200':
+          description: Mode vs eligibility, separate SLO status
+  /api/v1/autonomy/control/{action}:
+    post:
+      operationId: operatorAfoControl
+      parameters:
+      - name: action
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - pause
+          - drain
+          - resume
+      security:
+      - OperatorAuthorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              title: Operator action
+              type: object
+              additionalProperties: false
+              required:
+              - authorization_ref
+              - reason
+              properties:
+                authorization_ref: &id001
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                reason: *id001
+                csrf_token: *id001
+      responses:
+        '200':
+          description: Audited operator decision
+        '403':
+          description: Forbidden or expired approval
+components:
+  securitySchemes:
+    OperatorAuthorization:
+      type: http
+      scheme: bearer
+      description: Explicit operator-issued permission; agents are never issued this
+        credential

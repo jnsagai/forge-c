@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFO Approved Work Order",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "tenant_scope",
+    "manifest_sha256",
+    "input_manifest_ref",
+    "approved_by",
+    "authorization_ref",
+    "driver_class",
+    "target",
+    "safety_scope",
+    "model_profile",
+    "submitted_utc"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "tenant_scope": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_manifest_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "approved_by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "authorization_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "driver_class": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "safety_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "model_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "submitted_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "NORMAL",
+        "HIGH"
+      ]
+    },
+    "deadline_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requirements_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "git_revision": {
+      "type": "string",
+      "minLength": 7,
+      "maxLength": 64
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
