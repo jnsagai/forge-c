@@ -1,0 +1,456 @@
+{
+ "name": "EASA pilot review, HAL r161-r164",
+ "archives": {
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022"
+ },
+ "measurements": [
+  {
+   "archive_sha256": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  }
+ ],
+ "fn": {
+  "seeded": 24,
+  "missed": 0,
+  "upper95": 0.117
+ },
+ "rows": [
+  {
+   "row": "HAL-r161#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "title": "SWE.1 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:e41de6ca1daa2281",
+    "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:e41de6ca1daa2281"
+   ],
+   "verifier": [
+    "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+   ],
+   "advice": "CORRECT",
+   "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r161#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+   "title": "SWE.2 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "Flow/scheduling analysis evidence was not accepted (none produced) and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r161#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "title": "SWE.3 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."
+  },
+  {
+   "row": "HAL-r161#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+   "title": "SWE.4 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "Negative/boundary test-case evidence was not accepted and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r161#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "title": "Safety evidence missing: hsi",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r161#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "title": "Safety evidence missing: allocation review",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r161#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "title": "Safety evidence missing: software safety analysis",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The software safety analysis document was postponed by you. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r161#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "title": "Safety evidence missing: tool assurance assessment",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r162#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "title": "SWE.1 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:82f29931f3c05d30",
+    "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:82f29931f3c05d30"
+   ],
+   "verifier": [
+    "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480"
+   ],
+   "advice": "CORRECT",
+   "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r162#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:CLM-SWE.2:CONTESTED",
+   "title": "SWE.2 claim contested",
+   "gate_findings": [
+    "ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:ab7d2d96ecc63900",
+    "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:ab7d2d96ecc63900",
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:ab7d2d96ecc63900",
+    "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:ab7d2d96ecc63900",
+    "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+   ],
+   "verifier": [
+    "ARCH_IRQ_OWNER_MISSING"
+   ],
+   "advice": "JUDGEMENT",
+   "why": "Architecture verifier: ARCH_IRQ_OWNER_MISSING. Interrupts are outside the work-order scope, but the architecture text discusses callers and interrupt handlers serialising RCC access without naming an owner of that shared resource. If you consider that concurrency note in scope, the finding is CORRECT; if interrupts are fully out of scope, it is INCORRECT. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r162#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "title": "SWE.3 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."
+  },
+  {
+   "row": "HAL-r162#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:CLM-SWE.4:CONTESTED",
+   "title": "SWE.4 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:MUTATION_EVIDENCE:easa-report:SWE.4:fdcef8b11f37a07d",
+    "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+   ],
+   "verifier": [
+    "SURVIVOR:OK_TO_ERROR@85:hal_status_t status = HAL_OK;",
+    "SURVIVOR:OK_TO_ERROR@181:hal_status_t status = HAL_OK;"
+   ],
+   "advice": "INCORRECT",
+   "why": "Mutation verifier: two surviving mutants change the initial 'status = HAL_OK'. Both branches overwrite status before it is returned, so the mutant is equivalent (never observable): a false positive for the CONTESTED status. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons."
+  },
+  {
+   "row": "HAL-r162#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "title": "Safety evidence missing: hsi",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r162#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "title": "Safety evidence missing: allocation review",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r162#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "title": "Safety evidence missing: software safety analysis",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The software safety analysis document was postponed by you. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r162#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "title": "Safety evidence missing: tool assurance assessment",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r163#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "title": "SWE.1 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:24391f51aaddec8c",
+    "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:24391f51aaddec8c"
+   ],
+   "verifier": [
+    "REQ_UNBOUNDED_TIME:SWR-001",
+    "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+    "REQ_UNBOUNDED_TIME:SWR-002",
+    "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+    "REQ_UNBOUNDED_TIME:SWR-007",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+   ],
+   "advice": "CORRECT",
+   "why": "Requirements verifier: REQ_UNBOUNDED_TIME:SWR-001; REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_UNBOUNDED_TIME:SWR-002; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The REQ_UNBOUNDED_TIME part is a verifier false positive: the requirement is bounded by 'the supplied timeout' and the rule only recognises 'caller-supplied'. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r163#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:CLM-SWE.2:CONTESTED",
+   "title": "SWE.2 claim contested",
+   "gate_findings": [
+    "ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:b3421356b06541d0",
+    "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:b3421356b06541d0",
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:b3421356b06541d0",
+    "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:b3421356b06541d0",
+    "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+   ],
+   "verifier": [
+    "ARCH_UNDECLARED_ENDPOINT:Caller"
+   ],
+   "advice": "CORRECT",
+   "why": "Architecture verifier: ARCH_UNDECLARED_ENDPOINT:Caller. The diagram/interface text uses an actor 'Caller' that is not a declared component: a minor real inconsistency. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r163#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "title": "SWE.3 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."
+  },
+  {
+   "row": "HAL-r163#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+   "title": "SWE.4 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "Negative/boundary test-case evidence was not accepted and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r163#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "title": "Safety evidence missing: hsi",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r163#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "title": "Safety evidence missing: allocation review",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r163#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "title": "Safety evidence missing: software safety analysis",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The software safety analysis document was postponed by you. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r163#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "title": "Safety evidence missing: tool assurance assessment",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r164#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "title": "SWE.1 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:837ae710aa3b8619",
+    "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:837ae710aa3b8619"
+   ],
+   "verifier": [
+    "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+    "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+   ],
+   "advice": "CORRECT",
+   "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r164#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+   "title": "SWE.2 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "Flow/scheduling analysis evidence was not accepted (none produced) and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."
+  },
+  {
+   "row": "HAL-r164#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "title": "SWE.3 claim unsupported",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+   ],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."
+  },
+  {
+   "row": "HAL-r164#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:CLM-SWE.4:CONTESTED",
+   "title": "SWE.4 claim contested",
+   "gate_findings": [
+    "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+    "ASSURANCE_GATE_FAILED:INDEPENDENT_ORACLE:easa-report:SWE.4:a42633080b4d2fd5",
+    "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+   ],
+   "verifier": [
+    "ORACLE_FAIL:SWR-010:HSE_RESET_DEFAULT_PRESERVED",
+    "ORACLE_FAIL:SWR-011:HSI_RESET_DEFAULT_PRESERVED"
+   ],
+   "advice": "INCORRECT",
+   "why": "Independent oracle: ORACLE_FAIL SWR-010/011 *_RESET_DEFAULT_PRESERVED. This is the CAPA-047 false positive: HAL_RCC_GPDMA1_Enable writes only RCC_AHB1ENR and never RCC_CR; the fixed oracle passes this package 19/19. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons."
+  },
+  {
+   "row": "HAL-r164#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "title": "Safety evidence missing: hsi",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r164#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "title": "Safety evidence missing: allocation review",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."
+  },
+  {
+   "row": "HAL-r164#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "title": "Safety evidence missing: software safety analysis",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The software safety analysis document was postponed by you. The finding states a real gap."
+  },
+  {
+   "row": "HAL-r164#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "title": "Safety evidence missing: tool assurance assessment",
+   "gate_findings": [],
+   "verifier": [],
+   "advice": "CORRECT",
+   "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."
+  }
+ ],
+ "worksheet_sha256": "31db5929b130dc5db653eaadb65e833dcdf47b729f1dbb928d16546a1156cc38"
+}
