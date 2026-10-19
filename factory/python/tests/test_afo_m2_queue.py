@@ -221,3 +221,19 @@ def test_backup_restore_and_event_forwarding_once(repo, tmp_path):
     (tmp_path / "bad.sqlite3").write_bytes(b"not a database" * 100)
     with pytest.raises(Exception):  # noqa: B017 - corrupt backups are refused either way
         Store.restore(tmp_path / "bad.sqlite3", tmp_path / "x" / "c.sqlite3")
+
+
+def test_operator_cli_controls_are_recorded_and_need_a_reason(repo, capsys):
+    s = Store()
+    s.submit(_env(repo), repo=repo, max_queued=10)
+    assert cli.main(["status"]) == 0 and json.loads(capsys.readouterr().out)["orders"] == {"QUEUED": 1}
+    assert cli.main(["pause"]) == 3                                          # no reason: refused
+    assert cli.main(["pause", "--reason", "maintenance window"]) == 0
+    assert cli.main(["drain", "--reason", "finish in-flight"]) == 0
+    assert Store().control() == {"paused": "1", "draining": "1"}
+    assert cli.main(["resume", "--reason", "done"]) == 0
+    assert Store().control() == {"paused": "0", "draining": "0"}
+    with Store().tx() as c:
+        acts = [r["action"] for r in c.execute("SELECT action FROM afo_operator_actions ORDER BY seq")]
+    assert acts == ["paused=1", "draining=1", "paused=0", "draining=0"]
+    assert cli.approve(_env(repo), policy.load())[0] is False                # OBSERVE_ONLY: intake refused

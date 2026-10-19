@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m2_queue.py::test_concurrent_duplicate_submits_make_one_order",
+    "factory/python/tests/test_afo_m2_queue.py::test_leases_fence_a_stale_scheduler",
+    "factory/python/tests/test_afo_m2_queue.py::test_priority_aging_prevents_starvation",
+    "factory/python/tests/test_afo_m2_queue.py::test_idle_conductor_makes_no_model_call"
+  ],
+  "duration_s": 1.511,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "aa063b37d7fb6fdc503289cb41c3958a44999523",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T024/20261019T083307.log",
+  "log_sha256": "9a115371047ef69b026dd4214503347ff19adbc58755f1aebee61b2e638b3b35",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T024",
+  "ts_utc": "2026-10-19T08:33:07.594753Z"
+}

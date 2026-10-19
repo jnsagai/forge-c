@@ -11,7 +11,7 @@ def test_matrix_is_derived_and_the_document_is_current():
             assert r["gap"] == "" and r["checks_passed"].split("/")[0] == r["checks_passed"].split("/")[1], r
         if r["status"] == "PARTIAL":
             assert r["gap"], r                         # a partial row always says what is missing
-    assert {r["id"] for r in rows if r["status"] == "MISSING"} >= {"A18", "A20", "A21"}
+    assert {r["id"] for r in rows if r["status"] == "MISSING"} >= {"A20", "A21"}
 
 
 def test_a_row_citing_absent_code_cannot_be_implemented(monkeypatch):

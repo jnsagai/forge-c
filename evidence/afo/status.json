@@ -1,10 +1,10 @@
 {
   "fr_counts": {
-    "COVERED": 5,
-    "OPEN": 58,
+    "COVERED": 16,
+    "OPEN": 47,
     "PARTIAL": 9
   },
-  "generated_at": "2026-10-19T08:26:14.021646Z",
+  "generated_at": "2026-10-19T08:33:31.592534Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -82,7 +82,7 @@
       "priority": "P0",
       "tasks": {
         "AFO-T004": "PASS",
-        "AFO-T018": "NOT_RUN",
+        "AFO-T018": "PASS",
         "AFO-T072": "NOT_RUN"
       }
     },
@@ -174,13 +174,13 @@
         "AT-004",
         "AT-005"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-013",
       "priority": "P0",
       "tasks": {
         "AFO-T007": "PASS",
         "AFO-T008": "PASS",
-        "AFO-T021": "NOT_RUN"
+        "AFO-T021": "PASS"
       }
     },
     {
@@ -201,12 +201,12 @@
         "AT-005",
         "AT-007"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-015",
       "priority": "P0",
       "tasks": {
         "AFO-T013": "PASS",
-        "AFO-T021": "NOT_RUN"
+        "AFO-T021": "PASS"
       }
     },
     {
@@ -227,12 +227,12 @@
         "AT-010",
         "AT-012"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-017",
       "priority": "P0",
       "tasks": {
-        "AFO-T017": "NOT_RUN",
-        "AFO-T022": "NOT_RUN"
+        "AFO-T017": "PASS",
+        "AFO-T022": "PASS"
       }
     },
     {
@@ -241,12 +241,12 @@
         "AT-012",
         "AT-013"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-018",
       "priority": "P0",
       "tasks": {
-        "AFO-T017": "NOT_RUN",
-        "AFO-T023": "NOT_RUN"
+        "AFO-T017": "PASS",
+        "AFO-T023": "PASS"
       }
     },
     {
@@ -255,24 +255,24 @@
         "AT-013",
         "AT-015"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-019",
       "priority": "P0",
       "tasks": {
-        "AFO-T016": "NOT_RUN",
-        "AFO-T018": "NOT_RUN"
+        "AFO-T016": "PASS",
+        "AFO-T018": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-014"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-020",
       "priority": "P0",
       "tasks": {
-        "AFO-T020": "NOT_RUN",
-        "AFO-T022": "NOT_RUN"
+        "AFO-T020": "PASS",
+        "AFO-T022": "PASS"
       }
     },
     {
@@ -280,12 +280,12 @@
         "AT-010",
         "AT-014"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-021",
       "priority": "P0",
       "tasks": {
-        "AFO-T021": "NOT_RUN",
-        "AFO-T022": "NOT_RUN"
+        "AFO-T021": "PASS",
+        "AFO-T022": "PASS"
       }
     },
     {
@@ -293,12 +293,12 @@
         "AT-011",
         "AT-013"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-022",
       "priority": "P0",
       "tasks": {
-        "AFO-T016": "NOT_RUN",
-        "AFO-T019": "NOT_RUN"
+        "AFO-T016": "PASS",
+        "AFO-T019": "PASS"
       }
     },
     {
@@ -306,12 +306,12 @@
         "AT-013",
         "AT-021"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-023",
       "priority": "P0",
       "tasks": {
-        "AFO-T019": "NOT_RUN",
-        "AFO-T024": "NOT_RUN"
+        "AFO-T019": "PASS",
+        "AFO-T024": "PASS"
       }
     },
     {
@@ -319,24 +319,24 @@
         "AT-014",
         "AT-015"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-024",
       "priority": "P0",
       "tasks": {
-        "AFO-T020": "NOT_RUN",
-        "AFO-T021": "NOT_RUN"
+        "AFO-T020": "PASS",
+        "AFO-T021": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-016"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-025",
       "priority": "P1",
       "tasks": {
-        "AFO-T020": "NOT_RUN",
-        "AFO-T024": "NOT_RUN"
+        "AFO-T020": "PASS",
+        "AFO-T024": "PASS"
       }
     },
     {
@@ -345,11 +345,11 @@
         "AT-053",
         "AT-054"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-026",
       "priority": "P1",
       "tasks": {
-        "AFO-T023": "NOT_RUN",
+        "AFO-T023": "PASS",
         "AFO-T058": "NOT_RUN"
       }
     },
@@ -478,11 +478,11 @@
         "AT-021",
         "AT-041"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-036",
       "priority": "P1",
       "tasks": {
-        "AFO-T025": "NOT_RUN",
+        "AFO-T025": "PASS",
         "AFO-T034": "NOT_RUN"
       }
     },
@@ -952,9 +952,9 @@
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
     "BLOCKED": 1,
-    "NOT_RUN": 61,
+    "NOT_RUN": 51,
     "PARTIAL": 1,
-    "PASS": 12
+    "PASS": 22
   },
   "tasks": {
     "AFO-T001": {
@@ -1123,103 +1123,113 @@
       "task_id": "AFO-T015"
     },
     "AFO-T016": {
+      "evidence": "evidence/v0.4/runs/AFO-T016/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-019;AFO-FR-022",
       "planned_test_refs": "AT-011;AT-013;AT-015",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T016"
     },
     "AFO-T017": {
+      "evidence": "evidence/v0.4/runs/AFO-T017/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-017;AFO-FR-018",
       "planned_test_refs": "AT-010;AT-011;AT-012;AT-013",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T017"
     },
     "AFO-T018": {
+      "evidence": "evidence/v0.4/runs/AFO-T018/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-006;AFO-FR-019",
       "planned_test_refs": "AT-011;AT-013;AT-015;AT-066",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T018"
     },
     "AFO-T019": {
+      "evidence": "evidence/v0.4/runs/AFO-T019/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-022;AFO-FR-023",
       "planned_test_refs": "AT-011;AT-013;AT-021",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T019"
     },
     "AFO-T020": {
+      "evidence": "evidence/v0.4/runs/AFO-T020/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-020;AFO-FR-024;AFO-FR-025",
       "planned_test_refs": "AT-014;AT-015;AT-016",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T020"
     },
     "AFO-T021": {
+      "evidence": "evidence/v0.4/runs/AFO-T021/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-013;AFO-FR-015;AFO-FR-021;AFO-FR-024",
       "planned_test_refs": "AT-004;AT-005;AT-007;AT-010;AT-014;AT-015",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T021"
     },
     "AFO-T022": {
+      "evidence": "evidence/v0.4/runs/AFO-T022/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-017;AFO-FR-020;AFO-FR-021",
       "planned_test_refs": "AT-010;AT-012;AT-014",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T022"
     },
     "AFO-T023": {
+      "evidence": "evidence/v0.4/runs/AFO-T023/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-018;AFO-FR-026",
       "planned_test_refs": "AT-011;AT-012;AT-013;AT-014;AT-053;AT-054",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T023"
     },
     "AFO-T024": {
+      "evidence": "evidence/v0.4/runs/AFO-T024/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-023;AFO-FR-025",
       "planned_test_refs": "AT-013;AT-016;AT-021",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T024"
     },
     "AFO-T025": {
+      "evidence": "evidence/v0.4/runs/AFO-T025/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M2",
       "planned_requirement_refs": "AFO-FR-036",
       "planned_test_refs": "AT-021;AT-041",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T025"
     },
     "AFO-T026": {
