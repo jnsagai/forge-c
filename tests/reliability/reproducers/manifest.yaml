@@ -552,3 +552,14 @@ reproducers:
     operations: [SWE.3/inspect, SWE.3/author]
     root_cause: "The SWE.2/SWE.3 inspector prompts never stated the mandated register access (extern ll_rcc_regs placed by the linker, no integer-to-pointer casts; SWE.2 author prompt, ADR-0009), so the DeepSeek inspector failed the correct design for lacking the RCC base address in C (r103 SWE3-02, r159 SWE3-01); the LL author answered with an authored address unit and pointer helpers, which the LL implementation gate did not reject as a non-header-only unit, and SWE.3 exhausted its rework budget. With such a unit the header-only oracle would also have crashed at link time."
     remedy: "SWE.2/SWE.3 inspector prompts carry REGISTER_BLOCK_NOTE; the LL implementation gate reports IMPL:LL_EXTRA_COMPILE_UNIT for any authored .c beside the generated unit; an oracle link failure returns BUILD_FAILED (ORACLE_BUILD_FAILED finding in contract mode)."
+  - id: RPR-051
+    script: rpr051_no_write_register_semantics.py
+    sha256: a36c246b5743711fbde866bd3c06d5b6a621b2aae2678d4b15701e3120ff207c
+    symptom_signature: "no_write effect naming a register demands zero register accesses"
+    observed_in: r164
+    baseline_revision: dcdce940ddf3f5922afa9f00c2e8bd6842dbb0f4
+    fix_revision: f1782d454d34b224991d8fca989c0bb70a9d8828
+    error_codes: ["ORACLE_FAIL"]
+    operations: [SWE.4/assurance-oracle]
+    root_cause: "Register contract rc-v1 gave op no_write one meaning (no register access at all, as for a NULL configuration) while its schema allowed a register/field on a no_write effect; the SWE.1 author used it for 'leave RCC_CR.HSEON/HSION at reset value' and SWE.2 mapped it to HAL_RCC_GPDMA1_Enable, which writes RCC_AHB1ENR. The contract checker skipped no_write entries and the oracle demanded zero accesses, failing a correct driver (r164 SWR-010/011)."
+    remedy: "A no_write effect that names a register means the call leaves that register unchanged (oracle compares the register word before/after); without a register it still means no register access. The checker validates the named register/field against the RM and the SWR, and the SWE.1 contract prompt states both meanings."
