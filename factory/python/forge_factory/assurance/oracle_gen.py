@@ -273,7 +273,10 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
                 return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,
                         "contract": contract}
             objs.append(str(o))
-        subprocess.run(["gcc", *objs, "-o", str(t / "oracle")], check=True, capture_output=True)
+        b = subprocess.run(["gcc", *objs, "-o", str(t / "oracle")], capture_output=True, text=True)
+        if b.returncode:  # CAPA-046 (r159): an unresolved symbol is a build failure, never a verifier crash
+            return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,
+                    "contract": contract}
         r = subprocess.run([str(t / "oracle")], capture_output=True, text=True, timeout=60)
     res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}|TIMEOUT|INVALID) (\S+) (PASS|FAIL)$", r.stdout, re.M)
     if contract and len(res) < len(cases):  # a crash or hang mid-run: the missing cases are failures, not passes
