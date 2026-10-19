@@ -1,0 +1,22 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "python specs/005-autonomous-factory-operations/validate_spec.py && python -m forge_factory.assurance.regress --full --out evidence/afo/baseline/regression-14c3fa1.json"
+  ],
+  "duration_s": 1214.206,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "14c3fa1ac840e8cf0263b176387e2cca5b83bceb",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T001/20261019T084049.log",
+  "log_sha256": "4f47335c36b384ebaeaab8d5f63a3060ecae18145af32c2a405113ead5294109",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "AFO-T001",
+  "ts_utc": "2026-10-19T08:40:49.682598Z"
+}
