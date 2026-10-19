@@ -383,7 +383,8 @@
       "fr": "CRE-FR-022",
       "passing_tasks": [
         "CRE-T032",
-        "CRE-T042"
+        "CRE-T042",
+        "CRE-T053"
       ],
       "priority": "P2",
       "status": "COVERED",
@@ -1429,8 +1430,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-17T08:14:17.069043Z",
-  "git_head": "7ec24f8f86f89688341714ff3e58b03f880a316e",
+  "generated_at": "2026-10-19T05:45:41.284134Z",
+  "git_head": "ce87883217e6c876efe8fa47b111b6060e24864b",
   "p0_gaps": [],
   "release_semantics": "Factory outputs are READY_FOR_OFFLINE_REVIEW or BLOCKED only; no ASIL B approval.",
   "schema": "forge-c/implementation-status/0.4",
@@ -1439,7 +1440,7 @@
     "002_total": 51,
     "003_pass": 20,
     "003_total": 20,
-    "004_pass": 53,
+    "004_pass": 54,
     "004_total": 54,
     "cre_fr_covered": 40,
     "cre_fr_total": 40,
@@ -3315,14 +3316,16 @@
       "task": "CRE-T052"
     },
     {
-      "checked": false,
-      "evidence": [],
+      "checked": true,
+      "evidence": [
+        "evidence/v0.4/runs/CRE-T053/latest.json"
+      ],
       "frs": [
         "CRE-FR-022"
       ],
-      "line": "- [ ] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW",
+      "line": "- [X] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T053/latest.json`",
       "priority": "P2",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task": "CRE-T053"
     },
     {

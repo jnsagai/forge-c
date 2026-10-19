@@ -89,5 +89,5 @@
 - [X] **CRE-T050 [P2]** Provide a command that freezes a per-class SPC calibration window per CRE-FR-020 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T050/latest.json`
 - [X] **CRE-T051 [P2]** Record model sampling parameters (temperature, seed when supported) per work order per CRE-FR-014 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T051/latest.json`
 - [X] **CRE-T052 [P2]** Emit cre.failure_classified and cre.corrective_action_applied lifecycle events per CRE-FR-031 / plan §4 (partial) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T052/latest.json`
-- [ ] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW
+- [X] **CRE-T053 [P2]** Optional Duane/AMSAA reliability-growth diagnostic with goodness-of-fit checks per CRE-FR-022 (missing) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T053/latest.json`
 - [X] **CRE-T054 [P2]** Review the 002 supervisor changes made during CRE (held fingerprints for unbroken faults, checkpoint quarantine) against the 002 spec per CRE-FR-002 (unrequested) — LOW ✅ Evidence: `evidence/v0.4/runs/CRE-T054/latest.json`
