@@ -2,6 +2,7 @@
 commands, fs/terminal) without forwarding them, forwards updates, prepends the tool note."""
 import io
 import json
+import re
 import sys
 import textwrap
 
@@ -117,3 +118,95 @@ def test_capa049_a_denied_permission_rejects_and_never_cancels_the_turn():
                                        {"optionId": "r1", "kind": "reject_once"}]}) == {"outcome": "selected", "optionId": "r1"}
     assert P.deny_outcome({"options": [{"optionId": "a1", "kind": "allow_always"}]}) == {"outcome": "cancelled"}
     assert P.deny_outcome(None) == {"outcome": "cancelled"}
+
+
+FAKE_CLAUDE = re.sub(r"for k in \([^)]*\)", 'for k in ("CLAUDE_CONFIG_DIR", "ANTHROPIC_API_KEY", '
+                     '"CLAUDE_CODE_OAUTH_TOKEN", "DISABLE_AUTOUPDATER")', FAKE, count=1, flags=re.S)
+
+
+def test_claude_proxy_gets_gate_servers_only_no_builtin_tools_and_no_api_key(tmp_path, monkeypatch):
+    """OD-2026-10-19-08: inspectors on Claude (owner account) behind the same proxy and gates as Codex."""
+    import time
+
+    assert FAKE_CLAUDE != FAKE
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-must-not-pass")
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "tok-must-not-pass")
+    ws = tmp_path / "WO" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/workflow.toml").write_text("[run.agent.mcps.forge_build_mcp]\ntype = \"stdio\"\n")
+    b = ws / ".forge-run/binding.json"
+    Binding("BND", str(ws), {"i1": {"role": "swe3-inspector", "phase": "SWE.3"}}).dump(b)
+    fake, seen = tmp_path / "fake.py", tmp_path / "seen.jsonl"
+    fake.write_text(FAKE_CLAUDE)
+    client = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": 1, "clientCapabilities": {
+                  "fs": {"readTextFile": True, "writeTextFile": True}, "terminal": True}}},
+              {"jsonrpc": "2.0", "id": 2, "method": "session/new", "params": {"cwd": str(ws), "mcpServers": [
+                  {"name": "evil", "command": "/bin/sh", "args": [], "env": []}]}},
+              {"jsonrpc": "2.0", "id": 3, "method": "session/prompt", "params": {"sessionId": "S1", "prompt": [
+                  {"type": "text", "text": "inspect"}]}}]
+    out = io.StringIO()
+    p = P.Proxy(b, "i1", agent_argv=[sys.executable, str(fake), str(seen)], fin=iter(()), fout=out, agent="claude")
+
+    def slow_lines():
+        for x in client:
+            yield json.dumps(x) + "\n"
+            time.sleep(0.4)
+    p.fin = slow_lines()
+    p.run()
+    to_agent = [json.loads(x) for x in seen.read_text().splitlines()]
+    env = next(m["env"] for m in to_agent if "env" in m)
+    assert env["CLAUDE_CONFIG_DIR"].endswith("claude-home") and env["DISABLE_AUTOUPDATER"] == "1"
+    assert env["ANTHROPIC_API_KEY"] is None and env["CLAUDE_CODE_OAUTH_TOKEN"] is None   # account login only
+    init = next(m for m in to_agent if m.get("method") == "initialize")
+    assert init["params"]["clientCapabilities"]["terminal"] is False
+    new = next(m for m in to_agent if m.get("method") == "session/new")["params"]
+    assert [s["name"] for s in new["mcpServers"]] == ["forge_fs", "forge_build_mcp"]       # "evil" dropped
+    assert all(s["args"][:2] == ["-m", "forge_factory.acp.gate"] and "--node" in s["args"] and
+               {"name": "PYTHONPATH", "value": s["env"][0]["value"]} in s["env"] for s in new["mcpServers"])
+    opts = new["_meta"]["claudeCode"]["options"]
+    assert opts["tools"] == [] and opts["settingSources"] == [] and opts["strictMcpConfig"] is True
+    assert opts["model"] == "claude-opus-5-5" and new["_meta"]["disableBuiltInTools"] is True
+    assert sorted(opts["allowedTools"]) == ["mcp__forge_build_mcp", "mcp__forge_fs"]
+    replies = {m["id"]: m for m in to_agent if "id" in m and "method" not in m}
+    assert replies[900]["result"] == {"outcome": {"outcome": "selected", "optionId": "deny"}}
+    assert replies[901]["error"]["code"] == -32601
+    prompt = next(m for m in to_agent if m.get("method") == "session/prompt")["params"]["prompt"]
+    assert prompt[0]["text"] == P.TOOL_NOTE and prompt[-1]["text"] == P.REPLY_NOTE
+
+
+def test_attach_claude_converts_inspectors_and_release_manager_only(tmp_path):
+    from forge_factory import acp
+
+    g = ('digraph X {\n  swe3_author [label="SWE.3 author", prompt="do"]\n'
+         '  swe3_inspector [label="SWE.3 inspector", model="deepseek-flash", prompt="check"]\n'
+         '  release_manager [label="Release Manager", max_visits=1, prompt="pack"]\n  gate [shape=parallelogram, script="x"]\n}\n')
+    nodes = {"swe3_author": {"role": "swe3-author"}, "swe3_inspector": {"role": "swe3-inspector"},
+             "release_manager": {"role": "release-manager"}}
+    out, done = acp.attach(g, nodes, tmp_path, roles=acp.NON_AUTHOR_ROLES, agent="claude")
+    assert done == ["swe3_inspector", "release_manager"]
+    ins = next(x for x in out.splitlines() if x.strip().startswith("swe3_inspector"))
+    assert "--node swe3_inspector --agent claude" in ins and 'model="' not in ins
+    assert 'swe3_author [label="SWE.3 author", prompt="do"]' in out
+    both, _ = acp.attach(out, nodes, tmp_path)                                  # then Codex authors on top
+    assert "--agent" not in next(x for x in both.splitlines() if x.strip().startswith("swe3_author"))
+
+
+def test_attestation_sees_claude_inspectors(tmp_path, monkeypatch):
+    from forge_factory.assurance import independence
+    from forge_factory.assurance import package as PK
+
+    seen = {}
+    real = independence.attest
+    monkeypatch.setattr(independence, "attest", lambda wo, au, ins, *r: seen.update(au=au, ins=ins) or real(wo, au, ins, *r))
+
+    ws = tmp_path / "WO-Y" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/model-profile.json").write_text(json.dumps({
+        "default": "deepseek-flash", "provider": "deepseek", "nodes": [],
+        "acp_authors": {"nodes": ["swe3_author"], "model": "gpt-6.1-sol", "provider": "openai-codex"},
+        "acp_inspectors": {"nodes": ["swe3_inspector"], "model": "claude-opus-5", "provider": "anthropic-claude"}}))
+    att = PK.attestation(ws)
+    assert att["decision"] == "SUPPORTED"
+    assert (seen["ins"]["model"], seen["ins"]["provider"]) == ("claude-opus-5", "anthropic-claude")
+    assert seen["au"]["model"] == "gpt-6.1-sol"

@@ -12,6 +12,9 @@ Between Fabro (ACP client) and codex-acp (ACP agent):
   * session/prompt: a short tool note is prepended (file tools are the gate's mcp__forge_fs__* tools; no shell) and
     the reply rule appended (final message = the requested JSON only; CAPA-045).
 Codex runs with the factory CODEX_HOME (acp.codex_home) and its shell/exec/browser/plugin/sub-agent features off.
+With --agent claude (OD-2026-10-19-08) the agent is claude-agent-acp on the owner's Claude login (acp.claude_home):
+the gate servers are set in session/new instead (ACP mcpServers, each allowed without a prompt) together with
+_meta.claudeCode.options that remove every built-in tool and every settings source; the rest is identical.
 Everything denied is logged to .forge-run/acp/<node>.proxy.jsonl (method and reason, no content).
 """
 from __future__ import annotations
@@ -26,7 +29,7 @@ import tomllib
 from pathlib import Path
 
 from ..common import data_root, utc_now
-from . import codex_home
+from . import claude_home, codex_home
 
 CODEX_ACP = "toolchains/codex-acp-2.1.1/node_modules/.bin/codex-acp"
 TOOL_NOTE = ("[factory tool note] You have no shell. Files: mcp__forge_fs__read_file, read_many_files, glob, grep, "
@@ -54,6 +57,12 @@ def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
     return {"forge_fs": srv("forge_fs"), **{k: srv(k.replace("_", "-")) for k in keys}}
 
 
+def acp_servers(servers: dict[str, dict]) -> list[dict]:
+    """The same gate servers as ACP stdio McpServer entries (session/new mcpServers), for claude-agent-acp."""
+    return [{"name": n, "command": s["command"], "args": s["args"],
+             "env": [{"name": k, "value": v} for k, v in s["env"].items()]} for n, s in servers.items()]
+
+
 def deny_outcome(params) -> dict:
     """CAPA-049 (LL r165): answering a permission request with outcome 'cancelled' means 'the prompt turn was
     cancelled' - Codex ended the turn and Fabro failed the whole run ('Pipeline cancelled'). A policy refusal selects
@@ -65,12 +74,19 @@ def deny_outcome(params) -> dict:
 
 
 class Proxy:
-    def __init__(self, binding: Path, node: str, agent_argv: list[str] | None = None, fin=sys.stdin, fout=sys.stdout):
+    def __init__(self, binding: Path, node: str, agent_argv: list[str] | None = None, fin=sys.stdin, fout=sys.stdout,
+                 agent: str = "codex"):
         from ..policy.authz import Binding
 
-        self.binding_path, self.node = binding, node
+        self.binding_path, self.node, self.kind = binding, node, agent
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
+        if agent == "claude":
+            self.servers = gate_servers(binding, node, self.ws)
+            self.agent = subprocess.Popen(agent_argv or [str(data_root() / claude_home.ADAPTER)], stdin=subprocess.PIPE,
+                                          stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+                                          env=claude_home.agent_env(dict(os.environ)), cwd=str(self.ws))
+            return
         env = {**os.environ, "CODEX_HOME": str(codex_home.home()), "INITIAL_AGENT_MODE": "read-only", "NO_BROWSER": "1",
                "CODEX_PATH": str(data_root() / codex_home.CODEX),
                "CODEX_CONFIG": json.dumps({"features": {f: False for f in codex_home.DISABLED_FEATURES},
@@ -105,6 +121,10 @@ class Proxy:
         elif meth in ("session/new", "session/load") and isinstance(p, dict):
             dropped = [s.get("name") for s in p.get("mcpServers") or []]
             p["mcpServers"] = []  # the gate servers come from the Codex session config only
+            if self.kind == "claude":  # ... or, for Claude, from here: gate servers only, no built-in tool/settings
+                p["mcpServers"] = acp_servers(self.servers)
+                p["_meta"] = {"claudeCode": {"options": claude_home.session_options(sorted(self.servers))},
+                              "disableBuiltInTools": True}
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
             p["prompt"] = [{"type": "text", "text": TOOL_NOTE}] + p["prompt"] + [{"type": "text", "text": REPLY_NOTE}]
@@ -154,11 +174,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.acp.proxy")
     ap.add_argument("--binding", type=Path, required=True)
     ap.add_argument("--node", required=True)
+    ap.add_argument("--agent", choices=["codex", "claude"], default="codex")
     a = ap.parse_args(argv)
-    if not codex_home.logged_in():
-        print(json.dumps({"jsonrpc": "2.0", "method": "forge/error", "params": {"message": "CODEX_HOME not logged in"}}))
+    home = claude_home if a.agent == "claude" else codex_home
+    if not home.logged_in():
+        print(json.dumps({"jsonrpc": "2.0", "method": "forge/error",
+                          "params": {"message": f"{home.home()} not logged in"}}))
         return 2
-    return Proxy(a.binding, a.node).run()
+    return Proxy(a.binding, a.node, agent=a.agent).run()
 
 
 if __name__ == "__main__":

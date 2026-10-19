@@ -1,0 +1,21 @@
+{
+  "installed_at": "2026-10-19",
+  "requested_by": "owner (OD-2026-10-19-08: inspectors on Claude via the owner's Claude account)",
+  "packages": [
+    {
+      "name": "@agentclientprotocol/claude-agent-acp",
+      "version": "0.85.1",
+      "licence": "Apache-2.0",
+      "published": "2026-10-02",
+      "method": "npm install --ignore-scripts --save-exact into toolchains/claude-agent-acp-0.85.1 (latest stable release at least two weeks old)",
+      "sha256": {"dist/acp-agent.js": "644daa80157fcdfe7b806cbd23b56f75be4fed146a890aa5e219204e689aca13"}
+    },
+    {
+      "name": "@anthropic-ai/claude-agent-sdk (+ linux-x64 binary)",
+      "version": "0.3.286 (bundled Claude Code 2.1.286)",
+      "licence": "Proprietary: Anthropic PBC, use subject to Anthropic's legal agreements (not open source); authorized by the owner's decision to use their Claude account",
+      "sha256": {"claude-agent-sdk-linux-x64/claude": "fe503f65c6289d59c23e5b21ae44f03583f997dd33a2cbfc75ab4f96fb8fc73f"}
+    }
+  ],
+  "login": "isolated CLAUDE_CONFIG_DIR <data_root>/claude-home (0700), owner's claude.ai account; credentials never copied into the repository or logs"
+}

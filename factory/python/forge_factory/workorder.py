@@ -364,7 +364,7 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
 
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
-        provided_from: str | None = None, acp_authors: str | None = None,
+        provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
         labels: dict[str, str] | None = None, resume_upto: str | None = None) -> dict:
     if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
         from .acp import codex_home
@@ -374,6 +374,14 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         codex_home.ensure()
         if not codex_home.logged_in():
             raise RuntimeError(f"CODEX_HOME {codex_home.home()} is not logged in (run: CODEX_HOME=<it> codex login)")
+    if acp_inspectors:  # OD-2026-10-19-08: non-author nodes on Claude (owner's Claude account, not the API)
+        from .acp import claude_home
+
+        if acp_inspectors != "claude":
+            raise ValueError(f"unknown ACP inspector backend: {acp_inspectors}")
+        claude_home.ensure()
+        if not claude_home.logged_in():
+            raise RuntimeError(f"{claude_home.home()} is not logged in (run: CLAUDE_CONFIG_DIR=<it> claude auth login)")
     ws, manifest = prepare(example, wo, provided_from)
     phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
     if phases == []:
@@ -398,6 +406,16 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                                "provider": acp.ACP_PROVIDER, "codex": codex_home.CODEX,
                                "note": "author roles on Codex; inspectors and every other node on the run model"}
         manifest["acp_authors"] = acp_nodes
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if acp_inspectors:
+        from . import acp
+        from .acp import claude_home
+
+        graph, ins_nodes = acp.attach(graph, nodes, ws, roles=acp.NON_AUTHOR_ROLES, agent="claude")
+        prof["acp_inspectors"] = {"nodes": ins_nodes, "model": claude_home.MODEL, "provider": acp.CLAUDE_PROVIDER,
+                                  "adapter": claude_home.ADAPTER,
+                                  "note": "inspectors and the Release Manager on Claude; deterministic nodes unchanged"}
+        manifest["acp_inspectors"] = ins_nodes
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
@@ -443,9 +461,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
     ap.add_argument("--acp-authors", choices=["codex"], default=None,
                     help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates")
+    ap.add_argument("--acp-inspectors", choices=["claude"], default=None,
+                    help="OD-2026-10-19-08: inspectors + Release Manager on Claude (owner account) via the same gates")
     a = ap.parse_args(argv)
     res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-              resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors)
+              resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
+              acp_inspectors=a.acp_inspectors)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0
