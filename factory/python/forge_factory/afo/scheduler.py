@@ -77,6 +77,11 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
     epoch = store.acquire_lease(SCOPE, owner, float(eff.get("queue.lease_seconds", 120)), now=now)
     if epoch is None:
         return {**out, "action": "lease_held_elsewhere"}
+    if eff.mode != "OBSERVE_ONLY":  # AFO-T051: a wait for an external factory change is bounded (order wall budget)
+        expired = store.expire_waiting(float(eff.get("budgets.max_order_wall_seconds", 86400)), now=now)
+        if expired:
+            out["expired_waiting"] = expired
+    # WAITING_EXTERNAL_CHANGE holds no capacity (not an ACTIVE state): unrelated approved orders keep being scheduled
     cand = store.next_candidate(float(eff.get("queue.priority_aging_seconds", 3600)), now=now)
     if cand is None:
         return {**out, "action": "idle", "epoch": epoch}

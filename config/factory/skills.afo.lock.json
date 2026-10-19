@@ -2,6 +2,10 @@
   "schema": "forge-c/skills-lock-afo/0.1",
   "skill_version": "0.4.0",
   "skills": {
+    "afo-factory-maintainer": {
+      "path": "factory/skills/afo/afo-factory-maintainer/SKILL.md",
+      "sha256": "56151b9cf741a5dc6c2281cdd12958290fc946cad9be711f03ff4cc29588a7d9"
+    },
     "afo-recovery-planner": {
       "path": "factory/skills/afo/afo-recovery-planner/SKILL.md",
       "sha256": "d500d31090598c132df8ad9e7aee59f2b2b032f61d1ee7db04288a19998ec37a"

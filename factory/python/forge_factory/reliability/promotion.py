@@ -85,7 +85,10 @@ def _quality(base_wt: Path, cand_wt: Path) -> tuple[str, str | None, list[str]]:
 
 def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, reproducers: list[str] | None = None,
              kind: str = "FIX", pool: RR.WorktreePool | None = None, repo: Path = REPO_ROOT,
-             skip_quality: bool = False) -> dict:
+             skip_quality: bool = False, staged_manifest: Path | None = None) -> dict:
+    """`staged_manifest` (AFO-T048): reproducers a deterministic broker sealed OUTSIDE the repo for a maintainer
+    candidate (ids `AFO-*`, sha256-checked like the frozen manifest). They serve the reproducer gate only; the
+    prevention gate keeps the frozen tests/reliability manifest, which no candidate can change."""
     cand, base = _rev(candidate, repo), _rev(baseline, repo)
     own_pool = pool is None
     pool = pool or RR.WorktreePool(repo)
@@ -129,12 +132,19 @@ def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, 
             else:
                 gates.append(_gate("policy_integrity", "PASS", ["policy:candidate"]))
         reps, man_issues = RR.load_manifest()
+        staged, staged_issues = RR.load_manifest(staged_manifest) if staged_manifest else ({}, [])
+        staged = {k: v for k, v in staged.items() if k.startswith("AFO-") and k not in reps}
+        if not stopped and staged_issues:
+            gates.append(_gate("reproducer", "FAIL", [f"staged-manifest:{staged_manifest}"], "STAGED_REPRODUCER_INVALID"))
+            reasons.append(f"staged reproducer: {', '.join(staged_issues[:3])}")
+            stop_rest(order[3:])
+            stopped = True
         if not stopped:
             if reproducers:
                 ok = True
                 for rid in reproducers:
-                    b = RR.run(store, policy, rid, base, "BASELINE", pool, reps)
-                    c = RR.run(store, policy, rid, cand, "CANDIDATE", pool, reps)
+                    b = RR.run(store, policy, rid, base, "BASELINE", pool, {**reps, **staged})
+                    c = RR.run(store, policy, rid, cand, "CANDIDATE", pool, {**reps, **staged})
                     good, why = RR.causal_verdict(b, c)
                     repro_refs += [f"reproducer-run:{b['run_id']}", f"reproducer-run:{c['run_id']}"]
                     ok &= good

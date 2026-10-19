@@ -65,6 +65,18 @@ MIGRATIONS = [
       baseline_hash TEXT NOT NULL, upstream TEXT NOT NULL, inspection_ref TEXT NOT NULL, frozen_utc TEXT NOT NULL,
       recorded_utc TEXT NOT NULL, UNIQUE (attempt_id, phase, baseline_hash));
     """,
+    # v3 - AFO-T048/T051: append-only Factory Maintainer proposal records (the database refuses UPDATE/DELETE) and
+    # the moment an order started waiting for an external factory change (bounded TTL)
+    """
+    CREATE TABLE afo_maintainer_proposals (
+      seq INTEGER PRIMARY KEY AUTOINCREMENT, proposal_id TEXT NOT NULL, order_id TEXT, status TEXT NOT NULL,
+      record TEXT NOT NULL, record_sha256 TEXT NOT NULL, recorded_utc TEXT NOT NULL);
+    CREATE TRIGGER afo_proposals_no_update BEFORE UPDATE ON afo_maintainer_proposals
+      BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
+    CREATE TRIGGER afo_proposals_no_delete BEFORE DELETE ON afo_maintainer_proposals
+      BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
+    ALTER TABLE afo_work_orders ADD COLUMN waiting_since_epoch REAL;
+    """,
 ]
 # DISPATCH_PENDING/UNKNOWN -> PREPARED only when reconciliation PROVES the launch never reached Fabro (ADR-AFO-002)
 ATTEMPT_EDGES = {"PREPARED": {"DISPATCH_PENDING", "CANCELLED"},
@@ -97,7 +109,8 @@ class Store:
             have = c.execute("SELECT COALESCE(MAX(version), 0) FROM afo_schema_version").fetchone()[0]
             for v, sql in enumerate(MIGRATIONS, 1):
                 if v > have:
-                    for stmt in (s for s in sql.split(";") if s.strip()):  # inside the IMMEDIATE transaction
+                    # one statement per line end ';' (trigger bodies keep their inner '; ' on one line)
+                    for stmt in (s for s in re.split(r";[ \t]*\n", sql) if s.strip()):  # inside the IMMEDIATE tx
                         c.execute(stmt)
                     c.execute("INSERT INTO afo_schema_version VALUES (?, ?)", (v, utc_now()))
         self.path.chmod(0o600)
@@ -221,6 +234,8 @@ class Store:
             raise QueueError("TRANSITION_DENIED", f"{row['state']}->{to}",
                              ("transition_denied", oid, None, {"from": row["state"], "to": to, "reason": reason,
                                                                "version": row["version"]}, "WARN"))
+        if to == "WAITING_EXTERNAL_CHANGE":  # AFO-T051: the TTL runs from here
+            fields.setdefault("waiting_since_epoch", time.time())
         sets = ", ".join(["state=?", "version=version+1"] + [f"{k}=?" for k in fields])
         n = c.execute(f"UPDATE afo_work_orders SET {sets} WHERE order_id=? AND version=?",  # noqa: S608
                       (to, *fields.values(), oid, row["version"])).rowcount
@@ -372,6 +387,56 @@ class Store:
             c.execute("UPDATE afo_attempts SET state=?, record=?, finished_utc=? WHERE attempt_id=?",
                       (to, json.dumps(rec), rec.get("finished_utc"), aid))
             self._event(c, f"attempt:{to}", r["order_id"], aid, {"from": r["state"]})
+
+    # -- external factory change (T051) and maintainer proposals (T048) ------------------------------------------
+    def expire_waiting(self, ttl_s: float, now: float | None = None) -> list[str]:
+        """WAITING_EXTERNAL_CHANGE is bounded: past the TTL the order is finalized BLOCKED (never waits forever)."""
+        now = now or time.time()
+        out = []
+        for o in self.orders(("WAITING_EXTERNAL_CHANGE",)):
+            if (o["waiting_since_epoch"] or 0) + ttl_s <= now:
+                if self.transition(o["order_id"], "BLOCKED", "WAITING_EXTERNAL_CHANGE_TTL",
+                                   terminal_reason=f"WAITING_EXTERNAL_CHANGE_TTL:{int(ttl_s)}s"):
+                    out.append(o["order_id"])
+        return out
+
+    def external_change_approved(self, oid: str, factory_revision: str, approval_ref: str, actor: str) -> None:
+        """An externally approved and deployed factory change: the order re-enters the queue; admission then creates
+        a NEW attempt on the deployed revision (the old attempt is never resumed in place)."""
+        if not re.fullmatch(r"[0-9a-f]{7,40}", factory_revision) or not approval_ref.strip():
+            raise QueueError("EXTERNAL_CHANGE_UNTRACEABLE", f"{factory_revision!r} {approval_ref!r}")
+        with self.tx() as c:
+            self._transition(c, oid, "QUEUED", f"external change {factory_revision[:12]} approved ({approval_ref[:80]})",
+                             waiting_since_epoch=None, not_before_epoch=0)
+            c.execute("INSERT INTO afo_operator_actions (action, actor, reason, utc) VALUES (?,?,?,?)",
+                      ("external_change_approved", actor, f"{oid} {factory_revision} {approval_ref}"[:300], utc_now()))
+            self._event(c, "external_change_approved", oid, payload={"factory_revision": factory_revision,
+                                                                     "approval_ref": approval_ref[:200]})
+
+    def record_proposal(self, rec: dict, status: str, order_id: str | None = None) -> int:
+        contracts.require("maintenance-proposal", rec)
+        if rec["auto_deployment_allowed"] is not False:  # schema const, repeated here: never relaxed by a schema edit
+            raise QueueError("AUTO_DEPLOYMENT_FORBIDDEN", rec["proposal_id"])
+        body = json.dumps(rec, sort_keys=True)
+        with self.tx() as c:
+            seq = c.execute("INSERT INTO afo_maintainer_proposals (proposal_id, order_id, status, record, record_sha256,"
+                            " recorded_utc) VALUES (?,?,?,?,?,?)", (rec["proposal_id"], order_id, status, body,
+                                                                   sha256_bytes(body.encode()), utc_now())).lastrowid
+            self._event(c, f"proposal:{status}", order_id or rec["proposal_id"],
+                        payload={"proposal_id": rec["proposal_id"], "outcome": rec["outcome"]},
+                        severity="WARN" if status in ("QUARANTINED", "REJECTED") else "INFO")
+        return seq
+
+    def proposal(self, pid: str) -> dict | None:
+        with self.tx() as c:
+            r = c.execute("SELECT * FROM afo_maintainer_proposals WHERE proposal_id=? ORDER BY seq DESC LIMIT 1",
+                          (pid,)).fetchone()
+            return {**dict(r), "record": json.loads(r["record"])} if r else None
+
+    def proposal_history(self, pid: str) -> list[dict]:
+        with self.tx() as c:
+            return [{**dict(r), "record": json.loads(r["record"])} for r in c.execute(
+                "SELECT * FROM afo_maintainer_proposals WHERE proposal_id=? ORDER BY seq", (pid,))]
 
     # -- backup / restore (T025) ---------------------------------------------------------------------------------
     def backup(self, dest: Path) -> dict:

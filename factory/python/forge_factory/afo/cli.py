@@ -4,6 +4,8 @@
   python -m forge_factory.afo.cli status | list [--state S]
   python -m forge_factory.afo.cli pause|drain|resume --reason "..."
   python -m forge_factory.afo.cli backup <dest.sqlite3>
+  python -m forge_factory.afo.cli external-change <order_id> --revision <sha> --approval-ref <ref> --reason "..."
+  python -m forge_factory.afo.cli maintainer-process|maintainer-publish <proposal_id>     # AFO M5 broker steps
 
 Operator controls are authenticated by the OS: only the account that owns the Conductor state directory may run
 them (agents run under policy-scoped MCP roles and never get this CLI), and every control is recorded with actor and
@@ -44,10 +46,14 @@ def operator_ok() -> bool:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.afo.cli")
-    ap.add_argument("cmd", choices=["submit", "status", "list", "pause", "drain", "resume", "backup"])
+    ap.add_argument("cmd", choices=["submit", "status", "list", "pause", "drain", "resume", "backup",
+                                    "external-change", "maintainer-process", "maintainer-publish"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--state")
     ap.add_argument("--reason", default="")
+    ap.add_argument("--revision", default="")
+    ap.add_argument("--approval-ref", default="")
+    ap.add_argument("--capa")
     a = ap.parse_args(argv)
     store = Store()
     if a.cmd == "submit":
@@ -79,6 +85,28 @@ def main(argv: list[str] | None = None) -> int:
         print("refused: give --reason", file=sys.stderr)
         return 3
     actor = getpass.getuser()
+    if a.cmd == "external-change":  # AFO-T051: an externally approved and deployed factory change re-queues the order
+        try:
+            store.external_change_approved(a.arg, a.revision, a.approval_ref, actor)
+        except QueueError as e:
+            print(json.dumps({"refused": e.code, "detail": e.detail}))
+            return 1
+        print(json.dumps({"order_id": a.arg, "state": store.order(a.arg)["state"]}))
+        return 0
+    if a.cmd in ("maintainer-process", "maintainer-publish"):  # AFO M5: deterministic broker steps, never the agent
+        from ..reliability.policy import load as cre_policy
+        from ..reliability.store import CREStore
+        from . import maintainer as M
+
+        try:
+            rec = (M.process(store, a.arg, CREStore(), cre_policy(), capa_id=a.capa) if a.cmd == "maintainer-process"
+                   else M.publish(store, a.arg, load()))
+        except M.MaintainerDenied as e:
+            print(json.dumps({"refused": e.code, "detail": e.detail}))
+            return 1
+        print(json.dumps({"proposal_id": a.arg, "outcome": rec["outcome"], "branch_ref": rec["branch_ref"],
+                          "pr_url": rec["pr_url"], "cre_promotion_id": rec["cre_promotion_id"]}))
+        return 0
     if a.cmd == "pause":
         store.set_control("paused", "1", actor, a.reason)
     elif a.cmd == "drain":

@@ -26,3 +26,28 @@ agents:
   task: Read the frozen case through forge-afo-mcp, choose one allowed strategy that changes something material
     (artifact scope, technique or model), and submit it with submit_recovery_plan. Never edit code, tests, requirements,
     oracles, evidence, policies or archives; never ask to disable or relax a gate.
+- id: afo-factory-maintainer
+  # distinct from the infra fabric-repair role (forge-repo-mcp, runtime/** and services/**): one candidate worktree,
+  # factory source allowlist only, sandbox UID `maintainer`, no git/GitHub credentials (the broker owns them)
+  skill: factory/skills/afo/afo-factory-maintainer/SKILL.md
+  description: Prepare (never merge or deploy) one narrow candidate patch for a verified FACTORY_CODE_DEFECT in an
+    isolated worktree, with a reproducer that fails on the baseline.
+  phase: null
+  model: qwen3:8b  # registry default like the 20 base roles; the run profile chooses the model
+  model_provider: ollama
+  max_stage_tokens: 24000
+  max_turns: 20
+  max_mcp_output_bytes: 2048
+  allowed_tools:
+  - forge-maintainer-mcp.read_case
+  - forge-maintainer-mcp.read_source
+  - forge-maintainer-mcp.write_source
+  - forge-maintainer-mcp.run_candidate_tests
+  - forge-maintainer-mcp.submit_candidate
+  readonly: false
+  output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
+  status: IMPLEMENTED_AFO_DISABLED_BY_POLICY
+  task: Read the case, write the smallest allowlisted fix plus a candidate-owned reproducer test under
+    factory/python/tests/afo_candidate/ that prints SYMPTOM_PRESENT on the baseline and SYMPTOM_ABSENT on the fix,
+    run it with run_candidate_tests and submit with submit_candidate. Never touch tests/reliability, holdouts,
+    evidence, policies, checklists, requirements, skills, registries or the AFO/CRE code; never weaken a gate.

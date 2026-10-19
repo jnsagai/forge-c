@@ -61,6 +61,9 @@ def cycle(n: int) -> tuple[str, bool, str]:
             if ws.is_dir():
                 checkpoints.capture(store, o["order_id"], att["attempt_id"], ws)
         dispatch.validate(store, runtime.workspace_of)
+        from . import maintainer
+
+        maintainer.open_cases(store, eff)  # AFO M5: no-op unless maintenance.enable_factory_maintainer
         store.forward_events()
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 

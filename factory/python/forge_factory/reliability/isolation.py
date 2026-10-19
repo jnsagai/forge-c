@@ -5,6 +5,7 @@ repair-candidate code as DIFFERENT host UIDs from the production account:
   production (Fabro, agents, MCP tools)  -> the owner account (uid 1000)
   verifier   (reproducers, benchmarks, promotion quality gate) -> container uid 2001 = host uid 102000
   repair     (candidate code under evaluation)                    -> container uid 2002 = host uid 102001
+  maintainer (AFO-T046: Factory Maintainer candidate tests)      -> container uid 2003 = host uid 102002
 Kernel-enforced: the host filesystem is visible READ-ONLY (only the toolchain/repo/data-root paths it needs are
 bind-mounted), /tmp is private, the only writable place is a per-run scratch directory owned by the sandbox UID,
 the network is off for the verifier, HOME is empty, and the owner's 0600 credentials (dashboard tokens, Fabro dev
@@ -26,7 +27,7 @@ from pathlib import Path
 
 from ..common import REPO_ROOT, data_root
 
-ROLES = {"verifier": 2001, "repair": 2002}
+ROLES = {"verifier": 2001, "repair": 2002, "maintainer": 2003}
 SHORT = Path.home() / ".forge-podman"  # podman limits runroot paths to 50 chars: short symlink -> loop10
 MODE_ENV = "FORGE_CRE_ISOLATION"  # podman (default when available) | none
 

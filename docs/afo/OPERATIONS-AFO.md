@@ -85,3 +85,18 @@ anything not yet switched.
 - **Heartbeat:** `$FORGE_STATE_DIR/afo/conductor.heartbeat`
 - **Alerts:** `$FORGE_STATE_DIR/afo/alerts.jsonl`
 - **Every decision AFO takes:** `$FORGE_STATE_DIR/afo/decisions.jsonl`
+
+## 7. Factory Maintainer proposals (M5, ADR-AFO-003)
+
+- Disabled by policy (`maintenance.enable_factory_maintainer: false`, `allow_proposal_pr: false`).
+- When enabled, the Conductor prepares a case per order in WAITING_EXTERNAL_CHANGE. A case is an isolated worktree
+  under the sandbox volume.
+- After the maintainer agent submits, the operator runs:
+  - `python -m forge_factory.afo.cli maintainer-process <proposal_id> [--capa CAPA-NNN]`: veto, baseline
+    reproducer, CAPA link and CRE evaluation. It can take about 1 h.
+  - `python -m forge_factory.afo.cli maintainer-publish <proposal_id>`: local branch `afo/proposal/<id>`; a draft
+    PR only if `allow_proposal_pr` is on.
+- Merging is a human decision outside AFO.
+- After an approved change is deployed: `python -m forge_factory.afo.cli external-change <order_id> --revision <sha>
+  --approval-ref <PR/decision> --reason "..."`. Otherwise the order ends BLOCKED after
+  `budgets.max_order_wall_seconds`.
