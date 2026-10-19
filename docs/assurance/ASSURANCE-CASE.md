@@ -1,12 +1,12 @@
 # Feature 006 assurance case summary (generated)
 
-Generated 2026-10-19T05:00:44.057527Z at `0f7a97839990`.
+Generated 2026-10-19T08:40:02.128823Z at `5053d0e54d42`.
 
 This is bounded engineering evidence for offline human review. It is not an ISO 26262 or Automotive SPICE conformance statement, not an ASIL approval and not a safety sign-off.
 
 ## Readiness
 
-- Implementation: PARTIAL; configured mode: PILOT (profile ENHANCED).
+- Implementation: COMPLETE; configured mode: PILOT (profile ENHANCED).
 - Normative method catalog: RECONCILED (47 entries reconciled table by table against the owner-registered ISO 26262-6:2018 copy by the named human reviewer).
 - Technical gates end to end: DEMONSTRATED; product yield: 0.0.
 - Safety approval: none (outside the factory).
@@ -15,14 +15,12 @@ This is bounded engineering evidence for offline human review. It is not an ISO 
 
 - MODE:HUMAN_AUTHORIZATION_MISSING
 - MODE:VALIDATED_PILOT_MISSING
-- E2E:NO_READY_PACKAGE (42 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)
+- E2E:NO_READY_PACKAGE (49 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)
 
 ## Top-level claims
 
 | Claim | Status | Evidence / counterevidence |
 |---|---|---|
-| EASA-T069 | FAIL | status FAIL exit 1 |
-| EASA-T079 | PARTIAL | LL r122/r125 and HAL r124/r136 pass AT-094 (six matrices, nothing uncovered). Scope ASIL B: packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package; HAL r136 also escalated DEF-005 (Renode RCC_CR reset value vs RM) for an owner decision. |
 
 ## Stated limitations
 
@@ -33,4 +31,4 @@ This is bounded engineering evidence for offline human review. It is not an ISO 
 
 ## Task and requirement status
 
-Tasks: FAIL 1, PASS 71. FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0. Details: `docs/assurance/EASA-STATUS.md`.
+Tasks: PASS 72. FRs: COVERED 72, PARTIAL 0, BLOCKED 0, OPEN 0. Details: `docs/assurance/EASA-STATUS.md`.

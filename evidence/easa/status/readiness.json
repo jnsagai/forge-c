@@ -2,7 +2,7 @@
   "decision": "NOT_READY",
   "note": "Readiness only; switching the mode needs policy.request_mode with a human authorization.",
   "pilots": {
-    "finished": 42,
+    "finished": 49,
     "ready": 0,
     "runs": {
       "WO-0002A-STM32N6-RCC-LL-r108": "BLOCKED",
@@ -21,6 +21,8 @@
       "WO-0002A-STM32N6-RCC-LL-r121": "BLOCKED",
       "WO-0002A-STM32N6-RCC-LL-r122": "BLOCKED",
       "WO-0002A-STM32N6-RCC-LL-r125": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r153": "BLOCKED",
+      "WO-0002A-STM32N6-RCC-LL-r158": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r123": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r124": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r126": "BLOCKED",
@@ -46,7 +48,12 @@
       "WO-0002B-STM32N6-RCC-HAL-r149": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r150": "BLOCKED",
       "WO-0002B-STM32N6-RCC-HAL-r151": "BLOCKED",
-      "WO-0002B-STM32N6-RCC-HAL-r152": "BLOCKED"
+      "WO-0002B-STM32N6-RCC-HAL-r152": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r153": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r154": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r155": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r156": "BLOCKED",
+      "WO-0002B-STM32N6-RCC-HAL-r157": "BLOCKED"
     },
     "technical_pass": [
       "WO-0002A-STM32N6-RCC-LL-r122",
@@ -58,7 +65,12 @@
       "WO-0002B-STM32N6-RCC-HAL-r149",
       "WO-0002B-STM32N6-RCC-HAL-r150",
       "WO-0002B-STM32N6-RCC-HAL-r151",
-      "WO-0002B-STM32N6-RCC-HAL-r152"
+      "WO-0002B-STM32N6-RCC-HAL-r152",
+      "WO-0002B-STM32N6-RCC-HAL-r154",
+      "WO-0002B-STM32N6-RCC-HAL-r155",
+      "WO-0002B-STM32N6-RCC-HAL-r156",
+      "WO-0002B-STM32N6-RCC-HAL-r157",
+      "WO-0002A-STM32N6-RCC-LL-r158"
     ],
     "yield": 0.0
   },
@@ -66,12 +78,12 @@
     "blocking_items": [
       "MODE:HUMAN_AUTHORIZATION_MISSING",
       "MODE:VALIDATED_PILOT_MISSING",
-      "E2E:NO_READY_PACKAGE (42 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
+      "E2E:NO_READY_PACKAGE (49 finished pilot runs, 0 READY_FOR_OFFLINE_REVIEW)"
     ],
     "configured_mode": "PILOT",
     "e2e_product_yield": 0.0,
     "feature": "006-enhanced-ai-software-assurance",
-    "implementation": "PARTIAL",
+    "implementation": "COMPLETE",
     "normative_catalog_status": "RECONCILED",
     "safety_approval": null,
     "technical_gates": "DEMONSTRATED"
