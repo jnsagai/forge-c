@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/review-packs/rcc-hal-r154/verify_signoff.py",
+    "evidence/v0.4/review-packs/rcc-hal-r154/signoffs.json",
+    "T-010"
+  ],
+  "duration_s": 0.027,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "6a920f40e4208f6d06c1c8cceaef325a55631de2",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/001-T-010/20261019T074844.log",
+  "log_sha256": "399d04d798a3b99d280576372136a28703306c67aafc3e2e0831f7cdb17930c6",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "001-T-010",
+  "ts_utc": "2026-10-19T07:48:44.431613Z"
+}
