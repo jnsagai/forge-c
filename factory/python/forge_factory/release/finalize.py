@@ -279,7 +279,9 @@ def owner_safety_documents(wo: dict, stage: Path) -> list[str]:
     for d in wo.get("owner_safety_documents") or []:
         if (stage / d["path"]).is_file():
             lines.append(f"- `{d['path']}`: signed by {d['approved_by']} on {d['approved_at']} (SHA-256 "
-                         f"`{d['sha256'][:16]}`). An engineering review record, not a safety approval or certification.")
+                         f"`{d['sha256'][:16]}`, {d.get('decision') or 'no decision id'}). Its open findings and "
+                         "questions are listed in the document. An engineering review record, not a safety approval "
+                         "or certification.")
     lines += [f"- Owner safety document not used: `{i}`." for i in wo.get("owner_safety_document_issues") or []]
     return lines
 

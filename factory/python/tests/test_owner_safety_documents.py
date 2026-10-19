@@ -83,37 +83,43 @@ def test_unregistered_documents_are_issues():
         [], ["SAFETY_DOC_NOT_REGISTERED:software_safety_analysis", "SAFETY_DOC_NOT_REGISTERED:tool_assurance_assessment"])
 
 
-def test_committed_rcc_drafts_are_registered_but_not_signed():
+def test_committed_rcc_register_is_either_an_unsigned_draft_or_an_intact_signature():
     dec = yaml.safe_load((REPO_ROOT / scope.DECISIONS).read_text())["decisions"][0]
     reg = dec["safety_documents"]
     assert set(reg) == set(scope.DOC_FILES)
-    for e in reg.values():
-        text = (REPO_ROOT / e["path"]).read_text()
-        assert e["approved_by"] is None and e["sha256"] is None and scope.DRAFT_MARK.search(text)
-        assert scope.claim_text_findings({"target_asil": "B"}, text) == []  # no compliance claim, ASIL B only
     docs, issues = scope.owner_documents(dec, reg["software_safety_analysis"]["basis"], REPO_ROOT)
-    assert docs == [] and issues == ["SAFETY_DOC_NOT_SIGNED:software_safety_analysis",
-                                     "SAFETY_DOC_NOT_SIGNED:tool_assurance_assessment"]
+    signed = {d["key"] for d in docs}
+    for key, e in reg.items():
+        text = (REPO_ROOT / e["path"]).read_text()
+        assert scope.claim_text_findings({"target_asil": "B"}, text) == []  # no compliance claim, ASIL B only
+        if key in signed:
+            assert not scope.DRAFT_MARK.search(text) and scope._human(e["approved_by"])
+        else:
+            assert e["approved_by"] is None and e["sha256"] is None and scope.DRAFT_MARK.search(text)
+            assert f"SAFETY_DOC_NOT_SIGNED:{key}" in issues
+    assert len(docs) + len(issues) == len(scope.DOC_FILES)
 
 
-def _signed_scope(tmp_path, monkeypatch, texts):
-    """Point the scope decisions at a copy of the committed file whose RCC decision has a signed register."""
+def _scope_with(tmp_path, monkeypatch, register: dict):
+    """Point the scope decisions at a copy of the committed file whose RCC decision has the given register."""
     real = yaml.safe_load((REPO_ROOT / scope.DECISIONS).read_text())
-    _ws, man = WO.prepare(LL_EX, "WO-LL-BASIS")  # the example's real source requirements hash
-    basis = json.loads((_ws / ".forge-run/safety_scope.json").read_text())["scope"]["source_requirements_hash"]
-    assert man["owner_safety_documents"] == []
-    real["decisions"][0].update(_docs(tmp_path, monkeypatch, texts, basis=basis))
+    real["decisions"][0]["safety_documents"] = register
     p = tmp_path / "safety-scope.yaml"
     p.write_text(yaml.safe_dump(real))
     monkeypatch.setattr(scope, "DECISIONS", str(p))
 
 
 def test_prepare_copies_only_signed_documents_read_only(tmp_path, monkeypatch):
+    unsigned = {k: {"path": f"{scope.DOC_DIR}SC-T/{k}.md", "basis": "x", "sha256": None, "approved_by": None,
+                    "approved_at": None} for k in scope.DOC_FILES}
+    _scope_with(tmp_path, monkeypatch, unsigned)
     _ws0, man0 = WO.prepare(LL_EX, "WO-LL-UNSIGNED")
     assert man0["owner_safety_documents"] == [] and not (_ws0 / "safety/software_safety_analysis.md").exists()
     assert "SAFETY_DOC_NOT_SIGNED:software_safety_analysis" in man0["owner_safety_document_issues"]
+    basis = json.loads((_ws0 / ".forge-run/safety_scope.json").read_text())["scope"]["source_requirements_hash"]
 
-    _signed_scope(tmp_path, monkeypatch, {"software_safety_analysis": SIGNED, "tool_assurance_assessment": DRAFT})
+    texts = {"software_safety_analysis": SIGNED, "tool_assurance_assessment": DRAFT}
+    _scope_with(tmp_path, monkeypatch, _docs(tmp_path, monkeypatch, texts, basis=basis)["safety_documents"])
     ws, man = WO.prepare(LL_EX, "WO-LL-SIGNED")
     f = ws / "safety/software_safety_analysis.md"
     assert f.read_text() == SIGNED and (f.stat().st_mode & 0o222) == 0
