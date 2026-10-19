@@ -1,0 +1,88 @@
+openapi: 3.1.0
+info:
+  title: Forge-C Control Room API (feature 007)
+  version: 0.1.0
+  description: >
+    Read-only, model-free projections for the factory manager. Same auth as the dashboard API (bearer token or
+    forge_dashboard_session cookie; roles viewer/auditor). Served on 127.0.0.1 only. No endpoint changes factory
+    state. Values whose inputs are missing are NOT_MEASURED with a reason, never defaulted.
+servers:
+  - url: http://127.0.0.1:8765
+security:
+  - bearer: []
+  - cookie: []
+paths:
+  /control-room:
+    get:
+      summary: Control Room page (static HTML; data loads through the endpoints below)
+      security: []
+      responses:
+        "200": {description: HTML page}
+  /api/v1/control-room/floor:
+    get:
+      summary: Live floor snapshot (stations, andon, units in progress and finished in the last 24 h)
+      responses:
+        "200":
+          description: Floor snapshot
+          content:
+            application/json:
+              schema: {$ref: "floor-snapshot.schema.json"}
+        "401": {description: authentication required}
+  /api/v1/control-room/stream:
+    get:
+      summary: SSE stream of floor snapshots (event "floor" when content_hash changes; event "heartbeat" every second with data_age_s)
+      parameters:
+        - {name: max_seconds, in: query, schema: {type: integer, minimum: 1, maximum: 300, default: 60}}
+      responses:
+        "200": {description: text/event-stream}
+  /api/v1/control-room/scorecard:
+    get:
+      summary: Scorecard for a window and the previous same-length window (counts + K01-K20 from the KPI engine)
+      parameters:
+        - {name: window, in: query, schema: {type: string, enum: [shift, today, 7d, 30d, custom], default: today}}
+        - {name: start, in: query, description: "custom only, local ISO date-time", schema: {type: string}}
+        - {name: end, in: query, description: "custom only, local ISO date-time", schema: {type: string}}
+      responses:
+        "200":
+          description: Scorecard (see data-model.md#scorecard)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [window, previous, counts, kpis, previous_kpis, violations_open]
+  /api/v1/control-room/quality:
+    get:
+      summary: Per-station control charts (first-pass yield p-chart, cycle-time I-MR) and Pareto of loss reasons
+      parameters:
+        - {name: station, in: query, schema: {type: string, enum: ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]}}
+        - {name: window, in: query, schema: {type: string, enum: [7d, 30d, 90d], default: 30d}}
+      responses:
+        "200":
+          description: "{charts: [ControlChart], pareto: [ParetoEntry], capa: [...]} (data-model.md)"
+  /api/v1/control-room/usage:
+    get:
+      summary: Model usage per run/station/role/model and cost (NOT_MEASURED without a price)
+      parameters:
+        - {name: window, in: query, schema: {type: string, enum: [shift, today, 7d, 30d], default: 7d}}
+      responses:
+        "200":
+          description: "{records: [ModelUsageRecord], by_model: [...], by_station: [...], not_reported_share, tokens_per_ready_unit}"
+  /api/v1/control-room/alerts:
+    get:
+      summary: Open alerts (deterministic conditions; stable alert_id; acknowledgement is client-side only)
+      responses:
+        "200":
+          description: "{alerts: [Alert], violations_open: int}"
+  /api/v1/control-room/export:
+    get:
+      summary: Export scorecard, quality or usage data with evidence references
+      parameters:
+        - {name: view, in: query, required: true, schema: {type: string, enum: [scorecard, quality, usage, floor]}}
+        - {name: format, in: query, schema: {type: string, enum: [json, csv], default: json}}
+        - {name: window, in: query, schema: {type: string, default: today}}
+      responses:
+        "200": {description: JSON or CSV attachment}
+components:
+  securitySchemes:
+    bearer: {type: http, scheme: bearer}
+    cookie: {type: apiKey, in: cookie, name: forge_dashboard_session}

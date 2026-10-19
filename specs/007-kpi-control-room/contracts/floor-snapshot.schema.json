@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/control-room-floor/0.1",
+  "title": "Control Room floor snapshot",
+  "type": "object",
+  "required": ["schema", "generated_at", "data_age_s", "stale", "factory_status", "stations", "units", "content_hash"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "forge-c/control-room-floor/0.1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "data_age_s": {"type": ["number", "null"], "minimum": 0},
+    "stale": {"type": "boolean"},
+    "factory_status": {"enum": ["PRODUCING", "ATTENTION", "STOPPED", "NO_WIP", "VIOLATION"]},
+    "violations_open": {"type": "integer", "minimum": 0},
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stations": {
+      "type": "array", "minItems": 7, "maxItems": 7,
+      "items": {
+        "type": "object",
+        "required": ["station_id", "andon", "units", "oldest_wait_s", "reason", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "station_id": {"enum": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6", "SHIPPING"]},
+          "andon": {"enum": ["RUNNING", "REWORK", "BLOCKED", "IDLE"]},
+          "units": {"type": "array", "items": {"type": "string"}},
+          "oldest_wait_s": {"type": ["number", "null"], "minimum": 0},
+          "reason": {"type": ["string", "null"], "maxLength": 300},
+          "evidence": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["work_order", "order_id", "class", "admitted_at", "station", "status", "station_since", "elapsed_s",
+                     "rework_cycles", "first_pass", "package", "run", "models", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "work_order": {"type": "string"},
+          "order_id": {"type": "string"},
+          "class": {"type": "object"},
+          "admitted_at": {"type": "string"},
+          "station": {"enum": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6", "SHIPPING"]},
+          "status": {"enum": ["RUNNING", "REWORK", "BLOCKED", "READY", "STOPPED"]},
+          "station_since": {"type": ["string", "null"]},
+          "elapsed_s": {"type": "number", "minimum": 0},
+          "rework_cycles": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+          "first_pass": {"type": "object", "additionalProperties": {"enum": ["PASS", "FAIL", null]}},
+          "package": {"type": ["object", "null"]},
+          "run": {"type": "object"},
+          "models": {"type": "object"},
+          "reason": {"type": ["string", "null"], "maxLength": 300}
+        }
+      }
+    }
+  }
+}
