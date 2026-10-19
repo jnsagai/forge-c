@@ -1,0 +1,331 @@
+<title>RCC HAL r154 Sign-off</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+/* Layout: a review dossier - package identity strip, then one tab per backlog task, each a checklist with a signing block at its foot */
+:root {
+  --bg: #f6f7f8; --surface: #ffffff; --ink: #18212b; --muted: #5a6673; --rule: #d8dde3;
+  --accent: #1d4e7a; --accent-soft: #e3ecf5; --ok: #1f7a4d; --ok-soft: #e2f2e9;
+  --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #a83232; --bad-soft: #f8e1e1;
+  --f-display: "IBM Plex Serif", Georgia, serif; --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12171d; --surface: #1a2129; --ink: #e4e9ee; --muted: #9aa6b2; --rule: #2e3843;
+  --accent: #8cb8e3; --accent-soft: #1f3247; --ok: #6fcf9c; --ok-soft: #173426;
+  --warn: #e7b062; --warn-soft: #3a2c14; --bad: #ef8b8b; --bad-soft: #3b1d1d; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #12171d; --surface: #1a2129; --ink: #e4e9ee; --muted: #9aa6b2; --rule: #2e3843;
+  --accent: #8cb8e3; --accent-soft: #1f3247; --ok: #6fcf9c; --ok-soft: #173426;
+  --warn: #e7b062; --warn-soft: #3a2c14; --bad: #ef8b8b; --bad-soft: #3b1d1d; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 64px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font: 600 1.75rem/1.2 var(--f-display); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.2rem/1.3 var(--f-display); margin: 0; text-wrap: balance; }
+h3 { font: 600 0.95rem/1.3 var(--f-body); margin: 0; }
+.lede { color: var(--muted); max-width: 70ch; margin: 6px 0 0; }
+.mono { font-family: var(--f-mono); font-size: 0.86em; }
+.label { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.strip { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.strip > div { min-width: 0; display: grid; gap: 4px; align-content: start; }
+.hash { word-break: break-all; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+.pill.blocked { background: var(--warn-soft); color: var(--warn); }
+.pill.pass { background: var(--ok-soft); color: var(--ok); }
+.pill.pending { background: var(--accent-soft); color: var(--accent); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.note { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 10px 12px; border-radius: 0 4px 4px 0; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--rule); }
+.tabs button { font: 500 0.92rem var(--f-body); color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 8px 12px; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.tabs button:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { display: grid; gap: 16px; }
+.items { display: grid; gap: 10px; }
+.item { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.item[data-mark="ok"] { border-left: 3px solid var(--ok); }
+.item[data-mark="finding"] { border-left: 3px solid var(--bad); }
+.item-head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.item-title { display: flex; gap: 10px; align-items: baseline; min-width: 0; flex: 1 1 360px; }
+.item-id { font-family: var(--f-mono); font-weight: 500; color: var(--accent); white-space: nowrap; }
+.meta { color: var(--muted); font-size: 0.86rem; }
+.marks { display: flex; gap: 6px; }
+.marks button { font: 500 0.82rem var(--f-body); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink); cursor: pointer; }
+.marks button.on-ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.marks button.on-finding { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.marks button:disabled { cursor: default; opacity: 0.55; }
+textarea { width: 100%; min-height: 64px; font: 0.9rem/1.45 var(--f-body); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--rule); border-radius: 4px; padding: 8px; resize: vertical; }
+.md { min-width: 0; overflow-x: auto; }
+.md p { margin: 0 0 8px; max-width: 75ch; }
+.md table { border-collapse: collapse; font-size: 0.85rem; margin: 4px 0 8px; }
+.md th, .md td { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; vertical-align: top; }
+.md th { background: var(--accent-soft); }
+details summary { cursor: pointer; color: var(--accent); font-size: 0.88rem; }
+.sign { background: var(--surface); border: 1px solid var(--accent); border-radius: 6px; padding: 16px; display: grid; gap: 12px; }
+.verdicts { display: grid; gap: 6px; }
+.verdicts label, .confirm { display: flex; gap: 8px; align-items: flex-start; }
+.btn { font: 600 0.92rem var(--f-body); background: var(--accent); color: var(--surface); border: 0; border-radius: 4px; padding: 9px 16px; cursor: pointer; justify-self: start; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.records { display: grid; gap: 8px; }
+.record { border-top: 1px solid var(--rule); padding-top: 8px; font-size: 0.9rem; }
+.status-line { font-size: 0.88rem; color: var(--muted); min-height: 1.2em; }
+.copy { font: 500 0.75rem var(--f-body); border: 1px solid var(--rule); background: var(--surface); color: var(--accent); border-radius: 4px; padding: 1px 6px; cursor: pointer; margin-left: 6px; }
+.counts { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) { .item { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="label">Forge-C · SPEC-001 human review · T-009 · T-010 · T-018</div>
+    <h1>RCC HAL r154 Sign-off</h1>
+    <p class="lede">Your review of one sealed factory package. Mark each item, choose a verdict and sign. Records are stored with your signed-in identity and bound to the package hash below; only the artifact owner can sign, agents cannot write here.</p>
+  </header>
+
+  <section class="strip" aria-label="Package under review">
+    <div><span class="label">Work order</span><span class="mono" id="wo"></span><span class="meta" id="ll"></span></div>
+    <div><span class="label">Package status</span><span><span class="pill blocked" id="status"></span></span><span class="meta" id="gaps"></span></div>
+    <div><span class="label">Safety scope</span><span id="scope"></span></div>
+    <div style="grid-column: 1 / -1"><span class="label">Archive SHA-256 <button class="copy" id="copyHash" type="button">Copy</button></span><span class="mono hash" id="hash"></span></div>
+  </section>
+
+  <p class="note" id="ownerNote" hidden></p>
+
+  <nav class="tabs" role="tablist" aria-label="Review tasks">
+    <button role="tab" id="tab-T-009" aria-selected="true" data-task="T-009">T-009 Requirements</button>
+    <button role="tab" id="tab-T-010" aria-selected="false" data-task="T-010">T-010 Architecture</button>
+    <button role="tab" id="tab-T-018" aria-selected="false" data-task="T-018">T-018 Independent review</button>
+  </nav>
+  <main id="panel" class="panel" role="tabpanel"></main>
+</div>
+
+<script id="pack-data" type="application/json">{"package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip", "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2", "work_order": "WO-0002B-STM32N6-RCC-HAL-r154", "provided_ll": "WO-0002A-STM32N6-RCC-LL-r125", "status": "BLOCKED", "gaps": ["missing_or_empty_file:safety/software_safety_analysis.md", "missing_or_empty_file:safety/tool_assurance_assessment.md"], "safety_target": "ISO 26262-6:2018 ASIL B evidence candidate", "scope": "HSI and HSE oscillator control, ADC12 and GPDMA1 peripheral clocks and resets, using the provided read-only LL driver. HAL APIs use the HAL_RCC_ prefix, hal_status_t results and const configuration pointers. PLL configuration, clock tree switching, security/privilege configuration, interrupts and low-power modes are outside this work order. Hardware access assumes the caller has the required access rights. HAL status responses, validation rules, fallback behavior and polling bounds below are work-order development contracts, not hardware guarantees from RM0486.", "swrs": [{"id": "SWR-001", "text": "When HSI enable is requested with valid parameters, the RCC driver shall set RCC_CR.HSION and return HAL_OK only after observing RCC_SR.HSIRDY equal to 1 within the caller-supplied timeout.", "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.", "verification": "Host unit test requests HSI enable with readiness initially absent and then present within the supplied timeout; pass if HSION is set and HAL_OK occurs only after HSIRDY is observed equal to 1."}, {"id": "SWR-002", "text": "When HSE enable is requested with valid parameters, the RCC driver shall set RCC_CR.HSEON and return HAL_OK only after observing RCC_SR.HSERDY equal to 1 within the caller-supplied timeout.", "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.", "verification": "Host unit test requests HSE enable with readiness initially absent and then present within the supplied timeout; pass if HSEON is set and HAL_OK occurs only after HSERDY is observed equal to 1."}, {"id": "SWR-003", "text": "When HSI or HSE disable is requested with valid parameters, the RCC driver shall clear the selected RCC_CR.HSION or RCC_CR.HSEON bit and return HAL_OK only after observing the corresponding RCC_SR.HSIRDY or RCC_SR.HSERDY flag equal to 0 within the caller-supplied timeout.", "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.", "verification": "Host unit test exercises both oscillator selectors with readiness initially set and subsequently cleared within the supplied timeout; pass if the selected enable bit is cleared and HAL_OK occurs only after the corresponding ready flag is observed equal to 0."}, {"id": "SWR-004", "text": "When ADC12 or GPDMA1 peripheral clock enable or disable is requested with valid parameters, the RCC driver shall set or clear respectively the selected RCC_AHB1ENR.ADC12EN or RCC_AHB1ENR.GPDMA1EN bit and return HAL_OK.", "source": "RM0486 p.575; work-order HAL scope.", "verification": "Host unit test exercises enable and disable for each peripheral; pass if the selected clock bit matches the requested state and each successful operation returns HAL_OK."}, {"id": "SWR-005", "text": "When ADC12 or GPDMA1 peripheral reset is requested with valid parameters, the RCC driver shall assert and then release the selected RCC_AHB1RSTR.ADC12RST or RCC_AHB1RSTR.GPDMA1RST bit and return HAL_OK with that bit cleared.", "source": "RM0486 p.548; work-order HAL scope.", "verification": "Host unit test observes reset assertion and release for each peripheral; pass if the selected reset bit is asserted before release, is cleared on completion and the result is HAL_OK."}, {"id": "SWR-006", "text": "When an HSI or HSE ready-state wait expires without the requested ready state being observed within the caller-supplied timeout, the RCC driver shall clear the selected oscillator enable bit and return HAL_TIMEOUT with the driver fallback state set to oscillator/clock off.", "source": "RM0486 p.480; RM0486 p.482; work-order failure-response contract.", "verification": "Host unit test holds each selected ready flag opposite to its requested state for enable and disable operations; pass if the driver clears its selected enable bit and returns HAL_TIMEOUT within the supplied timeout bound, leaving the oscillator enable command off."}, {"id": "SWR-007", "text": "When an API receives a NULL configuration pointer or an unknown selector or a timeout argument of 0 or greater than HAL_RCC_TIMEOUT_VALUE, the RCC driver shall return HAL_ERROR without register writes.", "source": "RM0486 p.480; RM0486 p.548; RM0486 p.575; work-order parameter-validation contract.", "verification": "Host unit test covers NULL pointers, selectors outside HSI/HSE or ADC12/GPDMA1 as appropriate, and timeout values 0 and greater than HAL_RCC_TIMEOUT_VALUE; pass if each invalid call returns HAL_ERROR with no register writes."}, {"id": "SWR-008", "text": "While waiting for any oscillator ready-state transition, the RCC driver shall bound every wait to at most the caller-supplied timeout polling iterations and at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations.", "source": "RM0486 p.482; work-order polling budget.", "verification": "Host unit test exercises never-ready and never-cleared conditions for both oscillators with valid timeout values including 1 and HAL_RCC_TIMEOUT_VALUE; pass if each wait ends within the caller-supplied timeout and at most HAL_RCC_TIMEOUT_VALUE polling iterations."}, {"id": "SWR-009", "text": "While no oscillator control has been requested after reset, the RCC driver shall leave RCC_CR.HSION at its documented reset value 1.", "source": "RM0486 p.479; RM0486 p.480.", "verification": "SWE.6 Robot suite reviews the startup behavior against the documented RCC_CR reset value and absence of unsolicited HSION writes; pass if the driver leaves HSION at the documented value 1 under the stated condition, with evidence classified as VERIFIED_AGAINST_DOCUMENTED_RESET_VALUE_ONLY per OD-2026-10-18-01."}, {"id": "SWR-010", "text": "While no oscillator control has been requested after reset, the RCC driver shall leave RCC_CR.HSEON at its reset value 0.", "source": "RM0486 p.479; RM0486 p.480.", "verification": "Host unit test initializes the documented reset state and observes startup without oscillator requests; pass if HSEON remains 0."}, {"id": "SWR-011", "text": "While no peripheral clock or reset operation has been requested after reset, the RCC driver shall leave RCC_AHB1ENR and RCC_AHB1RSTR at their reset values 0.", "source": "RM0486 p.548; RM0486 p.575.", "verification": "Host unit test initializes both registers to their documented reset values and observes startup without peripheral requests; pass if both registers remain 0."}, {"id": "SWR-012", "text": "When executing a valid control operation, the RCC driver shall perform hardware access exclusively through the provided LL_RCC_ functions while preserving all register bits unrelated to the requested oscillator or peripheral.", "source": "RM0486 p.480; RM0486 p.482; RM0486 p.548; RM0486 p.575; work-order provided-LL constraint.", "verification": "Host unit test uses the LL fake to exercise oscillator, clock and reset operations with distinguishable unrelated bit patterns; pass if the corresponding LL operations are used and unrelated bits retain their initial values."}, {"id": "SWR-013", "text": "The RCC driver shall occupy at most 4096 bytes of flash.", "source": "work-order budget (owner development target).", "verification": "SWE.6 Robot suite evaluates the target build's driver-attributable flash usage; pass if usage is at most 4096 bytes."}, {"id": "SWR-014", "text": "The RCC driver shall occupy at most 64 bytes of static RAM.", "source": "work-order budget (owner development target).", "verification": "SWE.6 Robot suite evaluates the target build's driver-attributable static RAM usage; pass if usage is at most 64 bytes."}, {"id": "SWR-015", "text": "The RCC driver shall use at most 128 bytes of stack.", "source": "work-order budget (owner development target).", "verification": "SWE.6 Robot suite evaluates the target build's worst-case driver call-chain stack usage; pass if usage is at most 128 bytes."}], "open_points": "- Target ASIL B scope SC-RCC-2026-10-18 has software safety allocation PENDING owner allocation review; no software safety requirements or allocated safety reaction time are available.\n- The manifest upstream approval status is NOT_PROVIDED, with DRAFT_TEMPLATE and placeholder issues; no approved supplemental HSI contract, safety allocation or budget input is inferred from that template.\n- Silicon revision is UNSPECIFIED; board-specific oscillator characteristics and physical-time limits are not supplied. The polling bound is an iteration limit.\n- OD-2026-10-18-01 limits HSION reset verification to the documented reset value: the Renode RCC model resets every register to 0 and physical target or HIL observation is unavailable.\n- The oscillator-off timeout fallback is a driver enable-command state, not an allocated system safe state or proof of physical clock shutdown.", "arch": {"Basis and scope": "Work order WO-0002B-STM32N6-RCC-HAL-r154; frozen requirements baseline BL-SWE.1-001, hash bc0ad6802d4da27229cdb2817e8fba23bae5588c444a059fb62cfbea431be6ea. This architecture allocates SWR-001 through SWR-015 from workproducts/SWE.1/software_requirements.md.\n\nThe HAL supports HSI and HSE enable/disable and ADC12 and GPDMA1 peripheral clock enable/disable and reset pulses. MSI, LSI, LSE, PLL1 through PLL4, clock tree switching, security/privilege configuration, interrupts and low-power management have no public APIs in this work order. Naming permission does not expand the frozen requirements or the provided LL interface.", "Components": "| Owner | Component | Responsibility |\n| --- | --- | --- |\n| SWC_HAL | software/hal/stm32n6xx_hal_rcc.h | Public hal_status_t, configuration types, selectors, timeout constant and HAL_RCC_ declarations. |\n| SWC_HAL | software/hal/stm32n6xx_hal_rcc.c | Validate arguments, command the selected oscillator/peripheral through LL functions, perform bounded readiness polling and return status. |\n| SWC_LL | PROVIDED software/ll/stm32n6xx_ll_rcc.h | Frozen header-only register accessors from verified work order WO-0002A-STM32N6-RCC-LL-r125; no new requirements allocated to this component. |\n| RCC | External RCC register block | Memory-mapped hardware at 0x56028000 (RM0486 p.176). |\n\nSWC_HAL owns every SWR in this work order. SWC_LL is a provided dependency, not a HAL implementation deliverable. Preserve its manifest SHA-256 a19e118ecd46ec15ececa8358fc8c22d367d1859408df7ba2740e555f2298dcd. The HAL calls only the LL_RCC_ functions actually declared in that header, listed below. Do not add LL functions, modify the provided header, or duplicate register access in the HAL.\n\nDependencies: caller -> SWC_HAL -> SWC_LL -> RCC. The HAL depends on standard fixed-width integer definitions and NULL support; no operating system, timer service, allocation service, callbacks, interrupt handler or other driver is required. Static and dynamic views are architecture_static.puml and architecture_dynamic.puml.", "Register table": "These are all register bits used by this HAL. SWE.3 shall derive its hardware mapping only from this table and use the matching frozen LL declarations. Offsets are bytes from RCC base 0x56028000 (RM0486 p.176).\n\n| Name | Offset | Bit position(s) | Access | RM0486 page |\n| --- | --- | --- | --- | --- |\n| RCC_CR.HSION | 0x000 | 3 | rw; LL enable sets and LL disable clears | p.479 (offset/reset), p.480 (bit/behavior) |\n| RCC_CR.HSEON | 0x000 | 4 | rw; LL enable sets and LL disable clears | p.479 (offset/reset), p.480 (bit/behavior) |\n| RCC_SR.HSIRDY | 0x004 | 3 | r; LL readiness read only | p.481 (offset/access), p.482 (bit/behavior) |\n| RCC_SR.HSERDY | 0x004 | 4 | r; LL readiness read only | p.481 (offset/access), p.482 (bit/behavior) |\n| RCC_AHB1ENR.ADC12EN | 0x250 | 5 | rw; LL enable sets and LL disable clears | p.575 |\n| RCC_AHB1ENR.GPDMA1EN | 0x250 | 4 | rw; LL enable sets and LL disable clears | p.575 |\n| RCC_AHB1RSTR.ADC12RST | 0x210 | 5 | rw; LL ForceReset sets and LL ReleaseReset clears | p.548 |\n| RCC_AHB1RSTR.GPDMA1RST | 0x210 | 4 | rw; LL ForceReset sets and LL ReleaseReset clears | p.548 |\n\nRCC_CR documented reset is 0x00000008: HSION = 1 and HSEON = 0 (RM0486 p.479; RM0486 p.480). RCC_SR reset is 0 (RM0486 p.481). RCC_AHB1ENR and RCC_AHB1RSTR reset are 0 (RM0486 p.575; RM0486 p.548). These values describe hardware, not initialization writes to perform.", "Interfaces": "All public operations return hal_status_t. Define HAL_OK = 0, HAL_ERROR = 1 and HAL_TIMEOUT = 2 in that enumeration. Define HAL_RCC_TIMEOUT_VALUE as 1000U. These values and configuration representations are architecture decisions implementing the frozen development contract.\n\nUse hal_rcc_oscillator_t selectors HAL_RCC_OSC_HSI = 0 and HAL_RCC_OSC_HSE = 1. Use hal_rcc_peripheral_t selectors HAL_RCC_PERIPH_ADC12 = 0 and HAL_RCC_PERIPH_GPDMA1 = 1. The two selector types have separate validation domains.\n\nDefine hal_rcc_osc_config_t with fields hal_rcc_oscillator_t selector and uint32_t timeout. Define hal_rcc_periph_config_t with fields hal_rcc_peripheral_t selector and uint32_t timeout. The caller supplies a const configuration pointer and retains ownership for the entire synchronous call. The driver does not retain pointers or mutate caller configuration.\n\nEvery named operation requires its configuration selector to match its named target; a different selector, including the other supported selector, is a parameter error. This makes the function name the sole authority for the affected hardware. Validate NULL first, then selector and timeout before calling any LL function. A valid timeout is 1U through HAL_RCC_TIMEOUT_VALUE inclusive. Peripheral operations also validate the timeout to implement SWR-007 uniformly, but they perform no polling.\n\n| Public API (return type hal_status_t) | Configuration | LL calls and successful effect |\n| --- | --- | --- |\n| HAL_RCC_HSI_Enable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSI | LL_RCC_HSI_Enable(); poll LL_RCC_HSI_IsReady() for 1U; HAL_OK after observation. |\n| HAL_RCC_HSI_Disable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSI | LL_RCC_HSI_Disable(); poll LL_RCC_HSI_IsReady() for 0U; HAL_OK after observation. |\n| HAL_RCC_HSE_Enable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSE | LL_RCC_HSE_Enable(); poll LL_RCC_HSE_IsReady() for 1U; HAL_OK after observation. |\n| HAL_RCC_HSE_Disable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSE | LL_RCC_HSE_Disable(); poll LL_RCC_HSE_IsReady() for 0U; HAL_OK after observation. |\n| HAL_RCC_ADC12_Enable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_Enable(); return HAL_OK. |\n| HAL_RCC_ADC12_Disable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_Disable(); return HAL_OK. |\n| HAL_RCC_ADC12_Reset(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_ForceReset(); then LL_RCC_ADC12_ReleaseReset(); return HAL_OK with reset released. |\n| HAL_RCC_GPDMA1_Enable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_Enable(); return HAL_OK. |\n| HAL_RCC_GPDMA1_Disable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_Disable(); return HAL_OK. |\n| HAL_RCC_GPDMA1_Reset(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_ForceReset(); then LL_RCC_GPDMA1_ReleaseReset(); return HAL_OK with reset released. |\n\nA Reset operation is the complete assertion/release pulse required by SWR-005; it does not leave reset asserted. There is no separate public ReleaseReset API. No additional LL calls, including IsEnabled queries, are required for peripheral success. No minimum physical reset pulse time is specified by the supplied requirements.", "Hardware/software and isolation assumptions": "The caller has the required oscillator and peripheral security/privilege rights (RM0486 p.480, p.482, p.548, p.575). The HAL does not configure protection or translate access faults into status codes.\n\nThe caller serializes RCC modifications across tasks, interrupts, cores and other register users. LL read-modify-write sequences are not mutually exclusive; unrelated-bit preservation assumes no concurrent writer during the operation. No interrupt masking or locks are introduced.\n\nThe system owner must choose oscillator control consistent with its active clock dependencies. Clock tree switching and system-level fallback are outside this component. Peripheral reset may affect peripheral state (RM0486 p.548), so the caller must quiesce its users before reset. This architecture provides no claimed freedom from interference against concurrent or unauthorized hardware users; isolation depends on the stated access and serialization assumptions.", "Timeouts and error handling": "Oscillator control has logical states Validate -> Command -> Wait -> Complete, or Wait -> Fallback -> Complete. These are call-local control flow, not persistent software state.\n\n1. Validate the pointer, named-target selector and timeout. On failure return HAL_ERROR without any LL command or register writes.\n2. Issue exactly the named oscillator LL enable or disable command.\n3. Perform at most config->timeout readiness calls. Each polling iteration consists of one selected LL_RCC_HSI_IsReady() or LL_RCC_HSE_IsReady() call and comparison with the requested state: 1U for enable, 0U for disable. The first sample counts as iteration one. Stop immediately on a matching observation and return HAL_OK; success on the last allowed sample is valid.\n4. If all allowed samples fail, call the selected oscillator LL Disable function to ensure the enable command is off, then return HAL_TIMEOUT. Apply the same fallback to a disable timeout, even though disable was already commanded. Do not perform another readiness sample, a cleanup wait, or a retry.\n5. HAL_ERROR has no fallback writes because no control request passed validation. HAL_TIMEOUT affects only the requested oscillator; it never disables the other oscillator or peripheral clocks.\n\nEach wait performs at most the caller timeout and at most 1000 readiness samples (SWR-008). Use a bounded uint32_t loop or decrementing counter; no unsigned underflow can extend the wait. No tick source, delays or physical-time units are implied. Polling does not establish a board-specific microsecond limit.\n\nFallback oscillator/clock off is represented by the cleared enable command in RCC_CR; no separate global fallback variable is needed. A timeout does not prove that the ready flag or physical clock is already off. The HAL does not write or simulate a ready flag. The caller receives HAL_TIMEOUT and owns further system recovery. No allocated system safe state or safety reaction time is available.\n\nPeripheral control follows Validate -> one LL enable/disable call -> HAL_OK, or Validate -> LL ForceReset -> LL ReleaseReset -> HAL_OK. Invalid peripheral configurations return HAL_ERROR with no register writes. There are no peripheral wait loops or peripheral HAL_TIMEOUT paths.", "Startup behavior": "There is no initialization API, constructor, automatic reset sequence or file-scope executable register operation. Before an explicit control request, the HAL leaves the documented oscillator and peripheral reset values untouched (SWR-009 through SWR-011). An explicit peripheral request cannot change RCC_CR; an explicit oscillator request cannot change either peripheral register.\n\nHSION reset evidence remains VERIFIED_AGAINST_DOCUMENTED_RESET_VALUE_ONLY under OD-2026-10-18-01. The supplied Renode RCC model resets registers to zero, and physical target/HIL observation is unavailable. Host startup checks may seed documented reset values; the HAL must not write reset values to compensate for the model.", "Memory and stack budget": "| Resource | Mandatory ceiling | Design allocation and verification |\n| --- | --- | --- |\n| Driver-attributable flash | <=4096 B (SWR-013) | Ten small public functions, compact shared validation/poll helpers if useful, inline provided LL accessors; no runtime tables or format strings. Check attributed target text and read-only data in the linked map. |\n| Driver-attributable static RAM | <=64 B (SWR-014) | Planned 0 B: no mutable globals, persistent configuration, retained pointers or heap. MMIO symbol and host test array are not driver RAM allocation. Confirm target data/bss attribution. |\n| Worst-case driver call-chain stack | <=128 B (SWR-015) | Reserve up to 64 B for public entry and up to 64 B total for nested helpers/LL calls. Only scalar locals and counters, no recursion, VLAs or local arrays. Verify compiler stack reports and deepest call chain including non-inlined LL bodies. |\n\nThese are enforced design budgets, not measured results. Caller-owned configuration and test harness storage are external. Compiler-generated helper and inlined LL costs remain attributable to the driver. SWE.3 must keep call depth bounded; downstream target verification must establish actual usage.", "Requirement allocation table": "Every allocation is to SWC_HAL. Function sets in this table refer to the exact public names declared above; the LL component receives no work-order requirement allocation.\n\n| Requirement | Owner | Allocated function(s) / architectural obligation |\n| --- | --- | --- |\n| SWR-001 | SWC_HAL | HAL_RCC_HSI_Enable: set command and observe ready before HAL_OK. |\n| SWR-002 | SWC_HAL | HAL_RCC_HSE_Enable: set command and observe ready before HAL_OK. |\n| SWR-003 | SWC_HAL | HAL_RCC_HSI_Disable, HAL_RCC_HSE_Disable: clear command and observe not-ready before HAL_OK. |\n| SWR-004 | SWC_HAL | HAL_RCC_ADC12_Enable, HAL_RCC_ADC12_Disable, HAL_RCC_GPDMA1_Enable, HAL_RCC_GPDMA1_Disable: selected peripheral clock control. |\n| SWR-005 | SWC_HAL | HAL_RCC_ADC12_Reset, HAL_RCC_GPDMA1_Reset: ordered assertion followed by release. |\n| SWR-006 | SWC_HAL | HAL_RCC_HSI_Enable, HAL_RCC_HSI_Disable, HAL_RCC_HSE_Enable, HAL_RCC_HSE_Disable: disable selected oscillator on timeout and return HAL_TIMEOUT. |\n| SWR-007 | SWC_HAL | All ten public APIs: validate const configuration pointer, selector and 1..1000 timeout before any writes; HAL_ERROR on invalid input. |\n| SWR-008 | SWC_HAL | HAL_RCC_HSI_Enable, HAL_RCC_HSI_Disable, HAL_RCC_HSE_Enable, HAL_RCC_HSE_Disable: at most timeout readiness samples, no unbounded cleanup. |\n| SWR-009 | SWC_HAL | HAL_RCC_HSI_Enable and HAL_RCC_HSI_Disable boundaries: no unsolicited HSION writes or startup routine. |\n| SWR-010 | SWC_HAL | HAL_RCC_HSE_Enable and HAL_RCC_HSE_Disable boundaries: no unsolicited HSEON writes or startup routine. |\n| SWR-011 | SWC_HAL | HAL_RCC_ADC12_Enable, HAL_RCC_ADC12_Disable, HAL_RCC_ADC12_Reset, HAL_RCC_GPDMA1_Enable, HAL_RCC_GPDMA1_Disable, HAL_RCC_GPDMA1_Reset boundaries: no unsolicited peripheral writes. |\n| SWR-012 | SWC_HAL | All ten public APIs: exclusive use of matching provided LL_RCC_ calls and preservation of unrelated bits under serialized access. |\n| SWR-013 | SWC_HAL | All ten public APIs and reachable helpers: flash ceiling 4096 B. |\n| SWR-014 | SWC_HAL | All ten public APIs and reachable helpers: static RAM ceiling 64 B. |\n| SWR-015 | SWC_HAL | All ten public APIs and reachable helpers: call-chain stack ceiling 128 B. |", "Verification interfaces and limitations": "Host unit verification replaces the LL include through the manifest ll-fake-v1 isolation boundary to record exact LL calls, change readiness per polling sample, and check ordering and bounds. Integration verification uses the unchanged provided LL and host-owned register array to check masks, offsets and unrelated-bit preservation. This is a verification seam, not a runtime interface or alternate target implementation.\n\nThe static view supplies owner trace notes for deterministic generation of traceability/matrix_1_swr_to_architecture.csv. No architecture author writes that generated matrix or freezes the baseline.\n\nSilicon revision and board characteristics remain unspecified. Supplemental upstream approvals and allocated software safety requirements remain unavailable as recorded in SWE.1. This architecture implements the frozen development requirements without inventing safety allocation, physical-time behavior or verification outcomes."}, "matrices": {"matrix_1_swr_to_architecture": {"rows": 15, "uncovered": "none"}, "matrix_2_unitspec_to_swr": {"rows": 46, "uncovered": "none"}, "matrix_3_code_to_unitspec": {"rows": 12, "uncovered": "none"}, "matrix_4_unittest_to_unitspec": {"rows": 42, "uncovered": "none"}, "matrix_5_integrationtest_to_architecture": {"rows": 26, "uncovered": "none"}, "matrix_6_validationtest_to_swr": {"rows": 15, "uncovered": "none"}}, "inspections": {"SWE.1": [{"id": "INS-SWE.1-001", "verdict": "PASS"}], "SWE.2": [{"id": "INS-SWE.2-001", "verdict": "PASS"}], "SWE.3": [{"id": "INS-SWE.3-001", "verdict": "PASS"}, {"id": "INS-SWE.3-002", "verdict": "PASS"}], "SWE.4": [{"id": "INS-SWE.4-001", "verdict": "PASS"}], "SWE.5": [{"id": "INS-SWE.5-001", "verdict": "PASS"}], "SWE.6": [{"id": "INS-SWE.6-001", "verdict": "PASS"}]}, "easa": {"mode": "PILOT", "technical_status": "PASS", "blocking_findings": ["EASA:CLM-SWE.1:CONTESTED", "EASA:CLM-SWE.2:CONTESTED", "EASA:CLM-SWE.3:UNSUPPORTED", "EASA:CLM-SWE.4:UNSUPPORTED", "EASA:SAFETY_EVIDENCE_MISSING:hsi", "EASA:SAFETY_EVIDENCE_MISSING:allocation_review", "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis", "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment"], "statement": "Bounded engineering evidence for offline human review; no ISO 26262 / ASPICE conformance, no ASIL approval, no safety sign-off."}, "safety_statement": "# Software safety requirements\n\nTarget ASIL B (SC-RCC-2026-10-18): software safety allocation PENDING owner allocation review - no software safety requirement is allocated yet; this is an open gap, not a claim of safety allocation.\n\nSource: .forge-run/manifest.json target.safety_allocation, approved by Jefferson Nascimento on 2026-10-18.\n\nThe target classification does not allocate software safety requirements. No safety items are listed. Software safety allocation remains an open gap requiring owner review. The oscillator-off fallback and work-order resource and polling budgets are development requirements; no allocated system safe state or safety reaction time is inferred.\n", "known_limitations": "# Known limitations and declared safety gaps (generated from facts)\n\n- This package is an offline review candidate. It is NOT an ISO 26262 / ASIL B approval, ASPICE capability determination, tool qualification or production release.\n- Unit/integration tests and coverage are HOST executions; they are not target (MCU) evidence.\n- MISRA C: Cppcheck addon subset only; MISRA compliance is NOT claimed.\n- Target verification: performed.\n- Footprint scope: object-level target build (cortex-m55, GNU Arm); not a linked firmware image.\n- Disabled optional tools/operations: forge-docs-mcp.build_docs, forge-docs-mcp.render_diagram, forge-sim-mcp.run_hwsim, forge-sim-mcp.run_renode, forge-tests-mcp.gcov_coverage\n", "footprint": {"budgets": {"flash_bytes": 4096, "stack_bytes": 128, "static_ram_bytes": 64, "status": "development targets set by the work-order owner (2026-10-15)"}, "flash_bytes": 576, "max_frame_bytes": 8, "ram_bytes": 0, "scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image"}, "defects": [{"id": "DEF-001", "kind": "CODE", "status": "WITHDRAWN", "summary": "UT-008 fails: oscillator waits poll IsReady timeout+2 times (3 for timeout=1; 1002 for 1000), exceeding SWR-008. The final post-budget query can accept late readiness. Fix driver polling; retain test bounds."}, {"id": "DEF-002", "kind": "TEST", "status": "DECLARED", "summary": "Corrected test setup: two return_from calls replace the same query script, so prior disable tests observed immediate 0, not a 1-to-0 transition. Check immediate off observation and record delayed-clear fidelity limitation. HSI timeout=1 inherited HSE selector; restored valid HSI. Driver DEF-001 rema"}, {"id": "DEF-003", "kind": "TEST", "status": "DECLARED", "summary": "Corrected inherited selector and overwritten fake scripts. Strengthened timeout bounds to <=timeout at 1 and 1000 for all waits; added final/late enable readiness, all-API invalid inputs and LL isolation. Normalize each check to a unique suffix under its trace UT ID. Delayed falling readiness and ra"}, {"id": "DEF-004", "kind": "TEST", "status": "DECLARED", "summary": "UT-012 reused the same identifier at 14 CHECK sites, so run_unit rejected duplicate IDs despite successful host execution. Assigned unique UT-012-C02 through UT-012-C14 suffixes while retaining UT-012 and every original assertion."}, {"id": "DEF-005", "kind": "TEST", "status": "DECLARED", "summary": "Corrected TCHECK 41, 61 and 7 to explicitly assert HAL_OK, HAL_TIMEOUT and HAL_ERROR respectively. Previous status comparisons were in aggregate variables and were not observed by trace verification. Retained all aggregate register and status checks. Rerun inv-2ccc1d95b9d142f9: 15/15 tests passed an"}]}</script>
+<script>
+const DATA = JSON.parse(document.getElementById("pack-data").textContent);
+const PACK_VERSION = "1";
+const $ = (s) => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== undefined && v !== null && v !== false) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+};
+
+// Minimal markdown: pipe tables and paragraphs/bullets; everything as text (no HTML injection)
+function md(src) {
+  const box = el("div", { class: "md" });
+  const lines = String(src || "").split("\n");
+  for (let i = 0; i < lines.length; ) {
+    if (lines[i].trim().startsWith("|")) {
+      const rows = [];
+      while (i < lines.length && lines[i].trim().startsWith("|")) { rows.push(lines[i].trim()); i++; }
+      const cells = rows.filter((r) => !/^\|\s*:?-{2,}/.test(r)).map((r) => r.replace(/^\||\|$/g, "").split("|").map((c) => c.trim()));
+      const t = el("table");
+      cells.forEach((r, ri) => t.append(el("tr", {}, ...r.map((c) => el(ri === 0 ? "th" : "td", { text: c.replace(/\*\*/g, "") })))));
+      box.append(el("div", { style: "overflow-x:auto" }, t));
+      continue;
+    }
+    const para = [];
+    while (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith("|")) { para.push(lines[i].replace(/\*\*/g, "")); i++; }
+    if (para.length) box.append(el("p", { text: para.join("\n"), style: "white-space:pre-wrap" }));
+    while (i < lines.length && !lines[i].trim()) i++;
+  }
+  return box;
+}
+
+// ---- review content per task ----------------------------------------------------------------------------------
+const insp = (ph) => (DATA.inspections[ph] || []).map((x) => x.verdict).join(", ") || "none";
+const TASKS = {
+  "T-009": {
+    title: "Approved SWE requirements for RCC including RAM/ROM/timing",
+    acceptance: "Reviewed requirements baseline.",
+    intro: "The SWE.1 requirements of this work order, as frozen in the package. For each one check that it is correct, unambiguous, verifiable, consistent with RM0486 and the work-order scope, and that its verification criterion uses the requirement's own bound.",
+    items: [
+      { id: "SCOPE", title: "Scope statement", body: DATA.scope },
+      ...DATA.swrs.map((s) => ({ id: s.id, title: s.text, meta: "Source: " + s.source, body: "Verification: " + s.verification })),
+      { id: "OPEN-POINTS", title: "Open points declared by the requirements", body: DATA.open_points },
+      { id: "SAFETY-REQ", title: "Software safety requirements statement", body: DATA.safety_statement },
+    ],
+    verdicts: [["APPROVED", "Approve the requirements baseline"], ["APPROVED_WITH_FINDINGS", "Approve with the findings recorded below (to fix in a later work order)"], ["REJECTED", "Reject: the baseline needs rework before approval"]],
+    confirm: "I reviewed these requirements myself. This approval covers the requirements as written; it is not a safety allocation.",
+  },
+  "T-010": {
+    title: "Software architecture and safety interaction analysis",
+    acceptance: "Signed design review.",
+    intro: "The SWE.2 architecture. The safety-interaction part of this task depends on T-002 (approved safety allocations and safe state), which does not exist yet, so it cannot be reviewed now; your signature covers the architecture only.",
+    items: [
+      ...Object.entries(DATA.arch).map(([k, v]) => ({ id: "ARCH-" + k.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/-+$/, ""), title: k, body: v })),
+      { id: "TRACE-SWR-ARCH", title: "Requirement to architecture trace (matrix 1)", body: `${DATA.matrices.matrix_1_swr_to_architecture.rows} rows, uncovered: ${DATA.matrices.matrix_1_swr_to_architecture.uncovered}. SWE.2 inspection: ${insp("SWE.2")}.` },
+      { id: "SAFETY-INTERACTION", title: "Safety interaction analysis", body: "Not reviewable: needs the approved safety allocation and safe state (T-002).", fixed: "pending" },
+    ],
+    verdicts: [["APPROVED_EXCEPT_SAFETY_INTERACTION", "Approve the architecture; the safety-interaction analysis stays open until T-002"], ["APPROVED_WITH_FINDINGS", "Approve with the findings recorded below"], ["REJECTED", "Reject: the architecture needs rework"]],
+    confirm: "I reviewed this architecture myself. My signature does not cover a safety interaction analysis.",
+  },
+  "T-018": {
+    title: "Independent review and controlled sign-off",
+    acceptance: "Authenticated release record.",
+    intro: "The package as a whole: what the factory produced, what its gates and inspections found, and what is missing. The package is BLOCKED because the ASIL B safety evidence does not exist, so the only truthful outcomes here are 'reviewed, not releasable' or a rejection.",
+    items: [
+      { id: "INSPECTIONS", title: "Phase inspections (AI inspector, deterministic gates)", body: Object.keys(DATA.inspections).sort().map((p) => `${p}: ${insp(p)}`).join("\n") },
+      { id: "MATRICES", title: "Six traceability matrices", body: Object.entries(DATA.matrices).map(([k, v]) => `${k}: ${v.rows} rows, uncovered: ${v.uncovered}`).join("\n") },
+      { id: "DEFECTS", title: "Defects raised during the run", body: DATA.defects.map((d) => `${d.id} (${d.kind}, ${d.status}): ${d.summary}`).join("\n\n") },
+      { id: "FOOTPRINT", title: "Resource use against budgets", body: `Flash ${DATA.footprint.flash_bytes} B (budget ${DATA.footprint.budgets.flash_bytes}), static RAM ${DATA.footprint.ram_bytes} B (budget ${DATA.footprint.budgets.static_ram_bytes}), largest stack frame ${DATA.footprint.max_frame_bytes} B (budget ${DATA.footprint.budgets.stack_bytes}). Scope: ${DATA.footprint.scope}.` },
+      { id: "EASA", title: "Assurance (EASA PILOT) findings", body: `Technical status: ${DATA.easa.technical_status}. Blocking findings in PILOT mode (recorded, not enforced):\n${DATA.easa.blocking_findings.join("\n")}\n\n${DATA.easa.statement}` },
+      { id: "LIMITATIONS", title: "Known limitations stated by the package", body: DATA.known_limitations },
+      { id: "GAPS", title: "Package gaps (why it is BLOCKED)", body: DATA.gaps.join("\n") },
+    ],
+    verdicts: [["REVIEWED_NOT_RELEASABLE", "Reviewed: not releasable while the package is BLOCKED (ASIL B safety evidence missing)"], ["REVIEWED_WITH_FINDINGS", "Reviewed: findings to fix, recorded below"], ["REJECTED", "Rejected"]],
+    confirm: "I reviewed this package myself, independently of the agents that produced and inspected it. This record is not a production release and not an ISO 26262 or ASPICE certification.",
+  },
+};
+
+// ---- per-viewer draft (browser storage, convenience only) -------------------------------------------------------
+const DRAFT_KEY = "rcc-r154-review-draft-v1";
+let draft = {};
+try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}") || {}; } catch (e) { draft = {}; }
+const saveDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (e) { /* storage unavailable */ } };
+const taskDraft = (t) => (draft[t] ||= { items: {}, verdict: "", comment: "", confirmed: false });
+
+// ---- platform state ------------------------------------------------------------------------------------------------
+const state = { db: null, user: null, isOwner: false, myId: null, records: [], active: "T-009" };
+
+function renderStrip() {
+  $("#wo").textContent = DATA.work_order;
+  $("#ll").textContent = "HAL on the provided LL " + DATA.provided_ll;
+  $("#status").textContent = DATA.status;
+  $("#gaps").textContent = DATA.gaps.length + " gaps: " + DATA.gaps.map((g) => g.split("/").pop()).join(", ");
+  $("#scope").textContent = "ASIL " + DATA.safety_target + " (SC-RCC-2026-10-18), allocation pending";
+  $("#hash").textContent = DATA.archive_sha256;
+}
+
+function render() {
+  const t = state.active, def = TASKS[t], d = taskDraft(t);
+  document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.task === t)));
+  const p = $("#panel");
+  p.replaceChildren();
+  p.setAttribute("aria-labelledby", "tab-" + t);
+  const marked = def.items.filter((i) => !i.fixed && d.items[i.id]?.mark).length, total = def.items.filter((i) => !i.fixed).length;
+  const findings = def.items.filter((i) => d.items[i.id]?.mark === "finding").length;
+  p.append(el("div", {}, el("h2", { text: `${t} · ${def.title}` }),
+    el("p", { class: "lede", text: def.intro }),
+    el("p", { class: "meta counts", text: `Acceptance: ${def.acceptance}  ·  Reviewed ${marked} of ${total} items  ·  ${findings} finding(s)` })));
+  const list = el("div", { class: "items" });
+  for (const it of def.items) {
+    const st = d.items[it.id] || {};
+    const card = el("article", { class: "item", "data-mark": it.fixed ? "" : (st.mark || "") });
+    const marks = el("div", { class: "marks" });
+    if (it.fixed) marks.append(el("span", { class: "pill pending", text: "Pending T-002" }));
+    else for (const [m, label] of [["ok", "OK"], ["finding", "Finding"]]) {
+      marks.append(el("button", { type: "button", class: st.mark === m ? "on-" + m : "", "aria-pressed": String(st.mark === m),
+        onclick: () => { d.items[it.id] = { ...st, mark: st.mark === m ? "" : m }; saveDraft(); render(); } }, label));
+    }
+    card.append(el("div", { class: "item-head" }, el("div", { class: "item-title" }, el("span", { class: "item-id", text: it.id }),
+      el("h3", { text: it.title.length > 260 ? it.title.slice(0, 260) + "…" : it.title })), marks));
+    if (it.meta) card.append(el("div", { class: "meta", text: it.meta }));
+    if (it.body) {
+      const long = it.body.length > 700;
+      const body = md(it.body);
+      card.append(long ? el("details", {}, el("summary", { text: "Show content" }), body) : body);
+    }
+    if (st.mark === "finding") {
+      const ta = el("textarea", { id: `note-${t}-${it.id}`, "aria-label": `Finding for ${it.id}`, placeholder: "Describe the finding" });
+      ta.value = st.note || "";
+      ta.addEventListener("input", () => { d.items[it.id] = { ...d.items[it.id], note: ta.value }; saveDraft(); });
+      card.append(ta);
+    }
+    list.append(card);
+  }
+  p.append(list);
+  p.append(signBlock(t, def, d, marked, total));
+  p.append(recordsBlock(t));
+}
+
+function signBlock(t, def, d, marked, total) {
+  const box = el("section", { class: "sign", "aria-label": "Verdict and signature" }, el("h2", { text: "Verdict and signature" }));
+  const vs = el("div", { class: "verdicts", role: "radiogroup" });
+  for (const [v, label] of def.verdicts) {
+    const r = el("input", { type: "radio", name: "verdict-" + t, id: `v-${t}-${v}`, value: v, checked: d.verdict === v });
+    r.addEventListener("change", () => { d.verdict = v; saveDraft(); render(); });
+    vs.append(el("label", { for: `v-${t}-${v}` }, r, el("span", { text: label })));
+  }
+  const cm = el("textarea", { id: "comment-" + t, "aria-label": "Overall comment", placeholder: "Overall comment (optional)" });
+  cm.value = d.comment || "";
+  cm.addEventListener("input", () => { d.comment = cm.value; saveDraft(); });
+  const cb = el("input", { type: "checkbox", id: "confirm-" + t, checked: d.confirmed });
+  cb.addEventListener("change", () => { d.confirmed = cb.checked; saveDraft(); render(); });
+  const missingNotes = def.items.filter((i) => d.items[i.id]?.mark === "finding" && !(d.items[i.id].note || "").trim()).length;
+  const ready = marked === total && d.verdict && d.confirmed && missingNotes === 0 && state.isOwner && state.db && state.myId;
+  const why = !state.db ? "Signing needs the page's data store; open the page in claude.ai while signed in."
+    : !state.isOwner ? "Only the artifact owner can sign this record."
+    : marked < total ? `Mark every item first (${total - marked} left).`
+    : missingNotes ? `Describe ${missingNotes} finding(s) first.`
+    : !d.verdict ? "Choose a verdict." : !d.confirmed ? "Confirm the statement above." : "";
+  const status = el("div", { class: "status-line", id: "sign-status-" + t, text: why });
+  const btn = el("button", { type: "button", class: "btn", disabled: !ready, onclick: () => sign(t, def, d, status, btn) }, `Sign ${t}`);
+  box.append(vs, cm, el("label", { class: "confirm", for: "confirm-" + t }, cb, el("span", { text: def.confirm })), btn, status);
+  return box;
+}
+
+async function sign(t, def, d, status, btn) {
+  btn.disabled = true;
+  status.textContent = "Signing…";
+  const items = {};
+  for (const it of def.items) if (!it.fixed) items[it.id] = { mark: d.items[it.id].mark, note: (d.items[it.id].note || "").trim() };
+  const rec = { task: t, verdict: d.verdict, comment: (d.comment || "").trim(), items, statement: def.confirm,
+    signed_by: state.myId, signed_at: new Date().toISOString(), work_order: DATA.work_order, package: DATA.package,
+    archive_sha256: DATA.archive_sha256, pack_version: PACK_VERSION };
+  try {
+    await state.db.collection("signoffs").add(rec);
+    status.textContent = `Signed ${t}. The record is stored; Claude can now read it back and commit it as evidence.`;
+  } catch (e) {
+    status.textContent = "Not signed: " + (e && e.message ? e.message : "the data store refused the write") + ". Nothing was recorded.";
+    btn.disabled = false;
+  }
+}
+
+function recordsBlock(t) {
+  const box = el("section", { class: "records", "aria-label": "Signed records" }, el("h2", { text: "Signed records" }));
+  const recs = state.records.filter((r) => r.task === t).sort((a, b) => (a.signed_at < b.signed_at ? 1 : -1));
+  if (!state.db) box.append(el("p", { class: "meta", text: "Signed records appear here when the page runs in claude.ai with its data store." }));
+  else if (!recs.length) box.append(el("p", { class: "meta", text: `No signature for ${t} yet. When you sign, the record appears here with your name and time.` }));
+  for (const r of recs) {
+    const nm = el("strong", { text: "…" });
+    const finds = Object.values(r.items || {}).filter((x) => x.mark === "finding").length;
+    box.append(el("div", { class: "record" }, el("div", {}, el("span", { class: "pill " + (r.verdict === "REJECTED" ? "bad" : "pass"), text: r.verdict }), " by ", nm,
+      el("span", { class: "meta", text: ` · ${new Date(r.signed_at).toLocaleString()} · ${finds} finding(s) · package ${r.archive_sha256 === DATA.archive_sha256 ? "matches" : "DIFFERS"}` }))));
+    if (state.user && r.signed_by) state.user.profiles([r.signed_by]).then((ps) => { nm.textContent = ps[r.signed_by]?.name || "the owner"; });
+    else nm.textContent = "the owner";
+  }
+  return box;
+}
+
+document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => { state.active = b.dataset.task; render(); }));
+$("#copyHash").addEventListener("click", () => {
+  navigator.clipboard?.writeText(DATA.archive_sha256).then(() => { $("#copyHash").textContent = "Copied"; },
+    () => { const r = document.createRange(); r.selectNodeContents($("#hash")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); });
+});
+renderStrip();
+render();
+
+(async () => {
+  const [db, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+  state.db = db; state.user = user;
+  if (user) {
+    state.isOwner = await user.isOwner();
+    state.myId = await user.id();
+  }
+  const n = $("#ownerNote");
+  if (db && !state.isOwner) { n.hidden = false; n.textContent = "You can read this review pack and the signed records; only the artifact owner can sign."; }
+  if (db) db.collection("signoffs").onSnapshot((snap) => { state.records = snap.docs.map((x) => x.data()); render(); },
+    () => { state.records = []; render(); });
+  render();
+})();
+</script>
