@@ -563,3 +563,14 @@ reproducers:
     operations: [SWE.4/assurance-oracle]
     root_cause: "Register contract rc-v1 gave op no_write one meaning (no register access at all, as for a NULL configuration) while its schema allowed a register/field on a no_write effect; the SWE.1 author used it for 'leave RCC_CR.HSEON/HSION at reset value' and SWE.2 mapped it to HAL_RCC_GPDMA1_Enable, which writes RCC_AHB1ENR. The contract checker skipped no_write entries and the oracle demanded zero accesses, failing a correct driver (r164 SWR-010/011)."
     remedy: "A no_write effect that names a register means the call leaves that register unchanged (oracle compares the register word before/after); without a register it still means no register access. The checker validates the named register/field against the RM and the SWR, and the SWE.1 contract prompt states both meanings."
+  - id: RPR-052
+    script: rpr052_package_duplicate_compile_unit.py
+    sha256: 1809c871f1b04fabf42e9ce77cdeb91a2150155204600f126d951498575d4d93
+    symptom_signature: "package workspace links the same compile unit twice"
+    observed_in: T-015 on HAL r161-r164
+    baseline_revision: b5bd89441a146a0f384c1190c7e3086d83a13099
+    fix_revision: 6d7ccbc696608c5cf05fe39df2cb7cffb8e9fc73
+    error_codes: ["BASE_BUILD_FAIL", "multiple definition"]
+    operations: [T-015/optimization, sim.build_image]
+    root_cause: "sim.build_image collected every .c of software/hal and software/src; a workspace rebuilt from a sealed package holds the HAL unit in both (packaged flat view), so the target image linked each HAL function twice. The link-error summary dropped 'multiple definition' lines and optimization.collect reported MEASURED although no case had a count."
+    remedy: "One compile unit per file name (software/hal first); 'multiple definition' kept in the error summary; NOT_MEASURED:<reason> when no case produced a count."

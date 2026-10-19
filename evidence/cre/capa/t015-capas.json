@@ -1,0 +1,100 @@
+{
+  "CAPA-048": {
+    "history": [
+      {
+        "at": "2026-10-19T11:50:16.386069Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[\"CAPA-048\"]",
+        "from_state": null,
+        "reason": "T-015 instruction costs never measured on real packages: the target image linked the HAL unit twice (software/hal + packaged software/src) and the report still said MEASURED (HAL r161-r164)",
+        "seq": 397,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T11:50:16.406706Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 398,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T11:50:16.459250Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-052 assigned",
+        "seq": 399,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T11:52:25.139915Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[\"reproducer-run:rr-1b5b00e38620e1d8b462\", \"reproducer-run:rr-136612c0c70a36f36b7f\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 400,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T11:52:25.210912Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[\"git:b5bd89441a14..6d7ccbc69660\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 6d7ccbc69660 (patch 5491 bytes)",
+        "seq": 401,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T11:52:25.345952Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[\"reproducer-run:rr-80ee752a32a29555a602\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-052 absent at 6d7ccbc69660",
+        "seq": 402,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T11:52:25.398580Z",
+        "capa_id": "CAPA-048",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 403,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "b5bd89441a146a0f384c1190c7e3086d83a13099",
+      "6d7ccbc696608c5cf05fe39df2cb7cffb8e9fc73",
+      "pd-c019184d4ff34ce65a82"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<6d7ccbc69660"
+      ],
+      "candidate_patch_sha256": "0665994d1e8c8cfb289b1c817660aca7959e7431a62b77cab635844980b90b22",
+      "capa_id": "CAPA-048",
+      "created_at": "2026-10-19T11:50:16.386069Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-048"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-052",
+      "reproducer_id": "RPR-052",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-1b5b00e38620e1d8b462",
+        "reproducer-run:rr-136612c0c70a36f36b7f"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "build_image collects both source dirs without de-duplication; the status ignores per-case failures",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T11:52:25.398580Z"
+    }
+  }
+}
