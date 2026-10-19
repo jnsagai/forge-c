@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-10",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Dashboard sign-in for the owner's phone",
+  "amends": "OD-2026-10-19-09",
+  "statements": ["drop the token for my phone"],
+  "decision": "While dashboard sign-in is disabled (until deployment), the owner's phone (Tailscale device s22-ultra-de-jefferson, 100.73.215.92) gets the anonymous viewer role without a token, like this machine. It is listed under trusted_devices in config/factory/dashboard-access.yaml.",
+  "agent_note": "The phone is trusted by its Tailscale address and only on a Tailscale connection, because Tailscale authenticates the device; a Wi-Fi/LAN address is assigned by the router to any device and does not identify the phone, so Wi-Fi clients (the phone included) still need the viewer token. The dashboard ignores forwarded-address headers.",
+  "not_changed": "Token required for every other device; AFO operator token for pause/drain/resume; at deployment set auth: token, which also signs in the trusted devices"
+}
