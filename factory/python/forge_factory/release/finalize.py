@@ -352,6 +352,12 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
         easa_bundle(ws, stage, dry_status)
     except Exception as exc:  # noqa: BLE001 - observe-only evidence must never break packaging
         _w(stage, "assurance/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
+    from ..afo.package import bundle_into as afo_bundle  # feature 005: AFO attempts only; never changes the status
+
+    try:
+        afo_bundle(ws, stage, dry_status)
+    except Exception as exc:  # noqa: BLE001 - AFO evidence must never break packaging
+        _w(stage, "operations/afo/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
     sealed: dict = {}
 
     def seal(_key: str) -> dict:

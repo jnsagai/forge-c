@@ -64,6 +64,11 @@ def cycle(n: int) -> tuple[str, bool, str]:
         from . import maintainer
 
         maintainer.open_cases(store, eff)  # AFO M5: no-op unless maintenance.enable_factory_maintainer
+        from . import alerts, deadletter
+
+        window = float(eff.get("notifications.dedupe_window_seconds", 900))
+        deadletter.sweep(store, runtime.workspace_of, window_s=window)  # AFO M6: one case + one alert per BLOCKED
+        alerts.deliver(store)                                          # local fallback always; adapters optional
         store.forward_events()
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 

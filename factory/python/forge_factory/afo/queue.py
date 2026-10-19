@@ -77,6 +77,22 @@ MIGRATIONS = [
       BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
     ALTER TABLE afo_work_orders ADD COLUMN waiting_since_epoch REAL;
     """,
+    # v4 - AFO-T054/T055: one immutable dead-letter case per (order, reason) and a deduplicated notification outbox
+    """
+    CREATE TABLE afo_dead_letters (
+      case_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT, reason_code TEXT NOT NULL,
+      record TEXT NOT NULL, record_sha256 TEXT NOT NULL, state TEXT NOT NULL, recorded_utc TEXT NOT NULL,
+      UNIQUE (order_id, reason_code));
+    CREATE TRIGGER afo_dlq_immutable BEFORE UPDATE OF case_id, order_id, attempt_id, reason_code, record, record_sha256,
+      recorded_utc ON afo_dead_letters BEGIN SELECT RAISE(ABORT, 'IMMUTABLE_DEAD_LETTER'); END;
+    CREATE TRIGGER afo_dlq_no_delete BEFORE DELETE ON afo_dead_letters
+      BEGIN SELECT RAISE(ABORT, 'IMMUTABLE_DEAD_LETTER'); END;
+    CREATE TABLE afo_notifications (
+      notification_id TEXT PRIMARY KEY, dedupe_key TEXT UNIQUE NOT NULL, delivery_state TEXT NOT NULL,
+      channel TEXT NOT NULL, severity TEXT NOT NULL, first_utc TEXT NOT NULL, last_utc TEXT NOT NULL,
+      count INTEGER NOT NULL, payload TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0,
+      next_epoch REAL NOT NULL DEFAULT 0, delivered_utc TEXT);
+    """,
 ]
 # DISPATCH_PENDING/UNKNOWN -> PREPARED only when reconciliation PROVES the launch never reached Fabro (ADR-AFO-002)
 ATTEMPT_EDGES = {"PREPARED": {"DISPATCH_PENDING", "CANCELLED"},

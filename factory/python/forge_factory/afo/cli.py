@@ -47,7 +47,8 @@ def operator_ok() -> bool:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.afo.cli")
     ap.add_argument("cmd", choices=["submit", "status", "list", "pause", "drain", "resume", "backup",
-                                    "external-change", "maintainer-process", "maintainer-publish"])
+                                    "external-change", "maintainer-process", "maintainer-publish", "operator-token",
+                                    "dead-letter-ack", "dead-letter-close"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--state")
     ap.add_argument("--reason", default="")
@@ -106,6 +107,22 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(json.dumps({"proposal_id": a.arg, "outcome": rec["outcome"], "branch_ref": rec["branch_ref"],
                           "pr_url": rec["pr_url"], "cre_promotion_id": rec["cre_promotion_id"]}))
+        return 0
+    if a.cmd == "operator-token":  # AFO-T058: printed once; the dashboard POST controls accept only this bearer token
+        from .dashboard_api import issue_operator_token
+
+        print(json.dumps({"operator_token": issue_operator_token(), "note": "store it like a password; rotate by "
+                          "re-running (the old token stops working)"}))
+        return 0
+    if a.cmd in ("dead-letter-ack", "dead-letter-close"):  # AFO-T054: operator case state only; the record is immutable
+        from . import deadletter
+
+        try:
+            deadletter.set_state(store, a.arg, "ACKNOWLEDGED" if a.cmd.endswith("ack") else "CLOSED", actor, a.reason)
+        except QueueError as e:
+            print(json.dumps({"refused": e.code, "detail": e.detail}))
+            return 1
+        print(json.dumps({"case_id": a.arg, "state": "ACKNOWLEDGED" if a.cmd.endswith("ack") else "CLOSED"}))
         return 0
     if a.cmd == "pause":
         store.set_control("paused", "1", actor, a.reason)
