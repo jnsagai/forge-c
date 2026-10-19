@@ -242,6 +242,17 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         manifest["target"]["safety_allocation"] = allocation_status(sc)
         (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
         (ws / ".forge-run/safety_scope.json").chmod(0o444)
+        # OD-2026-10-19-11: owner-signed safety documents enter the work order read-only, hash-checked; unsigned
+        # drafts never do (the issues are recorded and the package stays BLOCKED on the missing document)
+        for doc in sc.get("documents") or []:
+            data = (REPO_ROOT / doc["source"]).read_bytes()
+            if sha256_bytes(data) != doc["sha256"]:
+                raise ValueError(f"SAFETY_DOC_HASH_MISMATCH:{doc['key']}")
+            (ws / doc["path"]).parent.mkdir(parents=True, exist_ok=True)
+            (ws / doc["path"]).write_bytes(data)
+            (ws / doc["path"]).chmod(0o444)
+        manifest["owner_safety_documents"] = sc.get("documents") or []
+        manifest["owner_safety_document_issues"] = sc.get("document_issues") or []
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 

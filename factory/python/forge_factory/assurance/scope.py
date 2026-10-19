@@ -120,8 +120,59 @@ def owner_scope(example: str, work_order_id: str, source_requirements_hash: str,
         issues = validate(rec)
         if issues:
             raise ValueError(f"SCOPE_DECISION_INVALID:{issues}")
-        return {"scope": rec, "na": d.get("na") or {}, "approved_by": d["approved_by"], "approved_at": d["approved_at"]}
+        docs, doc_issues = owner_documents(d, source_requirements_hash, Path(repo or REPO_ROOT))
+        return {"scope": rec, "na": d.get("na") or {}, "approved_by": d["approved_by"], "approved_at": d["approved_at"],
+                "documents": docs, "document_issues": doc_issues}
     return None
+
+
+DOC_DIR = "config/factory/safety-documents/"
+DOC_FILES = {"software_safety_analysis": "safety/software_safety_analysis.md",
+             "tool_assurance_assessment": "safety/tool_assurance_assessment.md"}
+DRAFT_MARK = re.compile(r"\bDRAFT\b[^\n]{0,60}\bnot approved\b", re.I)
+
+
+def owner_documents(decision: dict, source_requirements_hash: str, repo) -> tuple[list[dict], list[str]]:
+    """OD-2026-10-19-11: the owner-signed safety documents of a scope decision that apply to this work order.
+
+    A document counts only when its register entry (`safety_documents.<key>` in the scope decision) names a human
+    approver and date, its file under config/factory/safety-documents/ still has the registered SHA-256, its basis is
+    this work order's source requirements hash, and the file no longer carries the draft marker. Anything else is an
+    issue and the document is left out, so the package stays BLOCKED on it. An agent never writes the register."""
+    from ..common import sha256_bytes
+
+    docs, issues = [], []
+    reg = decision.get("safety_documents") or {}
+    for key, rel in DOC_FILES.items():
+        e = reg.get(key)
+        if not isinstance(e, dict):
+            issues.append(f"SAFETY_DOC_NOT_REGISTERED:{key}")
+            continue
+        src = str(e.get("path") or "")
+        if not src.startswith(DOC_DIR) or ".." in src.split("/"):
+            issues.append(f"SAFETY_DOC_PATH_INVALID:{key}")
+            continue
+        if not _human(e.get("approved_by")) or not e.get("approved_at") or not e.get("sha256"):
+            issues.append(f"SAFETY_DOC_NOT_SIGNED:{key}")
+            continue
+        f = repo / src
+        data = f.read_bytes() if f.is_file() else b""
+        if not data or sha256_bytes(data) != e["sha256"]:
+            issues.append(f"SAFETY_DOC_HASH_MISMATCH:{key}")
+        elif e.get("basis") != source_requirements_hash:
+            issues.append(f"SAFETY_DOC_BASIS_CHANGED:{key}")
+        elif DRAFT_MARK.search(data.decode("utf-8", errors="replace")):
+            issues.append(f"SAFETY_DOC_STILL_DRAFT:{key}")
+        else:
+            docs.append({"key": key, "path": rel, "source": src, "sha256": e["sha256"], "basis": e["basis"],
+                         "approved_by": e["approved_by"], "approved_at": str(e["approved_at"]),
+                         "decision": e.get("decision")})
+    return docs, issues
+
+
+def signed_documents(manifest: dict) -> dict[str, str]:
+    """{workspace path: registered SHA-256} of the owner-signed safety documents copied into a work order."""
+    return {d["path"]: d["sha256"] for d in manifest.get("owner_safety_documents") or []}
 
 
 SCOPE_FILE = ".forge-run/safety_scope.json"
