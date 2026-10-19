@@ -97,12 +97,15 @@ def deny_outcome(params) -> dict:
 
 
 class Proxy:
+    # class-level defaults: frozen CRE reproducers (RPR-049, RPR-053) build a bare Proxy without __init__
+    kind = "codex"
+    prompts: set | None = None
     def __init__(self, binding: Path, node: str, agent_argv: list[str] | None = None, fin=sys.stdin, fout=sys.stdout,
                  agent: str = "codex"):
         from ..policy.authz import Binding
 
         self.binding_path, self.node, self.kind = binding, node, agent
-        self.prompts: set = set()  # ids of session/prompt requests whose results carry usage
+        self.prompts = set()  # ids of session/prompt requests whose results carry usage (feature 007)
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
         if agent == "claude":
@@ -152,6 +155,8 @@ class Proxy:
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
             if "id" in m:
+                if self.prompts is None:
+                    self.prompts = set()
                 self.prompts.add(m["id"])
             p["prompt"] = [{"type": "text", "text": TOOL_NOTE}] + p["prompt"] + [{"type": "text", "text": REPLY_NOTE}]
         return m
@@ -168,7 +173,7 @@ class Proxy:
                 self.to_agent({"jsonrpc": "2.0", "id": m["id"],
                                "error": {"code": -32601, "message": f"refused by factory policy: {meth}"}})
             return
-        if "id" in m and "result" in m and m["id"] in self.prompts:
+        if "id" in m and "result" in m and self.prompts and m["id"] in self.prompts:
             self.prompts.discard(m["id"])
             rec = usage_record(m["result"], claude_home.MODEL if self.kind == "claude" else codex_home.MODEL)
             if rec:
