@@ -144,8 +144,12 @@ class Store:
     def tx(self):
         """BEGIN IMMEDIATE: one writer at a time, serialised across processes."""
         c = self.connect()
-        try:
+        try:  # AFO-T065 (DB lock): a BEGIN that fails holds no transaction - report the lock, not a failed ROLLBACK
             c.execute("BEGIN IMMEDIATE")
+        except BaseException:
+            c.close()
+            raise
+        try:
             yield c
             c.execute("COMMIT")
         except QueueError as e:
