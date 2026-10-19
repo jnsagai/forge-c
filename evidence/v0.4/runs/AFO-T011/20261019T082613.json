@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "\nimport sys; t=open('docs/afo/OPERATIONS-AFO.md').read().lower()\nneed=['linger=yes','requiresmountsfor','x-systemd.requires-mounts-for','afo.host init','systemd-creds','never run `sudo`','by pid','authz sign']\nmiss=[n for n in need if n not in t]; print('missing',miss); sys.exit(1 if miss else 0)"
+  ],
+  "duration_s": 0.016,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d9d82df4b47131456ddeba89ac9eec63861d8cd7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T011/20261019T082613.log",
+  "log_sha256": "e7f10f3e142794b89df73801806beca9135757a8198d3137622fe8d21b9467ad",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T011",
+  "ts_utc": "2026-10-19T08:26:13.953725Z"
+}

@@ -1,9 +1,9 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T08:26:03.431545Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-19T08:26:14.021646Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
 
-Tasks: BLOCKED 1, FAIL 1, NOT_RUN 61, PARTIAL 1, PASS 11.
-FRs: COVERED 5, OPEN 60, PARTIAL 7.
+Tasks: BLOCKED 1, NOT_RUN 61, PARTIAL 1, PASS 12.
+FRs: COVERED 5, OPEN 58, PARTIAL 9.
 
 | Task | M | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|---|
@@ -17,7 +17,7 @@ FRs: COVERED 5, OPEN 60, PARTIAL 7.
 | AFO-T008 | M1 | P0 | PASS | AT-001, AT-003, AT-004, AT-005, AT-007, AT-009 | evidence/v0.4/runs/AFO-T008/latest.json |
 | AFO-T009 | M1 | P0 | PASS | AT-001, AT-004, AT-005, AT-007 | evidence/v0.4/runs/AFO-T009/latest.json |
 | AFO-T010 | M1 | P0 | PASS | AT-006 | evidence/v0.4/runs/AFO-T010/latest.json |
-| AFO-T011 | M1 | P0 | FAIL | AT-002, AT-008, AT-045, AT-046 | evidence/v0.4/runs/AFO-T011/latest.json |
+| AFO-T011 | M1 | P0 | PASS | AT-002, AT-008, AT-045, AT-046 | evidence/v0.4/runs/AFO-T011/latest.json |
 | AFO-T012 | M1 | P0 | PASS | AT-003, AT-009 | evidence/v0.4/runs/AFO-T012/latest.json |
 | AFO-T013 | M1 | P0 | PASS | AT-003, AT-005, AT-007, AT-009 | evidence/v0.4/runs/AFO-T013/latest.json |
 | AFO-T014 | M1 | P0 | PARTIAL | AT-001, AT-004, AT-005, AT-007 | evidence/v0.4/runs/AFO-T014/latest.json |
@@ -96,11 +96,11 @@ FRs: COVERED 5, OPEN 60, PARTIAL 7.
 | AFO-FR-009 | P0 | PARTIAL | AFO-T007=PASS, AFO-T008=PASS, AFO-T009=PASS, AFO-T014=PARTIAL |
 | AFO-FR-010 | P0 | COVERED | AFO-T008=PASS, AFO-T012=PASS, AFO-T013=PASS |
 | AFO-FR-011 | P0 | COVERED | AFO-T010=PASS |
-| AFO-FR-012 | P0 | OPEN | AFO-T011=FAIL, AFO-T015=BLOCKED |
+| AFO-FR-012 | P0 | PARTIAL | AFO-T011=PASS, AFO-T015=BLOCKED |
 | AFO-FR-013 | P0 | PARTIAL | AFO-T007=PASS, AFO-T008=PASS, AFO-T021=NOT_RUN |
 | AFO-FR-014 | P0 | COVERED | AFO-T012=PASS, AFO-T013=PASS |
 | AFO-FR-015 | P0 | PARTIAL | AFO-T013=PASS, AFO-T021=NOT_RUN |
-| AFO-FR-016 | P1 | OPEN | AFO-T011=FAIL, AFO-T045=NOT_RUN |
+| AFO-FR-016 | P1 | PARTIAL | AFO-T011=PASS, AFO-T045=NOT_RUN |
 | AFO-FR-017 | P0 | OPEN | AFO-T017=NOT_RUN, AFO-T022=NOT_RUN |
 | AFO-FR-018 | P0 | OPEN | AFO-T017=NOT_RUN, AFO-T023=NOT_RUN |
 | AFO-FR-019 | P0 | OPEN | AFO-T016=NOT_RUN, AFO-T018=NOT_RUN |

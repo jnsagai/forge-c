@@ -1,10 +1,10 @@
 {
   "fr_counts": {
     "COVERED": 5,
-    "OPEN": 60,
-    "PARTIAL": 7
+    "OPEN": 58,
+    "PARTIAL": 9
   },
-  "generated_at": "2026-10-19T08:26:03.431545Z",
+  "generated_at": "2026-10-19T08:26:14.021646Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -161,11 +161,11 @@
         "AT-002",
         "AT-008"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-012",
       "priority": "P0",
       "tasks": {
-        "AFO-T011": "FAIL",
+        "AFO-T011": "PASS",
         "AFO-T015": "BLOCKED"
       }
     },
@@ -214,11 +214,11 @@
         "AT-045",
         "AT-046"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-016",
       "priority": "P1",
       "tasks": {
-        "AFO-T011": "FAIL",
+        "AFO-T011": "PASS",
         "AFO-T045": "NOT_RUN"
       }
     },
@@ -952,10 +952,9 @@
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
     "BLOCKED": 1,
-    "FAIL": 1,
     "NOT_RUN": 61,
     "PARTIAL": 1,
-    "PASS": 11
+    "PASS": 12
   },
   "tasks": {
     "AFO-T001": {
@@ -1075,8 +1074,7 @@
       "planned_requirement_refs": "AFO-FR-012;AFO-FR-016",
       "planned_test_refs": "AT-002;AT-008;AT-045;AT-046",
       "priority": "P0",
-      "reason": "exit 1",
-      "status": "FAIL",
+      "status": "PASS",
       "task_id": "AFO-T011"
     },
     "AFO-T012": {
