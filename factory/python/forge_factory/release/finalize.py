@@ -247,7 +247,8 @@ def sup_reports(ws: Path, stage: Path, checks: dict, findings: list[dict], detai
        f"is a rework/change requiring re-inspection): `{json.dumps(revs)}`\n")
 
 
-def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[str]) -> None:
+def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[str],
+                      owner_docs: list[str] | None = None) -> None:
     lines = ["# Known limitations and declared safety gaps (generated from facts)", "",
              "- This package is an offline review candidate. It is NOT an ISO 26262 / ASIL B approval, ASPICE "
              "capability determination, tool qualification or production release.",
@@ -258,7 +259,31 @@ def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[st
              f"- Footprint scope: {detail['footprint']['scope']}.",
              "- Disabled optional tools/operations: " + (", ".join(disabled) or "none")]
     lines += [f"- Unmet check: `{k}`" for k, v in sorted(checks.items()) if not v]
+    lines += owner_docs or []
     _w(stage, "safety/known_limitations.md", "\n".join(lines) + "\n")
+
+
+def owner_safety_documents(wo: dict, stage: Path) -> list[str]:
+    """OD-2026-10-19-11: only the owner-signed safety documents, unchanged since signing, enter the package. Any other
+    file at those paths is removed from the stage, so the packager reports it missing. Returns limitation lines."""
+    from ..assurance.scope import DOC_FILES, signed_documents
+
+    if "owner_safety_documents" not in wo:  # prepared without an owner safety scope (or before this rule)
+        return []
+    signed, lines = signed_documents(wo), []
+    for rel in DOC_FILES.values():
+        f = stage / rel
+        if f.is_file() and sha256_bytes(f.read_bytes()) != signed.get(rel):
+            f.unlink()
+            lines.append(f"- `{rel}` removed from the package: it is not the owner-signed version.")
+    for d in wo.get("owner_safety_documents") or []:
+        if (stage / d["path"]).is_file():
+            lines.append(f"- `{d['path']}`: signed by {d['approved_by']} on {d['approved_at']} (SHA-256 "
+                         f"`{d['sha256'][:16]}`, {d.get('decision') or 'no decision id'}). Its open findings and "
+                         "questions are listed in the document. An engineering review record, not a safety approval "
+                         "or certification.")
+    lines += [f"- Owner safety document not used: `{i}`." for i in wo.get("owner_safety_document_issues") or []]
+    return lines
 
 
 def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) -> dict:
@@ -269,6 +294,7 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     budgets = wo.get("budgets", {})
     for d in ("workproducts", "safety", "traceability", "verification", "inspection", "configuration"):
         _copy_tree(ws / d, stage / d)
+    owner_docs = owner_safety_documents(wo, stage)
     for d in ("hal", "ll", "src", "include", "tests"):
         _copy_tree(ws / "software" / d, stage / "software" / d)
     # policy-required flat views (documented in manifest): C sources -> software/src, headers -> software/include
@@ -321,7 +347,7 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     from ..mcp.preflight import op_catalog
 
     disabled = sorted(k for k, e in op_catalog().items() if e["status"] == "DISABLED")
-    known_limitations(stage, checks, detail, disabled)
+    known_limitations(stage, checks, detail, disabled, owner_docs)
     sup_reports(ws, stage, checks, findings, detail)
     if not (stage / "configuration/target_baseline.json").is_file():
         _w(stage, "configuration/target_baseline.json", pretty_json(wo.get("target", {"status": "UNSPECIFIED"})))

@@ -1,0 +1,13 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-11",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "ASIL B safety documents for the RCC scope SC-RCC-2026-10-18: software safety analysis and tool assurance assessment",
+  "statements": ["help me with two postponed safety documents",
+                 "Authorship: I draft, you sign (Recommended)",
+                 "SSA scope: Per product (Recommended)"],
+  "decision": "The agent drafts both documents for the product (RCC LL and HAL, one scope), from the factory's records, marked AI-drafted and not approved. The owner reviews, corrects and signs them. Only a signed document, registered with its SHA-256, approver, date and basis (the work orders' source requirements hash) in config/factory/safety-scope.yaml, enters an RCC work order (read-only) and the package. Unsigned drafts never count; packages stay BLOCKED until signature.",
+  "agent_note": "The drafts state assumed safety requirements because no safety requirement, HSI or safe state has been allocated to the RCC driver; the reviewer must accept or change them. The HSI and the allocation review stay open ASIL B gaps in the observe-only assurance check. Signing records an engineering review; it is not a safety approval or certification.",
+  "not_changed": "Safety scope target ASIL B; hsi_hash and allocation_review_ref remain null; assurance mode OBSERVE_ONLY; work orders without an owner safety scope keep the previous packaging behaviour"
+}

@@ -41,7 +41,7 @@ This file states what the evidence does **not** show. The readiness levels come 
   delivery.
 - Nothing here is an ISO 26262 or Automotive SPICE conformance statement, a safety approval or a production
   release.
-- The ASIL B safety documents (software safety analysis, tool assurance assessment) are postponed by the owner.
+- The ASIL B safety documents (software safety analysis, tool assurance assessment) are AI-drafted and await the owner's review and signature (OD-2026-10-19-11, `config/factory/safety-documents/`); until signed, RCC packages stay BLOCKED on them.
   Current packages are therefore BLOCKED on those two gaps, and no READY package exists.
 - **AFO attempt archives.** For a work order launched by AFO, READY and BLOCKED archives carry `operations/afo/`.
   - Contents: order, attempts, recovery plans, checkpoints, lifecycle events, dead-letter cases and service

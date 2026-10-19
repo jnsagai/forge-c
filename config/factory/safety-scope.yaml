@@ -14,3 +14,21 @@ decisions:
     approved_at: '2026-10-18'
     hsi_hash: null
     allocation_review_ref: null
+    # OD-2026-10-19-11: owner-signed safety documents for this scope. A document counts only when approved_by,
+    # approved_at and sha256 are filled in on the owner's signature, the file still has that SHA-256, its basis is the
+    # work order's source requirements hash, and its draft marker is gone. Unsigned drafts never enter a work order.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-RCC-2026-10-18/software_safety_analysis.md
+        basis: c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4
+        sha256: 1795badc064854e0cd56ba8cc1dd0e8694c19e4d60cfc9edf38d982510c5407a
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-19'
+        decision: OD-2026-10-19-12
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-RCC-2026-10-18/tool_assurance_assessment.md
+        basis: c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4
+        sha256: 38b778bd62aa1b3a1b247ea1f8784c285c6ade9512206f8167791a3fe965671c
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-19'
+        decision: OD-2026-10-19-12

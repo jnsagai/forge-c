@@ -85,9 +85,13 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
     (stage / "configuration").mkdir(parents=True, exist_ok=True)  # the approved scope travels with the package
     (stage / "configuration/safety_scope.json").write_text(pretty_json(rec))
     sc, na, docs = rec.get("scope") or {}, rec.get("na") or {}, {}
+    mf = ws / ".forge-run/manifest.json"
+    wo = json.loads(mf.read_text()) if mf.is_file() else {}
+    signed = scope.signed_documents(wo) if "owner_safety_documents" in wo else None  # OD-2026-10-19-11
     for key, rel in SAFETY_FILES.items():
         f = stage / rel
-        docs[key] = rel if f.is_file() and f.stat().st_size else None
+        ok = f.is_file() and f.stat().st_size and (signed is None or sha256_bytes(f.read_bytes()) == signed.get(rel))
+        docs[key] = rel if ok else None
     ev = scope.evaluate(sc, docs, na)
     if sc.get("target_asil") == "QM" and ev["state"] == "SATISFIED":
         for key, rel in SAFETY_FILES.items():
