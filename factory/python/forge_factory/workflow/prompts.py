@@ -693,8 +693,9 @@ CONTRACT_SWE1 = (
     "independent oracle tests the code against it): {{\"schema\":\"forge-c/register-effects/1\",\"effects\":[...]}} "
     "with one entry per tested case of EVERY requirement that sets or clears a register bit - one entry per bit and "
     "per oscillator/peripheral/function (HSI enable and HSE enable are two entries), e.g. {example}. 'register' and "
-    "'field' are the RM0486 names your requirement text uses; op is set, clear or no_write.{extra} Every case id is "
-    "unique UPPER_CASE. Never add an entry the requirement text does not state.")
+    "'field' are the RM0486 names your requirement text uses; op is set, clear or no_write (no_write WITH "
+    "register/field: the call does not write that register; WITHOUT them: no register access at all).{extra} Every "
+    "case id is unique UPPER_CASE. Never add an entry the requirement text does not state.")
 CONTRACT_SWE1_HAL = (
     " Oscillator enable: \"ready\":\"RCC_SR.<FLAG>RDY\" and status HAL_OK; ready timeout: op clear (the driver "
     "clears the enable bit it set), \"ready\":\"never\", status HAL_TIMEOUT; invalid parameter: one entry per invalid "

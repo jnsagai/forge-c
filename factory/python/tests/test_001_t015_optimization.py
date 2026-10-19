@@ -13,10 +13,11 @@ needs_target = pytest.mark.skipif(not (sim.renode_bin() and shutil.which("arm-no
                                   reason="Renode or GNU Arm not installed")
 
 
-def _pkg(tmp_path, name, hal_c=HAL_C, flash=600, frame=8, contract=True):
+def _pkg(tmp_path, name, hal_c=HAL_C, flash=600, frame=8, contract=True, flat_copy=False):
     p = tmp_path / f"{name}-review.zip"
     files = {"software/ll/stm32n6xx_ll_rcc.h": LL, "software/hal/stm32n6xx_hal_rcc.h": HAL_H,
              "software/hal/stm32n6xx_hal_rcc.c": hal_c,
+             **({"software/src/stm32n6xx_hal_rcc.c": hal_c} if flat_copy else {}),  # real packages: flat view too
              "verification/footprint/memory_stack_summary.json": json.dumps(
                  {"flash_bytes": flash, "ram_bytes": 0, "max_frame_bytes": frame, "scope": "object-level"})}
     if contract:
@@ -60,3 +61,17 @@ def test_renode_counts_per_call_are_deterministic_and_see_a_slower_driver(tmp_pa
     assert slow["instructions_status"] == "MEASURED", slow
     assert slow["instructions"]["HSE_ENABLE"]["instructions"] > fast["instructions"]["HSE_ENABLE"]["instructions"]
     assert O.compare(fast, slow)["metrics"]["instructions_common"]["verdict"] == "WORSE"
+
+
+@needs_target
+def test_capa048_real_package_layout_with_the_flat_src_copy_links_once(tmp_path):
+    """CAPA-048 (batch d376c70, HAL r161-r164): sealed packages carry the HAL unit in software/hal AND software/src;
+    the benchmark image linked both (multiple definition) and every case was BASE_BUILD_FAIL while the status said
+    MEASURED."""
+    m = O.collect(_pkg(tmp_path, "flat", flat_copy=True))
+    assert m["instructions_status"] == "MEASURED", m
+    assert all(v["status"] == "OK" and v["instructions"] > 0 for v in m["instructions"].values()), m
+    bad = HAL_C + "\nint broken(void) { return undefined_symbol(); }\n"
+    (tmp_path / "b").mkdir()
+    n = O.collect(_pkg(tmp_path / "b", "broken", hal_c=bad))
+    assert n["instructions_status"].startswith("NOT_MEASURED:"), n                  # no number -> never MEASURED

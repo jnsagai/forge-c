@@ -20,7 +20,9 @@ FAKE = textwrap.dedent('''
             out({"jsonrpc": "2.0", "id": m["id"], "result": {"protocolVersion": 1}})
         elif m.get("method") == "session/new":
             out({"jsonrpc": "2.0", "id": 900, "method": "session/request_permission",
-                 "params": {"toolCall": {"kind": "edit", "title": "Edit files"}}})
+                 "params": {"toolCall": {"kind": "edit", "title": "Edit files"}, "options": [
+                     {"optionId": "allow", "name": "Allow", "kind": "allow_once"},
+                     {"optionId": "deny", "name": "Reject", "kind": "reject_once"}]}})
             out({"jsonrpc": "2.0", "id": 901, "method": "fs/write_text_file", "params": {"path": "/x", "content": "y"}})
             out({"jsonrpc": "2.0", "method": "session/update", "params": {"update": {"sessionUpdate": "agent_message_chunk"}}})
             out({"jsonrpc": "2.0", "id": m["id"], "result": {"sessionId": "S1"}})
@@ -69,7 +71,7 @@ def test_proxy_enforces_the_boundary(tmp_path, monkeypatch):
     assert all(s["args"][:2] == ["-m", "forge_factory.acp.gate"] and s["default_tools_approval_mode"] == "approve"
                for s in cfg.values())
     replies = {m["id"]: m for m in to_agent if "id" in m and "method" not in m}
-    assert replies[900]["result"] == {"outcome": {"outcome": "cancelled"}}
+    assert replies[900]["result"] == {"outcome": {"outcome": "selected", "optionId": "deny"}}  # CAPA-049: not cancel
     assert replies[901]["error"]["code"] == -32601
     prompt = next(m for m in to_agent if m.get("method") == "session/prompt")
     assert prompt["params"]["prompt"][0]["text"] == P.TOOL_NOTE and prompt["params"]["prompt"][1]["text"] == "do the task"
@@ -107,3 +109,11 @@ def test_attestation_sees_codex_authors_and_run_model_inspectors(tmp_path):
         "acp_authors": {"nodes": ["swe3_author"], "model": "gpt-6.1-sol", "provider": "openai-codex"}}))
     att = PK.attestation(ws)
     assert att["decision"] == "SUPPORTED" and att["shared_common_cause_refs"] == []   # different model and provider
+
+
+def test_capa049_a_denied_permission_rejects_and_never_cancels_the_turn():
+    """CAPA-049 (LL r165): 'cancelled' ended the Codex turn and Fabro failed the whole run."""
+    assert P.deny_outcome({"options": [{"optionId": "a1", "kind": "allow_once"}, {"optionId": "r2", "kind": "reject_always"},
+                                       {"optionId": "r1", "kind": "reject_once"}]}) == {"outcome": "selected", "optionId": "r1"}
+    assert P.deny_outcome({"options": [{"optionId": "a1", "kind": "allow_always"}]}) == {"outcome": "cancelled"}
+    assert P.deny_outcome(None) == {"outcome": "cancelled"}

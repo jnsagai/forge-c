@@ -1,0 +1,725 @@
+{
+ "generated_from": "pilot-worksheet-batch5.json",
+ "measurements": [
+  {
+   "archive_sha256": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  },
+  {
+   "archive_sha256": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "pilot_check": "PASS",
+   "seeded_applied": 6,
+   "seeded_missed": []
+  }
+ ],
+ "rows": [
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:e41de6ca1daa2281",
+     "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:e41de6ca1daa2281"
+    ],
+    "requirements": {
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "SOURCE_CONTRADICTION_CHECK": "FAIL",
+     "SOURCE_LINKED_REQUIREMENTS": "PASS",
+     "TESTABILITY_CHECK": "FAIL",
+     "TRACE_REQ_TO_TEST": "PASS",
+     "TWO_WAY_TRACE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.1/v_requirements-e41de6ca1daa.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     },
+     {
+      "report": "SWE.1/v_requirements-e41de6ca1daa.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+    ],
+    "requirements": {
+     "COMPONENT_ALLOCATION": "PASS",
+     "FLOW_SCHEDULING_ANALYSIS": "UNKNOWN",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INTERFACE_DEFINITION": "PASS",
+     "IRQ_RESOURCE_OWNERSHIP": "PASS",
+     "PLANTUML_SEMANTIC_CONSISTENCY": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+    ],
+    "requirements": {
+     "COMPILE_WARNINGS_CLEAN": "PASS",
+     "CONCURRENCY_ANALYSIS": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "MISRA_RULE_COVERAGE_MATRIX": "PASS",
+     "REGISTER_ACCESS_SEMANTICS": "PASS",
+     "REGISTER_MAP_CONFORMANCE": "PASS",
+     "RESOURCE_BUDGETS": "PASS",
+     "STATIC_ANALYSIS": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+    ],
+    "requirements": {
+     "API_EXECUTION_PROOF": "PASS",
+     "BRANCH_COVERAGE": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INDEPENDENT_ORACLE": "PASS",
+     "MUTATION_EVIDENCE": "PASS",
+     "NEGATIVE_BOUNDARY_CASES": "UNKNOWN",
+     "REQUIREMENTS_DERIVED_TESTS": "PASS",
+     "STATEMENT_COVERAGE": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:82f29931f3c05d30",
+     "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:82f29931f3c05d30"
+    ],
+    "requirements": {
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "SOURCE_CONTRADICTION_CHECK": "FAIL",
+     "SOURCE_LINKED_REQUIREMENTS": "PASS",
+     "TESTABILITY_CHECK": "FAIL",
+     "TRACE_REQ_TO_TEST": "PASS",
+     "TWO_WAY_TRACE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.1/v_requirements-82f29931f3c0.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480"
+      ]
+     },
+     {
+      "report": "SWE.1/v_requirements-82f29931f3c0.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.2:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:ab7d2d96ecc63900",
+     "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:ab7d2d96ecc63900",
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:ab7d2d96ecc63900",
+     "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:ab7d2d96ecc63900",
+     "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+    ],
+    "requirements": {
+     "COMPONENT_ALLOCATION": "FAIL",
+     "FLOW_SCHEDULING_ANALYSIS": "UNKNOWN",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INTERFACE_DEFINITION": "FAIL",
+     "IRQ_RESOURCE_OWNERSHIP": "FAIL",
+     "PLANTUML_SEMANTIC_CONSISTENCY": "FAIL"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.2/v_arch-ab7d2d96ecc6.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_IRQ_OWNER_MISSING"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-ab7d2d96ecc6.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_IRQ_OWNER_MISSING"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-ab7d2d96ecc6.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_IRQ_OWNER_MISSING"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-ab7d2d96ecc6.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_IRQ_OWNER_MISSING"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+    ],
+    "requirements": {
+     "COMPILE_WARNINGS_CLEAN": "PASS",
+     "CONCURRENCY_ANALYSIS": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "MISRA_RULE_COVERAGE_MATRIX": "PASS",
+     "REGISTER_ACCESS_SEMANTICS": "PASS",
+     "REGISTER_MAP_CONFORMANCE": "PASS",
+     "RESOURCE_BUDGETS": "PASS",
+     "STATIC_ANALYSIS": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.4:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:MUTATION_EVIDENCE:easa-report:SWE.4:fdcef8b11f37a07d",
+     "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+    ],
+    "requirements": {
+     "API_EXECUTION_PROOF": "PASS",
+     "BRANCH_COVERAGE": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INDEPENDENT_ORACLE": "PASS",
+     "MUTATION_EVIDENCE": "FAIL",
+     "NEGATIVE_BOUNDARY_CASES": "UNKNOWN",
+     "REQUIREMENTS_DERIVED_TESTS": "PASS",
+     "STATEMENT_COVERAGE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.4/v_mutation-fdcef8b11f37.json",
+      "status": "FAIL",
+      "findings": [
+       "SURVIVOR:OK_TO_ERROR@85:hal_status_t status = HAL_OK;",
+       "SURVIVOR:OK_TO_ERROR@181:hal_status_t status = HAL_OK;"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:24391f51aaddec8c",
+     "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:24391f51aaddec8c"
+    ],
+    "requirements": {
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "SOURCE_CONTRADICTION_CHECK": "FAIL",
+     "SOURCE_LINKED_REQUIREMENTS": "PASS",
+     "TESTABILITY_CHECK": "FAIL",
+     "TRACE_REQ_TO_TEST": "PASS",
+     "TWO_WAY_TRACE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.1/v_requirements-24391f51aadd.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_UNBOUNDED_TIME:SWR-001",
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_UNBOUNDED_TIME:SWR-002",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_UNBOUNDED_TIME:SWR-007",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     },
+     {
+      "report": "SWE.1/v_requirements-24391f51aadd.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_UNBOUNDED_TIME:SWR-001",
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_UNBOUNDED_TIME:SWR-002",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_UNBOUNDED_TIME:SWR-007",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.2:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:b3421356b06541d0",
+     "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:b3421356b06541d0",
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:b3421356b06541d0",
+     "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:b3421356b06541d0",
+     "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+    ],
+    "requirements": {
+     "COMPONENT_ALLOCATION": "FAIL",
+     "FLOW_SCHEDULING_ANALYSIS": "UNKNOWN",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INTERFACE_DEFINITION": "FAIL",
+     "IRQ_RESOURCE_OWNERSHIP": "FAIL",
+     "PLANTUML_SEMANTIC_CONSISTENCY": "FAIL"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.2/v_arch-b3421356b065.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_UNDECLARED_ENDPOINT:Caller"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-b3421356b065.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_UNDECLARED_ENDPOINT:Caller"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-b3421356b065.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_UNDECLARED_ENDPOINT:Caller"
+      ]
+     },
+     {
+      "report": "SWE.2/v_arch-b3421356b065.json",
+      "status": "FAIL",
+      "findings": [
+       "ARCH_UNDECLARED_ENDPOINT:Caller"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+    ],
+    "requirements": {
+     "COMPILE_WARNINGS_CLEAN": "PASS",
+     "CONCURRENCY_ANALYSIS": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "MISRA_RULE_COVERAGE_MATRIX": "PASS",
+     "REGISTER_ACCESS_SEMANTICS": "PASS",
+     "REGISTER_MAP_CONFORMANCE": "PASS",
+     "RESOURCE_BUDGETS": "PASS",
+     "STATIC_ANALYSIS": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+    ],
+    "requirements": {
+     "API_EXECUTION_PROOF": "PASS",
+     "BRANCH_COVERAGE": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INDEPENDENT_ORACLE": "PASS",
+     "MUTATION_EVIDENCE": "PASS",
+     "NEGATIVE_BOUNDARY_CASES": "UNKNOWN",
+     "REQUIREMENTS_DERIVED_TESTS": "PASS",
+     "STATEMENT_COVERAGE": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#001",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.1:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:837ae710aa3b8619",
+     "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:837ae710aa3b8619"
+    ],
+    "requirements": {
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "SOURCE_CONTRADICTION_CHECK": "FAIL",
+     "SOURCE_LINKED_REQUIREMENTS": "PASS",
+     "TESTABILITY_CHECK": "FAIL",
+     "TRACE_REQ_TO_TEST": "PASS",
+     "TWO_WAY_TRACE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.1/v_requirements-837ae710aa3b.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     },
+     {
+      "report": "SWE.1/v_requirements-837ae710aa3b.json",
+      "status": "FAIL",
+      "findings": [
+       "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480",
+       "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#002",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"
+    ],
+    "requirements": {
+     "COMPONENT_ALLOCATION": "PASS",
+     "FLOW_SCHEDULING_ANALYSIS": "UNKNOWN",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INTERFACE_DEFINITION": "PASS",
+     "IRQ_RESOURCE_OWNERSHIP": "PASS",
+     "PLANTUML_SEMANTIC_CONSISTENCY": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#003",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+   "detail": {
+    "claim_status": "UNSUPPORTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"
+    ],
+    "requirements": {
+     "COMPILE_WARNINGS_CLEAN": "PASS",
+     "CONCURRENCY_ANALYSIS": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "MISRA_RULE_COVERAGE_MATRIX": "PASS",
+     "REGISTER_ACCESS_SEMANTICS": "PASS",
+     "REGISTER_MAP_CONFORMANCE": "PASS",
+     "RESOURCE_BUDGETS": "PASS",
+     "STATIC_ANALYSIS": "PASS"
+    },
+    "verifier_evidence": []
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#004",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:CLM-SWE.4:CONTESTED",
+   "detail": {
+    "claim_status": "CONTESTED",
+    "gate_findings": [
+     "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION",
+     "ASSURANCE_GATE_FAILED:INDEPENDENT_ORACLE:easa-report:SWE.4:a42633080b4d2fd5",
+     "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"
+    ],
+    "requirements": {
+     "API_EXECUTION_PROOF": "PASS",
+     "BRANCH_COVERAGE": "PASS",
+     "INDEPENDENT_INSPECTION": "UNKNOWN",
+     "INDEPENDENT_ORACLE": "FAIL",
+     "MUTATION_EVIDENCE": "PASS",
+     "NEGATIVE_BOUNDARY_CASES": "UNKNOWN",
+     "REQUIREMENTS_DERIVED_TESTS": "PASS",
+     "STATEMENT_COVERAGE": "PASS"
+    },
+    "verifier_evidence": [
+     {
+      "report": "SWE.4/v_oracle-a42633080b4d.json",
+      "status": "FAIL",
+      "findings": [
+       "ORACLE_FAIL:SWR-010:HSE_RESET_DEFAULT_PRESERVED",
+       "ORACLE_FAIL:SWR-011:HSI_RESET_DEFAULT_PRESERVED"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#005",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#006",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#007",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  },
+  {
+   "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#008",
+   "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+   "source": "package:blocking",
+   "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+   "detail": {
+    "note": "owner-postponed ASIL B safety evidence (safety scope SC-RCC-2026-10-18)"
+   }
+  }
+ ],
+ "archives": {
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+  "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022"
+ }
+}

@@ -1,0 +1,715 @@
+{
+  "schema": "forge-c/optimization-report/0.1",
+  "generated_at": "2026-10-19T12:05:51.055860Z",
+  "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)",
+  "packages": [
+    {
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "archive_sha256": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+      "measured_at": "2026-10-19T11:59:24.111830Z",
+      "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)",
+      "flash_bytes": 412,
+      "ram_bytes": 0,
+      "max_frame_bytes": 0,
+      "footprint_scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image",
+      "instructions": {
+        "HSI_ENABLE": {
+          "instructions": 24,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_ENABLE": {
+          "instructions": 26,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "HSI_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Disable"
+        },
+        "HSE_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Disable"
+        },
+        "ADC12_CLOCK_ENABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "GPDMA1_CLOCK_ENABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "ADC12_CLOCK_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Disable"
+        },
+        "GPDMA1_CLOCK_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Disable"
+        },
+        "ADC12_RESET": {
+          "instructions": 19,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Reset"
+        },
+        "GPDMA1_RESET": {
+          "instructions": 21,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Reset"
+        },
+        "HSI_READY_TIMEOUT": {
+          "instructions": 84,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_READY_TIMEOUT": {
+          "instructions": 86,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "INVALID_NULL_CONFIG_POINTER": {
+          "instructions": 11,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_UNKNOWN_OSCILLATOR_SELECTOR": {
+          "instructions": 15,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_UNKNOWN_PERIPHERAL_SELECTOR": {
+          "instructions": 14,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "INVALID_TIMEOUT_ZERO": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        }
+      },
+      "instructions_status": "MEASURED",
+      "contract_notes": [],
+      "empty_image_instructions": {
+        "default": 21,
+        "never_ready": 21
+      },
+      "archive_unchanged": true
+    },
+    {
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "archive_sha256": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+      "measured_at": "2026-10-19T12:00:58.025921Z",
+      "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)",
+      "flash_bytes": 412,
+      "ram_bytes": 0,
+      "max_frame_bytes": 0,
+      "footprint_scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image",
+      "instructions": {
+        "HSI_ENABLE": {
+          "instructions": 24,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_ENABLE": {
+          "instructions": 26,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "HSI_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Disable"
+        },
+        "HSE_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Disable"
+        },
+        "ADC12_CLOCK_ENABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "GPDMA1_CLOCK_ENABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "ADC12_CLOCK_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Disable"
+        },
+        "GPDMA1_CLOCK_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Disable"
+        },
+        "ADC12_RESET": {
+          "instructions": 19,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Reset"
+        },
+        "GPDMA1_RESET": {
+          "instructions": 21,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Reset"
+        },
+        "HSI_READY_TIMEOUT": {
+          "instructions": 84,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_READY_TIMEOUT": {
+          "instructions": 86,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "INVALID_NULL_POINTER": {
+          "instructions": 11,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_OSCILLATOR_SELECTOR": {
+          "instructions": 15,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_PERIPHERAL_SELECTOR": {
+          "instructions": 14,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "INVALID_TIMEOUT_ZERO": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        }
+      },
+      "instructions_status": "MEASURED",
+      "contract_notes": [],
+      "empty_image_instructions": {
+        "default": 21,
+        "never_ready": 21
+      },
+      "archive_unchanged": true
+    },
+    {
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "archive_sha256": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+      "measured_at": "2026-10-19T12:02:32.574164Z",
+      "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)",
+      "flash_bytes": 412,
+      "ram_bytes": 0,
+      "max_frame_bytes": 0,
+      "footprint_scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image",
+      "instructions": {
+        "HSI_ENABLE": {
+          "instructions": 25,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_ENABLE": {
+          "instructions": 27,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "HSI_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Disable"
+        },
+        "HSE_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Disable"
+        },
+        "ADC12_CLOCK_ENABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "GPDMA1_CLOCK_ENABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "ADC12_CLOCK_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Disable"
+        },
+        "GPDMA1_CLOCK_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Disable"
+        },
+        "ADC12_RESET": {
+          "instructions": 19,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Reset"
+        },
+        "GPDMA1_RESET": {
+          "instructions": 21,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Reset"
+        },
+        "HSI_READY_TIMEOUT": {
+          "instructions": 84,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_READY_TIMEOUT": {
+          "instructions": 86,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "INVALID_NULL_POINTER": {
+          "instructions": 11,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_OSCILLATOR_SELECTOR": {
+          "instructions": 15,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_PERIPHERAL_SELECTOR": {
+          "instructions": 14,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "INVALID_TIMEOUT_ZERO": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE": {
+          "instructions": 17,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        }
+      },
+      "instructions_status": "MEASURED",
+      "contract_notes": [],
+      "empty_image_instructions": {
+        "default": 21,
+        "never_ready": 21
+      },
+      "archive_unchanged": true
+    },
+    {
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "archive_sha256": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022",
+      "measured_at": "2026-10-19T12:04:06.753676Z",
+      "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)",
+      "flash_bytes": 412,
+      "ram_bytes": 0,
+      "max_frame_bytes": 8,
+      "footprint_scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image",
+      "instructions": {
+        "HSI_ENABLE": {
+          "instructions": 25,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_ENABLE": {
+          "instructions": 26,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "HSI_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Disable"
+        },
+        "HSE_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSE_Disable"
+        },
+        "GPDMA1_CLOCK_ENABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "ADC12_CLOCK_ENABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Enable"
+        },
+        "GPDMA1_CLOCK_DISABLE": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Disable"
+        },
+        "ADC12_CLOCK_DISABLE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Disable"
+        },
+        "GPDMA1_RESET": {
+          "instructions": 19,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Reset"
+        },
+        "ADC12_RESET": {
+          "instructions": 21,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_ADC12_Reset"
+        },
+        "HSI_READY_TIMEOUT": {
+          "instructions": 87,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_READY_TIMEOUT": {
+          "instructions": 86,
+          "status": "OK",
+          "scenario": "never_ready",
+          "function": "HAL_RCC_HSE_Enable"
+        },
+        "INVALID_NULL_POINTER": {
+          "instructions": 12,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_OSCILLATOR_SELECTOR": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_PERIPHERAL_SELECTOR": {
+          "instructions": 14,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "INVALID_TIMEOUT_ZERO": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE": {
+          "instructions": 18,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_HSI_Enable"
+        },
+        "HSE_RESET_DEFAULT_PRESERVED": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        },
+        "HSI_RESET_DEFAULT_PRESERVED": {
+          "instructions": 16,
+          "status": "OK",
+          "scenario": "default",
+          "function": "HAL_RCC_GPDMA1_Enable"
+        }
+      },
+      "instructions_status": "MEASURED",
+      "contract_notes": [],
+      "empty_image_instructions": {
+        "default": 21,
+        "never_ready": 21
+      },
+      "archive_unchanged": true
+    }
+  ],
+  "comparisons": [
+    {
+      "baseline": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "candidate": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "common_cases": [
+        "ADC12_CLOCK_DISABLE",
+        "ADC12_CLOCK_ENABLE",
+        "ADC12_RESET",
+        "GPDMA1_CLOCK_DISABLE",
+        "GPDMA1_CLOCK_ENABLE",
+        "GPDMA1_RESET",
+        "HSE_DISABLE",
+        "HSE_ENABLE",
+        "HSE_READY_TIMEOUT",
+        "HSI_DISABLE",
+        "HSI_ENABLE",
+        "HSI_READY_TIMEOUT",
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE",
+        "INVALID_TIMEOUT_ZERO"
+      ],
+      "metrics": {
+        "flash_bytes": {
+          "baseline": 412,
+          "candidate": 412,
+          "delta": 0,
+          "delta_pct": 0.0,
+          "verdict": "EQUAL"
+        },
+        "ram_bytes": {
+          "baseline": 0,
+          "candidate": 0,
+          "delta": 0,
+          "delta_pct": null,
+          "verdict": "EQUAL"
+        },
+        "max_frame_bytes": {
+          "baseline": 0,
+          "candidate": 0,
+          "delta": 0,
+          "delta_pct": null,
+          "verdict": "EQUAL"
+        },
+        "instructions_common": {
+          "baseline": 396,
+          "candidate": 396,
+          "delta": 0,
+          "delta_pct": 0.0,
+          "verdict": "EQUAL"
+        }
+      },
+      "overall": "EQUIVALENT",
+      "basis": "deterministic measurements (footprint tools; Renode counts checked twice)"
+    },
+    {
+      "baseline": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "candidate": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "common_cases": [
+        "ADC12_CLOCK_DISABLE",
+        "ADC12_CLOCK_ENABLE",
+        "ADC12_RESET",
+        "GPDMA1_CLOCK_DISABLE",
+        "GPDMA1_CLOCK_ENABLE",
+        "GPDMA1_RESET",
+        "HSE_DISABLE",
+        "HSE_ENABLE",
+        "HSE_READY_TIMEOUT",
+        "HSI_DISABLE",
+        "HSI_ENABLE",
+        "HSI_READY_TIMEOUT",
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE",
+        "INVALID_TIMEOUT_ZERO"
+      ],
+      "metrics": {
+        "flash_bytes": {
+          "baseline": 412,
+          "candidate": 412,
+          "delta": 0,
+          "delta_pct": 0.0,
+          "verdict": "EQUAL"
+        },
+        "ram_bytes": {
+          "baseline": 0,
+          "candidate": 0,
+          "delta": 0,
+          "delta_pct": null,
+          "verdict": "EQUAL"
+        },
+        "max_frame_bytes": {
+          "baseline": 0,
+          "candidate": 0,
+          "delta": 0,
+          "delta_pct": null,
+          "verdict": "EQUAL"
+        },
+        "instructions_common": {
+          "baseline": 396,
+          "candidate": 398,
+          "delta": 2,
+          "delta_pct": 0.51,
+          "verdict": "WORSE"
+        }
+      },
+      "overall": "DOMINATED",
+      "basis": "deterministic measurements (footprint tools; Renode counts checked twice)"
+    },
+    {
+      "baseline": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "candidate": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "common_cases": [
+        "ADC12_CLOCK_DISABLE",
+        "ADC12_CLOCK_ENABLE",
+        "ADC12_RESET",
+        "GPDMA1_CLOCK_DISABLE",
+        "GPDMA1_CLOCK_ENABLE",
+        "GPDMA1_RESET",
+        "HSE_DISABLE",
+        "HSE_ENABLE",
+        "HSE_READY_TIMEOUT",
+        "HSI_DISABLE",
+        "HSI_ENABLE",
+        "HSI_READY_TIMEOUT",
+        "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE",
+        "INVALID_TIMEOUT_ZERO"
+      ],
+      "metrics": {
+        "flash_bytes": {
+          "baseline": 412,
+          "candidate": 412,
+          "delta": 0,
+          "delta_pct": 0.0,
+          "verdict": "EQUAL"
+        },
+        "ram_bytes": {
+          "baseline": 0,
+          "candidate": 0,
+          "delta": 0,
+          "delta_pct": null,
+          "verdict": "EQUAL"
+        },
+        "max_frame_bytes": {
+          "baseline": 0,
+          "candidate": 8,
+          "delta": 8,
+          "delta_pct": null,
+          "verdict": "WORSE"
+        },
+        "instructions_common": {
+          "baseline": 396,
+          "candidate": 402,
+          "delta": 6,
+          "delta_pct": 1.52,
+          "verdict": "WORSE"
+        }
+      },
+      "overall": "DOMINATED",
+      "basis": "deterministic measurements (footprint tools; Renode counts checked twice)"
+    }
+  ],
+  "pareto": {
+    "metrics": [
+      "flash_bytes",
+      "max_frame_bytes",
+      "instructions_common"
+    ],
+    "common_cases": [
+      "ADC12_CLOCK_DISABLE",
+      "ADC12_CLOCK_ENABLE",
+      "ADC12_RESET",
+      "GPDMA1_CLOCK_DISABLE",
+      "GPDMA1_CLOCK_ENABLE",
+      "GPDMA1_RESET",
+      "HSE_DISABLE",
+      "HSE_ENABLE",
+      "HSE_READY_TIMEOUT",
+      "HSI_DISABLE",
+      "HSI_ENABLE",
+      "HSI_READY_TIMEOUT",
+      "INVALID_TIMEOUT_ABOVE_HAL_RCC_TIMEOUT_VALUE",
+      "INVALID_TIMEOUT_ZERO"
+    ],
+    "points": [
+      {
+        "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+        "flash_bytes": 412,
+        "max_frame_bytes": 0,
+        "instructions_common": 396
+      },
+      {
+        "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+        "flash_bytes": 412,
+        "max_frame_bytes": 0,
+        "instructions_common": 396
+      },
+      {
+        "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+        "flash_bytes": 412,
+        "max_frame_bytes": 0,
+        "instructions_common": 398
+      },
+      {
+        "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+        "flash_bytes": 412,
+        "max_frame_bytes": 8,
+        "instructions_common": 402
+      }
+    ],
+    "pareto_front": [
+      "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip"
+    ],
+    "cycle_metric": "executed instructions on the Renode cortex-m55 model (cycle proxy, not cycle-accurate; OD-2026-10-19-05)"
+  }
+}

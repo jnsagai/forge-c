@@ -1,0 +1,4 @@
+{"pareto_front": ["forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip"], "measured": ["MEASURED", "MEASURED", "MEASURED", "MEASURED"], "status": "PASS"}
+pareto ['-RCC-HAL-r161-review.zip', '-RCC-HAL-r162-review.zip'] common cases 14
+
+--- stderr ---

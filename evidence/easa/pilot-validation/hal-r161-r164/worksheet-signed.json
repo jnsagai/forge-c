@@ -1,0 +1,296 @@
+{
+  "created_at": "2026-10-19T11:50:15.008213Z",
+  "instructions": "For each row write disposition CORRECT (the finding is a real gap or defect) or INCORRECT (false positive), with a short note for INCORRECT. Then fill reviewer and reviewed_at. Only the named human reviewer fills this; an agent must not.",
+  "measurements": [
+    {
+      "archive_sha256": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "pilot_check": "PASS",
+      "seeded_applied": 6,
+      "seeded_missed": []
+    },
+    {
+      "archive_sha256": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "pilot_check": "PASS",
+      "seeded_applied": 6,
+      "seeded_missed": []
+    },
+    {
+      "archive_sha256": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "pilot_check": "PASS",
+      "seeded_applied": 6,
+      "seeded_missed": []
+    },
+    {
+      "archive_sha256": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "pilot_check": "PASS",
+      "seeded_applied": 6,
+      "seeded_missed": []
+    }
+  ],
+  "reviewed_at": "2026-10-19T13:12:50Z",
+  "reviewer": "Jefferson Nascimento",
+  "rows": [
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.1:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#001",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#002",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#003",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#004",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#005",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#006",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#007",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161#008",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.1:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#001",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.2:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#002",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#003",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "INCORRECT",
+      "finding": "EASA:CLM-SWE.4:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "Mutation verifier: two surviving mutants change the initial 'status = HAL_OK'. Both branches overwrite status before it is returned, so the mutant is equivalent (never observable): a false positive for the CONTESTED status. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons.",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#004",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#005",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#006",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#007",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162#008",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.1:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#001",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.2:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#002",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#003",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.4:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#004",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#005",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#006",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#007",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163#008",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.1:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#001",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.2:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#002",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:CLM-SWE.3:UNSUPPORTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#003",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "INCORRECT",
+      "finding": "EASA:CLM-SWE.4:CONTESTED",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "Independent oracle: ORACLE_FAIL SWR-010/011 *_RESET_DEFAULT_PRESERVED. This is the CAPA-047 false positive: HAL_RCC_GPDMA1_Enable writes only RCC_AHB1ENR and never RCC_CR; the fixed oracle passes this package 19/19. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons.",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#004",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#005",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#006",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#007",
+      "source": "package:blocking"
+    },
+    {
+      "disposition": "CORRECT",
+      "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip",
+      "reviewer_note": "",
+      "row": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164#008",
+      "source": "package:blocking"
+    }
+  ],
+  "schema": "forge-c/easa-pilot-review-worksheet/0.1",
+  "entry": "Dispositions decided by the owner (OD-2026-10-19-07) in the Claude Code session of 2026-10-19: 30 CORRECT, 2 INCORRECT (HAL-r162#004 equivalent mutant; HAL-r164#004 CAPA-047 oracle false positive), including the owner's judgement CORRECT on HAL-r162#002. Typed into this file by the agent on that instruction."
+}

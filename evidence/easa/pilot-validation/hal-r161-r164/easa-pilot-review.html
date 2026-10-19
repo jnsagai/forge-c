@@ -1,0 +1,281 @@
+<title>EASA Pilot Review r161–r164</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+/* Layout: review dossier - measurement strip, then one section per sealed package with a disposition card per blocking finding, signing block at the foot */
+:root {
+  --bg: #f6f7f8; --surface: #ffffff; --ink: #18212b; --muted: #5a6673; --rule: #d8dde3;
+  --accent: #1d4e7a; --accent-soft: #e3ecf5; --ok: #1f7a4d; --ok-soft: #e2f2e9;
+  --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #a83232; --bad-soft: #f8e1e1;
+  --f-display: "IBM Plex Serif", Georgia, serif; --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12171d; --surface: #1a2129; --ink: #e4e9ee; --muted: #9aa6b2; --rule: #2e3843;
+  --accent: #8cb8e3; --accent-soft: #1f3247; --ok: #6fcf9c; --ok-soft: #173426;
+  --warn: #e7b062; --warn-soft: #3a2c14; --bad: #ef8b8b; --bad-soft: #3b1d1d; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #12171d; --surface: #1a2129; --ink: #e4e9ee; --muted: #9aa6b2; --rule: #2e3843;
+  --accent: #8cb8e3; --accent-soft: #1f3247; --ok: #6fcf9c; --ok-soft: #173426;
+  --warn: #e7b062; --warn-soft: #3a2c14; --bad: #ef8b8b; --bad-soft: #3b1d1d; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 64px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font: 600 1.75rem/1.2 var(--f-display); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.2rem/1.3 var(--f-display); margin: 0; text-wrap: balance; }
+h3 { font: 600 0.98rem/1.35 var(--f-body); margin: 0; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 72ch; margin-top: 6px; }
+.mono { font-family: var(--f-mono); font-size: 0.85em; overflow-wrap: anywhere; }
+.strip { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.stat { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; min-width: 0; }
+.stat .k { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.stat .v { font: 600 1.35rem/1.25 var(--f-display); font-variant-numeric: tabular-nums; }
+.stat .s { color: var(--muted); font-size: 0.85rem; }
+.howto { background: var(--accent-soft); border-radius: 6px; padding: 12px 14px; display: grid; gap: 6px; max-width: 80ch; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 0.85rem; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.chip:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.progress { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+section.pkg { display: grid; gap: 10px; }
+.pkghead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+.pkghead .mono { color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.card[data-done="CORRECT"] { border-left: 4px solid var(--ok); }
+.card[data-done="INCORRECT"] { border-left: 4px solid var(--bad); }
+.cardtop { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.rowid { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); }
+details { font-size: 0.9rem; }
+details summary { cursor: pointer; color: var(--accent); }
+ul.ev { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 2px; }
+.advice { border-radius: 4px; padding: 8px 10px; font-size: 0.9rem; display: grid; gap: 4px; }
+.advice[data-a="CORRECT"] { background: var(--ok-soft); }
+.advice[data-a="INCORRECT"] { background: var(--bad-soft); }
+.advice[data-a="JUDGEMENT"] { background: var(--warn-soft); }
+.pill { display: inline-block; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+.advice[data-a="CORRECT"] .pill { color: var(--ok); } .advice[data-a="INCORRECT"] .pill { color: var(--bad); } .advice[data-a="JUDGEMENT"] .pill { color: var(--warn); }
+.choice { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.choice label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+textarea, input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; }
+textarea { min-height: 52px; resize: vertical; }
+.need { color: var(--bad); font-size: 0.85rem; }
+.sign { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: grid; gap: 10px; }
+button.primary { font: 600 0.95rem var(--f-body); background: var(--accent); color: var(--surface); border: 0; border-radius: 4px; padding: 9px 16px; cursor: pointer; justify-self: start; }
+button.primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.muted { color: var(--muted); }
+.records { display: grid; gap: 6px; }
+.rec { font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>EASA pilot review: HAL r161–r164</h1>
+    <p class="lede">Your disposition of the 32 blocking assurance findings in the four sealed rc-v1 HAL packages. The signed result is the human part of the validated pilot record that ENFORCING mode needs. It is not a safety approval and does not switch any mode.</p>
+  </header>
+
+  <div class="strip" id="strip"></div>
+
+  <div class="howto">
+    <h3>How to review</h3>
+    <p><b>CORRECT</b>: the finding names a real gap or defect. <b>INCORRECT</b>: it is a false positive; say why in the note.</p>
+    <p>The tinted box under each finding is my advisory reading of the evidence, with the reasons. It is a suggestion only: the decision and the signature are yours.</p>
+  </div>
+
+  <div class="bar" role="group" aria-label="Show findings">
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="open" aria-pressed="false">Not yet marked</button>
+    <button class="chip" data-f="claims" aria-pressed="false">SWE claims</button>
+    <button class="chip" data-f="safety" aria-pressed="false">Safety evidence</button>
+    <span class="progress" id="progress"></span>
+  </div>
+
+  <div id="rows"></div>
+
+  <section class="sign" aria-labelledby="signh">
+    <h2 id="signh">Sign the worksheet</h2>
+    <p class="muted">Signing stores your 32 dispositions with your account, the time and the archive hashes. Only the artifact owner can sign.</p>
+    <label for="reviewer">Reviewer (your full name)</label>
+    <input type="text" id="reviewer" autocomplete="name" placeholder="First and last name">
+    <label class="choice"><input type="checkbox" id="confirm"> I reviewed each finding myself. My dispositions are not a safety approval, an ASIL allocation or a certification.</label>
+    <button class="primary" id="signbtn" disabled>Sign worksheet</button>
+    <p id="signstatus" class="muted" role="status"></p>
+    <div class="records" id="records"></div>
+  </section>
+</div>
+
+<script id="pack-data" type="application/json">{"name": "EASA pilot review, HAL r161-r164", "archives": {"forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f", "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e", "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b", "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022"}, "measurements": [{"archive_sha256": "d124cbe54551b854ab3990d9c0775fd75e368c8eab459f3a41a06328f83fa03f", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "pilot_check": "PASS", "seeded_applied": 6, "seeded_missed": []}, {"archive_sha256": "edb891446d1510f41b3fef125673466e1f2480d6fed5bc1de39853efa0a2d56e", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "pilot_check": "PASS", "seeded_applied": 6, "seeded_missed": []}, {"archive_sha256": "26c610fdd3d63b9b1a9ee67e6d9348bd5b46c5c9244e409cd9ae14baa1c22c8b", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "pilot_check": "PASS", "seeded_applied": 6, "seeded_missed": []}, {"archive_sha256": "234e3d6e8074d9258a1364c1b4eda363f820e3a9bd94e100e3b492cda9274022", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "pilot_check": "PASS", "seeded_applied": 6, "seeded_missed": []}], "fn": {"seeded": 24, "missed": 0, "upper95": 0.117}, "rows": [{"row": "HAL-r161#001", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:CLM-SWE.1:CONTESTED", "title": "SWE.1 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:e41de6ca1daa2281", "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:e41de6ca1daa2281"], "verifier": ["REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"], "advice": "CORRECT", "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r161#002", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:CLM-SWE.2:UNSUPPORTED", "title": "SWE.2 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"], "verifier": [], "advice": "CORRECT", "why": "Flow/scheduling analysis evidence was not accepted (none produced) and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r161#003", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:CLM-SWE.3:UNSUPPORTED", "title": "SWE.3 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"], "verifier": [], "advice": "CORRECT", "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."}, {"row": "HAL-r161#004", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:CLM-SWE.4:UNSUPPORTED", "title": "SWE.4 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"], "verifier": [], "advice": "CORRECT", "why": "Negative/boundary test-case evidence was not accepted and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r161#005", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi", "title": "Safety evidence missing: hsi", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."}, {"row": "HAL-r161#006", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review", "title": "Safety evidence missing: allocation review", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."}, {"row": "HAL-r161#007", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis", "title": "Safety evidence missing: software safety analysis", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The software safety analysis document was postponed by you. The finding states a real gap."}, {"row": "HAL-r161#008", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment", "title": "Safety evidence missing: tool assurance assessment", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."}, {"row": "HAL-r162#001", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:CLM-SWE.1:CONTESTED", "title": "SWE.1 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:82f29931f3c05d30", "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:82f29931f3c05d30"], "verifier": ["REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480"], "advice": "CORRECT", "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r162#002", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:CLM-SWE.2:CONTESTED", "title": "SWE.2 claim contested", "gate_findings": ["ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:ab7d2d96ecc63900", "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:ab7d2d96ecc63900", "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:ab7d2d96ecc63900", "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:ab7d2d96ecc63900", "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"], "verifier": ["ARCH_IRQ_OWNER_MISSING"], "advice": "JUDGEMENT", "why": "Architecture verifier: ARCH_IRQ_OWNER_MISSING. Interrupts are outside the work-order scope, but the architecture text discusses callers and interrupt handlers serialising RCC access without naming an owner of that shared resource. If you consider that concurrency note in scope, the finding is CORRECT; if interrupts are fully out of scope, it is INCORRECT. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r162#003", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:CLM-SWE.3:UNSUPPORTED", "title": "SWE.3 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"], "verifier": [], "advice": "CORRECT", "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."}, {"row": "HAL-r162#004", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:CLM-SWE.4:CONTESTED", "title": "SWE.4 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:MUTATION_EVIDENCE:easa-report:SWE.4:fdcef8b11f37a07d", "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"], "verifier": ["SURVIVOR:OK_TO_ERROR@85:hal_status_t status = HAL_OK;", "SURVIVOR:OK_TO_ERROR@181:hal_status_t status = HAL_OK;"], "advice": "INCORRECT", "why": "Mutation verifier: two surviving mutants change the initial 'status = HAL_OK'. Both branches overwrite status before it is returned, so the mutant is equivalent (never observable): a false positive for the CONTESTED status. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons."}, {"row": "HAL-r162#005", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi", "title": "Safety evidence missing: hsi", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."}, {"row": "HAL-r162#006", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review", "title": "Safety evidence missing: allocation review", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."}, {"row": "HAL-r162#007", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis", "title": "Safety evidence missing: software safety analysis", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The software safety analysis document was postponed by you. The finding states a real gap."}, {"row": "HAL-r162#008", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment", "title": "Safety evidence missing: tool assurance assessment", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."}, {"row": "HAL-r163#001", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:CLM-SWE.1:CONTESTED", "title": "SWE.1 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:24391f51aaddec8c", "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:24391f51aaddec8c"], "verifier": ["REQ_UNBOUNDED_TIME:SWR-001", "REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480", "REQ_UNBOUNDED_TIME:SWR-002", "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480", "REQ_UNBOUNDED_TIME:SWR-007", "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"], "advice": "CORRECT", "why": "Requirements verifier: REQ_UNBOUNDED_TIME:SWR-001; REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_UNBOUNDED_TIME:SWR-002; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The REQ_UNBOUNDED_TIME part is a verifier false positive: the requirement is bounded by 'the supplied timeout' and the rule only recognises 'caller-supplied'. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r163#002", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:CLM-SWE.2:CONTESTED", "title": "SWE.2 claim contested", "gate_findings": ["ASSURANCE_GATE_FAILED:COMPONENT_ALLOCATION:easa-report:SWE.2:b3421356b06541d0", "ASSURANCE_GATE_FAILED:INTERFACE_DEFINITION:easa-report:SWE.2:b3421356b06541d0", "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:IRQ_RESOURCE_OWNERSHIP:easa-report:SWE.2:b3421356b06541d0", "ASSURANCE_GATE_FAILED:PLANTUML_SEMANTIC_CONSISTENCY:easa-report:SWE.2:b3421356b06541d0", "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"], "verifier": ["ARCH_UNDECLARED_ENDPOINT:Caller"], "advice": "CORRECT", "why": "Architecture verifier: ARCH_UNDECLARED_ENDPOINT:Caller. The diagram/interface text uses an actor 'Caller' that is not a declared component: a minor real inconsistency. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r163#003", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:CLM-SWE.3:UNSUPPORTED", "title": "SWE.3 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"], "verifier": [], "advice": "CORRECT", "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."}, {"row": "HAL-r163#004", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:CLM-SWE.4:UNSUPPORTED", "title": "SWE.4 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"], "verifier": [], "advice": "CORRECT", "why": "Negative/boundary test-case evidence was not accepted and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r163#005", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi", "title": "Safety evidence missing: hsi", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."}, {"row": "HAL-r163#006", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review", "title": "Safety evidence missing: allocation review", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."}, {"row": "HAL-r163#007", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis", "title": "Safety evidence missing: software safety analysis", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The software safety analysis document was postponed by you. The finding states a real gap."}, {"row": "HAL-r163#008", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment", "title": "Safety evidence missing: tool assurance assessment", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."}, {"row": "HAL-r164#001", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:CLM-SWE.1:CONTESTED", "title": "SWE.1 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:SOURCE_CONTRADICTION_CHECK:easa-report:SWE.1:837ae710aa3b8619", "ASSURANCE_GATE_FAILED:TESTABILITY_CHECK:easa-report:SWE.1:837ae710aa3b8619"], "verifier": ["REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480", "REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480"], "advice": "CORRECT", "why": "Requirements verifier: REQ_SOURCE_MISMATCH:SWR-001:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-002:HSERDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSIRDY not on p.480; REQ_SOURCE_MISMATCH:SWR-007:HSERDY not on p.480. SWR-001/002/007 cite RM0486 p.480 (and p.482) for the RCC_SR ready flags, but RCC_SR (section 14.10.2) starts on p.481: a real but minor source-citation gap. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r164#002", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:CLM-SWE.2:UNSUPPORTED", "title": "SWE.2 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "EVIDENCE_NOT_ACCEPTED:FLOW_SCHEDULING_ANALYSIS"], "verifier": [], "advice": "CORRECT", "why": "Flow/scheduling analysis evidence was not accepted (none produced) and only the AI inspection exists. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review."}, {"row": "HAL-r164#003", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:CLM-SWE.3:UNSUPPORTED", "title": "SWE.3 claim unsupported", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION"], "verifier": [], "advice": "CORRECT", "why": "The only reason is the inspection rule. The SWE inspection for this phase was done by the AI inspector. The ASIL B profile does not accept an AI PASS as independent inspection evidence, so this claim cannot be SUPPORTED without a human or qualified independent review. Mark INCORRECT only if you accept the AI inspection plus the deterministic SWE.3 gates as sufficient for ASIL B."}, {"row": "HAL-r164#004", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:CLM-SWE.4:CONTESTED", "title": "SWE.4 claim contested", "gate_findings": ["AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION", "ASSURANCE_GATE_FAILED:INDEPENDENT_ORACLE:easa-report:SWE.4:a42633080b4d2fd5", "EVIDENCE_NOT_ACCEPTED:NEGATIVE_BOUNDARY_CASES"], "verifier": ["ORACLE_FAIL:SWR-010:HSE_RESET_DEFAULT_PRESERVED", "ORACLE_FAIL:SWR-011:HSI_RESET_DEFAULT_PRESERVED"], "advice": "INCORRECT", "why": "Independent oracle: ORACLE_FAIL SWR-010/011 *_RESET_DEFAULT_PRESERVED. This is the CAPA-047 false positive: HAL_RCC_GPDMA1_Enable writes only RCC_AHB1ENR and never RCC_CR; the fixed oracle passes this package 19/19. The claim would still be UNSUPPORTED for the inspection and boundary-test reasons."}, {"row": "HAL-r164#005", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:hsi", "title": "Safety evidence missing: hsi", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No authoritative HSI (hardware-software interface) document from the silicon/system level exists for this work order. The finding states a real gap."}, {"row": "HAL-r164#006", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:allocation_review", "title": "Safety evidence missing: allocation review", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "No approved ASIL allocation review exists (owner task T-002). The finding states a real gap."}, {"row": "HAL-r164#007", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis", "title": "Safety evidence missing: software safety analysis", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The software safety analysis document was postponed by you. The finding states a real gap."}, {"row": "HAL-r164#008", "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip", "finding": "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment", "title": "Safety evidence missing: tool assurance assessment", "gate_findings": [], "verifier": [], "advice": "CORRECT", "why": "The tool confidence / assurance assessment was postponed by you (T-016). The finding states a real gap."}], "worksheet_sha256": "31db5929b130dc5db653eaadb65e833dcdf47b729f1dbb928d16546a1156cc38"}</script>
+<script>
+const DATA = JSON.parse(document.getElementById("pack-data").textContent);
+const $ = (s) => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== undefined && v !== null && v !== false) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+};
+const DRAFT_KEY = "easa-pilot-r161-r164-draft-v1";
+let draft = { rows: {}, reviewer: "" };
+try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null") || draft; draft.rows ||= {}; } catch (e) { /* storage unavailable */ }
+const saveDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (e) { /* storage unavailable */ } };
+const state = { filter: "all", db: null, user: null, isOwner: false, myId: null, records: [] };
+
+function strip() {
+  const box = $("#strip");
+  const m = DATA.measurements;
+  box.append(
+    el("div", { class: "stat" }, el("div", { class: "k", text: "Seeded defects" }), el("div", { class: "v", text: `${DATA.fn.missed} of ${DATA.fn.seeded} missed` }),
+      el("div", { class: "s", text: `False negatives; one-sided 95% upper bound ${(DATA.fn.upper95 * 100).toFixed(1)}%` })),
+    el("div", { class: "stat" }, el("div", { class: "k", text: "Pilot check" }), el("div", { class: "v", text: `${m.filter((x) => x.pilot_check === "PASS").length} of ${m.length} PASS` }),
+      el("div", { class: "s", text: "Sealed archives read only; hashes unchanged" })),
+    el("div", { class: "stat" }, el("div", { class: "k", text: "Findings to review" }), el("div", { class: "v", text: String(DATA.rows.length) }),
+      el("div", { class: "s", text: "8 per package: SWE claims and safety evidence" })),
+  );
+}
+
+const isSafety = (r) => r.finding.startsWith("EASA:SAFETY");
+function visible(r) {
+  if (state.filter === "open") return !(draft.rows[r.row] || {}).d;
+  if (state.filter === "claims") return !isSafety(r);
+  if (state.filter === "safety") return isSafety(r);
+  return true;
+}
+
+function card(r) {
+  const d = draft.rows[r.row] || {};
+  const c = el("article", { class: "card", "data-done": d.d || "" });
+  const top = el("div", { class: "cardtop" }, el("span", { class: "rowid", text: r.row }), el("h3", { text: r.title }), el("span", { class: "mono", text: r.finding }));
+  c.append(top);
+  if (r.gate_findings.length || r.verifier.length) {
+    const det = el("details", {}, el("summary", { text: "Evidence: gate reasons and verifier findings" }));
+    if (r.gate_findings.length) det.append(el("ul", { class: "ev" }, ...r.gate_findings.map((g) => el("li", { class: "mono", text: g }))));
+    if (r.verifier.length) det.append(el("ul", { class: "ev" }, ...r.verifier.map((g) => el("li", { class: "mono", text: g }))));
+    c.append(det);
+  }
+  c.append(el("div", { class: "advice", "data-a": r.advice }, el("span", { class: "pill", text: r.advice === "JUDGEMENT" ? "Advisory: your judgement" : "Advisory: " + r.advice }), el("p", { text: r.why })));
+  const name = "d-" + r.row;
+  const choice = el("div", { class: "choice", role: "radiogroup", "aria-label": "Disposition for " + r.row });
+  for (const v of ["CORRECT", "INCORRECT"]) {
+    const id = name + "-" + v;
+    const inp = el("input", { type: "radio", name, id, value: v });
+    inp.checked = d.d === v;
+    inp.addEventListener("change", () => { draft.rows[r.row] = { ...draft.rows[r.row], d: v }; saveDraft(); render(); });
+    choice.append(el("label", { for: id }, inp, el("span", { text: v === "CORRECT" ? "CORRECT (real gap)" : "INCORRECT (false positive)" })));
+  }
+  c.append(choice);
+  const ta = el("textarea", { id: "n-" + r.row, placeholder: d.d === "INCORRECT" ? "Why is this a false positive? (required)" : "Note (optional)" });
+  ta.value = d.n || "";
+  ta.addEventListener("input", () => { draft.rows[r.row] = { ...draft.rows[r.row], n: ta.value }; saveDraft(); updateSign(); });
+  c.append(ta);
+  if (d.d === "INCORRECT" && !(d.n || "").trim()) c.append(el("span", { class: "need", text: "Add a short reason for INCORRECT." }));
+  return c;
+}
+
+function render() {
+  const box = $("#rows");
+  box.replaceChildren();
+  const byPkg = {};
+  for (const r of DATA.rows) (byPkg[r.package] ||= []).push(r);
+  for (const [pkg, rows] of Object.entries(byPkg)) {
+    const shown = rows.filter(visible);
+    if (!shown.length) continue;
+    const run = pkg.replace(/^.*RCC-HAL-/, "HAL ").replace(/-review\.zip$/, "");
+    const meas = DATA.measurements.find((m) => m.package === pkg);
+    const sec = el("section", { class: "pkg", "aria-label": run },
+      el("div", { class: "pkghead" }, el("h2", { text: run }), el("span", { class: "mono", text: "sha256 " + (DATA.archives[pkg] || "").slice(0, 16) + "…" }),
+        el("span", { class: "muted", text: `pilot check ${meas.pilot_check} · seeded ${meas.seeded_applied}, missed ${meas.seeded_missed.length}` })));
+    shown.forEach((r) => sec.append(card(r)));
+    box.append(sec);
+  }
+  const done = DATA.rows.filter((r) => (draft.rows[r.row] || {}).d).length;
+  $("#progress").textContent = `${done} of ${DATA.rows.length} marked`;
+  updateSign();
+}
+
+function missing() {
+  const out = [];
+  for (const r of DATA.rows) {
+    const d = draft.rows[r.row] || {};
+    if (!d.d) out.push(r.row + " not marked");
+    else if (d.d === "INCORRECT" && !(d.n || "").trim()) out.push(r.row + " needs a reason");
+  }
+  return out;
+}
+
+function updateSign() {
+  const miss = missing();
+  const name = ($("#reviewer").value || "").trim();
+  const ok = !miss.length && /\S+\s+\S+/.test(name) && $("#confirm").checked && state.db && state.isOwner && state.myId;
+  $("#signbtn").disabled = !ok;
+  const st = $("#signstatus");
+  if (st.dataset.final) return;
+  st.textContent = !state.db ? "Signing needs the page's data store: open this page in claude.ai while signed in."
+    : !state.isOwner ? "Only the artifact owner can sign; you can read the findings."
+    : miss.length ? `${miss.length} row(s) still open: ${miss.slice(0, 4).join(", ")}${miss.length > 4 ? "…" : ""}`
+    : !/\S+\s+\S+/.test(name) ? "Enter your full name as the reviewer."
+    : !$("#confirm").checked ? "Tick the confirmation to sign." : "Ready to sign.";
+}
+
+async function sign() {
+  const btn = $("#signbtn");
+  btn.disabled = true;
+  const rec = {
+    schema: "forge-c/easa-pilot-review-signature/0.1", worksheet_sha256: DATA.worksheet_sha256, archives: DATA.archives,
+    reviewer: $("#reviewer").value.trim(), signed_by: state.myId, signed_at: new Date().toISOString(),
+    rows: Object.fromEntries(DATA.rows.map((r) => [r.row, { disposition: draft.rows[r.row].d, note: (draft.rows[r.row].n || "").trim(), finding: r.finding, package: r.package }])),
+  };
+  const st = $("#signstatus");
+  try {
+    await state.db.collection("worksheets").add(rec);
+    st.dataset.final = "1";
+    st.textContent = "Signed. Your dispositions are stored with this page; Claude reads them back into the pilot record.";
+  } catch (e) {
+    st.textContent = "Not signed: " + (e && e.message ? e.message : "the data store refused the write") + ". Nothing was recorded.";
+    btn.disabled = false;
+  }
+}
+
+function renderRecords() {
+  const box = $("#records");
+  box.replaceChildren();
+  const recs = state.records.slice().sort((a, b) => (a.signed_at < b.signed_at ? 1 : -1));
+  if (!recs.length) return;
+  box.append(el("h3", { text: "Signed records" }));
+  for (const r of recs) {
+    const inc = Object.values(r.rows || {}).filter((x) => x.disposition === "INCORRECT").length;
+    box.append(el("div", { class: "rec" }, el("span", { text: `${r.reviewer} · ${new Date(r.signed_at).toLocaleString()} · ${Object.keys(r.rows || {}).length} rows, ${inc} INCORRECT · worksheet ${r.worksheet_sha256 === DATA.worksheet_sha256 ? "matches" : "DIFFERS"}` })));
+  }
+}
+
+document.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
+  state.filter = b.dataset.f;
+  document.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+}));
+$("#reviewer").value = draft.reviewer || "";
+$("#reviewer").addEventListener("input", () => { draft.reviewer = $("#reviewer").value; saveDraft(); updateSign(); });
+$("#confirm").addEventListener("change", updateSign);
+$("#signbtn").addEventListener("click", sign);
+strip();
+render();
+
+(async () => {
+  const [db, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+  state.db = db; state.user = user;
+  if (user) {
+    try { state.isOwner = await user.isOwner(); state.myId = await user.id(); } catch (e) { /* identity unavailable */ }
+  }
+  if (db) {
+    try {
+      db.collection("worksheets").onSnapshot((snap) => { state.records = snap.docs.map((x) => x.data()); renderRecords(); }, () => {});
+    } catch (e) { /* reading records failed; signing still possible */ }
+  }
+  updateSign();
+})();
+</script>

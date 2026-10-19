@@ -87,8 +87,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             continue
         if layer == "HAL" and e.get("status") not in STATUSES:
             out.append(f"CONTRACT_STATUS:{where}:{e.get('status')} (HAL_OK|HAL_TIMEOUT|HAL_ERROR)")
-        if op == "no_write":
-            continue
+        if op == "no_write" and not (e.get("register") or e.get("field")):
+            continue  # no register access at all (e.g. a NULL configuration rejected before any access)
         reg, fld = e.get("register"), e.get("field")
         r = idx.get(reg)
         if r is None or fld not in r["fields"]:
@@ -151,7 +151,9 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
             continue
         case = {"case": e["case"], "swr": e.get("swr"), "function": c["function"], "args": list(c.get("args") or []),
                 "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None}
-        if e["op"] != "no_write":
+        # CAPA-047 (r164): a no_write effect that names a register means "this register is not written by the
+        # call" (the call may legitimately write other registers); without a register it means no access at all
+        if e["op"] != "no_write" or e.get("register"):
             r = idx.get(e.get("register"))
             fld = (r or {}).get("fields", {}).get(e.get("field"))
             if fld is None:

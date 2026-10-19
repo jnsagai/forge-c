@@ -1,0 +1,100 @@
+{
+  "CAPA-047": {
+    "history": [
+      {
+        "at": "2026-10-19T11:34:59.420708Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[\"CAPA-047\"]",
+        "from_state": null,
+        "reason": "EASA oracle false positive on a correct driver: rc-v1 no_write effect naming RCC_CR.HSEON/HSION mapped to HAL_RCC_GPDMA1_Enable demanded zero register accesses (HAL r164 ORACLE_FAIL SWR-010/011; the observe-only oracle findings are not imported as CRE observations, so no fingerprint)",
+        "seq": 390,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T11:34:59.451290Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 391,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T11:34:59.511574Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-051 assigned",
+        "seq": 392,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T11:45:49.301150Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[\"reproducer-run:rr-bb117f3bd8316b196f35\", \"reproducer-run:rr-6213da19690d6e5a57f9\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 393,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T11:45:49.374840Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[\"git:dcdce940ddf3..f1782d454d34\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix f1782d454d34 (patch 7393 bytes)",
+        "seq": 394,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T11:45:49.521158Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[\"reproducer-run:rr-1f6c4faadb891a018a04\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-051 absent at f1782d454d34",
+        "seq": 395,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T11:45:49.578358Z",
+        "capa_id": "CAPA-047",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 396,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "dcdce940ddf3f5922afa9f00c2e8bd6842dbb0f4",
+      "f1782d454d34b224991d8fca989c0bb70a9d8828",
+      "pd-5e66f61edf0f0638bd83"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<f1782d454d34"
+      ],
+      "candidate_patch_sha256": "aeba7de6808c938862b12798145a75bcf4bc03bbb7233f66902cc98929bbff6f",
+      "capa_id": "CAPA-047",
+      "created_at": "2026-10-19T11:34:59.420708Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-047"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-051",
+      "reproducer_id": "RPR-051",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-bb117f3bd8316b196f35",
+        "reproducer-run:rr-6213da19690d6e5a57f9"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "no_write had a single meaning (no access) while the contract allowed a register on it",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T11:45:49.578358Z"
+    }
+  }
+}

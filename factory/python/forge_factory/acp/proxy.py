@@ -7,7 +7,8 @@ Between Fabro (ACP client) and codex-acp (ACP agent):
   * the agent's MCP servers are the policy gate servers only (forge_fs + every forge MCP server of the run), set in
     the Codex session config with default_tools_approval_mode="approve" (the gate decides; codex-acp 2.1.1 cannot
     relay Codex's MCP approval question); session/new|load mcpServers from the client are dropped;
-  * session/request_permission and every other agent->client request: denied here, never forwarded;
+  * session/request_permission and every other agent->client request: denied here, never forwarded (a permission
+    request is answered with its reject option, CAPA-049);
   * session/prompt: a short tool note is prepended (file tools are the gate's mcp__forge_fs__* tools; no shell) and
     the reply rule appended (final message = the requested JSON only; CAPA-045).
 Codex runs with the factory CODEX_HOME (acp.codex_home) and its shell/exec/browser/plugin/sub-agent features off.
@@ -51,6 +52,16 @@ def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
                                                     "--node", node, "--server", server],
                 "env": env, "default_tools_approval_mode": "approve"}
     return {"forge_fs": srv("forge_fs"), **{k: srv(k.replace("_", "-")) for k in keys}}
+
+
+def deny_outcome(params) -> dict:
+    """CAPA-049 (LL r165): answering a permission request with outcome 'cancelled' means 'the prompt turn was
+    cancelled' - Codex ended the turn and Fabro failed the whole run ('Pipeline cancelled'). A policy refusal selects
+    the request's own reject option instead, so the agent sees a refusal and continues with the gate's MCP tools;
+    'cancelled' is only the fallback when the request offers no reject option."""
+    opts = [o for o in ((params or {}).get("options") or []) if isinstance(o, dict) and o.get("optionId")]
+    rej = next((o for k in ("reject_once", "reject_always") for o in opts if o.get("kind") == k), None)
+    return {"outcome": "selected", "optionId": rej["optionId"]} if rej else {"outcome": "cancelled"}
 
 
 class Proxy:
@@ -105,7 +116,7 @@ class Proxy:
             if meth == "session/request_permission":
                 tc = (m.get("params") or {}).get("toolCall") or {}
                 self._log({"event": "denied_permission", "kind": tc.get("kind"), "title": str(tc.get("title"))[:120]})
-                self.to_agent({"jsonrpc": "2.0", "id": m["id"], "result": {"outcome": {"outcome": "cancelled"}}})
+                self.to_agent({"jsonrpc": "2.0", "id": m["id"], "result": {"outcome": deny_outcome(m.get("params"))}})
             else:
                 self._log({"event": "denied_request", "method": meth})
                 self.to_agent({"jsonrpc": "2.0", "id": m["id"],

@@ -59,7 +59,11 @@ def renode_bin() -> str | None:
 
 def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]]:
     """Build one RAM-resident Cortex-M55 test image (test source + driver sources + startup + linker script)."""
-    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ws / d).glob("*.c"))]
+    # CAPA-048: a packaged workspace carries the HAL unit in software/hal AND in the flat software/src view; one
+    # compile unit per file name (software/hal first), or the image links every function twice
+    seen: set[str] = set()
+    srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ws / d).glob("*.c"))
+            if not (p.name in seen or seen.add(p.name))]
     incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
                                      "software/tests/software") if (ws / d).is_dir()]
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
@@ -67,7 +71,8 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
     lines = b.stderr.decode(errors="replace").splitlines()
     # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
     errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines
-            if ("undefined reference" in ln or ": error:" in ln) and "collect2" not in ln][:8]
+            if ("undefined reference" in ln or "multiple definition" in ln or ": error:" in ln)
+            and "collect2" not in ln][:8]
     if not errs:
         errs = [ln[:140] for ln in lines if "error" in ln][:4]
     return b.exit_code == 0, b.stdout + b.stderr, errs
