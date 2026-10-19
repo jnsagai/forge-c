@@ -561,7 +561,8 @@ try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElemen
   else { renderFloor(init.floor); }
   $("app").hidden = false;
   state.lastMsg = Date.now();
-  connect(); poll(); loadUsage();
+  connect(); poll();
+  if (init && init.usage && $("uwin").value === "7d" && $("cohort").value === "all") renderUsage(init.usage); else loadUsage();
   if (init && init.quality && $("qwin").value === "30d") { lastQuality = init.quality; renderQuality(lastQuality); } else loadQuality();
   if (init && init.score && $("win").value === "today" && $("cohort").value === "all") renderScore(init.score); else loadScore();
 })();

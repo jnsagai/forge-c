@@ -79,6 +79,7 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
             init = {"role": who, "floor": floor_snapshot()}
             if cache.ready.is_set():  # first paint with today's scorecard (the page then follows the viewer's choice)
                 init["score"] = scorecard(cache, W.window("today", cfg()), "all")
+                init["usage"] = cr_usage(who, "7d", "all", None, None)
             init["quality"] = cr_quality(who, "30d", None)
             blob = json.dumps(init, default=str).replace("</", "<\\/")
             html = html.replace("<script>", f"<script>window.__INIT__={blob};</script>\n<script>", 1)
