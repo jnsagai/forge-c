@@ -585,3 +585,14 @@ reproducers:
     operations: [SWE.3/author]
     root_cause: "The forge ACP proxy denied every session/request_permission with outcome 'cancelled', which ACP defines as 'the prompt turn was cancelled'; when the Codex SWE.3 author asked to edit files natively (LL r165), Codex ended the turn and Fabro failed the whole run as 'Pipeline cancelled'."
     remedy: "Deny by selecting the request's reject option (reject_once, else reject_always); 'cancelled' only when the request offers no reject option."
+  - id: RPR-054
+    script: rpr054_regmap_register_field_rows.py
+    sha256: 4b67672fbc120a61aa2d1413a8779ff892fbb23d051dd3bfefd0ff68df5752e0
+    symptom_signature: "register map generator finds no register in register.field table rows"
+    observed_in: r166
+    baseline_revision: 533b7e0109e03f1e08be9462cccdff9469211578
+    fix_revision: 98f6f095bfa7d75489eeb584daf6c606dabaaed9
+    error_codes: ["NO_REGISTERS_FROM_SWE2_TABLE", "IMPL:LL_EXTRA_COMPILE_UNIT", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/regmap, SWE.3/author]
+    root_cause: "The SWE.2 register-table contract asks for one row per register/bit with a 'name' column; the r166 author wrote register.field names (RCC_CR.HSION). The register map generator accepted only bare RCC_ names, found none, BLOCKED and skipped writing the generated LL compile unit; the SWE.3 author wrote its own compile unit, which the CAPA-046 check rejects and which no author tool can delete, until the rework budget ran out."
+    remedy: "The generator takes the leading RCC_ register name of a register.field / register[field] / backticked cell, and writes the constant LL compile unit before any BLOCKED return."
