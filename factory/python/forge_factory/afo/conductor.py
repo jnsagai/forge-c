@@ -51,7 +51,10 @@ def cycle(n: int) -> tuple[str, bool, str]:
 
         dispatch.dispatch_pending(store, runtime.launcher)
         dispatch.reconcile_inflight(store, runtime.fabro_view)
-        dispatch.reconcile_running(store, runtime.fabro_view)
+        from . import recovery
+
+        dispatch.reconcile_running(store, runtime.fabro_view, recover=recovery.make_recover(
+            store, eff, f"conductor-{os.getpid()}", runtime.workspace_of))
         for o in store.orders(("RUNNING", "VALIDATING")):
             att = store.attempts(o["order_id"])[-1]
             ws = runtime.workspace_of(att)

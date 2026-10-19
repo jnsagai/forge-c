@@ -69,8 +69,12 @@ ROWS = [
     ("A19", "Mount sentinel / stable data volume preflight", "afo.host (005 M1)",
      [(f"{PY}/afo/host.py", r"^def preflight\("), (f"{PY}/afo/host.py", r"^def init\(")],
      "the sentinel is written by the operator after boot-time mounting is configured (OPERATIONS-AFO.md)", "T010"),
-    ("A20", "Recovery planner and factory maintainer roles", "-", [(f"{PY}/afo/planner.py", r"")], "not built",
-     "T037-T045"),
+    ("A20", "Recovery planner and factory maintainer roles",
+     "afo.bundle/recovery/planner + forge-afo-mcp + agents.afo.yaml overlay (005 M4)",
+     [(f"{PY}/afo/recovery.py", r"^def validate\("), (f"{PY}/afo/planner.py", r"^def parse\("),
+      (f"{PY}/mcp/servers/afo.py", r"^OPERATIONS = "), ("config/factory/agents.afo.yaml", r"afo-recovery-planner")],
+     "planner Fabro run not enabled (policy enable_recovery_planner=false); factory maintainer role is M5",
+     "T035-T045"),
     ("A21", "Dead-letter cases and alerts", "-", [(f"{PY}/afo/deadletter.py", r"")], "not built", "T054, T055"),
 ]
 

@@ -67,7 +67,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         manifest = json.loads((REPO_ROOT / order["input_manifest_ref"]).read_text())
         payload = json.loads(cmd["payload"])
         if payload.get("resume_from"):  # recovery attempt: resume verified phases from the previous attempt
-            manifest = {**manifest, "resume_from": payload["resume_from"]}
+            manifest = {**manifest, **{k: payload[k] for k in ("resume_from", "resume_upto", "model_profile",
+                                                                "lesson_ids") if payload.get(k)}}
         try:
             receipt = launcher(manifest, name, labels)
         except Exception as exc:  # noqa: BLE001 - outcome unknown: reconciliation decides, never a blind retry
@@ -136,7 +137,9 @@ def reconcile_inflight(store: Store, view, *, now: float | None = None) -> list[
 
 
 # -- run-state reconciliation (T029) ---------------------------------------------------------------------------------
-def reconcile_running(store: Store, view) -> list[dict]:
+def reconcile_running(store: Store, view, recover=None) -> list[dict]:
+    """`recover(order, attempt)` handles a terminal run whose SWE phase failed (AFO M4) and returns True when it
+    took the order; otherwise the order goes to VALIDATING (the package decides READY or BLOCKED)."""
     out = []
     runs = view()
     for order in store.orders(("RUNNING",)):
@@ -155,6 +158,10 @@ def reconcile_running(store: Store, view) -> list[dict]:
         kind = run_kind(run)
         if kind in TERMINAL:
             store.attempt_transition(att["attempt_id"], TERMINAL[kind], exit_status=kind.lower(), finished_utc=utc_now())
+            r = recover(store.order(order["order_id"]), store.attempts(order["order_id"])[-1]) if recover else None
+            if r:
+                out.append({"order_id": order["order_id"], "action": "recovery", "result": r})
+                continue
             store.transition(order["order_id"], "VALIDATING", f"Fabro run {rid} {kind.lower()}")
             out.append({"order_id": order["order_id"], "action": "validating", "run": kind})
         else:

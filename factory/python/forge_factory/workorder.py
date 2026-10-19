@@ -265,9 +265,10 @@ RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "eviden
 TARGET_BUILD = "build/target-cm55-gcc"
 
 
-def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
+def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None) -> list[str]:
     """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
-    non-stale baseline with its recorded inspection), stopping at the first phase that did not. Returns the phases
+    non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
+    (AFO-T040: a return to the owning upstream phase reruns that phase and everything after it). Returns the phases
     still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
     from .inspection.engine import PHASE_PATHS, PHASES, Store
 
@@ -278,7 +279,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
     stable: list[str] = []
     for ph in PHASES:
         g = st.gate(ph)
-        if g["decision"] != "PASS":
+        if g["decision"] != "PASS" or (upto is not None and ph == upto):
             break
         stable.append(ph)
     # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
@@ -364,7 +365,7 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None,
-        labels: dict[str, str] | None = None) -> dict:
+        labels: dict[str, str] | None = None, resume_upto: str | None = None) -> dict:
     if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
         from .acp import codex_home
 
@@ -374,7 +375,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         if not codex_home.logged_in():
             raise RuntimeError(f"CODEX_HOME {codex_home.home()} is not logged in (run: CODEX_HOME=<it> codex login)")
     ws, manifest = prepare(example, wo, provided_from)
-    phases = resume_from(ws, manifest, resume) if resume else None
+    phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
     secmap = {}

@@ -42,11 +42,13 @@ def _env(repo, rid="RCC-HAL-1", name="m1", prio="NORMAL", model="deepseek-flash"
 
 def test_store_migrates_with_wal_full_sync_and_private_file(repo):
     s = Store()
-    assert s.schema_version() == 1
+    from forge_factory.afo.queue import MIGRATIONS
+
+    assert s.schema_version() == len(MIGRATIONS)
     c = s.connect()
     assert c.execute("PRAGMA journal_mode").fetchone()[0] == "wal" and c.execute("PRAGMA synchronous").fetchone()[0] == 2
     assert oct(s.path.stat().st_mode & 0o777) == "0o600"
-    assert Store().schema_version() == 1                                      # re-open is a no-op migration
+    assert Store().schema_version() == len(MIGRATIONS)                        # re-open is a no-op migration
 
 
 def test_intake_pins_the_manifest_is_idempotent_and_detects_conflicts(repo):
@@ -111,7 +113,7 @@ def test_leases_fence_a_stale_scheduler(repo):
     assert len(s.commands()) == 1
     s.attempt_transition(aid, "DISPATCH_PENDING")
     with pytest.raises(QueueError):
-        s.attempt_transition(aid, "PREPARED")
+        s.attempt_transition(aid, "SUCCEEDED")                               # not an attempt edge
 
 
 def _pilot(tmp_path, monkeypatch):

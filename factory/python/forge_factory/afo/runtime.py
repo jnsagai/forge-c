@@ -25,12 +25,22 @@ def fabro_view(limit: int = 200):
         return None
 
 
+# pre-approved model profiles (policy engineering.allowed_model_profiles) -> launch parameters
+PROFILES = {"deepseek-flash": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": None},
+            "codex-gpt-6.1-sol": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": "codex"}}
+
+
 def launcher(manifest: dict, wo: str, labels: dict) -> dict:
     from ..workorder import run
 
+    if manifest.get("model_profile"):  # a SWITCH_PREAPPROVED_MODEL_PROFILE recovery attempt
+        if manifest["model_profile"] not in PROFILES:
+            raise ValueError(f"MODEL_PROFILE_UNKNOWN:{manifest['model_profile']}")
+        manifest = {**manifest, **PROFILES[manifest["model_profile"]]}
     r = run(REPO_ROOT / manifest["example"], wo, detach=True, model=manifest.get("model", "deepseek-flash"),
             provider=manifest.get("provider", "deepseek"), provided_from=manifest.get("provided_from"),
-            acp_authors=manifest.get("acp_authors"), resume=manifest.get("resume_from"), labels=labels)
+            acp_authors=manifest.get("acp_authors"), resume=manifest.get("resume_from"),
+            resume_upto=manifest.get("resume_upto"), labels=labels)
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")
     rev = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
