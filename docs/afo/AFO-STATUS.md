@@ -1,9 +1,9 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T09:40:01.067827Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-19T10:22:25.658136Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
 
-Tasks: BLOCKED 2, NOT_RUN 22, PARTIAL 2, PASS 49.
-FRs: COVERED 45, OPEN 15, PARTIAL 12.
+Tasks: BLOCKED 6, NOT_RUN 5, PARTIAL 3, PASS 61.
+FRs: COVERED 54, OPEN 2, PARTIAL 16.
 
 | Task | M | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|---|
@@ -60,23 +60,23 @@ FRs: COVERED 45, OPEN 15, PARTIAL 12.
 | AFO-T051 | M5 | P1 | PASS | AT-039, AT-047, AT-048, AT-050 | evidence/v0.4/runs/AFO-T051/latest.json |
 | AFO-T052 | M5 | P1 | PASS | AT-048, AT-051 | evidence/v0.4/runs/AFO-T052/latest.json |
 | AFO-T053 | M5 | P1 | PASS | AT-039, AT-050 | evidence/v0.4/runs/AFO-T053/latest.json |
-| AFO-T054 | M6 | P0 | NOT_RUN | AT-037, AT-038, AT-039, AT-040 |  |
-| AFO-T055 | M6 | P0 | NOT_RUN | AT-037, AT-038, AT-040, AT-042 |  |
-| AFO-T056 | M6 | P0 | NOT_RUN | AT-052, AT-053, AT-054, AT-055 |  |
-| AFO-T057 | M6 | P0 | NOT_RUN | AT-042, AT-052, AT-055 |  |
-| AFO-T058 | M6 | P0 | NOT_RUN | AT-014, AT-053, AT-054 |  |
-| AFO-T059 | M6 | P0 | NOT_RUN | AT-037, AT-056 |  |
-| AFO-T060 | M6 | P0 | NOT_RUN | AT-037, AT-038, AT-039 |  |
-| AFO-T061 | M6 | P0 | NOT_RUN | AT-042, AT-055 |  |
-| AFO-T062 | M7 | P0 | NOT_RUN | AT-037, AT-057, AT-058 |  |
-| AFO-T063 | M7 | P0 | NOT_RUN | AT-057, AT-058 |  |
-| AFO-T064 | M7 | P0 | NOT_RUN | AT-059, AT-062, AT-063 |  |
-| AFO-T065 | M7 | P0 | NOT_RUN | AT-060, AT-061 |  |
-| AFO-T066 | M7 | P0 | NOT_RUN | AT-059, AT-063 |  |
-| AFO-T067 | M7 | P0 | NOT_RUN | AT-062 |  |
-| AFO-T068 | M7 | P0 | NOT_RUN | AT-062 |  |
-| AFO-T069 | M7 | P0 | NOT_RUN | AT-054, AT-059, AT-062, AT-063, AT-064 |  |
-| AFO-T070 | M7 | P0 | NOT_RUN | AT-054, AT-063, AT-064, AT-065, AT-066 |  |
+| AFO-T054 | M6 | P0 | PASS | AT-037, AT-038, AT-039, AT-040 | evidence/v0.4/runs/AFO-T054/latest.json |
+| AFO-T055 | M6 | P0 | PASS | AT-037, AT-038, AT-040, AT-042 | evidence/v0.4/runs/AFO-T055/latest.json |
+| AFO-T056 | M6 | P0 | PASS | AT-052, AT-053, AT-054, AT-055 | evidence/v0.4/runs/AFO-T056/latest.json |
+| AFO-T057 | M6 | P0 | PARTIAL | AT-042, AT-052, AT-055 | evidence/v0.4/runs/AFO-T057/latest.json |
+| AFO-T058 | M6 | P0 | PASS | AT-014, AT-053, AT-054 | evidence/v0.4/runs/AFO-T058/latest.json |
+| AFO-T059 | M6 | P0 | PASS | AT-037, AT-056 | evidence/v0.4/runs/AFO-T059/latest.json |
+| AFO-T060 | M6 | P0 | PASS | AT-037, AT-038, AT-039 | evidence/v0.4/runs/AFO-T060/latest.json |
+| AFO-T061 | M6 | P0 | PASS | AT-042, AT-055 | evidence/v0.4/runs/AFO-T061/latest.json |
+| AFO-T062 | M7 | P0 | PASS | AT-037, AT-057, AT-058 | evidence/v0.4/runs/AFO-T062/latest.json |
+| AFO-T063 | M7 | P0 | PASS | AT-057, AT-058 | evidence/v0.4/runs/AFO-T063/latest.json |
+| AFO-T064 | M7 | P0 | PASS | AT-059, AT-062, AT-063 | evidence/v0.4/runs/AFO-T064/latest.json |
+| AFO-T065 | M7 | P0 | PASS | AT-060, AT-061 | evidence/v0.4/runs/AFO-T065/latest.json |
+| AFO-T066 | M7 | P0 | BLOCKED | AT-059, AT-063 | A real-model READY + deliberate BLOCKED pair launched BY THE CONDUCTOR needs AFO in PILOT mode: a signed owner PILOT authorization (config/factory/afo-authorizations/, launch_workorder + submit_workorder for the driver class) bound to the policy sha256; the policy is OBSERVE_ONLY. Models follow the owner decisions (DeepSeek; Sol 6.1 Codex authors since 2026-10-19), not local Qwen. Factory runs outside AFO (e.g. HAL r161, rc-v1, six phases PASS, BLOCKED only on the owner-postponed ASIL B safety documents) are not AFO-launched orders and are not counted. |
+| AFO-T067 | M7 | P0 | PASS | AT-062 | evidence/v0.4/runs/AFO-T067/latest.json |
+| AFO-T068 | M7 | P0 | BLOCKED | AT-062 | Actual 24 h / 72 h / 168 h soak needs an operator authorization and the deferred restart/boot work (data volume mounts only at login; owner decision 2026-10-19 defers restart/reboot). Runner ready (AFO-T067): python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>; then: python -m forge_factory.afo.soak run soak-24h-1 (report: ... report soak-24h-1). Elapsed hours are never simulated. |
+| AFO-T069 | M7 | P0 | BLOCKED | AT-054, AT-059, AT-062, AT-063, AT-064 | The recovery drill matrix includes service restarts on the live shared host and a machine reboot; owner decision 2026-10-19 defers restart/reboot drills (see AFO-T014/T015/T034). Crash windows are covered with injected faults (AFO-T033, AFO-T065). |
+| AFO-T070 | M7 | P0 | BLOCKED | AT-054, AT-063, AT-064, AT-065, AT-066 | Needs the owner's signed operator readiness review before any ACTIVE mode change; the review input is forge_factory.afo.readiness.assess() (no level above IMPLEMENTED can be demonstrated before the deferred drills and a PILOT authorization). No ACTIVE change is requested. |
 | AFO-T071 | M8 | P0 | NOT_RUN | AT-064, AT-065 |  |
 | AFO-T072 | M8 | P0 | NOT_RUN | AT-065, AT-066 |  |
 | AFO-T073 | M8 | P0 | NOT_RUN | AT-037, AT-056 |  |
@@ -92,7 +92,7 @@ FRs: COVERED 45, OPEN 15, PARTIAL 12.
 | AFO-FR-005 | P0 | PARTIAL | AFO-T001=PASS, AFO-T071=NOT_RUN |
 | AFO-FR-006 | P0 | PARTIAL | AFO-T004=PASS, AFO-T018=PASS, AFO-T072=NOT_RUN |
 | AFO-FR-007 | P0 | COVERED | AFO-T005=PASS, AFO-T038=PASS, AFO-T045=PASS |
-| AFO-FR-008 | P0 | PARTIAL | AFO-T032=PASS, AFO-T062=NOT_RUN |
+| AFO-FR-008 | P0 | COVERED | AFO-T032=PASS, AFO-T062=PASS |
 | AFO-FR-009 | P0 | PARTIAL | AFO-T007=PASS, AFO-T008=PASS, AFO-T009=PASS, AFO-T014=PARTIAL |
 | AFO-FR-010 | P0 | COVERED | AFO-T008=PASS, AFO-T012=PASS, AFO-T013=PASS |
 | AFO-FR-011 | P0 | COVERED | AFO-T010=PASS |
@@ -110,7 +110,7 @@ FRs: COVERED 45, OPEN 15, PARTIAL 12.
 | AFO-FR-023 | P0 | COVERED | AFO-T019=PASS, AFO-T024=PASS |
 | AFO-FR-024 | P0 | COVERED | AFO-T020=PASS, AFO-T021=PASS |
 | AFO-FR-025 | P1 | COVERED | AFO-T020=PASS, AFO-T024=PASS |
-| AFO-FR-026 | P1 | PARTIAL | AFO-T023=PASS, AFO-T058=NOT_RUN |
+| AFO-FR-026 | P1 | COVERED | AFO-T023=PASS, AFO-T058=PASS |
 | AFO-FR-027 | P0 | COVERED | AFO-T027=PASS, AFO-T028=PASS |
 | AFO-FR-028 | P0 | COVERED | AFO-T026=PASS, AFO-T027=PASS, AFO-T028=PASS |
 | AFO-FR-029 | P0 | COVERED | AFO-T028=PASS, AFO-T029=PASS |
@@ -142,18 +142,18 @@ FRs: COVERED 45, OPEN 15, PARTIAL 12.
 | AFO-FR-055 | P1 | COVERED | AFO-T050=PASS, AFO-T052=PASS |
 | AFO-FR-056 | P0 | COVERED | AFO-T051=PASS, AFO-T053=PASS |
 | AFO-FR-057 | P1 | COVERED | AFO-T051=PASS, AFO-T053=PASS |
-| AFO-FR-058 | P0 | OPEN | AFO-T054=NOT_RUN, AFO-T060=NOT_RUN |
-| AFO-FR-059 | P0 | OPEN | AFO-T054=NOT_RUN, AFO-T055=NOT_RUN |
-| AFO-FR-060 | P0 | OPEN | AFO-T055=NOT_RUN |
-| AFO-FR-061 | P1 | OPEN | AFO-T056=NOT_RUN, AFO-T057=NOT_RUN |
-| AFO-FR-062 | P1 | OPEN | AFO-T056=NOT_RUN, AFO-T058=NOT_RUN |
-| AFO-FR-063 | P0 | OPEN | AFO-T057=NOT_RUN, AFO-T061=NOT_RUN |
-| AFO-FR-064 | P0 | OPEN | AFO-T059=NOT_RUN, AFO-T073=NOT_RUN |
-| AFO-FR-065 | P0 | OPEN | AFO-T062=NOT_RUN, AFO-T063=NOT_RUN |
-| AFO-FR-066 | P0 | OPEN | AFO-T062=NOT_RUN, AFO-T063=NOT_RUN |
-| AFO-FR-067 | P0 | OPEN | AFO-T064=NOT_RUN, AFO-T066=NOT_RUN |
-| AFO-FR-068 | P0 | OPEN | AFO-T065=NOT_RUN |
-| AFO-FR-069 | P1 | OPEN | AFO-T067=NOT_RUN, AFO-T068=NOT_RUN |
-| AFO-FR-070 | P0 | OPEN | AFO-T064=NOT_RUN, AFO-T069=NOT_RUN, AFO-T074=NOT_RUN |
-| AFO-FR-071 | P0 | OPEN | AFO-T070=NOT_RUN, AFO-T072=NOT_RUN, AFO-T075=NOT_RUN |
-| AFO-FR-072 | P0 | OPEN | AFO-T069=NOT_RUN, AFO-T070=NOT_RUN |
+| AFO-FR-058 | P0 | COVERED | AFO-T054=PASS, AFO-T060=PASS |
+| AFO-FR-059 | P0 | COVERED | AFO-T054=PASS, AFO-T055=PASS |
+| AFO-FR-060 | P0 | COVERED | AFO-T055=PASS |
+| AFO-FR-061 | P1 | PARTIAL | AFO-T056=PASS, AFO-T057=PARTIAL |
+| AFO-FR-062 | P1 | COVERED | AFO-T056=PASS, AFO-T058=PASS |
+| AFO-FR-063 | P0 | PARTIAL | AFO-T057=PARTIAL, AFO-T061=PASS |
+| AFO-FR-064 | P0 | PARTIAL | AFO-T059=PASS, AFO-T073=NOT_RUN |
+| AFO-FR-065 | P0 | COVERED | AFO-T062=PASS, AFO-T063=PASS |
+| AFO-FR-066 | P0 | COVERED | AFO-T062=PASS, AFO-T063=PASS |
+| AFO-FR-067 | P0 | PARTIAL | AFO-T064=PASS, AFO-T066=BLOCKED |
+| AFO-FR-068 | P0 | COVERED | AFO-T065=PASS |
+| AFO-FR-069 | P1 | PARTIAL | AFO-T067=PASS, AFO-T068=BLOCKED |
+| AFO-FR-070 | P0 | PARTIAL | AFO-T064=PASS, AFO-T069=BLOCKED, AFO-T074=NOT_RUN |
+| AFO-FR-071 | P0 | OPEN | AFO-T070=BLOCKED, AFO-T072=NOT_RUN, AFO-T075=NOT_RUN |
+| AFO-FR-072 | P0 | OPEN | AFO-T069=BLOCKED, AFO-T070=BLOCKED |

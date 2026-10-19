@@ -1,18 +1,38 @@
 {
   "AFO-T014": {
-    "status": "PARTIAL",
-    "reason": "Conductor restart drill PASS on real systemd (SIGKILL, watchdog hang, SIGTERM, bounded crash loop); the gateways, Fabro servers, dashboard and Ollama get the same drill when their units are installed in an owner-approved maintenance window (they are live and shared with running batches) Owner decision 2026-10-19: the install-time drills of the other services are deferred with the restart work."
+    "reason": "Conductor restart drill PASS on real systemd (SIGKILL, watchdog hang, SIGTERM, bounded crash loop); the gateways, Fabro servers, dashboard and Ollama get the same drill when their units are installed in an owner-approved maintenance window (they are live and shared with running batches) Owner decision 2026-10-19: the install-time drills of the other services are deferred with the restart work.",
+    "status": "PARTIAL"
   },
   "AFO-T015": {
-    "status": "BLOCKED",
-    "reason": "real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later."
+    "reason": "real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
+    "status": "BLOCKED"
   },
   "AFO-T034": {
-    "status": "BLOCKED",
-    "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later."
+    "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
+    "status": "BLOCKED"
   },
   "AFO-T044": {
-    "status": "PARTIAL",
-    "reason": "real failed gates ingested and routed for SWE.1 (HAL r153), SWE.2 (HAL r142), SWE.3 (HAL r148, LL r153), SWE.4 (HAL r146) and READY/BLOCKED discrimination (HAL r154 reached its package); no real SWE.5/SWE.6 gate failure exists on this host yet and conflicting HSI is covered synthetically (SPECIFICATION_GAP class test); the planner's live Fabro run is disabled by policy"
+    "reason": "real failed gates ingested and routed for SWE.1 (HAL r153), SWE.2 (HAL r142), SWE.3 (HAL r148, LL r153), SWE.4 (HAL r146) and READY/BLOCKED discrimination (HAL r154 reached its package); no real SWE.5/SWE.6 gate failure exists on this host yet and conflicting HSI is covered synthetically (SPECIFICATION_GAP class test); the planner's live Fabro run is disabled by policy",
+    "status": "PARTIAL"
+  },
+  "AFO-T057": {
+    "reason": "Autonomy section and order drilldown are wired to the read-only API and tested (routes exist, page calls only them, viewer/auditor projections); the page reuses the existing responsive layout, but it has not been rendered and checked on a phone or desktop browser by a person.",
+    "status": "PARTIAL"
+  },
+  "AFO-T066": {
+    "reason": "A real-model READY + deliberate BLOCKED pair launched BY THE CONDUCTOR needs AFO in PILOT mode: a signed owner PILOT authorization (config/factory/afo-authorizations/, launch_workorder + submit_workorder for the driver class) bound to the policy sha256; the policy is OBSERVE_ONLY. Models follow the owner decisions (DeepSeek; Sol 6.1 Codex authors since 2026-10-19), not local Qwen. Factory runs outside AFO (e.g. HAL r161, rc-v1, six phases PASS, BLOCKED only on the owner-postponed ASIL B safety documents) are not AFO-launched orders and are not counted.",
+    "status": "BLOCKED"
+  },
+  "AFO-T068": {
+    "reason": "Actual 24 h / 72 h / 168 h soak needs an operator authorization and the deferred restart/boot work (data volume mounts only at login; owner decision 2026-10-19 defers restart/reboot). Runner ready (AFO-T067): python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>; then: python -m forge_factory.afo.soak run soak-24h-1 (report: ... report soak-24h-1). Elapsed hours are never simulated.",
+    "status": "BLOCKED"
+  },
+  "AFO-T069": {
+    "reason": "The recovery drill matrix includes service restarts on the live shared host and a machine reboot; owner decision 2026-10-19 defers restart/reboot drills (see AFO-T014/T015/T034). Crash windows are covered with injected faults (AFO-T033, AFO-T065).",
+    "status": "BLOCKED"
+  },
+  "AFO-T070": {
+    "reason": "Needs the owner's signed operator readiness review before any ACTIVE mode change; the review input is forge_factory.afo.readiness.assess() (no level above IMPLEMENTED can be demonstrated before the deferred drills and a PILOT authorization). No ACTIVE change is requested.",
+    "status": "BLOCKED"
   }
 }

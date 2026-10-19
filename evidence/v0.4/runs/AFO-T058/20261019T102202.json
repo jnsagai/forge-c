@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m6_operations.py::test_operator_controls_need_the_operator_token_and_every_denial_is_audited"
+  ],
+  "duration_s": 1.407,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c85e4d89f08f47a9cabdc4a685f36d7642340b98",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T058/20261019T102202.log",
+  "log_sha256": "a0468d1316915329906c2051b065b0439af2db2cc05b7e36f577759ce943bda3",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T058",
+  "ts_utc": "2026-10-19T10:22:02.527471Z"
+}

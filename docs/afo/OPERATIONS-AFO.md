@@ -100,3 +100,91 @@ anything not yet switched.
 - After an approved change is deployed: `python -m forge_factory.afo.cli external-change <order_id> --revision <sha>
   --approval-ref <PR/decision> --reason "..."`. Otherwise the order ends BLOCKED after
   `budgets.max_order_wall_seconds`.
+
+## 8. Dead letters and alerts (M6)
+
+- Every order finalized BLOCKED gets exactly one dead-letter case: reason code, required action, artifact refs with
+  hashes. Its alert is enqueued in the same transaction.
+- **Case states.** A case moves `OPEN → ACKNOWLEDGED → CLOSED`, by the operator only. The record itself is immutable,
+  and the database refuses edits and deletes.
+  ```
+  python -m forge_factory.afo.cli dead-letter-ack <case_id> --reason "looking at it"
+  python -m forge_factory.afo.cli dead-letter-close <case_id> --reason "re-submitted as <order>"
+  ```
+- **Notices.** `$FORGE_STATE_DIR/conductor/notifications.jsonl` (0600) gets one line per announcement, mirrored to
+  the 002 ledger (channel `human`).
+  - A repeat within `notifications.dedupe_window_seconds` only counts. A fact still being reported one window after
+    its last delivery is announced once more.
+  - The watchdog's stale-heartbeat alerts stay in `$FORGE_STATE_DIR/afo/alerts.jsonl`.
+- A dead-letter case is bookkeeping, not a release state. The archive stays BLOCKED and never counts as READY.
+
+## 9. Dashboard Autonomy view and operator controls (M6)
+
+- **Read-only views:** `/api/v1/afo/{summary,orders,orders/<id>,dead-letters,proposals,operations}` with the
+  existing viewer and auditor tokens. Operator actions are visible to auditors only.
+  - They read through a read-only database connection, so they never write or lock the queue.
+- **Pause, drain, resume from the dashboard:** use `POST /api/v1/afo/operator/{pause,drain,resume}` with the JSON
+  body `{"reason": "..."}` and `Authorization: Bearer <operator token>`.
+  - The viewer and auditor tokens and the session cookie are refused. Every refusal is audited.
+  - Issue or rotate the operator token as the state-directory owner:
+    `python -m forge_factory.afo.cli operator-token --reason "rotate"`. The token is printed once; the old one stops
+    working.
+- The CLI controls (`pause`, `drain`, `resume`) do the same thing and are recorded the same way.
+
+## 10. Backup, restore and rollback
+
+- **Backup** (online, consistent, 0600, integrity-checked):
+  `python -m forge_factory.afo.cli backup <dest>.sqlite3 --reason "nightly"`.
+- **Restore** into a NEW path only. A live store is never overwritten.
+  ```
+  python -c "from pathlib import Path; from forge_factory.afo.queue import Store; print(Store.restore(Path('<backup>'), Path('<new path>')))"
+  ```
+  Stop the Conductor first. Then move the restored file into `$FORGE_STATE_DIR/conductor/` and start the Conductor
+  again. Reconciliation adopts or quarantines the in-flight attempts.
+- **Roll back the factory:**
+  1. Pause.
+  2. Check out the last approved revision in the deployment worktree.
+  3. Restart the services by PID or unit.
+  4. Resume.
+
+  Orders already running keep the revision recorded in their attempt; new attempts use the deployed revision.
+- **Roll back the mode:** set `mode: OBSERVE_ONLY` in `config/factory/afo-policy.yaml`. That needs no signature.
+  Revoke the authorization (section 5) if it should not be reused.
+
+## 11. Security
+
+- Agents reach only their MCP operations. They hold no shell, no git, no GitHub and no operator token.
+- The Factory Maintainer's candidate code runs as the sandbox UID `maintainer`, with no network and no credentials.
+- Every proposal goes through the git-diff veto and the independent 004 promotion gate. The broker can create a
+  branch or a draft PR only (ADR-AFO-003).
+- Tokens live only in `$FORGE_STATE_DIR/dashboard/` (0600). Rotate the operator token after any suspected exposure.
+
+## 12. Incidents
+
+| Signal | Meaning | Action |
+|---|---|---|
+| Watchdog `HEARTBEAT_STALE` | Conductor hung or dead | systemd restarts it; if it repeats, `pause` and read the journal |
+| Orders stay QUEUED, `deferred` events | A dependency is down (Fabro, gateway, MCP, volume) | Fix the dependency; backoff is bounded and resumes by itself |
+| `database is locked` in the Conductor log | Another writer holds the store | Find it (`fuser`), stop it by PID; the Conductor retries next cycle |
+| Notices stay PENDING | The notice log cannot be written (disk full) | Free space; delivery resumes and nothing is lost |
+| Attempt `UNKNOWN` / order quarantined | A launch outcome cannot be proven | Read the reconciliation events; never relaunch by hand |
+
+## 13. Maintenance window
+
+1. `drain`, so running work reaches a safe point.
+2. Wait until no order is ADMITTED, RUNNING or VALIDATING.
+3. Do the work.
+4. `resume`.
+
+Restart and reboot drills (AFO-T014, T015, T034, T069) run only in an owner-approved window.
+
+## 14. Readiness and soak (M7)
+
+- **Readiness:** `python -c "from forge_factory.afo import readiness, soak; import json; print(json.dumps(readiness.assess(), indent=1))"`.
+  The levels come from evidence only. Missing data means NOT_DEMONSTRATED, and the assessment never changes the mode.
+- **Soak:** it needs your authorization.
+  1. `python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>`
+  2. `python -m forge_factory.afo.soak run soak-24h-1`
+  3. `python -m forge_factory.afo.soak report soak-24h-1`
+
+  Only real, contiguous wall-clock time counts. Gaps, clock jumps and reboots count as unknown exposure.

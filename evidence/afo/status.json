@@ -1,10 +1,10 @@
 {
   "fr_counts": {
-    "COVERED": 45,
-    "OPEN": 15,
-    "PARTIAL": 12
+    "COVERED": 54,
+    "OPEN": 2,
+    "PARTIAL": 16
   },
-  "generated_at": "2026-10-19T09:40:01.067827Z",
+  "generated_at": "2026-10-19T10:22:25.658136Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -106,12 +106,12 @@
         "AT-037",
         "AT-057"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-008",
       "priority": "P0",
       "tasks": {
         "AFO-T032": "PASS",
-        "AFO-T062": "NOT_RUN"
+        "AFO-T062": "PASS"
       }
     },
     {
@@ -345,12 +345,12 @@
         "AT-053",
         "AT-054"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "id": "AFO-FR-026",
       "priority": "P1",
       "tasks": {
         "AFO-T023": "PASS",
-        "AFO-T058": "NOT_RUN"
+        "AFO-T058": "PASS"
       }
     },
     {
@@ -758,12 +758,12 @@
         "AT-038",
         "AT-039"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-058",
       "priority": "P0",
       "tasks": {
-        "AFO-T054": "NOT_RUN",
-        "AFO-T060": "NOT_RUN"
+        "AFO-T054": "PASS",
+        "AFO-T060": "PASS"
       }
     },
     {
@@ -771,12 +771,12 @@
         "AT-037",
         "AT-040"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-059",
       "priority": "P0",
       "tasks": {
-        "AFO-T054": "NOT_RUN",
-        "AFO-T055": "NOT_RUN"
+        "AFO-T054": "PASS",
+        "AFO-T055": "PASS"
       }
     },
     {
@@ -784,11 +784,11 @@
         "AT-038",
         "AT-042"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-060",
       "priority": "P0",
       "tasks": {
-        "AFO-T055": "NOT_RUN"
+        "AFO-T055": "PASS"
       }
     },
     {
@@ -796,12 +796,12 @@
         "AT-052",
         "AT-055"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-061",
       "priority": "P1",
       "tasks": {
-        "AFO-T056": "NOT_RUN",
-        "AFO-T057": "NOT_RUN"
+        "AFO-T056": "PASS",
+        "AFO-T057": "PARTIAL"
       }
     },
     {
@@ -809,12 +809,12 @@
         "AT-053",
         "AT-054"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-062",
       "priority": "P1",
       "tasks": {
-        "AFO-T056": "NOT_RUN",
-        "AFO-T058": "NOT_RUN"
+        "AFO-T056": "PASS",
+        "AFO-T058": "PASS"
       }
     },
     {
@@ -822,12 +822,12 @@
         "AT-042",
         "AT-055"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-063",
       "priority": "P0",
       "tasks": {
-        "AFO-T057": "NOT_RUN",
-        "AFO-T061": "NOT_RUN"
+        "AFO-T057": "PARTIAL",
+        "AFO-T061": "PASS"
       }
     },
     {
@@ -835,11 +835,11 @@
         "AT-037",
         "AT-056"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-064",
       "priority": "P0",
       "tasks": {
-        "AFO-T059": "NOT_RUN",
+        "AFO-T059": "PASS",
         "AFO-T073": "NOT_RUN"
       }
     },
@@ -848,24 +848,24 @@
         "AT-057",
         "AT-058"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-065",
       "priority": "P0",
       "tasks": {
-        "AFO-T062": "NOT_RUN",
-        "AFO-T063": "NOT_RUN"
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-058"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-066",
       "priority": "P0",
       "tasks": {
-        "AFO-T062": "NOT_RUN",
-        "AFO-T063": "NOT_RUN"
+        "AFO-T062": "PASS",
+        "AFO-T063": "PASS"
       }
     },
     {
@@ -873,12 +873,12 @@
         "AT-059",
         "AT-063"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-067",
       "priority": "P0",
       "tasks": {
-        "AFO-T064": "NOT_RUN",
-        "AFO-T066": "NOT_RUN"
+        "AFO-T064": "PASS",
+        "AFO-T066": "BLOCKED"
       }
     },
     {
@@ -886,23 +886,23 @@
         "AT-060",
         "AT-061"
       ],
-      "coverage": "OPEN",
+      "coverage": "COVERED",
       "id": "AFO-FR-068",
       "priority": "P0",
       "tasks": {
-        "AFO-T065": "NOT_RUN"
+        "AFO-T065": "PASS"
       }
     },
     {
       "acceptance": [
         "AT-062"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-069",
       "priority": "P1",
       "tasks": {
-        "AFO-T067": "NOT_RUN",
-        "AFO-T068": "NOT_RUN"
+        "AFO-T067": "PASS",
+        "AFO-T068": "BLOCKED"
       }
     },
     {
@@ -911,12 +911,12 @@
         "AT-062",
         "AT-063"
       ],
-      "coverage": "OPEN",
+      "coverage": "PARTIAL",
       "id": "AFO-FR-070",
       "priority": "P0",
       "tasks": {
-        "AFO-T064": "NOT_RUN",
-        "AFO-T069": "NOT_RUN",
+        "AFO-T064": "PASS",
+        "AFO-T069": "BLOCKED",
         "AFO-T074": "NOT_RUN"
       }
     },
@@ -929,7 +929,7 @@
       "id": "AFO-FR-071",
       "priority": "P0",
       "tasks": {
-        "AFO-T070": "NOT_RUN",
+        "AFO-T070": "BLOCKED",
         "AFO-T072": "NOT_RUN",
         "AFO-T075": "NOT_RUN"
       }
@@ -944,17 +944,17 @@
       "id": "AFO-FR-072",
       "priority": "P0",
       "tasks": {
-        "AFO-T069": "NOT_RUN",
-        "AFO-T070": "NOT_RUN"
+        "AFO-T069": "BLOCKED",
+        "AFO-T070": "BLOCKED"
       }
     }
   ],
   "schema": "forge-c/afo-status/0.1",
   "task_counts": {
-    "BLOCKED": 2,
-    "NOT_RUN": 22,
-    "PARTIAL": 2,
-    "PASS": 49
+    "BLOCKED": 6,
+    "NOT_RUN": 5,
+    "PARTIAL": 3,
+    "PASS": 61
   },
   "tasks": {
     "AFO-T001": {
@@ -1543,123 +1543,136 @@
       "task_id": "AFO-T053"
     },
     "AFO-T054": {
+      "evidence": "evidence/v0.4/runs/AFO-T054/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-058;AFO-FR-059",
       "planned_test_refs": "AT-037;AT-038;AT-039;AT-040",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T054"
     },
     "AFO-T055": {
+      "evidence": "evidence/v0.4/runs/AFO-T055/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-059;AFO-FR-060",
       "planned_test_refs": "AT-037;AT-038;AT-040;AT-042",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T055"
     },
     "AFO-T056": {
+      "evidence": "evidence/v0.4/runs/AFO-T056/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-061;AFO-FR-062",
       "planned_test_refs": "AT-052;AT-053;AT-054;AT-055",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T056"
     },
     "AFO-T057": {
+      "evidence": "evidence/v0.4/runs/AFO-T057/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-061;AFO-FR-063",
       "planned_test_refs": "AT-042;AT-052;AT-055",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "Autonomy section and order drilldown are wired to the read-only API and tested (routes exist, page calls only them, viewer/auditor projections); the page reuses the existing responsive layout, but it has not been rendered and checked on a phone or desktop browser by a person.",
+      "status": "PARTIAL",
       "task_id": "AFO-T057"
     },
     "AFO-T058": {
+      "evidence": "evidence/v0.4/runs/AFO-T058/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-026;AFO-FR-062",
       "planned_test_refs": "AT-014;AT-053;AT-054",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T058"
     },
     "AFO-T059": {
+      "evidence": "evidence/v0.4/runs/AFO-T059/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-064",
       "planned_test_refs": "AT-037;AT-056",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T059"
     },
     "AFO-T060": {
+      "evidence": "evidence/v0.4/runs/AFO-T060/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-058",
       "planned_test_refs": "AT-037;AT-038;AT-039",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T060"
     },
     "AFO-T061": {
+      "evidence": "evidence/v0.4/runs/AFO-T061/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M6",
       "planned_requirement_refs": "AFO-FR-063",
       "planned_test_refs": "AT-042;AT-055",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T061"
     },
     "AFO-T062": {
+      "evidence": "evidence/v0.4/runs/AFO-T062/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M7",
       "planned_requirement_refs": "AFO-FR-008;AFO-FR-065;AFO-FR-066",
       "planned_test_refs": "AT-037;AT-057;AT-058",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T062"
     },
     "AFO-T063": {
+      "evidence": "evidence/v0.4/runs/AFO-T063/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M7",
       "planned_requirement_refs": "AFO-FR-065;AFO-FR-066",
       "planned_test_refs": "AT-057;AT-058",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T063"
     },
     "AFO-T064": {
+      "evidence": "evidence/v0.4/runs/AFO-T064/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M7",
       "planned_requirement_refs": "AFO-FR-067;AFO-FR-070",
       "planned_test_refs": "AT-059;AT-062;AT-063",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T064"
     },
     "AFO-T065": {
+      "evidence": "evidence/v0.4/runs/AFO-T065/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M7",
       "planned_requirement_refs": "AFO-FR-068",
       "planned_test_refs": "AT-060;AT-061",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T065"
     },
     "AFO-T066": {
@@ -1669,17 +1682,19 @@
       "planned_requirement_refs": "AFO-FR-067",
       "planned_test_refs": "AT-059;AT-063",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "A real-model READY + deliberate BLOCKED pair launched BY THE CONDUCTOR needs AFO in PILOT mode: a signed owner PILOT authorization (config/factory/afo-authorizations/, launch_workorder + submit_workorder for the driver class) bound to the policy sha256; the policy is OBSERVE_ONLY. Models follow the owner decisions (DeepSeek; Sol 6.1 Codex authors since 2026-10-19), not local Qwen. Factory runs outside AFO (e.g. HAL r161, rc-v1, six phases PASS, BLOCKED only on the owner-postponed ASIL B safety documents) are not AFO-launched orders and are not counted.",
+      "status": "BLOCKED",
       "task_id": "AFO-T066"
     },
     "AFO-T067": {
+      "evidence": "evidence/v0.4/runs/AFO-T067/latest.json",
       "evidence_refs": "",
       "implementation_status": "NOT_IMPLEMENTED",
       "milestone": "M7",
       "planned_requirement_refs": "AFO-FR-069",
       "planned_test_refs": "AT-062",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "task_id": "AFO-T067"
     },
     "AFO-T068": {
@@ -1689,7 +1704,8 @@
       "planned_requirement_refs": "AFO-FR-069",
       "planned_test_refs": "AT-062",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "Actual 24 h / 72 h / 168 h soak needs an operator authorization and the deferred restart/boot work (data volume mounts only at login; owner decision 2026-10-19 defers restart/reboot). Runner ready (AFO-T067): python -m forge_factory.afo.soak start soak-24h-1 --target-hours 24 --interval 60 --authorization-ref <OD id>; then: python -m forge_factory.afo.soak run soak-24h-1 (report: ... report soak-24h-1). Elapsed hours are never simulated.",
+      "status": "BLOCKED",
       "task_id": "AFO-T068"
     },
     "AFO-T069": {
@@ -1699,7 +1715,8 @@
       "planned_requirement_refs": "AFO-FR-070;AFO-FR-072",
       "planned_test_refs": "AT-054;AT-059;AT-062;AT-063;AT-064",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "The recovery drill matrix includes service restarts on the live shared host and a machine reboot; owner decision 2026-10-19 defers restart/reboot drills (see AFO-T014/T015/T034). Crash windows are covered with injected faults (AFO-T033, AFO-T065).",
+      "status": "BLOCKED",
       "task_id": "AFO-T069"
     },
     "AFO-T070": {
@@ -1709,7 +1726,8 @@
       "planned_requirement_refs": "AFO-FR-071;AFO-FR-072",
       "planned_test_refs": "AT-054;AT-063;AT-064;AT-065;AT-066",
       "priority": "P0",
-      "status": "NOT_RUN",
+      "reason": "Needs the owner's signed operator readiness review before any ACTIVE mode change; the review input is forge_factory.afo.readiness.assess() (no level above IMPLEMENTED can be demonstrated before the deferred drills and a PILOT authorization). No ACTIVE change is requested.",
+      "status": "BLOCKED",
       "task_id": "AFO-T070"
     },
     "AFO-T071": {
