@@ -10,5 +10,9 @@
   "AFO-T034": {
     "status": "BLOCKED",
     "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later."
+  },
+  "AFO-T044": {
+    "status": "PARTIAL",
+    "reason": "real failed gates ingested and routed for SWE.1 (HAL r153), SWE.2 (HAL r142), SWE.3 (HAL r148, LL r153), SWE.4 (HAL r146) and READY/BLOCKED discrimination (HAL r154 reached its package); no real SWE.5/SWE.6 gate failure exists on this host yet and conflicting HSI is covered synthetically (SPECIFICATION_GAP class test); the planner's live Fabro run is disabled by policy"
   }
 }

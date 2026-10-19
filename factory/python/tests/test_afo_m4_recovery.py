@@ -211,3 +211,15 @@ def test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace(tmp_pat
     m = f.seen_manifest
     assert m["resume_upto"] == "SWE.3" and m["model_profile"] == "codex-gpt-6.1-sol" and m["resume_from"].endswith("-a1")
     assert s.order(oid)["state"] == "RUNNING" and f.launches == 2
+
+
+@pytest.mark.parametrize("wo,phase", [("WO-0002B-STM32N6-RCC-HAL-r153", "SWE.1"), ("WO-0002B-STM32N6-RCC-HAL-r142", "SWE.2"),
+                                      ("WO-0002B-STM32N6-RCC-HAL-r148", "SWE.3"), ("WO-0002B-STM32N6-RCC-HAL-r146", "SWE.4"),
+                                      ("WO-0002A-STM32N6-RCC-LL-r153", "SWE.3")])
+def test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked(wo, phase, tmp_path, monkeypatch):
+    b = bundle.build(_real(wo), "afo-x", "afo-x-a1", open_capa=set())
+    assert b["phase"] == phase and b["failure_class"] == "PRODUCT_QUALITY" and b["gate_result"] == "BLOCKED"
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    p = recovery.rule_plan(b, ws=_real(wo), order_env={}, tried_models={"deepseek-flash"}, eff=policy.load(),
+                           attempt_started_utc="", allowed_models=["deepseek-flash", "codex-gpt-6.1-sol"])
+    assert p is not None and p["strategy"] in ("RETURN_TO_OWNING_UPSTREAM_PHASE", "SWITCH_PREAPPROVED_MODEL_PROFILE")
