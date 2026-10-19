@@ -13,6 +13,7 @@ Promotion candidates must not change `evidence/**`. Each candidate was therefore
 | 3 | 5dbc172 | c169ec7 | `pd-2acbdb07b9e82a0a02d0` | **ELIGIBLE_FOR_OFFLINE_REVIEW** on the final tree (adds the usage panel on first paint): all hard gates PASS |
 | 4 | 171dcdf | 436d04e | `pd-6adae24972d781a3fb03` | **ELIGIBLE_FOR_OFFLINE_REVIEW**: adds the dashboard sign-in switch and mobile access (OD-2026-10-19-09); all hard gates PASS |
 | 5 | 0a2c031 | 4a2c493 | `pd-0bfb86703bf5f8dfe318` | **ELIGIBLE_FOR_OFFLINE_REVIEW** (baseline main 0c80b73): the owner's phone needs no token over Tailscale (OD-2026-10-19-10); all hard gates PASS |
+| 6 | 4e330de | aae4bd8 | `pd-7eb191eba4225bcd7014` | **ELIGIBLE_FOR_OFFLINE_REVIEW** (baseline main 0c80b73): final tree, adds the docs fix (Tailscale IP instead of the `*.ts.net` name, which browsers force to HTTPS); all hard gates PASS |
 
 **Cause of iteration 1:**
 - The new ACP-proxy usage recording read `self.prompts`, which only `Proxy.__init__` sets.
