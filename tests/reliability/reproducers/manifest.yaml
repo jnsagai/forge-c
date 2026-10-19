@@ -497,3 +497,14 @@ reproducers:
     operations: [SWE.4/author, SWE.4/inspect]
     root_cause: "The generated LL test double (CAPA-038) documented no way to preset the state a state query reads (e.g. a peripheral already enabled), and its bit helpers were public; r146's SWE.4 author called ll_fake_set_bit()/ll_fake_query_bit() with magic indices tied to the generated enum order (14 calls; r144: 2), the inspector rejected UT-009 (abstract bits, vacuous test) and the SWE.4 rework budget ran out."
     remedy: "ll_fake_set_state(query_fn, value) presets the state of a state query without an LL call (returns 0U for scripted flags); the helpers are named ll_fake_internal_* and run_unit fails a unit test that calls them (LL_FAKE_INTERNAL_CALL); the SWE.4 prompt names the preset call."
+  - id: RPR-048
+    script: rpr048_asil_scope_states_qm.py
+    sha256: 46b1522a3c55a02afbc5b4b946a0f23d28faac9e88b5cbf53ff6da1d5b0f7941
+    symptom_signature: "ASIL scope work order states QM safety allocation"
+    observed_in: r144-r152
+    baseline_revision: 1da76b0489d35f66ccfccf498e855f5b165cd90e
+    fix_revision: fdf081a5355e0f815e16a1ff217519dbdcdeaa12
+    error_codes: ["SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE"]
+    operations: [SWE.1/author, SWE.6/author]
+    root_cause: "workorder.prepare recorded the owner scope (SC-RCC-2026-10-18, ASIL B) as safety_target but kept the example's target.safety_allocation 'OUT_OF_SCOPE: QM development ... (owner decision 2026-10-15)'; the SWE.1 prompt turns OUT_OF_SCOPE into 'QM development scope: no software safety requirements are allocated', and no gate or the EASA pilot check compared stated safety level with the scope. Found in owner review of batch 3 (r144, r147, r149-r152; LL r125 too)."
+    remedy: "An owner scope supersedes target.safety_allocation (ASIL B without allocation review -> 'software safety allocation PENDING owner allocation review'); the SWE.1 prompt states that gap and never QM; the author gate (SAFETY_SCOPE:...) and the pilot check (SAFETY_SCOPE_TEXT:...) reject a QM claim or another ASIL inside an owner ASIL scope."

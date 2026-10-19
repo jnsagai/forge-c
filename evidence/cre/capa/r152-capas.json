@@ -1,0 +1,101 @@
+{
+  "CAPA-044": {
+    "history": [
+      {
+        "at": "2026-10-19T04:58:30.361197Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[\"CAPA-044\"]",
+        "from_state": null,
+        "reason": "owner review 2026-10-19 of HAL batch 3: ASIL B packages (r144, r147, r149-r152; LL r125) state 'QM development' safety allocation; no gate observed it, so there is no failure fingerprint to link",
+        "seq": 369,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T04:58:30.388380Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 370,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T04:58:30.450970Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-048 assigned",
+        "seq": 371,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T05:00:01.918103Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[\"reproducer-run:rr-086675f16625f940bd02\", \"reproducer-run:rr-6f0996b392086ff4e14c\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 372,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T05:00:01.944216Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[\"git:1da76b0489d3..fdf081a5355e\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix fdf081a5355e (patch 16501 bytes)",
+        "seq": 373,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T05:00:01.982145Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[\"reproducer-run:rr-60a8cecde105379aaa9c\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-048 absent at fdf081a5355e",
+        "seq": 374,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T05:00:01.997600Z",
+        "capa_id": "CAPA-044",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 375,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "1da76b0489d35f66ccfccf498e855f5b165cd90e",
+      "fdf081a5355e0f815e16a1ff217519dbdcdeaa12",
+      "pd-8d7654a7b9f0d8b4a8c2"
+    ],
+    "note": "found by owner review, not by a gate (no failure fingerprint)",
+    "record": {
+      "affected_versions": [
+        "forge-c@<fdf081a5355e"
+      ],
+      "candidate_patch_sha256": "55499f25079cc967f644b3b0a7082f31db72f30c9e85706402a1edaf8953621b",
+      "capa_id": "CAPA-044",
+      "created_at": "2026-10-19T04:58:30.361197Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-044"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-048",
+      "reproducer_id": "RPR-048",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-086675f16625f940bd02",
+        "reproducer-run:rr-6f0996b392086ff4e14c"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the owner scope set safety_target but did not supersede the example's QM target.safety_allocation, which the SWE.1 prompt turns into a QM statement; nothing compared stated safety level with the scope",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T05:00:01.997600Z"
+    }
+  }
+}
