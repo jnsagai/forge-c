@@ -530,3 +530,14 @@ reproducers:
     operations: [SWE.1/author, SWE.6/author]
     root_cause: "workorder.prepare recorded the owner scope (SC-RCC-2026-10-18, ASIL B) as safety_target but kept the example's target.safety_allocation 'OUT_OF_SCOPE: QM development ... (owner decision 2026-10-15)'; the SWE.1 prompt turns OUT_OF_SCOPE into 'QM development scope: no software safety requirements are allocated', and no gate or the EASA pilot check compared stated safety level with the scope. Found in owner review of batch 3 (r144, r147, r149-r152; LL r125 too)."
     remedy: "An owner scope supersedes target.safety_allocation (ASIL B without allocation review -> 'software safety allocation PENDING owner allocation review'); the SWE.1 prompt states that gap and never QM; the author gate (SAFETY_SCOPE:...) and the pilot check (SAFETY_SCOPE_TEXT:...) reject a QM claim or another ASIL inside an owner ASIL scope."
+  - id: RPR-049
+    script: rpr049_codex_reply_prose.py
+    sha256: 2ef6e6aa4e975a6064d1a241e882ea6d83557136b40d2ced146e957115d1b92a
+    symptom_signature: "Codex ACP prompt has no trailing reply rule and default verbosity"
+    observed_in: r143-r154
+    baseline_revision: ab18ceca9f0000b5dcc4067c4f4480cce18918fc
+    fix_revision: 4e7ce38eb3559369e3e98fce2940de8f3aeadcda
+    error_codes: ["AGENT_OUTPUT_CONTRACT", "AGENT_OUTPUT_PROSE", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.1/author, SWE.2/author, SWE.3/author, SWE.4/author, SWE.5/author, SWE.6/author]
+    root_cause: "On the Codex ACP path the reply contract ('Finish with ONLY this JSON') sat in the middle of a long prompt (the proxy prepended its tool note) and Codex ran at default verbosity; Codex added prose to most final replies (r143-r152) and in r153 SWE.1 replied twice without the JSON, which the strict contract rejects, exhausting the rework budget with valid work products."
+    remedy: "Codex runs with model_verbosity = low and the proxy appends the factory reply rule as the LAST prompt item; the strict reply contract is unchanged (owner decision 2026-10-19: produce just what is expected)."
