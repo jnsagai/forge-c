@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_afo_m0_policy_authz.py::test_pilot_takes_effect_only_with_a_valid_signed_authorization",
+    "factory/python/tests/test_afo_m0_policy_authz.py::test_each_broken_authorization_is_refused"
+  ],
+  "duration_s": 0.574,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "44f306cd8c4a3c57176e3d1b471e6c1f52cf8a62",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/AFO-T006/20261019T081629.log",
+  "log_sha256": "c5eca18cad4ffe072c5f3565c50b171a6b6a042421146f4d7ec770b7bf433e75",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "AFO-T006",
+  "ts_utc": "2026-10-19T08:16:29.718735Z"
+}
