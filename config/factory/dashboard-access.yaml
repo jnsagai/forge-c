@@ -1,9 +1,14 @@
 # Dashboard sign-in (viewer/auditor tokens). Owner decision OD-2026-10-19-09: sign-in is OFF until deployment.
 # At deployment set `auth: token` (or export FORGE_DASHBOARD_AUTH=token) and restart the dashboard.
-# "disabled" applies to requests from this machine only: they get `anonymous_role`. Requests from any other address
-# (a phone over Tailscale or Wi-Fi, with --host <address>) still need a viewer/auditor token. The AFO operator
-# actions (pause/drain/resume) always require the operator bearer token.
+# "disabled" applies to requests from this machine and (OD-2026-10-19-10) to the trusted devices below: they get
+# `anonymous_role`. A trusted device is named by its Tailscale address (100.64.0.0/10) and is let in only when it
+# connects to a Tailscale listen address (--host <tailscale-ip>). Requests from any other address, including Wi-Fi/LAN
+# addresses, still need a viewer/auditor token. An invalid entry fails closed to `auth: token`.
+# The AFO operator actions (pause/drain/resume) always require the operator bearer token.
 schema: forge-c/dashboard-access/0.1
 auth: disabled            # token | disabled
 anonymous_role: viewer    # viewer | auditor (auditor also shows the security/audit channels)
-decision: OD-2026-10-19-09
+trusted_devices:          # OD-2026-10-19-10: the owner's phone, no token while auth is disabled
+  - name: s22-ultra-de-jefferson
+    address: 100.73.215.92
+decision: OD-2026-10-19-10
