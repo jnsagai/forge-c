@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d2_recovery.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "100_healthy or permanent_unfixable or cre_failure_never or unbroken_fault"
+  ],
+  "duration_s": 8.065,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "ceeda1a3a042aeed9ccd2893e79a16729c54f179",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T015/20261016T050756.log",
+  "log_sha256": "d0e9b93d07d98ddd8fd31776b271e6a58021b31063033655d4b3fe0f82b1c497",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T015",
+  "ts_utc": "2026-10-16T05:07:56.920401Z"
+}

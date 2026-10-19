@@ -81,13 +81,26 @@ class Supervisor:
         self.router = Router(policy, self.store, self.state)
         self.dispatch_enabled, self.dry = dispatch_enabled, dry_run_dispatch
         self.finalizer_enabled = finalizer_enabled
+        self.cre = None  # CRE hook (feature 004), created on first poll
         ck = self.home / "checkpoint.json"
-        self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
+        try:
+            self.ck: dict = json.loads(ck.read_text()) if ck.is_file() else {"polls": 0, "started": utc_now()}
+            if not isinstance(self.ck, dict) or not isinstance(self.ck.get("polls"), int):
+                raise ValueError("checkpoint shape")
+        except (ValueError, OSError):  # CRE fault campaign F08: a corrupted checkpoint must not stop supervision
+            quarantine = ck.with_name(f"checkpoint.corrupt-{int(time.time())}.json")
+            try:
+                ck.replace(quarantine)
+            except OSError:
+                pass
+            self.ck = {"polls": 0, "started": utc_now(), "recovered_from_corrupt_checkpoint": quarantine.name}
+            emit("audit", "WARN", f"supervisor checkpoint corrupted; quarantined as {quarantine.name}, restarted counts")
 
     def poll_once(self) -> dict:
         t0 = time.monotonic()
         samples = self.probes.all(self.store.path)
         eligible = self.router.observe(samples)
+        eligible = self.cre_poll(samples, eligible)
         dispatched = []
         fabro_ok = any(s.check == "fabro_readiness" and s.status == "HEALTHY" for s in samples)
         if self.dispatch_enabled:
@@ -127,6 +140,18 @@ class Supervisor:
         sd_notify("WATCHDOG=1")
         return health
 
+    def cre_poll(self, samples: list, eligible: list[dict]) -> list[dict]:
+        """Feature 004 CRE hook (deterministic, zero model calls). Contained: a CRE failure never stops supervision."""
+        try:
+            if self.cre is None:
+                from ..reliability.supervisor_hook import CREHook
+
+                self.cre = CREHook(self.store.path)
+            return self.cre.on_poll(samples, self.store, eligible)
+        except Exception as exc:  # noqa: BLE001 - containment boundary by design
+            emit("supervisor", "WARN", f"cre hook degraded: {type(exc).__name__}: {str(exc)[:100]}")
+            return eligible
+
     def export_dashboard_queues(self, fabro_ok: bool) -> None:
         """Queue records for the external fabro_dashboard monitor (file export only; never affects supervision)."""
         try:
@@ -161,9 +186,9 @@ class Supervisor:
             if not rid_f.is_file() or pkg.is_file():
                 continue
             try:
-                from ..fabro.client import FabroClient, load_token, run_status
+                from ..fabro.client import client_for_workspace, run_status
 
-                st = run_status(FabroClient(token=load_token(), timeout=5).get_run(rid_f.read_text().strip()))
+                st = run_status(client_for_workspace(ws).get_run(rid_f.read_text().strip()))
             except Exception as exc:  # noqa: BLE001
                 emit("supervisor", "DEBUG", f"finalizer status probe failed: {type(exc).__name__}")
                 continue
@@ -211,7 +236,10 @@ def main(argv: list[str] | None = None) -> int:
 
     probes = Probes(pol, os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32290"), load_token(),
                     os.environ.get("FORGE_DASHBOARD_URL"), sorted(SERVER_MODULES))
-    Supervisor(pol, probes, dispatch_enabled=not a.no_dispatch).run_forever(a.max_polls)
+    # FORGE_SUPERVISOR_NO_DISPATCH=1 (systemctl --user set-environment) suspends repair dispatch reversibly, e.g. for
+    # an owner-authorized live drill where the model-based repair agent must not run; detection/triage continue
+    no_dispatch = a.no_dispatch or os.environ.get("FORGE_SUPERVISOR_NO_DISPATCH") == "1"
+    Supervisor(pol, probes, dispatch_enabled=not no_dispatch).run_forever(a.max_polls)
     return 0
 
 

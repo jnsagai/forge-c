@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/schemas/004/cre-event.schema.json",
+  "title": "Forge-C CRE typed event (feature 004)",
+  "description": "Typed CRE payload stored append-only in the CRE store and mirrored into the 002 ledger as an envelope event with payload_ref 'cre-event:<event_id>'. Content-addressed event_id = 'cre-' + sha256(type|idempotency_key)[:40].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "type",
+    "ts_utc",
+    "source_type",
+    "data_status",
+    "correlation_id",
+    "policy_sha256",
+    "factory_version",
+    "evidence_refs",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "cre-1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^cre-[0-9a-f]{40}$"
+    },
+    "type": {
+      "enum": [
+        "cre.failure_observed",
+        "cre.failure_classified",
+        "cre.retry_decided",
+        "cre.circuit_opened",
+        "cre.circuit_half_open",
+        "cre.circuit_closed",
+        "cre.recovery_transition",
+        "cre.recovery_terminal",
+        "cre.side_effect",
+        "cre.capa_opened",
+        "cre.capa_transition",
+        "cre.reproducer_run",
+        "cre.reproducer_verified",
+        "cre.root_cause_verified",
+        "cre.corrective_action_applied",
+        "cre.preventive_test_registered",
+        "cre.lesson_linked",
+        "cre.lesson_retracted",
+        "cre.benchmark_completed",
+        "cre.promotion_evaluated",
+        "cre.candidate_rolled_back",
+        "cre.spc_signal",
+        "cre.security_denial",
+        "cre.policy_decision"
+      ]
+    },
+    "ts_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "source_type": {
+      "enum": [
+        "DETERMINISTIC_TOOL",
+        "AGENT_HYPOTHESIS",
+        "HUMAN_REVIEW"
+      ]
+    },
+    "data_status": {
+      "enum": [
+        "OBSERVED",
+        "HYPOTHESIS",
+        "VERIFIED",
+        "UNKNOWN",
+        "ESTIMATED",
+        "NOT_COMPUTABLE"
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "causation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "run_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "work_order": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "order_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "incident_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100
+    },
+    "capa_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100
+    },
+    "fingerprint": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^cfp1-[0-9a-f]{40}$"
+    },
+    "phase": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "policy_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "factory_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "monotonic_elapsed_s": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "maxItems": 20
+    },
+    "evidence_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "redacted": {
+      "type": "boolean"
+    },
+    "payload": {
+      "type": "object",
+      "maxProperties": 40
+    }
+  }
+}

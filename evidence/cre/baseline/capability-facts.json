@@ -1,0 +1,41 @@
+{
+  "archives": 77,
+  "collected_at": "2026-10-16T04:38:06.092128Z",
+  "events_by_channel": {
+    "ai": 1506,
+    "audit": 11076,
+    "human": 270,
+    "knowledge": 4,
+    "metrics": 1760,
+    "repair": 4,
+    "security": 693,
+    "supervisor": 1780,
+    "tools": 615,
+    "workflow": 1220
+  },
+  "incidents_by_state": {
+    "RESOLVED": 1
+  },
+  "lessons_by_state": {
+    "QUARANTINED": 1,
+    "VALIDATED": 1
+  },
+  "packages_by_status": {
+    "BLOCKED": 76,
+    "NO_PACKAGE": 1
+  },
+  "repair_attempts_by_status": {
+    "PROMOTED": 1,
+    "ROLLED_BACK": 1
+  },
+  "state_dir": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state",
+  "supervisor": {
+    "last_poll": "2026-10-16T04:38:02.473914Z",
+    "model_calls": 0,
+    "model_tokens": 0,
+    "polls": 1760,
+    "since": "2026-10-14T21:52:36.845221Z",
+    "status": "HEALTHY"
+  },
+  "work_orders": 77
+}

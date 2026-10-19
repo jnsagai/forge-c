@@ -1,0 +1,110 @@
+# Feature 004 (CRE) reliability policy - reconciled with the existing 002/003 configuration (CRE-T004).
+# Validated by forge_factory.reliability.policy against
+# specs/004-continuous-reliability-engineering/contracts/reliability-policy.schema.json PLUS hard invariants
+# that no edit can weaken (a weakened file is rejected and the last good policy stays active).
+# Repair budgets are NOT duplicated here: the 002 supervisor-policy.yaml repair block stays authoritative and
+# CRE limits must not exceed it.
+schema_version: "1.0"
+feature_id: 004-continuous-reliability-engineering
+mode: OBSERVE_ONLY        # OBSERVE_ONLY | PILOT | ACTIVE; PILOT/ACTIVE need an authorization block
+
+integration:
+  reuse_existing_supervisor: true          # forge_factory.supervisor (systemd forge-supervisor)
+  reuse_existing_incident_store: true      # state/supervisor/incidents.sqlite3 (+ CRE tables, versioned migration)
+  reuse_existing_kpi_catalog: true         # K01-K20 (003) unchanged; CRE-R01..R08 are additive diagnostics
+  do_not_create_parallel_control_plane: true
+
+supervisor:
+  invoke_model_on_healthy_poll: false
+  health_unknown_is_healthy: false
+
+recovery:
+  retry_only_idempotent_operations: true
+  max_transient_retries_per_operation: 2
+  max_repair_attempts_per_incident: 2      # <= supervisor-policy repair.max_attempts_per_incident
+  max_repairs_per_hour: 3                  # <= supervisor-policy repair.max_attempts_per_hour
+  initial_backoff_seconds: 2
+  max_backoff_seconds: 60
+  jitter_ratio: 0.2
+  lease_seconds: 120
+  breaker_failure_threshold: 3             # consecutive failures that open a dependency breaker
+  breaker_cooldown_seconds: 300
+  breaker_half_open_probes: 1
+  fail_closed_on_unknown_side_effect: true
+  non_replayable_operation_classes:
+    - hardware_flash
+    - safety_approval
+    - baselined_evidence_mutation
+    - release_signing
+  exhausted_terminal_state: REQUIRES_OFFLINE_ATTENTION
+
+capa:
+  root_cause_requires_reproduction: true
+  preventive_regression_required: true
+  allowed_cross_workflow_lessons: VALIDATED_ONLY
+  max_approved_lessons_per_query: 3
+  effectiveness_window_runs: 5             # recurrence observation window, in later comparable runs
+
+promotion:
+  auto_promote_persistent_code: false
+  allow_auto_mutation_of_safety_rules: false
+  forbid_test_oracle_edits: true
+  require_independent_runner: true
+  require_frozen_baseline: true
+  require_reproducer_and_regression: true
+  require_security_and_policy_integrity: true
+  require_authorized_offline_change_control: true
+  allowed_automatic_operational_actions: []   # empty unless mode ACTIVE with an authorization block
+
+benchmark:
+  freeze_fixture_manifest: true
+  keep_holdout_outside_candidate_permissions: true
+  require_equivalent_workload_strata: true
+  include_failed_first_attempts: true
+  include_all_retry_tokens_in_cost: true
+
+statistics:
+  confidence_level: 0.95
+  baseline_measurement_only: true
+  min_samples_for_descriptive_charts: 30   # descriptive only; no universal statistical guarantee
+  min_samples_for_slo_evidence: 10   # owner decision 2026-10-17 ("the SLO seems too heavy, reduce to 10 runs"); baseline measurement only, wide intervals
+  p_chart_enabled_after_calibration: false
+  ewma_enabled_after_calibration: false
+  ewma_lambda: 0.2
+  reliability_growth_fit_enabled: false
+  unknown_is_success: false
+
+security:
+  protected_path_globs:
+    - .specify/memory/constitution.md
+    - CLAUDE.md
+    - config/factory/*safety*
+    - config/factory/*release*
+    - config/factory/reliability-policy.yaml
+    - config/factory/supervisor-policy.yaml
+    - config/factory/trace-policy.yaml
+    - factory/release-manager/**
+    - factory/checklists/**
+    - evidence/**
+    - specs/001-factory/**
+    - specs/002-self-healing-factory/**
+    - specs/003-manufacturing-kpis/**
+    - specs/004-continuous-reliability-engineering/contracts/**
+    - tests/reliability/**
+  deny_agent_direct_shell: true
+  deny_agent_editing_gate_results: true
+  audit_channel_min_level: INFO
+  redact_secrets_before_persistence: true
+
+telemetry:
+  preserve_existing_capture_view_separation: true
+  use_existing_kpi_engine: true
+  raw_logs_outside_model_context: true
+  max_tool_excerpt_bytes: 2048             # = agents.yaml max_mcp_output_bytes (existing budget)
+  use_provider_token_counters: true
+  on_missing_token_counters: UNKNOWN_OR_ESTIMATED_WITH_METHOD
+
+readiness:
+  offline_safety_signoff_required: true
+  safety_approval_by_ai: false
+  block_missing_p0_evidence: true

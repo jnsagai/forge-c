@@ -1,0 +1,423 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-16T10:31:13.047440Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[\"r80:RPR-006\"]",
+          "from_state": null,
+          "reason": "r80 factory defect (SWE.3 presence gate requires HAL files in an LL work order)",
+          "seq": 42,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T10:31:13.121427Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 43,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T10:31:13.165440Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-006 assigned",
+          "seq": 44,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T10:31:15.086721Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[\"reproducer-run:rr-bdadacfb92b7ada2ccac\", \"reproducer-run:rr-e6ad28aaf47666c4f14e\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 45,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T10:31:15.105330Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[\"git:face7ca7427e..71b83b6b8151\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 71b83b6b8151 (patch 8075 bytes)",
+          "seq": 46,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T10:31:15.953935Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[\"reproducer-run:rr-09ece5b6790eab24f9dd\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-006 absent at 71b83b6b8151",
+          "seq": 47,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T10:31:15.970501Z",
+          "capa_id": "CAPA-004",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 48,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "face7ca7427ede2a18904e7aa09709072b9d113b"
+        ],
+        "FINGERPRINT": [
+          "cfp1-5c9fc31969a69ab9185513da2b761ad2a443e225",
+          "cfp1-4fa6fbd82bb00e04fdee458dc244fab9cb7288da"
+        ],
+        "FIX_REVISION": [
+          "71b83b6b815144ab1536b223df9f6a4f89572ee6"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<71b83b6b8151"
+        ],
+        "candidate_patch_sha256": "777858aa11f952b3dfc46b7f2ec74bc9c11d7b68ff666b2bc5dc6ae5ce7b9554",
+        "capa_id": "CAPA-004",
+        "created_at": "2026-10-16T10:31:13.047440Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r80:RPR-006"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-006",
+        "reproducer_id": "RPR-006",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-bdadacfb92b7ada2ccac",
+          "reproducer-run:rr-e6ad28aaf47666c4f14e"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "ADR-0009 made the SWE.3 chain layer-aware but the presence gate's required outputs still listed software/hal/* for every work order.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T10:31:15.970501Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T10:31:15.988241Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[\"r80:RPR-007\"]",
+          "from_state": null,
+          "reason": "r80 factory defect (architecture check accepts a placeholder API in the allocation table)",
+          "seq": 49,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T10:31:16.009110Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 50,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T10:31:16.038037Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-007 assigned",
+          "seq": 51,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T10:31:17.897891Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[\"reproducer-run:rr-655ce658a23a10d4cbcc\", \"reproducer-run:rr-f1220e3804357aaf5620\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 52,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T10:31:17.914384Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[\"git:face7ca7427e..71b83b6b8151\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 71b83b6b8151 (patch 8075 bytes)",
+          "seq": 53,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T10:31:18.776973Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[\"reproducer-run:rr-362d8ed88953b0c570c6\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-007 absent at 71b83b6b8151",
+          "seq": 54,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T10:31:18.798164Z",
+          "capa_id": "CAPA-005",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 55,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "face7ca7427ede2a18904e7aa09709072b9d113b"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "71b83b6b815144ab1536b223df9f6a4f89572ee6"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<71b83b6b8151"
+        ],
+        "candidate_patch_sha256": "777858aa11f952b3dfc46b7f2ec74bc9c11d7b68ff666b2bc5dc6ae5ce7b9554",
+        "capa_id": "CAPA-005",
+        "created_at": "2026-10-16T10:31:15.988241Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r80:RPR-007"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-007",
+        "reproducer_id": "RPR-007",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-655ce658a23a10d4cbcc",
+          "reproducer-run:rr-f1220e3804357aaf5620"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The architecture check verified that every SWR is allocated but not that the allocated API names are concrete, so LL_RCC_<Peripheral>_Enable passed and SWE.3 could omit the peripheral functions.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T10:31:18.798164Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T10:31:18.822772Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[\"r80:RPR-008\"]",
+          "from_state": null,
+          "reason": "r80 factory defect (LL SWE.1 procedure demands an access-count requirement)",
+          "seq": 56,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T10:31:18.845372Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 57,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T10:31:18.874064Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-008 assigned",
+          "seq": 58,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T10:31:20.890213Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[\"reproducer-run:rr-194e385e43a1fbd6a05b\", \"reproducer-run:rr-37962324960fa1464385\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 59,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T10:31:20.908529Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[\"git:face7ca7427e..71b83b6b8151\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 71b83b6b8151 (patch 8075 bytes)",
+          "seq": 60,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T10:31:21.925601Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[\"reproducer-run:rr-edb689c3dfa3e500d474\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-008 absent at 71b83b6b8151",
+          "seq": 61,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T10:31:21.937647Z",
+          "capa_id": "CAPA-006",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 62,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "face7ca7427ede2a18904e7aa09709072b9d113b"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "71b83b6b815144ab1536b223df9f6a4f89572ee6"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<71b83b6b8151"
+        ],
+        "candidate_patch_sha256": "777858aa11f952b3dfc46b7f2ec74bc9c11d7b68ff666b2bc5dc6ae5ce7b9554",
+        "capa_id": "CAPA-006",
+        "created_at": "2026-10-16T10:31:18.822772Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r80:RPR-008"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-008",
+        "reproducer_id": "RPR-008",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-194e385e43a1fbd6a05b",
+          "reproducer-run:rr-37962324960fa1464385"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The LL SWE.1 procedure asked for a requirement on the number of register reads/writes, which a host RAM register array cannot observe; SWE.4/SWE.5 spent their rework budget on access-counting stubs (r80 BLOCKED at SWE.5).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T10:31:21.937647Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T10:31:32.511492Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"r80:SWE5-03\"]",
+          "from_state": null,
+          "reason": "r80 SWE.5 inspection failed SWE5-03 (no interrupt interaction tested) although interrupts are out of the work-order scope",
+          "seq": 63,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T10:31:32.535467Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 64,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T10:41:08.680698Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-009 assigned",
+          "seq": 65,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T10:41:10.837356Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"reproducer-run:rr-f9393cfc5a03d3a05259\", \"reproducer-run:rr-55b146dd26aca53a38f7\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 66,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T10:41:10.856589Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"git:b9361c0bb212..14868f7960a0\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 14868f7960a0 (patch 4475 bytes)",
+          "seq": 67,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T10:41:11.887342Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[\"reproducer-run:rr-143f1c9da00ba850c90c\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-009 absent at 14868f7960a0",
+          "seq": 68,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T10:41:11.900800Z",
+          "capa_id": "CAPA-007",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 69,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "b9361c0bb212425b6d6d12e66aef5d4f69cdecf4"
+        ],
+        "FINGERPRINT": [
+          "cfp1-7a02454bbfaccd76ccbcd2c66d9d3a9f49729f34"
+        ],
+        "FIX_REVISION": [
+          "14868f7960a0bf1db509cd052da9abd9ab1b2769"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<14868f7960a0"
+        ],
+        "candidate_patch_sha256": "dc8fc5cb42581f6e54ffd0a0b9241429bc14d0665dd2a466650ae92ce146ca1f",
+        "capa_id": "CAPA-007",
+        "created_at": "2026-10-16T10:31:32.511492Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r80:SWE5-03"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-009",
+        "reproducer_id": "RPR-009",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-f9393cfc5a03d3a05259",
+          "reproducer-run:rr-55b146dd26aca53a38f7"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The SWE.5 procedure and report template do not state work-order scope exclusions (interrupts, low-power), so the inspector applies the full SWE5-03 checklist item; hypothesis only, no reproducer yet.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T10:41:11.900800Z"
+      }
+    }
+  ],
+  "promotion_decisions": [
+    "pd-71d98ae6b352329bd9aa",
+    "pd-213b185e3c1aae838215"
+  ],
+  "schema": "forge-c/cre-capa-export/1.0",
+  "source_run": "WO-0002A-STM32N6-RCC-LL-r80"
+}

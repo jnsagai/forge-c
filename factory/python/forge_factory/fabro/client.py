@@ -8,6 +8,7 @@ No undocumented DB access, no UI scraping.
 """
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Iterator
 from pathlib import Path
@@ -97,6 +98,17 @@ class FabroClient:
             return self._http.post(f"/api/v1/runs/{run_id}/cancel").status_code
         except httpx.HTTPError as exc:
             raise FabroUnavailable(type(exc).__name__) from exc
+
+
+def client_for_workspace(ws: Path, timeout: float = 5.0) -> FabroClient:
+    """Client for the Fabro server that holds this work order's run (.forge-run/fabro_server.json, written at launch;
+    the local server when absent). r56: cloud-benchmark runs live on another server and 404 on the local one."""
+    url = storage = None
+    srv = Path(ws) / ".forge-run/fabro_server.json"
+    if srv.is_file():
+        meta = json.loads(srv.read_text())
+        url, storage = meta.get("url") or None, meta.get("storage") or None
+    return FabroClient(base_url=url, token=load_token(storage), timeout=timeout)
 
 
 def run_status(run: dict) -> str:

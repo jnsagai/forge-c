@@ -7,7 +7,7 @@ import sys
 
 import pytest
 from forge_factory.inspection.engine import load_checklist
-from forge_factory.workflow.builder import MAX_VISITS, build
+from forge_factory.workflow.builder import MAX_VISITS, UPSTREAM_LOOPS, build
 
 
 def edges(dot):
@@ -29,10 +29,15 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert "forge_factory.inspection.regmap" in dot and nodes["swe3_hal_author"]["role"] == "swe3-author"
     assert ("swe3_inspect_gate", "swe4_scaffold", "outcome=succeeded") in e and ("swe4_scaffold", "swe4_test_author", "") in e
     assert ("swe4_test_author", "swe4_author", "") in e and "forge_factory.workflow.scaffold" in dot
+    assert ("swe4_inspect_gate", "swe5_target_author", "outcome=succeeded") in e and ("swe5_target_author", "swe5_author", "") in e
+    assert ("swe5_inspect_gate", "swe6_scaffold", "outcome=succeeded") in e and ("swe6_scaffold", "swe6_test_author", "") in e
+    assert ("swe6_test_author", "swe6_author", "") in e
     assert nodes["swe3_ll_author"] == {"role": "swe3-author", "phase": "SWE.3"}
     assert ("swe3_verify", "swe3_inspector", "outcome=succeeded") in e
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)
-    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == 1 + load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
+    rework = load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
+    # ADR-0008 per-epoch rework budget: every upstream loop gives each phase 1 + rework visits again
+    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == (1 + rework) * (1 + UPSTREAM_LOOPS)
 
 
 def test_code_model_profile_applies_only_to_code_nodes():
@@ -43,6 +48,12 @@ def test_code_model_profile_applies_only_to_code_nodes():
     assert dot.count('model="qwen3-coder:30b"') == len(CODE_NODES)
     assert 'swe1_author [label=' in dot and 'swe3_inspector [label=' in dot  # inspectors/others keep the default
     assert build("wo-test")[0].count('model="') == 0
+
+
+def test_command_nodes_carry_data_locations():
+    dot, _ = build("wo-test")
+    cmds = [ln for ln in dot.splitlines() if "script=" in ln]
+    assert cmds and all("FORGE_STATE_DIR=" in c and "FORGE_DATA_ROOT=" in c for c in cmds)  # r47
 
 
 def test_every_node_can_reach_finalize():
@@ -63,13 +74,46 @@ def test_every_node_can_reach_finalize():
         assert "finalize" in seen, node
 
 
-def test_route_success_only_to_author_and_failure_fallback_to_finalize():
+def test_route_success_only_to_author_and_failure_through_upstream_chain_to_finalize():
     dot, _ = build("wo-test")
     e = edges(dot)
     for n in range(1, 7):
         target = "swe3_fix_author" if n == 3 else f"swe{n}_author"  # SWE.3 rework re-enters at the fix step
         assert (f"swe{n}_route", target, "outcome=succeeded") in e
-        assert (f"swe{n}_route", "finalize", "") in e
+        assert (f"swe{n}_route", "upstream_swe1", "") in e  # ADR-0008: not same-phase -> upstream chain
+    for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):  # L12: triage first
+        nxt = f"upstream_swe{k + 1}" if k < 3 else "finalize"
+        assert (f"upstream_swe{k}", f"swe{k}_triage", "outcome=succeeded") in e and (f"upstream_swe{k}", nxt, "") in e
+        assert (f"swe{k}_triage", f"swe{k}_triage_gate", "") in e
+        assert (f"swe{k}_triage_gate", owner, "outcome=succeeded") in e and (f"swe{k}_triage_gate", "return_swe2", "") in e
+    for n in range(2, 7):  # fully rejected loop: back to the reporting phase's rework entry, never re-freezing upstream
+        entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
+        assert (f"return_swe{n}", entry, "outcome=succeeded") in e
+        assert (f"return_swe{n}", f"return_swe{n + 1}" if n < 6 else "finalize", "") in e
+    assert "--phase SWE.3 --step upstream" in dot and "--phase SWE.3 --step triage" in dot
+
+
+def test_every_agent_node_has_visit_budget_for_upstream_reentry():
+    """Probe P2 (ADR-0008): Fabro kills the run when a node is entered beyond max_visits."""
+    dot, nodes = build("wo-test")
+    visits = {m.group(1): int(m.group(2)) for m in re.finditer(r"^\s*(\w+) \[.*?max_visits=(\d+)", dot, re.M)}
+    for name in nodes:
+        if name == "release_manager":
+            continue
+        assert visits.get(name, 0) >= 1 + UPSTREAM_LOOPS, (name, visits.get(name))
+
+
+def test_resumed_graph_keeps_upstream_owners_and_starts_at_restart_phase():
+    dot, nodes = build("wo-test", phases=["SWE.6"])
+    e = edges(dot)
+    assert ("start", "swe6_scaffold", "") in e and not any(a == "start" and b != "swe6_scaffold" for a, b, _ in e)
+    assert "swe1_author" in nodes and "swe3_fix_author" in nodes  # reachable through the upstream chain
+    assert ("swe3_triage_gate", "swe3_fix_author", "outcome=succeeded") in e
+
+
+def _trace(ws):
+    (ws / "traceability").mkdir(parents=True, exist_ok=True)
+    (ws / "traceability/requirements_to_tests.csv").write_text("requirement_id,test_id,test_file\nSWR-001,UT-001,t.c\n")
 
 
 def gate(ws, phase, step, stdin="", check=""):
@@ -83,10 +127,15 @@ def test_gate_cli_author_rejects_prose_and_freezes_valid(tmp_path):
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
-    assert gate(tmp_path, "SWE.1", "author", "Done, looks great!").returncode >= 10
+    _trace(tmp_path)
+    # ADR-0008 L10: prose is never evidence - with complete deterministic evidence it is frozen (violation
+    # recorded) and the inspection decides; a failure-signalling reply is still rejected
+    assert gate(tmp_path, "SWE.1", "author", "Done, but the trace is incomplete.").returncode >= 10
+    prose = gate(tmp_path, "SWE.1", "author", "Done, looks great!")
+    assert prose.returncode == 0 and "CONTRACT_VIOLATION_RECORDED" in prose.stdout.decode()
     ok = gate(tmp_path, "SWE.1", "author", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                       "next_action": "next"}))
-    assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
+    assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()  # idempotent: same content, same baseline
     # Inspector claiming PASS without a recorded inspection must not pass the gate.
     fake = gate(tmp_path, "SWE.1", "inspect", json.dumps({"status": "PASS", "artifacts": [], "issues": [],
                                                          "next_action": "next"}))
@@ -116,6 +165,7 @@ def test_author_gate_uses_tool_evidence_not_agent_prose(tmp_path):
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
     assert gate(tmp_path, "SWE.1", "author", "").returncode >= 10  # nothing frozen: empty reply rejected
     from forge_factory.inspection.engine import Store
     Store(tmp_path).freeze("SWE.1", "swe1-author")  # frozen via MCP during the stage
@@ -130,6 +180,7 @@ def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(
     (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
     (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
     reply = 'Baseline ready, EARS PASS.\n{"status":"PASS","artifacts":[],"issues":[],"next_action":"next"}'
     ok = gate(tmp_path, "SWE.1", "author", reply)
     assert ok.returncode == 0 and "BL-SWE.1-001" in ok.stdout.decode()
@@ -141,13 +192,80 @@ def test_author_prose_ending_in_contract_json_is_frozen_with_violation_recorded(
 
 
 def test_route_counts_author_rejections_in_rework_budget(tmp_path):
+    # each cycle fails differently (an output appears between attempts): the authored 3-cycle budget applies
+    for i in range(2):  # authored maximum_rework_cycles = 3
+        assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+        assert gate(tmp_path, "SWE.3", "route").returncode == 0  # failed cycle within budget: rework
+        (tmp_path / "workproducts/SWE.3").mkdir(parents=True, exist_ok=True)
+        (tmp_path / f"workproducts/SWE.3/{'detailed_design.md' if i == 0 else 'notes.md'}").write_text("x\n")
+        (tmp_path / "software/ll").mkdir(parents=True, exist_ok=True)
+        if i == 1:
+            (tmp_path / "software/ll/stm32n6xx_ll_rcc.h").write_text("x\n")
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
-    assert gate(tmp_path, "SWE.3", "route").returncode == 0  # 1 failed cycle: rework allowed
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
+
+
+def test_route_stops_early_on_an_identical_deterministic_rejection(tmp_path):
+    """CAPA-014: the same deterministic rejection twice never recovered in r10-r82 (0 of 14): stop at the 2nd."""
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
-    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # BLOCKED -> finalizer (not an endless rework loop)
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    r = gate(tmp_path, "SWE.3", "route")
+    assert r.returncode == 1
+    log = (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert "STUCK: identical deterministic rejection twice" in log
 
 
 def test_route_counts_its_own_invocations_when_no_gate_ran(tmp_path):
-    # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route twice
+    # agent session crashed: Fabro skipped the author gate (no stdin) and went straight to route
     assert gate(tmp_path, "SWE.3", "route").returncode == 0
-    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 2nd failed cycle -> BLOCKED -> finalizer
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
+
+
+def test_failed_gate_outputs_differ_per_cycle_for_fabro_breaker(tmp_path):
+    """Fabro hashes node|category|output (digits normalised) and kills the run at the 3rd identical signature."""
+    import re as _re
+
+    outs = [gate(tmp_path, "SWE.3", "author", "prose").stdout.decode() for _ in range(3)]
+    norm = [_re.sub(r"\d+", "<n>", o) for o in outs]
+    assert len(set(norm)) == 3 and all("gate execution " in o for o in outs)
+    # r56: Fabro truncates the output in its signature (~200 chars) - the marker must be the first line
+    assert all(o.startswith("gate execution ") for o in outs) and len({o[:40] for o in norm}) == 3
+
+
+def test_author_gate_presence_check_blocks_freeze_of_incomplete_phase(tmp_path):
+    """r43: lenient inspectors passed SWE.4/5 whose reports did not exist; nothing incomplete is frozen."""
+    (tmp_path / "workproducts/SWE.4").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.4/notes.md").write_text("x\n")
+    reply = json.dumps({"status": "PASS", "artifacts": [], "issues": [], "next_action": "next"})
+    r = gate(tmp_path, "SWE.4", "author", reply)
+    out = r.stdout.decode()
+    assert r.returncode >= 10 and "MISSING_REQUIRED_OUTPUT:workproducts/SWE.4/unit_verification_report.md" in out
+    assert "REQUIRED_TOOL_NOT_PASS:run_unit:NOT_RUN" in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert not (tmp_path / "configuration/baselines/SWE.4").exists()
+
+
+def test_generated_workflow_has_no_template_delimiters():
+    """r58: Fabro renders the .fabro file as a template; '{{' / '{%' in a prompt broke the launch (no run id)."""
+    for chunk in (40, 150):
+        dot, _ = build("wo-test", chunk_lines=chunk)
+        assert "{{" not in dot and "{%" not in dot and "{#" not in dot
+
+
+def test_format_violation_does_not_cost_a_cycle_when_evidence_is_complete_l10(tmp_path):
+    """ADR-0008 L10 (owner decision): r61 lost 2 of 3 SWE.3 cycles to prose replies after the work was done."""
+    (tmp_path / "workproducts/SWE.1").mkdir(parents=True)
+    (tmp_path / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall reset all clocks.\n")
+    _trace(tmp_path)
+    for reply in ("I could not finish the trace table.", "Turn budget exhausted before the review.",
+                  "Status: BLOCKED - missing section", '{"status":"BLOCKED","issues":["x"],"next_action":"rerun it"}'):
+        r = gate(tmp_path, "SWE.1", "author", reply)
+        assert r.returncode >= 10, reply  # a reply that signals failure is honoured (schema-invalid BLOCKED: r56)
+    ok = gate(tmp_path, "SWE.1", "author", "I wrote the requirements and the trace file; everything is in place.")
+    assert ok.returncode == 0 and "CONTRACT_VIOLATION_RECORDED" in ok.stdout.decode()
+    log = (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert "FROZEN_BY_EVIDENCE" in log and "AGENT_OUTPUT_CONTRACT_VIOLATION" in log
+    empty = tmp_path / "e"
+    assert gate(empty, "SWE.1", "author", "All done, looks good.").returncode >= 10  # presence gate still rules

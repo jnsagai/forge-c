@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "factory/python/tests/test_cre_d4_promotion.py",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "-k",
+    "suites_are_frozen or unpinned"
+  ],
+  "duration_s": 0.45,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "8ddf81f3a7b7376ab59473f4fd664896381c09fb",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T024/20261016T054021.log",
+  "log_sha256": "64f04428d5e5f152004f70a9355d5ddcdd24c95a0d0e4d72ff6a1f330e32129d",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T024",
+  "ts_utc": "2026-10-16T05:40:21.955472Z"
+}

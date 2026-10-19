@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 4 items / 3 deselected / 1 selected
+
+factory/python/tests/test_cre_d6_views.py .                              [100%]
+
+======================= 1 passed, 3 deselected in 1.89s ========================
+
+--- stderr ---

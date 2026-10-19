@@ -131,9 +131,24 @@ def promote(attempt_id: str, incident_id: str, store: IncidentStore, health_chec
         rec["tests"].append({"name": name, "status": "PASS" if ok else "FAIL", "evidence_ref": f"commit:{cand}"})
     if any(t["status"] != "PASS" for t in rec["tests"]):
         return finish("ROLLED_BACK", "ROLLED_BACK", "regression checks failed")
-    # atomic compare-and-swap switch of main
-    git(infra, "update-ref", "refs/heads/main", cand, old)
-    git(infra, "reset", "-q", "--hard", "main")
+    # atomic compare-and-swap switch of main (CRE-T045: journaled COMPENSATABLE; the reverse CAS compensates)
+    from ..reliability.production import guarded
+
+    def switch(_key: str) -> dict:
+        git(infra, "update-ref", "refs/heads/main", cand, old)
+        git(infra, "reset", "-q", "--hard", "main")
+        return {"from": old, "to": cand}
+
+    def rollback() -> None:
+        def undo(_key: str) -> dict:
+            git(infra, "update-ref", "refs/heads/main", old, cand)
+            git(infra, "reset", "-q", "--hard", "main")
+            return {"from": cand, "to": old}
+        guarded("infra_cas_rollback", f"infra_cas_rollback:{attempt_id}", undo)
+
+    sw = guarded("infra_cas_switch", f"infra_cas_switch:{attempt_id}", switch)
+    if not sw["executed"] and sw["status"] != "ALREADY_DONE":  # enforcing: a previous switch has an unknown outcome
+        return finish("ROLLED_BACK", "REQUIRES_OFFLINE_ATTENTION", f"infra switch journal: {sw['status']}")
     stable = 0
     for _ in range(stable_polls * 3):
         stable = stable + 1 if health_check(infra) else 0
@@ -142,12 +157,10 @@ def promote(attempt_id: str, incident_id: str, store: IncidentStore, health_chec
         time.sleep(poll_interval_s)
     after = {str(r): tree_hash(r) for r in (protected_roots or [])}
     if after != roots_before:
-        git(infra, "update-ref", "refs/heads/main", old, cand)
-        git(infra, "reset", "-q", "--hard", "main")
+        rollback()
         return finish("ROLLED_BACK", "REQUIRES_OFFLINE_ATTENTION", "product/evidence hash changed during repair")
     if stable < stable_polls:
-        git(infra, "update-ref", "refs/heads/main", old, cand)
-        git(infra, "reset", "-q", "--hard", "main")
+        rollback()
         rec["tests"].append({"name": f"health-stable-{stable_polls}-polls", "status": "FAIL", "evidence_ref": f"commit:{old}"})
         return finish("ROLLED_BACK", "ROLLED_BACK", "health not restored; rolled back")
     rec["tests"].append({"name": f"health-stable-{stable_polls}-polls", "status": "PASS", "evidence_ref": f"commit:{cand}"})

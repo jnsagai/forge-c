@@ -1,0 +1,54 @@
+{
+  "schema": "forge-c/cre-slo-interim/1.0",
+  "recorded_at": "2026-10-16T19:29:06Z",
+  "factory_revision": "70ccc9eaff9f8c0189ae586ce2f7d02669e84dc2",
+  "model": "deepseek-flash",
+  "provider": "deepseek",
+  "decision": "owner option A (30 LL + 30 HAL); stopped by owner on 2026-10-16 after r97 ('Stop all after this run finish'); r98 cancelled before start and excluded",
+  "clean_definition": "all six phase gates PASS and the only package gaps are the two owner-deferred safety documents",
+  "cohorts": {
+    "LL (0002a, full run)": {
+      "clean": 4,
+      "n": 6,
+      "rate": 0.667,
+      "wilson95": [
+        0.3,
+        0.9
+      ],
+      "runs": {
+        "r87": "CLEAN",
+        "r89": "CLEAN",
+        "r91": "CLEAN",
+        "r93": "BLOCKED SWE.4 (2 failed inspections)",
+        "r95": "CLEAN",
+        "r97": "BLOCKED SWE.5 (target tests never written: run_renode NO_TESTS twice, CAPA-014 early stop)"
+      }
+    },
+    "HAL (0002b, provided LL r87)": {
+      "clean": 4,
+      "n": 5,
+      "rate": 0.8,
+      "wilson95": [
+        0.38,
+        0.96
+      ],
+      "runs": {
+        "r88": "CLEAN",
+        "r90": "CLEAN",
+        "r92": "BLOCKED SWE.4 (inspection, run_unit, prose reply)",
+        "r94": "CLEAN",
+        "r96": "CLEAN"
+      }
+    }
+  },
+  "slo_status": "NOT_DEMONSTRATED (n=6/5 < policy minimum 30 per cohort; intervals are wide)",
+  "observations": [
+    "SWE.4 is the most frequent blocking phase (2 of 3 blocked runs)",
+    "CAPA-014 early stop fired in r97",
+    "candidate CAPAs queued (not implemented): SWE.4 failure pattern; SWE.5 re-entry when the target-test author wrote no tests"
+  ],
+  "cost_usd": {
+    "spent_total": 4.537,
+    "cap": 12.5
+  }
+}

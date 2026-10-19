@@ -38,7 +38,9 @@ additional_checks:
   severity_if_failed: major
   criterion: The allocated design is implemented in live code - every HAL_RCC_ function allocated in the SWE.2
     architecture is declared in the HAL header and defined (non-static) in the HAL source, every LL_RCC_
-    function the HAL calls is defined in the LL header, and no code is commented out (MISRA C:2012 Dir 4.4).
+    function the HAL calls is defined in the LL header (an LL-only work order - every allocated LL_RCC_ function
+    is a static inline definition in the LL header; a HAL work order - the provided LL header is unchanged), and
+    no code is commented out (MISRA C:2012 Dir 4.4).
   deterministic_check: implementation_completeness
   verification_node: gate --step verify --phase SWE.3 --check hal_guideline
   source: night-run finding 2026-10-15 (WO r15 - all HAL code inside an unterminated comment passed every check)

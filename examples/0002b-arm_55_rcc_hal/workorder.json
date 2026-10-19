@@ -1,0 +1,58 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 RCC HAL driver (on the verified RCC LL driver)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 14 + memory map p.176"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.14 RCC register interface + memory map p.176 (owner decision 2026-10-15)",
+    "safety_allocation": "OUT_OF_SCOPE: QM development, no safety allocation or safety claims (owner decision 2026-10-15)"
+  },
+  "scope": [
+    "HAL: hal_status_t API with HAL_RCC_ prefix, const config pointers, parameter checks, timeout-bounded waits, built only on the PROVIDED LL_RCC_ functions",
+    "HSI and HSE oscillator enable/disable with ready-flag wait in RCC_SR bounded by a caller-supplied timeout",
+    "Peripheral clock enable/disable and peripheral reset through the LL",
+    "The LL header is provided read-only (verified LL work order) and is not modified",
+    "Out of scope: PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+  ],
+  "system_names": [
+    "RCC driver",
+    "RCC HAL driver",
+    "STM32N6 RCC driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "role": "reference_manual_rcc_chapter"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "ADR-0009 (owner decision 2026-10-16): built on the PROVIDED LL header of a verified 0002a LL work order (--provided-from)"
+}

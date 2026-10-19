@@ -25,7 +25,12 @@ def handle(ctx: dict, binding: Binding) -> Decision:
         return Decision(True, "NOT_A_TOOL_EVENT", str(ctx.get("event")))
     d = Authorizer(binding).decide(ctx.get("node_id"), str(ctx.get("tool_name", "")), ctx.get("tool_input"))
     if d.allow and d.role:
-        ok, n, limit = count_tool_call(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")), d.role)
+        ok, n, limit, reserved = count_tool_call(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")),
+                                                 d.role, str(ctx.get("tool_name", "")), binding.workspace)
+        if reserved:
+            return Decision(False, "INSPECTION_CALLS_RESERVED", f"{n}/{limit} tool calls used: the remaining calls are "
+                            "reserved - call check_inspection now with a verdict for EVERY item (and report_defect for "
+                            "upstream findings)", d.role, d.op)
         if not ok:
             return Decision(False, "TURN_BUDGET_EXHAUSTED", f"{n}>{limit} tool calls; reply BLOCKED now", d.role, d.op)
     return d

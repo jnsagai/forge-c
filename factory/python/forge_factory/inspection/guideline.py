@@ -81,8 +81,13 @@ class Checker:
         return hal, ll
 
     def check_layout(self, hal: list[Path], ll: list[Path]) -> None:
+        from ..layer import layer_of
+
         lay = self.rules["layout"]
-        for d, names in ((lay["hal_dir"], lay["hal_files"]), (lay["ll_dir"], lay["ll_files"])):
+        required = [(lay["ll_dir"], lay["ll_files"])]  # ADR-0009: an LL work order has no HAL files
+        if layer_of(self.ws) != "LL":
+            required.insert(0, (lay["hal_dir"], lay["hal_files"]))
+        for d, names in required:
             for name in names:
                 p = self.ws / d / name.format(ppp=self.ppp)
                 if not p.is_file():

@@ -8,6 +8,26 @@ from forge_factory.inspection.engine import InspectionError, Store
 ARCH_MIN = ("# Architecture\n## Components\n- HAL, LL\n## Interfaces\n- HAL_RCC_HSI_Enable\n## Requirement allocation\n"
             "| SWR | Function |\n|---|---|\n| SWR-001 | HAL_RCC_HSI_SetConfig |\n## Register table\n"
             "| Name | Offset |\n|---|---|\n| RCC_CR | 0x0 |\n")  # synthetic minimum for other tests' fixtures
+STATIC_PUML = ("@startuml\npackage \"RCC driver\" {\n  component \"stm32n6xx_hal_rcc\" as HAL\n"
+               "  component \"stm32n6xx_ll_rcc\" as LL\n}\ncomponent \"RCC registers\" as RCC\nHAL --> LL\nLL --> RCC\n@enduml\n")
+DYNAMIC_PUML = ("@startuml\nparticipant Caller\nparticipant HAL\nCaller -> HAL : HAL_RCC_HSI_SetConfig()\n"
+                "alt ready\n  HAL --> Caller : HAL_OK\nelse timeout\n  HAL --> Caller : HAL_TIMEOUT\nend\n@enduml\n")
+
+
+def add_views(ws):
+    """Synthetic SWE.2 PlantUML views for other tests' fixtures (SWE2-08)."""
+    (ws / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.2/architecture_static.puml").write_text(STATIC_PUML)
+    (ws / "workproducts/SWE.2/architecture_dynamic.puml").write_text(DYNAMIC_PUML)
+
+
+def add_reqif(ws):
+    """Deterministic ReqIF export of the fixture's SWE.1 requirements (SWE1-08)."""
+    from forge_factory.inspection.reqif_export import export
+
+    assert export(ws)["verdict"] == "PASS"
+
+
 REPLY = '{"status":"PASS","artifacts":["workproducts/SWE.2/software_architecture.md"],"issues":[],"next_action":"next"}'
 GOOD = """# Software Architecture
 ## Components

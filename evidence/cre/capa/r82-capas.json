@@ -1,0 +1,316 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-16T13:25:37.011930Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"r82:RPR-012\"]",
+          "from_state": null,
+          "reason": "r82 factory defect (architecture check accepts interfaces missing from the allocation)",
+          "seq": 84,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T13:25:37.061432Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 85,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T13:25:37.120740Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-012 assigned",
+          "seq": 86,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T13:25:38.912890Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"reproducer-run:rr-4a3f2812ef2997675340\", \"reproducer-run:rr-e7bde5b95f798a0e8df3\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 87,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T13:25:38.929152Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"git:14f1ab112c80..68df55037fb4\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 68df55037fb4 (patch 8980 bytes)",
+          "seq": 88,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T13:25:39.774192Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[\"reproducer-run:rr-26b17ba9d3dd6b096403\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-012 absent at 68df55037fb4",
+          "seq": 89,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T13:25:39.794876Z",
+          "capa_id": "CAPA-010",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 90,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "14f1ab112c80f21dbb0f630916df596df2e7bb4a"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "68df55037fb4ebf58cd63b705b550b81b778f182"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<68df55037fb4"
+        ],
+        "candidate_patch_sha256": "e6788f4ea42752f4735b9440854ae915773429ec23f3253ff59c8115444c5ff0",
+        "capa_id": "CAPA-010",
+        "created_at": "2026-10-16T13:25:37.011930Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r82:RPR-012"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-012",
+        "reproducer_id": "RPR-012",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-4a3f2812ef2997675340",
+          "reproducer-run:rr-e7bde5b95f798a0e8df3"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The LL API naming text listed MSI, LSI, LSE and PLL1..4 although the work order covers HSI and HSE, and no check compared the Interfaces section with the allocation table; SWE.3 inspection found interfaces that were never allocated or coded.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T13:25:39.794876Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T13:25:39.813261Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[\"r82:RPR-013\"]",
+          "from_state": null,
+          "reason": "r82 factory defect (LL SWE.2 procedure omits concurrency and reentrancy)",
+          "seq": 91,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T13:25:39.831329Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 92,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T13:25:39.866357Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-013 assigned",
+          "seq": 93,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T13:25:41.917350Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[\"reproducer-run:rr-370049d12c9710202c84\", \"reproducer-run:rr-36db4adece81849647f5\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 94,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T13:25:41.935781Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[\"git:14f1ab112c80..68df55037fb4\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 68df55037fb4 (patch 8980 bytes)",
+          "seq": 95,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T13:25:42.962743Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[\"reproducer-run:rr-1f2f15758db3e83b4499\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-013 absent at 68df55037fb4",
+          "seq": 96,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T13:25:42.977139Z",
+          "capa_id": "CAPA-011",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 97,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "14f1ab112c80f21dbb0f630916df596df2e7bb4a"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "68df55037fb4ebf58cd63b705b550b81b778f182"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<68df55037fb4"
+        ],
+        "candidate_patch_sha256": "e6788f4ea42752f4735b9440854ae915773429ec23f3253ff59c8115444c5ff0",
+        "capa_id": "CAPA-011",
+        "created_at": "2026-10-16T13:25:39.813261Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r82:RPR-013"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-013",
+        "reproducer_id": "RPR-013",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-370049d12c9710202c84",
+          "reproducer-run:rr-36db4adece81849647f5"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The LL SWE.2 procedure asked for read-modify-write access but no concurrency/reentrancy section, so SWE2-03 (concurrency, ISR synchronisation, reentrancy) failed on a one-line note.",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T13:25:42.977139Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T13:25:42.991422Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[\"r82:RPR-014\"]",
+          "from_state": null,
+          "reason": "r82 factory defect (report_defect accepts product code as a cited test file)",
+          "seq": 98,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T13:25:43.006687Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 99,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T13:25:43.039751Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-014 assigned",
+          "seq": 100,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T13:25:44.766523Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[\"reproducer-run:rr-2dc927e8ec3a4fc37b0c\", \"reproducer-run:rr-835f582d78de7c595f8e\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 101,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T13:25:44.787039Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[\"git:14f1ab112c80..68df55037fb4\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 68df55037fb4 (patch 8980 bytes)",
+          "seq": 102,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T13:25:45.709633Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[\"reproducer-run:rr-317190f961694a8f53a3\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-014 absent at 68df55037fb4",
+          "seq": 103,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T13:25:45.721931Z",
+          "capa_id": "CAPA-012",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 104,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "links": {
+        "BASELINE_REVISION": [
+          "14f1ab112c80f21dbb0f630916df596df2e7bb4a"
+        ],
+        "FINGERPRINT": [],
+        "FIX_REVISION": [
+          "68df55037fb4ebf58cd63b705b550b81b778f182"
+        ]
+      },
+      "record": {
+        "affected_versions": [
+          "forge-c@<68df55037fb4"
+        ],
+        "candidate_patch_sha256": "e6788f4ea42752f4735b9440854ae915773429ec23f3253ff59c8115444c5ff0",
+        "capa_id": "CAPA-012",
+        "created_at": "2026-10-16T13:25:42.991422Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r82:RPR-014"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-014",
+        "reproducer_id": "RPR-014",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-2dc927e8ec3a4fc37b0c",
+          "reproducer-run:rr-835f582d78de7c595f8e"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "report_defect accepted any workspace file as test_files; the SWE.3 inspector cited the LL header, and the anti-bending gate rejected every correct header fix as DEFECT_TEST_CHANGED until SWE.3 blocked (r82).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T13:25:45.721931Z"
+      }
+    }
+  ],
+  "promotion_decisions": {
+    "pd-2990f3ca257951030536": "REJECTED (v1 edited a baseline test fixture)",
+    "pd-5d91c64a647090c5a609": "ELIGIBLE_FOR_OFFLINE_REVIEW (v2)"
+  },
+  "schema": "forge-c/cre-capa-export/1.0",
+  "source_run": "WO-0002A-STM32N6-RCC-LL-r82"
+}

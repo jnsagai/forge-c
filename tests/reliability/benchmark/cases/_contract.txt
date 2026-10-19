@@ -1,0 +1,4 @@
+Benchmark harness contract (ADR-CRE-004): `python <harness> <scratch>`; the runner has copied the case inputs into
+<scratch>/ws (layout from the frozen suite manifest) and put the REVISION UNDER TEST on PYTHONPATH. The harness prints
+ONE JSON line {"observed": {...}} and exits 0; any other output/exit is a harness ERROR. Oracles live only in the
+manifest and are evaluated by the runner, never by the candidate.

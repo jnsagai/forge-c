@@ -1,0 +1,21 @@
+test_complete_synthetic_fixture_passes_structurally (test_gates.GateTests.test_complete_synthetic_fixture_passes_structurally) ... ok
+test_draft_profile_blocked (test_gates.GateTests.test_draft_profile_blocked) ... ok
+test_excess_flash_blocked (test_gates.GateTests.test_excess_flash_blocked) ... ok
+test_invalid_evidence_hash_blocked (test_gates.GateTests.test_invalid_evidence_hash_blocked) ... ok
+test_missing_safety_allocation_blocked (test_gates.GateTests.test_missing_safety_allocation_blocked) ... ok
+test_missing_safety_requirement_allocation_blocked (test_gates.GateTests.test_missing_safety_requirement_allocation_blocked) ... ok
+test_missing_trace_link_blocked (test_gates.GateTests.test_missing_trace_link_blocked) ... ok
+test_non_hardware_timing_blocked_on_release (test_gates.GateTests.test_non_hardware_timing_blocked_on_release) ... ok
+test_path_traversal_blocked (test_gates.GateTests.test_path_traversal_blocked) ... ok
+test_quality_gate_e2e_structural (test_gates.GateTests.test_quality_gate_e2e_structural) ... ok
+test_unchecked_human_review_blocked_release (test_gates.GateTests.test_unchecked_human_review_blocked_release) ... ok
+test_unproven_stack_blocked (test_gates.GateTests.test_unproven_stack_blocked) ... ok
+test_unreviewed_trace_link_blocked (test_gates.GateTests.test_unreviewed_trace_link_blocked) ... ok
+test_unverified_unit_result_blocked (test_gates.GateTests.test_unverified_unit_result_blocked) ... ok
+test_demo_rejects_fake_hardware_scope_and_modified_logs (test_oss_pipeline.OSSPipelineTests.test_demo_rejects_fake_hardware_scope_and_modified_logs) ... ok
+test_policy_rejects_cloud_api (test_oss_pipeline.OSSPipelineTests.test_policy_rejects_cloud_api) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.035s
+
+OK

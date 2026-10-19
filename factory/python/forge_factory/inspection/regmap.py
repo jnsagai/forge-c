@@ -98,7 +98,19 @@ def generate(ws: Path) -> dict:
         return {"status": "BLOCKED", "issues": ["NO_REGISTERS_FROM_SWE2_TABLE"] + [f"NOT_IN_RM:{n}" for n in missing]}
     out = ws / LL_HEADER
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render(regs), encoding="utf-8")
+    text = render(regs)
+    if out.is_file():  # ADR-0008 re-entry (upstream loop): keep the authored access functions, regenerate the defines
+        old = out.read_text(encoding="utf-8", errors="replace")
+        end = f"#endif /* {GUARD} */"
+        if FUNCTIONS_MARKER in old and end in old:
+            authored = old.split(FUNCTIONS_MARKER, 1)[1].rsplit(end, 1)[0]
+            text = text.replace(FUNCTIONS_MARKER + "\n\n" + end, FUNCTIONS_MARKER + authored + end)
+    out.write_text(text, encoding="utf-8")
+    from ..layer import LL_TU, LL_TU_TEXT, layer_of
+
+    if layer_of(ws) == "LL":  # ADR-0009: compile unit of the header-only LL (build/analysis/size tools need one)
+        (ws / LL_TU).parent.mkdir(parents=True, exist_ok=True)
+        (ws / LL_TU).write_text(LL_TU_TEXT, encoding="utf-8")
     rec = {"schema": "forge-c/regmap/0.4", "generated_at": utc_now(), "header": LL_HEADER,
            "registers": {r["name"]: {"offset": r["offset"], "fields": len(r["fields"]), "source": r["source"],
                                      "source_sha256": r["sha256"]} for r in regs},

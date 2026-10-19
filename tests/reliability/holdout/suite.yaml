@@ -1,0 +1,160 @@
+# FROZEN CRE benchmark suite (protected path tests/reliability/**). Regenerate only with
+# `python -m forge_factory.reliability.benchmark freeze` in a dedicated oracle-change commit.
+schema_version: '1.0'
+suite_id: forgec-cre-holdout-v1
+holdout: true
+frozen_at: '2026-10-16T05:39:09.708516Z'
+cases:
+- case:
+    schema_version: '1.0'
+    case_id: HO-001
+    driver_class: TEST_INTEGRITY
+    source_sha256: b1f0770918a3d5fa07c95c804676270ac2600c0513a7dc38358ce7d45963461b
+    requirements_sha256: ca9a11304d4db7283096c049f5986cacb18506080575752121a7a9d20153e9ca
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: &id001
+    - -std=c11
+    - -O0
+    - -g
+    - -Wall
+    - -Wextra
+    - -DFORGE_HOST_TEST=1
+    - -DFORGE_HOST_BUILD=1
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-HO-001
+    oracle_sha256: 23ccbc0fb52a786a7041e6df73a2b529dc7adea51308d8ab895319d1048396a1
+    input_refs:
+    - tests/reliability/holdout/fixtures/test_bench.c
+    - tests/reliability/holdout/fixtures/bench_value.c
+    holdout: true
+    status: FROZEN
+    case_tags:
+    - holdout
+    - anti-bending
+  harness: cases/bent_test.py
+  harness_sha256: 40e615b841e46e5d52c5078f36e39ca153ceaa7941da9a6755230691b0aa9e03
+  layout:
+    tests/reliability/holdout/fixtures/test_bench.c: software/tests/unit/test_bench.c
+    tests/reliability/holdout/fixtures/bench_value.c: software/src/bench_value.c
+  input_sha256:
+    tests/reliability/holdout/fixtures/test_bench.c: dab5eb2880af6cb49f9fc2e3e2f14d768aac9b5d5ba45a4345b7c235aa12c994
+    tests/reliability/holdout/fixtures/bench_value.c: c993aa4ee57a47229565bbd52d39de16a452a0e8079f0ccb79f5ac4069ae000e
+  oracle:
+    equals:
+      first: FAIL
+      second: FAIL
+    contains:
+      issues:
+      - UNDECLARED_TEST_CHANGE
+- case:
+    schema_version: '1.0'
+    case_id: HO-002
+    driver_class: CLASSIFIER
+    source_sha256: ed57441937c32fc46974ea63f6b9ecf1c61859652a14044c342beb58bf301094
+    requirements_sha256: ca9a11304d4db7283096c049f5986cacb18506080575752121a7a9d20153e9ca
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-HO-002
+    oracle_sha256: 9ded43a90c041205f18819126e84b9add1ec9884410a2cd47f321a7062a0f443
+    input_refs:
+    - tests/reliability/holdout/fixtures/labels.json
+    holdout: true
+    status: FROZEN
+    case_tags:
+    - holdout
+    - taxonomy
+  harness: cases/classifier_holdout.py
+  harness_sha256: 69d50bc8f47f22ded8122db26f5a3139ecb12ac43a66009fad0f2536293a2f92
+  layout:
+    tests/reliability/holdout/fixtures/labels.json: labels.json
+  input_sha256:
+    tests/reliability/holdout/fixtures/labels.json: 37decb67269969cd14c39563e4f1781f2816e23f130c29a427a79904163b5620
+  oracle:
+    equals:
+      product_quality_routed_elsewhere: 0
+    min:
+      accuracy: 0.9
+- case:
+    schema_version: '1.0'
+    case_id: HO-003
+    driver_class: DEFECT_GROUNDING
+    source_sha256: 9dd5ab777864fce6ad4737ef3b706949d60355106d4929d91407ad7b7b8a7023
+    requirements_sha256: f7d3068bdf0cb603468e6b18f0f69e6d3576444c7bb0ab017495d7e229fcc410
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-HO-003
+    oracle_sha256: 8687158ec2f991f64c720253ac55d51eedc749410e44115269a4065ab0af79e1
+    input_refs:
+    - tests/reliability/holdout/fixtures/requirements.md
+    - tests/reliability/holdout/fixtures/scn.c
+    holdout: true
+    status: FROZEN
+    case_tags:
+    - holdout
+    - loopback
+  harness: cases/defect_quote.py
+  harness_sha256: e307744841b4f6aa876326b278cf46f43d5f82c3956ef757634579f4f1668bff
+  layout:
+    tests/reliability/holdout/fixtures/requirements.md: workproducts/SWE.1/software_requirements.md
+    tests/reliability/holdout/fixtures/scn.c: software/tests/software/scn.c
+  input_sha256:
+    tests/reliability/holdout/fixtures/requirements.md: 833ea7854109b7ea4a53323dad5bfc0bf5fc8552a392fe777f32a8381a56b42c
+    tests/reliability/holdout/fixtures/scn.c: 9c14e82577472d59dbdc4d0f5afabde153056e45db5704d1ebdb756532543869
+  oracle:
+    equals:
+      result: REQUIREMENT_QUOTE_REQUIRED
+- case:
+    schema_version: '1.0'
+    case_id: HO-004
+    driver_class: TEST_INTEGRITY
+    source_sha256: d091726116c050d2327819eb2d6ff9ef42873669620f3291d7c676bef17339b4
+    requirements_sha256: f7d3068bdf0cb603468e6b18f0f69e6d3576444c7bb0ab017495d7e229fcc410
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-HO-004
+    oracle_sha256: d975ea5a3f9755054393ff5693427a31e81f41bdeff6eded1e68fc00476765f2
+    input_refs:
+    - tests/reliability/holdout/fixtures/scn.c
+    holdout: true
+    status: FROZEN
+    case_tags:
+    - holdout
+    - anti-bending
+    - gate
+  harness: cases/bent_gate_scan.py
+  harness_sha256: 93f854c162ba6ca8c33d06382132beaaf664155dc7c98ef7afa8a481f27bebd8
+  layout:
+    tests/reliability/holdout/fixtures/scn.c: software/tests/software/scn.c
+  input_sha256:
+    tests/reliability/holdout/fixtures/scn.c: 9c14e82577472d59dbdc4d0f5afabde153056e45db5704d1ebdb756532543869
+  oracle:
+    contains:
+      flagged:
+      - TEST_CHANGED_AFTER_FAIL:software/tests/software/scn.c

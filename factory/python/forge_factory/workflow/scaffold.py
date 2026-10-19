@@ -46,11 +46,15 @@ int main(void)
 
 
 def scaffold(ws: Path) -> dict:
+    from ..layer import layer_of
+
     p = ws / UNIT_TEST
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(HARNESS, encoding="utf-8")
+    text = HARNESS if layer_of(ws) != "LL" else HARNESS.replace('#include "stm32n6xx_hal_rcc.h"',
+                                                                  '#include "stm32n6xx_ll_rcc.h"')  # ADR-0009
+    p.write_text(text, encoding="utf-8")
     return {"status": "PASS", "created": True, "file": UNIT_TEST}
 
 

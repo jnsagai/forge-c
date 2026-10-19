@@ -1,0 +1,222 @@
+{
+  "capas": [
+    {
+      "history": [
+        {
+          "at": "2026-10-16T15:34:55.958517Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[\"r86:RPR-024\"]",
+          "from_state": null,
+          "reason": "r86 factory defect (host test run accepts duplicate CHECK ids)",
+          "seq": 172,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T15:34:55.984426Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 173,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T15:34:56.015996Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-024 assigned",
+          "seq": 174,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T15:34:58.486124Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[\"reproducer-run:rr-06a267686dbad6e04a66\", \"reproducer-run:rr-6434700bb9c8531f8283\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 175,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T15:34:58.503307Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[\"git:bca018ab6c88..995fc2d87f47\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 995fc2d87f47 (patch 6777 bytes)",
+          "seq": 176,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T15:34:59.614738Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[\"reproducer-run:rr-6ca7f683700d6e2fb764\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-024 absent at 995fc2d87f47",
+          "seq": 177,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T15:34:59.628051Z",
+          "capa_id": "CAPA-022",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 178,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "record": {
+        "affected_versions": [
+          "forge-c@<995fc2d87f47"
+        ],
+        "candidate_patch_sha256": "b88aa56a8b6319738a84305d509eef43493ff8caafa483416f756464781ad6fe",
+        "capa_id": "CAPA-022",
+        "created_at": "2026-10-16T15:34:55.958517Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r86:RPR-024"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-024",
+        "reproducer_id": "RPR-024",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-06a267686dbad6e04a66",
+          "reproducer-run:rr-6434700bb9c8531f8283"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "run_unit and run_integration did not check that each CHECK id is unique; aligning UT ids with the SWE.1 trace produced duplicates that only the SWE.4 inspector found (r86: two rework cycles).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T15:34:59.628051Z"
+      }
+    },
+    {
+      "history": [
+        {
+          "at": "2026-10-16T15:34:59.642786Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[\"r86:RPR-025\"]",
+          "from_state": null,
+          "reason": "r86 factory defect (target procedures do not state the RCC model semantics)",
+          "seq": 179,
+          "to_state": "OPEN"
+        },
+        {
+          "at": "2026-10-16T15:34:59.655342Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[]",
+          "from_state": "OPEN",
+          "reason": "triage by HUMAN:claude-implementation-engineer",
+          "seq": 180,
+          "to_state": "TRIAGED"
+        },
+        {
+          "at": "2026-10-16T15:34:59.689069Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[]",
+          "from_state": "TRIAGED",
+          "reason": "reproducer RPR-025 assigned",
+          "seq": 181,
+          "to_state": "REPRODUCER_PENDING"
+        },
+        {
+          "at": "2026-10-16T15:35:01.805026Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[\"reproducer-run:rr-08eb5368d0cb8426ec9e\", \"reproducer-run:rr-f5001c242dede3b21bcd\"]",
+          "from_state": "REPRODUCER_PENDING",
+          "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+          "seq": 182,
+          "to_state": "CAUSE_VERIFIED"
+        },
+        {
+          "at": "2026-10-16T15:35:01.825579Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[\"git:bca018ab6c88..995fc2d87f47\"]",
+          "from_state": "CAUSE_VERIFIED",
+          "reason": "fix 995fc2d87f47 (patch 6777 bytes)",
+          "seq": 183,
+          "to_state": "FIX_CANDIDATE"
+        },
+        {
+          "at": "2026-10-16T15:35:02.865291Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[\"reproducer-run:rr-b50ef6512f7eeabf3ad3\"]",
+          "from_state": "FIX_CANDIDATE",
+          "reason": "prevention test prevention:RPR-025 absent at 995fc2d87f47",
+          "seq": 184,
+          "to_state": "PREVENTION_TESTED"
+        },
+        {
+          "at": "2026-10-16T15:35:02.878823Z",
+          "capa_id": "CAPA-023",
+          "evidence": "[]",
+          "from_state": "PREVENTION_TESTED",
+          "reason": "observation window opened",
+          "seq": 185,
+          "to_state": "EFFECTIVENESS_OBSERVING"
+        }
+      ],
+      "record": {
+        "affected_versions": [
+          "forge-c@<995fc2d87f47"
+        ],
+        "candidate_patch_sha256": "b88aa56a8b6319738a84305d509eef43493ff8caafa483416f756464781ad6fe",
+        "capa_id": "CAPA-023",
+        "created_at": "2026-10-16T15:34:59.642786Z",
+        "event_ids": [],
+        "incident_ids": [
+          "r86:RPR-025"
+        ],
+        "lesson_ids": [],
+        "observation_window_end": null,
+        "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+        "prevention_test_id": "prevention:RPR-025",
+        "reproducer_id": "RPR-025",
+        "root_cause_evidence_refs": [
+          "reproducer-run:rr-08eb5368d0cb8426ec9e",
+          "reproducer-run:rr-f5001c242dede3b21bcd"
+        ],
+        "root_cause_status": "VERIFIED",
+        "root_cause_summary": "The SWE.5/SWE.6 procedures described the simulated RCC only as 'ready flags follow enable bits'; authors treated RCC_SR as writable storage, their target checks failed and they reported correct code as defective (r86 DEF-003/004, rejected by triage).",
+        "schema_version": "1.0",
+        "state": "EFFECTIVENESS_OBSERVING",
+        "updated_at": "2026-10-16T15:35:02.878823Z"
+      }
+    }
+  ],
+  "effectiveness_after_r86": {
+    "CAPA-004": "EFFECTIVE",
+    "CAPA-005": "EFFECTIVE",
+    "CAPA-006": "REOPENED",
+    "CAPA-007": "EFFECTIVENESS_OBSERVING",
+    "CAPA-008": "EFFECTIVENESS_OBSERVING",
+    "CAPA-009": "EFFECTIVENESS_OBSERVING",
+    "CAPA-010": "REOPENED",
+    "CAPA-011": "EFFECTIVENESS_OBSERVING",
+    "CAPA-012": "EFFECTIVENESS_OBSERVING",
+    "CAPA-013": "EFFECTIVENESS_OBSERVING",
+    "CAPA-014": "EFFECTIVENESS_OBSERVING",
+    "CAPA-015": "EFFECTIVENESS_OBSERVING",
+    "CAPA-016": "REOPENED",
+    "CAPA-017": "EFFECTIVENESS_OBSERVING",
+    "CAPA-018": "EFFECTIVENESS_OBSERVING",
+    "CAPA-019": "EFFECTIVENESS_OBSERVING",
+    "CAPA-020": "EFFECTIVENESS_OBSERVING",
+    "CAPA-021": "EFFECTIVENESS_OBSERVING",
+    "CAPA-022": "EFFECTIVENESS_OBSERVING",
+    "CAPA-023": "EFFECTIVENESS_OBSERVING"
+  },
+  "live_observations": {
+    "CAPA-013/018": "r86 SWE.3 measured 352 B text with real frames (first real LL measurement)",
+    "CAPA-014": "STUCK early stop fired in r86 SWE.6 (identical deterministic rejection twice)",
+    "CAPA-021": "r86 SWE.1 ReqIF export passed first attempt"
+  },
+  "promotion_decisions": {
+    "pd-abc9f74dded0eb1dd740": "ELIGIBLE 995fc2d vs bca018a (CAPA-022, CAPA-023)"
+  },
+  "schema": "forge-c/cre-capa-export/1.0",
+  "source_run": "WO-0002A-STM32N6-RCC-LL-r86"
+}

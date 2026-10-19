@@ -48,7 +48,7 @@ def call(mod, server, op, args, role, phase=None):
 # ---------------- T010 registry + preflight --------------------------------------------------------
 def test_t010_catalog_all_ops_implemented_and_mandatory_available():
     cat = PF.op_catalog()
-    assert len(cat) == 36  # 34 design ops + 2 versioned v0.5 KPI overlay ops
+    assert len(cat) == 39  # 34 design ops + 2 v0.5 KPI overlay ops + run_robot (SWE.6) + report/reject_defect (ADR-0008)
     assert not [k for k, e in cat.items() if e["status"] == "NOT_IMPLEMENTED"]
     assert not [k for k, e in cat.items() if e["mandatory"] and e["status"] != "OK"]
 
@@ -178,9 +178,24 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
                                                          ' return 1; }\n')
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert "UT-009 FAIL" in neg["issues"]  # failing case ids are returned to the agent
+    (ws / "software/tests/unit/test_negative.c").write_text(  # r74: the failed check's expression, not just its id
+        '#include <stdio.h>\nstatic int f(int x){ return x + 1; }\n#define CHECK(id, c) do { if (c) { printf("%s PASS\\n",'
+        ' (id)); } else { printf("%s FAIL\\n", (id)); n++; } } while (0)\nint main(void){ int n = 0; int st;\n'
+        '    st = f(1);\n    printf("st=%d\\n", st);\n    CHECK("UT-010", st == 2);\n    CHECK("UT-011",\n          st == 3);\n    return n; }\n')
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert "CHECK_EXPR:test_negative.c#UT-011:st == 3 with st = f(1)" in neg["issues"], neg["issues"]
+    assert not any("UT-010" in i for i in neg["issues"])
+    (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return 0; }\n")  # bent to pass
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert neg["status"] == "FAIL" and "UNDECLARED_TEST_CHANGE:software/tests/unit/test_negative.c" in neg["issues"]
+    (ws / "software/tests/unit/test_negative.c").unlink()  # removed: not a bent test
+    assert call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")["status"] == "PASS"
     (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return undefined_symbol; }\n")
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert any("test_negative.c:1" in i and "error:" in i for i in neg["issues"]), neg["issues"]
+    (ws / "software/tests/unit/test_negative.c").write_text("int missing_fn(void);\nint main(void){ return missing_fn(); }\n")
+    neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
+    assert any("undefined reference" in i and "missing_fn" in i for i in neg["issues"]), neg["issues"]
 
 
 # ---------------- T015 sim ----------------------------------------------------------------------------
@@ -202,12 +217,22 @@ def test_t016_evidence_role_enforced_and_inspection_immutable(ws):
     (ws / "workproducts/SWE.1").mkdir(parents=True)
     (ws / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** The RCC driver shall enable the selected peripheral clock.\n")
+    from test_swe2_architecture import add_reqif
+
+    add_reqif(ws)
     fr = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-author", "SWE.1")
     assert fr["status"] == "PASS"
     bad = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-inspector", "SWE.1")
     assert bad["status"] == "BLOCKED"
     v = {c: {"verdict": "PASS", "evidence_refs": ["workproducts/SWE.1/software_requirements.md"]}
          for c in [f"SWE1-0{i}" for i in range(1, 7)]}
+    # r56: an item without a recognisable verdict is refused (nothing recorded), not turned into MISSING_VERDICT
+    part = call(evidence, "forge-evidence-mcp", "check_inspection",
+                {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001",
+                 "verdicts": "SWE1-01=PASS; SWE1-02=PASS; SWE1-03=PASS; SWE1-04=PASS; SWE1-05=Looks fine; SWE1-06=PASS"},
+                "swe1-inspector", "SWE.1")
+    assert part["status"] == "FAIL" and part["issues"] == ["INCOMPLETE_VERDICTS:SWE1-05"], part
+    assert not (ws / "inspection/SWE.1").is_dir() or not list((ws / "inspection/SWE.1").glob("INS-*.json"))
     ins = call(evidence, "forge-evidence-mcp", "check_inspection",
                {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001", "verdicts": v}, "swe1-inspector", "SWE.1")
     assert ins["status"] == "PASS", ins
@@ -351,3 +376,7 @@ def test_verdict_string_parsed_by_item_ids_any_separator():
     assert r["SWE1-03"]["findings"] == ["no reset reqs"]  # r33: full-stop separators lost five verdicts
     assert parse_verdict_string("SWE2-01=PASS; SWE2-02=FAIL:missing budget\nSWE2-03=NOT_APPLICABLE")["SWE2-02"][
         "findings"] == ["missing budget"]
+    # r56: "Rework finding: ..." is a failure in other words - FAIL with the finding kept; PASS only when literal
+    r = parse_verdict_string("SWE5-04=PASS (ok); SWE5-05=Rework finding: SWR-012 has no SWE.5 measure; SWE5-06=PASS")
+    assert r["SWE5-05"]["verdict"] == "FAIL" and "SWR-012" in r["SWE5-05"]["findings"][0]
+    assert parse_verdict_string("SWE5-01=Looks fine") == {}

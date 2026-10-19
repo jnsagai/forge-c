@@ -41,13 +41,29 @@ class FakeFabro:
 
 # ---------------- T042 ------------------------------------------------------------------------------------
 def test_t042_turn_budget_blocks_and_resets_per_visit(env):
-    for _ in range(20):
-        ok, n, lim = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
+    from forge_factory.registry.agents import load_agents
+
+    limit = {a.id: a.max_turns for a in load_agents()[0]}
+    assert limit["swe3-author"] == 35 and limit["swe3-inspector"] == 20  # owner decision 2026-10-15 (r70)
+    for _ in range(35):
+        ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
         assert ok
-    ok, n, lim = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
-    assert not ok and n == 21 and lim == 20
+    ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
+    assert not ok and n == 36 and lim == 35
     G.reset_node("b", "R", "swe3_author")
     assert G.count_tool_call("b", "R", "swe3_author", "swe3-author")[0]
+
+
+def test_t042_inspector_last_calls_reserved_for_recording_the_inspection(env):
+    """r63: the SWE.6 inspector used all 20 calls reading and never recorded its (correct) finding."""
+    for _ in range(16):
+        assert G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")[0]
+    ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")
+    assert not ok and reserved and n == 16  # denied without consuming budget
+    for tool in ("mcp__forge_evidence_mcp__report_defect", "mcp__forge_evidence_mcp__check_inspection"):
+        ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", tool)
+        assert ok and not reserved
+    assert G.count_tool_call("b", "R", "swe6_author", "swe6-author", "read_file")[0]  # authors unaffected
 
 
 def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
@@ -56,8 +72,11 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
     b = Binding("b2", str(tmp_path), {"insp": {"role": "swe1-inspector", "phase": "SWE.1"}})
     ctx = {"event": "pre_tool_use", "node_id": "insp", "run_id": "R", "tool_name": "read_file",
            "tool_input": {"file_path": "x"}}
-    decisions = [handle(ctx, b) for _ in range(21)]
-    assert all(d.allow for d in decisions[:20]) and decisions[20].code == "TURN_BUDGET_EXHAUSTED"
+    decisions = [handle(ctx, b) for _ in range(17)]
+    assert all(d.allow for d in decisions[:16]) and decisions[16].code == "INSPECTION_CALLS_RESERVED"
+    rec = {**ctx, "tool_name": "mcp__forge_evidence_mcp__check_inspection", "tool_input": {}}
+    decisions = [handle(rec, b) for _ in range(5)]  # the 4 reserved calls, then the authored limit (20)
+    assert all(d.allow for d in decisions[:4]) and decisions[4].code == "TURN_BUDGET_EXHAUSTED"
     assert handle({"event": "stage_start", "node_id": "insp", "run_id": "R"}, b).allow
     assert handle(ctx, b).allow
 
@@ -65,7 +84,7 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
 def test_t042_token_exhaustion_cancels_and_blocks_never_false_pass(env, tmp_path):
     ws = tmp_path / "ws"
     (ws / ".forge-run").mkdir(parents=True)
-    fake = FakeFabro([("swe3_author", 150_000, 2_000), ("swe1_author", 1000, 100)])
+    fake = FakeFabro([("swe3_author", 450_000, 2_000), ("swe1_author", 1000, 100)])  # cap 32000 x MAX_VISITS (12)
     out = G.check_run("RUN-X", {"swe3_author": {"role": "swe3-author"}, "swe1_author": {"role": "swe1-author"}}, ws, fake)
     assert out["status"] == "TOKEN_BUDGET_EXHAUSTED" and fake.cancelled and out["basis"] == "reported"
     assert [e["node"] for e in out["exceeded"]] == ["swe3_author"]
@@ -149,6 +168,10 @@ def complete_workspace(ws: Path) -> None:
         p = ws / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(txt)
+    from test_swe2_architecture import add_reqif, add_views
+
+    add_views(ws)
+    add_reqif(ws)
     (ws / "build/target-cm55-gcc").mkdir(parents=True)
     (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
     (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
@@ -163,6 +186,7 @@ def complete_workspace(ws: Path) -> None:
     ok = {"status": "PASS", "summary": "target", "artifact_refs": [], "issues": [], "provenance": {}, "metrics": {}}
     rows = [("forge-analysis-mcp", "cppcheck", ok), ("forge-analysis-mcp", "clang_analyze", ok),
             ("forge-tests-mcp", "run_unit", ok), ("forge-tests-mcp", "run_integration", ok),
+            ("forge-tests-mcp", "run_robot", ok),
             ("forge-build-mcp", "measure_elf", {**ok, "summary": "text=10 (target-cm55-gcc)",
                                                 "metrics": {"flash_bytes": 100, "ram_bytes": 8}}),
             ("forge-build-mcp", "stack_usage", {**ok, "summary": "max frame (target-cm55-gcc)",
@@ -239,6 +263,30 @@ def test_t046_external_finalizer_packages_crashed_run(env, monkeypatch):
     assert pkg["package_status"] == "BLOCKED"
 
 
+def test_t046_external_finalizer_asks_the_server_that_holds_the_run(env, monkeypatch):
+    """r56: a cloud-benchmark run lives on another Fabro server; asking the local one (404) left it unpackaged."""
+    from forge_factory.supervisor import service as S
+    ws = env / "state/workorders/WO-CLOUD/workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
+    (ws / ".forge-run/fabro_run_id").write_text("RUN-CLOUD")
+    (ws / ".forge-run/fabro_server.json").write_text(json.dumps({"url": "http://127.0.0.1:32291/api/v1",
+                                                                 "storage": str(env / "cloud-storage")}))
+    (env / "cloud-storage").mkdir()
+    (env / "cloud-storage/server.env").write_text("FABRO_DEV_TOKEN=cloud-token\n")
+    import forge_factory.fabro.client as C
+    calls = []
+
+    def fake(**kw):
+        calls.append(kw)
+        return FakeFabro([], status="failed")
+
+    monkeypatch.setattr(C, "FabroClient", fake)
+    S.Supervisor(S.load_policy(), None, home=env / "sup", dispatch_enabled=False).external_finalizer()
+    assert calls[0]["base_url"].endswith(":32291/api/v1") and calls[0]["token"] == "cloud-token"  # status probe
+    assert json.loads((ws / ".forge-run/package.json").read_text())["package_status"] == "BLOCKED"
+
+
 # ---------------- T047 ------------------------------------------------------------------------------------
 def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path):
     from forge_factory.supervisor.probes import Sample
@@ -260,7 +308,10 @@ def test_t047_product_defect_loops_swe_infra_defect_routes_repair(env, tmp_path)
     assert [i["fault_type"] for i in st.all()] == ["MCP_HANDSHAKE_FAILURE"]
     dot, _ = build("wo")
     assert "fabric-repair" not in dot and "repair" not in {n.split()[0] for n in dot.splitlines() if "[" in n}
-    assert dot.count("max_visits=4") == 13  # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step)
+    from forge_factory.workflow.builder import MAX_VISITS
+
+    # bounded SWE loops (6 authors + 6 inspectors + SWE.3 fix step); ADR-0008: per-epoch budget, 1 + 2 upstream epochs
+    assert MAX_VISITS == 12 and dot.count(f"max_visits={MAX_VISITS}") == 13
 
 
 # ---------------- T049 ------------------------------------------------------------------------------------
