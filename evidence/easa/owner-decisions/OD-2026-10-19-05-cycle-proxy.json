@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-05",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "SPEC-001 T-015 cycle metric",
+  "question": "Renode is not cycle-accurate; accept executed instructions per API call (deterministic, Renode cortex-m55 model), labelled as a cycle proxy, as the T-015 cycle metric? Real cycle counts need the physical board (T-001).",
+  "answer": "accepted",
+  "statement": "T-015 accepted",
+  "scope": "T-015 reports label the metric 'executed instructions (cycle proxy, not cycle-accurate)'; no timing or WCET claim is derived from it"
+}
