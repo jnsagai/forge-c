@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forge-C Control Room</title>
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--ink:#16181d;--muted:#5d6472;--line:#dde1e7;--run:#1f8a4c;--run-bg:#e3f4ea;
+--rew:#a86400;--rew-bg:#fff1d6;--blk:#c62828;--blk-bg:#fde4e4;--idle:#6b7280;--idle-bg:#eef0f3;--ready:#1f6fb5;
+--ready-bg:#e1eefa;--accent:#3949ab;--shadow:0 1px 2px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--panel:#181b21;--ink:#e8eaed;
+--muted:#9aa3b2;--line:#2a2f38;--run:#4cc47f;--run-bg:#13301f;--rew:#f0b13d;--rew-bg:#33260c;--blk:#ff6b6b;
+--blk-bg:#3a1515;--idle:#8b93a1;--idle-bg:#20242b;--ready:#6fb3f2;--ready-bg:#132739;--accent:#8c9eff;--shadow:none}}
+:root[data-theme="dark"]{--bg:#0f1115;--panel:#181b21;--ink:#e8eaed;--muted:#9aa3b2;--line:#2a2f38;--run:#4cc47f;
+--run-bg:#13301f;--rew:#f0b13d;--rew-bg:#33260c;--blk:#ff6b6b;--blk-bg:#3a1515;--idle:#8b93a1;--idle-bg:#20242b;
+--ready:#6fb3f2;--ready-bg:#132739;--accent:#8c9eff;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:12px 16px;border-bottom:1px solid var(--line);
+background:var(--panel);position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;font-weight:650;letter-spacing:.2px}
+header .sp{flex:1}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-weight:650;font-size:12px;
+letter-spacing:.3px;border:1px solid transparent}
+.s-RUNNING,.s-PRODUCING{color:var(--run);background:var(--run-bg)}
+.s-REWORK,.s-ATTENTION{color:var(--rew);background:var(--rew-bg)}
+.s-BLOCKED,.s-STOPPED,.s-VIOLATION{color:var(--blk);background:var(--blk-bg)}
+.s-IDLE,.s-NO_WIP{color:var(--idle);background:var(--idle-bg)}
+.s-READY{color:var(--ready);background:var(--ready-bg)}
+main{padding:16px;display:grid;gap:16px;max-width:1600px;margin:0 auto}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:var(--shadow);
+min-width:0}
+section.panel h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.banner{border-radius:8px;padding:10px 12px;font-weight:600}
+.banner.stale{background:var(--rew-bg);color:var(--rew)}
+.banner.viol{background:var(--blk-bg);color:var(--blk)}
+.board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:start}
+.ship{display:grid;gap:6px}
+.shiprow{display:grid;grid-template-columns:minmax(0,2.2fr) auto minmax(0,3fr) auto auto;gap:4px 12px;align-items:center;
+padding:6px 8px;border:1px solid var(--line);border-left:4px solid var(--idle);border-radius:7px;font-size:12px}
+.shiprow.READY{border-left-color:var(--ready)}.shiprow.BLOCKED{border-left-color:var(--blk)}
+.shiprow .wo{font-weight:650;word-break:break-all}.shiprow .why{color:var(--blk);word-break:break-word}
+.counts{display:flex;gap:8px;flex-wrap:wrap}
+.station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.station .head b{font-size:13px}
+.station .head .andon{font-size:11px;font-weight:700;letter-spacing:.4px}
+.station .meta{padding:4px 10px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
+.station .reason{padding:6px 10px;font-size:12px;color:var(--blk);border-bottom:1px solid var(--line);word-break:break-word}
+.station .reason.rw{color:var(--rew)}
+.units{padding:8px;display:grid;gap:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--idle);border-radius:7px;padding:6px 8px;
+font-size:12px;min-width:0}
+.card.RUNNING{border-left-color:var(--run)}.card.REWORK{border-left-color:var(--rew)}
+.card.BLOCKED,.card.STOPPED{border-left-color:var(--blk)}.card.READY{border-left-color:var(--ready)}
+.card .wo{font-weight:650;word-break:break-all}
+.card .row{display:flex;justify-content:space-between;gap:6px;color:var(--muted)}
+.recent{padding:6px 8px 8px;font-size:12px}
+.recent summary{cursor:pointer;color:var(--muted)}
+.recent ul{margin:6px 0 0;padding-left:16px}
+.recent li{margin:2px 0;word-break:break-word}
+.kv{display:flex;gap:14px;flex-wrap:wrap}
+.empty{padding:10px;color:var(--muted);font-size:12px}
+#login{max-width:460px;margin:40px auto}
+input,select,button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;
+padding:6px 8px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--idle);display:inline-block}
+.live-dot.on{background:var(--run)}
+@media (max-width:1100px){.board{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.board{grid-template-columns:1fr}
+.shiprow{grid-template-columns:1fr auto}.shiprow .why{grid-column:1/-1}header{padding:10px 16px}main{padding:12px 16px}
+.station .units{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Forge-C Control Room</h1>
+  <span id="fstatus" class="pill s-NO_WIP">–</span>
+  <span class="muted" id="age"></span>
+  <span class="sp"></span>
+  <span class="muted"><span class="live-dot" id="dot"></span> <span id="live">offline</span></span>
+  <a href="/">Engineering dashboard</a>
+  <button id="theme" title="Toggle light/dark">◐</button>
+</header>
+<div id="login" hidden>
+  <section class="panel"><h2>Sign in</h2>
+    <p class="muted">Paste a dashboard token (state/dashboard/tokens.json). The Control Room is read-only.</p>
+    <input id="tok" type="password" style="width:100%" aria-label="dashboard token">
+    <p><button id="go">Open Control Room</button></p></section>
+</div>
+<main id="app" hidden>
+  <div id="banners"></div>
+  <section class="panel" aria-labelledby="h-floor">
+    <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span></h2>
+    <div class="board" id="board"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-ship">
+    <h2 id="h-ship">Shipped in the last 24 h <span class="counts" id="ship-counts"></span></h2>
+    <div class="ship" id="ship"></div>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const ICON = {RUNNING: "▶", REWORK: "↻", BLOCKED: "■", IDLE: "–", STOPPED: "■", READY: "✓"};
+const LABEL = {RUNNING: "RUNNING", REWORK: "REWORK", BLOCKED: "STOPPED", IDLE: "IDLE", STOPPED: "STOPPED", READY: "READY"};
+const FSTATUS = {PRODUCING: "Producing", ATTENTION: "Attention: rework", STOPPED: "Line stopped", NO_WIP: "No WIP",
+                 VIOLATION: "Safety/process violation"};
+let state = {floor: null, lastMsg: 0};
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c])); }
+function dur(s) {
+  if (s == null) return "–";
+  s = Math.max(0, Math.round(s));
+  if (s < 60) return s + " s";
+  if (s < 3600) return Math.floor(s / 60) + " min";
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h < 48 ? `${h} h ${m} min` : `${Math.floor(h / 24)} d ${h % 24} h`;
+}
+function sinceIso(iso) { return iso ? (Date.now() - Date.parse(iso)) / 1000 : null; }
+function short(wo) { return wo.replace(/^WO-/, ""); }
+
+function card(u) {
+  const st = u.status;
+  const node = u.run && u.run.current_node ? ` · ${esc(u.run.current_node)}` : "";
+  const models = u.models ? `${esc((u.models.authors || {}).model || "?")} / ${esc((u.models.inspectors || {}).model || "?")}` : "";
+  return `<div class="card ${st}" title="${esc(u.work_order)}">
+    <div class="wo">${esc(short(u.work_order))}</div>
+    <div class="row"><span>${ICON[st] || ""} ${u.package ? (st === "READY" ? "READY" : "BLOCKED (scrap)") : (LABEL[st] || st)}${node}</span><span>${dur(sinceIso(u.station_since))}</span></div>
+    <div class="row"><span>total ${dur(u.elapsed_s)}</span><span>${esc(u.class.layer || "")}</span></div>
+    ${u.reason ? `<div class="row" style="color:var(${st === "REWORK" ? "--rew" : "--blk"})">${esc(u.reason)}</div>` : ""}
+    ${models ? `<div class="row"><span>${models}</span></div>` : ""}
+  </div>`;
+}
+
+function renderFloor(f) {
+  state.floor = f;
+  const fs = $("fstatus");
+  fs.className = "pill s-" + f.factory_status;
+  fs.textContent = (ICON[{PRODUCING: "RUNNING", ATTENTION: "REWORK", STOPPED: "BLOCKED", NO_WIP: "IDLE", VIOLATION: "BLOCKED"}[f.factory_status]] || "") + " " + (FSTATUS[f.factory_status] || f.factory_status);
+  const units = Object.fromEntries(f.units.map((u) => [u.work_order, u]));
+  const live = f.units.filter((u) => !u.package && u.status !== "STOPPED").length;
+  $("floor-sub").textContent = `${live} in progress · ${f.units.filter((u) => u.package).length} shipped in 24 h`;
+  $("board").innerHTML = f.stations.map((s) => {
+    const here = s.units.map((w) => units[w]).filter(Boolean);
+    const shipped = s.station_id === "SHIPPING" ? f.units.filter((u) => u.package) : [];
+    const nReady = shipped.filter((u) => u.status === "READY").length;
+    const rec = s.recent.filter((r) => s.station_id !== "SHIPPING" && r.status === "BLOCKED");
+    return `<div class="station" aria-label="${esc(s.station_id)} ${LABEL[s.andon]}">
+      <div class="head s-${s.andon}"><b>${esc(s.station_id === "SHIPPING" ? "Shipping" : s.station_id)}</b>
+        <span class="andon">${ICON[s.andon]} ${LABEL[s.andon]}</span></div>
+      <div class="meta">${here.length} unit${here.length === 1 ? "" : "s"}${s.oldest_wait_s != null ? " · oldest " + dur(s.oldest_wait_s) : ""}
+        ${s.station_id === "SHIPPING" ? `<br>24 h: <b style="color:var(--ready)">${nReady} READY</b> · <b style="color:var(--blk)">${shipped.length - nReady} BLOCKED</b>` : ""}</div>
+      ${s.reason ? `<div class="reason ${s.andon === "REWORK" ? "rw" : ""}">${esc(s.reason)}</div>` : ""}
+      <div class="units">${here.map(card).join("") || '<div class="empty">no units</div>'}</div>
+      ${rec.length ? `<details class="recent"><summary>${rec.length} stopped here in 24 h</summary><ul>${rec.map((r) =>
+        `<li><b>${esc(short(r.work_order))}</b> ${esc(r.reason || "")}</li>`).join("")}</ul></details>` : ""}
+    </div>`;
+  }).join("");
+  renderShipped(f);
+  renderBanners();
+}
+
+function renderShipped(f) {
+  const done = f.units.filter((u) => u.package)
+    .sort((a, b) => String(b.package.finalized_at).localeCompare(String(a.package.finalized_at)));
+  const nReady = done.filter((u) => u.status === "READY").length;
+  $("ship-counts").innerHTML = `<span class="pill s-READY">✓ ${nReady} READY</span><span class="pill s-BLOCKED">■ ${done.length - nReady} BLOCKED (scrap)</span>`;
+  $("ship").innerHTML = done.map((u) => `<div class="shiprow ${u.status}">
+      <span class="wo">${esc(short(u.work_order))}</span>
+      <span>${u.status === "READY" ? "✓ READY" : "■ BLOCKED"}</span>
+      <span class="why">${esc(u.reason || "")}</span>
+      <span class="muted">lead ${dur(u.elapsed_s)}</span>
+      <span class="muted">${dur(sinceIso(u.package.finalized_at))} ago</span></div>`).join("") || '<div class="empty">nothing shipped in the last 24 h</div>';
+}
+
+function renderBanners() {
+  const f = state.floor; if (!f) return;
+  const b = [];
+  if (f.factory_status === "VIOLATION") b.push(`<div class="banner viol">■ ${f.violations_open} open safety/process violation(s). The factory is not green while any is open.</div>`);
+  const age = f.data_age_s != null ? f.data_age_s + (Date.now() - state.lastMsg) / 1000 : null;
+  if (f.stale || (state.lastMsg && Date.now() - state.lastMsg > 15000))
+    b.push(`<div class="banner stale">⚠ Stale data: last update ${dur(age)} ago. Values below are not live.</div>`);
+  $("banners").innerHTML = b.join("");
+  $("age").textContent = f.data_age_s == null ? "no production data" : `data age ${dur(f.data_age_s)}`;
+}
+
+async function api(path) {
+  const r = await fetch(path, {credentials: "same-origin"});
+  if (r.status === 401) { showLogin(); throw new Error("auth"); }
+  if (!r.ok) throw new Error(path + " " + r.status);
+  return r.json();
+}
+
+let es = null, pollTimer = null;
+function connect() {
+  if (es) es.close();
+  es = new EventSource("/api/v1/control-room/stream?max_seconds=300");
+  es.addEventListener("floor", (e) => { state.lastMsg = Date.now(); setLive(true); renderFloor(JSON.parse(e.data)); });
+  es.addEventListener("heartbeat", (e) => {
+    state.lastMsg = Date.now(); setLive(true);
+    const h = JSON.parse(e.data);
+    if (state.floor) { Object.assign(state.floor, h); renderBanners(); }
+  });
+  es.onerror = () => { setLive(false); es.close(); es = null; setTimeout(connect, 3000); };
+}
+function setLive(on) { $("dot").className = "live-dot" + (on ? " on" : ""); $("live").textContent = on ? "live" : "reconnecting"; }
+function poll() {  // fallback when the stream is down: refresh every 5 s
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if (state.lastMsg && Date.now() - state.lastMsg < 6000) return;
+    try { renderFloor(await api("/api/v1/control-room/floor")); } catch (e) { /* shown by the stale banner */ }
+  }, 5000);
+}
+setInterval(() => { if (state.floor) { renderBanners(); } }, 1000);
+
+function showLogin() { $("login").hidden = false; $("app").hidden = true; }
+$("go").onclick = () => { location.href = "/login?next=/control-room&token=" + encodeURIComponent($("tok").value.trim()); };
+$("theme").onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const nxt = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = nxt;
+  try { localStorage.setItem("cr-theme", nxt); } catch (e) { /* per-viewer convenience only */ }
+};
+try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* ignore */ }
+
+(async function start() {
+  const init = window.__INIT__;
+  if (!init) { try { renderFloor(await api("/api/v1/control-room/floor")); } catch (e) { return; } }
+  else { renderFloor(init.floor); }
+  $("app").hidden = false;
+  state.lastMsg = Date.now();
+  connect(); poll();
+})();
+</script>
+</body>
+</html>

@@ -48,7 +48,7 @@ def workspaces() -> list[Path]:
     return sorted(root.glob("*/workspace")) if root.is_dir() else []
 
 
-def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None) -> FastAPI:
+def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None, control_room_floor=None) -> FastAPI:
     app = FastAPI(title="Forge-C Human Supervisor Dashboard API", version="0.4.0", docs_url=None, redoc_url=None)
     st = store or EventStore()
     col = Collector(st)
@@ -81,10 +81,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         return {"live": True}
 
     @app.get("/login")
-    def login(token: str) -> RedirectResponse:
+    def login(token: str, next: str = "/") -> RedirectResponse:  # noqa: A002 - query parameter name
         if not any(secrets.compare_digest(token, t) for t in toks.values()):
             raise HTTPException(401, "bad token")
-        resp = RedirectResponse("/", status_code=303)
+        resp = RedirectResponse(next if next in ("/", "/control-room") else "/", status_code=303)
         resp.set_cookie("forge_dashboard_session", token, httponly=True, samesite="strict")
         return resp
 
@@ -435,6 +435,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
                 yield ": keepalive\n\n"
                 await asyncio.sleep(1.0)
         return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-store"})
+
+    from .control_room import register as register_control_room  # feature 007: manager view, read-only
+
+    register_control_room(app, role, toks, control_room_floor)
 
     @app.exception_handler(HTTPException)
     async def http_err(_req: Request, exc: HTTPException) -> JSONResponse:
