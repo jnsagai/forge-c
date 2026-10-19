@@ -214,6 +214,8 @@ def test_triage_rejects_an_unsupported_claim_and_quarantines(factory):
     M.write_source(case, M.CANDIDATE_TESTS + "rpr_calc.py", 'print("SYMPTOM_ABSENT")\n')  # "fixed" without proof
     sub = M.submit(case, "fix calc.add sign error", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
     assert sub["veto"] == [] and Path(sub["staged"]["manifest"]).is_file()
+    sealed = Path(sub["staged"]["manifest"]).parent / "reproducer.py"
+    assert sealed.stat().st_mode & 0o777 == 0o444          # readable by the CRE verifier sandbox UID, writable by none
     rec = M.process(store, case["proposal_id"], CREStore(), cre_policy(),
                     evaluator=lambda *a, **k: pytest.fail("must not be evaluated"))
     assert rec["outcome"] == "REJECTED" and "REPRODUCER_DOES_NOT_FAIL_ON_BASELINE" in rec["cre_promotion_id"]

@@ -252,7 +252,9 @@ def submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
         if script.exists():
             script.chmod(0o600)
         script.write_text(text)
-        script.chmod(0o400)
+        # read-only for everyone: the CRE verifier runs it as its sandbox UID (r: 0o400 was "Permission denied" in
+        # the M5 drill); integrity is the sha256 in the sealed manifest, and no sandbox UID can write here
+        script.chmod(0o444)
         rid = "AFO-" + pid
         man = {"reproducers": [{"id": rid, "script": script.name, "sha256": sha256_file(script),
                                 "symptom_signature": signature, "observed_in": case["incident"].get("order_id", ""),
