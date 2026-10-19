@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-03",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Independent EASA oracle input",
+  "question": "A: broaden the sentence parser and fill config structs by naming rules; B: machine-readable register contract (SWE.1 effects + SWE.2 calls, gate-checked, the oracle reads only the contract and the RM); C: keep and accept the measured false-negative rate.",
+  "answer": "b",
+  "evidence_for_question": "pilot-validation trial on HAL r149: the sentence-parsing oracle skipped every pointer-argument API (ORACLE_NOT_DERIVABLE) and the EASA detectors missed 4 of 6 seeded defects",
+  "scope": "work orders prepared from now carry manifest register_contract rc-v1; older work orders and sealed packages are unchanged"
+}
