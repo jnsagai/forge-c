@@ -187,6 +187,44 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None) -
     return "\n".join(lines)
 
 
+def contract_source(cases: list[dict], include: str) -> str:
+    """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
+    bits of the register unchanged, no register access for a no_write case, a bounded poll for a never-ready case."""
+    from .register_contract import call_text
+
+    lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stddef.h>", "#include <stdio.h>",
+             "#include <string.h>", "volatile uint32_t regs[1024];", "unsigned long shim_n;",
+             "volatile uint32_t (*shim_regs(void))[1024] { shim_n++; return &regs; }", "static int fails;",
+             "int main(void)", "{", "    uint32_t before[1024];"]
+    for i, c in enumerate(cases, 1):
+        t = 5 if c["never_ready"] else 10
+        lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
+                  f"{c['function']} (contract + RM constants) */", "    memset((void *)regs, 0, sizeof regs);"]
+        if c["op"] != "no_write":
+            other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
+            pre = c["mask"] if c["op"] == "clear" and not c["never_ready"] else 0
+            lines.append(f"    regs[{c['word']}U] = 0x{(pre | other):08X}U;")
+            if c["ready"] and c["op"] == "set":
+                lines.append(f"    regs[{c['ready'][0]}U] |= 0x{c['ready'][1]:08X}U;")
+        lines += ["    memcpy(before, (const void *)regs, sizeof before);", "    shim_n = 0UL;"]
+        call = call_text(c, f"{t}U")
+        lines.append(f"    {{ hal_status_t st = {call};" if c["status"] else f"    {{ (void){call};")
+        conds = []
+        if c["op"] == "no_write":
+            conds.append("(shim_n == 0UL)")
+        else:
+            conds.append(f"((regs[{c['word']}U] & 0x{c['mask']:08X}U) {'!=' if c['op'] == 'set' else '=='} 0U)")
+            conds.append(f"((regs[{c['word']}U] & ~0x{c['mask']:08X}U) == (before[{c['word']}U] & ~0x{c['mask']:08X}U))")
+        if c["never_ready"]:
+            conds.append(f"(shim_n <= {t + 2}UL) && (shim_n >= 2UL)")
+        if c["status"]:
+            conds.append(f"(st == {c['status']})")
+        lines += [f"      int ok = {' && '.join(conds)};",
+                  f'      printf("OR-{i:03d} {c["swr"]} {c["case"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
+    lines += ["    return fails ? 1 : 0;", "}", ""]
+    return "\n".join(lines)
+
+
 def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str) -> dict:
     ws = Path(ws)
     req = (ws / "workproducts/SWE.1/software_requirements.md").read_text(errors="replace")
@@ -196,14 +234,24 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         return {"status": "BLOCKED", "reason": f"{api_header} not found"}
     sections = ws / "inputs/sections/RM0486"
     idx = hardware.index(sections)
-    cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
-    extra = derive_timeouts(req, hdr_path.read_text(errors="replace"), idx) if api_header.endswith("hal_rcc.h") else []
-    src = c_source(cases, api_header, extra)
+    from . import register_contract as RC
+
+    contract = (ws / RC.EFFECTS).is_file() and (ws / RC.CALLS).is_file()
+    if contract:  # owner decision 2026-10-19 (option B): the machine-readable contract replaces sentence parsing
+        cases, notes = RC.cases(ws)
+        extra: list[dict] = []
+        src = contract_source(cases, api_header)
+        contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
+    else:
+        cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
+        extra = derive_timeouts(req, hdr_path.read_text(errors="replace"), idx) if api_header.endswith("hal_rcc.h") else []
+        src = c_source(cases, api_header, extra)
+        contract_digests = []
     prov = {"oracle_id": "OR-" + hashlib.sha256(src.encode()).hexdigest()[:12], "work_order_id": ws.parent.name,
-            "requirement_refs": sorted({c["swr"] for c in cases}),
-            "source_digests": [hashlib.sha256(req.encode()).hexdigest()] + sorted({
+            "requirement_refs": sorted({c["swr"] for c in cases if c.get("swr")}),
+            "source_digests": [hashlib.sha256(req.encode()).hexdigest()] + contract_digests + sorted({
                 hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(sections.glob("*.md"))
-                if any(f"({c['register']})" in p.read_text(errors="replace")[:400] for c in cases)}),
+                if any(f"({c['register']})" in p.read_text(errors="replace")[:400] for c in cases if c.get("register"))}),
             "author_role": "oracle-builder", "implementation_hash_seen": None, "independence_status": "UNKNOWN",
             "contamination_reason": None, "holdout_digest": None,
             "oracle_file_hash": hashlib.sha256(src.encode()).hexdigest()}
@@ -222,10 +270,14 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
             b = subprocess.run(["gcc", "-std=c99", "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
                                text=True)
             if b.returncode:
-                return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov}
+                return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,
+                        "contract": contract}
             objs.append(str(o))
         subprocess.run(["gcc", *objs, "-o", str(t / "oracle")], check=True, capture_output=True)
         r = subprocess.run([str(t / "oracle")], capture_output=True, text=True, timeout=60)
     res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}|TIMEOUT|INVALID) (\S+) (PASS|FAIL)$", r.stdout, re.M)
+    if contract and len(res) < len(cases):  # a crash or hang mid-run: the missing cases are failures, not passes
+        res += [(f"OR-{i:03d}", c["swr"], c["case"], "FAIL") for i, c in enumerate(cases, 1)
+                if f"OR-{i:03d}" not in {x[0] for x in res}]
     return {"status": "PASS" if r.returncode == 0 and res else "FAIL", "cases": len(cases) + len(extra), "results": res,
             "notes": notes, "provenance": prov, "source": src, "output_sha256": hashlib.sha256(r.stdout.encode()).hexdigest()}

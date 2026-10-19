@@ -664,7 +664,7 @@ def ll_author_prompt() -> str:
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
-        (trace_step("code") if _layer() == "LL" else []) + [REENTRY] + [REPLY]
+        (trace_step("code") + [CONTRACT_SWE3] if _layer() == "LL" else []) + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -672,9 +672,52 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + [REENTRY] + \
+         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
+        [CONTRACT_SWE3, REENTRY] + \
         [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+# owner decision 2026-10-19 (option B): the independent EASA oracle reads this contract, never the code
+CONTRACT_SWE1 = (
+    "write_file workproducts/SWE.1/register_effects.json (machine-readable register contract of your requirements; an "
+    "independent oracle tests the code against it): {{\"schema\":\"forge-c/register-effects/1\",\"effects\":[...]}} "
+    "with one entry per tested case of EVERY requirement that sets or clears a register bit - one entry per bit and "
+    "per oscillator/peripheral/function (HSI enable and HSE enable are two entries), e.g. {example}. 'register' and "
+    "'field' are the RM0486 names your requirement text uses; op is set, clear or no_write.{extra} Every case id is "
+    "unique UPPER_CASE. Never add an entry the requirement text does not state.")
+CONTRACT_SWE1_HAL = (
+    " Oscillator enable: \"ready\":\"RCC_SR.<FLAG>RDY\" and status HAL_OK; ready timeout: op clear (the driver "
+    "clears the enable bit it set), \"ready\":\"never\", status HAL_TIMEOUT; invalid parameter: one entry per invalid "
+    "value (NULL pointer, unknown selector, timeout 0, timeout above HAL_RCC_TIMEOUT_VALUE) with op no_write and status "
+    "HAL_ERROR (no register/field); reset (assert then release): op clear on the reset bit with status HAL_OK.")
+CONTRACT_SWE1_LL = " LL functions return nothing: no status and no ready; reset assert is set, release is clear."
+CONTRACT_SWE2 = (
+    "write_file workproducts/SWE.2/api_calls.json: {{\"schema\":\"forge-c/api-calls/1\",\"calls\":{{\"<case>\":"
+    "{{\"function\":\"<function>\",\"args\":[...]}}}}}} with one entry per case of "
+    "workproducts/SWE.1/register_effects.json: function = one your allocation table allocates to that case's SWR; args "
+    "= C argument expressions using only the interface types and constants you define in Interfaces{example} - no "
+    "function calls, no ';'. SWE.3 must implement the interface so that these calls compile.")
+CONTRACT_SWE3 = ("Implement the interface exactly as workproducts/SWE.2/api_calls.json calls it (names, types, "
+                 "constants): the gate compiles those calls against your header.")
+
+
+def contract_step(phase: str) -> list[str]:
+    hal = _layer() != "LL"
+    if phase == "SWE.1":
+        ex = ('{\"case\":\"HSE_ENABLE\",\"swr\":\"SWR-002\",\"register\":\"RCC_CR\",\"field\":\"HSEON\",'
+              '\"op\":\"set\",\"ready\":\"RCC_SR.HSERDY\",\"status\":\"HAL_OK\"}' if hal else
+              '{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",'
+              '\"op\":\"set\"}')
+        return [CONTRACT_SWE1.format(example=ex, extra=CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL)]
+    if phase == "SWE.2":
+        ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
+              'the caller passes the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, '
+              'an unknown selector)' if hal else ' (LL functions take no arguments: args [])')
+        return [CONTRACT_SWE2.format(example=ex)]
+    if phase == "SWE.3":
+        return [CONTRACT_SWE3]
+    return []
 
 
 def author_prompt(phase: str) -> str:
@@ -696,6 +739,8 @@ def author_prompt(phase: str) -> str:
     tr = {"SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "ut", "SWE.5": "it", "SWE.6": "vt"}.get(phase)
     if tr and trace_step(tr):  # owner trace rules go before the final 'gate freezes the baseline' step
         body = body[:-1] + trace_step(tr) + body[-1:]
+    if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
+        body = body[:-1] + contract_step(phase) + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))

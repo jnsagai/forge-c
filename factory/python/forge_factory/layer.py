@@ -26,6 +26,7 @@ def layer_of(ws: Path) -> str:
 
 TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
 HAL_UNIT_ISOLATION = "ll-fake-v1"  # CAPA-038: HAL unit tests run on a generated test double of the provided LL API
+REGISTER_CONTRACT = "rc-v1"  # owner decision 2026-10-19 (option B): machine-readable register contract feeds the oracle
 
 
 def hal_unit_isolation(ws: Path) -> bool:
@@ -35,6 +36,14 @@ def hal_unit_isolation(ws: Path) -> bool:
     except (OSError, ValueError):
         return False
     return m.get("layer") == "HAL" and m.get("hal_unit_isolation") == HAL_UNIT_ISOLATION
+
+
+def register_contract_enabled(ws: Path) -> bool:
+    """Work orders prepared after 2026-10-19 carry `register_contract`; older runs keep the sentence-parsing oracle."""
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("register_contract") == REGISTER_CONTRACT
+    except (OSError, ValueError):
+        return False
 
 
 def swtrace_enabled(ws: Path) -> bool:

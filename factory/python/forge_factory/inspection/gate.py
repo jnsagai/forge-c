@@ -112,6 +112,20 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .swtrace import check_phase
 
         generated += check_phase(store.workspace, phase)["major_findings"]
+    from ..layer import layer_of, register_contract_enabled
+
+    if register_contract_enabled(store.workspace):  # owner decision 2026-10-19 (B): the oracle's register contract
+        from ..assurance import register_contract as RC
+
+        lay = layer_of(store.workspace)
+        if phase == "SWE.1":
+            generated += RC.check_effects(store.workspace, "LL" if lay == "LL" else "HAL")
+        elif phase == "SWE.2":
+            generated += RC.check_calls(store.workspace)
+        elif phase == "SWE.3":
+            hdr = "stm32n6xx_ll_rcc.h" if lay == "LL" else "stm32n6xx_hal_rcc.h"
+            generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
+                                                             store.workspace / "software/ll"], hdr)
     from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
 
     generated += workspace_scope_findings(store.workspace, phase)

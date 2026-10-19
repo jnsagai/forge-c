@@ -96,6 +96,8 @@ def v_oracle(ws: Path) -> dict:
     f = [f"ORACLE_FAIL:{x[1]}:{x[2]}" for x in r.get("results", []) if x[3] == "FAIL"]
     if r["status"] in ("PASS", "FAIL") and r["provenance"]["independence_status"] != "INDEPENDENT":
         f.append("ORACLE_NOT_INDEPENDENT:" + str(r["provenance"]["contamination_reason"]))
+    if r["status"] == "BUILD_FAILED" and r.get("contract"):  # the code does not follow the SWE.2 interface contract
+        f.append("ORACLE_BUILD_FAILED:" + " ".join(str(r.get("reason", "")).split())[-160:])
     limits = [f"LIMITATION:{n}" for n in r.get("notes", [])]  # not derivable from requirements: stated, not a failure
     st = r["status"] if r["status"] in ("PASS", "FAIL") else "NOT_SUPPORTED"
     return {"status": "FAIL" if f else st, "findings": f + limits, "cases": r.get("cases", 0)}

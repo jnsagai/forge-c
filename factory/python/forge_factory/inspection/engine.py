@@ -45,6 +45,7 @@ REQUIRED_OUTPUTS = {
     "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
 }
 TRACE_OUTPUTS = {"SWE.3": ["workproducts/SWE.3/unit_specifications.md", "workproducts/SWE.3/detailed_design/SWU-*.puml"]}
+CONTRACT_OUTPUTS = {"SWE.1": ["workproducts/SWE.1/register_effects.json"], "SWE.2": ["workproducts/SWE.2/api_calls.json"]}
 TRACE_CHECKS = ("swc_allocation", "unit_spec_and_code_trace", "unit_test_trace", "integration_test_trace",
                 "validation_test_trace")
 REQUIRED_TOOL_PASS = {"SWE.4": [("forge-tests-mcp", "run_unit")],
@@ -145,9 +146,10 @@ class Store:
 
     def missing_outputs(self, phase: str) -> list[str]:
         """Presence gate used by the production author gate before a phase may be frozen (r15/r43)."""
-        from ..layer import layer_of, swtrace_enabled
+        from ..layer import layer_of, register_contract_enabled, swtrace_enabled
 
         pats = REQUIRED_OUTPUTS.get(phase, []) + (TRACE_OUTPUTS.get(phase, []) if swtrace_enabled(self.workspace) else [])
+        pats += CONTRACT_OUTPUTS.get(phase, []) if register_contract_enabled(self.workspace) else []
         if phase == "SWE.3" and layer_of(self.workspace) == "LL":  # ADR-0009: an LL work order has no HAL files
             pats = [x for x in pats if not x.startswith("software/hal/")]
         out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in pats

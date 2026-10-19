@@ -17,7 +17,7 @@ from pathlib import Path
 from .common import REPO_ROOT, canonical_json, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
-from .layer import HAL_UNIT_ISOLATION, TRACE_PROFILE
+from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE
 from .mcp.preflight import fabro_mcp_config
 from .mcp.preflight import preflight as mcp_preflight
 from .registry.agents import preflight as agent_preflight
@@ -204,6 +204,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
                 "input_baseline_commit": head, "factory_revision": factory_revision(),
                 "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
                 "trace_profile": TRACE_PROFILE,
+                "register_contract": REGISTER_CONTRACT,
                 **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
