@@ -22,7 +22,9 @@ It is read-only and model-free:
   link (`/login?next=/control-room&token=<viewer token>`); a cookie then keeps the phone signed in.
 - **To serve the phone**, start the dashboard with extra listen addresses:
   `python -m forge_factory.dashboard.app --host 127.0.0.1 --host <tailscale-ip> [--host <wifi-ip>]`.
-  - Tailscale (`http://<machine>.<tailnet>.ts.net:<port>/control-room`) works from anywhere, for your own devices.
+  - Tailscale (`http://<tailscale-ip>:<port>/control-room`) works from anywhere, for your own devices. Use the
+    IP address, not the `*.ts.net` name: browsers force HTTPS for every `ts.net` name (HSTS preload), and the
+    dashboard serves plain HTTP, so the name fails with `ERR_SSL_PROTOCOL_ERROR`.
   - The Wi-Fi address works only on the same network.
 - **At deployment:** set `auth: token` and restart. Every client then signs in, this machine and the trusted
   devices included.
