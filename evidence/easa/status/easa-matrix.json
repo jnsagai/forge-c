@@ -108,9 +108,9 @@
   },
   "fr_counts": {
     "BLOCKED": 0,
-    "COVERED": 69,
+    "COVERED": 72,
     "OPEN": 0,
-    "PARTIAL": 3
+    "PARTIAL": 0
   },
   "fr_matrix": [
     {
@@ -1263,13 +1263,13 @@
         "EASA-AT-069",
         "EASA-AT-078"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-062",
       "priority": "P0",
       "task_status": [
         "PASS",
         "PASS",
-        "FAIL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T012",
@@ -1378,13 +1378,13 @@
         "EASA-AT-069",
         "EASA-AT-070"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-067",
       "priority": "P0",
       "task_status": [
         "PASS",
         "PASS",
-        "FAIL",
+        "PASS",
         "PASS"
       ],
       "tasks": [
@@ -1402,7 +1402,7 @@
         "EASA-AT-055",
         "EASA-AT-069"
       ],
-      "coverage": "PARTIAL",
+      "coverage": "COVERED",
       "fr": "EASA-FR-068",
       "priority": "P0",
       "task_status": [
@@ -1410,7 +1410,7 @@
         "PASS",
         "PASS",
         "PASS",
-        "FAIL"
+        "PASS"
       ],
       "tasks": [
         "EASA-T014",
@@ -1520,13 +1520,12 @@
       ]
     }
   ],
-  "generated_at": "2026-10-19T05:04:06.318105Z",
-  "git_head": "cb252f0672c3b4afe70dc7e5c5f1dae9c56d984f",
+  "generated_at": "2026-10-19T08:39:58.519526Z",
+  "git_head": "5053d0e54d42e73f173e969c6201ee58ae0f16de",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {
-    "FAIL": 1,
-    "PASS": 71
+    "PASS": 72
   },
   "tasks": {
     "EASA-T001": {
@@ -2553,9 +2552,9 @@
         "EASA-FR-067",
         "EASA-FR-068"
       ],
+      "git_head": "5053d0e54d42",
       "priority": "P0",
-      "reason": "status FAIL exit 1",
-      "status": "FAIL",
+      "status": "PASS",
       "title": "Perform owner-authorized PILOT on real end-to-end driver without claiming ready if safety evidence missing."
     },
     "EASA-T070": {
