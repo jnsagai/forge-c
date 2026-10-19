@@ -151,3 +151,29 @@ def test_code_that_breaks_the_interface_contract_fails_the_oracle_not_silently(w
     (ws / "software/hal/stm32n6xx_hal_rcc.c").write_text(HAL_C.replace("osc_config_t", "oscillator_config_t"))
     v = V.v_oracle(ws)
     assert v["status"] == "FAIL" and any(f.startswith("ORACLE_BUILD_FAILED") for f in v["findings"])
+
+
+@needs_cc
+def test_capa047_no_write_with_a_register_means_that_register_is_unchanged(ws):
+    """CAPA-047 (r164): SWR-010/011 'leave RCC_CR.HSEON/HSION at reset' mapped to HAL_RCC_GPDMA1_Enable (it writes
+    RCC_AHB1ENR only). The oracle required zero register accesses and failed a correct driver; a no_write case that
+    names a register now means that register is unchanged, and one without a register still means no access."""
+    eff = json.loads((ws / RC.EFFECTS).read_text())
+    eff["effects"].append({"case": "HSE_PRESERVED_BY_ENABLE", "swr": "SWR-001", "register": "RCC_CR",
+                           "field": "HSEON", "op": "no_write", "status": "HAL_ERROR"})
+    (ws / RC.EFFECTS).write_text(json.dumps(eff))
+    calls = json.loads((ws / RC.CALLS).read_text())
+    calls["calls"]["HSE_PRESERVED_BY_ENABLE"] = {"function": "HAL_RCC_HSE_Enable", "args": ["NULL", "{timeout}"]}
+    (ws / RC.CALLS).write_text(json.dumps(calls))
+    cs, _ = RC.cases(ws)
+    c = next(x for x in cs if x["case"] == "HSE_PRESERVED_BY_ENABLE")
+    assert c["word"] == 0 and "mask" in c and next(x for x in cs if x["case"] == "HSE_NULL").get("word") is None
+    r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], [ws / "software/hal/stm32n6xx_hal_rcc.c"],
+                       "stm32n6xx_hal_rcc.h")
+    assert r["status"] == "PASS", r["results"]
+    src = r["source"]
+    assert "(regs[0U] == before[0U])" in src and src.count("(shim_n == 0UL)") == 1
+    p = ws / "software/hal/stm32n6xx_hal_rcc.c"                     # a driver that writes RCC_CR on that path fails
+    p.write_text(p.read_text().replace("(config == NULL) || ", "(config == NULL && (ll_rcc_regs[0] |= 0x10U)) || ", 1))
+    r2 = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], [p], "stm32n6xx_hal_rcc.h")
+    assert ("OR-004", "SWR-001", "HSE_PRESERVED_BY_ENABLE", "FAIL") in r2["results"]

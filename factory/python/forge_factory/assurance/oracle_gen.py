@@ -189,7 +189,8 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None) -
 
 def contract_source(cases: list[dict], include: str) -> str:
     """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
-    bits of the register unchanged, no register access for a no_write case, a bounded poll for a never-ready case."""
+    bits of the register unchanged, a no_write case leaves its named register unchanged (no register named: no
+    register access at all), a bounded poll for a never-ready case."""
     from .register_contract import call_text
 
     lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stddef.h>", "#include <stdio.h>",
@@ -210,7 +211,9 @@ def contract_source(cases: list[dict], include: str) -> str:
         call = call_text(c, f"{t}U")
         lines.append(f"    {{ hal_status_t st = {call};" if c["status"] else f"    {{ (void){call};")
         conds = []
-        if c["op"] == "no_write":
+        if c["op"] == "no_write" and "word" in c:  # CAPA-047: the named register is unchanged by the call
+            conds.append(f"(regs[{c['word']}U] == before[{c['word']}U])")
+        elif c["op"] == "no_write":                # no register named: no register access at all
             conds.append("(shim_n == 0UL)")
         else:
             conds.append(f"((regs[{c['word']}U] & 0x{c['mask']:08X}U) {'!=' if c['op'] == 'set' else '=='} 0U)")
