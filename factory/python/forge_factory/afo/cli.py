@@ -1,0 +1,94 @@
+"""AFO-T023 (AFO-FR-018/026) - operator CLI for the Conductor queue.
+
+  python -m forge_factory.afo.cli submit <envelope.json>     # needs a signed owner authorization (submit_workorder)
+  python -m forge_factory.afo.cli status | list [--state S]
+  python -m forge_factory.afo.cli pause|drain|resume --reason "..."
+  python -m forge_factory.afo.cli backup <dest.sqlite3>
+
+Operator controls are authenticated by the OS: only the account that owns the Conductor state directory may run
+them (agents run under policy-scoped MCP roles and never get this CLI), and every control is recorded with actor and
+reason. Pause stops new admissions; drain lets in-flight work reach a safe point without admitting more; resume
+re-enables admission (re-admission still passes the preflight).
+"""
+from __future__ import annotations
+
+import argparse
+import getpass
+import json
+import os
+import sys
+from pathlib import Path
+
+from ..common import REPO_ROOT, state_dir
+from . import authz
+from .policy import load
+from .queue import QueueError, Store
+
+
+def approve(env: dict, eff=None) -> tuple[bool, str]:
+    """Intake approval: the envelope's authorization_ref must be a valid signed owner authorization for this policy,
+    allowing submit_workorder for this request, driver class and model."""
+    eff = eff or load()
+    if eff.mode not in ("PILOT", "ACTIVE"):
+        return False, f"AFO_MODE_{eff.mode}"
+    d = authz.find(eff.mode, eff.sha256 or "", ref=env["authorization_ref"], action="submit_workorder",
+                   request={"order_id": env["request_id"], "driver_class": env["driver_class"],
+                            "model": env["model_profile"]})
+    return d.allow, d.code
+
+
+def operator_ok() -> bool:
+    d = state_dir()
+    return d.exists() and d.stat().st_uid == os.getuid()
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(prog="forge_factory.afo.cli")
+    ap.add_argument("cmd", choices=["submit", "status", "list", "pause", "drain", "resume", "backup"])
+    ap.add_argument("arg", nargs="?")
+    ap.add_argument("--state")
+    ap.add_argument("--reason", default="")
+    a = ap.parse_args(argv)
+    store = Store()
+    if a.cmd == "submit":
+        eff = load()
+        try:
+            oid, created = store.submit(json.loads(Path(a.arg).read_text()), repo=REPO_ROOT,
+                                        max_queued=int(eff.get("queue.max_queued_orders", 0)),
+                                        approve=lambda env: approve(env, eff))
+        except QueueError as e:
+            print(json.dumps({"rejected": e.code, "detail": e.detail}))
+            return 2 if e.code == "CONFLICT" else 1
+        print(json.dumps({"order_id": oid, "created": created}))
+        return 0
+    if a.cmd in ("status", "list"):
+        orders = store.orders((a.state,) if a.state else None)
+        print(json.dumps({"mode": load().mode, "control": store.control(),
+                          "orders": [{k: o[k] for k in ("order_id", "request_id", "state", "priority", "defer_count")}
+                                     for o in orders] if a.cmd == "list" else
+                          {s: sum(o["state"] == s for o in orders) for s in sorted({o["state"] for o in orders})},
+                          "pending_commands": len(store.commands("PENDING"))}, indent=1))
+        return 0
+    if a.cmd == "backup":
+        print(json.dumps(store.backup(Path(a.arg))))
+        return 0
+    if not operator_ok():
+        print("refused: operator controls need the account that owns the Conductor state directory", file=sys.stderr)
+        return 3
+    if not a.reason.strip():
+        print("refused: give --reason", file=sys.stderr)
+        return 3
+    actor = getpass.getuser()
+    if a.cmd == "pause":
+        store.set_control("paused", "1", actor, a.reason)
+    elif a.cmd == "drain":
+        store.set_control("draining", "1", actor, a.reason)
+    else:
+        store.set_control("paused", "0", actor, a.reason)
+        store.set_control("draining", "0", actor, a.reason)
+    print(json.dumps({"control": store.control()}))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

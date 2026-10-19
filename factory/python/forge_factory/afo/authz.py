@@ -70,8 +70,9 @@ def revoked_ids(path: Path | None = None) -> set[str]:
 
 
 def verify(auth: dict, *, policy_sha256: str, mode: str, action: str | None = None, request: dict | None = None,
-           now: datetime | None = None, base: Path = AUTH_DIR, allowed_signers: Path = ALLOWED_SIGNERS,
+           now: datetime | None = None, base: Path | None = None, allowed_signers: Path | None = None,
            revoked: set[str] | None = None) -> AuthDecision:
+    base, allowed_signers = base or AUTH_DIR, allowed_signers or ALLOWED_SIGNERS  # resolved at call time
     aid = auth.get("authorization_id") if isinstance(auth, dict) else None
     errs = schema_errors(auth) if isinstance(auth, dict) else ["<root>: not an object"]
     if errs:
@@ -97,9 +98,10 @@ def verify(auth: dict, *, policy_sha256: str, mode: str, action: str | None = No
     return AuthDecision(True, "AUTH_OK", "", aid)
 
 
-def find(mode: str, policy_sha256: str, base: Path = AUTH_DIR, ref: str | None = None, **kw) -> AuthDecision:
+def find(mode: str, policy_sha256: str, base: Path | None = None, ref: str | None = None, **kw) -> AuthDecision:
     """Verify the authorization record the policy names (`ref`, required for PILOT/ACTIVE by the policy schema);
     the decision carries the exact reason a record does not authorize."""
+    base = base or AUTH_DIR
     if not ref:
         return AuthDecision(False, "AUTH_NOT_REFERENCED", "the policy names no authorization_ref")
     p = base / f"{ref}.json"

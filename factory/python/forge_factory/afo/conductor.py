@@ -36,11 +36,16 @@ def write_heartbeat(cycle: int, mode: str, ok: bool, detail: str = "") -> None:
 
 
 def cycle(n: int) -> tuple[str, bool, str]:
-    """One Conductor cycle. M1: policy evaluation only; M2 adds the queue/scheduler work for OBSERVE_ONLY+."""
+    """One Conductor cycle: policy evaluation (fail closed), then the scheduler cycle the mode allows (M2)."""
+    from . import scheduler
     from .policy import load
+    from .queue import Store
 
     eff = load(log=(n % 60 == 0))  # record a policy decision every 60 cycles and at start
-    return eff.mode, True, ("; ".join(eff.issues))[:200]
+    if eff.mode == "DISABLED":
+        return eff.mode, True, ("; ".join(eff.issues))[:200]
+    r = scheduler.cycle(Store(), f"conductor-{os.getpid()}", eff=eff)
+    return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 
 
 class Conductor:
