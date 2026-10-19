@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-04",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Agent reply contract when the final reply has no JSON",
+  "question": "(a) keep rejecting a reply without the JSON contract, or (b) accept-and-record it when all required outputs pass the gates",
+  "statement": "additional prose doesnt seems to be good, since can create fuzzy answer and consume tokens, better is to produce just what is expected",
+  "decision": "(a) The strict reply contract stays: the final reply is only the requested JSON. Prose is reduced at the source (CAPA-045: Codex model_verbosity low, trailing reply rule), never accepted by relaxing the gate.",
+  "also_decided": "OK to merge feat/004 into feat/005 and feat/005 into feat/006 with merge commits (no force-push, nothing to main)"
+}
