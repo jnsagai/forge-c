@@ -116,6 +116,7 @@ button:hover{border-color:var(--accent)}
   <h1>Forge-C Control Room</h1>
   <span id="fstatus" class="pill s-NO_WIP">–</span>
   <span class="muted" id="age"></span>
+  <span class="pill s-ATTENTION" id="authoff" hidden title="Owner decision OD-2026-10-19-09: no sign-in until deployment (this machine only)">sign-in off until deployment</span>
   <span class="sp"></span>
   <span class="muted"><span class="live-dot" id="dot"></span> <span id="live">offline</span></span>
   <a href="/">Engineering dashboard</a>
@@ -558,7 +559,7 @@ try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElemen
 (async function start() {
   const init = window.__INIT__;
   if (!init) { try { renderFloor(await api("/api/v1/control-room/floor")); } catch (e) { return; } }
-  else { renderFloor(init.floor); }
+  else { renderFloor(init.floor); if (init.auth === "disabled") $("authoff").hidden = false; }
   $("app").hidden = false;
   state.lastMsg = Date.now();
   connect(); poll();

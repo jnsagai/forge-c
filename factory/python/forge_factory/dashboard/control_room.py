@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import secrets
 import time
 from pathlib import Path
 
@@ -17,7 +16,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 STATIC = Path(__file__).parent / "static"
 
 
-def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) -> None:
+def register(app: FastAPI, role, who_of, floor=None, events=None, access: dict | None = None) -> None:
     import threading
 
     from ..controlroom import config as C
@@ -73,10 +72,9 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
     @app.get("/control-room")
     def control_room_page(request: Request) -> HTMLResponse:
         html = (STATIC / "control-room.html").read_text()
-        tok = request.cookies.get("forge_dashboard_session", "")
-        who = next((r for r, t in toks.items() if tok and secrets.compare_digest(tok, t)), None)
+        who = who_of(request)
         if who:  # first paint without waiting for the stream
-            init = {"role": who, "floor": floor_snapshot()}
+            init = {"role": who, "auth": (access or {}).get("auth", "token"), "floor": floor_snapshot()}
             if cache.ready.is_set():  # first paint with today's scorecard (the page then follows the viewer's choice)
                 init["score"] = scorecard(cache, W.window("today", cfg()), "all")
                 init["usage"] = cr_usage(who, "7d", "all", None, None)

@@ -1,0 +1,9 @@
+# Dashboard sign-in (viewer/auditor tokens). Owner decision OD-2026-10-19-09: sign-in is OFF until deployment.
+# At deployment set `auth: token` (or export FORGE_DASHBOARD_AUTH=token) and restart the dashboard.
+# "disabled" applies to requests from this machine only: they get `anonymous_role`. Requests from any other address
+# (a phone over Tailscale or Wi-Fi, with --host <address>) still need a viewer/auditor token. The AFO operator
+# actions (pause/drain/resume) always require the operator bearer token.
+schema: forge-c/dashboard-access/0.1
+auth: disabled            # token | disabled
+anonymous_role: viewer    # viewer | auditor (auditor also shows the security/audit channels)
+decision: OD-2026-10-19-09

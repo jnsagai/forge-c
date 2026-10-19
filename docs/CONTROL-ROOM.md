@@ -10,6 +10,19 @@ It is read-only and model-free:
 - no value comes from a model;
 - nothing on the page changes the factory.
 
+## Sign-in and mobile access
+
+- **Sign-in is off until deployment** (owner decision OD-2026-10-19-09, `config/factory/dashboard-access.yaml`).
+  It is off only for this machine: a browser here opens the Control Room directly, with the viewer role.
+- **Any other device needs the viewer token once**, for example a phone over Tailscale or Wi-Fi. Open the login
+  link (`/login?next=/control-room&token=<viewer token>`); a cookie then keeps the phone signed in.
+- **To serve the phone**, start the dashboard with extra listen addresses:
+  `python -m forge_factory.dashboard.app --host 127.0.0.1 --host <tailscale-ip> [--host <wifi-ip>]`.
+  - Tailscale (`http://<machine>.<tailnet>.ts.net:<port>/control-room`) works from anywhere, for your own devices.
+  - The Wi-Fi address works only on the same network.
+- **At deployment:** set `auth: token` and restart. Every client then signs in, this machine included.
+- The AFO operator actions (pause/drain/resume) always require the operator token.
+
 ## Panels
 
 | Panel | What it shows | Source |

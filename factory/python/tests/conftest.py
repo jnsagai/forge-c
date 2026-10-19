@@ -18,3 +18,10 @@ def _easa_hermetic(request, monkeypatch, tmp_path_factory):
     monkeypatch.delenv(normative.ENV, raising=False)
     monkeypatch.setattr(policy, "POLICY_PATH", d / "assurance-policy.yaml")
     monkeypatch.setattr(catalog, "DERIVED_DIR", d / "derived")
+
+
+@pytest.fixture(autouse=True)
+def _dashboard_sign_in_on(monkeypatch):
+    """The committed dashboard-access config may switch sign-in off (OD-2026-10-19-09); tests exercise the token
+    mode unless a test sets FORGE_DASHBOARD_AUTH itself."""
+    monkeypatch.setenv("FORGE_DASHBOARD_AUTH", "token")
