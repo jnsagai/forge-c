@@ -1,0 +1,22 @@
+# Owner decision 2026-10-18 (Jefferson Nascimento): EASA PILOT. Active only after a human approval of this file's
+# sha and an ACCEPTED, human-authorized mode transition (policy.active). PILOT records findings; it never changes
+# a package status (that is ENFORCING, which needs a validated pilot and a separate decision).
+schema_version: '1.0'
+mode: PILOT
+profile: ENHANCED
+standard_edition: ISO 26262-6:2018
+norm_catalog_status: SECONDARY_WORKING_INDEX_NOT_AUTHORIZED_STANDARD
+allow_change_asil_from_profile: false
+allow_sup_man_workflows: false
+safety_signoff_by_ai: false
+approve_missing_evidence_by_ai: false
+authorization:
+  approved_by: Jefferson Nascimento
+  approved_at: '2026-10-18'
+  reference: 'owner instruction 2026-10-18: ''go for EASA PILOT'''
+requirements:
+  SWE.4:
+  - INDEPENDENT_ORACLE
+  - BRANCH_COVERAGE
+  - MUTATION_EVIDENCE
+last_verified_policy_sha: null

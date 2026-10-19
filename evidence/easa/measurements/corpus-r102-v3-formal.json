@@ -1,0 +1,264 @@
+{
+  "false_positives_on_correct": {
+    "factory": []
+  },
+  "subject": "forge-c-WO-0002B-STM32N6-RCC-HAL-r102-review.zip",
+  "summary": {
+    "easa_caught": 10,
+    "easa_only": [
+      "D01",
+      "D05"
+    ],
+    "either": 10,
+    "factory_caught": 8,
+    "factory_only": [],
+    "formal_caught": 1,
+    "neither": [],
+    "variants": 10
+  },
+  "variants": [
+    {
+      "class": "wrong bit in generated register definition",
+      "easa_by": [
+        "oracle",
+        "register_checks"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-003:SWR-002:HAL_RCC_HSE_Enable",
+          "OR-004:SWR-002:HAL_RCC_HSE_Enable",
+          "OR-007:SWR-006:HAL_RCC_HSE_Disable"
+        ],
+        "register_checks": [
+          "DEFINE_MISMATCH:LL_RCC_CR_HSEON_MSK:0x20!=0x10",
+          "RESERVED_BIT_WRITE:RCC_CR:0x00000020:line 99",
+          "RESERVED_BIT_WRITE:RCC_CR:0x00000020:line 105"
+        ]
+      },
+      "factory_detected": false,
+      "factory_evidence": [],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D01"
+    },
+    {
+      "class": "write clobbers other bits (= for |=)",
+      "easa_by": [
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-009:SWR-007:HAL_RCC_ADC12_Enable",
+          "OR-010:SWR-007:HAL_RCC_ADC12_Enable"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-007"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D02"
+    },
+    {
+      "class": "wrong register (RSTR for ENR)",
+      "easa_by": [
+        "oracle",
+        "register_checks"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-011:SWR-007:HAL_RCC_GPDMA1_Enable",
+          "OR-012:SWR-007:HAL_RCC_GPDMA1_Enable"
+        ],
+        "register_checks": [
+          "UNKNOWN_FIELD:LL_RCC_AHB1ENR_GPDMA1EN_MSK:for RCC_AHB1RSTR:line 151"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-007b",
+        "test_rcc_integration.c:IT-002c",
+        "test_rcc_integration.c:IT-002d",
+        "test_rcc_integration.c:IT-002f"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D03"
+    },
+    {
+      "class": "swapped oscillator (HSI for HSE)",
+      "easa_by": [
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-003:SWR-002:HAL_RCC_HSE_Enable",
+          "OR-004:SWR-002:HAL_RCC_HSE_Enable"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-002",
+        "test_rcc.c:UT-004",
+        "test_rcc_integration.c:IT-003c",
+        "test_rcc_integration.c:IT-003e"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D04"
+    },
+    {
+      "class": "polling bound off by one",
+      "easa_by": [
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-025:TIMEOUT:HAL_RCC_HSE_Enable",
+          "OR-028:TIMEOUT:HAL_RCC_HSI_Enable"
+        ]
+      },
+      "factory_detected": false,
+      "factory_evidence": [],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D05"
+    },
+    {
+      "class": "no rollback of the enable bit on timeout",
+      "easa_by": [
+        "analyzers",
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "analyzers": [
+          "unused parameter 'disable_osc' [-Wunused-parameter]"
+        ],
+        "oracle": [
+          "OR-025:TIMEOUT:HAL_RCC_HSE_Enable",
+          "OR-028:TIMEOUT:HAL_RCC_HSI_Enable"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-003b",
+        "test_rcc.c:UT-004b",
+        "test_rcc.c:UT-013",
+        "test_rcc.c:UT-013b"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D06"
+    },
+    {
+      "class": "missing parameter check (timeout 0 accepted)",
+      "easa_by": [
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-026:INVALID:HAL_RCC_HSE_Enable",
+          "OR-029:INVALID:HAL_RCC_HSI_Enable"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-014",
+        "test_rcc.c:UT-014c",
+        "test_rcc_integration.c:IT-005a",
+        "test_rcc_integration.c:IT-005c"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D07"
+    },
+    {
+      "class": "write to the read-only status register",
+      "easa_by": [
+        "oracle",
+        "register_checks"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-003:SWR-002:HAL_RCC_HSE_Enable",
+          "OR-004:SWR-002:HAL_RCC_HSE_Enable",
+          "OR-025:TIMEOUT:HAL_RCC_HSE_Enable"
+        ],
+        "register_checks": [
+          "RO_REGISTER_WRITE:RCC_SR:line 114"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-002",
+        "test_rcc.c:UT-004",
+        "test_rcc_integration.c:IT-003b",
+        "test_rcc_integration.c:IT-003c"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D08"
+    },
+    {
+      "class": "uninitialised status variable",
+      "easa_by": [
+        "analyzers",
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "analyzers": [
+          "The left operand of '!=' is a garbage value [core.UndefinedBinaryOperatorResult]",
+          "variable 'status' may be uninitialized when used here [-Wconditional-uninitialized]"
+        ],
+        "oracle": [
+          "OR-025:TIMEOUT:HAL_RCC_HSE_Enable",
+          "OR-028:TIMEOUT:HAL_RCC_HSI_Enable"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-003b",
+        "test_rcc.c:UT-004b",
+        "test_rcc.c:UT-013",
+        "test_rcc.c:UT-013b"
+      ],
+      "formal_detected": true,
+      "formal_evidence": [
+        "EVA_ALARM:stm32n6xx_hal_rcc.c:21: accessing uninitialized left-value. assert \\initialized(&status);"
+      ],
+      "id": "D09"
+    },
+    {
+      "class": "release clears the wrong reset bit",
+      "easa_by": [
+        "oracle"
+      ],
+      "easa_detected": true,
+      "easa_evidence": {
+        "oracle": [
+          "OR-023:SWR-010:HAL_RCC_GPDMA1_ReleaseReset",
+          "OR-024:SWR-010:HAL_RCC_GPDMA1_ReleaseReset"
+        ]
+      },
+      "factory_detected": true,
+      "factory_evidence": [
+        "test_rcc.c:UT-010b",
+        "test_rcc_integration.c:IT-002i",
+        "test_rcc_integration.c:IT-008"
+      ],
+      "formal_detected": false,
+      "formal_evidence": [],
+      "id": "D10"
+    }
+  ]
+}

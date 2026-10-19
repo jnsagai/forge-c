@@ -1,0 +1,12 @@
+{
+  "work_order_id": "WO-EXAMPLE-006",
+  "author_role": "swe4-author",
+  "inspector_role": "swe4-inspector",
+  "verifier_role": "test-runner",
+  "oracle_origin_refs": [
+    "SWR-RCC-001"
+  ],
+  "shared_common_cause_refs": [],
+  "independent": true,
+  "decision": "SUPPORTED"
+}

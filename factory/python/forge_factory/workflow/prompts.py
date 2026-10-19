@@ -57,7 +57,8 @@ WORK_ORDER_SCOPE_NOTE = ("Read .forge-run/manifest.json 'scope' once. A checklis
                          "report omits it or claims such behaviour was tested); never fail an item for not testing "
                          "excluded behaviour.")
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
-                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE), judge SWE1-01 against that "
+                    "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE or PENDING owner allocation review), "
+                    "judge SWE1-01 against that "
                     "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
                     "recorded in traceability/upstream_gaps.md, not a failure of SWE1-01.")
 
@@ -89,7 +90,10 @@ AUTHOR_STEPS = {
         "requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations).",
         "write_file safety/software_safety_requirements.md: if the manifest target safety_allocation is OUT_OF_SCOPE, state "
         "'QM development scope: no software safety requirements are allocated (work-order owner decision)' and list no "
-        "safety items; otherwise list the safety-relevant SWR IDs.",
+        "safety items; if it says 'software safety allocation PENDING owner allocation review', state 'Target <the ASIL "
+        "from target.safety_allocation> (<its scope id>): software safety allocation PENDING owner allocation review - no "
+        "software safety requirement is allocated yet; this is an open gap, not a QM claim', list no safety items and "
+        "never write QM; otherwise list the safety-relevant SWR IDs.",
         "If inputs/upstream-inputs.yaml exists (human-approved HSI contract, safety allocation, budgets), read it and write "
         "one requirement per allocated software safety requirement with '  - Source: <SSR id>'. write_file "
         "traceability/upstream_gaps.md: '# Upstream coverage', (a) one row per upstream input from the manifest target "
@@ -203,6 +207,8 @@ AUTHOR_STEPS = {
 
 CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
+TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
+ISOLATION = {"on": False}  # CAPA-038: HAL unit tests run on the generated LL test double (set by the builder)
 
 
 def small() -> str:
@@ -270,6 +276,28 @@ UT_EXAMPLE = ("static void ut_hsi_enable(void)\n{\n    hal_status_t st;\n    ut_
               "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n    st = HAL_RCC_HSI_Enable();\n"
               "    CHECK(\"UT-001\", (st == HAL_OK) && ((ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK) != 0U));\n"
               "    ut_reset_regs();\n    st = HAL_RCC_HSI_Enable();\n    CHECK(\"UT-002\", st == HAL_TIMEOUT);\n}")
+FAKE_UT_EXAMPLE = ("static void ut_hse_enable(void)\n{\n    hal_status_t st;\n    ut_reset();\n"
+                   "    ll_fake_return_from(LL_FAKE_LL_RCC_HSE_IsReady, 3U, 1U);  /* ready from the 3rd poll on */\n"
+                   "    st = HAL_RCC_HSE_Enable(10U);\n"
+                   "    CHECK(\"UT-001\", st == HAL_OK);\n"
+                   "    CHECK(\"UT-001-ENABLED\", ll_fake_calls(LL_FAKE_LL_RCC_HSE_Enable) == 1U);\n"
+                   "    CHECK(\"UT-001-ORDER\", ll_fake_index_of(LL_FAKE_LL_RCC_HSE_Enable, 1U) < "
+                   "ll_fake_index_of(LL_FAKE_LL_RCC_HSE_IsReady, 1U));\n"
+                   "    ut_reset();  /* never ready */\n    st = HAL_RCC_HSE_Enable(10U);\n"
+                   "    CHECK(\"UT-002\", st == HAL_TIMEOUT);\n"
+                   "    CHECK(\"UT-002-ROLLBACK\", ll_fake_calls(LL_FAKE_LL_RCC_HSE_Disable) == 1U);\n}")
+FAKE_UT_FIRST = (
+    "read_file software/tests/unit/test_rcc.c (GENERATED harness: CHECK(id, cond), ut_reset(), markers; never change "
+    "it), software/tests/unit/ll_fake/stm32n6xx_ll_rcc.h (GENERATED test double of the provided LL API - read its "
+    "'test double API' block: ll_fake_return_from(fn, n, value) makes an LL query return value from its n-th call on "
+    "(default 0U = flag never set; a query of a bit an LL function writes, e.g. IsEnabled after Enable/Disable, follows "
+    "that bit like the LL; IsReady-type hardware flags stay 0U until scripted), ll_fake_set_state(query_fn, value) "
+    "presets the state an IsEnabled-type query reads (e.g. already enabled) without an LL call, ll_fake_calls(fn), "
+    "ll_fake_index_of(fn, k) for call order, ll_fake_last_arg; never call ll_fake_internal_* (run_unit fails); never "
+    "change it), software/hal/stm32n6xx_hal_rcc.h and traceability/requirements_to_tests.csv. HAL unit tests observe "
+    "the HAL only through these LL calls (there is no register array); register effects are verified with the real LL "
+    "in SWE.5. Count polls and order exactly as the HAL code does them and assert what the requirement states. Name "
+    "every check of a test with that test's id: 'UT-007' or 'UT-007-<suffix>' inside the function tagged @test UT-007.")
 UT_STEPS = [
     "read_file software/tests/unit/test_rcc.c (GENERATED harness: fake ll_rcc_regs, ut_reset_regs(), CHECK(id, cond), "
     "markers; never change it), software/hal/stm32n6xx_hal_rcc.h (the HAL_RCC_ functions to test) and "
@@ -341,14 +369,16 @@ ROBOT_STEPS = [
 def robot_test_author_prompt() -> str:
     """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
     robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
-    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + [DEFECT_RULE] + [REPLY]
+    steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + trace_step("vt") + [DEFECT_RULE] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
 def target_test_author_prompt() -> str:
     """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
     target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
-    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + [DEFECT_RULE] + [REPLY]
+    steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + trace_step("tt") + [DEFECT_RULE] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -357,9 +387,15 @@ def unit_test_author_prompt() -> str:
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
+    if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
+        ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
+                                                  "_MSK defines that exist in software/ll/stm32n6xx_ll_rcc.h - never "
+                                                  "registers from other STM32 families such as BDCR",
+                                                  "adapt names and UT ids; use ONLY LL_FAKE_<LL function> ids from the "
+                                                  "test double") for x in UT_STEPS[1:]], FAKE_UT_EXAMPLE
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
-         for x in ut] + [DEFECT_RULE, REPLY]
+         for x in ut] + trace_step("ut") + [DEFECT_RULE, REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -540,6 +576,67 @@ def _layer() -> str:
     return LAYER["layer"]
 
 
+def _t() -> tuple[str, str]:
+    """(unit/spec id infix, developed SWC) of this work order."""
+    return ("LL", "SWC_LL") if _layer() == "LL" else ("HAL", "SWC_HAL")
+
+
+def trace_step(kind: str) -> list[str]:
+    """Owner trace rules, only for work orders prepared with the owner trace profile (deterministically gated)."""
+    if not TRACE["on"]:
+        return []
+    x, swc = _t()
+    other = "the PROVIDED LL as SWC_LL (no allocation to it)" if _layer() == "HAL" else "no SWC_HAL"
+    rules = {
+        "swe2": "OWNER TRACE RULES (gate-checked, ARCH:* issues): in workproducts/SWE.2/architecture_static.puml the LL "
+                "and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype - "
+                f"'component \"RCC_{x}\\nstm32n6xx_{x.lower()}_rcc\" <<SWC>> as {swc}' (keep the module name "
+                f"stm32n6xx_{x.lower()}_rcc in the label: the view check requires it) and {other}. Allocate EVERY SWR of "
+                f"workproducts/SWE.1/software_requirements.md to {swc} with a note IN the diagram: 'note right of {swc}', "
+                "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. "
+                f"'{swc} --> RCC : IF-01 register access'" + (" and 'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* accessors'"
+                                                           if _layer() != "LL" else "") + ". The gate generates "
+                "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv.",
+        "code": f"OWNER TRACE RULES: software units are the function groups of the SWE.2 allocation table (unit ids "
+                f"SWU-{x}-01, SWU-{x}-02, ... in table order; one unit per group, e.g. HSI, HSE, ADC12, GPDMA1). Put a "
+                "Doxygen block directly above EVERY function definition you write, in the same edit: '/**', ' * @brief "
+                f"<one line>', ' * @unit SWU-{x}-01', ' * @spec USPEC-{x}-01-01', ' */' - number the spec items of a "
+                f"unit USPEC-{x}-<unit nn>-01, -02, ... (one item per distinct behaviour: set, clear, query, wait, "
+                "error). Static helper functions belong to the unit that calls them and get the same block.",
+        "keep": "Keep every Doxygen /** ... @unit ... @spec ... */ block above its function when you edit code.",
+        "swe3": "OWNER TRACE RULES (gate-checked, UNIT:*/CODE:* issues): the factory GENERATED "
+                "workproducts/SWE.3/unit_specifications.md, one as-built PlantUML design per unit under "
+                "workproducts/SWE.3/detailed_design/ and workproducts/SWE.3/misra_deviations.md from the code tags and "
+                "tool results. Replace EVERY 'TODO' in unit_specifications.md (one edit_file per unit): each spec item gets "
+                "the behaviour text and 'Traces: SWR-...'. You may refine the designs; the gate adds each design's "
+                "USPEC citation itself. Do not rewrite these files from scratch. Resource budgets (flash/RAM/stack) "
+                "and initial-state invariants ('While no ... has been called ...') are component-level: do NOT create "
+                "units or functions for them and never edit "
+                "software/src/stm32n6xx_ll_rcc.c (generated). Format reference: "
+                f"for each unit '## SWU-{x}-nn: <name>', "
+                f"'- SWC: {swc}', '- Functions: <exact C function names of the unit, incl. static helpers>', '- Design: "
+                f"workproducts/SWE.3/detailed_design/SWU-{x}-nn.puml' and one line per spec item used in the code: "
+                f"'- **USPEC-{x}-nn-mm** <the behaviour the unit shall implement> Traces: SWR-001, SWR-003' (only SWRs "
+                f"allocated to {swc} in the architecture diagram; every allocated SWR is traced by at least one item). "
+                "For EACH unit write_file workproducts/SWE.3/detailed_design/<unit id>.puml: a PlantUML activity "
+                "diagram between @startuml and @enduml whose title contains the unit id and which names every function "
+                "of the unit. The gate generates workproducts/SWE.3/unit_specifications/<unit>.reqif, runs Doxygen and "
+                "writes workproducts/SWE.3/traceability/matrix_2 and matrix_3.",
+        "ut": "OWNER TRACE RULES: directly above each test function put '/** @test UT-00n @verifies USPEC-...-.. */' "
+              "with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
+              "specifications.md) it verifies. Every USPEC item must be verified by a passing test (UT:* issues).",
+        "tt": "OWNER TRACE RULES: start each target test file with '/** @file <file name> @verifies IF-01 IF-02 */' "
+              "naming the architecture interfaces (IF ids of workproducts/SWE.2/architecture_static.puml) it exercises.",
+        "it": "OWNER TRACE RULES: directly above each integration test function put '/** @test IT-00n @verifies IF-01 "
+              f"{swc} */' (interface ids and SWCs of workproducts/SWE.2/architecture_static.puml); the CHECK ids it "
+              "prints start with that IT id. Every interface must be verified by a passing integration or target test "
+              "(IT:* issues; matrix 5).",
+        "vt": "OWNER TRACE RULES: every Robot test keeps its SWR tag; every SWR needs a passing test (VT:* issues; "
+              "matrix 6).",
+    }
+    return [rules[kind]]
+
+
 def triage_prompt(k: int) -> str:
     """ADR-0008 L12: the upstream owner judges routed defects in a small, edit-free step before any fix."""
     steps = [f"Call use_skill with skill_name swe{k}-author.",
@@ -560,7 +657,7 @@ def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
-        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REPLY]
+        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -570,7 +667,7 @@ def ll_author_prompt() -> str:
 
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
-        [REENTRY] + [REPLY]
+        (trace_step("code") + [CONTRACT_SWE3] if _layer() == "LL" else []) + [REENTRY] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -578,8 +675,52 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + [REENTRY] + [REPLY]
+         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
+        [CONTRACT_SWE3, REENTRY] + \
+        [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+# owner decision 2026-10-19 (option B): the independent EASA oracle reads this contract, never the code
+CONTRACT_SWE1 = (
+    "write_file workproducts/SWE.1/register_effects.json (machine-readable register contract of your requirements; an "
+    "independent oracle tests the code against it): {{\"schema\":\"forge-c/register-effects/1\",\"effects\":[...]}} "
+    "with one entry per tested case of EVERY requirement that sets or clears a register bit - one entry per bit and "
+    "per oscillator/peripheral/function (HSI enable and HSE enable are two entries), e.g. {example}. 'register' and "
+    "'field' are the RM0486 names your requirement text uses; op is set, clear or no_write.{extra} Every case id is "
+    "unique UPPER_CASE. Never add an entry the requirement text does not state.")
+CONTRACT_SWE1_HAL = (
+    " Oscillator enable: \"ready\":\"RCC_SR.<FLAG>RDY\" and status HAL_OK; ready timeout: op clear (the driver "
+    "clears the enable bit it set), \"ready\":\"never\", status HAL_TIMEOUT; invalid parameter: one entry per invalid "
+    "value (NULL pointer, unknown selector, timeout 0, timeout above HAL_RCC_TIMEOUT_VALUE) with op no_write and status "
+    "HAL_ERROR (no register/field); reset (assert then release): op clear on the reset bit with status HAL_OK.")
+CONTRACT_SWE1_LL = " LL functions return nothing: no status and no ready; reset assert is set, release is clear."
+CONTRACT_SWE2 = (
+    "write_file workproducts/SWE.2/api_calls.json: {{\"schema\":\"forge-c/api-calls/1\",\"calls\":{{\"<case>\":"
+    "{{\"function\":\"<function>\",\"args\":[...]}}}}}} with one entry per case of "
+    "workproducts/SWE.1/register_effects.json: function = one your allocation table allocates to that case's SWR; args "
+    "= C argument expressions using only the interface types and constants you define in Interfaces{example} - no "
+    "function calls, no ';'. SWE.3 must implement the interface so that these calls compile.")
+CONTRACT_SWE3 = ("Implement the interface exactly as workproducts/SWE.2/api_calls.json calls it (names, types, "
+                 "constants): the gate compiles those calls against your header.")
+
+
+def contract_step(phase: str) -> list[str]:
+    hal = _layer() != "LL"
+    if phase == "SWE.1":
+        ex = ('{\"case\":\"HSE_ENABLE\",\"swr\":\"SWR-002\",\"register\":\"RCC_CR\",\"field\":\"HSEON\",'
+              '\"op\":\"set\",\"ready\":\"RCC_SR.HSERDY\",\"status\":\"HAL_OK\"}' if hal else
+              '{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",'
+              '\"op\":\"set\"}')
+        return [CONTRACT_SWE1.format(example=ex, extra=CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL)]
+    if phase == "SWE.2":
+        ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
+              'the caller passes the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, '
+              'an unknown selector)' if hal else ' (LL functions take no arguments: args [])')
+        return [CONTRACT_SWE2.format(example=ex)]
+    if phase == "SWE.3":
+        return [CONTRACT_SWE3]
+    return []
 
 
 def author_prompt(phase: str) -> str:
@@ -598,6 +739,11 @@ def author_prompt(phase: str) -> str:
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
         [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
+    tr = {"SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "ut", "SWE.5": "it", "SWE.6": "vt"}.get(phase)
+    if tr and trace_step(tr):  # owner trace rules go before the final 'gate freezes the baseline' step
+        body = body[:-1] + trace_step(tr) + body[-1:]
+    if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
+        body = body[:-1] + contract_step(phase) + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))

@@ -22,9 +22,10 @@ from ..policy.authz import Binding
 
 UPSTREAM_LOOPS = 2  # ADR-0008: run-wide cross-phase loop budget (= defects.UPSTREAM_LOOP_BUDGET)
 REWORK_CYCLES = 3  # checklist policy maximum_rework_cycles
+PROGRESS_EXTRA_CYCLES = 2  # owner decision 2026-10-18: rework-policy.yaml max_extra_cycles (gate.extra_cycles)
 # Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008). The rework budget is per epoch
-# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES visits again.
-MAX_VISITS = (1 + REWORK_CYCLES) * (1 + UPSTREAM_LOOPS)
+# (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES (+ progress extension) visits.
+MAX_VISITS = (1 + REWORK_CYCLES + PROGRESS_EXTRA_CYCLES) * (1 + UPSTREAM_LOOPS)
 ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 
@@ -72,6 +73,10 @@ def robot_scaffold_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.workflow.robot_scaffold --workspace ."
 
 
+def unit_scaffold_cmd() -> str:
+    return f"{_env()} {sys.executable} -m forge_factory.inspection.unit_scaffold --workspace ."
+
+
 def regmap_cmd() -> str:
     return f"{_env()} {sys.executable} -m forge_factory.inspection.regmap --workspace ."
 
@@ -87,13 +92,16 @@ MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR
 
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
           sections: dict[str, str] | None = None, code_model: str | None = None,
-          chunk_lines: int = 40, layer: str = "LL+HAL") -> tuple[str, dict]:
+          chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
+          isolation: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
+    prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
+    prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
     dot, nodes = _build(work_order, phases, goal, sections)
     if code_model:
         for n in CODE_NODES:
@@ -144,9 +152,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             # ADR-0009: LL layer = regmap + LL author; HAL layer = HAL author on the PROVIDED LL (no regmap: the
             # provided header is frozen); legacy LL+HAL = both authors
             chain = {"LL": [regmap, ll], "HAL": [hal], "LL+HAL": [regmap, ll, hal]}[layer] + [fix]
+            units = "swe3_units"  # CAPA-028/029: deterministic unit-spec/design/MISRA scaffold (trace profile only)
+            if prompts.TRACE["on"]:
+                chain = chain + [units]
             entry = chain[0]
             for n_ in chain:
-                if n_ != regmap:
+                if n_ not in (regmap, units):
                     nodes[n_] = {"role": "swe3-author", "phase": phase}
             spec = {regmap: f'  {regmap} [shape=parallelogram, label="SWE.3 register map generator (RM0486, '
                             f'deterministic)", script="{_q(regmap_cmd())}"]',
@@ -155,7 +166,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                     hal: f'  {hal} [label="SWE.3 HAL author", max_visits={ONCE}, timeout="1200s", '
                          f'prompt="{_q(hal_author_prompt())}"]',
                     fix: f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", '
-                         f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]'}
+                         f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
+                    units: f'  {units} [shape=parallelogram, label="SWE.3 unit specification and design scaffold '
+                           f'(deterministic)", script="{_q(unit_scaffold_cmd())}"]'}
             L += [spec[n_] for n_ in chain] + [f"  {x} -> {y}" for x, y in zip(chain, chain[1:] + [a], strict=True)]
         if phase == "SWE.4":  # unit tests written in their own fresh context; rework re-enters at the SWE.4 author
             from .prompts import unit_test_author_prompt

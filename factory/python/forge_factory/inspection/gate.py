@@ -106,6 +106,29 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 
         generated += check_views(store.workspace, render=True)["major_findings"]
+    from ..layer import swtrace_enabled
+
+    if phase != "SWE.1" and swtrace_enabled(store.workspace):  # owner addendum 2026-10-17: trace relations of this phase
+        from .swtrace import check_phase
+
+        generated += check_phase(store.workspace, phase)["major_findings"]
+    from ..layer import layer_of, register_contract_enabled
+
+    if register_contract_enabled(store.workspace):  # owner decision 2026-10-19 (B): the oracle's register contract
+        from ..assurance import register_contract as RC
+
+        lay = layer_of(store.workspace)
+        if phase == "SWE.1":
+            generated += RC.check_effects(store.workspace, "LL" if lay == "LL" else "HAL")
+        elif phase == "SWE.2":
+            generated += RC.check_calls(store.workspace)
+        elif phase == "SWE.3":
+            hdr = "stm32n6xx_ll_rcc.h" if lay == "LL" else "stm32n6xx_hal_rcc.h"
+            generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
+                                                             store.workspace / "software/ll"], hdr)
+    from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
+
+    generated += workspace_scope_findings(store.workspace, phase)
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
@@ -177,6 +200,9 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
     print(json.dumps(g))
+    from ..assurance import observe  # EASA-T022: observe-only assurance gate; never changes this decision
+
+    observe.phase(store.workspace, phase, g)
     # The agent's own PASS is never sufficient: the recorded, deterministic gate decision rules.
     if g["decision"] == "PASS":
         from . import defects
@@ -225,6 +251,63 @@ def stuck_signature(ws: Path, phase: str, since: str = "") -> tuple | None:
     return b if a is not None and a == b else None
 
 
+EXTENSION_POLICY = "config/factory/rework-policy.yaml"
+_ITEM = re.compile(r"\b[A-Z][A-Z0-9]{1,7}(?:-[A-Z0-9]+)*-\d+\b")  # UT-007, SWR-006, USPEC-HAL-09-01, DEF-004
+
+
+def extra_cycles() -> int:
+    """Owner decision 2026-10-18 (rework-policy.yaml): extra failed cycles allowed while a phase progresses; 0 when
+    the policy is absent or unreadable (fail closed to the authored checklist maximum)."""
+    from ..common import REPO_ROOT, load_yaml
+
+    try:
+        return max(0, min(5, int(load_yaml(REPO_ROOT / EXTENSION_POLICY)["progress_extension"]["max_extra_cycles"])))
+    except (OSError, KeyError, TypeError, ValueError):
+        return 0
+
+
+def _issue_key(s: str) -> str:
+    """An author-gate issue without line/column numbers (a warning that only moved is the same issue)."""
+    return re.sub(r":\d+(?=:|$)", "", s)
+
+
+def failed_cycles(store: Store, phase: str, since: str) -> list[dict]:
+    """The phase's failed cycles of this epoch in time order: author gate rejections (issues without line numbers)
+    and failed inspections (check id with the item ids its finding names), as multisets."""
+    from collections import Counter
+
+    cyc = []
+    for x in _epoch_lines(store.workspace, phase, since):
+        d = json.loads(x)
+        if d.get("step") == "author" and d.get("result") == "REJECTED":
+            iss = [_issue_key(str(i)) for i in (d.get("issues") or d.get("errors") or [])]
+            cyc.append({"ts": d.get("ts", ""), "kind": "author", "items": Counter(iss), "n": len(iss)})
+    for i in store.inspections(phase):
+        if i.get("verdict") != "PASS" and i.get("recorded_at", "") >= since:
+            fs = [f for f in i.get("findings") or [] if isinstance(f, dict)]
+            keys = [str(f.get("id") or f.get("check_id") or "?") + "@" + ",".join(
+                sorted(set(_ITEM.findall(str(f.get("detail") or ""))))) for f in fs]
+            cyc.append({"ts": i.get("recorded_at", ""), "kind": "inspect", "items": Counter(keys), "n": len(keys)})
+    return sorted(cyc, key=lambda c: c["ts"])
+
+
+def progressing(store: Store, phase: str, since: str) -> dict:
+    """Owner progress rule (rework-policy.yaml): the last failed cycle improved on the one before it."""
+    cyc = failed_cycles(store, phase, since)
+    if len(cyc) < 2:
+        return {"progress": False, "why": "fewer than two failed cycles"}
+    a, b = cyc[-2], cyc[-1]
+    if a["kind"] == "author" and b["kind"] == "inspect":
+        return {"progress": True, "why": "deterministic gates passed; reached inspection"}
+    if a["kind"] != b["kind"]:
+        return {"progress": False, "why": "regressed from inspection to an author gate rejection"}
+    gone = sorted((a["items"] - b["items"]).elements())
+    if gone and b["n"] <= a["n"]:
+        return {"progress": True, "why": f"{len(gone)} item(s) resolved, {a['n']} -> {b['n']} findings",
+                "resolved": gone[:6]}
+    return {"progress": False, "why": f"no item resolved or findings grew ({a['n']} -> {b['n']})"}
+
+
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
@@ -238,6 +321,11 @@ def step_route(store: Store, phase: str) -> int:
     budget = int(g["max_rework_cycles"])
     stuck = stuck_signature(store.workspace, phase, since) if g["decision"] != "PASS" else None
     exhausted = cycles >= budget or stuck is not None
+    extension = None
+    if exhausted and stuck is None and g["decision"] != "PASS" and cycles < budget + extra_cycles():
+        # owner decision 2026-10-18: one more cycle at a time, only while the phase measurably progresses
+        extension = {"cycle": cycles - budget + 1, "of": extra_cycles(), **progressing(store, phase, since)}
+        exhausted = not extension["progress"]
     from . import defects
 
     up = defects.open_from(store.workspace, phase)
@@ -265,7 +353,12 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] != "PASS" and exhausted:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
+    if extension is not None:
+        g = {**g, "progress_extension": extension}
     _state(store.workspace, phase, {"step": "route", "gate": g})
+    if extension is not None and extension["progress"]:
+        emit("workflow", "INFO", f"{phase} progress extension {extension['cycle']}/{extension['of']}: "
+             f"{extension['why']}", phase=phase)
     if g["decision"] == "BLOCKED":
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)
         return 1

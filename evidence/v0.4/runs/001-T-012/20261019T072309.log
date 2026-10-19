@@ -1,0 +1,35 @@
+{
+ "task": "T-012",
+ "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+ "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+ "archive_unchanged": true,
+ "checks": [
+  {
+   "check": "unit tests run PASS (raw tool result)",
+   "pass": true
+  },
+  {
+   "check": "unit test sources",
+   "pass": true
+  },
+  {
+   "check": "static analysis summary",
+   "pass": true
+  },
+  {
+   "check": "MISRA coverage matrix (subset, no compliance claim)",
+   "pass": true
+  },
+  {
+   "check": "raw tool logs",
+   "pass": true
+  },
+  {
+   "check": "SWE.4 inspection PASS",
+   "pass": true
+  }
+ ],
+ "status": "PASS"
+}
+
+--- stderr ---

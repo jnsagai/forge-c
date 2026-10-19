@@ -45,3 +45,45 @@ def test_resume_carries_only_leading_passed_phases(tmp_path, monkeypatch):
     rec = json.loads((ws / ".forge-run/manifest.json").read_text())["resumed_from"]
     assert rec["source_work_order"] == "WO-SRC" and rec["restart_phase"] == "SWE.3"
     assert set(rec["stable_phases"]) == {"SWE.1", "SWE.2"}
+
+
+def _stable_swe1(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+    src = tmp_path / "state/workorders/WO-SRC/workspace"
+    for rel, txt in {"workproducts/SWE.1/software_requirements.md":
+                     "- **SWR-001** When enable is requested, the RCC driver shall set the clock enable bit.\n",
+                     "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,t.c\n",
+                     "traceability/provided_ll.h": "#define LL 1\n",
+                     "configuration/system_names.json": json.dumps(["RCC driver"])}.items():
+        (src / rel).parent.mkdir(parents=True, exist_ok=True)
+        (src / rel).write_text(txt)
+    add_reqif(src)
+    s = Store(src)
+    bl = s.freeze("SWE.1", "swe1-author")
+    assert s.record_inspection("SWE.1", "swe1-inspector", bl["baseline_id"], _all_pass("SWE.1"))["verdict"] == "PASS"
+    ws = tmp_path / "state/workorders/WO-NEW/workspace"
+    (ws / "traceability").mkdir(parents=True)
+    (ws / ".forge-run").mkdir(parents=True)
+    subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
+    return src, ws
+
+
+def test_capa040_provided_read_only_file_is_kept_and_must_match(tmp_path, monkeypatch):
+    """CAPA-040 (r132/r133): a HAL resume copied the source's provided LL header over the new work order's own
+    read-only copy (Permission denied). Provided files are never copied; a different source copy refuses the resume."""
+    import hashlib
+
+    import pytest
+
+    src, ws = _stable_swe1(tmp_path, monkeypatch)
+    mine = ws / "traceability/provided_ll.h"
+    mine.write_text("#define LL 1\n")
+    mine.chmod(0o444)
+    man = {"work_order": "WO-NEW", "provided": [{"path": "traceability/provided_ll.h",
+                                                "sha256": hashlib.sha256(b"#define LL 1\n").hexdigest()}]}
+    assert resume_from(ws, man, "WO-SRC")[0] == "SWE.2"
+    assert mine.read_text() == "#define LL 1\n" and (mine.stat().st_mode & 0o777) == 0o444
+    (src / "traceability/provided_ll.h").write_text("#define LL 2\n")
+    with pytest.raises(ValueError, match="RESUME_PROVIDED_MISMATCH:traceability/provided_ll.h"):
+        resume_from(ws, man, "WO-SRC")

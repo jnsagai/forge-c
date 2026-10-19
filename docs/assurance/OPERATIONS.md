@@ -1,0 +1,108 @@
+# Feature 006 (EASA) operations guide
+
+Feature 006 adds independent engineering checks to SWE.1–SWE.6. It is bounded engineering evidence for offline human
+review. It is not an ISO 26262 or Automotive SPICE conformance statement, not an ASIL approval and not a safety
+sign-off. It adds no SUP/MAN workflow.
+
+## 1. What runs, and where
+
+| Where | What | Can it change an outcome? |
+|---|---|---|
+| SWE inspection gate (`inspection/gate.py step_inspect`) | `assurance/observe.py`: the assurance gate for the phase. It uses recorded MCP tool results plus the independent verifiers in `assurance/verifiers.py`, and appends to `.forge-run/assurance/gate-log.jsonl` with reports under `.forge-run/assurance/reports/` | No. It is observe-only and the 002 decision stands. |
+| SWE.2–SWE.6 author gate, trace-profile work orders only | `inspection/swtrace.py` checks the phase's trace relation and writes its matrix into `workproducts/SWE.n/traceability/` | Yes, as the existing presence gate: missing links block the freeze. This is the owner addendum of 2026-10-17. |
+| SWE.3 chain, trace profile only | `inspection/unit_scaffold.py` (node `swe3_units`) generates the unit-spec skeleton, the as-built PlantUML designs and the MISRA deviation statement from facts | No. It generates; the author must replace the markers. |
+| Finalizer (`release/finalize.py`) | `assurance/package.py` adds `assurance/` (gate log, independence, applicability, fidelity, claims, hashes) and `configuration/model-profile.json` | Only in ENFORCING mode, through the existing `open_findings` rule of the unchanged v0.5 release policy |
+| Dashboard | `/api/v1/assurance/*` and the Assurance section of the existing page | No (read-only) |
+
+Work orders prepared from now on carry `"trace_profile": "owner-2026-10-17"` in `.forge-run/manifest.json`. Older work
+orders and test fixtures keep their original rules.
+
+## 2. Commands
+
+```sh
+. scripts/forge-env.sh
+python -m forge_factory.assurance.baseline --out <file>         # capability matrix, tools, locked references (T001)
+python -m forge_factory.assurance.regress --full --out <file>   # regression + negative controls (T004)
+python -m forge_factory.assurance.compat --out <file>           # migration on a DB copy, frozen files (T007)
+python -m forge_factory.assurance.audit <zip> --out <file>      # read-only frozen baseline manifest (T003)
+python -m forge_factory.assurance.matrix                        # FR -> task -> AT -> evidence status (T071)
+python - <<'EOF'                                                # copy-based shadow audit of a sealed package (T064)
+from forge_factory.assurance import shadow; print(shadow.run(ZIP, RM_INPUTS_DIR))
+EOF
+```
+
+Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json`; see `docs/assurance/EASA-STATUS.md`. The
+authored `tasks.md` keeps its boxes unchecked by design, because `validate_spec.py` counts them.
+
+## 3. Rollout: OBSERVE_ONLY → PILOT → ENFORCING
+
+- **Today:** `config/factory/assurance-policy.yaml` is absent, so the built-in example policy applies: OBSERVE_ONLY,
+  profile ENHANCED.
+- **To change the mode:**
+  1. Write the policy file.
+  2. Have a human approve its sha (`policy.approve`).
+  3. Request the mode with `policy.request_mode`.
+  - PILOT needs a human authorization block.
+  - ENFORCING also needs a PASS pilot record with a measured false-positive and false-negative rate and an independent
+    human review.
+- An agent can do none of this.
+- A policy that isn't approved, or doesn't parse, is never loaded; the previous one stays active.
+
+## 4. Oracle independence
+
+- A test oracle counts as independent only if it is derived from the frozen requirements and the baselined reference
+  manual (`assurance/oracle_gen.py`, literal RM constants) and never sees the implementation.
+- An oracle that uses symbols defined by the code under test, copies a value from it, or was written by an author role
+  is `CONTAMINATED` (`assurance/oracle.py`). The sealed r101/r102 unit tests are this case: their expected values are
+  the generated macros (audit finding F-01).
+- The same model for author and inspector is recorded as common cause (`independence.py`): PARTIAL, not SUPPORTED.
+- Holdout expectations live in a vault owned by the verifier sub-UID (rootless Podman). Author processes are refused by
+  the policy check and by the kernel.
+
+## 5. Formal verifiers (CBMC, Frama-C)
+
+- Installed in user space (`evidence/easa/tools/formal-tools-install.json`), OSS only.
+- `assurance/formal.py` builds the harness from facts: the layer's public API and the register file the LL header
+  declares. Every argument and register word is unconstrained.
+  - **CBMC** (`BOUNDED_PROOF_WHERE_FEASIBLE`, HIGH_ASSURANCE profile): runtime-error freedom and bounded termination.
+    A loop that needs more than the unwind bound is INCONCLUSIVE, never PASS; busy-wait loops are not assumed to exit.
+  - **Frama-C Eva** (`STATIC_ANALYSIS`, used only when no accepted agent tool result exists): possible runtime errors
+    (alarms) for all inputs.
+- The verdict assumes valid pointer arguments. An informational CBMC run per pointer function records whether NULL is
+  handled.
+- Model limits: registers are plain memory (a register does not change between two reads), single thread, no
+  interrupts. These are proofs about the C code, not about the silicon, and they say nothing about functional register
+  semantics (that is the independent oracle).
+- Measured (`evidence/easa/measurements/formal-survey-v1.json`, `corpus-r102-v3-formal.json`): 11 sealed packages
+  PASS/0 alarms; on the seeded corpus formal catches 1/10 (the uninitialised variable) with 0 false positives.
+- Re-run: `python -m forge_factory.assurance.formal <review.zip>... --inputs <RM inputs> --out <file>`.
+
+## 6. Normative status
+
+- 2026-10-18: the owner registered an ISO 26262-6:2018 copy (outside the repository, by hash) and, as the named
+  reviewer, signed all 15 method tables. The catalog is CONTROLLED_RECONCILED. See
+  `docs/assurance/normative-reconciliation-plan.md`.
+- This changes which method ratings EASA uses. It does not authorize any ISO 26262 conformance, ASIL approval or
+  certification statement by the factory.
+
+## 7. Owner dispositions of input issues
+
+- `config/factory/verification-dispositions.yaml` records how the owner settled an escalated INPUT issue. Each entry
+  has a requirement-text match, a disposition, the limitation, a human approver and a date. An entry without a human
+  approver is refused.
+- An INPUT defect that a disposition settles is recorded as DISPOSITIONED: it is not escalated again and is not a
+  package gap. The limitation is stated in every package (`assurance/fidelity.json`, ASSURANCE-CASE.md).
+- OD-2026-10-18-01 (Jefferson Nascimento): SWR-015-type requirements on the RCC_CR.HSION reset value are verified
+  against the documented reset value only. The Renode model resets RCC_CR to 0, and there is no HIL or physical
+  observation (EASA audit F-08, r136 DEF-005).
+
+## 8. Decisions that only the owner can take
+
+1. **Product safety scope of the RCC work orders.** Decided 2026-10-18: ASIL B (confirmed by the owner), in
+   `config/factory/safety-scope.yaml`; copied read-only into each work order.
+   - Without it, the two safety documents stay required and every package stays BLOCKED.
+   - With an approved QM scope (human approver, written rationale), the package states the documents as not applicable.
+     The unchanged release policy can then give READY_FOR_OFFLINE_REVIEW. This was measured on a copy of sealed r102.
+2. **Registering a licensed ISO 26262-6:2018 copy, and a competent reviewer's per-table reconciliation.**
+3. **PILOT authorization for EASA**, after reviewing the dry-run and corpus measurements in `evidence/easa/measurements/`.
+4. **Recording a different model or provider per role**, if author/inspector independence beyond PARTIAL is wanted.

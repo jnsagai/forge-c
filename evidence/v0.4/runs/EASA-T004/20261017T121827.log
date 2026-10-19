@@ -1,0 +1,8 @@
+design-006: PASS exit=0 out=b8f881a26f0b
+design-006-negative-46-methods: PASS exit=1 out=2d4d06447f0c
+design-006-negative-checked-entry: PASS exit=1 out=b098a560ea88
+design-check-002: PASS exit=0 out=5fc709c82a88
+legacy-v0.1: PASS exit=0 out=af4c1956c2c2
+factory-test: PASS exit=0 out=05e5ceab84d4
+
+--- stderr ---

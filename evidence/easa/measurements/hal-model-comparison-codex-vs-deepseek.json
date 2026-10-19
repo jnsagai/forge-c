@@ -1,0 +1,84 @@
+{
+  "schema": "forge-c/easa-measurement/0.1",
+  "subject": "HAL model comparison, 5 fresh runs each, ASIL B scope, PILOT, provided LL r125",
+  "decision_rule": ">=3/5 runs pass SWE.1-SWE.6 (set before launch)",
+  "batches": {
+    "deepseek-flash (all roles), rev 26702e6": {
+      "r138": {
+        "phases_passed": 2,
+        "package_status": "BLOCKED",
+        "gaps": 30
+      },
+      "r139": {
+        "phases_passed": 2,
+        "package_status": "BLOCKED",
+        "gaps": 30
+      },
+      "r140": {
+        "phases_passed": 1,
+        "package_status": "BLOCKED",
+        "gaps": 44
+      },
+      "r141": {
+        "phases_passed": 2,
+        "package_status": "BLOCKED",
+        "gaps": 30
+      },
+      "r142": {
+        "phases_passed": 1,
+        "package_status": "BLOCKED",
+        "gaps": 43
+      }
+    },
+    "codex gpt-6.1-sol authors + deepseek-flash inspectors, rev ce039ad": {
+      "r143": {
+        "phases_passed": 3,
+        "package_status": "BLOCKED",
+        "gaps": 21
+      },
+      "r144": {
+        "phases_passed": 6,
+        "package_status": "BLOCKED",
+        "gaps": 2
+      },
+      "r145": {
+        "phases_passed": 2,
+        "package_status": "BLOCKED",
+        "gaps": 29
+      },
+      "r146": {
+        "phases_passed": 3,
+        "package_status": "BLOCKED",
+        "gaps": 21
+      },
+      "r147": {
+        "phases_passed": 6,
+        "package_status": "BLOCKED",
+        "gaps": 2
+      }
+    }
+  },
+  "summary": {
+    "deepseek-flash": {
+      "all_six": "0/5",
+      "mean_phases_passed": 1.6
+    },
+    "codex authors (gpt-6.1-sol high) + deepseek-flash inspectors": {
+      "all_six": "2/5",
+      "mean_phases_passed": 4.0
+    }
+  },
+  "codex_failures": {
+    "r143": "SWE.4: inspector test-adequacy findings (fallback bound, report claim vs log)",
+    "r145": "SWE.3: PlantUML render errors, then unit-spec/matrix inconsistency",
+    "r146": "SWE.4: inspector test-adequacy findings (vacuous loop test, uncovered timeout branches)"
+  },
+  "passing_packages": "r144 and r147: six matrices complete (evidence/easa/pilots/pilot-check-r144-r147-codex.json); BLOCKED only on the ASIL B safety documents",
+  "fairness": "revisions differ only by the ACP integration (ce039ad adds forge_factory.acp and --acp-authors); inspectors identical (deepseek-flash)",
+  "result": "decision rule NOT met (2/5); large improvement over 0/5 (mean phases 4.0 vs 1.6)",
+  "limits": [
+    "n=5 per arm",
+    "Codex usage counts against the owner's ChatGPT plan and is not metered here",
+    "author/inspector model diversity differs between arms (independence SUPPORTED vs PARTIAL)"
+  ]
+}

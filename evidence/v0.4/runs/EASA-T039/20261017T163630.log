@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c-easa-dev
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 21 items / 18 deselected / 3 selected
+
+factory/python/tests/test_easa_m4_swe3.py ..                             [ 66%]
+factory/python/tests/test_easa_m3_m4.py .                                [100%]
+
+======================= 3 passed, 18 deselected in 0.69s =======================
+
+--- stderr ---

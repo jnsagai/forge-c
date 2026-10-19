@@ -73,7 +73,8 @@ def attempt_context(ws: Path) -> dict | None:
     return {"attempt_id": attempt, "order_id": order_of(attempt, m), "created_at": m.get("created_at", ""),
             "factory_revision": rev, "cohort": cohort, "cohort_key": "|".join(f"{k}={v}" for k, v in cohort.items()),
             "run_id": fabro_run or None,
-            "deferred_safety": str(target.get("safety_allocation", "")).startswith("OUT_OF_SCOPE")}
+            "deferred_safety": str(target.get("safety_allocation", "")).startswith("OUT_OF_SCOPE")
+                               or "PENDING owner allocation review" in str(target.get("safety_allocation", ""))}
 
 
 def _obs(ctx: dict, *, raw: str, component: str, phase: str | None, step: str, ts: str, outcome: str,

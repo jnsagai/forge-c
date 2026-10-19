@@ -1,0 +1,100 @@
+{
+  "CAPA-034": {
+    "history": [
+      {
+        "at": "2026-10-17T17:23:10.238433Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[\"CAPA-034\"]",
+        "from_state": null,
+        "reason": "r116 SWE.3 STUCK on UNIT:SWR_NOT_REFINED:SWR-019 (initial-state invariant)",
+        "seq": 278,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T17:23:10.306883Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 279,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T17:23:10.415224Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-036 assigned",
+        "seq": 280,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T17:24:38.664919Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[\"reproducer-run:rr-fb80269f9c855600bf03\", \"reproducer-run:rr-cb5f7c5acb05331ff868\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 281,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T17:24:38.692301Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[\"git:4c658080a84b..cd66e3483b52\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix cd66e3483b52 (patch 5247 bytes)",
+        "seq": 282,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T17:24:38.800910Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[\"reproducer-run:rr-cccc4a1867e56a1fd83b\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-036 absent at cd66e3483b52",
+        "seq": 283,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T17:24:38.839644Z",
+        "capa_id": "CAPA-034",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 284,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "4c658080a84b98e5e3f7d038ddc8d7de47c8e3d5",
+      "cd66e3483b52dfe90958d33db2053c58b23eefd2",
+      "pd-054d229dc434e0ccc9fd"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<cd66e3483b52"
+      ],
+      "candidate_patch_sha256": "67e15f364c5eb72d5c4f1db5433e8b2a8c73e5468d9df94b3c2e11f313b68e70",
+      "capa_id": "CAPA-034",
+      "created_at": "2026-10-17T17:23:10.238433Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-034"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-036",
+      "reproducer_id": "RPR-036",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-fb80269f9c855600bf03",
+        "reproducer-run:rr-cb5f7c5acb05331ff868"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the SWE.3 trace gate demanded unit refinement of a component-level initial-state invariant",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T17:24:38.839644Z"
+    }
+  }
+}

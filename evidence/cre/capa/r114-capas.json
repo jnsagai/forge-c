@@ -1,0 +1,105 @@
+{
+  "CAPA-032": {
+    "history": [
+      {
+        "at": "2026-10-17T17:02:02.820121Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[\"CAPA-032\"]",
+        "from_state": null,
+        "reason": "r112/r114 SWE.1 BLOCKED: EARS_UNKNOWN_SYSTEM_NAME repeated three cycles",
+        "seq": 263,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T17:02:03.002109Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 264,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T17:02:03.096484Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-034 assigned",
+        "seq": 265,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T17:03:24.981161Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[\"reproducer-run:rr-e0c5bd430ec9d701d16b\", \"reproducer-run:rr-94de41d3dc567a23a994\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 266,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T17:03:25.009039Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[\"git:6896be1881fa..99f0fb2bfc47\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 99f0fb2bfc47 (patch 3490 bytes)",
+        "seq": 267,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T17:03:25.118657Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[\"reproducer-run:rr-ea3ca8911f4a6b703bd7\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-034 absent at 99f0fb2bfc47",
+        "seq": 268,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T17:03:25.159735Z",
+        "capa_id": "CAPA-032",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 269,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-0f3f9b0d76092572298515c62be08f50d5598c57",
+      "cfp1-37400c0e36c55a8203b94869888e2618e84f6dc2",
+      "cfp1-8305ff4a308b6673335f309c0e13dab209edbea4",
+      "cfp1-973861c80fe075aeffc9c0b68ae7fe619e3ce824",
+      "cfp1-e5f444e1047ee5bdd74ca33144b5c5cfe423b41b",
+      "6896be1881fa2fa11e4a5ef0363eea416b1652b8",
+      "99f0fb2bfc471432b7697c6f57c95b007fa283e1",
+      "pd-e6093d0d944c550648e0"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<99f0fb2bfc47"
+      ],
+      "candidate_patch_sha256": "6fa054ac22abb3a5a6d4e2f7237d7b0e54ecca0ebebded8c02993eb5fe12a90b",
+      "capa_id": "CAPA-032",
+      "created_at": "2026-10-17T17:02:02.820121Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-032"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-034",
+      "reproducer_id": "RPR-034",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-e0c5bd430ec9d701d16b",
+        "reproducer-run:rr-94de41d3dc567a23a994"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the deterministic EARS finding gave no actionable hint (parsed subject / allowed names) for a qualified subject",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T17:03:25.159735Z"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+"""SPEC-001 T-015: footprint + per-call instruction-count collectors (Renode, cycle proxy per OD-2026-10-19-05), a
+baseline comparator and a Pareto report; read-only on packages, deterministic counts, honest NOT_COMPARABLE."""
+import json
+import shutil
+import zipfile
+
+import pytest
+from forge_factory import optimization as O
+from forge_factory.mcp.servers import sim
+from test_easa_register_contract import CALLS, EFFECTS, HAL_C, HAL_H, LL
+
+needs_target = pytest.mark.skipif(not (sim.renode_bin() and shutil.which("arm-none-eabi-gcc")),
+                                  reason="Renode or GNU Arm not installed")
+
+
+def _pkg(tmp_path, name, hal_c=HAL_C, flash=600, frame=8, contract=True):
+    p = tmp_path / f"{name}-review.zip"
+    files = {"software/ll/stm32n6xx_ll_rcc.h": LL, "software/hal/stm32n6xx_hal_rcc.h": HAL_H,
+             "software/hal/stm32n6xx_hal_rcc.c": hal_c,
+             "verification/footprint/memory_stack_summary.json": json.dumps(
+                 {"flash_bytes": flash, "ram_bytes": 0, "max_frame_bytes": frame, "scope": "object-level"})}
+    if contract:
+        files.update({O.EFFECTS: json.dumps(EFFECTS), O.CALLS: json.dumps(CALLS)})
+    with zipfile.ZipFile(p, "w") as z:
+        for k, v in files.items():
+            z.writestr("evidence/" + k, v)
+    return p
+
+
+def test_comparator_and_pareto_on_given_measurements():
+    a = {"package": "a", "flash_bytes": 600, "ram_bytes": 0, "max_frame_bytes": 8,
+         "instructions": {"X": {"instructions": 40}, "Y": {"instructions": 10}}}
+    b = {"package": "b", "flash_bytes": 560, "ram_bytes": 0, "max_frame_bytes": 8,
+         "instructions": {"X": {"instructions": 52}, "Y": {"instructions": 10}, "Z": {"instructions": 3}}}
+    c = {"package": "c", "flash_bytes": 640, "ram_bytes": 0, "max_frame_bytes": 16,
+         "instructions": {"X": {"instructions": 60}, "Y": {"instructions": 12}}}
+    r = O.compare(a, b)
+    assert r["common_cases"] == ["X", "Y"] and r["overall"] == "TRADE_OFF"
+    assert r["metrics"]["flash_bytes"]["verdict"] == "BETTER" and r["metrics"]["instructions_common"]["delta"] == 12
+    assert O.compare(a, c)["overall"] == "DOMINATED"
+    assert O.pareto([a, b, c])["pareto_front"] == ["a", "b"]
+    assert O.compare(a, {**b, "instructions": {}})["metrics"]["instructions_common"]["verdict"] == "NOT_COMPARABLE"
+
+
+def test_package_without_register_contract_reports_it_and_stays_unchanged(tmp_path):
+    m = O.collect(_pkg(tmp_path, "old", contract=False))
+    assert m["instructions_status"].startswith("NO_REGISTER_CONTRACT") and m["flash_bytes"] == 600
+    assert m["archive_unchanged"]
+
+
+@needs_target
+def test_renode_counts_per_call_are_deterministic_and_see_a_slower_driver(tmp_path):
+    fast = O.collect(_pkg(tmp_path, "fast"))
+    assert fast["instructions_status"] == "MEASURED" and fast["archive_unchanged"], fast
+    assert all(v["status"] == "OK" and v["instructions"] > 0 for v in fast["instructions"].values()), fast
+    slow_c = HAL_C.replace("    LL_RCC_HSE_Enable();\n", "    for (count = 0U; count < 50U; count++) { __asm volatile(\"nop\"); }\n"
+                                                             "    count = 0U;\n    LL_RCC_HSE_Enable();\n")
+    (tmp_path / "s").mkdir()
+    slow = O.collect(_pkg(tmp_path / "s", "slow", hal_c=slow_c))
+    assert slow["instructions_status"] == "MEASURED", slow
+    assert slow["instructions"]["HSE_ENABLE"]["instructions"] > fast["instructions"]["HSE_ENABLE"]["instructions"]
+    assert O.compare(fast, slow)["metrics"]["instructions_common"]["verdict"] == "WORSE"

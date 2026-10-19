@@ -38,6 +38,28 @@ def _dir(ws: Path) -> Path:
     return ws / DIR
 
 
+DISPOSITIONS = ".forge-run/owner_dispositions.json"  # owner decisions copied read-only by workorder.prepare
+
+
+def owner_dispositions(ws: Path) -> list[dict]:
+    p = Path(ws) / DISPOSITIONS
+    try:
+        return json.loads(p.read_text()) if p.is_file() else []
+    except ValueError:
+        return []
+
+
+def settled_by(ws: Path, requirement_ids: list[str], quote: str = "") -> dict | None:
+    """The owner disposition that settles an INPUT issue about these requirements (matched on their frozen text)."""
+    texts = _requirement_texts(ws)
+    hay = [texts.get(r, "") for r in requirement_ids] + [quote]
+    for d in owner_dispositions(ws):
+        rx = re.compile(d.get("requirement_text_regex") or r"(?!x)x", re.I)
+        if any(rx.search(h) for h in hay if h):
+            return d
+    return None
+
+
 def all_defects(ws: Path) -> list[dict]:
     d = _dir(ws)
     return [json.loads(p.read_text()) for p in sorted(d.glob("DEF-*.json"))] if d.is_dir() else []
@@ -167,7 +189,10 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
            "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
     if kind == "TEST":
         rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
-    if kind in ESCALATED_KINDS:
+    od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" else None
+    if od is not None:  # the owner already decided this input issue: recorded, not escalated again
+        _event(rec, "DISPOSITIONED", disposition=od["id"], by=od.get("approved_by"), note=od.get("disposition"))
+    elif kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
         _event(rec, "DECLARED", note="test corrected in its own phase; reviewed by the inspector and the human")
@@ -278,12 +303,13 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
 
 
 def gaps(ws: Path) -> list[str]:
-    """Release finalizer: every defect not VERIFIED/REJECTED/DECLARED/WITHDRAWN is a gap."""
+    """Release finalizer: every defect not VERIFIED/REJECTED/DECLARED/WITHDRAWN/DISPOSITIONED is a gap (a
+    DISPOSITIONED one is an owner decision; its limitation is stated in the package)."""
     out = []
     for d in all_defects(ws):
         if d["status"] == "ESCALATED":
             out.append(f"escalated_defect:{d['id']}:{d['kind']}")
-        elif d["status"] not in ("VERIFIED", "REJECTED", "DECLARED", "WITHDRAWN"):
+        elif d["status"] not in ("VERIFIED", "REJECTED", "DECLARED", "WITHDRAWN", "DISPOSITIONED"):
             out.append(f"open_defect:{d['id']}:{d['kind']}:{d['status']}"
                        + (":gate-filed" if d.get("reported_by") == GATE_REPORTER else ""))
     return out

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/assurance-claim.schema.json",
+  "title": "assurance-claim",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_order_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assertion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "argument": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "counterevidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "SUPPORTED",
+        "UNSUPPORTED",
+        "CONTESTED",
+        "UNKNOWN"
+      ]
+    },
+    "verifier_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "claim_id",
+    "work_order_id",
+    "assertion",
+    "argument",
+    "evidence_refs",
+    "counterevidence_refs",
+    "status",
+    "verifier_ref"
+  ]
+}

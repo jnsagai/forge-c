@@ -43,6 +43,8 @@ input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
 <h3>CAPA (root cause VERIFIED only by reproducer contrast)</h3><div class="scroll"><table id="rcapa"></table></div>
 <h3>Workflow yield per cohort (CRE-R09) and other CRE measurements</h3><div class="scroll"><table id="rmet"></table></div>
 <h3>Promotion decisions (no automatic deployment)</h3><div class="scroll"><table id="rprom"></table></div></section>
+<section class="full"><h2>Assurance (feature 006 EASA — OBSERVE_ONLY; bounded engineering evidence, no ISO/ASPICE/ASIL claim)</h2>
+<div id="asum" class="muted"></div><div class="scroll"><table id="awo"></table></div></section>
 <section class="full"><h2>Work orders and SWE phase board</h2><div class="scroll"><table id="runs"></table></div></section>
 <section><h2>Incidents and repairs</h2><div class="scroll"><table id="inc"></table></div></section>
 <section><h2>Release packages (offline review only)</h2><div class="scroll"><table id="pkg"></table></div></section>
@@ -96,6 +98,10 @@ async function loadReliability(){try{
  const m=await api("reliability/metrics");rows("rmet",["metric","cohort","status","n","value","95% interval"],m.items.filter(x=>!x.metric_id.startsWith("CRE-R10")),x=>[esc(x.metric_id),esc(x.cohort_key.replace(/driver_class=[^|]*\|target=[^|]*\|/,"").slice(0,70)),b(x.status),esc(x.numerator===null?"-":x.numerator+"/"+x.denominator),esc(x.value===null?"N/A":x.value.toFixed(3)),esc(x.ci_lower===null?"—":"["+x.ci_lower.toFixed(3)+", "+x.ci_upper.toFixed(3)+"]")]);
  const p=await api("reliability/promotions");rows("rprom",["decision","evaluated","gates"],p.items,x=>[b(x.decision),esc(x.evaluated_at.slice(0,16)),esc(x.hard_gates.map(g=>g.name+":"+g.result).join(" "))]);
 }catch(e){$("rsum").textContent="reliability view unavailable: "+e.message}}
+async function loadAssurance(){try{
+ const s=await api("assurance/summary");$("asum").textContent="EASA tasks "+JSON.stringify(s.task_counts)+" · FRs "+JSON.stringify(s.fr_counts)+" @ "+s.git_head+" — "+s.statement;
+ const w=await api("assurance/workorders");rows("awo",["work order","assurance gates (observe-only)","matrices"],w.items,x=>[esc(x.work_order),esc(Object.entries(x.assurance_gates).map(([k,v])=>k+":"+v).join(" ")),esc(x.matrices)]);
+}catch(e){$("asum").textContent="assurance view unavailable: "+e.message}}
 const FRONT=["K01","K02","K03","K04","K05","K06","K07","K09","K14","K15","K16","K20"];
 async function loadKpis(){const d=await api("kpis?window_days="+$("kwin").value);
  $("kpis").innerHTML=d.metric_values.filter(m=>FRONT.includes(m.metric_id)).map(m=>{const f=Object.entries(m.filters).map(([k,v])=>v).join(" ");
@@ -114,7 +120,7 @@ function filtersUI(){const p=prefs();$("chans").innerHTML=CH.filter(c=>me.channe
  $("lvl").value=p.min_level;$("run").value=p.run||"";$("q").value=p.q||""}
 $("apply").onclick=()=>{const p={channels:[...document.querySelectorAll("#chans input:checked")].map(x=>x.value),min_level:$("lvl").value,run:$("run").value.trim(),q:$("q").value.trim()};savePrefs(p);lastId=0;loadEvents()};
 $("go").onclick=()=>{location.href="/login?token="+encodeURIComponent($("tok").value.trim())};
-(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;loadReliability();$("rapply").onclick=loadReliability;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
+(async()=>{try{me=await api("me");$("role").textContent="role: "+me.role+" (read-only)";$("app").hidden=false;filtersUI();await refresh();await loadEvents();loadKpis();$("kwin").onchange=loadKpis;loadReliability();loadAssurance();$("rapply").onclick=loadReliability;setInterval(refresh,5000);setInterval(loadKpis,30000)}catch(e){showLogin()}})();
 </script>
 </body>
 </html>

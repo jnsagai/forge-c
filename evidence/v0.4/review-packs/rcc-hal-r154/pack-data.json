@@ -1,0 +1,247 @@
+{
+    "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+    "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+    "work_order": "WO-0002B-STM32N6-RCC-HAL-r154",
+    "provided_ll": "WO-0002A-STM32N6-RCC-LL-r125",
+    "status": "BLOCKED",
+    "gaps": [
+        "missing_or_empty_file:safety/software_safety_analysis.md",
+        "missing_or_empty_file:safety/tool_assurance_assessment.md"
+    ],
+    "safety_target": "ISO 26262-6:2018 ASIL B evidence candidate",
+    "scope": "HSI and HSE oscillator control, ADC12 and GPDMA1 peripheral clocks and resets, using the provided read-only LL driver. HAL APIs use the HAL_RCC_ prefix, hal_status_t results and const configuration pointers. PLL configuration, clock tree switching, security/privilege configuration, interrupts and low-power modes are outside this work order. Hardware access assumes the caller has the required access rights. HAL status responses, validation rules, fallback behavior and polling bounds below are work-order development contracts, not hardware guarantees from RM0486.",
+    "swrs": [
+        {
+            "id": "SWR-001",
+            "text": "When HSI enable is requested with valid parameters, the RCC driver shall set RCC_CR.HSION and return HAL_OK only after observing RCC_SR.HSIRDY equal to 1 within the caller-supplied timeout.",
+            "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.",
+            "verification": "Host unit test requests HSI enable with readiness initially absent and then present within the supplied timeout; pass if HSION is set and HAL_OK occurs only after HSIRDY is observed equal to 1."
+        },
+        {
+            "id": "SWR-002",
+            "text": "When HSE enable is requested with valid parameters, the RCC driver shall set RCC_CR.HSEON and return HAL_OK only after observing RCC_SR.HSERDY equal to 1 within the caller-supplied timeout.",
+            "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.",
+            "verification": "Host unit test requests HSE enable with readiness initially absent and then present within the supplied timeout; pass if HSEON is set and HAL_OK occurs only after HSERDY is observed equal to 1."
+        },
+        {
+            "id": "SWR-003",
+            "text": "When HSI or HSE disable is requested with valid parameters, the RCC driver shall clear the selected RCC_CR.HSION or RCC_CR.HSEON bit and return HAL_OK only after observing the corresponding RCC_SR.HSIRDY or RCC_SR.HSERDY flag equal to 0 within the caller-supplied timeout.",
+            "source": "RM0486 p.480; RM0486 p.482; work-order HAL scope.",
+            "verification": "Host unit test exercises both oscillator selectors with readiness initially set and subsequently cleared within the supplied timeout; pass if the selected enable bit is cleared and HAL_OK occurs only after the corresponding ready flag is observed equal to 0."
+        },
+        {
+            "id": "SWR-004",
+            "text": "When ADC12 or GPDMA1 peripheral clock enable or disable is requested with valid parameters, the RCC driver shall set or clear respectively the selected RCC_AHB1ENR.ADC12EN or RCC_AHB1ENR.GPDMA1EN bit and return HAL_OK.",
+            "source": "RM0486 p.575; work-order HAL scope.",
+            "verification": "Host unit test exercises enable and disable for each peripheral; pass if the selected clock bit matches the requested state and each successful operation returns HAL_OK."
+        },
+        {
+            "id": "SWR-005",
+            "text": "When ADC12 or GPDMA1 peripheral reset is requested with valid parameters, the RCC driver shall assert and then release the selected RCC_AHB1RSTR.ADC12RST or RCC_AHB1RSTR.GPDMA1RST bit and return HAL_OK with that bit cleared.",
+            "source": "RM0486 p.548; work-order HAL scope.",
+            "verification": "Host unit test observes reset assertion and release for each peripheral; pass if the selected reset bit is asserted before release, is cleared on completion and the result is HAL_OK."
+        },
+        {
+            "id": "SWR-006",
+            "text": "When an HSI or HSE ready-state wait expires without the requested ready state being observed within the caller-supplied timeout, the RCC driver shall clear the selected oscillator enable bit and return HAL_TIMEOUT with the driver fallback state set to oscillator/clock off.",
+            "source": "RM0486 p.480; RM0486 p.482; work-order failure-response contract.",
+            "verification": "Host unit test holds each selected ready flag opposite to its requested state for enable and disable operations; pass if the driver clears its selected enable bit and returns HAL_TIMEOUT within the supplied timeout bound, leaving the oscillator enable command off."
+        },
+        {
+            "id": "SWR-007",
+            "text": "When an API receives a NULL configuration pointer or an unknown selector or a timeout argument of 0 or greater than HAL_RCC_TIMEOUT_VALUE, the RCC driver shall return HAL_ERROR without register writes.",
+            "source": "RM0486 p.480; RM0486 p.548; RM0486 p.575; work-order parameter-validation contract.",
+            "verification": "Host unit test covers NULL pointers, selectors outside HSI/HSE or ADC12/GPDMA1 as appropriate, and timeout values 0 and greater than HAL_RCC_TIMEOUT_VALUE; pass if each invalid call returns HAL_ERROR with no register writes."
+        },
+        {
+            "id": "SWR-008",
+            "text": "While waiting for any oscillator ready-state transition, the RCC driver shall bound every wait to at most the caller-supplied timeout polling iterations and at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations.",
+            "source": "RM0486 p.482; work-order polling budget.",
+            "verification": "Host unit test exercises never-ready and never-cleared conditions for both oscillators with valid timeout values including 1 and HAL_RCC_TIMEOUT_VALUE; pass if each wait ends within the caller-supplied timeout and at most HAL_RCC_TIMEOUT_VALUE polling iterations."
+        },
+        {
+            "id": "SWR-009",
+            "text": "While no oscillator control has been requested after reset, the RCC driver shall leave RCC_CR.HSION at its documented reset value 1.",
+            "source": "RM0486 p.479; RM0486 p.480.",
+            "verification": "SWE.6 Robot suite reviews the startup behavior against the documented RCC_CR reset value and absence of unsolicited HSION writes; pass if the driver leaves HSION at the documented value 1 under the stated condition, with evidence classified as VERIFIED_AGAINST_DOCUMENTED_RESET_VALUE_ONLY per OD-2026-10-18-01."
+        },
+        {
+            "id": "SWR-010",
+            "text": "While no oscillator control has been requested after reset, the RCC driver shall leave RCC_CR.HSEON at its reset value 0.",
+            "source": "RM0486 p.479; RM0486 p.480.",
+            "verification": "Host unit test initializes the documented reset state and observes startup without oscillator requests; pass if HSEON remains 0."
+        },
+        {
+            "id": "SWR-011",
+            "text": "While no peripheral clock or reset operation has been requested after reset, the RCC driver shall leave RCC_AHB1ENR and RCC_AHB1RSTR at their reset values 0.",
+            "source": "RM0486 p.548; RM0486 p.575.",
+            "verification": "Host unit test initializes both registers to their documented reset values and observes startup without peripheral requests; pass if both registers remain 0."
+        },
+        {
+            "id": "SWR-012",
+            "text": "When executing a valid control operation, the RCC driver shall perform hardware access exclusively through the provided LL_RCC_ functions while preserving all register bits unrelated to the requested oscillator or peripheral.",
+            "source": "RM0486 p.480; RM0486 p.482; RM0486 p.548; RM0486 p.575; work-order provided-LL constraint.",
+            "verification": "Host unit test uses the LL fake to exercise oscillator, clock and reset operations with distinguishable unrelated bit patterns; pass if the corresponding LL operations are used and unrelated bits retain their initial values."
+        },
+        {
+            "id": "SWR-013",
+            "text": "The RCC driver shall occupy at most 4096 bytes of flash.",
+            "source": "work-order budget (owner development target).",
+            "verification": "SWE.6 Robot suite evaluates the target build's driver-attributable flash usage; pass if usage is at most 4096 bytes."
+        },
+        {
+            "id": "SWR-014",
+            "text": "The RCC driver shall occupy at most 64 bytes of static RAM.",
+            "source": "work-order budget (owner development target).",
+            "verification": "SWE.6 Robot suite evaluates the target build's driver-attributable static RAM usage; pass if usage is at most 64 bytes."
+        },
+        {
+            "id": "SWR-015",
+            "text": "The RCC driver shall use at most 128 bytes of stack.",
+            "source": "work-order budget (owner development target).",
+            "verification": "SWE.6 Robot suite evaluates the target build's worst-case driver call-chain stack usage; pass if usage is at most 128 bytes."
+        }
+    ],
+    "open_points": "- Target ASIL B scope SC-RCC-2026-10-18 has software safety allocation PENDING owner allocation review; no software safety requirements or allocated safety reaction time are available.\n- The manifest upstream approval status is NOT_PROVIDED, with DRAFT_TEMPLATE and placeholder issues; no approved supplemental HSI contract, safety allocation or budget input is inferred from that template.\n- Silicon revision is UNSPECIFIED; board-specific oscillator characteristics and physical-time limits are not supplied. The polling bound is an iteration limit.\n- OD-2026-10-18-01 limits HSION reset verification to the documented reset value: the Renode RCC model resets every register to 0 and physical target or HIL observation is unavailable.\n- The oscillator-off timeout fallback is a driver enable-command state, not an allocated system safe state or proof of physical clock shutdown.",
+    "arch": {
+        "Basis and scope": "Work order WO-0002B-STM32N6-RCC-HAL-r154; frozen requirements baseline BL-SWE.1-001, hash bc0ad6802d4da27229cdb2817e8fba23bae5588c444a059fb62cfbea431be6ea. This architecture allocates SWR-001 through SWR-015 from workproducts/SWE.1/software_requirements.md.\n\nThe HAL supports HSI and HSE enable/disable and ADC12 and GPDMA1 peripheral clock enable/disable and reset pulses. MSI, LSI, LSE, PLL1 through PLL4, clock tree switching, security/privilege configuration, interrupts and low-power management have no public APIs in this work order. Naming permission does not expand the frozen requirements or the provided LL interface.",
+        "Components": "| Owner | Component | Responsibility |\n| --- | --- | --- |\n| SWC_HAL | software/hal/stm32n6xx_hal_rcc.h | Public hal_status_t, configuration types, selectors, timeout constant and HAL_RCC_ declarations. |\n| SWC_HAL | software/hal/stm32n6xx_hal_rcc.c | Validate arguments, command the selected oscillator/peripheral through LL functions, perform bounded readiness polling and return status. |\n| SWC_LL | PROVIDED software/ll/stm32n6xx_ll_rcc.h | Frozen header-only register accessors from verified work order WO-0002A-STM32N6-RCC-LL-r125; no new requirements allocated to this component. |\n| RCC | External RCC register block | Memory-mapped hardware at 0x56028000 (RM0486 p.176). |\n\nSWC_HAL owns every SWR in this work order. SWC_LL is a provided dependency, not a HAL implementation deliverable. Preserve its manifest SHA-256 a19e118ecd46ec15ececa8358fc8c22d367d1859408df7ba2740e555f2298dcd. The HAL calls only the LL_RCC_ functions actually declared in that header, listed below. Do not add LL functions, modify the provided header, or duplicate register access in the HAL.\n\nDependencies: caller -> SWC_HAL -> SWC_LL -> RCC. The HAL depends on standard fixed-width integer definitions and NULL support; no operating system, timer service, allocation service, callbacks, interrupt handler or other driver is required. Static and dynamic views are architecture_static.puml and architecture_dynamic.puml.",
+        "Register table": "These are all register bits used by this HAL. SWE.3 shall derive its hardware mapping only from this table and use the matching frozen LL declarations. Offsets are bytes from RCC base 0x56028000 (RM0486 p.176).\n\n| Name | Offset | Bit position(s) | Access | RM0486 page |\n| --- | --- | --- | --- | --- |\n| RCC_CR.HSION | 0x000 | 3 | rw; LL enable sets and LL disable clears | p.479 (offset/reset), p.480 (bit/behavior) |\n| RCC_CR.HSEON | 0x000 | 4 | rw; LL enable sets and LL disable clears | p.479 (offset/reset), p.480 (bit/behavior) |\n| RCC_SR.HSIRDY | 0x004 | 3 | r; LL readiness read only | p.481 (offset/access), p.482 (bit/behavior) |\n| RCC_SR.HSERDY | 0x004 | 4 | r; LL readiness read only | p.481 (offset/access), p.482 (bit/behavior) |\n| RCC_AHB1ENR.ADC12EN | 0x250 | 5 | rw; LL enable sets and LL disable clears | p.575 |\n| RCC_AHB1ENR.GPDMA1EN | 0x250 | 4 | rw; LL enable sets and LL disable clears | p.575 |\n| RCC_AHB1RSTR.ADC12RST | 0x210 | 5 | rw; LL ForceReset sets and LL ReleaseReset clears | p.548 |\n| RCC_AHB1RSTR.GPDMA1RST | 0x210 | 4 | rw; LL ForceReset sets and LL ReleaseReset clears | p.548 |\n\nRCC_CR documented reset is 0x00000008: HSION = 1 and HSEON = 0 (RM0486 p.479; RM0486 p.480). RCC_SR reset is 0 (RM0486 p.481). RCC_AHB1ENR and RCC_AHB1RSTR reset are 0 (RM0486 p.575; RM0486 p.548). These values describe hardware, not initialization writes to perform.",
+        "Interfaces": "All public operations return hal_status_t. Define HAL_OK = 0, HAL_ERROR = 1 and HAL_TIMEOUT = 2 in that enumeration. Define HAL_RCC_TIMEOUT_VALUE as 1000U. These values and configuration representations are architecture decisions implementing the frozen development contract.\n\nUse hal_rcc_oscillator_t selectors HAL_RCC_OSC_HSI = 0 and HAL_RCC_OSC_HSE = 1. Use hal_rcc_peripheral_t selectors HAL_RCC_PERIPH_ADC12 = 0 and HAL_RCC_PERIPH_GPDMA1 = 1. The two selector types have separate validation domains.\n\nDefine hal_rcc_osc_config_t with fields hal_rcc_oscillator_t selector and uint32_t timeout. Define hal_rcc_periph_config_t with fields hal_rcc_peripheral_t selector and uint32_t timeout. The caller supplies a const configuration pointer and retains ownership for the entire synchronous call. The driver does not retain pointers or mutate caller configuration.\n\nEvery named operation requires its configuration selector to match its named target; a different selector, including the other supported selector, is a parameter error. This makes the function name the sole authority for the affected hardware. Validate NULL first, then selector and timeout before calling any LL function. A valid timeout is 1U through HAL_RCC_TIMEOUT_VALUE inclusive. Peripheral operations also validate the timeout to implement SWR-007 uniformly, but they perform no polling.\n\n| Public API (return type hal_status_t) | Configuration | LL calls and successful effect |\n| --- | --- | --- |\n| HAL_RCC_HSI_Enable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSI | LL_RCC_HSI_Enable(); poll LL_RCC_HSI_IsReady() for 1U; HAL_OK after observation. |\n| HAL_RCC_HSI_Disable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSI | LL_RCC_HSI_Disable(); poll LL_RCC_HSI_IsReady() for 0U; HAL_OK after observation. |\n| HAL_RCC_HSE_Enable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSE | LL_RCC_HSE_Enable(); poll LL_RCC_HSE_IsReady() for 1U; HAL_OK after observation. |\n| HAL_RCC_HSE_Disable(const hal_rcc_osc_config_t *config) | selector HAL_RCC_OSC_HSE | LL_RCC_HSE_Disable(); poll LL_RCC_HSE_IsReady() for 0U; HAL_OK after observation. |\n| HAL_RCC_ADC12_Enable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_Enable(); return HAL_OK. |\n| HAL_RCC_ADC12_Disable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_Disable(); return HAL_OK. |\n| HAL_RCC_ADC12_Reset(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_ADC12 | LL_RCC_ADC12_ForceReset(); then LL_RCC_ADC12_ReleaseReset(); return HAL_OK with reset released. |\n| HAL_RCC_GPDMA1_Enable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_Enable(); return HAL_OK. |\n| HAL_RCC_GPDMA1_Disable(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_Disable(); return HAL_OK. |\n| HAL_RCC_GPDMA1_Reset(const hal_rcc_periph_config_t *config) | selector HAL_RCC_PERIPH_GPDMA1 | LL_RCC_GPDMA1_ForceReset(); then LL_RCC_GPDMA1_ReleaseReset(); return HAL_OK with reset released. |\n\nA Reset operation is the complete assertion/release pulse required by SWR-005; it does not leave reset asserted. There is no separate public ReleaseReset API. No additional LL calls, including IsEnabled queries, are required for peripheral success. No minimum physical reset pulse time is specified by the supplied requirements.",
+        "Hardware/software and isolation assumptions": "The caller has the required oscillator and peripheral security/privilege rights (RM0486 p.480, p.482, p.548, p.575). The HAL does not configure protection or translate access faults into status codes.\n\nThe caller serializes RCC modifications across tasks, interrupts, cores and other register users. LL read-modify-write sequences are not mutually exclusive; unrelated-bit preservation assumes no concurrent writer during the operation. No interrupt masking or locks are introduced.\n\nThe system owner must choose oscillator control consistent with its active clock dependencies. Clock tree switching and system-level fallback are outside this component. Peripheral reset may affect peripheral state (RM0486 p.548), so the caller must quiesce its users before reset. This architecture provides no claimed freedom from interference against concurrent or unauthorized hardware users; isolation depends on the stated access and serialization assumptions.",
+        "Timeouts and error handling": "Oscillator control has logical states Validate -> Command -> Wait -> Complete, or Wait -> Fallback -> Complete. These are call-local control flow, not persistent software state.\n\n1. Validate the pointer, named-target selector and timeout. On failure return HAL_ERROR without any LL command or register writes.\n2. Issue exactly the named oscillator LL enable or disable command.\n3. Perform at most config->timeout readiness calls. Each polling iteration consists of one selected LL_RCC_HSI_IsReady() or LL_RCC_HSE_IsReady() call and comparison with the requested state: 1U for enable, 0U for disable. The first sample counts as iteration one. Stop immediately on a matching observation and return HAL_OK; success on the last allowed sample is valid.\n4. If all allowed samples fail, call the selected oscillator LL Disable function to ensure the enable command is off, then return HAL_TIMEOUT. Apply the same fallback to a disable timeout, even though disable was already commanded. Do not perform another readiness sample, a cleanup wait, or a retry.\n5. HAL_ERROR has no fallback writes because no control request passed validation. HAL_TIMEOUT affects only the requested oscillator; it never disables the other oscillator or peripheral clocks.\n\nEach wait performs at most the caller timeout and at most 1000 readiness samples (SWR-008). Use a bounded uint32_t loop or decrementing counter; no unsigned underflow can extend the wait. No tick source, delays or physical-time units are implied. Polling does not establish a board-specific microsecond limit.\n\nFallback oscillator/clock off is represented by the cleared enable command in RCC_CR; no separate global fallback variable is needed. A timeout does not prove that the ready flag or physical clock is already off. The HAL does not write or simulate a ready flag. The caller receives HAL_TIMEOUT and owns further system recovery. No allocated system safe state or safety reaction time is available.\n\nPeripheral control follows Validate -> one LL enable/disable call -> HAL_OK, or Validate -> LL ForceReset -> LL ReleaseReset -> HAL_OK. Invalid peripheral configurations return HAL_ERROR with no register writes. There are no peripheral wait loops or peripheral HAL_TIMEOUT paths.",
+        "Startup behavior": "There is no initialization API, constructor, automatic reset sequence or file-scope executable register operation. Before an explicit control request, the HAL leaves the documented oscillator and peripheral reset values untouched (SWR-009 through SWR-011). An explicit peripheral request cannot change RCC_CR; an explicit oscillator request cannot change either peripheral register.\n\nHSION reset evidence remains VERIFIED_AGAINST_DOCUMENTED_RESET_VALUE_ONLY under OD-2026-10-18-01. The supplied Renode RCC model resets registers to zero, and physical target/HIL observation is unavailable. Host startup checks may seed documented reset values; the HAL must not write reset values to compensate for the model.",
+        "Memory and stack budget": "| Resource | Mandatory ceiling | Design allocation and verification |\n| --- | --- | --- |\n| Driver-attributable flash | <=4096 B (SWR-013) | Ten small public functions, compact shared validation/poll helpers if useful, inline provided LL accessors; no runtime tables or format strings. Check attributed target text and read-only data in the linked map. |\n| Driver-attributable static RAM | <=64 B (SWR-014) | Planned 0 B: no mutable globals, persistent configuration, retained pointers or heap. MMIO symbol and host test array are not driver RAM allocation. Confirm target data/bss attribution. |\n| Worst-case driver call-chain stack | <=128 B (SWR-015) | Reserve up to 64 B for public entry and up to 64 B total for nested helpers/LL calls. Only scalar locals and counters, no recursion, VLAs or local arrays. Verify compiler stack reports and deepest call chain including non-inlined LL bodies. |\n\nThese are enforced design budgets, not measured results. Caller-owned configuration and test harness storage are external. Compiler-generated helper and inlined LL costs remain attributable to the driver. SWE.3 must keep call depth bounded; downstream target verification must establish actual usage.",
+        "Requirement allocation table": "Every allocation is to SWC_HAL. Function sets in this table refer to the exact public names declared above; the LL component receives no work-order requirement allocation.\n\n| Requirement | Owner | Allocated function(s) / architectural obligation |\n| --- | --- | --- |\n| SWR-001 | SWC_HAL | HAL_RCC_HSI_Enable: set command and observe ready before HAL_OK. |\n| SWR-002 | SWC_HAL | HAL_RCC_HSE_Enable: set command and observe ready before HAL_OK. |\n| SWR-003 | SWC_HAL | HAL_RCC_HSI_Disable, HAL_RCC_HSE_Disable: clear command and observe not-ready before HAL_OK. |\n| SWR-004 | SWC_HAL | HAL_RCC_ADC12_Enable, HAL_RCC_ADC12_Disable, HAL_RCC_GPDMA1_Enable, HAL_RCC_GPDMA1_Disable: selected peripheral clock control. |\n| SWR-005 | SWC_HAL | HAL_RCC_ADC12_Reset, HAL_RCC_GPDMA1_Reset: ordered assertion followed by release. |\n| SWR-006 | SWC_HAL | HAL_RCC_HSI_Enable, HAL_RCC_HSI_Disable, HAL_RCC_HSE_Enable, HAL_RCC_HSE_Disable: disable selected oscillator on timeout and return HAL_TIMEOUT. |\n| SWR-007 | SWC_HAL | All ten public APIs: validate const configuration pointer, selector and 1..1000 timeout before any writes; HAL_ERROR on invalid input. |\n| SWR-008 | SWC_HAL | HAL_RCC_HSI_Enable, HAL_RCC_HSI_Disable, HAL_RCC_HSE_Enable, HAL_RCC_HSE_Disable: at most timeout readiness samples, no unbounded cleanup. |\n| SWR-009 | SWC_HAL | HAL_RCC_HSI_Enable and HAL_RCC_HSI_Disable boundaries: no unsolicited HSION writes or startup routine. |\n| SWR-010 | SWC_HAL | HAL_RCC_HSE_Enable and HAL_RCC_HSE_Disable boundaries: no unsolicited HSEON writes or startup routine. |\n| SWR-011 | SWC_HAL | HAL_RCC_ADC12_Enable, HAL_RCC_ADC12_Disable, HAL_RCC_ADC12_Reset, HAL_RCC_GPDMA1_Enable, HAL_RCC_GPDMA1_Disable, HAL_RCC_GPDMA1_Reset boundaries: no unsolicited peripheral writes. |\n| SWR-012 | SWC_HAL | All ten public APIs: exclusive use of matching provided LL_RCC_ calls and preservation of unrelated bits under serialized access. |\n| SWR-013 | SWC_HAL | All ten public APIs and reachable helpers: flash ceiling 4096 B. |\n| SWR-014 | SWC_HAL | All ten public APIs and reachable helpers: static RAM ceiling 64 B. |\n| SWR-015 | SWC_HAL | All ten public APIs and reachable helpers: call-chain stack ceiling 128 B. |",
+        "Verification interfaces and limitations": "Host unit verification replaces the LL include through the manifest ll-fake-v1 isolation boundary to record exact LL calls, change readiness per polling sample, and check ordering and bounds. Integration verification uses the unchanged provided LL and host-owned register array to check masks, offsets and unrelated-bit preservation. This is a verification seam, not a runtime interface or alternate target implementation.\n\nThe static view supplies owner trace notes for deterministic generation of traceability/matrix_1_swr_to_architecture.csv. No architecture author writes that generated matrix or freezes the baseline.\n\nSilicon revision and board characteristics remain unspecified. Supplemental upstream approvals and allocated software safety requirements remain unavailable as recorded in SWE.1. This architecture implements the frozen development requirements without inventing safety allocation, physical-time behavior or verification outcomes."
+    },
+    "matrices": {
+        "matrix_1_swr_to_architecture": {
+            "rows": 15,
+            "uncovered": "none"
+        },
+        "matrix_2_unitspec_to_swr": {
+            "rows": 46,
+            "uncovered": "none"
+        },
+        "matrix_3_code_to_unitspec": {
+            "rows": 12,
+            "uncovered": "none"
+        },
+        "matrix_4_unittest_to_unitspec": {
+            "rows": 42,
+            "uncovered": "none"
+        },
+        "matrix_5_integrationtest_to_architecture": {
+            "rows": 26,
+            "uncovered": "none"
+        },
+        "matrix_6_validationtest_to_swr": {
+            "rows": 15,
+            "uncovered": "none"
+        }
+    },
+    "inspections": {
+        "SWE.1": [
+            {
+                "id": "INS-SWE.1-001",
+                "verdict": "PASS"
+            }
+        ],
+        "SWE.2": [
+            {
+                "id": "INS-SWE.2-001",
+                "verdict": "PASS"
+            }
+        ],
+        "SWE.3": [
+            {
+                "id": "INS-SWE.3-001",
+                "verdict": "PASS"
+            },
+            {
+                "id": "INS-SWE.3-002",
+                "verdict": "PASS"
+            }
+        ],
+        "SWE.4": [
+            {
+                "id": "INS-SWE.4-001",
+                "verdict": "PASS"
+            }
+        ],
+        "SWE.5": [
+            {
+                "id": "INS-SWE.5-001",
+                "verdict": "PASS"
+            }
+        ],
+        "SWE.6": [
+            {
+                "id": "INS-SWE.6-001",
+                "verdict": "PASS"
+            }
+        ]
+    },
+    "easa": {
+        "mode": "PILOT",
+        "technical_status": "PASS",
+        "blocking_findings": [
+            "EASA:CLM-SWE.1:CONTESTED",
+            "EASA:CLM-SWE.2:CONTESTED",
+            "EASA:CLM-SWE.3:UNSUPPORTED",
+            "EASA:CLM-SWE.4:UNSUPPORTED",
+            "EASA:SAFETY_EVIDENCE_MISSING:hsi",
+            "EASA:SAFETY_EVIDENCE_MISSING:allocation_review",
+            "EASA:SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+            "EASA:SAFETY_EVIDENCE_MISSING:tool_assurance_assessment"
+        ],
+        "statement": "Bounded engineering evidence for offline human review; no ISO 26262 / ASPICE conformance, no ASIL approval, no safety sign-off."
+    },
+    "safety_statement": "# Software safety requirements\n\nTarget ASIL B (SC-RCC-2026-10-18): software safety allocation PENDING owner allocation review - no software safety requirement is allocated yet; this is an open gap, not a claim of safety allocation.\n\nSource: .forge-run/manifest.json target.safety_allocation, approved by Jefferson Nascimento on 2026-10-18.\n\nThe target classification does not allocate software safety requirements. No safety items are listed. Software safety allocation remains an open gap requiring owner review. The oscillator-off fallback and work-order resource and polling budgets are development requirements; no allocated system safe state or safety reaction time is inferred.\n",
+    "known_limitations": "# Known limitations and declared safety gaps (generated from facts)\n\n- This package is an offline review candidate. It is NOT an ISO 26262 / ASIL B approval, ASPICE capability determination, tool qualification or production release.\n- Unit/integration tests and coverage are HOST executions; they are not target (MCU) evidence.\n- MISRA C: Cppcheck addon subset only; MISRA compliance is NOT claimed.\n- Target verification: performed.\n- Footprint scope: object-level target build (cortex-m55, GNU Arm); not a linked firmware image.\n- Disabled optional tools/operations: forge-docs-mcp.build_docs, forge-docs-mcp.render_diagram, forge-sim-mcp.run_hwsim, forge-sim-mcp.run_renode, forge-tests-mcp.gcov_coverage\n",
+    "footprint": {
+        "budgets": {
+            "flash_bytes": 4096,
+            "stack_bytes": 128,
+            "static_ram_bytes": 64,
+            "status": "development targets set by the work-order owner (2026-10-15)"
+        },
+        "flash_bytes": 576,
+        "max_frame_bytes": 8,
+        "ram_bytes": 0,
+        "scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image"
+    },
+    "defects": [
+        {
+            "id": "DEF-001",
+            "kind": "CODE",
+            "status": "WITHDRAWN",
+            "summary": "UT-008 fails: oscillator waits poll IsReady timeout+2 times (3 for timeout=1; 1002 for 1000), exceeding SWR-008. The final post-budget query can accept late readiness. Fix driver polling; retain test bounds."
+        },
+        {
+            "id": "DEF-002",
+            "kind": "TEST",
+            "status": "DECLARED",
+            "summary": "Corrected test setup: two return_from calls replace the same query script, so prior disable tests observed immediate 0, not a 1-to-0 transition. Check immediate off observation and record delayed-clear fidelity limitation. HSI timeout=1 inherited HSE selector; restored valid HSI. Driver DEF-001 rema"
+        },
+        {
+            "id": "DEF-003",
+            "kind": "TEST",
+            "status": "DECLARED",
+            "summary": "Corrected inherited selector and overwritten fake scripts. Strengthened timeout bounds to <=timeout at 1 and 1000 for all waits; added final/late enable readiness, all-API invalid inputs and LL isolation. Normalize each check to a unique suffix under its trace UT ID. Delayed falling readiness and ra"
+        },
+        {
+            "id": "DEF-004",
+            "kind": "TEST",
+            "status": "DECLARED",
+            "summary": "UT-012 reused the same identifier at 14 CHECK sites, so run_unit rejected duplicate IDs despite successful host execution. Assigned unique UT-012-C02 through UT-012-C14 suffixes while retaining UT-012 and every original assertion."
+        },
+        {
+            "id": "DEF-005",
+            "kind": "TEST",
+            "status": "DECLARED",
+            "summary": "Corrected TCHECK 41, 61 and 7 to explicitly assert HAL_OK, HAL_TIMEOUT and HAL_ERROR respectively. Previous status comparisons were in aggregate variables and were not observed by trace verification. Retained all aggregate register and status checks. Rerun inv-2ccc1d95b9d142f9: 15/15 tests passed an"
+        }
+    ]
+}

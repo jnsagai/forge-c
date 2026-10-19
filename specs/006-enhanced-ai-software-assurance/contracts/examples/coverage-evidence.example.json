@@ -1,0 +1,12 @@
+{
+  "code_hash": "sha256:fixture",
+  "kind": "BRANCH",
+  "measured": false,
+  "covered": null,
+  "total": null,
+  "scope": "unit under test",
+  "test_run_refs": [],
+  "uncovered_rationale_refs": [],
+  "tool_id": "unknown",
+  "status": "NOT_COMPUTABLE"
+}

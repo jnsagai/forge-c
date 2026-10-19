@@ -1,0 +1,103 @@
+"""EASA-T079 / AT-094 — check a sealed review package of a real pilot work order for the owner-addendum evidence.
+
+PASS needs all six traceability matrices (csv + md) in the package and every matrix reporting 'Uncovered items: none',
+with the archive hash recorded and left unchanged (the archive is only read). Otherwise the result names the exact
+failing relation. The package status (READY/BLOCKED) and its gaps are reported, never upgraded.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import zipfile
+from pathlib import Path
+
+from ..common import pretty_json, sha256_file, utc_now
+
+MATRICES = ("matrix_1_swr_to_architecture", "matrix_2_unitspec_to_swr", "matrix_3_code_to_unitspec",
+            "matrix_4_unittest_to_unitspec", "matrix_5_integrationtest_to_architecture", "matrix_6_validationtest_to_swr")
+PREFIX = "evidence/traceability/matrices/"
+
+
+def check(zip_path: Path) -> dict:
+    zip_path = Path(zip_path)
+    before = sha256_file(zip_path)
+    rows, failing = {}, []
+    with zipfile.ZipFile(zip_path) as z:
+        names = set(z.namelist())
+        pkg = next((n for n in names if n.endswith("quality/final-gates.json")), None)
+        gates = json.loads(z.read(pkg)) if pkg else {}
+        summ = json.loads(z.read("evidence/assurance/summary.json")) if "evidence/assurance/summary.json" in names else {}
+        man = json.loads(z.read("manifest.json")) if "manifest.json" in names else {}  # the package root manifest
+        scope_texts = []  # CAPA-044: packaged text must state the approved safety level (no QM claim in ASIL scope)
+        sc_n = next((n for n in names if n.endswith("configuration/safety_scope.json")), None)
+        if sc_n:
+            from .scope import scope_level_findings
+
+            sc = (json.loads(z.read(sc_n)).get("scope") or {})
+            for n in sorted(names):
+                if n.endswith(".md") and not n.startswith(PREFIX):
+                    scope_texts += [f"SAFETY_SCOPE_TEXT:{x}:{n}" for x in
+                                    scope_level_findings(sc, z.read(n).decode(errors="replace"))]
+        failing += sorted(set(scope_texts))[:20]
+        for m in MATRICES:
+            csv_n, md_n = PREFIX + m + ".csv", PREFIX + m + ".md"
+            if csv_n not in names or md_n not in names:
+                rows[m] = {"present": False}
+                failing.append(f"MATRIX_MISSING:{m}")
+                continue
+            md = z.read(md_n).decode(errors="replace")
+            csv = z.read(csv_n).decode(errors="replace").splitlines()
+            unc = re.search(r"Uncovered items:\s*(.+)", md)
+            uncovered = (unc.group(1).strip() if unc else "UNSTATED")
+            status = {}
+            for line in csv[1:]:
+                st = line.rsplit(",", 1)[-1].strip()
+                status[st] = status.get(st, 0) + 1
+            rows[m] = {"present": True, "rows": len(csv) - 1, "status_counts": status, "uncovered": uncovered}
+            if uncovered.lower() != "none":
+                failing.append(f"MATRIX_UNCOVERED:{m}:{uncovered[:120]}")
+    after = sha256_file(zip_path)
+    return {"schema": "forge-c/easa-pilot-check/0.1", "checked_at": utc_now(), "package": zip_path.name,
+            "archive_sha256": before, "archive_unchanged": before == after, "matrices": rows,
+            "failing_relations": failing, "package_gates": {k: v for k, v in (gates.get("checks") or {}).items()},
+            "easa_mode": summ.get("mode"), "safety_scope": summ.get("safety_scope"),
+            "package_status": man.get("status"), "gap_count": man.get("gap_count"),
+            "status": "PASS" if not failing and before == after else "FAIL",
+            "scope": "trace completeness of a real pilot package; not a safety or release decision"}
+
+
+def pilot_findings(r: dict) -> list[str]:
+    """EASA-T069: an owner-authorized PILOT package records findings in PILOT mode and never claims READY while the
+    product safety scope is not satisfied."""
+    f = []
+    if r.get("easa_mode") != "PILOT":
+        f.append(f"NOT_A_PILOT_PACKAGE:{r.get('easa_mode')}")
+    sc = r.get("safety_scope") or {}
+    if str(r.get("package_status", "")).startswith("READY") and sc.get("status") != "SATISFIED":
+        f.append(f"READY_CLAIMED_WITH_SAFETY_SCOPE_{sc.get('status')}")
+    return f
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(prog="forge_factory.assurance.pilot")
+    ap.add_argument("zips", nargs="+", type=Path)
+    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--pilot", action="store_true", help="EASA-T069: also require PILOT mode and no unjustified READY")
+    a = ap.parse_args(argv)
+    res = {z.parent.name: check(z) for z in a.zips}
+    if a.pilot:
+        for v in res.values():
+            v["pilot_findings"] = pilot_findings(v)
+            if v["pilot_findings"]:
+                v["status"] = "FAIL"
+    a.out.parent.mkdir(parents=True, exist_ok=True)
+    a.out.write_text(pretty_json(res))
+    for k, v in res.items():
+        print(f"{k}: {v['status']} failing={v['failing_relations']}")
+    return 0 if all(v["status"] == "PASS" for v in res.values()) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,195 @@
+{
+  "source": "https://claude.ai/artifact/R99FkgMaPppN37vqYrqxYy collection signoffs (owner-only write rule)",
+  "read_at": "2026-10-19",
+  "signer_resolved": {
+    "u_ut13aTX0QjNYL9o84rGJ1g": "Jefferson (artifact owner account)"
+  },
+  "records": [
+    {
+      "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+      "comment": "",
+      "items": {
+        "OPEN-POINTS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SAFETY-REQ": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SCOPE": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-001": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-002": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-003": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-004": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-005": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-006": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-007": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-008": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-009": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-010": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-011": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-012": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-013": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-014": {
+          "mark": "ok",
+          "note": ""
+        },
+        "SWR-015": {
+          "mark": "ok",
+          "note": ""
+        }
+      },
+      "pack_version": "1",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+      "signed_at": "2026-10-19T07:33:48.005Z",
+      "signed_by": "u_ut13aTX0QjNYL9o84rGJ1g",
+      "statement": "I reviewed these requirements myself. This approval covers the requirements as written; it is not a safety allocation.",
+      "task": "T-009",
+      "verdict": "APPROVED",
+      "work_order": "WO-0002B-STM32N6-RCC-HAL-r154"
+    },
+    {
+      "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+      "comment": "",
+      "items": {
+        "ARCH-BASIS-AND-SCOPE": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-COMPONENTS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-HARDWARE-SOFTWARE-AND-ISOLATION-ASSUMPTIONS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-INTERFACES": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-MEMORY-AND-STACK-BUDGET": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-REGISTER-TABLE": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-REQUIREMENT-ALLOCATION-TABLE": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-STARTUP-BEHAVIOR": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-TIMEOUTS-AND-ERROR-HANDLING": {
+          "mark": "ok",
+          "note": ""
+        },
+        "ARCH-VERIFICATION-INTERFACES-AND-LIMITATIONS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "TRACE-SWR-ARCH": {
+          "mark": "ok",
+          "note": ""
+        }
+      },
+      "pack_version": "1",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+      "signed_at": "2026-10-19T07:47:38.429Z",
+      "signed_by": "u_ut13aTX0QjNYL9o84rGJ1g",
+      "statement": "I reviewed this architecture myself. My signature does not cover a safety interaction analysis.",
+      "task": "T-010",
+      "verdict": "APPROVED_EXCEPT_SAFETY_INTERACTION",
+      "work_order": "WO-0002B-STM32N6-RCC-HAL-r154"
+    },
+    {
+      "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+      "comment": "",
+      "items": {
+        "DEFECTS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "EASA": {
+          "mark": "ok",
+          "note": ""
+        },
+        "FOOTPRINT": {
+          "mark": "ok",
+          "note": ""
+        },
+        "GAPS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "INSPECTIONS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "LIMITATIONS": {
+          "mark": "ok",
+          "note": ""
+        },
+        "MATRICES": {
+          "mark": "ok",
+          "note": ""
+        }
+      },
+      "pack_version": "1",
+      "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+      "signed_at": "2026-10-19T07:47:54.460Z",
+      "signed_by": "u_ut13aTX0QjNYL9o84rGJ1g",
+      "statement": "I reviewed this package myself, independently of the agents that produced and inspected it. This record is not a production release and not an ISO 26262 or ASPICE certification.",
+      "task": "T-018",
+      "verdict": "REVIEWED_NOT_RELEASABLE",
+      "work_order": "WO-0002B-STM32N6-RCC-HAL-r154"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.backlog001",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r154/forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+    "--task",
+    "T-012"
+  ],
+  "duration_s": 0.042,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "e301e94814527c12c7eb4a96019c52847288ff32",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/001-T-012/20261019T072309.log",
+  "log_sha256": "80510d0448f8f1dab54caae481b24cfab38d7bba9644f0460e1cade06d22b460",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "001-T-012",
+  "ts_utc": "2026-10-19T07:23:09.961091Z"
+}

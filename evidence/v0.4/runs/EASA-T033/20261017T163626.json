@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_easa_m3_m4.py",
+    "factory/python/tests/test_easa_m8.py",
+    "-k",
+    "independent_index or at038 or reserved or at084 or real_rm or t066_independent_define"
+  ],
+  "duration_s": 0.424,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a623ccd1fb20d60fc9959ca4d5e807166c24802b",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T033/20261017T163626.log",
+  "log_sha256": "27ba9adcb57e9573e1a350da60583af1233cd5be2216ed06f9769df81f2ee28c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T033",
+  "ts_utc": "2026-10-17T16:36:26.877887Z"
+}

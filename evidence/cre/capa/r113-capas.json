@@ -1,0 +1,101 @@
+{
+  "CAPA-031": {
+    "history": [
+      {
+        "at": "2026-10-17T16:53:48.263713Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"CAPA-031\"]",
+        "from_state": null,
+        "reason": "r113 SWE.3 STUCK: author invented resource units to satisfy SWR_NOT_REFINED for budget SWRs",
+        "seq": 256,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T16:53:48.325402Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 257,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T16:53:48.390357Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-033 assigned",
+        "seq": 258,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T16:55:14.337495Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-afdf749ffc00c08ed816\", \"reproducer-run:rr-5a13faab0ca842498e1f\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 259,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T16:55:14.383418Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"git:8901e3820cb6..309848ccfda8\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 309848ccfda8 (patch 7761 bytes)",
+        "seq": 260,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T16:55:14.480020Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-09e178b901c6ebf54f8c\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-033 absent at 309848ccfda8",
+        "seq": 261,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T16:55:14.526522Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 262,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-ca4cdb143deeac339c6b46c0b9e63ecc3f251404",
+      "8901e3820cb65359c2891009523891f5817e83e4",
+      "309848ccfda805b23fb929eb3d4f3411f748515a",
+      "pd-e70f7ab98cac2268b78c"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<309848ccfda8"
+      ],
+      "candidate_patch_sha256": "848b6de72a97acbdd2be0043982664dca177ec91fa78faf80a4f581d4e1a064b",
+      "capa_id": "CAPA-031",
+      "created_at": "2026-10-17T16:53:48.263713Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-031"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-033",
+      "reproducer_id": "RPR-033",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-afdf749ffc00c08ed816",
+        "reproducer-run:rr-5a13faab0ca842498e1f"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the SWE.3 trace gate demanded unit refinement of component-level resource budgets",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T16:55:14.526522Z"
+    }
+  }
+}

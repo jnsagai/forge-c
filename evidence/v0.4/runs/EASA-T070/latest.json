@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_easa_readiness.py"
+  ],
+  "duration_s": 0.723,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "bf27061397a371393b3a6b09da693c8f1bec388e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T070/20261017T191753.log",
+  "log_sha256": "d72fdab6cc3fc1dbc8cdaa665e89e8939e3fe68ae62dfd7f1c1283e413ab31c6",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T070",
+  "ts_utc": "2026-10-17T19:17:53.465069Z"
+}

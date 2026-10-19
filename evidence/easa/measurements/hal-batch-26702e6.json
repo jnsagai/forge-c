@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/easa-measurement/0.1",
+  "subject": "HAL 5-run SLO batch on frozen revision 26702e6 (CAPA-038..042, DeepSeek flash, ASIL B, PILOT)",
+  "decision_rule": ">=3/5 runs pass SWE.1-SWE.6 (set before launch)",
+  "runs": {
+    "WO-0002B-STM32N6-RCC-HAL-r138": "BLOCKED SWE.3: Doxygen duplicate @param/@retval documentation (header + source), 3 cycles",
+    "WO-0002B-STM32N6-RCC-HAL-r139": "BLOCKED SWE.3: upstream ARCHITECTURE defects to SWE.2, loop budget exhausted",
+    "WO-0002B-STM32N6-RCC-HAL-r140": "BLOCKED SWE.2: inspector rework budget exhausted",
+    "WO-0002B-STM32N6-RCC-HAL-r141": "BLOCKED SWE.3: inspector rework budget exhausted",
+    "WO-0002B-STM32N6-RCC-HAL-r142": "BLOCKED SWE.2: STUCK on ARCH:NO_INTERFACES (identical rejection twice)"
+  },
+  "result": "0/5 - decision rule NOT met",
+  "reading": "failures spread over SWE.2/SWE.3 agent-quality and inspector rework; no single deterministic bookkeeping cause dominates; indicates model capability as the main limit",
+  "candidate_capa": "SWE.3 Doxygen duplicate-documentation feedback (r138), not applied during the batch to keep the revision frozen"
+}

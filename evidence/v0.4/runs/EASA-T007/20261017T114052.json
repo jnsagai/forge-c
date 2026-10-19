@@ -1,0 +1,22 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "python -m forge_factory.assurance.compat --out evidence/easa/baseline/compat-61c3e4d.json && python -m pytest -v -p no:cacheprovider factory/python/tests/test_easa_m0.py -k 'at007 or at077 or additive'"
+  ],
+  "duration_s": 1.031,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "61c3e4d60003037de7718f9fd09fd9a12c8993ac",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T007/20261017T114052.log",
+  "log_sha256": "67cda525cefad5a77d57c9632a1e49a77b2306ec160f53f365a98cc9ae4fd065",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T007",
+  "ts_utc": "2026-10-17T11:40:52.293509Z"
+}

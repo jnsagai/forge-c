@@ -24,6 +24,36 @@ def layer_of(ws: Path) -> str:
     return v if v in LAYERS else "LL+HAL"
 
 
+TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
+HAL_UNIT_ISOLATION = "ll-fake-v1"  # CAPA-038: HAL unit tests run on a generated test double of the provided LL API
+REGISTER_CONTRACT = "rc-v1"  # owner decision 2026-10-19 (option B): machine-readable register contract feeds the oracle
+
+
+def hal_unit_isolation(ws: Path) -> bool:
+    """HAL work orders prepared after CAPA-038 carry `hal_unit_isolation`; older runs keep the RAM register array."""
+    try:
+        m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    except (OSError, ValueError):
+        return False
+    return m.get("layer") == "HAL" and m.get("hal_unit_isolation") == HAL_UNIT_ISOLATION
+
+
+def register_contract_enabled(ws: Path) -> bool:
+    """Work orders prepared after 2026-10-19 carry `register_contract`; older runs keep the sentence-parsing oracle."""
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("register_contract") == REGISTER_CONTRACT
+    except (OSError, ValueError):
+        return False
+
+
+def swtrace_enabled(ws: Path) -> bool:
+    """Work orders prepared after the owner addendum carry `trace_profile`; older runs/fixtures keep their rules."""
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("trace_profile") == TRACE_PROFILE
+    except (OSError, ValueError):
+        return False
+
+
 def provided(ws: Path) -> list[dict]:
     """Components provided read-only to this work order (HAL layer: the LL header), with their sha256."""
     try:

@@ -37,7 +37,12 @@ def test_graph_has_six_separate_loops_and_verification_node():
     assert ("swe3_verify", "swe3_route", "") in e  # failure = unconditional fallback (fail closed)
     rework = load_checklist("SWE.3")["policy"]["maximum_rework_cycles"]
     # ADR-0008 per-epoch rework budget: every upstream loop gives each phase 1 + rework visits again
-    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == (1 + rework) * (1 + UPSTREAM_LOOPS)
+    # owner decision 2026-10-18: + up to PROGRESS_EXTRA_CYCLES visits while the phase progresses (rework-policy.yaml)
+    from forge_factory.inspection.gate import extra_cycles
+    from forge_factory.workflow.builder import PROGRESS_EXTRA_CYCLES
+
+    assert extra_cycles() == PROGRESS_EXTRA_CYCLES
+    assert f"max_visits={MAX_VISITS}" in dot and MAX_VISITS == (1 + rework + PROGRESS_EXTRA_CYCLES) * (1 + UPSTREAM_LOOPS)
 
 
 def test_code_model_profile_applies_only_to_code_nodes():
@@ -202,7 +207,12 @@ def test_route_counts_author_rejections_in_rework_budget(tmp_path):
         if i == 1:
             (tmp_path / "software/ll/stm32n6xx_ll_rcc.h").write_text("x\n")
     assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
-    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # 3rd failed cycle -> BLOCKED -> finalizer
+    # 3rd failed cycle = authored maximum; an output appeared since the 2nd, so the owner's progress extension
+    # (rework-policy.yaml, 2026-10-18) grants one more cycle
+    assert gate(tmp_path, "SWE.3", "route").returncode == 0
+    assert '"progress_extension"' in (tmp_path / ".forge-run/gates/gate-log.jsonl").read_text()
+    assert gate(tmp_path, "SWE.3", "author", "prose").returncode >= 10
+    assert gate(tmp_path, "SWE.3", "route").returncode == 1  # nothing changed: no progress -> BLOCKED -> finalizer
 
 
 def test_route_stops_early_on_an_identical_deterministic_rejection(tmp_path):

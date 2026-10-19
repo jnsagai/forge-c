@@ -1,0 +1,588 @@
+{
+  "catalog_digest": "0ef3eb6f07c024cc5cb1b05e4b7da779b90e908f9e394be99638b34af2065c77",
+  "catalog_entries": 47,
+  "duplicate_rows_ignored": [],
+  "edition": "ISO 26262-6:2018",
+  "generated_at": "2026-10-18T08:28:51.769883Z",
+  "not_extracted": [
+    "footnotes",
+    "alternatives/combination rules",
+    "applicability notes",
+    "row text"
+  ],
+  "note": "Machine-extracted from an OCR text copy; identifiers and rating symbols only. A table becomes RECONCILED only through catalog.reconcile() signed by a named human reviewer.",
+  "schema": "forge-c/easa-normative-worksheet/0.1",
+  "source_b_highly_recommended_total": 47,
+  "source_sha256": "5faf4306eaed584c614e0751ba28318099aeb1943bf2bbc14fe4653527f2ca40",
+  "status": "AWAITING_HUMAN_REVIEWER",
+  "tables": {
+    "1": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1c",
+        "1f",
+        "1g",
+        "1h"
+      ],
+      "findings": [],
+      "parsed_rows": 9,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T01-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T01-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T01-1C": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T01-1F": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T01-1G": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T01-1H": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1c",
+        "1f",
+        "1g",
+        "1h"
+      ],
+      "source_rows": 9,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "2": {
+      "catalog_rows": [
+        "1a",
+        "1b"
+      ],
+      "findings": [],
+      "parsed_rows": 4,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T02-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T02-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "+",
+          "D": "+"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b"
+      ],
+      "source_rows": 4,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "3": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1d",
+        "1e",
+        "1f",
+        "1i"
+      ],
+      "findings": [],
+      "parsed_rows": 9,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T03-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T03-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T03-1D": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T03-1E": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T03-1F": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T03-1I": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1d",
+        "1e",
+        "1f",
+        "1i"
+      ],
+      "source_rows": 9,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "4": {
+      "catalog_rows": [
+        "1b"
+      ],
+      "findings": [],
+      "parsed_rows": 8,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T04-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1b"
+      ],
+      "source_rows": 8,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "5": {
+      "catalog_rows": [
+        "1a",
+        "1b"
+      ],
+      "findings": [],
+      "parsed_rows": 4,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T05-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T05-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "+",
+          "D": "+"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b"
+      ],
+      "source_rows": 4,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "6": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1c",
+        "1d",
+        "1f",
+        "1g",
+        "1h",
+        "1i"
+      ],
+      "findings": [],
+      "parsed_rows": 10,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T06-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1C": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1D": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1F": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1G": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1H": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T06-1I": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1c",
+        "1d",
+        "1f",
+        "1g",
+        "1h",
+        "1i"
+      ],
+      "source_rows": 10,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "7": {
+      "catalog_rows": [
+        "1c",
+        "1h",
+        "1j",
+        "1k"
+      ],
+      "findings": [],
+      "parsed_rows": 14,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T07-1C": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T07-1H": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T07-1J": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T07-1K": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1c",
+        "1h",
+        "1j",
+        "1k"
+      ],
+      "source_rows": 14,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "8": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1c"
+      ],
+      "findings": [],
+      "parsed_rows": 4,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T08-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T08-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T08-1C": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1c"
+      ],
+      "source_rows": 4,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "9": {
+      "catalog_rows": [
+        "1a",
+        "1b"
+      ],
+      "findings": [],
+      "parsed_rows": 3,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T09-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "+",
+          "D": "+"
+        },
+        "ISO6-T09-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b"
+      ],
+      "source_rows": 3,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "10": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1d",
+        "1g"
+      ],
+      "findings": [],
+      "parsed_rows": 8,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T10-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T10-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T10-1D": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T10-1G": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1d",
+        "1g"
+      ],
+      "source_rows": 8,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "11": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1c"
+      ],
+      "findings": [],
+      "parsed_rows": 4,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T11-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T11-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T11-1C": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1c"
+      ],
+      "source_rows": 4,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "12": {
+      "catalog_rows": [],
+      "findings": [],
+      "parsed_rows": 2,
+      "proposed_rows_for_reconcile": {},
+      "source_b_highly_recommended": [],
+      "source_rows": 2,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "13": {
+      "catalog_rows": [
+        "1a",
+        "1b"
+      ],
+      "findings": [],
+      "parsed_rows": 3,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T13-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T13-1B": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b"
+      ],
+      "source_rows": 3,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "14": {
+      "catalog_rows": [
+        "1a"
+      ],
+      "findings": [],
+      "parsed_rows": 2,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T14-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a"
+      ],
+      "source_rows": 2,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    },
+    "15": {
+      "catalog_rows": [
+        "1a",
+        "1b",
+        "1f"
+      ],
+      "findings": [],
+      "parsed_rows": 6,
+      "proposed_rows_for_reconcile": {
+        "ISO6-T15-1A": {
+          "A": "++",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T15-1B": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        },
+        "ISO6-T15-1F": {
+          "A": "+",
+          "B": "++",
+          "C": "++",
+          "D": "++"
+        }
+      },
+      "source_b_highly_recommended": [
+        "1a",
+        "1b",
+        "1f"
+      ],
+      "source_rows": 6,
+      "state": "MATCHES_CATALOG",
+      "unparsed_rows": []
+    }
+  }
+}

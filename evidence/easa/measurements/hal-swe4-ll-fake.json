@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/easa-measurement/0.1",
+  "subject": "HAL SWE.4 with the generated LL test double (CAPA-038/039/040)",
+  "runs": {
+    "old_harness (RAM register array)": {
+      "WO-0002B-STM32N6-RCC-HAL-r123": "SWE.4 FAIL",
+      "WO-0002B-STM32N6-RCC-HAL-r124": "SWE.4 PASS",
+      "WO-0002B-STM32N6-RCC-HAL-r126": "SWE.4 FAIL",
+      "WO-0002B-STM32N6-RCC-HAL-r127": "SWE.4 FAIL"
+    },
+    "ll_fake (CAPA-038, revision 7427cf1/2b03bc5)": {
+      "WO-0002B-STM32N6-RCC-HAL-r129": "not reached (SWE.3 BLOCKED, agent unit specs)",
+      "WO-0002B-STM32N6-RCC-HAL-r130": "not reached (SWE.1 BLOCKED, inspector)",
+      "WO-0002B-STM32N6-RCC-HAL-r131": "not reached (SWE.2 BLOCKED, inspector)",
+      "WO-0002B-STM32N6-RCC-HAL-r135": "SWE.4 PASS (resumed r126); later SWE.3 rework BLOCKED (turn budget) after SWE.5 found DEF-002",
+      "WO-0002B-STM32N6-RCC-HAL-r136": "SWE.4 found DEF-001 (poll bound) -> SWE.3 fixed -> SWE.4 PASS -> SWE.5/SWE.6 PASS (resumed r127)"
+    }
+  },
+  "swe4_pass": {
+    "old_harness": "1/4",
+    "ll_fake_reached_swe4": "2/2"
+  },
+  "real_defects_found_by_unit_tests_on_ll_fake": [
+    "r135 DEF-003: ready flag polled one iteration past the timeout",
+    "r136 DEF-001: ready flag polled timeout+2 times"
+  ],
+  "caveats": [
+    "n=2 runs reached SWE.4 on the new harness; r135/r136 resumed SWE.1-SWE.3 from r126/r127",
+    "3 batch runs never reached SWE.4 (upstream agent/inspector variance), so the batch did not measure the fix",
+    "r135 exposed a fake gap (IsEnabled constant 0U) fixed as CAPA-038 iteration 2 after the runs"
+  ]
+}

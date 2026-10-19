@@ -1,0 +1,276 @@
+{
+  "CAPA-031": {
+    "history": [
+      {
+        "at": "2026-10-17T16:53:48.263713Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"CAPA-031\"]",
+        "from_state": null,
+        "reason": "r113 SWE.3 STUCK: author invented resource units to satisfy SWR_NOT_REFINED for budget SWRs",
+        "seq": 256,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T16:53:48.325402Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 257,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T16:53:48.390357Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-033 assigned",
+        "seq": 258,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T16:55:14.337495Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-afdf749ffc00c08ed816\", \"reproducer-run:rr-5a13faab0ca842498e1f\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 259,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T16:55:14.383418Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"git:8901e3820cb6..309848ccfda8\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 309848ccfda8 (patch 7761 bytes)",
+        "seq": 260,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T16:55:14.480020Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-09e178b901c6ebf54f8c\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-033 absent at 309848ccfda8",
+        "seq": 261,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T16:55:14.526522Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 262,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      },
+      {
+        "at": "2026-10-17T19:29:12.314709Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"attempt:WO-0002A-STM32N6-RCC-LL-r115\", \"attempt:WO-0002A-STM32N6-RCC-LL-r116\", \"attempt:WO-0002A-STM32N6-RCC-LL-r117\", \"attempt:WO-0002A-STM32N6-RCC-LL-r118\", \"attempt:WO-0002A-STM32N6-RCC-LL-r119\", \"attempt:WO-0002A-STM32N6-RCC-LL-r120\"]",
+        "from_state": "EFFECTIVENESS_OBSERVING",
+        "reason": "6 clean exposures >= window 5",
+        "seq": 299,
+        "to_state": "EFFECTIVE"
+      },
+      {
+        "at": "2026-10-17T19:29:33.704386Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"cre-observation:cre-869acc198d3c44d74208457237ee1ea256e9e61c\", \"gate-log:WO-0002A-STM32N6-RCC-LL-r120:SWE.3:author\"]",
+        "from_state": "EFFECTIVE",
+        "reason": "recurrence in r120 (contains fix): SWE.3 STUCK on UNIT:SWR_NOT_REFINED:SWR-021 'no more than 4096 bytes of code and constant data' - a resource budget the CAPA-031 pattern does not recognise. The EFFECTIVE transition just before was wrong: the observation importer classified the rejection UNCLASSIFI",
+        "seq": 300,
+        "to_state": "REOPENED"
+      },
+      {
+        "at": "2026-10-17T19:41:45.266150Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "REOPENED",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 308,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T19:41:45.335218Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-040 assigned",
+        "seq": 309,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T19:43:13.271296Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-f1c99c4ec20c173c07f0\", \"reproducer-run:rr-dad260b2dc8e79c62b87\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 310,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T19:43:13.323075Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"git:6e2c1ef2569d..5487244a28d0\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 5487244a28d0 (patch 2583 bytes)",
+        "seq": 311,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T19:43:13.420412Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[\"reproducer-run:rr-baf84090f2bc42649ef9\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-040 absent at 5487244a28d0",
+        "seq": 312,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T19:43:13.459141Z",
+        "capa_id": "CAPA-031",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 313,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-ca4cdb143deeac339c6b46c0b9e63ecc3f251404",
+      "8901e3820cb65359c2891009523891f5817e83e4",
+      "309848ccfda805b23fb929eb3d4f3411f748515a",
+      "pd-e70f7ab98cac2268b78c",
+      "cre-869acc198d3c44d74208457237ee1ea256e9e61c",
+      "6e2c1ef2569d1feb2b56f31a5a7d6dcdad4fdbee",
+      "5487244a28d0a5e6cb12f6c33c7823bbf0f02f52",
+      "pd-573e314d3c807f6e3a74"
+    ],
+    "note": "evaluate_effectiveness moved CAPA-031 to EFFECTIVE at 2026-10-17 ~19:25 because the r120 recurrence was UNCLASSIFIED (CAPA-037); corrected by a REOPENED transition with the r120 observation as evidence; iteration 2 fixed with RPR-040",
+    "record": {
+      "affected_versions": [
+        "forge-c@<5487244a28d0"
+      ],
+      "candidate_patch_sha256": "2a6ec29e69df2ca8d4e13c918a18c9f36c350933dd3e851dd8f70559075ec4eb",
+      "capa_id": "CAPA-031",
+      "created_at": "2026-10-17T16:53:48.263713Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-031"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-040",
+      "reproducer_id": "RPR-040",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-f1c99c4ec20c173c07f0",
+        "reproducer-run:rr-dad260b2dc8e79c62b87"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the resource-budget pattern recognised only flash/RAM/stack wording, not other byte budgets",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T19:43:13.459141Z"
+    }
+  },
+  "CAPA-037": {
+    "history": [
+      {
+        "at": "2026-10-17T19:38:59.045562Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[\"CAPA-037\"]",
+        "from_state": null,
+        "reason": "r120: CAPA-031 recurrence invisible to CRE because trace-gate rejections were UNCLASSIFIED; evaluate_effectiveness wrongly moved CAPA-031 to EFFECTIVE (corrected to REOPENED)",
+        "seq": 301,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-17T19:38:59.097513Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 302,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-17T19:38:59.185442Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-039 assigned",
+        "seq": 303,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-17T19:40:28.176862Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[\"reproducer-run:rr-1bc2577dc132bccce060\", \"reproducer-run:rr-6e95c29447819fcd70c6\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 304,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-17T19:40:28.206894Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[\"git:44311731b798..556929a4d05b\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 556929a4d05b (patch 3356 bytes)",
+        "seq": 305,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-17T19:40:28.247074Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[\"reproducer-run:rr-81d82e7df40b6fe67f6e\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-039 absent at 556929a4d05b",
+        "seq": 306,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-17T19:40:28.265510Z",
+        "capa_id": "CAPA-037",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 307,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "44311731b798dbf71c242da8249ede4721852ae9",
+      "556929a4d05bd2fdc47bb1987984ce92fe9043fa",
+      "pd-541c3b790ca7f4843c95"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<556929a4d05b"
+      ],
+      "candidate_patch_sha256": "829a0cb0be10a89f826bc8308a155a2347d47465f465a4b4eb8b28279a918954",
+      "capa_id": "CAPA-037",
+      "created_at": "2026-10-17T19:38:59.045562Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-037"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+      "prevention_test_id": "prevention:RPR-039",
+      "reproducer_id": "RPR-039",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-1bc2577dc132bccce060",
+        "reproducer-run:rr-6e95c29447819fcd70c6"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the CRE taxonomy had no rule for the owner-addendum trace-gate codes",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-17T19:40:28.265510Z"
+    }
+  }
+}

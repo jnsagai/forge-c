@@ -324,6 +324,25 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         from ..reliability import dashboard_api as R
         return R.anomalies()
 
+    # ---- feature 006 EASA: read-only Assurance view (evidence records and workspace files only) ----
+    @app.get("/api/v1/assurance/summary")
+    def easa_summary(r: str = Depends(role)) -> dict:
+        from ..assurance import dashboard_api as A
+        return A.summary()
+
+    @app.get("/api/v1/assurance/workorders")
+    def easa_workorders(r: str = Depends(role), limit: int = Query(30, ge=1, le=100)) -> dict:
+        from ..assurance import dashboard_api as A
+        return {"items": A.workorders(limit)}
+
+    @app.get("/api/v1/assurance/workorders/{wo}")
+    def easa_workorder(wo: str, r: str = Depends(role)) -> dict:
+        from ..assurance import dashboard_api as A
+        try:
+            return A.workorder(wo)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
     @app.get("/api/v1/events")
     def events(r: str = Depends(role), channel: str | None = None, min_level: str = "INFO", run_id: str | None = None,
                agent_id: str | None = None, phase: str | None = None, q: str | None = Query(None, max_length=200),

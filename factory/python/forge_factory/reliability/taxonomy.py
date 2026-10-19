@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from ..common import canonical_json
 
-CLASSIFIER_VERSION = "cre-rules-1.3"  # bump on any rule change; superseded observations are retracted, not deleted
+CLASSIFIER_VERSION = "cre-rules-1.4"  # bump on any rule change; superseded observations are retracted, not deleted
 CLASSES = ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY", "POLICY_SECURITY", "UNKNOWN")
 CATEGORIES = ("INFRASTRUCTURE", "WORKFLOW_ORCHESTRATION", "MCP_TOOL", "RESOURCE_BUDGET", "TRANSIENT_ENVIRONMENT",
               "PRODUCT_ENGINEERING", "REQUIREMENTS_SPEC", "AGENT_OUTPUT", "POLICY_SECURITY", "UNKNOWN")
@@ -55,6 +55,9 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     (r"MISSING_REQUIRED_OUTPUT:(?P<f>[^\s;]+)", "AGENT_OUTPUT", "MISSING_REQUIRED_OUTPUT:{f}"),
     (r"NO_WORKPRODUCTS|NO_TESTS|WORKPRODUCT_IS_AGENT_REPLY", "AGENT_OUTPUT", "NO_WORK_PRODUCT"),
     (r"REQUIRED_TOOL_NOT_PASS:(?P<op>\w+)", "PRODUCT_ENGINEERING", "REQUIRED_TOOL_NOT_PASS:{op}"),
+    # CAPA-037 (r120): the owner-addendum trace gate (inspection/swtrace.py) reports '<RELATION>:<CODE>:<detail>';
+    # without this rule all of them were UNCLASSIFIED and recurrence detection could not see them
+    (r"^(?P<k>UNIT|CODE|IT|UT|VT|ARCH):(?P<c>[A-Z][A-Z_]+)\b", "PRODUCT_ENGINEERING", "{k}:{c}"),
     # product engineering
     (r"REWORK_BUDGET_EXHAUSTED|rework budget exhausted", "PRODUCT_ENGINEERING", "REWORK_BUDGET_EXHAUSTED"),
     (r"REQIF:", "REQUIREMENTS_SPEC", "REQIF_EXPORT_INVALID"),  # r78/r79: duplicate ids broke the ReqIF schema

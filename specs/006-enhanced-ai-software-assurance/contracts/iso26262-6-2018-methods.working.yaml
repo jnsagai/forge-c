@@ -1,0 +1,827 @@
+catalog_version: 0.1.0-provisional
+normative_reference: ISO 26262-6:2018
+document_status: SECONDARY_WORKING_INDEX_NOT_AUTHORIZED_STANDARD
+owner_baseline_approval: null
+primary_publication: https://www.iso.org/standard/68388.html
+secondary_references:
+- https://public-docs.ferrocene.dev/main/certification/core/norm-mapping/iso-26262/iso-26262-6-method-tables.html
+- https://www.ansys.com/content/dam/amp/2022/april/webpage-requests/2022-ansys-scade-handbook.pdf
+- https://www.mathworks.com/help/slcheck/ug/assess-standards-compliance-of-simulink-model-testing-artifacts-with-iso-26262.html
+copyright_boundary: Short original summaries and table/row identifiers; no normative clause text reproduced.
+interpretation: ++ means highly recommended, not an unconditional instruction to perform every listed
+  alternative; select appropriate combinations and record applicability/rationale. No claim of ISO conformity
+  without controlled standard baseline and competent review.
+table_inventory:
+- table: 1
+  clause: 5
+  asil_b_highly_recommended_count: 6
+  status: WORKING_INDEX_UNVERIFIED
+- table: 2
+  clause: 7
+  asil_b_highly_recommended_count: 2
+  status: WORKING_INDEX_UNVERIFIED
+- table: 3
+  clause: 7
+  asil_b_highly_recommended_count: 6
+  status: WORKING_INDEX_UNVERIFIED
+- table: 4
+  clause: 7
+  asil_b_highly_recommended_count: 1
+  status: WORKING_INDEX_UNVERIFIED
+- table: 5
+  clause: 8
+  asil_b_highly_recommended_count: 2
+  status: WORKING_INDEX_UNVERIFIED
+- table: 6
+  clause: 8
+  asil_b_highly_recommended_count: 8
+  status: WORKING_INDEX_UNVERIFIED
+- table: 7
+  clause: 9
+  asil_b_highly_recommended_count: 4
+  status: WORKING_INDEX_UNVERIFIED
+- table: 8
+  clause: 9
+  asil_b_highly_recommended_count: 3
+  status: WORKING_INDEX_UNVERIFIED
+- table: 9
+  clause: 9
+  asil_b_highly_recommended_count: 2
+  status: WORKING_INDEX_UNVERIFIED
+- table: 10
+  clause: 10
+  asil_b_highly_recommended_count: 4
+  status: WORKING_INDEX_UNVERIFIED
+- table: 11
+  clause: 10
+  asil_b_highly_recommended_count: 3
+  status: WORKING_INDEX_UNVERIFIED
+- table: 12
+  clause: 10
+  asil_b_highly_recommended_count: 0
+  status: WORKING_INDEX_UNVERIFIED
+- table: 13
+  clause: 11
+  asil_b_highly_recommended_count: 2
+  status: WORKING_INDEX_UNVERIFIED
+- table: 14
+  clause: 11
+  asil_b_highly_recommended_count: 1
+  status: WORKING_INDEX_UNVERIFIED
+- table: 15
+  clause: 11
+  asil_b_highly_recommended_count: 3
+  status: WORKING_INDEX_UNVERIFIED
+methods:
+- method_id: ISO6-T01-1A
+  table: 1
+  row: 1a
+  paraphrase: Low complexity
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T01-1B
+  table: 1
+  row: 1b
+  paraphrase: Language subset restrictions
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T01-1C
+  table: 1
+  row: 1c
+  paraphrase: Strong-typing discipline
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T01-1F
+  table: 1
+  row: 1f
+  paraphrase: Unambiguous graphical representations
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T01-1G
+  table: 1
+  row: 1g
+  paraphrase: Style guidance
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T01-1H
+  table: 1
+  row: 1h
+  paraphrase: Naming conventions
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T02-1A
+  table: 2
+  row: 1a
+  paraphrase: Natural-language architectural description
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T02-1B
+  table: 2
+  row: 1b
+  paraphrase: Informal architectural notation
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1A
+  table: 3
+  row: 1a
+  paraphrase: Hierarchical component structure
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1B
+  table: 3
+  row: 1b
+  paraphrase: Bounded component size/complexity
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1D
+  table: 3
+  row: 1d
+  paraphrase: High component cohesion
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1E
+  table: 3
+  row: 1e
+  paraphrase: Low component coupling
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1F
+  table: 3
+  row: 1f
+  paraphrase: Adequate scheduling properties
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T03-1I
+  table: 3
+  row: 1i
+  paraphrase: Shared-resource management
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T04-1B
+  table: 4
+  row: 1b
+  paraphrase: Architectural design inspection
+  process: SWE.2
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: inspection
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T05-1A
+  table: 5
+  row: 1a
+  paraphrase: Natural-language unit design
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T05-1B
+  table: 5
+  row: 1b
+  paraphrase: Informal unit-design notation
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1A
+  table: 6
+  row: 1a
+  paraphrase: Defined unit entry/exit structure
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1B
+  table: 6
+  row: 1b
+  paraphrase: Controlled dynamic object usage
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1C
+  table: 6
+  row: 1c
+  paraphrase: Variable initialization
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1D
+  table: 6
+  row: 1d
+  paraphrase: Non-ambiguous variable naming
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1F
+  table: 6
+  row: 1f
+  paraphrase: Restrained pointer usage
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1G
+  table: 6
+  row: 1g
+  paraphrase: Explicit type conversions
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1H
+  table: 6
+  row: 1h
+  paraphrase: No hidden control/data flows
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T06-1I
+  table: 6
+  row: 1i
+  paraphrase: Avoid unconditional jumps
+  process: SWE.3
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T07-1C
+  table: 7
+  row: 1c
+  paraphrase: Software unit inspection
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: inspection
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T07-1H
+  table: 7
+  row: 1h
+  paraphrase: Static code analysis
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T07-1J
+  table: 7
+  row: 1j
+  paraphrase: Requirements-derived unit tests
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T07-1K
+  table: 7
+  row: 1k
+  paraphrase: Unit interface tests
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T08-1A
+  table: 8
+  row: 1a
+  paraphrase: Requirements analysis for test design
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T08-1B
+  table: 8
+  row: 1b
+  paraphrase: Equivalence partitions
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T08-1C
+  table: 8
+  row: 1c
+  paraphrase: Boundary analysis
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T09-1A
+  table: 9
+  row: 1a
+  paraphrase: Statement coverage
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T09-1B
+  table: 9
+  row: 1b
+  paraphrase: Branch coverage
+  process: SWE.4
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T10-1A
+  table: 10
+  row: 1a
+  paraphrase: Requirements-derived integration tests
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T10-1B
+  table: 10
+  row: 1b
+  paraphrase: Integration interface tests
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T10-1D
+  table: 10
+  row: 1d
+  paraphrase: Resource usage evaluation
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T10-1G
+  table: 10
+  row: 1g
+  paraphrase: Static analysis at integration
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T11-1A
+  table: 11
+  row: 1a
+  paraphrase: Requirements analysis for integration tests
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T11-1B
+  table: 11
+  row: 1b
+  paraphrase: Equivalence partitions for integration
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T11-1C
+  table: 11
+  row: 1c
+  paraphrase: Boundary analysis for integration
+  process: SWE.5
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T13-1A
+  table: 13
+  row: 1a
+  paraphrase: Hardware-in-the-loop environment
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T13-1B
+  table: 13
+  row: 1b
+  paraphrase: ECU network environment
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: design_review
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T14-1A
+  table: 14
+  row: 1a
+  paraphrase: Requirements-derived embedded software tests
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T15-1A
+  table: 15
+  row: 1a
+  paraphrase: Requirements analysis for embedded tests
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T15-1B
+  table: 15
+  row: 1b
+  paraphrase: Equivalence partitions for embedded tests
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER
+- method_id: ISO6-T15-1F
+  table: 15
+  row: 1f
+  paraphrase: Operational use case analysis
+  process: SWE.6
+  asil_recommendations:
+    A: UNVERIFIED
+    B: ++
+    C: UNVERIFIED
+    D: UNVERIFIED
+  recommendation_source: SECONDARY_WORKING_INDEX
+  normative_checked: false
+  classification_note: Reconcile row text, ASIL matrix, combinations, applicability and footnotes with
+    an authorized ISO 26262-6:2018 copy before compliance use.
+  default_evidence_kind: tool_execution
+  applicability: ASSESS_PER_WORK_ORDER

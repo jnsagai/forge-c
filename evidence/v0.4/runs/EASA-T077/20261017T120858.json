@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_easa_swtrace.py",
+    "-k",
+    "at092"
+  ],
+  "duration_s": 1.889,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "76ace0458beccc3316ad8be39f0037cb203d1022",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/EASA-T077/20261017T120858.log",
+  "log_sha256": "944c98d911ea9bc207803a751e91f105933ba4a0722424dc716f1a9a6a8c0264",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "EASA-T077",
+  "ts_utc": "2026-10-17T12:08:58.381588Z"
+}

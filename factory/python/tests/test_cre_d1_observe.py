@@ -239,3 +239,18 @@ def test_work_orders_record_sampling_and_failure_modes_emit_one_classified_event
     assert len(store.events("cre.failure_classified")) == len(modes)
     O.reduce(store, POL)
     assert len(store.events("cre.failure_classified")) == len(modes)  # once per fingerprint
+
+
+
+def test_capa037_trace_gate_codes_are_classified_not_unknown():
+    from forge_factory.reliability.taxonomy import classify
+
+    for raw, code in [("UNIT:SWR_NOT_REFINED:SWR-021 (allocated to SWC_LL but no unit-spec item traces it: add "
+                       "'Traces: SWR-021' to the USPEC item(s) of the unit that implements it)", "UNIT:SWR_NOT_REFINED"),
+                      ("IT:UNKNOWN_ARCH_REF:IT-001:IF-01 (architecture elements: IF-19, IF-20, SWC_LL)",
+                       "IT:UNKNOWN_ARCH_REF"),
+                      ("CODE:SPEC_NOT_IMPLEMENTED:USPEC-LL-01-01 (add ...)", "CODE:SPEC_NOT_IMPLEMENTED"),
+                      ("ARCH:SWR_NOT_ALLOCATED:SWR-003", "ARCH:SWR_NOT_ALLOCATED")]:
+        c = classify(raw)
+        assert (c.error_code, c.category, c.route) == (code, "PRODUCT_ENGINEERING", "SWE_REWORK")
+    assert classify("ARCHIVE:whatever").error_code == "UNCLASSIFIED"     # only the trace relations, anchored

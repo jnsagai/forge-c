@@ -1,0 +1,98 @@
+{
+  "WO-0002A-STM32N6-RCC-LL-r125": {
+    "archive_sha256": "27f45a98ed78374322c099919107b576f208b2ee56cf19e3051b79b69ad47d12",
+    "archive_unchanged": true,
+    "checked_at": "2026-10-18T09:37:46.522108Z",
+    "easa_mode": "PILOT",
+    "failing_relations": [],
+    "gap_count": 2,
+    "matrices": {
+      "matrix_1_swr_to_architecture": {
+        "present": true,
+        "rows": 24,
+        "status_counts": {
+          "ALLOCATED": 24
+        },
+        "uncovered": "none"
+      },
+      "matrix_2_unitspec_to_swr": {
+        "present": true,
+        "rows": 34,
+        "status_counts": {
+          "COMPONENT_LEVEL": 4,
+          "TRACED": 30
+        },
+        "uncovered": "none"
+      },
+      "matrix_3_code_to_unitspec": {
+        "present": true,
+        "rows": 16,
+        "status_counts": {
+          "TRACED": 16
+        },
+        "uncovered": "none"
+      },
+      "matrix_4_unittest_to_unitspec": {
+        "present": true,
+        "rows": 19,
+        "status_counts": {
+          "VERIFIED": 19
+        },
+        "uncovered": "none"
+      },
+      "matrix_5_integrationtest_to_architecture": {
+        "present": true,
+        "rows": 27,
+        "status_counts": {
+          "VERIFIED": 27
+        },
+        "uncovered": "none"
+      },
+      "matrix_6_validationtest_to_swr": {
+        "present": true,
+        "rows": 24,
+        "status_counts": {
+          "VERIFIED": 24
+        },
+        "uncovered": "none"
+      }
+    },
+    "package": "forge-c-WO-0002A-STM32N6-RCC-LL-r125-review.zip",
+    "package_gates": {
+      "integration_verification": true,
+      "misra_coverage_assessed": true,
+      "resource_budgets": true,
+      "safety_gaps_declared": true,
+      "software_verification": true,
+      "static_analysis": true,
+      "swe1_inspection": true,
+      "swe2_inspection": true,
+      "swe3_inspection": true,
+      "swe4_inspection": true,
+      "swe5_inspection": true,
+      "swe6_inspection": true,
+      "target_verification": true,
+      "traceability": true,
+      "unit_verification": true
+    },
+    "package_status": "BLOCKED",
+    "pilot_findings": [],
+    "safety_scope": {
+      "dispositions": {
+        "software_safety_analysis": "MISSING",
+        "tool_assurance_assessment": "MISSING"
+      },
+      "issues": [
+        "SAFETY_EVIDENCE_MISSING:hsi",
+        "SAFETY_EVIDENCE_MISSING:allocation_review",
+        "SAFETY_EVIDENCE_MISSING:software_safety_analysis",
+        "SAFETY_EVIDENCE_MISSING:tool_assurance_assessment"
+      ],
+      "status": "BLOCKED",
+      "target_asil": "B"
+    },
+    "schema": "forge-c/easa-pilot-check/0.1",
+    "scope": "trace completeness of a real pilot package; not a safety or release decision",
+    "status": "PASS"
+  }
+}

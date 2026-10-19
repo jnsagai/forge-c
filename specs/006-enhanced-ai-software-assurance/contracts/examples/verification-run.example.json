@@ -1,0 +1,22 @@
+{
+  "run_id": "synthetic-006",
+  "phase": "SWE.4",
+  "tool_id": "fixture-runner",
+  "tool_version": "0.0-test-only",
+  "command_digest": "sha256:synthetic",
+  "input_hash": "sha256:fixture",
+  "output_hash": "sha256:result",
+  "returncode": 1,
+  "environment": "HOST",
+  "status": "FAIL",
+  "observed_assertions": [
+    {
+      "requirement_id": "SWR-RCC-001",
+      "actual": "fail"
+    }
+  ],
+  "evidence_refs": [
+    "sha256:fixture-output"
+  ],
+  "timestamp_utc": "2026-10-17T10:00:00Z"
+}

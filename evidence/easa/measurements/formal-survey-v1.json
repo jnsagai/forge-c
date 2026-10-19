@@ -1,0 +1,442 @@
+{
+  "generated_at": "2026-10-17T18:40:00.474304Z",
+  "packages": {
+    "WO-0002A-STM32N6-RCC-LL-r101": {
+      "archive_sha256": "1bc3103e4a84a3580969c3900bb6f2d51b1109bcecbaf0858d9f2e3e1bf4c034",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_Disable": "PASS",
+          "LL_RCC_ADC12_Enable": "PASS",
+          "LL_RCC_ADC12_ForceReset": "PASS",
+          "LL_RCC_ADC12_IsEnabled": "PASS",
+          "LL_RCC_ADC12_ReleaseReset": "PASS",
+          "LL_RCC_GPDMA1_Disable": "PASS",
+          "LL_RCC_GPDMA1_Enable": "PASS",
+          "LL_RCC_GPDMA1_ForceReset": "PASS",
+          "LL_RCC_GPDMA1_IsEnabled": "PASS",
+          "LL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002A-STM32N6-RCC-LL-r117": {
+      "archive_sha256": "10090274c08650099d76c4cf18b7952f03563ed7e45df00c7f2a1e1a87073b0b",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_ClockDisable": "PASS",
+          "LL_RCC_ADC12_ClockEnable": "PASS",
+          "LL_RCC_ADC12_IsEnabledClock": "PASS",
+          "LL_RCC_ADC12_Reset": "PASS",
+          "LL_RCC_ADC12_ResetRelease": "PASS",
+          "LL_RCC_GPDMA1_ClockDisable": "PASS",
+          "LL_RCC_GPDMA1_ClockEnable": "PASS",
+          "LL_RCC_GPDMA1_IsEnabledClock": "PASS",
+          "LL_RCC_GPDMA1_Reset": "PASS",
+          "LL_RCC_GPDMA1_ResetRelease": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002A-STM32N6-RCC-LL-r87": {
+      "archive_sha256": "9a216b8ee61f8e35951d285d590b8ac728b295735cfb6b4c76f6ca1a4291f1d2",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_Disable": "PASS",
+          "LL_RCC_ADC12_Enable": "PASS",
+          "LL_RCC_ADC12_ForceReset": "PASS",
+          "LL_RCC_ADC12_IsEnabled": "PASS",
+          "LL_RCC_ADC12_ReleaseReset": "PASS",
+          "LL_RCC_GPDMA1_Disable": "PASS",
+          "LL_RCC_GPDMA1_Enable": "PASS",
+          "LL_RCC_GPDMA1_ForceReset": "PASS",
+          "LL_RCC_GPDMA1_IsEnabled": "PASS",
+          "LL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002A-STM32N6-RCC-LL-r89": {
+      "archive_sha256": "e13893bdb563d78c22d19514c70edf5cc6e480fd93485b331238b41909001d77",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_Disable": "PASS",
+          "LL_RCC_ADC12_Enable": "PASS",
+          "LL_RCC_ADC12_ForceReset": "PASS",
+          "LL_RCC_ADC12_IsEnabled": "PASS",
+          "LL_RCC_ADC12_ReleaseReset": "PASS",
+          "LL_RCC_GPDMA1_Disable": "PASS",
+          "LL_RCC_GPDMA1_Enable": "PASS",
+          "LL_RCC_GPDMA1_ForceReset": "PASS",
+          "LL_RCC_GPDMA1_IsEnabled": "PASS",
+          "LL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002A-STM32N6-RCC-LL-r91": {
+      "archive_sha256": "e86b113910e08afd7f57f9991b078f50a82dee8144ae651950c07d0a4a8dacd1",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_Disable": "PASS",
+          "LL_RCC_ADC12_Enable": "PASS",
+          "LL_RCC_ADC12_ForceReset": "PASS",
+          "LL_RCC_ADC12_IsEnabled": "PASS",
+          "LL_RCC_ADC12_ReleaseReset": "PASS",
+          "LL_RCC_GPDMA1_Disable": "PASS",
+          "LL_RCC_GPDMA1_Enable": "PASS",
+          "LL_RCC_GPDMA1_ForceReset": "PASS",
+          "LL_RCC_GPDMA1_IsEnabled": "PASS",
+          "LL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002A-STM32N6-RCC-LL-r95": {
+      "archive_sha256": "de74f89019cec4909b8bd1376f0cb206e2c68457420b49e327428b4b8a1820e8",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "functions": {
+          "LL_RCC_ADC12_Disable": "PASS",
+          "LL_RCC_ADC12_Enable": "PASS",
+          "LL_RCC_ADC12_ForceReset": "PASS",
+          "LL_RCC_ADC12_IsEnabled": "PASS",
+          "LL_RCC_ADC12_ReleaseReset": "PASS",
+          "LL_RCC_GPDMA1_Disable": "PASS",
+          "LL_RCC_GPDMA1_Enable": "PASS",
+          "LL_RCC_GPDMA1_ForceReset": "PASS",
+          "LL_RCC_GPDMA1_IsEnabled": "PASS",
+          "LL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "LL_RCC_HSE_Disable": "PASS",
+          "LL_RCC_HSE_Enable": "PASS",
+          "LL_RCC_HSE_IsReady": "PASS",
+          "LL_RCC_HSI_Disable": "PASS",
+          "LL_RCC_HSI_Enable": "PASS",
+          "LL_RCC_HSI_IsReady": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+        ],
+        "statements": [
+          81,
+          81
+        ],
+        "status": "PASS"
+      },
+      "layer": "LL"
+    },
+    "WO-0002B-STM32N6-RCC-HAL-r102": {
+      "archive_sha256": "bc5e59747ba622a99b2531d33e50d20d1cf3146bfc96a1afaf847478769f7679",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [],
+        "functions": {
+          "HAL_RCC_ADC12_Disable": "PASS",
+          "HAL_RCC_ADC12_Enable": "PASS",
+          "HAL_RCC_ADC12_ReleaseReset": "PASS",
+          "HAL_RCC_ADC12_Reset": "PASS",
+          "HAL_RCC_GPDMA1_Disable": "PASS",
+          "HAL_RCC_GPDMA1_Enable": "PASS",
+          "HAL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "HAL_RCC_GPDMA1_Reset": "PASS",
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [],
+        "statements": [
+          122,
+          122
+        ],
+        "status": "PASS"
+      },
+      "layer": "HAL"
+    },
+    "WO-0002B-STM32N6-RCC-HAL-r88": {
+      "archive_sha256": "12850fd05dc2cfc8532a6c53984ec3194fdb1210fb8d4af5f3ed29c9c170970a",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [],
+        "functions": {
+          "HAL_RCC_ADC12_Disable": "PASS",
+          "HAL_RCC_ADC12_Enable": "PASS",
+          "HAL_RCC_ADC12_ReleaseReset": "PASS",
+          "HAL_RCC_ADC12_Reset": "PASS",
+          "HAL_RCC_GPDMA1_Disable": "PASS",
+          "HAL_RCC_GPDMA1_Enable": "PASS",
+          "HAL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "HAL_RCC_GPDMA1_Reset": "PASS",
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS",
+          "HAL_RCC_PeripheralClockDisable": "PASS",
+          "HAL_RCC_PeripheralClockEnable": "PASS",
+          "HAL_RCC_PeripheralReleaseReset": "PASS",
+          "HAL_RCC_PeripheralReset": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [],
+        "statements": [
+          257,
+          257
+        ],
+        "status": "PASS"
+      },
+      "layer": "HAL"
+    },
+    "WO-0002B-STM32N6-RCC-HAL-r90": {
+      "archive_sha256": "8342f6e70fdf54b70bed60381b397b726f7a7eb1a6a695b6d5b7e4988b01cd22",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [],
+        "functions": {
+          "HAL_RCC_ADC12_Disable": "PASS",
+          "HAL_RCC_ADC12_Enable": "PASS",
+          "HAL_RCC_ADC12_Reset": "PASS",
+          "HAL_RCC_GPDMA1_Disable": "PASS",
+          "HAL_RCC_GPDMA1_Enable": "PASS",
+          "HAL_RCC_GPDMA1_Reset": "PASS",
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "null_argument": {
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:EVA_UNREACHED:2 of 149 statements not reached from the generated entry point (NULL arguments are not exercised); review before calling it dead"
+        ],
+        "statements": [
+          147,
+          149
+        ],
+        "status": "PASS"
+      },
+      "layer": "HAL"
+    },
+    "WO-0002B-STM32N6-RCC-HAL-r94": {
+      "archive_sha256": "872af017c4c22b5bee8102fa6a6ed55a39ee94e4eebcc216f4ea79c494500c5e",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [],
+        "functions": {
+          "HAL_RCC_ADC12_Disable": "PASS",
+          "HAL_RCC_ADC12_Enable": "PASS",
+          "HAL_RCC_ADC12_ReleaseReset": "PASS",
+          "HAL_RCC_ADC12_Reset": "PASS",
+          "HAL_RCC_GPDMA1_Disable": "PASS",
+          "HAL_RCC_GPDMA1_Enable": "PASS",
+          "HAL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "HAL_RCC_GPDMA1_Reset": "PASS",
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "null_argument": {},
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [],
+        "statements": [
+          141,
+          141
+        ],
+        "status": "PASS"
+      },
+      "layer": "HAL"
+    },
+    "WO-0002B-STM32N6-RCC-HAL-r96": {
+      "archive_sha256": "6152e7254e31b897e25e58479227c29e552e83a242ca2efdf434211bbbe14328",
+      "archive_unchanged": true,
+      "cbmc": {
+        "findings": [],
+        "functions": {
+          "HAL_RCC_ADC12_Disable": "PASS",
+          "HAL_RCC_ADC12_Enable": "PASS",
+          "HAL_RCC_ADC12_ReleaseReset": "PASS",
+          "HAL_RCC_ADC12_Reset": "PASS",
+          "HAL_RCC_GPDMA1_Disable": "PASS",
+          "HAL_RCC_GPDMA1_Enable": "PASS",
+          "HAL_RCC_GPDMA1_ReleaseReset": "PASS",
+          "HAL_RCC_GPDMA1_Reset": "PASS",
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "null_argument": {
+          "HAL_RCC_HSE_Disable": "PASS",
+          "HAL_RCC_HSE_Enable": "PASS",
+          "HAL_RCC_HSI_Disable": "PASS",
+          "HAL_RCC_HSI_Enable": "PASS"
+        },
+        "status": "PASS",
+        "unwind": 1100
+      },
+      "eva": {
+        "alarms": 0,
+        "findings": [
+          "LIMITATION:EVA_UNREACHED:1 of 171 statements not reached from the generated entry point (NULL arguments are not exercised); review before calling it dead"
+        ],
+        "statements": [
+          170,
+          171
+        ],
+        "status": "PASS"
+      },
+      "layer": "HAL"
+    }
+  },
+  "schema": "forge-c/easa-formal-survey/0.1"
+}

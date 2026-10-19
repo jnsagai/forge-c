@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/assurance-readiness.schema.json",
+  "title": "assurance-readiness",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "feature": {
+      "const": "006-enhanced-ai-software-assurance"
+    },
+    "implementation": {
+      "type": "string",
+      "enum": [
+        "SPEC_ONLY",
+        "PARTIAL",
+        "COMPLETE"
+      ]
+    },
+    "configured_mode": {
+      "type": "string",
+      "enum": [
+        "OBSERVE_ONLY",
+        "PILOT",
+        "ENFORCING"
+      ]
+    },
+    "normative_catalog_status": {
+      "type": "string",
+      "enum": [
+        "UNVERIFIED",
+        "RECONCILED"
+      ]
+    },
+    "technical_gates": {
+      "type": "string",
+      "enum": [
+        "NOT_DEMONSTRATED",
+        "DEMONSTRATED"
+      ]
+    },
+    "e2e_product_yield": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "safety_approval": {
+      "const": null
+    },
+    "blocking_items": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "feature",
+    "implementation",
+    "configured_mode",
+    "normative_catalog_status",
+    "technical_gates",
+    "safety_approval",
+    "blocking_items"
+  ]
+}

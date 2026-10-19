@@ -1,0 +1,9 @@
+# Progress rule (rework-policy.yaml, candidate 98e1aa9) replayed on the BLOCKED phase of the 2026-10-18 HAL failures (read-only; no run re-executed)
+r138 SWE.3 cycles ['a10', 'a10', 'a6'] -> EXTEND (9 item(s) resolved, 10 -> 6 findings)
+r140 SWE.2 cycles ['i1', 'i3', 'i3'] -> EXTEND (3 item(s) resolved, 3 -> 3 findings)
+r141 SWE.3 cycles ['a3', 'a4', 'i3'] -> EXTEND (deterministic gates passed; reached inspection)
+r142 SWE.2 cycles ['a1', 'a1'] -> BLOCK (STUCK)
+r143 SWE.4 cycles ['a1', 'i1', 'i1'] -> EXTEND (1 item(s) resolved, 1 -> 1 findings)
+r145 SWE.3 cycles ['a4', 'a4', 'i2'] -> EXTEND (deterministic gates passed; reached inspection)
+r146 SWE.4 cycles ['i1', 'i1', 'i1'] -> EXTEND (1 item(s) resolved, 1 -> 1 findings)
+# cycles: a=author gate rejection, i=failed inspection, number=issues/findings. EXTEND = one more cycle would have been granted; whether it would have converged is NOT measured.

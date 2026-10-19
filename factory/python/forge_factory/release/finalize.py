@@ -274,6 +274,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     for name in ("driver.elf", "driver.map"):
         if (tb / name).is_file():
             _w(stage, f"software/build/{name}", (tb / name).read_bytes())
+    _copy_tree(ws / "build" / "doxygen" / "html", stage / "documentation" / "doxygen")  # owner addendum: code docs
+    for f in sorted(ws.glob("workproducts/SWE.*/traceability/matrix_*")):  # owner addendum: the six matrices together
+        _w(stage, f"traceability/matrices/{f.name}", f.read_bytes())
     _copy_tree(ws / "evidence" / "raw", stage / "evidence-raw")
     if (ws / "evidence/tool-results.jsonl").is_file():
         _w(stage, "verification/tool-results.jsonl", (ws / "evidence/tool-results.jsonl").read_bytes())
@@ -343,6 +346,12 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
 
     bundle_into(ws, stage, dry_status)
+    from ..assurance.package import bundle_into as easa_bundle  # feature 006: changes status only in ENFORCING mode
+
+    try:
+        easa_bundle(ws, stage, dry_status)
+    except Exception as exc:  # noqa: BLE001 - observe-only evidence must never break packaging
+        _w(stage, "assurance/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
     sealed: dict = {}
 
     def seal(_key: str) -> dict:

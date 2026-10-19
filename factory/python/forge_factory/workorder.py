@@ -14,9 +14,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .common import REPO_ROOT, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
+from .common import REPO_ROOT, canonical_json, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
+from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE
 from .mcp.preflight import fabro_mcp_config
 from .mcp.preflight import preflight as mcp_preflight
 from .registry.agents import preflight as agent_preflight
@@ -135,6 +136,21 @@ def provided_ll(source_wo: str) -> tuple[bytes, dict]:
                   "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)"}
 
 
+def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[dict]:
+    """Owner dispositions (config/factory/verification-dispositions.yaml) that apply to this example work order.
+    Refuses a disposition without a human approver and date: an agent never settles an input issue."""
+    from .assurance.policy import _human
+    from .common import load_yaml
+
+    p = Path(repo) / "config/factory/verification-dispositions.yaml"
+    ods = [d for d in ((load_yaml(p) or {}).get("dispositions") or [] if p.is_file() else [])
+           if example_name in (d.get("examples") or [])]
+    bad = [d.get("id") for d in ods if not (_human(d.get("approved_by")) and d.get("approved_at"))]
+    if bad:
+        raise ValueError(f"OWNER_DISPOSITION_NOT_HUMAN_APPROVED:{bad}")
+    return ods
+
+
 def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
     layer = spec.get("layer", "LL+HAL")
@@ -187,6 +203,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
                 "input_baseline_commit": head, "factory_revision": factory_revision(),
                 "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
+                "trace_profile": TRACE_PROFILE,
+                "register_contract": REGISTER_CONTRACT,
+                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
@@ -203,6 +222,26 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     (ws / ".forge-run/index").mkdir(parents=True, exist_ok=True)
     for k, v in idx.items():
         (ws / f".forge-run/index/{Path(k).stem}.json").write_text(json.dumps(v))
+    from .assurance.scope import owner_scope  # owner safety-scope decision (never derived by an agent)
+
+    sc = owner_scope(example.name, wo, sha256_bytes(canonical_json(sorted((i["path"], i.get("sha256")) for i in listed))))
+    from .inspection.defects import DISPOSITIONS
+
+    ods = owner_dispositions_for(example.name)
+    if ods:  # owner dispositions of known input issues (never written by an agent)
+        manifest["owner_dispositions"] = [{"id": d["id"], "disposition": d["disposition"],
+                                           "limitation": " ".join(str(d["limitation"]).split())} for d in ods]
+        (ws / DISPOSITIONS).write_text(pretty_json(ods))
+        (ws / DISPOSITIONS).chmod(0o444)
+    if sc:
+        from .assurance.scope import allocation_status
+
+        manifest["safety_target"] = sc["scope"]["target_asil"]
+        # CAPA-044: the owner scope supersedes the example's target.safety_allocation (it said QM while the scope is
+        # ASIL B, and SWE.1 wrote "QM development scope" into ASIL B work products)
+        manifest["target"]["safety_allocation"] = allocation_status(sc)
+        (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
+        (ws / ".forge-run/safety_scope.json").chmod(0o444)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 
@@ -242,14 +281,22 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
         if g["decision"] != "PASS":
             break
         stable.append(ph)
+    # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
+    # they are never overwritten, and the source's copy must be byte-identical or its carried phases do not apply
+    provided = {r["path"]: r["sha256"] for r in manifest.get("provided") or []}
+    for rel, sha in provided.items():
+        if (src / rel).is_file() and sha256_file(src / rel) != sha:
+            raise ValueError(f"RESUME_PROVIDED_MISMATCH:{rel}:{source_wo} built on a different provided file")
     copied = []
     for ph in stable:
         for rel in PHASE_PATHS[ph]:
             if (src / rel).exists():
                 (ws / rel).parent.mkdir(parents=True, exist_ok=True)
                 if (src / rel).is_dir():
-                    shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
-                else:
+                    base = src / rel
+                    shutil.copytree(base, ws / rel, dirs_exist_ok=True, ignore=lambda d, names, base=base, rel=rel: [
+                        n for n in names if f"{rel}/{(Path(d) / n).relative_to(base)}" in provided])
+                elif rel not in provided:
                     shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
     if stable:
@@ -314,7 +361,15 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
 
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
-        provided_from: str | None = None) -> dict:
+        provided_from: str | None = None, acp_authors: str | None = None) -> dict:
+    if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
+        from .acp import codex_home
+
+        if acp_authors != "codex":
+            raise ValueError(f"unknown ACP author backend: {acp_authors}")
+        codex_home.ensure()
+        if not codex_home.logged_in():
+            raise RuntimeError(f"CODEX_HOME {codex_home.home()} is not logged in (run: CODEX_HOME=<it> codex login)")
     ws, manifest = prepare(example, wo, provided_from)
     phases = resume_from(ws, manifest, resume) if resume else None
     if phases == []:
@@ -326,8 +381,21 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
             secmap[parts[0]] = parts[3]
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
-                         phases=phases, layer=manifest.get("layer", "LL+HAL"))
-    (ws / ".forge-run/model-profile.json").write_text(pretty_json(model_profile(model, provider, code_model, nodes)))
+                         phases=phases, layer=manifest.get("layer", "LL+HAL"),
+                         trace=manifest.get("trace_profile") == TRACE_PROFILE,
+                         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION)
+    prof = model_profile(model, provider, code_model, nodes)
+    if acp_authors:
+        from . import acp
+        from .acp import codex_home
+
+        graph, acp_nodes = acp.attach(graph, nodes, ws)
+        prof["acp_authors"] = {"nodes": acp_nodes, "model": codex_home.MODEL, "reasoning_effort": codex_home.EFFORT,
+                               "provider": acp.ACP_PROVIDER, "codex": codex_home.CODEX,
+                               "note": "author roles on Codex; inspectors and every other node on the run model"}
+        manifest["acp_authors"] = acp_nodes
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)
@@ -369,9 +437,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
     ap.add_argument("--provided-from", default=None,
                     help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
+    ap.add_argument("--acp-authors", choices=["codex"], default=None,
+                    help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates")
     a = ap.parse_args(argv)
     res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-              resume=a.resume_from, provided_from=a.provided_from)
+              resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors)
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0

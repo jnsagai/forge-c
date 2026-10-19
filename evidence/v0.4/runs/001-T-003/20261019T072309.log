@@ -1,0 +1,27 @@
+{
+ "task": "T-003",
+ "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+ "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+ "archive_unchanged": true,
+ "checks": [
+  {
+   "check": "register map conformance against the RM index PASS",
+   "pass": true
+  },
+  {
+   "check": "SWE.2 register table (architecture) present",
+   "pass": true
+  },
+  {
+   "check": "RM-cited requirements baseline present",
+   "pass": true
+  },
+  {
+   "check": "toolchain/target baseline recorded",
+   "pass": true
+  }
+ ],
+ "status": "PASS"
+}
+
+--- stderr ---

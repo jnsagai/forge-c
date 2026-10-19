@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/jefferson/forge-c
+configfile: pyproject.toml
+plugins: anyio-4.15.1, cov-7.1.0
+collected 16 items / 13 deselected / 3 selected
+
+factory/python/tests/test_easa_swtrace.py ...                            [100%]
+
+======================= 3 passed, 13 deselected in 2.89s =======================
+
+--- stderr ---

@@ -1,0 +1,101 @@
+{
+  "CAPA-045": {
+    "history": [
+      {
+        "at": "2026-10-19T07:20:45.873231Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[\"CAPA-045\"]",
+        "from_state": null,
+        "reason": "Codex ACP authors reply with prose; r153 SWE.1 blocked on two replies without the JSON contract (34 observations of the fingerprint over all runs)",
+        "seq": 376,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-19T07:20:45.896198Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 377,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-19T07:20:45.950188Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-049 assigned",
+        "seq": 378,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-19T07:22:31.680707Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[\"reproducer-run:rr-a51035022c99b4b64830\", \"reproducer-run:rr-195fc79af6ae5631cc8a\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 379,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-19T07:22:31.702285Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[\"git:ab18ceca9f00..4e7ce38eb355\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 4e7ce38eb355 (patch 5982 bytes)",
+        "seq": 380,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-19T07:22:31.737768Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[\"reproducer-run:rr-7be91713676e2583388a\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-049 absent at 4e7ce38eb355",
+        "seq": 381,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-19T07:22:31.751982Z",
+        "capa_id": "CAPA-045",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 382,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cfp1-f5f803cb278abd7427276544ab75e7fecedabe27",
+      "ab18ceca9f0000b5dcc4067c4f4480cce18918fc",
+      "4e7ce38eb3559369e3e98fce2940de8f3aeadcda",
+      "pd-554a9c4e0fe914a05d93"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<4e7ce38eb355"
+      ],
+      "candidate_patch_sha256": "bd2f1e75779a527b1ec8124d8ff23ca5caad3fb208b29aa4fb61f8d8a806eab3",
+      "capa_id": "CAPA-045",
+      "created_at": "2026-10-19T07:20:45.873231Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-045"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-049",
+      "reproducer_id": "RPR-049",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-a51035022c99b4b64830",
+        "reproducer-run:rr-195fc79af6ae5631cc8a"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the ACP prompt placed the reply contract mid-prompt and Codex ran at default verbosity",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-19T07:22:31.751982Z"
+    }
+  }
+}

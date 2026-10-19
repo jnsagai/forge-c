@@ -75,7 +75,20 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang")
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
             if (ctx.workspace / d).is_dir()]
-    incs = [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
+    from ...workflow.ll_fake import FAKE_DIR, FAKE_HEADER, internal_calls, modified
+
+    fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
+    incs = [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS + [f"software/tests/{level}"]
+            if (ctx.workspace / d).is_dir()]
+    if fake and modified(ctx.workspace):
+        return result(ctx, "FAIL", "generated LL test double was modified", issues=[
+            f"GENERATED_TEST_DOUBLE_MODIFIED:{FAKE_HEADER} (generated from the provided LL header; restore it - write "
+            "the test cases in software/tests/unit/test_rcc.c only)"], tool="clang")
+    internal = [f"LL_FAKE_INTERNAL_CALL:{t.name}:{n} (internal to the generated LL bodies; preset state with "
+                "ll_fake_set_state(query_fn, value), script flags with ll_fake_return_from)"
+                for t in tests if fake for n in internal_calls(t.read_text(errors="replace"))]
+    if internal:
+        return result(ctx, "FAIL", "unit test calls LL test-double internals", issues=internal[:10], tool="clang")
     bdir = ctx.workspace / "build" / f"tests-{level}"
     if bdir.exists():
         shutil.rmtree(bdir)

@@ -1,0 +1,19 @@
+{
+  "database": {
+    "applied_first": [
+      1
+    ],
+    "applied_second": [],
+    "changed": [],
+    "pre_existing_objects": 77,
+    "status": "PASS",
+    "unchanged": true
+  },
+  "frozen_files": {
+    "base": "origin/feat/005-autonomous-factory-operations",
+    "changed": [],
+    "status": "PASS"
+  },
+  "generated_at": "2026-10-17T11:40:52.332449Z",
+  "schema": "forge-c/easa-compat/0.1"
+}

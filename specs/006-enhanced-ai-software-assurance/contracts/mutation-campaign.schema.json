@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-c.local/specs/006/contracts/mutation-campaign.schema.json",
+  "title": "mutation-campaign",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operator_set": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "eligible": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "killed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "survived": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "equivalent": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "invalid": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mutant_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "tool_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "MEASURED",
+        "UNKNOWN",
+        "BLOCKED"
+      ]
+    }
+  },
+  "required": [
+    "campaign_id",
+    "code_hash",
+    "operator_set",
+    "eligible",
+    "killed",
+    "survived",
+    "equivalent",
+    "invalid",
+    "mutant_refs",
+    "tool_version",
+    "result"
+  ]
+}

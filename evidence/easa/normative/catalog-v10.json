@@ -1,0 +1,1031 @@
+{
+  "catalog_version": "0.1.0-provisional",
+  "copyright_boundary": "Short original summaries and table/row identifiers; no normative clause text reproduced.",
+  "document_status": "PARTIALLY_RECONCILED",
+  "interpretation": "++ means highly recommended, not an unconditional instruction to perform every listed alternative; select appropriate combinations and record applicability/rationale. No claim of ISO conformity without controlled standard baseline and competent review.",
+  "methods": [
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1A",
+      "normative_checked": true,
+      "paraphrase": "Low complexity",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1B",
+      "normative_checked": true,
+      "paraphrase": "Language subset restrictions",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1C",
+      "normative_checked": true,
+      "paraphrase": "Strong-typing discipline",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1c",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1F",
+      "normative_checked": true,
+      "paraphrase": "Unambiguous graphical representations",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1f",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1G",
+      "normative_checked": true,
+      "paraphrase": "Style guidance",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1g",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T01-1H",
+      "normative_checked": true,
+      "paraphrase": "Naming conventions",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1h",
+      "table": 1,
+      "verification_ref": "licensed:5faf4306eaed584c:T1",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T02-1A",
+      "normative_checked": true,
+      "paraphrase": "Natural-language architectural description",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 2,
+      "verification_ref": "licensed:5faf4306eaed584c:T2",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "+",
+        "D": "+"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T02-1B",
+      "normative_checked": true,
+      "paraphrase": "Informal architectural notation",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 2,
+      "verification_ref": "licensed:5faf4306eaed584c:T2",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1A",
+      "normative_checked": true,
+      "paraphrase": "Hierarchical component structure",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1B",
+      "normative_checked": true,
+      "paraphrase": "Bounded component size/complexity",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1D",
+      "normative_checked": true,
+      "paraphrase": "High component cohesion",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1d",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1E",
+      "normative_checked": true,
+      "paraphrase": "Low component coupling",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1e",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1F",
+      "normative_checked": true,
+      "paraphrase": "Adequate scheduling properties",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1f",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T03-1I",
+      "normative_checked": true,
+      "paraphrase": "Shared-resource management",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1i",
+      "table": 3,
+      "verification_ref": "licensed:5faf4306eaed584c:T3",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "inspection",
+      "method_id": "ISO6-T04-1B",
+      "normative_checked": true,
+      "paraphrase": "Architectural design inspection",
+      "process": "SWE.2",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 4,
+      "verification_ref": "licensed:5faf4306eaed584c:T4",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T05-1A",
+      "normative_checked": true,
+      "paraphrase": "Natural-language unit design",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 5,
+      "verification_ref": "licensed:5faf4306eaed584c:T5",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "+",
+        "D": "+"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T05-1B",
+      "normative_checked": true,
+      "paraphrase": "Informal unit-design notation",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 5,
+      "verification_ref": "licensed:5faf4306eaed584c:T5",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1A",
+      "normative_checked": true,
+      "paraphrase": "Defined unit entry/exit structure",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1B",
+      "normative_checked": true,
+      "paraphrase": "Controlled dynamic object usage",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1C",
+      "normative_checked": true,
+      "paraphrase": "Variable initialization",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1c",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1D",
+      "normative_checked": true,
+      "paraphrase": "Non-ambiguous variable naming",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1d",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1F",
+      "normative_checked": true,
+      "paraphrase": "Restrained pointer usage",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1f",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1G",
+      "normative_checked": true,
+      "paraphrase": "Explicit type conversions",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1g",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1H",
+      "normative_checked": true,
+      "paraphrase": "No hidden control/data flows",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1h",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T06-1I",
+      "normative_checked": true,
+      "paraphrase": "Avoid unconditional jumps",
+      "process": "SWE.3",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1i",
+      "table": 6,
+      "verification_ref": "licensed:5faf4306eaed584c:T6",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "inspection",
+      "method_id": "ISO6-T07-1C",
+      "normative_checked": true,
+      "paraphrase": "Software unit inspection",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1c",
+      "table": 7,
+      "verification_ref": "licensed:5faf4306eaed584c:T7",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T07-1H",
+      "normative_checked": true,
+      "paraphrase": "Static code analysis",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1h",
+      "table": 7,
+      "verification_ref": "licensed:5faf4306eaed584c:T7",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T07-1J",
+      "normative_checked": true,
+      "paraphrase": "Requirements-derived unit tests",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1j",
+      "table": 7,
+      "verification_ref": "licensed:5faf4306eaed584c:T7",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T07-1K",
+      "normative_checked": true,
+      "paraphrase": "Unit interface tests",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1k",
+      "table": 7,
+      "verification_ref": "licensed:5faf4306eaed584c:T7",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T08-1A",
+      "normative_checked": true,
+      "paraphrase": "Requirements analysis for test design",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 8,
+      "verification_ref": "licensed:5faf4306eaed584c:T8",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T08-1B",
+      "normative_checked": true,
+      "paraphrase": "Equivalence partitions",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 8,
+      "verification_ref": "licensed:5faf4306eaed584c:T8",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T08-1C",
+      "normative_checked": true,
+      "paraphrase": "Boundary analysis",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1c",
+      "table": 8,
+      "verification_ref": "licensed:5faf4306eaed584c:T8",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "+",
+        "D": "+"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T09-1A",
+      "normative_checked": true,
+      "paraphrase": "Statement coverage",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 9,
+      "verification_ref": "licensed:5faf4306eaed584c:T9",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "+",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T09-1B",
+      "normative_checked": true,
+      "paraphrase": "Branch coverage",
+      "process": "SWE.4",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 9,
+      "verification_ref": "licensed:5faf4306eaed584c:T9",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T10-1A",
+      "normative_checked": true,
+      "paraphrase": "Requirements-derived integration tests",
+      "process": "SWE.5",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1a",
+      "table": 10,
+      "verification_ref": "licensed:5faf4306eaed584c:T10",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T10-1B",
+      "normative_checked": true,
+      "paraphrase": "Integration interface tests",
+      "process": "SWE.5",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1b",
+      "table": 10,
+      "verification_ref": "licensed:5faf4306eaed584c:T10",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T10-1D",
+      "normative_checked": true,
+      "paraphrase": "Resource usage evaluation",
+      "process": "SWE.5",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1d",
+      "table": 10,
+      "verification_ref": "licensed:5faf4306eaed584c:T10",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "++",
+        "B": "++",
+        "C": "++",
+        "D": "++"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T10-1G",
+      "normative_checked": true,
+      "paraphrase": "Static analysis at integration",
+      "process": "SWE.5",
+      "recommendation_source": "CONTROLLED_STANDARD",
+      "row": "1g",
+      "table": 10,
+      "verification_ref": "licensed:5faf4306eaed584c:T10",
+      "verified_reviewer_id": "Jefferson Nascimento"
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T11-1A",
+      "normative_checked": false,
+      "paraphrase": "Requirements analysis for integration tests",
+      "process": "SWE.5",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1a",
+      "table": 11
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T11-1B",
+      "normative_checked": false,
+      "paraphrase": "Equivalence partitions for integration",
+      "process": "SWE.5",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1b",
+      "table": 11
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T11-1C",
+      "normative_checked": false,
+      "paraphrase": "Boundary analysis for integration",
+      "process": "SWE.5",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1c",
+      "table": 11
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T13-1A",
+      "normative_checked": false,
+      "paraphrase": "Hardware-in-the-loop environment",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1a",
+      "table": 13
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "design_review",
+      "method_id": "ISO6-T13-1B",
+      "normative_checked": false,
+      "paraphrase": "ECU network environment",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1b",
+      "table": 13
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T14-1A",
+      "normative_checked": false,
+      "paraphrase": "Requirements-derived embedded software tests",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1a",
+      "table": 14
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T15-1A",
+      "normative_checked": false,
+      "paraphrase": "Requirements analysis for embedded tests",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1a",
+      "table": 15
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T15-1B",
+      "normative_checked": false,
+      "paraphrase": "Equivalence partitions for embedded tests",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1b",
+      "table": 15
+    },
+    {
+      "applicability": "ASSESS_PER_WORK_ORDER",
+      "asil_recommendations": {
+        "A": "UNVERIFIED",
+        "B": "++",
+        "C": "UNVERIFIED",
+        "D": "UNVERIFIED"
+      },
+      "classification_note": "Reconcile row text, ASIL matrix, combinations, applicability and footnotes with an authorized ISO 26262-6:2018 copy before compliance use.",
+      "default_evidence_kind": "tool_execution",
+      "method_id": "ISO6-T15-1F",
+      "normative_checked": false,
+      "paraphrase": "Operational use case analysis",
+      "process": "SWE.6",
+      "recommendation_source": "SECONDARY_WORKING_INDEX",
+      "row": "1f",
+      "table": 15
+    }
+  ],
+  "normative_reference": "ISO 26262-6:2018",
+  "owner_baseline_approval": null,
+  "primary_publication": "https://www.iso.org/standard/68388.html",
+  "reconciled_against_sha256": "5faf4306eaed584c614e0751ba28318099aeb1943bf2bbc14fe4653527f2ca40",
+  "secondary_references": [
+    "https://public-docs.ferrocene.dev/main/certification/core/norm-mapping/iso-26262/iso-26262-6-method-tables.html",
+    "https://www.ansys.com/content/dam/amp/2022/april/webpage-requests/2022-ansys-scade-handbook.pdf",
+    "https://www.mathworks.com/help/slcheck/ug/assess-standards-compliance-of-simulink-model-testing-artifacts-with-iso-26262.html"
+  ],
+  "table_inventory": [
+    {
+      "asil_b_highly_recommended_count": 6,
+      "clause": 5,
+      "status": "RECONCILED",
+      "table": 1
+    },
+    {
+      "asil_b_highly_recommended_count": 2,
+      "clause": 7,
+      "status": "RECONCILED",
+      "table": 2
+    },
+    {
+      "asil_b_highly_recommended_count": 6,
+      "clause": 7,
+      "status": "RECONCILED",
+      "table": 3
+    },
+    {
+      "asil_b_highly_recommended_count": 1,
+      "clause": 7,
+      "status": "RECONCILED",
+      "table": 4
+    },
+    {
+      "asil_b_highly_recommended_count": 2,
+      "clause": 8,
+      "status": "RECONCILED",
+      "table": 5
+    },
+    {
+      "asil_b_highly_recommended_count": 8,
+      "clause": 8,
+      "status": "RECONCILED",
+      "table": 6
+    },
+    {
+      "asil_b_highly_recommended_count": 4,
+      "clause": 9,
+      "status": "RECONCILED",
+      "table": 7
+    },
+    {
+      "asil_b_highly_recommended_count": 3,
+      "clause": 9,
+      "status": "RECONCILED",
+      "table": 8
+    },
+    {
+      "asil_b_highly_recommended_count": 2,
+      "clause": 9,
+      "status": "RECONCILED",
+      "table": 9
+    },
+    {
+      "asil_b_highly_recommended_count": 4,
+      "clause": 10,
+      "status": "RECONCILED",
+      "table": 10
+    },
+    {
+      "asil_b_highly_recommended_count": 3,
+      "clause": 10,
+      "status": "WORKING_INDEX_UNVERIFIED",
+      "table": 11
+    },
+    {
+      "asil_b_highly_recommended_count": 0,
+      "clause": 10,
+      "status": "WORKING_INDEX_UNVERIFIED",
+      "table": 12
+    },
+    {
+      "asil_b_highly_recommended_count": 2,
+      "clause": 11,
+      "status": "WORKING_INDEX_UNVERIFIED",
+      "table": 13
+    },
+    {
+      "asil_b_highly_recommended_count": 1,
+      "clause": 11,
+      "status": "WORKING_INDEX_UNVERIFIED",
+      "table": 14
+    },
+    {
+      "asil_b_highly_recommended_count": 3,
+      "clause": 11,
+      "status": "WORKING_INDEX_UNVERIFIED",
+      "table": 15
+    }
+  ]
+}

@@ -239,6 +239,27 @@ def test_target_procedures_state_the_rcc_model_exactly():
     prompts.LAYER["layer"] = "LL+HAL"
 
 
+def test_capa041_fix_loop_visit_gets_extra_turns_first_pass_does_not(tmp_path):
+    """CAPA-041 (r135/r136/r137): all three HAL SWE.3 fix visits ran out of turns; while a defect targeted at
+    SWE.3 is IN_FIX the SWE.3 author gets LOOP_EXTRA_TURNS; first passes and other roles are unchanged."""
+    import json
+
+    from forge_factory.inspection import defects
+    from forge_factory.policy import governor as GV
+
+    ws = tmp_path / "WO" / "workspace"
+    (ws / defects.DIR).mkdir(parents=True)
+    first = GV.turn_limit("swe3-author", str(ws))
+    (ws / defects.DIR / "DEF-001.json").write_text(json.dumps({"id": "DEF-001", "status": "IN_FIX",
+                                                                "target_phase": "SWE.3", "kind": "CODE"}))
+    assert GV.turn_limit("swe3-author", str(ws)) == first + GV.LOOP_EXTRA_TURNS
+    assert GV.turn_limit("swe4-author", str(ws)) == GV.turn_limit("swe4-author")       # not the target phase
+    assert GV.turn_limit("swe3-inspector", str(ws)) == GV.turn_limit("swe3-inspector")
+    (ws / defects.DIR / "DEF-001.json").write_text(json.dumps({"id": "DEF-001", "status": "FIXED",
+                                                                "target_phase": "SWE.3", "kind": "CODE"}))
+    assert GV.turn_limit("swe3-author", str(ws)) == first
+
+
 def test_traced_test_must_call_the_allocated_api(tmp_path, monkeypatch):
     """CAPA-024 (r86/r92/r93 SWE4-02): a traced unit test exercised a different function than its requirement."""
     from forge_factory.mcp import sdk
