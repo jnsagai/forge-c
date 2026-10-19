@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-02",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "EASA assurance mode PILOT -> ENFORCING",
+  "statement": "for enforcing mode i authorize",
+  "authorization": {"approved_by": "Jefferson Nascimento", "approved_at": "2026-10-19",
+                    "reference": "owner instruction 2026-10-19: 'for enforcing mode i authorize'"},
+  "effect": "Satisfies the HUMAN_AUTHORIZATION precondition only. The mode is NOT switched: policy.request_mode stays fail-closed until a validated pilot record exists (pilot PASS, measured false-positive and false-negative rates, independent human review) and the EASA-T070 readiness decision is no longer NOT_READY (it also requires a READY package, which needs the human-written ASIL B safety evidence).",
+  "not_decided": "No safety approval, no waiver of ASIL B evidence, no change of any gate."
+}
