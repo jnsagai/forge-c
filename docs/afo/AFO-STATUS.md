@@ -1,6 +1,6 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T08:40:46.170526Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-19T08:43:07.237343Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
 
 Tasks: BLOCKED 2, FAIL 1, NOT_RUN 41, PARTIAL 1, PASS 30.
 FRs: COVERED 24, OPEN 37, PARTIAL 11.
@@ -21,7 +21,7 @@ FRs: COVERED 24, OPEN 37, PARTIAL 11.
 | AFO-T012 | M1 | P0 | PASS | AT-003, AT-009 | evidence/v0.4/runs/AFO-T012/latest.json |
 | AFO-T013 | M1 | P0 | PASS | AT-003, AT-005, AT-007, AT-009 | evidence/v0.4/runs/AFO-T013/latest.json |
 | AFO-T014 | M1 | P0 | PARTIAL | AT-001, AT-004, AT-005, AT-007 | evidence/v0.4/runs/AFO-T014/latest.json |
-| AFO-T015 | M1 | P0 | BLOCKED | AT-002, AT-008 | real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) |
+| AFO-T015 | M1 | P0 | BLOCKED | AT-002, AT-008 | real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later. |
 | AFO-T016 | M2 | P0 | PASS | AT-011, AT-013, AT-015 | evidence/v0.4/runs/AFO-T016/latest.json |
 | AFO-T017 | M2 | P0 | PASS | AT-010, AT-011, AT-012, AT-013 | evidence/v0.4/runs/AFO-T017/latest.json |
 | AFO-T018 | M2 | P0 | PASS | AT-011, AT-013, AT-015, AT-066 | evidence/v0.4/runs/AFO-T018/latest.json |
@@ -40,7 +40,7 @@ FRs: COVERED 24, OPEN 37, PARTIAL 11.
 | AFO-T031 | M3 | P0 | PASS | AT-022, AT-023, AT-024 | evidence/v0.4/runs/AFO-T031/latest.json |
 | AFO-T032 | M3 | P0 | PASS | AT-024, AT-037, AT-057 | evidence/v0.4/runs/AFO-T032/latest.json |
 | AFO-T033 | M3 | P0 | PASS | AT-017, AT-022, AT-024, AT-025, AT-037, AT-057 | evidence/v0.4/runs/AFO-T033/latest.json |
-| AFO-T034 | M3 | P0 | BLOCKED | AT-019, AT-021, AT-022, AT-041 | real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) |
+| AFO-T034 | M3 | P0 | BLOCKED | AT-019, AT-021, AT-022, AT-041 | real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later. |
 | AFO-T035 | M4 | P0 | NOT_RUN | AT-026, AT-027, AT-035, AT-036, AT-043 |  |
 | AFO-T036 | M4 | P0 | NOT_RUN | AT-026, AT-028, AT-033, AT-035, AT-043 |  |
 | AFO-T037 | M4 | P0 | NOT_RUN | AT-029 |  |

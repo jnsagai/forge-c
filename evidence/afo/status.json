@@ -4,7 +4,7 @@
     "OPEN": 37,
     "PARTIAL": 11
   },
-  "generated_at": "2026-10-19T08:40:46.170526Z",
+  "generated_at": "2026-10-19T08:43:07.237343Z",
   "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
   "requirements": [
     {
@@ -1110,7 +1110,7 @@
       "planned_requirement_refs": "AFO-FR-009",
       "planned_test_refs": "AT-001;AT-004;AT-005;AT-007",
       "priority": "P0",
-      "reason": "Conductor restart drill PASS on real systemd (SIGKILL, watchdog hang, SIGTERM, bounded crash loop); the gateways, Fabro servers, dashboard and Ollama get the same drill when their units are installed in an owner-approved maintenance window (they are live and shared with running batches)",
+      "reason": "Conductor restart drill PASS on real systemd (SIGKILL, watchdog hang, SIGTERM, bounded crash loop); the gateways, Fabro servers, dashboard and Ollama get the same drill when their units are installed in an owner-approved maintenance window (they are live and shared with running batches) Owner decision 2026-10-19: the install-time drills of the other services are deferred with the restart work.",
       "status": "PARTIAL",
       "task_id": "AFO-T014"
     },
@@ -1121,7 +1121,7 @@
       "planned_requirement_refs": "AFO-FR-012",
       "planned_test_refs": "AT-002;AT-008",
       "priority": "P0",
-      "reason": "real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2)",
+      "reason": "real reboot / mount-removal drill needs owner authorization and a maintenance window; also the data volume is a login-time udisks loop mount of an image on a removable exFAT drive, so a headless reboot cannot pass until the operator configures boot-time mounting (docs/afo/OPERATIONS-AFO.md section 2) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
       "status": "BLOCKED",
       "task_id": "AFO-T015"
     },
@@ -1330,7 +1330,7 @@
       "planned_requirement_refs": "AFO-FR-030;AFO-FR-036",
       "planned_test_refs": "AT-019;AT-021;AT-022;AT-041",
       "priority": "P0",
-      "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026)",
+      "reason": "real machine reboot with an in-flight Fabro run needs owner authorization and a maintenance window; also blocked by the login-time data-volume mount (docs/afo/OPERATIONS-AFO.md section 2). Crash windows are covered with a fake Fabro (AFO-T033) and label adoption against the live Fabro listing (AFO-T026) Owner decision 2026-10-19: kept BLOCKED, restart/reboot drills deferred to later.",
       "status": "BLOCKED",
       "task_id": "AFO-T034"
     },
