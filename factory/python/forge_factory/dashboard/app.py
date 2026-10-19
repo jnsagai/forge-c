@@ -1,7 +1,9 @@
 """T037–T041 — read-only human supervision dashboard (FastAPI, loopback, OSS; contract: dashboard-api.openapi.yaml).
 
 * Auth: bearer token or `forge_dashboard_session` cookie. Roles: viewer (no security/audit channels) and
-  auditor (all channels). Tokens live in $FORGE_STATE_DIR/dashboard/tokens.json (0600).
+  auditor (all channels). Tokens live in $FORGE_STATE_DIR/dashboard/tokens.json (0600). Owner decision
+  OD-2026-10-19-09: sign-in can be switched off until deployment (config/factory/dashboard-access.yaml); every
+  request then gets the configured anonymous role, loopback binding only, and the operator token is unchanged.
 * All /api/v1 endpoints are GET/read-only projections; no SQL or file paths are exposed to the browser. Single
   exception (AFO-T058): POST /api/v1/afo/operator/{pause,drain,resume}, bearer operator token only, audited.
 * Display filters (channels, severity, run, agent, phase, search) never alter capture policy (T039).
@@ -48,11 +50,23 @@ def workspaces() -> list[Path]:
     return sorted(root.glob("*/workspace")) if root.is_dir() else []
 
 
-def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None) -> FastAPI:
+def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None, control_room_floor=None,
+               control_room_events=None) -> FastAPI:
     app = FastAPI(title="Forge-C Human Supervisor Dashboard API", version="0.4.0", docs_url=None, redoc_url=None)
     st = store or EventStore()
     col = Collector(st)
     toks = tokens()
+    from .access import load as load_access
+
+    access = load_access()
+
+    def who_of(request: Request) -> str | None:
+        """Role of a page request: its session cookie, else the anonymous role when sign-in is disabled."""
+        from .access import anonymous_role
+
+        tok = request.cookies.get("forge_dashboard_session", "")
+        who = next((r for r, t in toks.items() if tok and secrets.compare_digest(tok, t)), None)
+        return who or anonymous_role(access, request.client.host if request.client else None)
 
     def collector_loop() -> None:
         while True:
@@ -74,6 +88,11 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         for r, t in toks.items():
             if tok and secrets.compare_digest(tok, t):
                 return r
+        from .access import anonymous_role
+
+        anon = anonymous_role(access, request.client.host if request is not None and request.client else None)
+        if anon:  # OD-2026-10-19-09: no sign-in until deployment - for requests from this machine only
+            return anon
         raise HTTPException(401, "authentication required")
 
     @app.get("/api/v1/health/live")
@@ -81,10 +100,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         return {"live": True}
 
     @app.get("/login")
-    def login(token: str) -> RedirectResponse:
+    def login(token: str, next: str = "/") -> RedirectResponse:  # noqa: A002 - query parameter name
         if not any(secrets.compare_digest(token, t) for t in toks.values()):
             raise HTTPException(401, "bad token")
-        resp = RedirectResponse("/", status_code=303)
+        resp = RedirectResponse(next if next in ("/", "/control-room") else "/", status_code=303)
         resp.set_cookie("forge_dashboard_session", token, httponly=True, samesite="strict")
         return resp
 
@@ -93,8 +112,7 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         from fastapi.responses import HTMLResponse
 
         html = (STATIC / "index.html").read_text()
-        tok = request.cookies.get("forge_dashboard_session", "")
-        who = next((r for r, t in toks.items() if tok and secrets.compare_digest(tok, t)), None)
+        who = who_of(request)
         if who:  # server-side initial snapshot (same read-only projections as the API) for an immediate first paint
             init = {"me": me(who), "health": health(who), "runs": runs(who, None, 50, None),
                     "incidents": incidents(who, None, 20, None), "packages": packages(who, 20, None),
@@ -111,7 +129,8 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
 
     @app.get("/api/v1/me")
     def me(r: str = Depends(role)) -> dict:
-        return {"role": r, "channels": sorted(ROLE_CHANNELS[r]), "default_view": {"channels": ["human", "workflow",
+        return {"role": r, "auth": access["auth"],
+                "channels": sorted(ROLE_CHANNELS[r]), "default_view": {"channels": ["human", "workflow",
                                                                                                "supervisor"],
                                                                                   "min_level": "INFO"}}
 
@@ -436,6 +455,10 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
                 await asyncio.sleep(1.0)
         return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-store"})
 
+    from .control_room import register as register_control_room  # feature 007: manager view, read-only
+
+    register_control_room(app, role, who_of, control_room_floor, control_room_events, access)
+
     @app.exception_handler(HTTPException)
     async def http_err(_req: Request, exc: HTTPException) -> JSONResponse:
         return JSONResponse({"error": exc.detail}, status_code=exc.status_code)
@@ -450,8 +473,19 @@ def main() -> int:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--host", action="append", default=None,
+                    help="listen address; repeatable (e.g. 127.0.0.1 plus a Tailscale/LAN address for a phone). "
+                         "Non-loopback clients always need a dashboard token.")
     a = ap.parse_args()
-    uvicorn.run(create_app(), host="127.0.0.1", port=a.port, log_level="warning")
+    import socket
+
+    socks = []
+    for h in a.host or ["127.0.0.1"]:
+        s = socket.socket(socket.AF_INET6 if ":" in h else socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((h, a.port))
+        socks.append(s)
+    uvicorn.Server(uvicorn.Config(create_app(), log_level="warning")).run(sockets=socks)
     return 0
 
 

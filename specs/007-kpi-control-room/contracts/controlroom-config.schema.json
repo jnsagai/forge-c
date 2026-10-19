@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/controlroom-config/0.1",
+  "title": "Control Room configuration (config/factory/controlroom.yaml)",
+  "type": "object",
+  "required": ["schema", "tz", "shifts", "staleness_s", "idle_threshold_s", "lead_time_limit_s", "rework_near_ratio",
+               "yield_threshold", "spc", "prices"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "forge-c/controlroom-config/0.1"},
+    "tz": {"type": "string", "minLength": 1},
+    "shifts": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "object", "required": ["name", "start", "end"], "additionalProperties": false,
+                "properties": {"name": {"type": "string"}, "start": {"type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"},
+                               "end": {"type": "string", "pattern": "^(([01][0-9]|2[0-3]):[0-5][0-9]|24:00)$"}}}
+    },
+    "staleness_s": {"type": "integer", "minimum": 5},
+    "idle_threshold_s": {"type": "integer", "minimum": 60},
+    "lead_time_limit_s": {"type": "integer", "minimum": 60},
+    "rework_near_ratio": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+    "yield_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+    "spc": {"type": "object", "required": ["min_subgroups", "min_n", "min_points", "rules"], "additionalProperties": false,
+            "properties": {"min_subgroups": {"type": "integer", "minimum": 2}, "min_n": {"type": "integer", "minimum": 1},
+                           "min_points": {"type": "integer", "minimum": 2},
+                           "rules": {"type": "array", "items": {"enum": ["WE1", "WE2", "WE3"]}}}},
+    "prices": {"type": "object", "additionalProperties": {
+      "type": "object", "required": ["input_per_mtok", "output_per_mtok", "currency"], "additionalProperties": false,
+      "properties": {"input_per_mtok": {"type": "number", "minimum": 0}, "output_per_mtok": {"type": "number", "minimum": 0},
+                     "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}}}}
+  }
+}

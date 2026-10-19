@@ -210,3 +210,30 @@ def test_attestation_sees_claude_inspectors(tmp_path, monkeypatch):
     assert att["decision"] == "SUPPORTED"
     assert (seen["ins"]["model"], seen["ins"]["provider"]) == ("claude-opus-5", "anthropic-claude")
     assert seen["au"]["model"] == "gpt-6.1-sol"
+
+
+def test_cr_t027_usage_is_recorded_per_prompt_result_without_content(tmp_path, monkeypatch):
+    """Feature 007 CR-T027: one usage line per prompt result (counts + model), from ACP usage or _meta.quota."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ws = tmp_path / "WO" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    p = P.Proxy.__new__(P.Proxy)
+    p.ws, p.node, p.kind, p.prompts = ws, "swe2_inspector", "claude", set()
+    p.to_client = lambda m: None
+    p.from_client({"jsonrpc": "2.0", "id": 7, "method": "session/prompt", "params": {"sessionId": "S", "prompt": [
+        {"type": "text", "text": "SECRET PROMPT TEXT"}]}})
+    p.from_agent({"jsonrpc": "2.0", "id": 7, "result": {"stopReason": "end_turn", "usage": {
+        "inputTokens": 6, "outputTokens": 434, "cachedReadTokens": 10368, "cachedWriteTokens": 5503},
+        "_meta": {"quota": {"model_usage": [{"model": "claude-opus-5-5"}]}}}})
+    p.from_client({"jsonrpc": "2.0", "id": 8, "method": "session/prompt", "params": {"sessionId": "S", "prompt": []}})
+    p.from_agent({"jsonrpc": "2.0", "id": 8, "result": {"stopReason": "end_turn", "_meta": {"quota": {
+        "token_count": {"inputTokens": 3, "outputTokens": 5, "cachedInputTokens": 7}}}}})
+    p.from_client({"jsonrpc": "2.0", "id": 9, "method": "session/prompt", "params": {"sessionId": "S", "prompt": []}})
+    p.from_agent({"jsonrpc": "2.0", "id": 9, "result": {"stopReason": "end_turn"}})           # nothing reported
+    p.from_agent({"jsonrpc": "2.0", "id": 99, "result": {"usage": {"inputTokens": 1}}})       # not a prompt result
+    log = (ws / ".forge-run/acp/swe2_inspector.proxy.jsonl").read_text()
+    rows = [json.loads(x) for x in log.splitlines()]
+    assert [(r["model"], r["input"], r["output"], r["cache_read"]) for r in rows] == [
+        ("claude-opus-5-5", 6, 434, 10368), ("claude-opus-5-5", 3, 5, 7)]
+    assert "SECRET" not in log and all(set(r) <= {"ts", "event", "model", "input", "output", "cache_read", "cache_write"}
+                                       for r in rows)

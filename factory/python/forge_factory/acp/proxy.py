@@ -15,7 +15,8 @@ Codex runs with the factory CODEX_HOME (acp.codex_home) and its shell/exec/brows
 With --agent claude (OD-2026-10-19-08) the agent is claude-agent-acp on the owner's Claude login (acp.claude_home):
 the gate servers are set in session/new instead (ACP mcpServers, each allowed without a prompt) together with
 _meta.claudeCode.options that remove every built-in tool and every settings source; the rest is identical.
-Everything denied is logged to .forge-run/acp/<node>.proxy.jsonl (method and reason, no content).
+Everything denied is logged to .forge-run/acp/<node>.proxy.jsonl (method and reason, no content), and so is the
+token usage the agent reports in each prompt result (counts and model ID only; feature 007, CR-T029).
 """
 from __future__ import annotations
 
@@ -63,6 +64,28 @@ def acp_servers(servers: dict[str, dict]) -> list[dict]:
              "env": [{"name": k, "value": v} for k, v in s["env"].items()]} for n, s in servers.items()]
 
 
+def usage_record(result: dict, default_model: str) -> dict | None:
+    """Token counts from a session/prompt result: ACP `usage` and/or the adapters' `_meta.quota` (feature 007).
+    Counts and the model ID only - never prompt or response content. None when the agent reported nothing."""
+    if not isinstance(result, dict):
+        return None
+    u = result.get("usage") if isinstance(result.get("usage"), dict) else {}
+    q = (result.get("_meta") or {}).get("quota") if isinstance(result.get("_meta"), dict) else None
+    tc = (q or {}).get("token_count") or {}
+    mu = (q or {}).get("model_usage") or []
+
+    def pick(*vals):
+        return next((int(v) for v in vals if isinstance(v, (int, float)) and not isinstance(v, bool)), None)
+    rec = {"input": pick(u.get("inputTokens"), tc.get("inputTokens")),
+           "output": pick(u.get("outputTokens"), tc.get("outputTokens")),
+           "cache_read": pick(u.get("cachedReadTokens"), tc.get("cachedInputTokens")),
+           "cache_write": pick(u.get("cachedWriteTokens"), tc.get("cachedWriteTokens"))}
+    if all(v is None for v in rec.values()):
+        return None
+    model = next((m.get("model") for m in mu if isinstance(m, dict) and m.get("model")), None) or default_model
+    return {"event": "usage", "model": str(model)[:80], **rec}
+
+
 def deny_outcome(params) -> dict:
     """CAPA-049 (LL r165): answering a permission request with outcome 'cancelled' means 'the prompt turn was
     cancelled' - Codex ended the turn and Fabro failed the whole run ('Pipeline cancelled'). A policy refusal selects
@@ -74,11 +97,15 @@ def deny_outcome(params) -> dict:
 
 
 class Proxy:
+    # class-level defaults: frozen CRE reproducers (RPR-049, RPR-053) build a bare Proxy without __init__
+    kind = "codex"
+    prompts: set | None = None
     def __init__(self, binding: Path, node: str, agent_argv: list[str] | None = None, fin=sys.stdin, fout=sys.stdout,
                  agent: str = "codex"):
         from ..policy.authz import Binding
 
         self.binding_path, self.node, self.kind = binding, node, agent
+        self.prompts = set()  # ids of session/prompt requests whose results carry usage (feature 007)
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
         if agent == "claude":
@@ -127,6 +154,10 @@ class Proxy:
                               "disableBuiltInTools": True}
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
+            if "id" in m:
+                if self.prompts is None:
+                    self.prompts = set()
+                self.prompts.add(m["id"])
             p["prompt"] = [{"type": "text", "text": TOOL_NOTE}] + p["prompt"] + [{"type": "text", "text": REPLY_NOTE}]
         return m
 
@@ -142,6 +173,11 @@ class Proxy:
                 self.to_agent({"jsonrpc": "2.0", "id": m["id"],
                                "error": {"code": -32601, "message": f"refused by factory policy: {meth}"}})
             return
+        if "id" in m and "result" in m and self.prompts and m["id"] in self.prompts:
+            self.prompts.discard(m["id"])
+            rec = usage_record(m["result"], claude_home.MODEL if self.kind == "claude" else codex_home.MODEL)
+            if rec:
+                self._log(rec)
         self.to_client(m)
 
     def run(self) -> int:

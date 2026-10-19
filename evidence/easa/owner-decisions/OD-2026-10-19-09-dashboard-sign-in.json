@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-09",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Dashboard sign-in tokens and mobile access",
+  "statements": ["by know deactivate this token mechanism, we active later in the deployment",
+                 "create also a url where I can access by mobile"],
+  "decision": "Viewer/auditor sign-in is switched off until deployment (config/factory/dashboard-access.yaml auth: disabled, anonymous role viewer) for requests from this machine. For phone access the dashboard may also listen on the Tailscale and Wi-Fi addresses; requests from any address other than this machine still need the viewer/auditor token (one-time login link, then a cookie).",
+  "agent_note": "The token stays required for other devices because a dashboard without sign-in on a network address would expose factory data to every device on that network; the owner can still choose otherwise.",
+  "not_changed": "AFO operator token for pause/drain/resume; loopback-only default listen address; at deployment set auth: token"
+}

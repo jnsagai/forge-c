@@ -1,5 +1,7 @@
 # Factory Production Dashboard — v0.5 proposed panels
 
+> **Implemented manager view:** the Control Room (feature 007), at `/control-room`. See [CONTROL-ROOM.md](CONTROL-ROOM.md).
+
 ## Level 1: Executive production board (default)
 
 - Tiles: **SFOEE** (A×P×Q, or N/A), **READY packages / 7d**, **Station FPY / SWE1..6**, **p95 Lead Time**, **Blocking findings**, **Tokens per READY package**.

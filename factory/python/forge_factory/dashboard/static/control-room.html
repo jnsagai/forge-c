@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forge-C Control Room</title>
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--ink:#16181d;--muted:#5d6472;--line:#dde1e7;--run:#1f8a4c;--run-bg:#e3f4ea;
+--rew:#a86400;--rew-bg:#fff1d6;--blk:#c62828;--blk-bg:#fde4e4;--idle:#6b7280;--idle-bg:#eef0f3;--ready:#1f6fb5;
+--ready-bg:#e1eefa;--accent:#3949ab;--shadow:0 1px 2px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--panel:#181b21;--ink:#e8eaed;
+--muted:#9aa3b2;--line:#2a2f38;--run:#4cc47f;--run-bg:#13301f;--rew:#f0b13d;--rew-bg:#33260c;--blk:#ff6b6b;
+--blk-bg:#3a1515;--idle:#8b93a1;--idle-bg:#20242b;--ready:#6fb3f2;--ready-bg:#132739;--accent:#8c9eff;--shadow:none}}
+:root[data-theme="dark"]{--bg:#0f1115;--panel:#181b21;--ink:#e8eaed;--muted:#9aa3b2;--line:#2a2f38;--run:#4cc47f;
+--run-bg:#13301f;--rew:#f0b13d;--rew-bg:#33260c;--blk:#ff6b6b;--blk-bg:#3a1515;--idle:#8b93a1;--idle-bg:#20242b;
+--ready:#6fb3f2;--ready-bg:#132739;--accent:#8c9eff;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:12px 16px;border-bottom:1px solid var(--line);
+background:var(--panel);position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;font-weight:650;letter-spacing:.2px}
+header .sp{flex:1}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-weight:650;font-size:12px;
+letter-spacing:.3px;border:1px solid transparent}
+.s-RUNNING,.s-PRODUCING{color:var(--run);background:var(--run-bg)}
+.s-REWORK,.s-ATTENTION{color:var(--rew);background:var(--rew-bg)}
+.s-BLOCKED,.s-STOPPED,.s-VIOLATION{color:var(--blk);background:var(--blk-bg)}
+.s-IDLE,.s-NO_WIP{color:var(--idle);background:var(--idle-bg)}
+.s-READY{color:var(--ready);background:var(--ready-bg)}
+main{padding:16px;display:grid;gap:16px;max-width:1600px;margin:0 auto}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:var(--shadow);
+min-width:0}
+section.panel h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.banner{border-radius:8px;padding:10px 12px;font-weight:600}
+.banner.stale{background:var(--rew-bg);color:var(--rew)}
+.banner.viol{background:var(--blk-bg);color:var(--blk)}
+.board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:start}
+.ship{display:grid;gap:6px}
+.shiprow{display:grid;grid-template-columns:minmax(0,2.2fr) auto minmax(0,3fr) auto auto;gap:4px 12px;align-items:center;
+padding:6px 8px;border:1px solid var(--line);border-left:4px solid var(--idle);border-radius:7px;font-size:12px}
+.shiprow.READY{border-left-color:var(--ready)}.shiprow.BLOCKED{border-left-color:var(--blk)}
+.shiprow .wo{font-weight:650;word-break:break-all}.shiprow .why{color:var(--blk);word-break:break-word}
+.counts{display:flex;gap:8px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--bg);min-width:0}
+.tile .k{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.tile .v{font-size:22px;font-weight:700;margin:2px 0;font-variant-numeric:tabular-nums}
+.tile .d{font-size:12px;color:var(--muted)}
+.tile .nm{font-size:13px;font-weight:650;color:var(--muted)}
+.up{color:var(--run)}.down{color:var(--blk)}
+.fpy{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px;align-items:end;height:46px}
+.fpy div{background:var(--run);border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.fpy div.na{background:repeating-linear-gradient(45deg,var(--idle-bg),var(--idle-bg) 3px,var(--line) 3px,var(--line) 6px);height:100%}
+.fpyl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;font-size:10px;color:var(--muted);text-align:center}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto;font-weight:400}
+.note{font-size:12px;color:var(--muted);margin:-4px 0 10px}
+table.k{width:100%;border-collapse:collapse;font-size:12px}
+table.k th,table.k td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.k td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.chart{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--bg);min-width:0}
+.chart h3{font-size:13px;margin:0 0 4px;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.chart svg{width:100%;height:auto;display:block}
+.chart .cap{font-size:11px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:5px 9px}
+.seg button.on{background:var(--accent);color:#fff}
+@media (max-width:900px){.qgrid{grid-template-columns:1fr}}
+.alerts{display:grid;gap:6px}
+.al{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;
+border:1px solid var(--line);font-size:13px}
+.al.critical{background:var(--blk-bg);border-color:transparent}.al.warning{background:var(--rew-bg);border-color:transparent}
+.al .ic{font-weight:800}.al.critical .ic{color:var(--blk)}.al.warning .ic{color:var(--rew)}
+.al .tx{word-break:break-word}.al .tx small{color:var(--muted)}
+.al.acked{opacity:.6}
+.exp{font-size:12px;font-weight:400}
+.nm-badge{font-size:11px;font-weight:650;color:var(--muted);background:var(--idle-bg);border-radius:5px;padding:1px 5px}
+.station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.station .head b{font-size:13px}
+.station .head .andon{font-size:11px;font-weight:700;letter-spacing:.4px}
+.station .meta{padding:4px 10px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
+.station .reason{padding:6px 10px;font-size:12px;color:var(--blk);border-bottom:1px solid var(--line);word-break:break-word}
+.station .reason.rw{color:var(--rew)}
+.units{padding:8px;display:grid;gap:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--idle);border-radius:7px;padding:6px 8px;
+font-size:12px;min-width:0}
+.card.RUNNING{border-left-color:var(--run)}.card.REWORK{border-left-color:var(--rew)}
+.card.BLOCKED,.card.STOPPED{border-left-color:var(--blk)}.card.READY{border-left-color:var(--ready)}
+.card .wo{font-weight:650;word-break:break-all}
+.card .row{display:flex;justify-content:space-between;gap:6px;color:var(--muted)}
+.recent{padding:6px 8px 8px;font-size:12px}
+.recent summary{cursor:pointer;color:var(--muted)}
+.recent ul{margin:6px 0 0;padding-left:16px}
+.recent li{margin:2px 0;word-break:break-word}
+.kv{display:flex;gap:14px;flex-wrap:wrap}
+.empty{padding:10px;color:var(--muted);font-size:12px}
+#login{max-width:460px;margin:40px auto}
+input,select,button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;
+padding:6px 8px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--idle);display:inline-block}
+.live-dot.on{background:var(--run)}
+@media (max-width:1100px){.board{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.board{grid-template-columns:1fr}
+.shiprow{grid-template-columns:1fr auto}.shiprow .why{grid-column:1/-1}header{padding:10px 16px}main{padding:12px 16px}
+.station .units{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Forge-C Control Room</h1>
+  <span id="fstatus" class="pill s-NO_WIP">–</span>
+  <span class="muted" id="age"></span>
+  <span class="pill s-ATTENTION" id="authoff" hidden title="Owner decision OD-2026-10-19-09: no sign-in until deployment (this machine only)">sign-in off until deployment</span>
+  <span class="sp"></span>
+  <span class="muted"><span class="live-dot" id="dot"></span> <span id="live">offline</span></span>
+  <a href="/">Engineering dashboard</a>
+  <button id="theme" title="Toggle light/dark">◐</button>
+</header>
+<div id="login" hidden>
+  <section class="panel"><h2>Sign in</h2>
+    <p class="muted">Paste a dashboard token (state/dashboard/tokens.json). The Control Room is read-only.</p>
+    <input id="tok" type="password" style="width:100%" aria-label="dashboard token">
+    <p><button id="go">Open Control Room</button></p></section>
+</div>
+<main id="app" hidden>
+  <div id="banners"></div>
+  <section class="panel" aria-labelledby="h-att">
+    <h2 id="h-att">Attention <span class="muted" id="att-sub"></span>
+      <span class="ctrl"><label class="muted"><input type="checkbox" id="showack"> show acknowledged</label>
+        <button id="notif" title="Browser notifications for new critical alerts">Enable notifications</button></span></h2>
+    <div class="alerts" id="alerts"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-score">
+    <h2 id="h-score">Production scorecard <span class="muted" id="score-sub"></span>
+      <span class="ctrl"><select id="win" aria-label="window"><option value="shift">Current shift</option>
+        <option value="today" selected>Today</option><option value="7d">7 days</option><option value="30d">30 days</option></select>
+        <select id="cohort" aria-label="cohort"><option value="all">All runs</option><option value="cloud">Cloud-model runs</option>
+        <option value="production">Production (local-only)</option></select>
+        <span class="exp">export <a href="#" data-exp="scorecard:csv">CSV</a> · <a href="#" data-exp="scorecard:json">JSON</a></span></span></h2>
+    <div class="note" id="score-note"></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-floor">
+    <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span>
+      <span class="ctrl exp">export <a href="#" data-exp="floor:csv">CSV</a> · <a href="#" data-exp="floor:json">JSON</a></span></h2>
+    <div class="board" id="board"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-qual">
+    <h2 id="h-qual">Quality and losses <span class="muted">control charts spc-v1 · Pareto of recorded loss reasons</span>
+      <span class="ctrl"><span class="seg" id="qst"></span>
+        <select id="qwin" aria-label="quality window"><option value="7d">7 days</option><option value="30d" selected>30 days</option>
+        <option value="90d">90 days</option></select>
+        <span class="exp">export <a href="#" data-exp="quality:csv">CSV</a> · <a href="#" data-exp="quality:json">JSON</a></span></span></h2>
+    <div class="qgrid">
+      <div class="chart"><h3><span>First-pass yield per run (p-chart, daily)</span><span class="cap" id="c1s"></span></h3><div id="c1"></div>
+        <div class="cap" id="c1n"></div></div>
+      <div class="chart"><h3><span>Time to pass the station (I-MR)</span><span class="cap" id="c2s"></span></h3><div id="c2"></div>
+        <div class="cap" id="c2n"></div></div>
+      <div class="chart"><h3><span>Pareto of loss reasons</span><span class="cap" id="pas"></span></h3><div id="pa"></div></div>
+      <div class="chart"><h3><span>Corrective actions (CRE)</span><span class="cap" id="cas"></span></h3>
+        <div class="scroll" style="max-height:260px"><table class="k" id="capa"></table></div></div>
+    </div>
+  </section>
+  <section class="panel" aria-labelledby="h-use">
+    <h2 id="h-use">Model usage and cost <span class="muted" id="use-sub"></span>
+      <span class="ctrl"><select id="uwin" aria-label="usage window"><option value="today">Today</option>
+        <option value="7d" selected>7 days</option><option value="30d">30 days</option></select>
+        <span class="exp">export <a href="#" data-exp="usage:csv">CSV</a> · <a href="#" data-exp="usage:json">JSON</a></span></span></h2>
+    <div class="note" id="use-note"></div>
+    <div class="tiles" id="use-tiles"></div>
+    <div class="qgrid" style="margin-top:12px">
+      <div class="chart"><h3><span>New tokens by model and role</span><span class="cap">input + output; cache reads separate</span></h3><div id="use-models"></div></div>
+      <div class="chart"><h3><span>By station</span></h3><div class="scroll"><table class="k" id="use-st"></table></div></div>
+    </div>
+  </section>
+  <section class="panel" aria-labelledby="h-kpis">
+    <h2 id="h-kpis">All KPIs K01–K20 <span class="muted">feature-003 engine values, unchanged · previous period alongside</span></h2>
+    <div class="scroll"><table class="k" id="ktable"></table></div>
+  </section>
+  <section class="panel" aria-labelledby="h-ship">
+    <h2 id="h-ship">Shipped in the last 24 h <span class="counts" id="ship-counts"></span></h2>
+    <div class="ship" id="ship"></div>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const ICON = {RUNNING: "▶", REWORK: "↻", BLOCKED: "■", IDLE: "–", STOPPED: "■", READY: "✓"};
+const LABEL = {RUNNING: "RUNNING", REWORK: "REWORK", BLOCKED: "STOPPED", IDLE: "IDLE", STOPPED: "STOPPED", READY: "READY"};
+const FSTATUS = {PRODUCING: "Producing", ATTENTION: "Attention: rework", STOPPED: "Line stopped", NO_WIP: "No WIP",
+                 VIOLATION: "Safety/process violation"};
+let state = {floor: null, lastMsg: 0};
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c])); }
+function dur(s) {
+  if (s == null) return "–";
+  s = Math.max(0, Math.round(s));
+  if (s < 60) return s + " s";
+  if (s < 3600) return Math.floor(s / 60) + " min";
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h < 48 ? `${h} h ${m} min` : `${Math.floor(h / 24)} d ${h % 24} h`;
+}
+function sinceIso(iso) { return iso ? (Date.now() - Date.parse(iso)) / 1000 : null; }
+function short(wo) { return wo.replace(/^WO-/, ""); }
+
+function card(u) {
+  const st = u.status;
+  const node = u.run && u.run.current_node ? ` · ${esc(u.run.current_node)}` : "";
+  const models = u.models ? `${esc((u.models.authors || {}).model || "?")} / ${esc((u.models.inspectors || {}).model || "?")}` : "";
+  return `<div class="card ${st}" title="${esc(u.work_order)}">
+    <div class="wo">${esc(short(u.work_order))}</div>
+    <div class="row"><span>${ICON[st] || ""} ${u.package ? (st === "READY" ? "READY" : "BLOCKED (scrap)") : (LABEL[st] || st)}${node}</span><span>${dur(sinceIso(u.station_since))}</span></div>
+    <div class="row"><span>total ${dur(u.elapsed_s)}</span><span>${esc(u.class.layer || "")}</span></div>
+    ${u.reason ? `<div class="row" style="color:var(${st === "REWORK" ? "--rew" : "--blk"})">${esc(u.reason)}</div>` : ""}
+    ${models ? `<div class="row"><span>${models}</span></div>` : ""}
+  </div>`;
+}
+
+function renderFloor(f) {
+  state.floor = f;
+  const fs = $("fstatus");
+  fs.className = "pill s-" + f.factory_status;
+  fs.textContent = (ICON[{PRODUCING: "RUNNING", ATTENTION: "REWORK", STOPPED: "BLOCKED", NO_WIP: "IDLE", VIOLATION: "BLOCKED"}[f.factory_status]] || "") + " " + (FSTATUS[f.factory_status] || f.factory_status);
+  const units = Object.fromEntries(f.units.map((u) => [u.work_order, u]));
+  const live = f.units.filter((u) => !u.package && u.status !== "STOPPED").length;
+  $("floor-sub").textContent = `${live} in progress · ${f.units.filter((u) => u.package).length} shipped in 24 h`;
+  $("board").innerHTML = f.stations.map((s) => {
+    const here = s.units.map((w) => units[w]).filter(Boolean);
+    const shipped = s.station_id === "SHIPPING" ? f.units.filter((u) => u.package) : [];
+    const nReady = shipped.filter((u) => u.status === "READY").length;
+    const rec = s.recent.filter((r) => s.station_id !== "SHIPPING" && r.status === "BLOCKED");
+    return `<div class="station" aria-label="${esc(s.station_id)} ${LABEL[s.andon]}">
+      <div class="head s-${s.andon}"><b>${esc(s.station_id === "SHIPPING" ? "Shipping" : s.station_id)}</b>
+        <span class="andon">${ICON[s.andon]} ${LABEL[s.andon]}</span></div>
+      <div class="meta">${here.length} unit${here.length === 1 ? "" : "s"}${s.oldest_wait_s != null ? " · oldest " + dur(s.oldest_wait_s) : ""}
+        ${s.station_id === "SHIPPING" ? `<br>24 h: <b style="color:var(--ready)">${nReady} READY</b> · <b style="color:var(--blk)">${shipped.length - nReady} BLOCKED</b>` : ""}</div>
+      ${s.reason ? `<div class="reason ${s.andon === "REWORK" ? "rw" : ""}">${esc(s.reason)}</div>` : ""}
+      <div class="units">${here.map(card).join("") || '<div class="empty">no units</div>'}</div>
+      ${rec.length ? `<details class="recent"><summary>${rec.length} stopped here in 24 h</summary><ul>${rec.map((r) =>
+        `<li><b>${esc(short(r.work_order))}</b> ${esc(r.reason || "")}</li>`).join("")}</ul></details>` : ""}
+    </div>`;
+  }).join("");
+  renderShipped(f);
+  renderAlerts(f.alerts || []);
+  renderBanners();
+}
+
+function renderShipped(f) {
+  const done = f.units.filter((u) => u.package)
+    .sort((a, b) => String(b.package.finalized_at).localeCompare(String(a.package.finalized_at)));
+  const nReady = done.filter((u) => u.status === "READY").length;
+  $("ship-counts").innerHTML = `<span class="pill s-READY">✓ ${nReady} READY</span><span class="pill s-BLOCKED">■ ${done.length - nReady} BLOCKED (scrap)</span>`;
+  $("ship").innerHTML = done.map((u) => `<div class="shiprow ${u.status}">
+      <span class="wo">${esc(short(u.work_order))}</span>
+      <span>${u.status === "READY" ? "✓ READY" : "■ BLOCKED"}</span>
+      <span class="why">${esc(u.reason || "")}</span>
+      <span class="muted">lead ${dur(u.elapsed_s)}</span>
+      <span class="muted">${dur(sinceIso(u.package.finalized_at))} ago</span></div>`).join("") || '<div class="empty">nothing shipped in the last 24 h</div>';
+}
+
+// ---------------------------------------------------------------- alerts (US5)
+const ACK_KEY = "cr-acks";
+function acks() { try { return JSON.parse(localStorage.getItem(ACK_KEY) || "{}"); } catch (e) { return {}; } }
+function setAck(id, on) {
+  const a = acks(); if (on) a[id] = new Date().toISOString(); else delete a[id];
+  try { localStorage.setItem(ACK_KEY, JSON.stringify(a)); } catch (e) { /* per-viewer only; nothing reaches the factory */ }
+  if (state.floor) renderAlerts(state.floor.alerts || []);
+}
+const notified = new Set();
+function renderAlerts(list) {
+  const a = acks(), show = $("showack").checked;
+  const open = list.filter((x) => !a[x.alert_id] || !x.filterable);  // a violation is never hidden
+  const acked = list.filter((x) => a[x.alert_id] && x.filterable);
+  $("att-sub").textContent = list.length ? `${open.length} open${acked.length ? ` · ${acked.length} acknowledged` : ""}` : "";
+  const row = (x, isAck) => `<div class="al ${x.severity}${isAck ? " acked" : ""}" role="status">
+      <span class="ic">${x.severity === "critical" ? "■" : "▲"} ${esc(x.condition.replace(/_/g, " "))}</span>
+      <span class="tx">${esc(x.reason)}${x.subject && x.subject.work_order ? ` <small>· ${esc(short(x.subject.work_order))}</small>` : ""}${x.since ? ` <small>· since ${dur(sinceIso(x.since))}</small>` : ""}${!x.filterable ? " <small>· cannot be hidden</small>" : ""}</span>
+      <button data-ack="${esc(x.alert_id)}" data-on="${isAck || a[x.alert_id] ? 0 : 1}">${isAck || a[x.alert_id] ? "Unacknowledge" : "Acknowledge"}</button></div>`;
+  $("alerts").innerHTML = (open.map((x) => row(x, false)).join("") + (show ? acked.map((x) => row(x, true)).join("") : "")) ||
+    '<div class="empty">No open alerts. (A stopped station, a lead time over limit, a rework budget nearly used, a yield problem, a stale feed or a safety/process violation would appear here.)</div>';
+  for (const x of open) {
+    if (x.severity === "critical" && !notified.has(x.alert_id)) {
+      notified.add(x.alert_id);
+      try { if (window.Notification && Notification.permission === "granted") new Notification("Forge-C: " + x.condition.replace(/_/g, " "), {body: x.reason}); } catch (e) { /* optional */ }
+    }
+  }
+}
+$("alerts").onclick = (e) => { const id = e.target.dataset && e.target.dataset.ack; if (id) setAck(id, e.target.dataset.on === "1"); };
+$("showack").onchange = () => state.floor && renderAlerts(state.floor.alerts || []);
+$("notif").onclick = async () => {
+  try { const p = await Notification.requestPermission(); $("notif").textContent = p === "granted" ? "Notifications on" : "Notifications blocked"; }
+  catch (e) { $("notif").textContent = "Notifications unavailable"; }
+};
+try { if (window.Notification && Notification.permission === "granted") $("notif").textContent = "Notifications on"; } catch (e) { /* ignore */ }
+
+// ---------------------------------------------------------------- scorecard (US2)
+const WINLABEL = {shift: "this shift", today: "today", "7d": "7 days", "30d": "30 days"};
+function fmtVal(m) {
+  if (!m) return "–";
+  if (m.display !== "VALUE") return "NOT MEASURED";
+  const v = m.value;
+  if (m.unit === "ratio") return (v * 100).toFixed(v >= 0.995 || v === 0 ? 0 : 1) + " %";
+  if (m.unit === "seconds") return dur(v);
+  if (m.unit === "percent") return v.toFixed(0) + " %";
+  if (m.unit === "bytes") return Math.round(v) + " B";
+  if (Number.isInteger(v)) return String(v);
+  return (Math.round(v * 100) / 100).toString();
+}
+function key(m) { return m.metric_id + "|" + JSON.stringify(m.filters || {}); }
+function find(list, id, filt) {
+  return (list || []).find((m) => m.metric_id === id && Object.entries(filt || {}).every(([k, v]) => (m.filters || {})[k] === v));
+}
+function delta(cur, prev, higherBetter = true) {
+  if (!cur || !prev || cur.display !== "VALUE" || prev.display !== "VALUE") return "";
+  const d = cur.value - prev.value;
+  if (Math.abs(d) < 1e-9) return '<span class="muted">= prev</span>';
+  const good = (d > 0) === higherBetter;
+  const txt = cur.unit === "ratio" ? (d * 100).toFixed(1) + " pt" : cur.unit === "seconds" ? dur(Math.abs(d)) : (Math.round(d * 100) / 100);
+  return `<span class="${good ? "up" : "down"}">${d > 0 ? "▲" : "▼"} ${cur.unit === "seconds" ? (d > 0 ? "+" : "−") + txt : txt}</span>`;
+}
+function tile(name, value, sub, extra = "") {
+  return `<div class="tile"><div class="k"><span>${name}</span></div><div class="v">${value}</div><div class="d">${sub}</div>${extra}</div>`;
+}
+function nmTile(name, m) {
+  return `<div class="tile"><div class="k"><span>${name}</span></div><div class="v nm">NOT MEASURED</div>
+    <div class="d" title="${esc(m && m.reason)}">${esc(m ? m.reason : "no value")}</div></div>`;
+}
+function renderScore(sc) {
+  if (sc.status === "WARMING_UP") {
+    $("tiles").innerHTML = `<div class="tile"><div class="v nm">Warming up</div><div class="d">${esc(sc.reason)}</div></div>`;
+    $("score-note").textContent = ""; setTimeout(loadScore, 5000); return;
+  }
+  const c = sc.counts, pc = sc.previous_counts, K = sc.kpis, P = sc.previous_kpis;
+  $("score-sub").textContent = `${WINLABEL[sc.window.kind] || sc.window.kind} vs previous`;
+  $("score-note").textContent = `Cohort: ${sc.cohort_note}. Window ${sc.window.start_utc} → ${sc.window.end_utc} (UTC), ${sc.window.tz}.`;
+  const d = (a, b) => { const x = a - b; return x === 0 ? '<span class="muted">= prev</span>' : `${x > 0 ? "▲" : "▼"} ${Math.abs(x)} vs ${b}`; };
+  const t = [];
+  t.push(tile("READY packages", `<span style="color:var(--ready)">${c.packages_ready.value}</span>`, d(c.packages_ready.value, pc.packages_ready.value)));
+  t.push(tile("BLOCKED packages (scrap)", `<span style="color:var(--blk)">${c.packages_blocked.value}</span>`, d(c.packages_blocked.value, pc.packages_blocked.value)));
+  t.push(tile("Started", `${c.started_attempts.value}`, `runs · ${c.started_orders.value} driver order(s)`));
+  const wip = find(K, "K18");
+  t.push(wip && wip.display === "VALUE" ? tile("WIP", fmtVal(wip), "units in progress (K18)") : nmTile("WIP", wip));
+  const rty = find(K, "K03");
+  t.push(rty && rty.display === "VALUE" ? tile("Rolled throughput yield", fmtVal(rty), `${delta(rty, find(P, "K03"))} n=${rty.sample_count}${rty.low_sample ? " · low sample" : ""}`) : nmTile("Rolled throughput yield", rty));
+  const ph = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"];
+  const fp = ph.map((p) => find(K, "K02", {phase: p}));
+  const bars = fp.map((m) => m && m.display === "VALUE" ? `<div style="height:${Math.max(2, m.value * 100)}%" title="${m.filters.phase}: ${fmtVal(m)} (n=${m.sample_count})"></div>` : `<div class="na" title="${esc(m ? m.reason : "")}"></div>`).join("");
+  t.push(`<div class="tile"><div class="k"><span>First-pass yield per station</span></div><div class="fpy">${bars}</div>
+    <div class="fpyl">${ph.map((p, i) => `<span>${p.slice(4)}<br>${fp[i] && fp[i].display === "VALUE" ? Math.round(fp[i].value * 100) + "%" : "–"}</span>`).join("")}</div></div>`);
+  for (const [st, lab] of [["READY_FOR_OFFLINE_REVIEW", "Lead time READY"], ["BLOCKED", "Lead time BLOCKED"]]) {
+    const p50 = find(K, "K05", {status: st, quantile: "p50"}), p95 = find(K, "K05", {status: st, quantile: "p95"});
+    t.push(p50 && p50.display === "VALUE" ? tile(lab + " (p50)", fmtVal(p50), `p95 ${fmtVal(p95)} · n=${p50.sample_count} driver orders (first admission → close)`) : nmTile(lab, p50));
+  }
+  const oee = find(K, "K19");
+  t.push(oee && oee.display === "VALUE" ? tile("Factory OEE", fmtVal(oee), delta(oee, find(P, "K19"))) : nmTile("Factory OEE", oee));
+  const tok = find(K, "K15");
+  t.push(tok && tok.display === "VALUE" ? tile("Tokens per READY package", fmtVal(tok), `n=${tok.sample_count}`) : nmTile("Tokens per READY package", tok));
+  const v = find(K, "K20");
+  t.push(tile("Safety/process violations", `<span style="color:var(${v && v.value ? "--blk" : "--run"})">${v && v.display === "VALUE" ? v.value : "–"}</span>`, "hard zero-tolerance count (K20)"));
+  $("tiles").innerHTML = t.join("");
+  const prev = Object.fromEntries((P || []).map((m) => [key(m), m]));
+  $("ktable").innerHTML = `<thead><tr><th>KPI</th><th>Scope</th><th>${esc(WINLABEL[sc.window.kind] || "")}</th><th>n</th><th>Previous</th><th>Status / reason</th></tr></thead><tbody>` +
+    K.map((m) => `<tr><td><b>${m.metric_id}</b> ${esc((sc.names || {})[m.metric_id] || "")}</td>
+      <td>${esc(Object.values(m.filters || {}).join(" · "))}</td><td class="num">${fmtVal(m)}</td><td class="num">${m.sample_count}</td>
+      <td class="num">${fmtVal(prev[key(m)])}</td>
+      <td>${m.display === "VALUE" ? (m.low_sample ? '<span class="nm-badge">low sample</span> ' : "") + esc(m.explanation || "") : `<span class="nm-badge">NOT MEASURED</span> ${esc(m.reason)}`}</td></tr>`).join("") + "</tbody>";
+}
+async function loadScore() {
+  try {
+    const w = $("win").value, c = $("cohort").value;
+    renderScore(await api(`/api/v1/control-room/scorecard?window=${w}&cohort=${c}`));
+  } catch (e) { $("score-note").textContent = "scorecard unavailable: " + e.message; }
+}
+for (const id of ["win", "cohort"]) $(id).onchange = () => {
+  try { localStorage.setItem("cr-" + id, $(id).value); } catch (e) { /* per-viewer convenience */ }
+  loadScore(); if (id === "cohort") loadUsage();
+};
+for (const id of ["win", "cohort"]) { try { const v = localStorage.getItem("cr-" + id); if (v) $(id).value = v; } catch (e) { /* ignore */ } }
+setInterval(loadScore, 30000);
+
+// ---------------------------------------------------------------- quality (US3)
+let qStation = "SWE.4";
+try { qStation = localStorage.getItem("cr-qst") || qStation; } catch (e) { /* ignore */ }
+function svgChart(ch, fmt) {
+  const W = 600, H = 190, L = 60, R = 10, T = 10, B = 24;
+  const pts = ch.points || [];
+  if (!pts.length) return '<div class="empty">no data in this window</div>';
+  const lim = (x) => Array.isArray(x) ? x : (x == null ? null : pts.map(() => x));
+  const ucl = lim(ch.ucl), lcl = lim(ch.lcl);
+  const vals = pts.map((p) => p.value).concat(ucl || [], lcl || [], ch.center != null ? [ch.center] : []);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (hi === lo) { hi += 1; lo = Math.max(0, lo - 1); }
+  const pad = (hi - lo) * 0.08; hi += pad; lo = Math.max(lo - pad, Math.min(...vals) >= 0 ? 0 : lo - pad);
+  const x = (i) => L + (pts.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (pts.length - 1));
+  const y = (v) => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const bad = new Set((ch.violations || []).map((v) => v.point_index));
+  const line = (arr, cls) => arr ? `<polyline fill="none" stroke="var(${cls})" stroke-width="1.2" stroke-dasharray="5 4" points="${arr.map((v, i) => `${x(i)},${y(v)}`).join(" ")}"/>` : "";
+  const ticks = [lo, (lo + hi) / 2, hi].map((v) => `<text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(v)}</text>`).join("");
+  const labs = [0, pts.length - 1].filter((v, i, a) => a.indexOf(v) === i).map((i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="${i ? "end" : "start"}" font-size="10" fill="var(--muted)">${esc(String(pts[i].t).slice(0, 10))}</text>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="control chart">${ticks}${labs}
+    <line x1="${L}" x2="${W - R}" y1="${y(lo)}" y2="${y(lo)}" stroke="var(--line)"/>
+    ${line(ucl, "--blk")}${line(lcl, "--blk")}
+    ${ch.center != null ? `<line x1="${L}" x2="${W - R}" y1="${y(ch.center)}" y2="${y(ch.center)}" stroke="var(--run)" stroke-width="1.2"/>` : ""}
+    <polyline fill="none" stroke="var(--accent)" stroke-width="1.6" points="${pts.map((p, i) => `${x(i)},${y(p.value)}`).join(" ")}"/>
+    ${pts.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.value)}" r="${bad.has(i) ? 4.5 : 2.6}" fill="var(${bad.has(i) ? "--blk" : "--accent"})"><title>${esc(String(p.t))}: ${fmt(p.value)} (n=${p.n})${(p.units || []).length ? " · " + esc(p.units.slice(0, 6).map(short).join(", ")) : ""}${bad.has(i) ? " · rule violation" : ""}</title></circle>`).join("")}
+  </svg>`;
+}
+function chartStatus(ch) {
+  if (ch.status === "INSUFFICIENT_DATA") {
+    const m = ch.minimum || {};
+    return `insufficient data for limits (n=${ch.n}${ch.subgroups != null ? `, ${ch.subgroups} days` : ""}; needs ${Object.entries(m).map(([k, v]) => `${v} ${k}`).join(", ")})`;
+  }
+  const v = (ch.violations || []).length;
+  return `centre ${ch.method.endsWith("p-chart") ? Math.round(ch.center * 100) + " %" : dur(ch.center)} · ${v ? `<span class="down">${v} rule violation(s)</span>` : "in control"}`;
+}
+function paretoSvg(items) {
+  const top = items.slice(0, 10);
+  if (!top.length) return '<div class="empty">no loss recorded in this window</div>';
+  const W = 600, rowH = 22, L = 230, H = top.length * rowH + 8, max = Math.max(...top.map((x) => x.count));
+  const total = items.reduce((a, x) => a + x.count, 0);
+  let cum = 0;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pareto">${top.map((it, i) => {
+    cum += it.count; const w = (W - L - 70) * it.count / max, yy = 4 + i * rowH;
+    const col = it.kind === "BLOCKED" ? "--blk" : it.kind === "REWORK" ? "--rew" : "--accent";
+    return `<text x="${L - 6}" y="${yy + 14}" text-anchor="end" font-size="11" fill="var(--ink)">${esc((it.reason_code.length > 34 ? it.reason_code.slice(0, 33) + "…" : it.reason_code))}</text>
+      <rect x="${L}" y="${yy + 3}" width="${Math.max(2, w)}" height="${rowH - 8}" rx="3" fill="var(${col})"><title>${esc(it.station)} ${esc(it.kind)} ${esc(it.reason_code)}: ${it.count} (${esc(it.refs.slice(0, 5).map((r) => short(r.work_order)).join(", "))})</title></rect>
+      <text x="${L + w + 6}" y="${yy + 14}" font-size="11" fill="var(--muted)">${it.count} · ${Math.round(100 * cum / total)}%</text>`;
+  }).join("")}</svg>`;
+}
+function renderQuality(q) {
+  const ch = q.charts[qStation];
+  if (!ch) return;
+  $("c1").innerHTML = svgChart(ch.first_pass_yield, (v) => Math.round(v * 100) + "%");
+  $("c1s").innerHTML = chartStatus(ch.first_pass_yield);
+  $("c1n").textContent = q.notes.first_pass_yield;
+  $("c2").innerHTML = svgChart(ch.time_to_pass_s, dur);
+  $("c2s").innerHTML = chartStatus(ch.time_to_pass_s);
+  $("c2n").textContent = q.notes.time_to_pass_s;
+  const pa = q.pareto.filter((x) => x.station === qStation);
+  $("pa").innerHTML = paretoSvg(pa);
+  $("pas").textContent = `${qStation} · ${pa.reduce((a, x) => a + x.count, 0)} loss events`;
+  $("pas").innerHTML += ' · <span style="color:var(--blk)">■ blocked</span> <span style="color:var(--rew)">■ rework</span> <span style="color:var(--accent)">■ rejected</span>';
+  $("cas").textContent = q.capa_error || `${q.capa.length} most recent`;
+  $("capa").innerHTML = "<thead><tr><th>CAPA</th><th>State</th><th>Root cause</th></tr></thead><tbody>" +
+    q.capa.map((c) => `<tr><td><b>${esc(c.capa_id)}</b></td><td>${esc(c.state)}</td><td>${esc(c.root_cause_status || "")} · ${esc((c.root_cause_summary || "").slice(0, 140))}</td></tr>`).join("") + "</tbody>";
+}
+let lastQuality = null;
+async function loadQuality() {
+  try { lastQuality = await api(`/api/v1/control-room/quality?window=${$("qwin").value}`); renderQuality(lastQuality); }
+  catch (e) { $("pas").textContent = "quality data unavailable: " + e.message; }
+}
+$("qst").innerHTML = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"].map((s) => `<button data-s="${s}" class="${s === qStation ? "on" : ""}">${s.slice(4)}</button>`).join("");
+$("qst").onclick = (e) => {
+  const s = e.target.dataset && e.target.dataset.s; if (!s) return;
+  qStation = s; try { localStorage.setItem("cr-qst", s); } catch (er) { /* ignore */ }
+  for (const b of $("qst").children) b.className = b.dataset.s === s ? "on" : "";
+  if (lastQuality) renderQuality(lastQuality);
+};
+$("qwin").onchange = loadQuality;
+setInterval(loadQuality, 60000);
+
+// ---------------------------------------------------------------- usage (US4)
+function num(v) { return v == null ? "–" : v >= 1e6 ? (v / 1e6).toFixed(2) + " M" : v >= 1e3 ? (v / 1e3).toFixed(1) + " k" : String(v); }
+function renderUsage(u) {
+  if (u.status === "WARMING_UP") { $("use-note").textContent = "warming up…"; setTimeout(loadUsage, 5000); return; }
+  $("use-sub").textContent = `${WINLABEL[u.window.kind] || u.window.kind} · runs admitted in the window`;
+  $("use-note").textContent = u.note;
+  const tp = u.tokens_per_ready_package;
+  $("use-tiles").innerHTML = [
+    tile("New tokens (reported)", num(u.tokens_new_reported), `${u.reported_stages} of ${u.stages} agent stages reported`),
+    tile("Not reported", u.not_reported_share == null ? "–" : Math.round(u.not_reported_share * 100) + " %",
+         "stages with no usage record (counted as unknown, never 0)"),
+    tp.status === "MEASURED" ? tile("Tokens per READY package", num(tp.value), tp.complete ? "complete" : "lower bound: some usage not reported")
+      : nmTile("Tokens per READY package", {reason: tp.reason}),
+  ].join("") + u.by_model.filter((m, i, a) => a.findIndex((x) => x.model === m.model) === i).map((m) =>
+    m.cost && m.cost.status === "MEASURED" ? tile(`Cost ${esc(m.model)}`, `${m.cost.value} ${esc(m.cost.currency)}`, esc(m.cost.source))
+      : nmTile(`Cost ${esc(m.model)}`, {reason: m.cost ? m.cost.reason : ""})).join("");
+  const rows = u.by_model, max = Math.max(1, ...rows.map((m) => m.tokens_new || 0));
+  $("use-models").innerHTML = rows.length ? rows.map((m) => `<div style="margin:6px 0">
+      <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px"><span><b>${esc(m.model)}</b> · ${esc(m.role)} <span class="muted">${esc(m.provider || "")}</span></span>
+      <span class="muted">${m.tokens_new == null ? "not reported" : num(m.tokens_new)} · ${m.reported_stages}/${m.stages} stages · ${m.runs} runs</span></div>
+      <div style="height:10px;background:var(--idle-bg);border-radius:5px;overflow:hidden"><div style="height:100%;width:${m.tokens_new == null ? 0 : Math.max(1, 100 * m.tokens_new / max)}%;background:var(${m.role === "inspector" ? "--rew" : "--accent"})"></div></div>
+    </div>`).join("") : '<div class="empty">no agent stages in this window</div>';
+  $("use-st").innerHTML = "<thead><tr><th>Station</th><th>Stages</th><th>Reported</th><th>New tokens</th><th>Cache reads</th></tr></thead><tbody>" +
+    u.by_station.sort((a, b) => a.station.localeCompare(b.station)).map((s) => `<tr><td>${esc(s.station)}</td><td class="num">${s.stages}</td>
+      <td class="num">${s.reported_stages}${s.complete ? "" : ' <span class="nm-badge">incomplete</span>'}</td><td class="num">${num(s.tokens_new)}</td><td class="num">${num(s.cache_read)}</td></tr>`).join("") + "</tbody>";
+}
+async function loadUsage() {
+  try { renderUsage(await api(`/api/v1/control-room/usage?window=${$("uwin").value}&cohort=${$("cohort").value}`)); }
+  catch (e) { $("use-note").textContent = "usage unavailable: " + e.message; }
+}
+$("uwin").onchange = loadUsage;
+setInterval(loadUsage, 60000);
+
+document.addEventListener("click", (e) => {  // exports reflect the window/cohort currently shown
+  const x = e.target.dataset && e.target.dataset.exp; if (!x) return;
+  e.preventDefault();
+  const [view, fmt] = x.split(":");
+  const win = view === "quality" ? $("qwin").value : view === "usage" ? $("uwin").value : $("win").value;
+  location.href = `/api/v1/control-room/export?view=${view}&format=${fmt}&window=${win}&cohort=${$("cohort").value}`;
+});
+
+function renderBanners() {
+  const f = state.floor; if (!f) return;
+  const b = [];
+  if (f.factory_status === "VIOLATION") b.push(`<div class="banner viol">■ ${f.violations_open} open safety/process violation(s). The factory is not green while any is open.</div>`);
+  const age = f.data_age_s != null ? f.data_age_s + (Date.now() - state.lastMsg) / 1000 : null;
+  if (f.stale || (state.lastMsg && Date.now() - state.lastMsg > 15000))
+    b.push(`<div class="banner stale">⚠ Stale data: last update ${dur(age)} ago. Values below are not live.</div>`);
+  $("banners").innerHTML = b.join("");
+  $("age").textContent = f.data_age_s == null ? "no production data" : `data age ${dur(f.data_age_s)}`;
+}
+
+async function api(path) {
+  const r = await fetch(path, {credentials: "same-origin"});
+  if (r.status === 401) { showLogin(); throw new Error("auth"); }
+  if (!r.ok) throw new Error(path + " " + r.status);
+  return r.json();
+}
+
+let es = null, pollTimer = null;
+function connect() {
+  if (es) es.close();
+  es = new EventSource("/api/v1/control-room/stream?max_seconds=300");
+  es.addEventListener("floor", (e) => { state.lastMsg = Date.now(); setLive(true); renderFloor(JSON.parse(e.data)); });
+  es.addEventListener("heartbeat", (e) => {
+    state.lastMsg = Date.now(); setLive(true);
+    const h = JSON.parse(e.data);
+    if (state.floor) { Object.assign(state.floor, h); renderBanners(); }
+  });
+  es.onerror = () => { setLive(false); es.close(); es = null; setTimeout(connect, 3000); };
+}
+function setLive(on) { $("dot").className = "live-dot" + (on ? " on" : ""); $("live").textContent = on ? "live" : "reconnecting"; }
+function poll() {  // fallback when the stream is down: refresh every 5 s
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if (state.lastMsg && Date.now() - state.lastMsg < 6000) return;
+    try { renderFloor(await api("/api/v1/control-room/floor")); } catch (e) { /* shown by the stale banner */ }
+  }, 5000);
+}
+setInterval(() => { if (state.floor) { renderBanners(); } }, 1000);
+
+function showLogin() { $("login").hidden = false; $("app").hidden = true; }
+$("go").onclick = () => { location.href = "/login?next=/control-room&token=" + encodeURIComponent($("tok").value.trim()); };
+$("theme").onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const nxt = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = nxt;
+  try { localStorage.setItem("cr-theme", nxt); } catch (e) { /* per-viewer convenience only */ }
+};
+try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* ignore */ }
+
+(async function start() {
+  const init = window.__INIT__;
+  if (!init) { try { renderFloor(await api("/api/v1/control-room/floor")); } catch (e) { return; } }
+  else { renderFloor(init.floor); if (init.auth === "disabled") $("authoff").hidden = false; }
+  $("app").hidden = false;
+  state.lastMsg = Date.now();
+  connect(); poll();
+  if (init && init.usage && $("uwin").value === "7d" && $("cohort").value === "all") renderUsage(init.usage); else loadUsage();
+  if (init && init.quality && $("qwin").value === "30d") { lastQuality = init.quality; renderQuality(lastQuality); } else loadQuality();
+  if (init && init.score && $("win").value === "today" && $("cohort").value === "all") renderScore(init.score); else loadScore();
+})();
+</script>
+</body>
+</html>

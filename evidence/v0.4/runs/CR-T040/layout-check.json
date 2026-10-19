@@ -1,0 +1,39 @@
+{
+ "390": {
+  "scrollWidth": 378,
+  "clientWidth": 378,
+  "innerWidth": 390,
+  "stations": 7,
+  "tiles": 17,
+  "andonText": [
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE"
+  ],
+  "overflowing": [],
+  "method": "same-origin iframe 390 px",
+  "no_horizontal_scroll": true
+ },
+ "1440": {
+  "scrollWidth": 1428,
+  "clientWidth": 1428,
+  "innerWidth": 1440,
+  "stations": 7,
+  "tiles": 17,
+  "andonText": [
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE",
+   "\u2013 IDLE"
+  ],
+  "overflowing": [],
+  "no_horizontal_scroll": true
+ }
+}

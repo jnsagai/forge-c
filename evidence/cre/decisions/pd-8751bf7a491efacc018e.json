@@ -1,0 +1,132 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "a2dd3fae819258cfd03fbc1ba03f39567cc8a346",
+  "baseline_sha256": "e5a77bc71517936b51521c403df76b3d23d8d435687bb1d9eb6e4830da91431c",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "10f033e6b7ccb224de1bd6c2dc6e2e0eaf9ec177",
+  "candidate_sha256": "ed84e31ee56989f9ad504c6b044383a444fafb64600cb69be539325c3dc23619",
+  "decision": "REJECTED",
+  "decision_id": "pd-8751bf7a491efacc018e",
+  "evaluated_at": "2026-10-19T14:46:44.652925Z",
+  "evaluator_id": "cre-promotion-runner@10f033e6b7cc",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:a2dd3fae8192..10f033e6b7cc"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "NOT_APPLICABLE_FOR_CHANGE",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-9dd06674becc47c7895c",
+        "reproducer-run:rr-a5f601b36165cacb3ba2",
+        "reproducer-run:rr-7c28d50ee032e4434326",
+        "reproducer-run:rr-ab57575fc24eb71cf945",
+        "reproducer-run:rr-28c120e62a5093ca4888",
+        "reproducer-run:rr-eff3d4132ada59cf221c",
+        "reproducer-run:rr-625e9f052b231e1e37b8",
+        "reproducer-run:rr-beb45caf4b695b066b3a",
+        "reproducer-run:rr-6321eb215e978d4b7095",
+        "reproducer-run:rr-1c7d926eb2059f63bf35",
+        "reproducer-run:rr-90ed945d0a9509d99fe9",
+        "reproducer-run:rr-9356fc95d1c682b5a5d0",
+        "reproducer-run:rr-105df1e42890e170b9c3",
+        "reproducer-run:rr-15a6b57f8cf5ff961603",
+        "reproducer-run:rr-ae2fbb27b015123beb10",
+        "reproducer-run:rr-02a03dfa3b92f43aea6c",
+        "reproducer-run:rr-3df388bd2d5c51ab2ee3",
+        "reproducer-run:rr-4875031e4c957448041f",
+        "reproducer-run:rr-67a8ef96162f9271c018",
+        "reproducer-run:rr-e3a73dfa939918bcf16b",
+        "reproducer-run:rr-d7f3518a31b10cd4adbd",
+        "reproducer-run:rr-10e65801a1bcfff008f7",
+        "reproducer-run:rr-f540c78a4c187372cdb1",
+        "reproducer-run:rr-51ccacf3075b6d807950",
+        "reproducer-run:rr-a74d64eec74981d03092",
+        "reproducer-run:rr-2e77502ef8fba1d6e271",
+        "reproducer-run:rr-289980a5e996d351a896",
+        "reproducer-run:rr-4b4496de4585c3a8fd7d",
+        "reproducer-run:rr-b324c0107cd3a96ebdbd",
+        "reproducer-run:rr-040e821c81c0481bd201",
+        "reproducer-run:rr-0baf2e9f73e98fe6f17c",
+        "reproducer-run:rr-5399464cb6b04862db1f",
+        "reproducer-run:rr-a0d6584db779a7d914a9",
+        "reproducer-run:rr-b0d7eed8d1c2b5be0174",
+        "reproducer-run:rr-ba69dd20347319fd8ced",
+        "reproducer-run:rr-6440c425d1ec7463710f",
+        "reproducer-run:rr-a62308f2fa64747529ea",
+        "reproducer-run:rr-f191f6d5c5ae8c8c8093",
+        "reproducer-run:rr-e98e839093ab8f586b17",
+        "reproducer-run:rr-f58e1fe76692328f3c3b",
+        "reproducer-run:rr-8b288decdc6145106f30",
+        "reproducer-run:rr-8ebcc439ab2132f26daf",
+        "reproducer-run:rr-51520fd2da65c40a4b18",
+        "reproducer-run:rr-d37f0e012c0d67ba27ca",
+        "reproducer-run:rr-91c2a26aac16846553d0",
+        "reproducer-run:rr-0a0f38e46e75768bcec1",
+        "reproducer-run:rr-03498d9b8b82062ff1a1",
+        "reproducer-run:rr-dfd8050dfec9395a04bf",
+        "reproducer-run:rr-87a8dc5e08d223fd92c5",
+        "reproducer-run:rr-a4adc5aa0f23db8850d1",
+        "reproducer-run:rr-cc1a94e8d48f1ed999d2",
+        "reproducer-run:rr-8557a3501d1c46caba3c",
+        "reproducer-run:rr-7a955c317fae613caad7",
+        "reproducer-run:rr-2e1af4f3fa4147fb7e37"
+      ],
+      "name": "prevention",
+      "reason_code": "RESOLVED_FAILURE_REAPPEARED",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 3584 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "previously resolved failures reappear: RPR-049:ERROR"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

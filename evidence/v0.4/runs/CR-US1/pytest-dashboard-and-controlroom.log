@@ -1,0 +1,16 @@
+...........................s............................................ [ 96%]
+...                                                                      [100%]
+ M evidence/v0.4/kpi/pilot-snapshot.json
+ M factory/python/forge_factory/dashboard/app.py
+ M factory/python/forge_factory/dashboard/static/index.html
+ M specs/007-kpi-control-room/contracts/floor-snapshot.schema.json
+?? config/factory/controlroom.yaml
+?? factory/python/forge_factory/controlroom/
+?? factory/python/forge_factory/dashboard/control_room.py
+?? factory/python/forge_factory/dashboard/static/control-room.html
+?? factory/python/tests/controlroom_fixtures.py
+?? factory/python/tests/test_controlroom_api.py
+?? factory/python/tests/test_controlroom_floor.py
+?? factory/python/tests/test_controlroom_windows.py
+
+[exited with code 0]

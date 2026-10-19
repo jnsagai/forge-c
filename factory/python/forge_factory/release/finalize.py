@@ -199,8 +199,16 @@ def token_usage(fabro_run_id: str | None, ws: Path | None = None) -> dict:
         u = c.usage(fabro_run_id)
         stages = [{"stage": s["stage"]["id"], "model": s["model"]["model_id"], "provider": s["model"]["provider"],
                    "tokens_input": s["usage"]["tokens"]["input"], "tokens_output": s["usage"]["tokens"]["output"],
-                   "state": s.get("state")} for s in u.get("stages", [])]
+                   "state": s.get("state")} for s in u.get("stages", []) if s.get("model")]
+        # feature 007 (CR-T030): ACP stages carry no model in Fabro's usage - they are listed as not reported
+        # instead of failing the whole run's usage (which made every Codex-author run 'unknown')
+        unreported = [s["stage"]["id"] for s in u.get("stages", []) if not s.get("model")]
+        if not stages and unreported:
+            return {"basis": "unknown", "reason": "only ACP stages: usage not reported by Fabro", "by_stage": [],
+                    "not_reported_stages": unreported}
+        # basis stays in the 002 token-usage enum: the listed values are reported, the missing stages are named
         return {"basis": "reported", "source": "fabro /runs/{id}/usage", "by_stage": stages,
+                "not_reported_stages": unreported,
                 "total_input": sum(s["tokens_input"] for s in stages),
                 "total_output": sum(s["tokens_output"] for s in stages)}
     except Exception as exc:  # noqa: BLE001
