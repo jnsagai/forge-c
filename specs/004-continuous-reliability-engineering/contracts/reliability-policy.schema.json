@@ -333,6 +333,12 @@
           "minimum": 1,
           "maximum": 100000
         },
+        "min_samples_for_slo_evidence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000,
+          "description": "Optional (owner decision 2026-10-17): attempts per cohort and recorded factory revision for a measured reliability-SLO baseline; defaults to min_samples_for_descriptive_charts."
+        },
         "p_chart_enabled_after_calibration": {
           "type": "boolean"
         },

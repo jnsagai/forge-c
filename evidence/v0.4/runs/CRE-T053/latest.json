@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_cre_t053_growth_fit.py"
+  ],
+  "duration_s": 0.524,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "ce87883217e6c876efe8fa47b111b6060e24864b",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/CRE-T053/20261019T054540.log",
+  "log_sha256": "dd060c163df9ad15395a6516d9ed79fbdc2aefffb3d814f31af3856645b9e87f",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "CRE-T053",
+  "ts_utc": "2026-10-19T05:45:40.669881Z"
+}

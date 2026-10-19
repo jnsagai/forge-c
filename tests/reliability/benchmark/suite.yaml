@@ -3,7 +3,7 @@
 schema_version: '1.0'
 suite_id: forgec-cre-golden-v1
 holdout: false
-frozen_at: '2026-10-16T05:32:31.649636Z'
+frozen_at: '2026-10-17T05:26:34.118788Z'
 cases:
 - case:
     schema_version: '1.0'
@@ -201,3 +201,168 @@ cases:
     equals:
       final_state: REQUIRES_OFFLINE_ATTENTION
       within_bound: true
+- case:
+    schema_version: '1.0'
+    case_id: BC-006
+    driver_class: UART_HOST
+    source_sha256: 340016c2988ab17b22811e66c405c4762593ddcc3ad421e37d9427713380f1ba
+    requirements_sha256: f1feee3c58d67c48888b46c937f6d16078d2e1cdaa5034d02e1b73893a9e6bbf
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-006
+    oracle_sha256: 5bca0eb7a7e3118c9c1ecba59c844628e819af6e18a25e5abe9115e85ca90c4c
+    input_refs:
+    - drivers/demo_uart/src/forge_uart_demo.c
+    - drivers/demo_uart/include/forge_uart_demo.h
+    - tests/c/test_forge_uart_demo.c
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - uart
+    - interrupt-boundary
+    - host
+  harness: cases/unit_run.py
+  harness_sha256: bfd8fc450df4d9ecf449191b599819cd586b2aeaae06180ecc5ce14f03f84615
+  layout:
+    drivers/demo_uart/src/forge_uart_demo.c: software/src/forge_uart_demo.c
+    drivers/demo_uart/include/forge_uart_demo.h: software/include/forge_uart_demo.h
+    tests/c/test_forge_uart_demo.c: software/tests/unit/test_forge_uart_demo.c
+  input_sha256:
+    drivers/demo_uart/src/forge_uart_demo.c: 9636f9c25e75e236c41c93bd5125d14b8b7285d7afb37766a7f6659e618089fe
+    drivers/demo_uart/include/forge_uart_demo.h: 6b0e67ad40b7ea9f2ed4b621a71b1a9e6d2cc248097140c02a555499b2f882a0
+    tests/c/test_forge_uart_demo.c: 36a86634decad424d71dc065953bffa378366fd127513db914fafade62399a01
+  oracle:
+    equals:
+      status: PASS
+    min:
+      passed: 1
+- case:
+    schema_version: '1.0'
+    case_id: BC-007
+    driver_class: UART_HOST
+    source_sha256: 2fbe2ac0dbdb50d3ef3ab966df10be3dc0320e8a0554226d1109fa7f16c359ec
+    requirements_sha256: f1feee3c58d67c48888b46c937f6d16078d2e1cdaa5034d02e1b73893a9e6bbf
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-007
+    oracle_sha256: 5f9ff6b98f6c4901da89cdff211c20cb8c24b850cc130a39a7ac8ebdde2bf8a7
+    input_refs:
+    - drivers/demo_uart/include/forge_uart_demo.h
+    - tests/c/test_forge_uart_demo.c
+    - tests/reliability/benchmark/fixtures/forge_uart_demo_race.c
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - uart
+    - interrupt-boundary
+    - injected-failure
+    - race
+  harness: cases/unit_run.py
+  harness_sha256: bfd8fc450df4d9ecf449191b599819cd586b2aeaae06180ecc5ce14f03f84615
+  layout:
+    drivers/demo_uart/include/forge_uart_demo.h: software/include/forge_uart_demo.h
+    tests/c/test_forge_uart_demo.c: software/tests/unit/test_forge_uart_demo.c
+    tests/reliability/benchmark/fixtures/forge_uart_demo_race.c: software/src/forge_uart_demo.c
+  input_sha256:
+    drivers/demo_uart/include/forge_uart_demo.h: 6b0e67ad40b7ea9f2ed4b621a71b1a9e6d2cc248097140c02a555499b2f882a0
+    tests/c/test_forge_uart_demo.c: 36a86634decad424d71dc065953bffa378366fd127513db914fafade62399a01
+    tests/reliability/benchmark/fixtures/forge_uart_demo_race.c: 4a8ae8e5746c1241512c2a343f297035f73c0f43de3ac3e13542768c8f712600
+  oracle:
+    equals:
+      status: FAIL
+    contains:
+      issues:
+      - TEST_FAIL:test_forge_uart_demo.c:exit1
+- case:
+    schema_version: '1.0'
+    case_id: BC-008
+    driver_class: E2E_LL_STM32N6_RCC
+    source_sha256: 7fc29011817d40372e0ebf7d25393a487f8416eb9d27d7ae9b09fbdbfd9a580b
+    requirements_sha256: f7d3068bdf0cb603468e6b18f0f69e6d3576444c7bb0ab017495d7e229fcc410
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-008
+    oracle_sha256: 780f42ca0a32f45eefd983bb9d4261aafbbce6ee01b599cfdf7361cfd9a1e35c
+    input_refs:
+    - tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - e2e
+    - swe1-6
+    - packager
+    - replay
+  harness: cases/e2e_replay.py
+  harness_sha256: bb4d28e2d872d3e6e89d1e2330702d8ed39760c585f21be06c8d2ab199b230e3
+  layout:
+    tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz: e2e_ll_r87.tar.gz
+  input_sha256:
+    tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz: 7979f30da7c9ea683fc6b78ea1db8ac99cb4a07c75d8e0568a03a964e8decc59
+  oracle:
+    equals:
+      gates_pass: 6
+      package_status: BLOCKED
+      gap_count: 2
+    contains:
+      gaps:
+      - missing_or_empty_file:safety/software_safety_analysis.md
+      - missing_or_empty_file:safety/tool_assurance_assessment.md
+- case:
+    schema_version: '1.0'
+    case_id: BC-009
+    driver_class: E2E_LL_STM32N6_RCC
+    source_sha256: 7fc29011817d40372e0ebf7d25393a487f8416eb9d27d7ae9b09fbdbfd9a580b
+    requirements_sha256: f7d3068bdf0cb603468e6b18f0f69e6d3576444c7bb0ab017495d7e229fcc410
+    target_mcu: HOST_ONLY
+    compiler_version: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+    compiler_flags: *id001
+    tool_versions:
+      clang: clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)
+      python: 3.13.13
+    model_revision: null
+    seed: null
+    safety_profile: HOST_DEMONSTRATOR_NOT_ASIL_EVIDENCE
+    oracle_id: ORC-BC-009
+    oracle_sha256: 3f9e825a9e07d8b45c143d44f054277730e5c4bb669c6f0be702d23210cc13bf
+    input_refs:
+    - tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz
+    holdout: false
+    status: FROZEN
+    case_tags:
+    - e2e
+    - packager
+    - tamper
+    - injected-failure
+  harness: cases/e2e_replay_tampered.py
+  harness_sha256: e8e4e01763e07d758cc2259039f4e71ca1f34ebb8c1c9601b84b09be739c15b8
+  layout:
+    tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz: e2e_ll_r87.tar.gz
+  input_sha256:
+    tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz: 7979f30da7c9ea683fc6b78ea1db8ac99cb4a07c75d8e0568a03a964e8decc59
+  oracle:
+    equals:
+      gates_pass: 5
+      package_status: BLOCKED
+    min:
+      gap_count: 3

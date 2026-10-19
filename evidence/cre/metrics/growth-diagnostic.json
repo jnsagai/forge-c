@@ -1,0 +1,451 @@
+{
+  "assumptions": [
+    "attempts of one cohort are the observation clock; real elapsed time and effort per attempt are ignored",
+    "failures follow a power-law non-homogeneous Poisson process in that clock (checked, not assumed, by Cramer-von Mises)",
+    "factory revisions, prompts and models changed between attempts; the trend mixes all changes and attributes nothing",
+    "attempts are treated as independent; concurrent attempts on one revision are ordered by start time",
+    "beta interval uses the failure-count chi-square pivot and Wilson-Hilferty quantiles: approximate"
+  ],
+  "cohorts": [
+    {
+      "attempt_ids": [
+        "WO-0002B-STM32N6-RCC-HAL-r88",
+        "WO-0002B-STM32N6-RCC-HAL-r90",
+        "WO-0002B-STM32N6-RCC-HAL-r92",
+        "WO-0002B-STM32N6-RCC-HAL-r94",
+        "WO-0002B-STM32N6-RCC-HAL-r96",
+        "WO-0002B-STM32N6-RCC-HAL-r98",
+        "WO-0002B-STM32N6-RCC-HAL-r100",
+        "WO-0002B-STM32N6-RCC-HAL-r102",
+        "WO-0002B-STM32N6-RCC-HAL-r104",
+        "WO-0002B-STM32N6-RCC-HAL-r106",
+        "WO-0002B-STM32N6-RCC-HAL-r107",
+        "WO-0002B-STM32N6-RCC-HAL-r123",
+        "WO-0002B-STM32N6-RCC-HAL-r124",
+        "WO-0002B-STM32N6-RCC-HAL-r126",
+        "WO-0002B-STM32N6-RCC-HAL-r127",
+        "WO-0002B-STM32N6-RCC-HAL-r128",
+        "WO-0002B-STM32N6-RCC-HAL-r129",
+        "WO-0002B-STM32N6-RCC-HAL-r130",
+        "WO-0002B-STM32N6-RCC-HAL-r131",
+        "WO-0002B-STM32N6-RCC-HAL-r138",
+        "WO-0002B-STM32N6-RCC-HAL-r139",
+        "WO-0002B-STM32N6-RCC-HAL-r140",
+        "WO-0002B-STM32N6-RCC-HAL-r141",
+        "WO-0002B-STM32N6-RCC-HAL-r142",
+        "WO-0002B-STM32N6-RCC-HAL-r143",
+        "WO-0002B-STM32N6-RCC-HAL-r144",
+        "WO-0002B-STM32N6-RCC-HAL-r145",
+        "WO-0002B-STM32N6-RCC-HAL-r146",
+        "WO-0002B-STM32N6-RCC-HAL-r147",
+        "WO-0002B-STM32N6-RCC-HAL-r148",
+        "WO-0002B-STM32N6-RCC-HAL-r149",
+        "WO-0002B-STM32N6-RCC-HAL-r150",
+        "WO-0002B-STM32N6-RCC-HAL-r151",
+        "WO-0002B-STM32N6-RCC-HAL-r152",
+        "WO-0002B-STM32N6-RCC-HAL-r153"
+      ],
+      "censored_unfinished": 4,
+      "cohort_key": "driver_class=STM32N6_RCC_HAL_DRIVER_ON_THE_VERIFIED_R|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "failures": 23,
+      "finished_attempts": 35,
+      "fit": {
+        "T": 35.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.8488,
+            1.6963
+          ],
+          "beta_bias_corrected": 1.188,
+          "beta_hat_mle": 1.242,
+          "current_failure_intensity_per_attempt": 0.7807,
+          "lambda": 0.336769,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 1.3998,
+          "r_squared": 0.8937,
+          "slope_ln_cum_intensity_vs_ln_t": 0.3998,
+          "use": "descriptive only"
+        },
+        "failures": 23,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 0.1939,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.12627,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.196
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002B-STM32N6-RCC-HAL-r135",
+        "WO-0002B-STM32N6-RCC-HAL-r136",
+        "WO-0002B-STM32N6-RCC-HAL-r137"
+      ],
+      "censored_unfinished": 0,
+      "cohort_key": "driver_class=STM32N6_RCC_HAL_DRIVER_ON_THE_VERIFIED_R|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "failures": 2,
+      "finished_attempts": 3,
+      "fit": {
+        "T": 3.0,
+        "failures": 2,
+        "reason": "need >= 5 failures and >= 10 finished attempts",
+        "status": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "attempt_ids": [],
+      "censored_unfinished": 3,
+      "cohort_key": "driver_class=STM32N6_RCC_HAL_DRIVER_ON_THE_VERIFIED_R|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "failures": 0,
+      "finished_attempts": 0,
+      "fit": {
+        "T": 0,
+        "failures": 0,
+        "status": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002-STM32N6-RCC-r21-deepseek",
+        "WO-0002-STM32N6-RCC-r22-deepseek",
+        "WO-0002-STM32N6-RCC-r23-deepseek",
+        "WO-0002-STM32N6-RCC-r24-deepseek",
+        "WO-0002-STM32N6-RCC-r25-deepseek",
+        "WO-0002-STM32N6-RCC-r26-deepseek-impl",
+        "WO-0002-STM32N6-RCC-r27-deepseek-impl",
+        "WO-0002-STM32N6-RCC-r30-deepseek",
+        "WO-0002-STM32N6-RCC-r31-deepseek",
+        "WO-0002-STM32N6-RCC-r32-deepseek",
+        "WO-0002-STM32N6-RCC-r33-deepseek",
+        "WO-0002-STM32N6-RCC-r34-deepseek",
+        "WO-0002-STM32N6-RCC-r36-deepseek",
+        "WO-0002-STM32N6-RCC-r37-deepseek",
+        "WO-0002-STM32N6-RCC-r38-deepseek",
+        "WO-0002-STM32N6-RCC-r39-deepseek",
+        "WO-0002-STM32N6-RCC-r40-deepseek",
+        "WO-0002-STM32N6-RCC-r41-deepseek",
+        "WO-0002-STM32N6-RCC-r44-deepseek",
+        "WO-0002-STM32N6-RCC-r45-deepseek",
+        "WO-0002-STM32N6-RCC-r46-deepseek",
+        "WO-0002-STM32N6-RCC-r47-deepseek",
+        "WO-0002-STM32N6-RCC-r49-deepseek",
+        "WO-0002-STM32N6-RCC-r51-deepseek",
+        "WO-0002-STM32N6-RCC-r53-deepseek",
+        "WO-0002-STM32N6-RCC-r54-deepseek",
+        "WO-0002-STM32N6-RCC-r55-deepseek",
+        "WO-0002-STM32N6-RCC-r61-deepseek",
+        "WO-0002-STM32N6-RCC-r76-deepseek",
+        "WO-0002-STM32N6-RCC-r77-deepseek"
+      ],
+      "censored_unfinished": 0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "failures": 26,
+      "finished_attempts": 30,
+      "fit": {
+        "T": 30.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.7283,
+            1.3958
+          ],
+          "beta_bias_corrected": 0.9995,
+          "beta_hat_mle": 1.0394,
+          "current_failure_intensity_per_attempt": 0.8662,
+          "lambda": 0.868258,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 0.9248,
+          "r_squared": 0.5972,
+          "slope_ln_cum_intensity_vs_ln_t": -0.0752,
+          "use": "descriptive only"
+        },
+        "failures": 26,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 0.8881,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.03522,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.181
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002-STM32N6-RCC-r56-deepseek",
+        "WO-0002-STM32N6-RCC-r57-deepseek",
+        "WO-0002-STM32N6-RCC-r59-deepseek",
+        "WO-0002-STM32N6-RCC-r60-deepseek",
+        "WO-0002-STM32N6-RCC-r62-deepseek",
+        "WO-0002-STM32N6-RCC-r63-deepseek",
+        "WO-0002-STM32N6-RCC-r64-deepseek",
+        "WO-0002-STM32N6-RCC-r65-deepseek",
+        "WO-0002-STM32N6-RCC-r66-deepseek",
+        "WO-0002-STM32N6-RCC-r67-deepseek",
+        "WO-0002-STM32N6-RCC-r68-deepseek",
+        "WO-0002-STM32N6-RCC-r69-deepseek",
+        "WO-0002-STM32N6-RCC-r70-deepseek",
+        "WO-0002-STM32N6-RCC-r71-deepseek",
+        "WO-0002-STM32N6-RCC-r72-deepseek",
+        "WO-0002-STM32N6-RCC-r73-deepseek",
+        "WO-0002-STM32N6-RCC-r74-deepseek",
+        "WO-0002-STM32N6-RCC-r75-deepseek"
+      ],
+      "censored_unfinished": 1,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=RESUMED",
+      "failures": 16,
+      "finished_attempts": 18,
+      "fit": {
+        "T": 18.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.7103,
+            1.6347
+          ],
+          "beta_bias_corrected": 1.0618,
+          "beta_hat_mle": 1.1326,
+          "current_failure_intensity_per_attempt": 0.9438,
+          "lambda": 0.743519,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 0.9751,
+          "r_squared": 0.1013,
+          "slope_ln_cum_intensity_vs_ln_t": -0.0249,
+          "use": "descriptive only"
+        },
+        "failures": 16,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 1.0,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.0109,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.241
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002-STM32N6-RCC",
+        "WO-0002-STM32N6-RCC-r2",
+        "WO-0002-STM32N6-RCC-r3",
+        "WO-0002-STM32N6-RCC-r4",
+        "WO-0002-STM32N6-RCC-r5",
+        "WO-0002-STM32N6-RCC-r6",
+        "WO-0002-STM32N6-RCC-r7",
+        "WO-0002-STM32N6-RCC-r8",
+        "WO-0002-STM32N6-RCC-r9",
+        "WO-0002-STM32N6-RCC-r10",
+        "WO-0002-STM32N6-RCC-r11",
+        "WO-0002-STM32N6-RCC-r12",
+        "WO-0002-STM32N6-RCC-r13",
+        "WO-0002-STM32N6-RCC-r14",
+        "WO-0002-STM32N6-RCC-r15",
+        "WO-0002-STM32N6-RCC-r16",
+        "WO-0002-STM32N6-RCC-r17",
+        "WO-0002-STM32N6-RCC-r18"
+      ],
+      "censored_unfinished": 0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=-|provider=ollama|mode=FULL",
+      "failures": 18,
+      "finished_attempts": 18,
+      "fit": {
+        "T": 18.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.7442,
+            1.6311
+          ],
+          "beta_bias_corrected": 1.0876,
+          "beta_hat_mle": 1.1515,
+          "current_failure_intensity_per_attempt": 1.0876,
+          "lambda": 0.776393,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 1.0,
+          "r_squared": null,
+          "slope_ln_cum_intensity_vs_ln_t": 0.0,
+          "use": "descriptive only"
+        },
+        "failures": 18,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 1.0,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.00704,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.408
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002-STM32N6-RCC-r19",
+        "WO-0002-STM32N6-RCC-r20",
+        "WO-0002-STM32N6-RCC-r28-impl",
+        "WO-0002-STM32N6-RCC-r29",
+        "WO-0002-STM32N6-RCC-r35",
+        "WO-0002-STM32N6-RCC-r42",
+        "WO-0002-STM32N6-RCC-r43",
+        "WO-0002-STM32N6-RCC-r48",
+        "WO-0002-STM32N6-RCC-r50",
+        "WO-0002-STM32N6-RCC-r52",
+        "WO-0002-STM32N6-RCC-r78-qwen",
+        "WO-0002-STM32N6-RCC-r79-qwen"
+      ],
+      "censored_unfinished": 0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_AND_HAL_DRIVER|target=Arm Cortex-M55|model=qwen3:8b|code_model=qwen3-coder:30b|provider=ollama|mode=FULL",
+      "failures": 11,
+      "finished_attempts": 12,
+      "fit": {
+        "T": 12.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.6637,
+            1.8249
+          ],
+          "beta_bias_corrected": 1.0761,
+          "beta_hat_mle": 1.1837,
+          "current_failure_intensity_per_attempt": 0.9864,
+          "lambda": 0.758695,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 0.9452,
+          "r_squared": 0.5637,
+          "slope_ln_cum_intensity_vs_ln_t": -0.0548,
+          "use": "descriptive only"
+        },
+        "failures": 11,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 0.988,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.02185,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.435
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    },
+    {
+      "attempt_ids": [
+        "WO-0002A-STM32N6-RCC-LL-r80",
+        "WO-0002A-STM32N6-RCC-LL-r81",
+        "WO-0002A-STM32N6-RCC-LL-r82",
+        "WO-0002A-STM32N6-RCC-LL-r83",
+        "WO-0002A-STM32N6-RCC-LL-r84",
+        "WO-0002A-STM32N6-RCC-LL-r85",
+        "WO-0002A-STM32N6-RCC-LL-r86",
+        "WO-0002A-STM32N6-RCC-LL-r87",
+        "WO-0002A-STM32N6-RCC-LL-r89",
+        "WO-0002A-STM32N6-RCC-LL-r91",
+        "WO-0002A-STM32N6-RCC-LL-r93",
+        "WO-0002A-STM32N6-RCC-LL-r95",
+        "WO-0002A-STM32N6-RCC-LL-r97",
+        "WO-0002A-STM32N6-RCC-LL-r99",
+        "WO-0002A-STM32N6-RCC-LL-r101",
+        "WO-0002A-STM32N6-RCC-LL-r103",
+        "WO-0002A-STM32N6-RCC-LL-r105",
+        "WO-0002A-STM32N6-RCC-LL-r108",
+        "WO-0002A-STM32N6-RCC-LL-r109",
+        "WO-0002A-STM32N6-RCC-LL-r110",
+        "WO-0002A-STM32N6-RCC-LL-r111",
+        "WO-0002A-STM32N6-RCC-LL-r112",
+        "WO-0002A-STM32N6-RCC-LL-r113",
+        "WO-0002A-STM32N6-RCC-LL-r114",
+        "WO-0002A-STM32N6-RCC-LL-r115",
+        "WO-0002A-STM32N6-RCC-LL-r116",
+        "WO-0002A-STM32N6-RCC-LL-r117",
+        "WO-0002A-STM32N6-RCC-LL-r118",
+        "WO-0002A-STM32N6-RCC-LL-r119",
+        "WO-0002A-STM32N6-RCC-LL-r120",
+        "WO-0002A-STM32N6-RCC-LL-r121",
+        "WO-0002A-STM32N6-RCC-LL-r122",
+        "WO-0002A-STM32N6-RCC-LL-r125",
+        "WO-0002A-STM32N6-RCC-LL-r153"
+      ],
+      "censored_unfinished": 0,
+      "cohort_key": "driver_class=STM32N6_RCC_LOW_LEVEL_LL_DRIVER|target=Arm Cortex-M55|model=deepseek-flash|code_model=-|provider=deepseek|mode=FULL",
+      "failures": 25,
+      "finished_attempts": 34,
+      "fit": {
+        "T": 34.0,
+        "crow_amsaa": {
+          "beta_90pct_interval": [
+            0.8524,
+            1.6551
+          ],
+          "beta_bias_corrected": 1.1769,
+          "beta_hat_mle": 1.226,
+          "current_failure_intensity_per_attempt": 0.8654,
+          "lambda": 0.394004,
+          "reading": "no trend distinguishable from constant"
+        },
+        "duane": {
+          "implied_beta": 0.9797,
+          "r_squared": 0.0154,
+          "slope_ln_cum_intensity_vs_ln_t": -0.0203,
+          "use": "descriptive only"
+        },
+        "failures": 25,
+        "goodness_of_fit": {
+          "bootstrap_samples": 2000,
+          "p_value": 0.8971,
+          "reject_below": 0.1,
+          "seed": 20261019,
+          "statistic": 0.03461,
+          "test": "Cramer-von Mises, parametric bootstrap"
+        },
+        "laplace_trend": {
+          "two_sided_5pct_significant": false,
+          "u": 0.917
+        },
+        "status": "FIT_ACCEPTED_FOR_DIAGNOSTIC"
+      }
+    }
+  ],
+  "confidence": 0.9,
+  "diagnostic_only": true,
+  "failure_definition": "finished attempt that did not pass SWE.6",
+  "never_used_for": [
+    "promotion",
+    "readiness",
+    "gates",
+    "policy",
+    "SLO claims"
+  ],
+  "observation_clock": "cumulative finished attempts per cohort (discrete, time-terminated)",
+  "schema": "forge-c/cre-growth-diagnostic/0.1"
+}

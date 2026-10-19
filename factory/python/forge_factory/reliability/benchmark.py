@@ -31,6 +31,9 @@ RUN_UNIT_FLAGS = ["-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TES
 DEMO = {"drivers/demo_rcc/src/forge_rcc_demo.c": "software/src/forge_rcc_demo.c",
         "drivers/demo_rcc/include/forge_rcc_demo.h": "software/include/forge_rcc_demo.h",
         "tests/c/test_forge_rcc_demo.c": "software/tests/unit/test_forge_rcc_demo.c"}
+UART = {"drivers/demo_uart/src/forge_uart_demo.c": "software/src/forge_uart_demo.c",
+        "drivers/demo_uart/include/forge_uart_demo.h": "software/include/forge_uart_demo.h",
+        "tests/c/test_forge_uart_demo.c": "software/tests/unit/test_forge_uart_demo.c"}
 DEFINITIONS: dict[str, list[dict]] = {
     "golden": [
         {"case_id": "BC-001", "driver_class": "RCC_HOST", "harness": "cases/unit_run.py", "layout": DEMO,
@@ -52,6 +55,27 @@ DEFINITIONS: dict[str, list[dict]] = {
         {"case_id": "BC-005", "driver_class": "CRE_RECOVERY", "harness": "cases/fsm_terminates.py", "layout": {},
          "requirements": "specs/004-continuous-reliability-engineering/spec.md", "tags": ["recovery", "termination"],
          "oracle": {"equals": {"final_state": "REQUIRES_OFFLINE_ATTENTION", "within_bound": True}}},
+        # CRE-T046 (plan section 7 categories 2 and 5): UART register-level fixture with an interrupt boundary and a
+        # deterministic injection point, its injected race, and an end-to-end SWE.1-6 + packager replay
+        {"case_id": "BC-006", "driver_class": "UART_HOST", "harness": "cases/unit_run.py", "layout": UART,
+         "requirements": "specs/004-continuous-reliability-engineering/plan.md", "tags": ["uart", "interrupt-boundary", "host"],
+         "oracle": {"equals": {"status": "PASS"}, "min": {"passed": 1}}},
+        {"case_id": "BC-007", "driver_class": "UART_HOST", "harness": "cases/unit_run.py",
+         "layout": {**{k: v for k, v in UART.items() if k != "drivers/demo_uart/src/forge_uart_demo.c"},
+                    "tests/reliability/benchmark/fixtures/forge_uart_demo_race.c": "software/src/forge_uart_demo.c"},
+         "requirements": "specs/004-continuous-reliability-engineering/plan.md",
+         "tags": ["uart", "interrupt-boundary", "injected-failure", "race"],
+         "oracle": {"equals": {"status": "FAIL"}, "contains": {"issues": ["TEST_FAIL:test_forge_uart_demo.c:exit1"]}}},
+        {"case_id": "BC-008", "driver_class": "E2E_LL_STM32N6_RCC", "harness": "cases/e2e_replay.py",
+         "layout": {"tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz": "e2e_ll_r87.tar.gz"},
+         "requirements": "specs/002-self-healing-factory/spec.md", "tags": ["e2e", "swe1-6", "packager", "replay"],
+         "oracle": {"equals": {"gates_pass": 6, "package_status": "BLOCKED", "gap_count": 2},
+                    "contains": {"gaps": ["missing_or_empty_file:safety/software_safety_analysis.md",
+                                          "missing_or_empty_file:safety/tool_assurance_assessment.md"]}}},
+        {"case_id": "BC-009", "driver_class": "E2E_LL_STM32N6_RCC", "harness": "cases/e2e_replay_tampered.py",
+         "layout": {"tests/reliability/benchmark/fixtures/e2e_ll_r87.tar.gz": "e2e_ll_r87.tar.gz"},
+         "requirements": "specs/002-self-healing-factory/spec.md", "tags": ["e2e", "packager", "tamper", "injected-failure"],
+         "oracle": {"equals": {"gates_pass": 5, "package_status": "BLOCKED"}, "min": {"gap_count": 3}}},
     ],
     "holdout": [
         {"case_id": "HO-001", "driver_class": "TEST_INTEGRITY", "harness": "cases/bent_test.py",

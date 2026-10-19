@@ -237,3 +237,45 @@ def test_target_procedures_state_the_rcc_model_exactly():
         for text in (prompts.target_test_author_prompt(), prompts.robot_test_author_prompt()):
             assert "RCC_SR (offset 0x004), which is read-only" in text and "0x00000F1F" in text
     prompts.LAYER["layer"] = "LL+HAL"
+
+
+def test_traced_test_must_call_the_allocated_api(tmp_path, monkeypatch):
+    """CAPA-024 (r86/r92/r93 SWE4-02): a traced unit test exercised a different function than its requirement."""
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import evidence as EV
+
+    ws = _ws(tmp_path, arch="# A\n## Requirement allocation\n| SWR | Function |\n|---|---|\n"
+                             "| SWR-001 | LL_RCC_HSI_Enable |\n| SWR-002 | LL_RCC_HSI_IsReady |\n")
+    for k, v in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_EVENTS_DIR": str(ws / ".ev"),
+                 "FORGE_STATE_DIR": str(ws / ".st"), "FORGE_ROLE": "swe4-author", "FORGE_PHASE": "SWE.4"}.items():
+        monkeypatch.setitem(os.environ, k, v)
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n"
+        "- **SWR-002** When the HSI ready query is called, the RCC LL driver shall return 1U if RCC_SR.HSIRDY is set.\n")
+    (ws / "traceability").mkdir()
+    (ws / "traceability/requirements_to_tests.csv").write_text(
+        "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/test_rcc.c\n"
+        "SWR-002,UT-002,software/tests/unit/test_rcc.c\n")
+    (ws / "software/tests/unit").mkdir(parents=True)
+    shifted = ('static void ut_a(void)\n{\n    LL_RCC_HSI_IsReady();\n    CHECK("UT-001", 1);\n}\n'
+               'static void ut_b(void)\n{\n    LL_RCC_HSI_Enable();\n    CHECK("UT-002", 1);\n}\n')
+    (ws / "software/tests/unit/test_rcc.c").write_text(shifted)
+    op = next(o for o in EV.OPERATIONS if o.name == "validate_trace")
+    out = sdk.invoke("forge-evidence-mcp", op, {})
+    assert out["status"] == "FAIL"
+    assert any(i.startswith("TEST_DOES_NOT_CALL_ALLOCATED_API:UT-001:SWR-001") for i in out["issues"])
+    (ws / "software/tests/unit/test_rcc.c").write_text(shifted.replace("IsReady();\n    CHECK(\"UT-001\"", "Enable();\n"
+        "    CHECK(\"UT-001\"").replace("Enable();\n    CHECK(\"UT-002\"", "IsReady();\n    CHECK(\"UT-002\""))
+    assert sdk.invoke("forge-evidence-mcp", op, {})["status"] == "PASS"
+
+
+def test_swe5_author_writes_missing_target_tests():
+    """CAPA-025 (r97): SWE.5 rework could not recover when the target-test step had written no target tests."""
+    from forge_factory.workflow import prompts
+    from forge_factory.workflow.builder import build
+
+    for layer in ("LL", "HAL", "LL+HAL"):
+        build("WO-T", layer=layer, chunk_lines=150)
+        assert "If it reports NO_TESTS" in prompts.author_prompt("SWE.5")
+    prompts.LAYER["layer"] = "LL+HAL"

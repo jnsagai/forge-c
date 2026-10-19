@@ -105,7 +105,7 @@ def test_independent_runner_evaluates_oracles_and_finds_regressions(clone, env):
     with WorktreePool(clone) as pool:
         base = BM.run_suite("golden", "HEAD", pool, store, pol)
         cand = BM.run_suite("golden", lazy, pool, store, pol)
-    assert base["passed"] == base["n"] == 5
+    assert base["passed"] == base["n"] == len(BM.load_suite("golden", BM.SUITES["golden"])["cases"])  # T046: 9
     bc2 = {r["case_id"]: r for r in cand["results"]}["BC-002"]
     assert bc2["status"] == "FAIL" and "status='PASS'!='FAIL'" in bc2["reason"]  # the oracle is the runner's
     assert BM.regressions(base, cand) == ["BC-002:FAIL"] and cand["model_tokens"] == 0

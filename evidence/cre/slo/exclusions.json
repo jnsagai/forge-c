@@ -1,0 +1,6 @@
+{
+  "schema": "forge-c/cre-slo-exclusions/1.0",
+  "excluded": {
+    "WO-0002B-STM32N6-RCC-HAL-r98": "cancelled before it started by the owner's stop of the SLO batch (2026-10-16 'Stop all after this run finish'); the external finalizer packaged the cancelled run, which is not a factory attempt"
+  }
+}
