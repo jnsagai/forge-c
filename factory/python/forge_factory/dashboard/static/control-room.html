@@ -43,6 +43,24 @@ padding:6px 8px;border:1px solid var(--line);border-left:4px solid var(--idle);b
 .shiprow.READY{border-left-color:var(--ready)}.shiprow.BLOCKED{border-left-color:var(--blk)}
 .shiprow .wo{font-weight:650;word-break:break-all}.shiprow .why{color:var(--blk);word-break:break-word}
 .counts{display:flex;gap:8px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--bg);min-width:0}
+.tile .k{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.tile .v{font-size:22px;font-weight:700;margin:2px 0;font-variant-numeric:tabular-nums}
+.tile .d{font-size:12px;color:var(--muted)}
+.tile .nm{font-size:13px;font-weight:650;color:var(--muted)}
+.up{color:var(--run)}.down{color:var(--blk)}
+.fpy{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px;align-items:end;height:46px}
+.fpy div{background:var(--run);border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.fpy div.na{background:repeating-linear-gradient(45deg,var(--idle-bg),var(--idle-bg) 3px,var(--line) 3px,var(--line) 6px);height:100%}
+.fpyl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;font-size:10px;color:var(--muted);text-align:center}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto;font-weight:400}
+.note{font-size:12px;color:var(--muted);margin:-4px 0 10px}
+table.k{width:100%;border-collapse:collapse;font-size:12px}
+table.k th,table.k td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.k td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.nm-badge{font-size:11px;font-weight:650;color:var(--muted);background:var(--idle-bg);border-radius:5px;padding:1px 5px}
 .station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .station .head b{font-size:13px}
@@ -94,9 +112,22 @@ button:hover{border-color:var(--accent)}
 </div>
 <main id="app" hidden>
   <div id="banners"></div>
+  <section class="panel" aria-labelledby="h-score">
+    <h2 id="h-score">Production scorecard <span class="muted" id="score-sub"></span>
+      <span class="ctrl"><select id="win" aria-label="window"><option value="shift">Current shift</option>
+        <option value="today" selected>Today</option><option value="7d">7 days</option><option value="30d">30 days</option></select>
+        <select id="cohort" aria-label="cohort"><option value="all">All runs</option><option value="cloud">Cloud-model runs</option>
+        <option value="production">Production (local-only)</option></select></span></h2>
+    <div class="note" id="score-note"></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
   <section class="panel" aria-labelledby="h-floor">
     <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span></h2>
     <div class="board" id="board"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-kpis">
+    <h2 id="h-kpis">All KPIs K01–K20 <span class="muted">feature-003 engine values, unchanged · previous period alongside</span></h2>
+    <div class="scroll"><table class="k" id="ktable"></table></div>
   </section>
   <section class="panel" aria-labelledby="h-ship">
     <h2 id="h-ship">Shipped in the last 24 h <span class="counts" id="ship-counts"></span></h2>
@@ -178,6 +209,91 @@ function renderShipped(f) {
       <span class="muted">${dur(sinceIso(u.package.finalized_at))} ago</span></div>`).join("") || '<div class="empty">nothing shipped in the last 24 h</div>';
 }
 
+// ---------------------------------------------------------------- scorecard (US2)
+const WINLABEL = {shift: "this shift", today: "today", "7d": "7 days", "30d": "30 days"};
+function fmtVal(m) {
+  if (!m) return "–";
+  if (m.display !== "VALUE") return "NOT MEASURED";
+  const v = m.value;
+  if (m.unit === "ratio") return (v * 100).toFixed(v >= 0.995 || v === 0 ? 0 : 1) + " %";
+  if (m.unit === "seconds") return dur(v);
+  if (m.unit === "percent") return v.toFixed(0) + " %";
+  if (m.unit === "bytes") return Math.round(v) + " B";
+  if (Number.isInteger(v)) return String(v);
+  return (Math.round(v * 100) / 100).toString();
+}
+function key(m) { return m.metric_id + "|" + JSON.stringify(m.filters || {}); }
+function find(list, id, filt) {
+  return (list || []).find((m) => m.metric_id === id && Object.entries(filt || {}).every(([k, v]) => (m.filters || {})[k] === v));
+}
+function delta(cur, prev, higherBetter = true) {
+  if (!cur || !prev || cur.display !== "VALUE" || prev.display !== "VALUE") return "";
+  const d = cur.value - prev.value;
+  if (Math.abs(d) < 1e-9) return '<span class="muted">= prev</span>';
+  const good = (d > 0) === higherBetter;
+  const txt = cur.unit === "ratio" ? (d * 100).toFixed(1) + " pt" : cur.unit === "seconds" ? dur(Math.abs(d)) : (Math.round(d * 100) / 100);
+  return `<span class="${good ? "up" : "down"}">${d > 0 ? "▲" : "▼"} ${cur.unit === "seconds" ? (d > 0 ? "+" : "−") + txt : txt}</span>`;
+}
+function tile(name, value, sub, extra = "") {
+  return `<div class="tile"><div class="k"><span>${name}</span></div><div class="v">${value}</div><div class="d">${sub}</div>${extra}</div>`;
+}
+function nmTile(name, m) {
+  return `<div class="tile"><div class="k"><span>${name}</span></div><div class="v nm">NOT MEASURED</div>
+    <div class="d" title="${esc(m && m.reason)}">${esc(m ? m.reason : "no value")}</div></div>`;
+}
+function renderScore(sc) {
+  if (sc.status === "WARMING_UP") {
+    $("tiles").innerHTML = `<div class="tile"><div class="v nm">Warming up</div><div class="d">${esc(sc.reason)}</div></div>`;
+    $("score-note").textContent = ""; setTimeout(loadScore, 5000); return;
+  }
+  const c = sc.counts, pc = sc.previous_counts, K = sc.kpis, P = sc.previous_kpis;
+  $("score-sub").textContent = `${WINLABEL[sc.window.kind] || sc.window.kind} vs previous`;
+  $("score-note").textContent = `Cohort: ${sc.cohort_note}. Window ${sc.window.start_utc} → ${sc.window.end_utc} (UTC), ${sc.window.tz}.`;
+  const d = (a, b) => { const x = a - b; return x === 0 ? '<span class="muted">= prev</span>' : `${x > 0 ? "▲" : "▼"} ${Math.abs(x)} vs ${b}`; };
+  const t = [];
+  t.push(tile("READY packages", `<span style="color:var(--ready)">${c.packages_ready.value}</span>`, d(c.packages_ready.value, pc.packages_ready.value)));
+  t.push(tile("BLOCKED packages (scrap)", `<span style="color:var(--blk)">${c.packages_blocked.value}</span>`, d(c.packages_blocked.value, pc.packages_blocked.value)));
+  t.push(tile("Started", `${c.started_attempts.value}`, `runs · ${c.started_orders.value} driver order(s)`));
+  const wip = find(K, "K18");
+  t.push(wip && wip.display === "VALUE" ? tile("WIP", fmtVal(wip), "units in progress (K18)") : nmTile("WIP", wip));
+  const rty = find(K, "K03");
+  t.push(rty && rty.display === "VALUE" ? tile("Rolled throughput yield", fmtVal(rty), `${delta(rty, find(P, "K03"))} n=${rty.sample_count}${rty.low_sample ? " · low sample" : ""}`) : nmTile("Rolled throughput yield", rty));
+  const ph = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"];
+  const fp = ph.map((p) => find(K, "K02", {phase: p}));
+  const bars = fp.map((m) => m && m.display === "VALUE" ? `<div style="height:${Math.max(2, m.value * 100)}%" title="${m.filters.phase}: ${fmtVal(m)} (n=${m.sample_count})"></div>` : `<div class="na" title="${esc(m ? m.reason : "")}"></div>`).join("");
+  t.push(`<div class="tile"><div class="k"><span>First-pass yield per station</span></div><div class="fpy">${bars}</div>
+    <div class="fpyl">${ph.map((p, i) => `<span>${p.slice(4)}<br>${fp[i] && fp[i].display === "VALUE" ? Math.round(fp[i].value * 100) + "%" : "n/m"}</span>`).join("")}</div></div>`);
+  for (const [st, lab] of [["READY_FOR_OFFLINE_REVIEW", "Lead time READY"], ["BLOCKED", "Lead time BLOCKED"]]) {
+    const p50 = find(K, "K05", {status: st, quantile: "p50"}), p95 = find(K, "K05", {status: st, quantile: "p95"});
+    t.push(p50 && p50.display === "VALUE" ? tile(lab + " (p50)", fmtVal(p50), `p95 ${fmtVal(p95)} · n=${p50.sample_count} driver orders (first admission → close)`) : nmTile(lab, p50));
+  }
+  const oee = find(K, "K19");
+  t.push(oee && oee.display === "VALUE" ? tile("Factory OEE", fmtVal(oee), delta(oee, find(P, "K19"))) : nmTile("Factory OEE", oee));
+  const tok = find(K, "K15");
+  t.push(tok && tok.display === "VALUE" ? tile("Tokens per READY package", fmtVal(tok), `n=${tok.sample_count}`) : nmTile("Tokens per READY package", tok));
+  const v = find(K, "K20");
+  t.push(tile("Safety/process violations", `<span style="color:var(${v && v.value ? "--blk" : "--run"})">${v && v.display === "VALUE" ? v.value : "–"}</span>`, "hard zero-tolerance count (K20)"));
+  $("tiles").innerHTML = t.join("");
+  const prev = Object.fromEntries((P || []).map((m) => [key(m), m]));
+  $("ktable").innerHTML = `<thead><tr><th>KPI</th><th>Scope</th><th>${esc(WINLABEL[sc.window.kind] || "")}</th><th>n</th><th>Previous</th><th>Status / reason</th></tr></thead><tbody>` +
+    K.map((m) => `<tr><td><b>${m.metric_id}</b> ${esc((sc.names || {})[m.metric_id] || "")}</td>
+      <td>${esc(Object.values(m.filters || {}).join(" · "))}</td><td class="num">${fmtVal(m)}</td><td class="num">${m.sample_count}</td>
+      <td class="num">${fmtVal(prev[key(m)])}</td>
+      <td>${m.display === "VALUE" ? (m.low_sample ? '<span class="nm-badge">low sample</span> ' : "") + esc(m.explanation || "") : `<span class="nm-badge">NOT MEASURED</span> ${esc(m.reason)}`}</td></tr>`).join("") + "</tbody>";
+}
+async function loadScore() {
+  try {
+    const w = $("win").value, c = $("cohort").value;
+    renderScore(await api(`/api/v1/control-room/scorecard?window=${w}&cohort=${c}`));
+  } catch (e) { $("score-note").textContent = "scorecard unavailable: " + e.message; }
+}
+for (const id of ["win", "cohort"]) $(id).onchange = () => {
+  try { localStorage.setItem("cr-" + id, $(id).value); } catch (e) { /* per-viewer convenience */ }
+  loadScore();
+};
+for (const id of ["win", "cohort"]) { try { const v = localStorage.getItem("cr-" + id); if (v) $(id).value = v; } catch (e) { /* ignore */ } }
+setInterval(loadScore, 30000);
+
 function renderBanners() {
   const f = state.floor; if (!f) return;
   const b = [];
@@ -235,6 +351,7 @@ try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElemen
   $("app").hidden = false;
   state.lastMsg = Date.now();
   connect(); poll();
+  if (init && init.score && $("win").value === "today" && $("cohort").value === "all") renderScore(init.score); else loadScore();
 })();
 </script>
 </body>

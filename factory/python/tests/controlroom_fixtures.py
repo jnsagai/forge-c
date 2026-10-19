@@ -51,7 +51,8 @@ def workspace(root: Path, wo: str, rows: list[dict], created: str = "2026-10-19T
     if package:
         (ws / ".forge-run/package.json").write_text(json.dumps({
             "package_status": package, "finalized_at": finalized or ts(120), "archive_sha256": "ab" * 32,
-            "gap_count": 3, "run_id": wo}))
+            "archive": f"/archives/{wo}/{wo}-review.zip", "archive_ref": "archive:sha256:" + "ab" * 32,
+            "gap_count": 3, "gaps": [], "run_id": wo}))
     (ws / ".forge-run/model-profile.json").write_text(json.dumps(profile or {
         "default": "deepseek-flash", "provider": "deepseek", "nodes": [],
         "acp_authors": {"model": "gpt-6.1-sol", "provider": "openai-codex"},

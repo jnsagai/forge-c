@@ -48,7 +48,8 @@ def workspaces() -> list[Path]:
     return sorted(root.glob("*/workspace")) if root.is_dir() else []
 
 
-def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None, control_room_floor=None) -> FastAPI:
+def create_app(store: EventStore | None = None, collect: bool = True, fabro_client=None, control_room_floor=None,
+               control_room_events=None) -> FastAPI:
     app = FastAPI(title="Forge-C Human Supervisor Dashboard API", version="0.4.0", docs_url=None, redoc_url=None)
     st = store or EventStore()
     col = Collector(st)
@@ -438,7 +439,7 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
 
     from .control_room import register as register_control_room  # feature 007: manager view, read-only
 
-    register_control_room(app, role, toks, control_room_floor)
+    register_control_room(app, role, toks, control_room_floor, control_room_events)
 
     @app.exception_handler(HTTPException)
     async def http_err(_req: Request, exc: HTTPException) -> JSONResponse:

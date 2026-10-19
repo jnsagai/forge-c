@@ -17,11 +17,18 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 STATIC = Path(__file__).parent / "static"
 
 
-def register(app: FastAPI, role, toks: dict[str, str], floor=None) -> None:
+def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) -> None:
+    import threading
+
     from ..controlroom import config as C
+    from ..controlroom import windows as W
     from ..controlroom.floor import Floor
+    from ..controlroom.scorecard import COHORTS, EventCache, scorecard
 
     fl = floor or Floor()
+    cache = events or EventCache()
+    if events is None:  # production: fill the KPI event cache in the background (about a minute at start)
+        threading.Thread(target=cache.warm, daemon=True, name="controlroom-warm").start()
 
     def cfg() -> dict:
         try:
@@ -38,13 +45,29 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None) -> None:
         tok = request.cookies.get("forge_dashboard_session", "")
         who = next((r for r, t in toks.items() if tok and secrets.compare_digest(tok, t)), None)
         if who:  # first paint without waiting for the stream
-            blob = json.dumps({"role": who, "floor": floor_snapshot()}, default=str).replace("</", "<\\/")
+            init = {"role": who, "floor": floor_snapshot()}
+            if cache.ready.is_set():  # first paint with today's scorecard (the page then follows the viewer's choice)
+                init["score"] = scorecard(cache, W.window("today", cfg()), "all")
+            blob = json.dumps(init, default=str).replace("</", "<\\/")
             html = html.replace("<script>", f"<script>window.__INIT__={blob};</script>\n<script>", 1)
         return HTMLResponse(html, headers={"Cache-Control": "no-store"})
 
     @app.get("/api/v1/control-room/floor")
     def cr_floor(r: str = Depends(role)) -> dict:
         return floor_snapshot()
+
+    def window_or_422(window: str, start: str | None, end: str | None) -> dict:
+        try:
+            return W.window(window, cfg(), start=start, end=end)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @app.get("/api/v1/control-room/scorecard")
+    def cr_scorecard(r: str = Depends(role), window: str = Query("today", pattern="^(shift|today|7d|30d|custom)$"),
+                     cohort: str = Query("all"), start: str | None = None, end: str | None = None) -> dict:
+        if cohort not in COHORTS:
+            raise HTTPException(422, f"cohort must be one of {COHORTS}")
+        return scorecard(cache, window_or_422(window, start, end), cohort)
 
     @app.get("/api/v1/control-room/stream")
     async def cr_stream(request: Request, r: str = Depends(role), max_seconds: int = Query(60, ge=1, le=300)):
