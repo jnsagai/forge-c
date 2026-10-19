@@ -2,8 +2,9 @@
 
 * Auth: bearer token or `forge_dashboard_session` cookie. Roles: viewer (no security/audit channels) and
   auditor (all channels). Tokens live in $FORGE_STATE_DIR/dashboard/tokens.json (0600). Owner decision
-  OD-2026-10-19-09: sign-in can be switched off until deployment (config/factory/dashboard-access.yaml); every
-  request then gets the configured anonymous role, loopback binding only, and the operator token is unchanged.
+  OD-2026-10-19-09: sign-in can be switched off until deployment (config/factory/dashboard-access.yaml); requests
+  from this machine then get the configured anonymous role, and (OD-2026-10-19-10) so do the owner's trusted devices
+  over Tailscale. Every other client still needs a token, and the operator token is unchanged.
 * All /api/v1 endpoints are GET/read-only projections; no SQL or file paths are exposed to the browser. Single
   exception (AFO-T058): POST /api/v1/afo/operator/{pause,drain,resume}, bearer operator token only, audited.
 * Display filters (channels, severity, run, agent, phase, search) never alter capture policy (T039).
@@ -60,13 +61,20 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
 
     access = load_access()
 
+    def peer(request: Request | None) -> tuple[str | None, str | None]:
+        """(client address, local listen address) of the connection; the socket peer, never a forwarded header."""
+        if request is None:
+            return None, None
+        server = request.scope.get("server")
+        return (request.client.host if request.client else None), (server[0] if server else None)
+
     def who_of(request: Request) -> str | None:
         """Role of a page request: its session cookie, else the anonymous role when sign-in is disabled."""
         from .access import anonymous_role
 
         tok = request.cookies.get("forge_dashboard_session", "")
         who = next((r for r, t in toks.items() if tok and secrets.compare_digest(tok, t)), None)
-        return who or anonymous_role(access, request.client.host if request.client else None)
+        return who or anonymous_role(access, *peer(request))
 
     def collector_loop() -> None:
         while True:
@@ -90,8 +98,8 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
                 return r
         from .access import anonymous_role
 
-        anon = anonymous_role(access, request.client.host if request is not None and request.client else None)
-        if anon:  # OD-2026-10-19-09: no sign-in until deployment - for requests from this machine only
+        anon = anonymous_role(access, *peer(request))
+        if anon:  # OD-2026-10-19-09/-10: no sign-in until deployment - this machine and the trusted Tailscale devices
             return anon
         raise HTTPException(401, "authentication required")
 
@@ -475,7 +483,8 @@ def main() -> int:
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--host", action="append", default=None,
                     help="listen address; repeatable (e.g. 127.0.0.1 plus a Tailscale/LAN address for a phone). "
-                         "Non-loopback clients always need a dashboard token.")
+                         "Other clients need a dashboard token, except trusted devices over Tailscale "
+                         "(config/factory/dashboard-access.yaml).")
     a = ap.parse_args()
     import socket
 
@@ -485,7 +494,8 @@ def main() -> int:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((h, a.port))
         socks.append(s)
-    uvicorn.Server(uvicorn.Config(create_app(), log_level="warning")).run(sockets=socks)
+    # no reverse proxy: the client address is the socket peer (sign-in exemptions are by address)
+    uvicorn.Server(uvicorn.Config(create_app(), log_level="warning", proxy_headers=False)).run(sockets=socks)
     return 0
 
 
