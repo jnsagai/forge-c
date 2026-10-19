@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-07",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Independent review of the 32 blocking EASA findings, HAL r161-r164 pilot",
+  "statement": "approve all the 32 blocking findings",
+  "clarification": "Asked whether to record all 32 CORRECT against the evidence for two SWE.4 rows, the owner chose: 29+1 CORRECT, 2 INCORRECT",
+  "decision": "30 CORRECT (incl. the reviewer-judgement row HAL-r162#002, ARCH_IRQ_OWNER_MISSING); 2 INCORRECT: HAL-r162#004 (equivalent mutant 'status = HAL_OK') and HAL-r164#004 (CAPA-047 oracle no_write false positive)",
+  "worksheet": "evidence/easa/pilot-validation/hal-r161-r164/worksheet-signed.json",
+  "worksheet_sha256": "58fb64cb98c541b14791743cbb940c2b7e42b843ab402ba89eda5d72a256a2d5",
+  "pilot_record": "easa-mode-a46c3c319f3d6c1e0f90 (pilot_status PASS, false positives 2/32 = 6.25%, false negatives 0/24)",
+  "entry": "Dispositions typed into the worksheet by the agent on the owner's instruction; the review page was not used for this signature",
+  "not_changed": "Assurance mode stays OBSERVE_ONLY: ENFORCING also needs a READY package, and the ASIL B safety evidence is postponed by the owner. No safety approval, compliance or certification claim."
+}

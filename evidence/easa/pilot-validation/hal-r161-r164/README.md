@@ -6,8 +6,10 @@
   The observed rate is 0/24, with a one-sided 95% upper bound of about 12% (exact). This is a small sample.
 - **False positives:** 32 blocking EASA findings to review (8 per package). `review-data.json` gives the gate
   reasons and verifier findings for each row.
-- **Status: NOT a validated pilot record yet.** It becomes one only after the named human reviewer fills every
-  disposition (CORRECT/INCORRECT) and signs. Then `pilot_validation record` computes the rates.
+- **Status: validated pilot record `easa-mode-a46c3c319f3d6c1e0f90`** (`pilot-record.json`), from the owner-signed
+  `worksheet-signed.json` (OD-2026-10-19-07): pilot PASS; false positives 2/32 (6.25%: the equivalent mutant
+  HAL-r162#004 and the CAPA-047 oracle false positive HAL-r164#004); false negatives 0/24. The dispositions are the
+  owner's; the agent typed them in on the owner's instruction.
 - ENFORCING still also needs a READY package, and the ASIL B safety evidence is postponed by the owner.
 - **Review page:** https://claude.ai/artifact/25dq8foLRTVA9WkHz1HriZ (private).
   - Only the owner can sign. Records go to its `worksheets` collection with the reviewer name, the signer id, the time
