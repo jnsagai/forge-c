@@ -63,6 +63,7 @@ def test_proxy_enforces_the_boundary(tmp_path, monkeypatch):
     assert env["INITIAL_AGENT_MODE"] == "read-only" and env["CODEX_HOME"].endswith("codex-home")
     codex_cfg = json.loads(env["CODEX_CONFIG"])
     assert codex_cfg["features"]["shell_tool"] is False and codex_cfg["features"]["unified_exec"] is False
+    assert codex_cfg["model_verbosity"] == "low"
     cfg = codex_cfg["mcp_servers"]
     assert sorted(cfg) == ["forge_build_mcp", "forge_fs"]
     assert all(s["args"][:2] == ["-m", "forge_factory.acp.gate"] and s["default_tools_approval_mode"] == "approve"
@@ -72,6 +73,7 @@ def test_proxy_enforces_the_boundary(tmp_path, monkeypatch):
     assert replies[901]["error"]["code"] == -32601
     prompt = next(m for m in to_agent if m.get("method") == "session/prompt")
     assert prompt["params"]["prompt"][0]["text"] == P.TOOL_NOTE and prompt["params"]["prompt"][1]["text"] == "do the task"
+    assert prompt["params"]["prompt"][-1]["text"] == P.REPLY_NOTE                   # CAPA-045: last instruction
     to_client = [json.loads(x) for x in out.getvalue().splitlines()]
     assert not any(m.get("method") in ("session/request_permission", "fs/write_text_file") for m in to_client)
     assert any(m.get("method") == "session/update" for m in to_client)

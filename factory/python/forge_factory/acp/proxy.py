@@ -8,7 +8,8 @@ Between Fabro (ACP client) and codex-acp (ACP agent):
     the Codex session config with default_tools_approval_mode="approve" (the gate decides; codex-acp 2.1.1 cannot
     relay Codex's MCP approval question); session/new|load mcpServers from the client are dropped;
   * session/request_permission and every other agent->client request: denied here, never forwarded;
-  * session/prompt: a short tool note is prepended (file tools are the gate's mcp__forge_fs__* tools; no shell).
+  * session/prompt: a short tool note is prepended (file tools are the gate's mcp__forge_fs__* tools; no shell) and
+    the reply rule appended (final message = the requested JSON only; CAPA-045).
 Codex runs with the factory CODEX_HOME (acp.codex_home) and its shell/exec/browser/plugin/sub-agent features off.
 Everything denied is logged to .forge-run/acp/<node>.proxy.jsonl (method and reason, no content).
 """
@@ -31,6 +32,10 @@ TOOL_NOTE = ("[factory tool note] You have no shell. Files: mcp__forge_fs__read_
              "list_dir, write_file, edit_file; load your skill with mcp__forge_fs__use_skill (skill_name = your role). "
              "Factory MCP operations keep their names (e.g. mcp__forge_build_mcp__compile). Writes outside your role "
              "scope are refused by policy.")
+# CAPA-045 (r143-r154: Codex added prose to most replies; r153 SWE.1 blocked on two replies with no JSON at all).
+# Owner decision 2026-10-19: produce only what is expected. Appended LAST so it is the most recent instruction.
+REPLY_NOTE = ("[factory reply rule] Your final message must be exactly the JSON object the task asks for: no text "
+              "before or after it, no summary, no markdown fence. Any other text is a contract violation.")
 
 
 def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
@@ -58,6 +63,7 @@ class Proxy:
         env = {**os.environ, "CODEX_HOME": str(codex_home.home()), "INITIAL_AGENT_MODE": "read-only", "NO_BROWSER": "1",
                "CODEX_PATH": str(data_root() / codex_home.CODEX),
                "CODEX_CONFIG": json.dumps({"features": {f: False for f in codex_home.DISABLED_FEATURES},
+                                        "model_verbosity": codex_home.VERBOSITY,
                                            "mcp_servers": gate_servers(binding, node, self.ws)})}
         argv = agent_argv or [str(data_root() / CODEX_ACP)]
         self.agent = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -90,7 +96,7 @@ class Proxy:
             p["mcpServers"] = []  # the gate servers come from the Codex session config only
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
-            p["prompt"] = [{"type": "text", "text": TOOL_NOTE}] + p["prompt"]
+            p["prompt"] = [{"type": "text", "text": TOOL_NOTE}] + p["prompt"] + [{"type": "text", "text": REPLY_NOTE}]
         return m
 
     def from_agent(self, m: dict) -> None:
