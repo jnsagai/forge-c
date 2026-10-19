@@ -1,6 +1,1 @@
-{
-  "EASA-T079": {
-    "status": "PARTIAL",
-    "reason": "LL r122/r125 and HAL r124/r136 pass AT-094 (six matrices, nothing uncovered). Scope ASIL B: packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package; HAL r136 also escalated DEF-005 (Renode RCC_CR reset value vs RM) for an owner decision."
-  }
-}
+{}

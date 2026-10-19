@@ -1,7 +1,6 @@
 {
   "addendum_counts": {
-    "PARTIAL": 1,
-    "PASS": 6
+    "PASS": 7
   },
   "addendum_tasks": {
     "EASA-T073": {
@@ -101,9 +100,9 @@
         "EASA-OR-001",
         "EASA-OR-011"
       ],
+      "git_head": "cb252f0672c3",
       "priority": "P0",
-      "reason": "LL r122/r125 and HAL r124/r136 pass AT-094 (six matrices, nothing uncovered). Scope ASIL B: packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package; HAL r136 also escalated DEF-005 (Renode RCC_CR reset value vs RM) for an owner decision.",
-      "status": "PARTIAL",
+      "status": "PASS",
       "title": "Run real DeepSeek LL then HAL work orders on the new revision and report the matrices or the blockers."
     }
   },
@@ -1521,8 +1520,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-19T05:00:36.252063Z",
-  "git_head": "0f7a97839990819300de0b923621707443b907d4",
+  "generated_at": "2026-10-19T05:04:06.318105Z",
+  "git_head": "cb252f0672c3b4afe70dc7e5c5f1dae9c56d984f",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {

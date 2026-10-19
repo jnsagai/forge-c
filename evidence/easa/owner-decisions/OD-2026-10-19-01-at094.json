@@ -1,0 +1,16 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-01",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "EASA-AT-094 / EASA-T079 acceptance",
+  "question": "Close T079 only with a READY package (needs the human-written ASIL B safety evidence), or accept a BLOCKED package that names the exact failing relation, as AT-094's wording allows?",
+  "answer": "b",
+  "decision": "A sealed package with the six matrices and measured coverage that is BLOCKED and names the exact missing evidence satisfies EASA-AT-094. No READY package is required for T079.",
+  "not_decided": "No safety approval, no ASIL B evidence waiver and no READY/ENFORCING claim: ASIL B packages stay BLOCKED until the human-written safety evidence exists; EASA-T069 is unaffected.",
+  "superseded_blocker": {
+    "status": "PARTIAL",
+    "reason": "LL r122/r125 and HAL r124/r136 pass AT-094 (six matrices, nothing uncovered). Scope ASIL B: packages stay BLOCKED until the human-written ASIL safety evidence exists, so no READY package; HAL r136 also escalated DEF-005 (Renode RCC_CR reset value vs RM) for an owner decision."
+  },
+  "evidence": "evidence/v0.4/runs/EASA-T079/latest.json (pilot check r122 + r124 re-run 2026-10-19 on current code: six matrices, nothing uncovered, BLOCKED with gaps = the two missing safety documents)"
+}

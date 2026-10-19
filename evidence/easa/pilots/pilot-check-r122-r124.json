@@ -2,8 +2,10 @@
   "WO-0002A-STM32N6-RCC-LL-r122": {
     "archive_sha256": "a756cf217e33e2358427bdf78efadf9492a5835135e78dcd142604f96a1ac90f",
     "archive_unchanged": true,
-    "checked_at": "2026-10-17T21:15:11.087951Z",
+    "checked_at": "2026-10-19T05:03:56.480497Z",
+    "easa_mode": "OBSERVE_ONLY",
     "failing_relations": [],
+    "gap_count": 2,
     "matrices": {
       "matrix_1_swr_to_architecture": {
         "present": true,
@@ -73,6 +75,11 @@
       "traceability": true,
       "unit_verification": true
     },
+    "package_status": "BLOCKED",
+    "safety_scope": {
+      "note": "product ASIL/QM scope not recorded by the owner; safety documents stay required (gaps unchanged)",
+      "status": "NO_APPROVED_SCOPE"
+    },
     "schema": "forge-c/easa-pilot-check/0.1",
     "scope": "trace completeness of a real pilot package; not a safety or release decision",
     "status": "PASS"
@@ -80,8 +87,10 @@
   "WO-0002B-STM32N6-RCC-HAL-r124": {
     "archive_sha256": "c409c0c6bd1e1110e02bc95e323a4efc118983cf14f4a6f5ba20271b8b2345c8",
     "archive_unchanged": true,
-    "checked_at": "2026-10-17T21:15:11.090040Z",
+    "checked_at": "2026-10-19T05:03:56.483036Z",
+    "easa_mode": "OBSERVE_ONLY",
     "failing_relations": [],
+    "gap_count": 2,
     "matrices": {
       "matrix_1_swr_to_architecture": {
         "present": true,
@@ -150,6 +159,11 @@
       "target_verification": true,
       "traceability": true,
       "unit_verification": true
+    },
+    "package_status": "BLOCKED",
+    "safety_scope": {
+      "note": "product ASIL/QM scope not recorded by the owner; safety documents stay required (gaps unchanged)",
+      "status": "NO_APPROVED_SCOPE"
     },
     "schema": "forge-c/easa-pilot-check/0.1",
     "scope": "trace completeness of a real pilot package; not a safety or release decision",

@@ -1,6 +1,6 @@
 # Feature 006 (EASA) status — generated from evidence records
 
-Generated 2026-10-19T05:00:36.252063Z at `0f7a97839990`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
+Generated 2026-10-19T05:04:06.318105Z at `cb252f0672c3`. Task status comes only from `evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay unchecked by design.
 
 Tasks: FAIL 1, PASS 71.
 FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0.
@@ -82,7 +82,7 @@ FRs: COVERED 69, PARTIAL 3, BLOCKED 0, OPEN 0.
 
 ## Owner addendum 2026-10-17 (EASA-OR-001..011)
 
-Tasks: PARTIAL 1, PASS 6.
+Tasks: PASS 7.
 
 | Task | P | Status | ATs | Evidence / reason |
 |---|---|---|---|---|
@@ -92,7 +92,7 @@ Tasks: PARTIAL 1, PASS 6.
 | EASA-T076 | P0 | PASS | 090, 091 | evidence/v0.4/runs/EASA-T076/latest.json |
 | EASA-T077 | P0 | PASS | 092 | evidence/v0.4/runs/EASA-T077/latest.json |
 | EASA-T078 | P0 | PASS | 093 | evidence/v0.4/runs/EASA-T078/latest.json |
-| EASA-T079 | P0 | PARTIAL | 094 | evidence/v0.4/runs/EASA-T079/latest.json |
+| EASA-T079 | P0 | PASS | 094 | evidence/v0.4/runs/EASA-T079/latest.json |
 
 | FR | P | Coverage | Tasks |
 |---|---|---|---|
