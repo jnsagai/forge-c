@@ -52,6 +52,8 @@ def attestation(ws: Path) -> dict:
           "provider": acp.get("provider") or prov}
     ins = {"agent_id": "swe-inspector-nodes", "role": "inspector",  # inspectors stay on the run model
            "model": None if over else model, "provider": None if over else prov}
+    if p.get("acp_inspectors"):  # OD-2026-10-19-08: inspectors on Claude through the ACP proxy
+        ins |= {"model": p["acp_inspectors"].get("model"), "provider": p["acp_inspectors"].get("provider")}
     return independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
 
 
