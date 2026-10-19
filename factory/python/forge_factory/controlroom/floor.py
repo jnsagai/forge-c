@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import threading
 import time
 from dataclasses import dataclass, field
@@ -57,9 +58,22 @@ def decision(row: dict) -> tuple[str | None, str | None]:
     return row.get("step"), row.get("result") or (row.get("gate") or {}).get("decision")
 
 
+WITH_OBJECT = {"REQUIRED_TOOL_NOT_PASS", "MISSING_REQUIRED_OUTPUT", "MISSING_REQUIRED_OUTPUTS"}
+
+
 def code(issue: str) -> str:
-    """'CONTRACT_SWR_NOT_COVERED:SWR-005 (...)' -> 'CONTRACT_SWR_NOT_COVERED' (Pareto/reason normalisation)."""
-    return str(issue).split(":", 1)[0].split(" ", 1)[0][:120]
+    """Issue text -> loss code (Pareto/reason normalisation), dropping instance details:
+    'CONTRACT_SWR_NOT_COVERED:SWR-005 (...)' -> 'CONTRACT_SWR_NOT_COVERED';
+    'CODE:DOXYGEN_WARNING:file.h:14: ...' -> 'CODE:DOXYGEN_WARNING' (category + code);
+    'REQUIRED_TOOL_NOT_PASS:run_unit:FAIL' -> 'REQUIRED_TOOL_NOT_PASS:run_unit' (the tool or output named)."""
+    parts = str(issue).split(":")
+    head = parts[0].split(" ", 1)[0]
+    out = [head]
+    if head in WITH_OBJECT and len(parts) > 1:
+        out.append(parts[1].strip().split(" ", 1)[0].rsplit("/", 1)[-1])
+    elif len(parts) > 1 and re.fullmatch(r"[A-Z][A-Z0-9_]+", parts[1].strip()):
+        out.append(parts[1].strip())
+    return ":".join(out)[:120]
 
 
 def reason_of(row: dict) -> str | None:

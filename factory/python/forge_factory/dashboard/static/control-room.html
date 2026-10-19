@@ -60,6 +60,15 @@ table.k{width:100%;border-collapse:collapse;font-size:12px}
 table.k th,table.k td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 table.k td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .scroll{overflow-x:auto}
+.qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.chart{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--bg);min-width:0}
+.chart h3{font-size:13px;margin:0 0 4px;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.chart svg{width:100%;height:auto;display:block}
+.chart .cap{font-size:11px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:5px 9px}
+.seg button.on{background:var(--accent);color:#fff}
+@media (max-width:900px){.qgrid{grid-template-columns:1fr}}
 .nm-badge{font-size:11px;font-weight:650;color:var(--muted);background:var(--idle-bg);border-radius:5px;padding:1px 5px}
 .station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -124,6 +133,21 @@ button:hover{border-color:var(--accent)}
   <section class="panel" aria-labelledby="h-floor">
     <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span></h2>
     <div class="board" id="board"></div>
+  </section>
+  <section class="panel" aria-labelledby="h-qual">
+    <h2 id="h-qual">Quality and losses <span class="muted">control charts spc-v1 · Pareto of recorded loss reasons</span>
+      <span class="ctrl"><span class="seg" id="qst"></span>
+        <select id="qwin" aria-label="quality window"><option value="7d">7 days</option><option value="30d" selected>30 days</option>
+        <option value="90d">90 days</option></select></span></h2>
+    <div class="qgrid">
+      <div class="chart"><h3><span>First-pass yield per run (p-chart, daily)</span><span class="cap" id="c1s"></span></h3><div id="c1"></div>
+        <div class="cap" id="c1n"></div></div>
+      <div class="chart"><h3><span>Time to pass the station (I-MR)</span><span class="cap" id="c2s"></span></h3><div id="c2"></div>
+        <div class="cap" id="c2n"></div></div>
+      <div class="chart"><h3><span>Pareto of loss reasons</span><span class="cap" id="pas"></span></h3><div id="pa"></div></div>
+      <div class="chart"><h3><span>Corrective actions (CRE)</span><span class="cap" id="cas"></span></h3>
+        <div class="scroll" style="max-height:260px"><table class="k" id="capa"></table></div></div>
+    </div>
   </section>
   <section class="panel" aria-labelledby="h-kpis">
     <h2 id="h-kpis">All KPIs K01–K20 <span class="muted">feature-003 engine values, unchanged · previous period alongside</span></h2>
@@ -262,7 +286,7 @@ function renderScore(sc) {
   const fp = ph.map((p) => find(K, "K02", {phase: p}));
   const bars = fp.map((m) => m && m.display === "VALUE" ? `<div style="height:${Math.max(2, m.value * 100)}%" title="${m.filters.phase}: ${fmtVal(m)} (n=${m.sample_count})"></div>` : `<div class="na" title="${esc(m ? m.reason : "")}"></div>`).join("");
   t.push(`<div class="tile"><div class="k"><span>First-pass yield per station</span></div><div class="fpy">${bars}</div>
-    <div class="fpyl">${ph.map((p, i) => `<span>${p.slice(4)}<br>${fp[i] && fp[i].display === "VALUE" ? Math.round(fp[i].value * 100) + "%" : "n/m"}</span>`).join("")}</div></div>`);
+    <div class="fpyl">${ph.map((p, i) => `<span>${p.slice(4)}<br>${fp[i] && fp[i].display === "VALUE" ? Math.round(fp[i].value * 100) + "%" : "–"}</span>`).join("")}</div></div>`);
   for (const [st, lab] of [["READY_FOR_OFFLINE_REVIEW", "Lead time READY"], ["BLOCKED", "Lead time BLOCKED"]]) {
     const p50 = find(K, "K05", {status: st, quantile: "p50"}), p95 = find(K, "K05", {status: st, quantile: "p95"});
     t.push(p50 && p50.display === "VALUE" ? tile(lab + " (p50)", fmtVal(p50), `p95 ${fmtVal(p95)} · n=${p50.sample_count} driver orders (first admission → close)`) : nmTile(lab, p50));
@@ -293,6 +317,87 @@ for (const id of ["win", "cohort"]) $(id).onchange = () => {
 };
 for (const id of ["win", "cohort"]) { try { const v = localStorage.getItem("cr-" + id); if (v) $(id).value = v; } catch (e) { /* ignore */ } }
 setInterval(loadScore, 30000);
+
+// ---------------------------------------------------------------- quality (US3)
+let qStation = "SWE.4";
+try { qStation = localStorage.getItem("cr-qst") || qStation; } catch (e) { /* ignore */ }
+function svgChart(ch, fmt) {
+  const W = 600, H = 190, L = 60, R = 10, T = 10, B = 24;
+  const pts = ch.points || [];
+  if (!pts.length) return '<div class="empty">no data in this window</div>';
+  const lim = (x) => Array.isArray(x) ? x : (x == null ? null : pts.map(() => x));
+  const ucl = lim(ch.ucl), lcl = lim(ch.lcl);
+  const vals = pts.map((p) => p.value).concat(ucl || [], lcl || [], ch.center != null ? [ch.center] : []);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (hi === lo) { hi += 1; lo = Math.max(0, lo - 1); }
+  const pad = (hi - lo) * 0.08; hi += pad; lo = Math.max(lo - pad, Math.min(...vals) >= 0 ? 0 : lo - pad);
+  const x = (i) => L + (pts.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (pts.length - 1));
+  const y = (v) => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const bad = new Set((ch.violations || []).map((v) => v.point_index));
+  const line = (arr, cls) => arr ? `<polyline fill="none" stroke="var(${cls})" stroke-width="1.2" stroke-dasharray="5 4" points="${arr.map((v, i) => `${x(i)},${y(v)}`).join(" ")}"/>` : "";
+  const ticks = [lo, (lo + hi) / 2, hi].map((v) => `<text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(v)}</text>`).join("");
+  const labs = [0, pts.length - 1].filter((v, i, a) => a.indexOf(v) === i).map((i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="${i ? "end" : "start"}" font-size="10" fill="var(--muted)">${esc(String(pts[i].t).slice(0, 10))}</text>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="control chart">${ticks}${labs}
+    <line x1="${L}" x2="${W - R}" y1="${y(lo)}" y2="${y(lo)}" stroke="var(--line)"/>
+    ${line(ucl, "--blk")}${line(lcl, "--blk")}
+    ${ch.center != null ? `<line x1="${L}" x2="${W - R}" y1="${y(ch.center)}" y2="${y(ch.center)}" stroke="var(--run)" stroke-width="1.2"/>` : ""}
+    <polyline fill="none" stroke="var(--accent)" stroke-width="1.6" points="${pts.map((p, i) => `${x(i)},${y(p.value)}`).join(" ")}"/>
+    ${pts.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.value)}" r="${bad.has(i) ? 4.5 : 2.6}" fill="var(${bad.has(i) ? "--blk" : "--accent"})"><title>${esc(String(p.t))}: ${fmt(p.value)} (n=${p.n})${(p.units || []).length ? " · " + esc(p.units.slice(0, 6).map(short).join(", ")) : ""}${bad.has(i) ? " · rule violation" : ""}</title></circle>`).join("")}
+  </svg>`;
+}
+function chartStatus(ch) {
+  if (ch.status === "INSUFFICIENT_DATA") {
+    const m = ch.minimum || {};
+    return `insufficient data for limits (n=${ch.n}${ch.subgroups != null ? `, ${ch.subgroups} days` : ""}; needs ${Object.entries(m).map(([k, v]) => `${v} ${k}`).join(", ")})`;
+  }
+  const v = (ch.violations || []).length;
+  return `centre ${ch.method.endsWith("p-chart") ? Math.round(ch.center * 100) + " %" : dur(ch.center)} · ${v ? `<span class="down">${v} rule violation(s)</span>` : "in control"}`;
+}
+function paretoSvg(items) {
+  const top = items.slice(0, 10);
+  if (!top.length) return '<div class="empty">no loss recorded in this window</div>';
+  const W = 600, rowH = 22, L = 230, H = top.length * rowH + 8, max = Math.max(...top.map((x) => x.count));
+  const total = items.reduce((a, x) => a + x.count, 0);
+  let cum = 0;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pareto">${top.map((it, i) => {
+    cum += it.count; const w = (W - L - 70) * it.count / max, yy = 4 + i * rowH;
+    const col = it.kind === "BLOCKED" ? "--blk" : it.kind === "REWORK" ? "--rew" : "--accent";
+    return `<text x="${L - 6}" y="${yy + 14}" text-anchor="end" font-size="11" fill="var(--ink)">${esc((it.reason_code.length > 34 ? it.reason_code.slice(0, 33) + "…" : it.reason_code))}</text>
+      <rect x="${L}" y="${yy + 3}" width="${Math.max(2, w)}" height="${rowH - 8}" rx="3" fill="var(${col})"><title>${esc(it.station)} ${esc(it.kind)} ${esc(it.reason_code)}: ${it.count} (${esc(it.refs.slice(0, 5).map((r) => short(r.work_order)).join(", "))})</title></rect>
+      <text x="${L + w + 6}" y="${yy + 14}" font-size="11" fill="var(--muted)">${it.count} · ${Math.round(100 * cum / total)}%</text>`;
+  }).join("")}</svg>`;
+}
+function renderQuality(q) {
+  const ch = q.charts[qStation];
+  if (!ch) return;
+  $("c1").innerHTML = svgChart(ch.first_pass_yield, (v) => Math.round(v * 100) + "%");
+  $("c1s").innerHTML = chartStatus(ch.first_pass_yield);
+  $("c1n").textContent = q.notes.first_pass_yield;
+  $("c2").innerHTML = svgChart(ch.time_to_pass_s, dur);
+  $("c2s").innerHTML = chartStatus(ch.time_to_pass_s);
+  $("c2n").textContent = q.notes.time_to_pass_s;
+  const pa = q.pareto.filter((x) => x.station === qStation);
+  $("pa").innerHTML = paretoSvg(pa);
+  $("pas").textContent = `${qStation} · ${pa.reduce((a, x) => a + x.count, 0)} loss events`;
+  $("pas").innerHTML += ' · <span style="color:var(--blk)">■ blocked</span> <span style="color:var(--rew)">■ rework</span> <span style="color:var(--accent)">■ rejected</span>';
+  $("cas").textContent = q.capa_error || `${q.capa.length} most recent`;
+  $("capa").innerHTML = "<thead><tr><th>CAPA</th><th>State</th><th>Root cause</th></tr></thead><tbody>" +
+    q.capa.map((c) => `<tr><td><b>${esc(c.capa_id)}</b></td><td>${esc(c.state)}</td><td>${esc(c.root_cause_status || "")} · ${esc((c.root_cause_summary || "").slice(0, 140))}</td></tr>`).join("") + "</tbody>";
+}
+let lastQuality = null;
+async function loadQuality() {
+  try { lastQuality = await api(`/api/v1/control-room/quality?window=${$("qwin").value}`); renderQuality(lastQuality); }
+  catch (e) { $("pas").textContent = "quality data unavailable: " + e.message; }
+}
+$("qst").innerHTML = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"].map((s) => `<button data-s="${s}" class="${s === qStation ? "on" : ""}">${s.slice(4)}</button>`).join("");
+$("qst").onclick = (e) => {
+  const s = e.target.dataset && e.target.dataset.s; if (!s) return;
+  qStation = s; try { localStorage.setItem("cr-qst", s); } catch (er) { /* ignore */ }
+  for (const b of $("qst").children) b.className = b.dataset.s === s ? "on" : "";
+  if (lastQuality) renderQuality(lastQuality);
+};
+$("qwin").onchange = loadQuality;
+setInterval(loadQuality, 60000);
 
 function renderBanners() {
   const f = state.floor; if (!f) return;
@@ -351,6 +456,7 @@ try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElemen
   $("app").hidden = false;
   state.lastMsg = Date.now();
   connect(); poll();
+  if (init && init.quality && $("qwin").value === "30d") { lastQuality = init.quality; renderQuality(lastQuality); } else loadQuality();
   if (init && init.score && $("win").value === "today" && $("cohort").value === "all") renderScore(init.score); else loadScore();
 })();
 </script>

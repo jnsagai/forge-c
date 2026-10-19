@@ -23,9 +23,12 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
     from ..controlroom import config as C
     from ..controlroom import windows as W
     from ..controlroom.floor import Floor
+    from ..controlroom.pareto import History
     from ..controlroom.scorecard import COHORTS, EventCache, scorecard
+    from ..controlroom.spc import i_mr, p_chart
 
     fl = floor or Floor()
+    hist = History(root=getattr(fl, "root", None))
     cache = events or EventCache()
     if events is None:  # production: fill the KPI event cache in the background (about a minute at start)
         threading.Thread(target=cache.warm, daemon=True, name="controlroom-warm").start()
@@ -48,6 +51,7 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
             init = {"role": who, "floor": floor_snapshot()}
             if cache.ready.is_set():  # first paint with today's scorecard (the page then follows the viewer's choice)
                 init["score"] = scorecard(cache, W.window("today", cfg()), "all")
+            init["quality"] = cr_quality(who, "30d", None)
             blob = json.dumps(init, default=str).replace("</", "<\\/")
             html = html.replace("<script>", f"<script>window.__INIT__={blob};</script>\n<script>", 1)
         return HTMLResponse(html, headers={"Cache-Control": "no-store"})
@@ -68,6 +72,36 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
         if cohort not in COHORTS:
             raise HTTPException(422, f"cohort must be one of {COHORTS}")
         return scorecard(cache, window_or_422(window, start, end), cohort)
+
+    @app.get("/api/v1/control-room/quality")
+    def cr_quality(r: str = Depends(role), window: str = Query("30d", pattern="^(7d|30d|90d)$"),
+                   station: str | None = Query(None, pattern=r"^SWE\.[1-6]$")) -> dict:
+        from datetime import UTC, datetime, timedelta
+
+        from ..inspection.engine import PHASES
+
+        c = cfg()
+        now = datetime.now(UTC)
+        start = (now - timedelta(days=int(window[:-1]))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        end = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        charts = {p: {"first_pass_yield": p_chart(hist.first_pass_groups(start, end, p, c["tz"]), c["spc"]),
+                      "time_to_pass_s": i_mr(hist.time_to_pass(start, end, p), c["spc"])}
+                  for p in ([station] if station else PHASES)}
+        try:
+            from ..reliability import dashboard_api as R
+
+            capa = [{k: x.get(k) for k in ("capa_id", "state", "root_cause_status", "root_cause_summary",
+                                           "reproducer_id", "created_at", "updated_at")}
+                    for x in R.capas().get("items", [])]
+            capa_err = None
+        except Exception as exc:  # noqa: BLE001 - shown as unavailable, never guessed
+            capa, capa_err = [], f"CRE store unavailable: {type(exc).__name__}"
+        return {"window": {"kind": window, "start_utc": start, "end_utc": end}, "station": station,
+                "charts": charts, "pareto": hist.pareto(start, end, station)[:40],
+                "capa": sorted(capa, key=lambda x: str(x.get("updated_at") or ""), reverse=True)[:30],
+                "capa_error": capa_err,
+                "notes": {"first_pass_yield": "per run: outcome of the first inspection at the station (daily subgroups)",
+                          "time_to_pass_s": "per run: from the previous station's pass to this station's pass"}}
 
     @app.get("/api/v1/control-room/stream")
     async def cr_stream(request: Request, r: str = Depends(role), max_seconds: int = Query(60, ge=1, le=300)):
