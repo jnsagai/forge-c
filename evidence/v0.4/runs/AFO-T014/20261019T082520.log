@@ -1,0 +1,77 @@
+{
+ "schema": "forge-c/afo-restart-drill/0.1",
+ "unit": "forge-afo-drill-3b5d64a5.service",
+ "ok": true,
+ "steps": [
+  {
+   "step": "1_start_ready",
+   "pass": true,
+   "observed": {
+    "MainPID": "1179736",
+    "Result": "success",
+    "NRestarts": "0",
+    "ExecMainStatus": "0",
+    "ActiveState": "active",
+    "SubState": "running"
+   },
+   "at": "2026-10-19T08:25:20.722737Z"
+  },
+  {
+   "step": "2_sigkill_restarted",
+   "pass": true,
+   "observed": {
+    "MainPID": "1180763",
+    "Result": "success",
+    "NRestarts": "1",
+    "ExecMainStatus": "0",
+    "ActiveState": "active",
+    "SubState": "running"
+   },
+   "at": "2026-10-19T08:25:22.251583Z"
+  },
+  {
+   "step": "3_hang_watchdog_restarted",
+   "pass": true,
+   "observed": {
+    "MainPID": "1186365",
+    "Result": "success",
+    "NRestarts": "2",
+    "ExecMainStatus": "0",
+    "ActiveState": "active",
+    "SubState": "running"
+   },
+   "at": "2026-10-19T08:25:29.336927Z"
+  },
+  {
+   "step": "4_sigterm_clean_no_restart",
+   "pass": true,
+   "observed": {
+    "MainPID": "0",
+    "Result": "success",
+    "NRestarts": "0",
+    "ExecMainStatus": "0",
+    "ActiveState": "inactive",
+    "SubState": "dead"
+   },
+   "at": "2026-10-19T08:25:34.864778Z"
+  },
+  {
+   "step": "5_crash_loop_bounded",
+   "pass": true,
+   "observed": {
+    "MainPID": "0",
+    "Result": "signal",
+    "NRestarts": "3",
+    "ExecMainStatus": "9",
+    "ActiveState": "failed",
+    "SubState": "failed",
+    "restarts_limit": 3
+   },
+   "at": "2026-10-19T08:25:55.731817Z"
+  }
+ ],
+ "scope": "throwaway copy of the Conductor unit; live Forge-C services and other projects untouched"
+}
+
+--- stderr ---
+Failed to reset failed state of unit forge-afo-drill-3b5d64a5.service: Unit forge-afo-drill-3b5d64a5.service not loaded.
