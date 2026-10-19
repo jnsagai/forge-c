@@ -1,0 +1,31 @@
+{
+ "task": "T-011",
+ "package": "forge-c-WO-0002B-STM32N6-RCC-HAL-r154-review.zip",
+ "archive_sha256": "877f5c09e7e6be29a0d5cd307517aa45feaa84dc8692f354d130562d7cb95ef2",
+ "archive_unchanged": true,
+ "checks": [
+  {
+   "check": "HAL source and header",
+   "pass": true
+  },
+  {
+   "check": "LL header",
+   "pass": true
+  },
+  {
+   "check": "ELF and map file",
+   "pass": true
+  },
+  {
+   "check": "detailed design",
+   "pass": true
+  },
+  {
+   "check": "SWE.3 inspection PASS",
+   "pass": true
+  }
+ ],
+ "status": "PASS"
+}
+
+--- stderr ---
