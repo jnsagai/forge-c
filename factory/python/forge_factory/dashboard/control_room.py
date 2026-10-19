@@ -151,6 +151,29 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
                 "violations_open": snap.get("violations_open", 0),
                 "acknowledgement": "per viewer, in the browser only; no factory state changes"}
 
+    @app.get("/api/v1/control-room/export")
+    def cr_export(r: str = Depends(role), view: str = Query(..., pattern="^(floor|scorecard|quality|usage)$"),
+                  format: str = Query("json", pattern="^(json|csv)$"), window: str = Query("today"),  # noqa: A002
+                  cohort: str = Query("all")):
+        from fastapi.responses import Response
+
+        from ..controlroom.export import render
+
+        if view == "floor":
+            data = floor_snapshot()
+        elif view == "scorecard":
+            data = cr_scorecard(r, window, cohort, None, None)
+        elif view == "quality":
+            data = cr_quality(r, window if window in ("7d", "30d", "90d") else "30d", None)
+        else:
+            data = cr_usage(r, window, cohort, None, None)
+        if data.get("status") == "WARMING_UP":
+            raise HTTPException(503, "warming up: retry in a minute")
+        body, media = render(view, data, format)
+        name = f"forge-c-control-room-{view}-{window}.{format}"
+        return Response(body, media_type=media, headers={"Content-Disposition": f'attachment; filename="{name}"',
+                                                         "Cache-Control": "no-store"})
+
     @app.get("/api/v1/control-room/stream")
     async def cr_stream(request: Request, r: str = Depends(role), max_seconds: int = Query(60, ge=1, le=300)):
         async def gen():

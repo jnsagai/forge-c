@@ -115,3 +115,65 @@ def test_stream_delivers_floor_changes_within_5_seconds(client):
     srv.should_exit = True
     within = sum(1 for x in latencies if x <= 5.0)
     assert len(latencies) == 20 and within >= 19, latencies
+
+
+def test_cr_t037_export_csv_and_json_with_evidence(client):
+    workspace(client.root, "WO-E-r1", passed("SWE.1", 1))
+    h = _h(client)
+    r = client.get("/api/v1/control-room/export?view=floor&format=csv", headers=h)
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv")
+    assert r.text.splitlines()[0].startswith("work_order,order_id,station") and "WO-E-r1" in r.text
+    assert "attachment" in r.headers["content-disposition"]
+    j = client.get("/api/v1/control-room/export?view=floor&format=json", headers=h).json()
+    assert j["schema"] == "forge-c/control-room-floor/0.1"
+    q = client.get("/api/v1/control-room/export?view=quality&format=csv&window=30d", headers=h)
+    assert q.status_code == 200 and q.text.startswith("station,kind,reason_code,count,cumulative_share,refs")
+    assert client.get("/api/v1/control-room/export?view=secrets&format=csv", headers=h).status_code == 422
+
+
+def test_cr_t038_no_model_call_while_serving_every_view(client, monkeypatch):
+    """SC-007: patch every way a model could be reached (process spawn, LLM gateway, Fabro run creation, ACP proxy)
+    to fail, then exercise every Control Room endpoint."""
+    import subprocess
+
+    def boom(*a, **k):
+        raise AssertionError("model path reached from the Control Room")
+    monkeypatch.setattr(subprocess, "Popen", boom)
+    monkeypatch.setattr(subprocess, "run", boom)
+    import forge_factory.acp.proxy as AP
+
+    monkeypatch.setattr(AP.Proxy, "__init__", boom)
+    import socket
+
+    import forge_factory.llm_gateway as G
+
+    monkeypatch.setattr(G, "create_app", boom)
+    monkeypatch.setattr(G, "Meter", boom)
+    real_connect = socket.create_connection
+
+    def loopback_only(addr, *a, **k):  # any model API is off-host; Fabro and the dashboard are on 127.0.0.1
+        if str(addr[0]) not in ("127.0.0.1", "localhost", "::1"):
+            raise AssertionError(f"off-host connection to {addr[0]} from the Control Room")
+        return real_connect(addr, *a, **k)
+    monkeypatch.setattr(socket, "create_connection", loopback_only)
+    workspace(client.root, "WO-M-r1", passed("SWE.1", 1))
+    h = _h(client)
+    for path in ("/api/v1/control-room/floor", "/api/v1/control-room/alerts", "/api/v1/control-room/quality",
+                 "/api/v1/control-room/scorecard?window=today", "/api/v1/control-room/usage?window=7d",
+                 "/api/v1/control-room/export?view=floor&format=csv", "/control-room"):
+        assert client.get(path, headers=h).status_code in (200, 503), path
+
+
+def test_cr_t039_no_compliance_claim_and_text_labels_for_every_andon(client):
+    import re
+
+    from forge_factory.dashboard import control_room as CRM
+
+    page = (CRM.STATIC / "control-room.html").read_text()
+    banned = r"certif|compliant|complian(ce|t) (achieved|met)|safety[- ]approved|approved for release|ASPICE (level|capability)|ISO 26262 (compliant|certified)|production[- ]ready"
+    assert not re.search(banned, page, re.I)
+    workspace(client.root, "WO-T-r1", passed("SWE.1", 1))
+    body = json.dumps(client.get("/api/v1/control-room/floor", headers=_h(client)).json())
+    assert not re.search(banned, body, re.I)
+    labels = re.search(r"const LABEL = \{([^}]*)\}", page).group(1)
+    assert all(f"{s}:" in labels for s in ("RUNNING", "REWORK", "BLOCKED", "IDLE", "STOPPED", "READY"))

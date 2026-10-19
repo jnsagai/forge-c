@@ -76,6 +76,7 @@ border:1px solid var(--line);font-size:13px}
 .al .ic{font-weight:800}.al.critical .ic{color:var(--blk)}.al.warning .ic{color:var(--rew)}
 .al .tx{word-break:break-word}.al .tx small{color:var(--muted)}
 .al.acked{opacity:.6}
+.exp{font-size:12px;font-weight:400}
 .nm-badge{font-size:11px;font-weight:650;color:var(--muted);background:var(--idle-bg);border-radius:5px;padding:1px 5px}
 .station{border:1px solid var(--line);border-radius:9px;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 .station .head{padding:8px 10px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -139,19 +140,22 @@ button:hover{border-color:var(--accent)}
       <span class="ctrl"><select id="win" aria-label="window"><option value="shift">Current shift</option>
         <option value="today" selected>Today</option><option value="7d">7 days</option><option value="30d">30 days</option></select>
         <select id="cohort" aria-label="cohort"><option value="all">All runs</option><option value="cloud">Cloud-model runs</option>
-        <option value="production">Production (local-only)</option></select></span></h2>
+        <option value="production">Production (local-only)</option></select>
+        <span class="exp">export <a href="#" data-exp="scorecard:csv">CSV</a> · <a href="#" data-exp="scorecard:json">JSON</a></span></span></h2>
     <div class="note" id="score-note"></div>
     <div class="tiles" id="tiles"></div>
   </section>
   <section class="panel" aria-labelledby="h-floor">
-    <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span></h2>
+    <h2 id="h-floor">Shop floor <span class="muted" id="floor-sub"></span>
+      <span class="ctrl exp">export <a href="#" data-exp="floor:csv">CSV</a> · <a href="#" data-exp="floor:json">JSON</a></span></h2>
     <div class="board" id="board"></div>
   </section>
   <section class="panel" aria-labelledby="h-qual">
     <h2 id="h-qual">Quality and losses <span class="muted">control charts spc-v1 · Pareto of recorded loss reasons</span>
       <span class="ctrl"><span class="seg" id="qst"></span>
         <select id="qwin" aria-label="quality window"><option value="7d">7 days</option><option value="30d" selected>30 days</option>
-        <option value="90d">90 days</option></select></span></h2>
+        <option value="90d">90 days</option></select>
+        <span class="exp">export <a href="#" data-exp="quality:csv">CSV</a> · <a href="#" data-exp="quality:json">JSON</a></span></span></h2>
     <div class="qgrid">
       <div class="chart"><h3><span>First-pass yield per run (p-chart, daily)</span><span class="cap" id="c1s"></span></h3><div id="c1"></div>
         <div class="cap" id="c1n"></div></div>
@@ -165,7 +169,8 @@ button:hover{border-color:var(--accent)}
   <section class="panel" aria-labelledby="h-use">
     <h2 id="h-use">Model usage and cost <span class="muted" id="use-sub"></span>
       <span class="ctrl"><select id="uwin" aria-label="usage window"><option value="today">Today</option>
-        <option value="7d" selected>7 days</option><option value="30d">30 days</option></select></span></h2>
+        <option value="7d" selected>7 days</option><option value="30d">30 days</option></select>
+        <span class="exp">export <a href="#" data-exp="usage:csv">CSV</a> · <a href="#" data-exp="usage:json">JSON</a></span></span></h2>
     <div class="note" id="use-note"></div>
     <div class="tiles" id="use-tiles"></div>
     <div class="qgrid" style="margin-top:12px">
@@ -491,6 +496,14 @@ async function loadUsage() {
 }
 $("uwin").onchange = loadUsage;
 setInterval(loadUsage, 60000);
+
+document.addEventListener("click", (e) => {  // exports reflect the window/cohort currently shown
+  const x = e.target.dataset && e.target.dataset.exp; if (!x) return;
+  e.preventDefault();
+  const [view, fmt] = x.split(":");
+  const win = view === "quality" ? $("qwin").value : view === "usage" ? $("uwin").value : $("win").value;
+  location.href = `/api/v1/control-room/export?view=${view}&format=${fmt}&window=${win}&cohort=${$("cohort").value}`;
+});
 
 function renderBanners() {
   const f = state.floor; if (!f) return;
