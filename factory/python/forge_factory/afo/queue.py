@@ -58,10 +58,19 @@ MIGRATIONS = [
       seq INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, actor TEXT NOT NULL, reason TEXT NOT NULL,
       utc TEXT NOT NULL);
     """,
+    # v2 - AFO-T030: immutable accepted-phase checkpoints with their upstream dependency hashes
+    """
+    CREATE TABLE afo_checkpoints (
+      checkpoint_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, phase TEXT NOT NULL,
+      baseline_hash TEXT NOT NULL, upstream TEXT NOT NULL, inspection_ref TEXT NOT NULL, frozen_utc TEXT NOT NULL,
+      recorded_utc TEXT NOT NULL, UNIQUE (attempt_id, phase, baseline_hash));
+    """,
 ]
-ATTEMPT_EDGES = {"PREPARED": {"DISPATCH_PENDING", "CANCELLED"}, "DISPATCH_PENDING": {"RUNNING", "UNKNOWN", "FAILED"},
+# DISPATCH_PENDING/UNKNOWN -> PREPARED only when reconciliation PROVES the launch never reached Fabro (ADR-AFO-002)
+ATTEMPT_EDGES = {"PREPARED": {"DISPATCH_PENDING", "CANCELLED"},
+                 "DISPATCH_PENDING": {"RUNNING", "UNKNOWN", "FAILED", "PREPARED"},
                  "RUNNING": {"SUCCEEDED", "FAILED", "CANCELLED", "UNKNOWN"},
-                 "UNKNOWN": {"RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"}}
+                 "UNKNOWN": {"RUNNING", "SUCCEEDED", "FAILED", "CANCELLED", "PREPARED"}}
 
 
 class QueueError(ValueError):

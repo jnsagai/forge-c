@@ -329,8 +329,9 @@ def resume_from(ws: Path, manifest: dict, source_wo: str) -> list[str]:
     return remaining
 
 
-def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
-    """Start the Fabro run (CRE-T045: journaled `workorder_launch`, idempotency key = work-order id)."""
+def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] | None = None) -> str:
+    """Start the Fabro run (CRE-T045: journaled `workorder_launch`, idempotency key = work-order id). `labels` adds
+    Fabro run labels (AFO-T026: afo_attempt/afo_nonce identify an AFO attempt for crash reconciliation)."""
     import os
 
     from .reliability.production import JournalRefused, enforcing, guarded
@@ -341,9 +342,10 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
         # idempotency key honoured by the receiver side (enforcing modes; observe-only keeps the 002 behaviour)
         if enforcing() and prior.is_file() and prior.read_text().strip():
             return {"fabro_run_id": prior.read_text().strip(), "reused": True}
+        extra = [x for k, v in sorted((labels or {}).items()) for x in ("--label", f"{k}={v}")]
         out = subprocess.run([fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local",
-                              "--label", f"forge={wo}"], cwd=ws, env=fabro_env(), capture_output=True, text=True,
-                             timeout=180)
+                              "--label", f"forge={wo}", *extra], cwd=ws, env=fabro_env(), capture_output=True,
+                             text=True, timeout=180)
         rid = (out.stdout.strip().splitlines() or [""])[-1]
         if out.returncode != 0 or not rid:  # r58: a rejected workflow used to leave an empty run id silently
             emit("human", "ERROR", f"{wo} Fabro launch failed (exit {out.returncode})", correlation_id=wo)
@@ -361,7 +363,8 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str) -> str:
 
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
-        provided_from: str | None = None, acp_authors: str | None = None) -> dict:
+        provided_from: str | None = None, acp_authors: str | None = None,
+        labels: dict[str, str] | None = None) -> dict:
     if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
         from .acp import codex_home
 
@@ -412,7 +415,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     import os
 
     fab = os.environ.get("FORGE_FABRO_BIN", fab)
-    fabro_run_id = launch_run(ws, wo, toml, fab)
+    fabro_run_id = launch_run(ws, wo, toml, fab, labels)
     # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
     # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.
     (ws / ".forge-run/fabro_server.json").write_text(json.dumps(

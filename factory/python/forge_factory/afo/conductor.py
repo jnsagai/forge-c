@@ -44,7 +44,21 @@ def cycle(n: int) -> tuple[str, bool, str]:
     eff = load(log=(n % 60 == 0))  # record a policy decision every 60 cycles and at start
     if eff.mode == "DISABLED":
         return eff.mode, True, ("; ".join(eff.issues))[:200]
-    r = scheduler.cycle(Store(), f"conductor-{os.getpid()}", eff=eff)
+    store = Store()
+    r = scheduler.cycle(store, f"conductor-{os.getpid()}", eff=eff)
+    if eff.mode in ("PILOT", "ACTIVE"):  # M3: launch, reconcile, validate; OBSERVE_ONLY never touches Fabro
+        from . import checkpoints, dispatch, runtime
+
+        dispatch.dispatch_pending(store, runtime.launcher)
+        dispatch.reconcile_inflight(store, runtime.fabro_view)
+        dispatch.reconcile_running(store, runtime.fabro_view)
+        for o in store.orders(("RUNNING", "VALIDATING")):
+            att = store.attempts(o["order_id"])[-1]
+            ws = runtime.workspace_of(att)
+            if ws.is_dir():
+                checkpoints.capture(store, o["order_id"], att["attempt_id"], ws)
+        dispatch.validate(store, runtime.workspace_of)
+        store.forward_events()
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 
 
