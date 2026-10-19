@@ -21,6 +21,9 @@ LL_HEADER = "software/ll/stm32n6xx_ll_rcc.h"
 GUARD = "STM32N6XX_LL_RCC_H"
 FUNCTIONS_MARKER = "// LL_RCC access functions (SWE.3 LL author)"  # line comment: a dropped '*/' cannot hide code
 _BIT = re.compile(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", re.M)
+# CAPA-050 (LL r166): a table row may name the register alone (RCC_CR) or with its field (RCC_CR.HSION, RCC_CR[HSION],
+# `RCC_CR`); the register is the leading RCC_ name. A '_' joined name (RCC_CR_HSION) stays one name: NOT_IN_RM.
+_REG_CELL = re.compile(r"`?(RCC_[A-Z0-9_]+)`?(?:$|[\s.\[(:/,])")
 
 
 def parse_section(text: str) -> dict | None:
@@ -57,9 +60,9 @@ def architecture_registers(ws: Path) -> list[str]:
     body = next((b for h, b in _sections(p.read_text(errors="replace")).items() if re.search(r"register\s+table", h)), "")
     names = []
     for row in _rows(body):
-        n = row[0].split()[0] if row and row[0] else ""
-        if re.fullmatch(r"RCC_[A-Z0-9_]+", n) and n not in names:
-            names.append(n)
+        m = _REG_CELL.match(row[0].strip()) if row and row[0] else None
+        if m and m.group(1) not in names:
+            names.append(m.group(1))
     return names
 
 
@@ -94,6 +97,13 @@ def generate(ws: Path) -> dict:
     rm = rm_registers(ws)
     missing = [n for n in wanted if n not in rm]
     regs = [rm[n] for n in wanted if n in rm]
+    from ..layer import LL_TU, LL_TU_TEXT, layer_of
+
+    if layer_of(ws) == "LL":  # ADR-0009: compile unit of the header-only LL (build/analysis/size tools need one)
+        # CAPA-050: written even when the map is BLOCKED, so no author writes its own unit (CAPA-046 rejects it and
+        # the author has no tool to delete it: LL r166 ended BLOCKED on that loop)
+        (ws / LL_TU).parent.mkdir(parents=True, exist_ok=True)
+        (ws / LL_TU).write_text(LL_TU_TEXT, encoding="utf-8")
     if not regs:
         return {"status": "BLOCKED", "issues": ["NO_REGISTERS_FROM_SWE2_TABLE"] + [f"NOT_IN_RM:{n}" for n in missing]}
     out = ws / LL_HEADER
@@ -106,11 +116,6 @@ def generate(ws: Path) -> dict:
             authored = old.split(FUNCTIONS_MARKER, 1)[1].rsplit(end, 1)[0]
             text = text.replace(FUNCTIONS_MARKER + "\n\n" + end, FUNCTIONS_MARKER + authored + end)
     out.write_text(text, encoding="utf-8")
-    from ..layer import LL_TU, LL_TU_TEXT, layer_of
-
-    if layer_of(ws) == "LL":  # ADR-0009: compile unit of the header-only LL (build/analysis/size tools need one)
-        (ws / LL_TU).parent.mkdir(parents=True, exist_ok=True)
-        (ws / LL_TU).write_text(LL_TU_TEXT, encoding="utf-8")
     rec = {"schema": "forge-c/regmap/0.4", "generated_at": utc_now(), "header": LL_HEADER,
            "registers": {r["name"]: {"offset": r["offset"], "fields": len(r["fields"]), "source": r["source"],
                                      "source_sha256": r["sha256"]} for r in regs},
