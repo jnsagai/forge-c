@@ -149,6 +149,17 @@ button:hover{border-color:var(--accent)}
         <div class="scroll" style="max-height:260px"><table class="k" id="capa"></table></div></div>
     </div>
   </section>
+  <section class="panel" aria-labelledby="h-use">
+    <h2 id="h-use">Model usage and cost <span class="muted" id="use-sub"></span>
+      <span class="ctrl"><select id="uwin" aria-label="usage window"><option value="today">Today</option>
+        <option value="7d" selected>7 days</option><option value="30d">30 days</option></select></span></h2>
+    <div class="note" id="use-note"></div>
+    <div class="tiles" id="use-tiles"></div>
+    <div class="qgrid" style="margin-top:12px">
+      <div class="chart"><h3><span>New tokens by model and role</span><span class="cap">input + output; cache reads separate</span></h3><div id="use-models"></div></div>
+      <div class="chart"><h3><span>By station</span></h3><div class="scroll"><table class="k" id="use-st"></table></div></div>
+    </div>
+  </section>
   <section class="panel" aria-labelledby="h-kpis">
     <h2 id="h-kpis">All KPIs K01–K20 <span class="muted">feature-003 engine values, unchanged · previous period alongside</span></h2>
     <div class="scroll"><table class="k" id="ktable"></table></div>
@@ -313,7 +324,7 @@ async function loadScore() {
 }
 for (const id of ["win", "cohort"]) $(id).onchange = () => {
   try { localStorage.setItem("cr-" + id, $(id).value); } catch (e) { /* per-viewer convenience */ }
-  loadScore();
+  loadScore(); if (id === "cohort") loadUsage();
 };
 for (const id of ["win", "cohort"]) { try { const v = localStorage.getItem("cr-" + id); if (v) $(id).value = v; } catch (e) { /* ignore */ } }
 setInterval(loadScore, 30000);
@@ -399,6 +410,39 @@ $("qst").onclick = (e) => {
 $("qwin").onchange = loadQuality;
 setInterval(loadQuality, 60000);
 
+// ---------------------------------------------------------------- usage (US4)
+function num(v) { return v == null ? "–" : v >= 1e6 ? (v / 1e6).toFixed(2) + " M" : v >= 1e3 ? (v / 1e3).toFixed(1) + " k" : String(v); }
+function renderUsage(u) {
+  if (u.status === "WARMING_UP") { $("use-note").textContent = "warming up…"; setTimeout(loadUsage, 5000); return; }
+  $("use-sub").textContent = `${WINLABEL[u.window.kind] || u.window.kind} · runs admitted in the window`;
+  $("use-note").textContent = u.note;
+  const tp = u.tokens_per_ready_package;
+  $("use-tiles").innerHTML = [
+    tile("New tokens (reported)", num(u.tokens_new_reported), `${u.reported_stages} of ${u.stages} agent stages reported`),
+    tile("Not reported", u.not_reported_share == null ? "–" : Math.round(u.not_reported_share * 100) + " %",
+         "stages with no usage record (counted as unknown, never 0)"),
+    tp.status === "MEASURED" ? tile("Tokens per READY package", num(tp.value), tp.complete ? "complete" : "lower bound: some usage not reported")
+      : nmTile("Tokens per READY package", {reason: tp.reason}),
+  ].join("") + u.by_model.filter((m, i, a) => a.findIndex((x) => x.model === m.model) === i).map((m) =>
+    m.cost && m.cost.status === "MEASURED" ? tile(`Cost ${esc(m.model)}`, `${m.cost.value} ${esc(m.cost.currency)}`, esc(m.cost.source))
+      : nmTile(`Cost ${esc(m.model)}`, {reason: m.cost ? m.cost.reason : ""})).join("");
+  const rows = u.by_model, max = Math.max(1, ...rows.map((m) => m.tokens_new || 0));
+  $("use-models").innerHTML = rows.length ? rows.map((m) => `<div style="margin:6px 0">
+      <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px"><span><b>${esc(m.model)}</b> · ${esc(m.role)} <span class="muted">${esc(m.provider || "")}</span></span>
+      <span class="muted">${m.tokens_new == null ? "not reported" : num(m.tokens_new)} · ${m.reported_stages}/${m.stages} stages · ${m.runs} runs</span></div>
+      <div style="height:10px;background:var(--idle-bg);border-radius:5px;overflow:hidden"><div style="height:100%;width:${m.tokens_new == null ? 0 : Math.max(1, 100 * m.tokens_new / max)}%;background:var(${m.role === "inspector" ? "--rew" : "--accent"})"></div></div>
+    </div>`).join("") : '<div class="empty">no agent stages in this window</div>';
+  $("use-st").innerHTML = "<thead><tr><th>Station</th><th>Stages</th><th>Reported</th><th>New tokens</th><th>Cache reads</th></tr></thead><tbody>" +
+    u.by_station.sort((a, b) => a.station.localeCompare(b.station)).map((s) => `<tr><td>${esc(s.station)}</td><td class="num">${s.stages}</td>
+      <td class="num">${s.reported_stages}${s.complete ? "" : ' <span class="nm-badge">incomplete</span>'}</td><td class="num">${num(s.tokens_new)}</td><td class="num">${num(s.cache_read)}</td></tr>`).join("") + "</tbody>";
+}
+async function loadUsage() {
+  try { renderUsage(await api(`/api/v1/control-room/usage?window=${$("uwin").value}&cohort=${$("cohort").value}`)); }
+  catch (e) { $("use-note").textContent = "usage unavailable: " + e.message; }
+}
+$("uwin").onchange = loadUsage;
+setInterval(loadUsage, 60000);
+
 function renderBanners() {
   const f = state.floor; if (!f) return;
   const b = [];
@@ -455,7 +499,7 @@ try { const t = localStorage.getItem("cr-theme"); if (t) document.documentElemen
   else { renderFloor(init.floor); }
   $("app").hidden = false;
   state.lastMsg = Date.now();
-  connect(); poll();
+  connect(); poll(); loadUsage();
   if (init && init.quality && $("qwin").value === "30d") { lastQuality = init.quality; renderQuality(lastQuality); } else loadQuality();
   if (init && init.score && $("win").value === "today" && $("cohort").value === "all") renderScore(init.score); else loadScore();
 })();

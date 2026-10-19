@@ -103,6 +103,19 @@ def register(app: FastAPI, role, toks: dict[str, str], floor=None, events=None) 
                 "notes": {"first_pass_yield": "per run: outcome of the first inspection at the station (daily subgroups)",
                           "time_to_pass_s": "per run: from the previous station's pass to this station's pass"}}
 
+    @app.get("/api/v1/control-room/usage")
+    def cr_usage(r: str = Depends(role), window: str = Query("7d", pattern="^(shift|today|7d|30d|custom)$"),
+                 cohort: str = Query("all"), start: str | None = None, end: str | None = None) -> dict:
+        from ..controlroom.usage import window_usage
+
+        if cohort not in COHORTS:
+            raise HTTPException(422, f"cohort must be one of {COHORTS}")
+        w = window_or_422(window, start, end)
+        if not cache.ready.is_set():
+            return {"status": "WARMING_UP", "window": w, "cohort": cohort}
+        return {"status": "OK", "window": w, "cohort": cohort,
+                **window_usage(cache, w["start_utc"], w["end_utc"], cohort, cfg()["prices"])}
+
     @app.get("/api/v1/control-room/stream")
     async def cr_stream(request: Request, r: str = Depends(role), max_seconds: int = Query(60, ge=1, le=300)):
         async def gen():
