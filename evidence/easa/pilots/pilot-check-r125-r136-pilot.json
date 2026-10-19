@@ -2,9 +2,15 @@
   "WO-0002A-STM32N6-RCC-LL-r125": {
     "archive_sha256": "27f45a98ed78374322c099919107b576f208b2ee56cf19e3051b79b69ad47d12",
     "archive_unchanged": true,
-    "checked_at": "2026-10-18T11:34:40.819223Z",
+    "checked_at": "2026-10-19T05:00:35.839380Z",
     "easa_mode": "PILOT",
-    "failing_relations": [],
+    "failing_relations": [
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:OUT_OF_SCOPE: QM!=ASIL B:evidence/safety/software_safety_requirements.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:OUT_OF_SCOPE: QM!=ASIL B:evidence/traceability/upstream_gaps.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:evidence/safety/software_safety_requirements.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:evidence/workproducts/SWE.1/software_requirements.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:evidence/workproducts/SWE.6/software_verification_report.md"
+    ],
     "gap_count": 2,
     "matrices": {
       "matrix_1_swr_to_architecture": {
@@ -93,14 +99,19 @@
     },
     "schema": "forge-c/easa-pilot-check/0.1",
     "scope": "trace completeness of a real pilot package; not a safety or release decision",
-    "status": "PASS"
+    "status": "FAIL"
   },
   "WO-0002B-STM32N6-RCC-HAL-r136": {
     "archive_sha256": "2a5fe170166d94a4234da17dbbe2324419394ed3ec12f09e4462a6716a72dddb",
     "archive_unchanged": true,
-    "checked_at": "2026-10-18T11:34:40.822048Z",
+    "checked_at": "2026-10-19T05:00:35.848669Z",
     "easa_mode": "PILOT",
-    "failing_relations": [],
+    "failing_relations": [
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:OUT_OF_SCOPE: QM!=ASIL B:evidence/safety/software_safety_requirements.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:OUT_OF_SCOPE: QM!=ASIL B:evidence/traceability/upstream_gaps.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:OUT_OF_SCOPE: QM!=ASIL B:evidence/workproducts/SWE.6/software_verification_report.md",
+      "SAFETY_SCOPE_TEXT:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:evidence/safety/software_safety_requirements.md"
+    ],
     "gap_count": 3,
     "matrices": {
       "matrix_1_swr_to_architecture": {
@@ -189,6 +200,6 @@
     },
     "schema": "forge-c/easa-pilot-check/0.1",
     "scope": "trace completeness of a real pilot package; not a safety or release decision",
-    "status": "PASS"
+    "status": "FAIL"
   }
 }

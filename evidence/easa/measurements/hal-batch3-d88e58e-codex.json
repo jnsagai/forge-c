@@ -52,7 +52,7 @@
   },
   "pilot_check": "evidence/easa/pilots/pilot-check-r149-r152-codex.json: 4/4 PASS, archives unchanged, six matrices complete; packages BLOCKED only on safety/software_safety_analysis.md and safety/tool_assurance_assessment.md (owner-postponed)",
   "FINDING_safety_scope_inconsistency": {
-    "status": "OPEN - reported to owner 2026-10-19, not fixed",
+    "status": "FACTORY FIXED 2026-10-19 by CAPA-044 (candidate fdf081a, decision pd-8d7654a7b9f0d8b4a8c2, owner go); existing sealed packages are NOT changed and stay inconsistent: pilot re-check evidence/easa/pilots/pilot-recheck-safety-scope-2026-10-19.json fails all 8 ASIL B packages (LL r125, HAL r136, r144, r147, r149-r152); EASA-T069 re-recorded FAIL",
     "what": "The HAL example workorder.json target.safety_allocation still reads 'OUT_OF_SCOPE: QM development ... (owner decision 2026-10-15)'; the SWE.1 prompt turns that into 'QM development scope: no software safety requirements are allocated'. The ASIL B owner scope (SC-RCC-2026-10-18, manifest safety_target B) does not override it, so ASIL B packages state QM development.",
     "affected_files_with_QM_text": {
       "r144": [

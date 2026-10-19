@@ -9,19 +9,19 @@
     "--out",
     "evidence/easa/pilots/pilot-check-r125-r136-pilot.json"
   ],
-  "duration_s": 0.045,
-  "exit_code": 0,
+  "duration_s": 0.06,
+  "exit_code": 1,
   "git_dirty": true,
-  "git_head": "5b9154a0770dd605297fac808904b0f16e5bba15",
+  "git_head": "0f7a97839990819300de0b923621707443b907d4",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/EASA-T069/20261018T113440.log",
-  "log_sha256": "9d7e120439514523823b91a7d6e85913f335f4845b6285705cddae9dedbd9e90",
+  "log": "evidence/v0.4/runs/EASA-T069/20261019T050035.log",
+  "log_sha256": "5c86bac133cff4d1d497181dd9997c62f72a754141ec3217684c1e89af42976c",
   "schema": "forge-c/task-evidence/0.4",
-  "status": "PASS",
+  "status": "FAIL",
   "task": "EASA-T069",
-  "ts_utc": "2026-10-18T11:34:40.783165Z"
+  "ts_utc": "2026-10-19T05:00:35.795192Z"
 }
