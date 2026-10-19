@@ -56,6 +56,12 @@ WORK_ORDER_SCOPE_NOTE = ("Read .forge-run/manifest.json 'scope' once. A checklis
                          "PASS with 'N/A by work-order scope' when the report states the exclusion (FAIL only if the "
                          "report omits it or claims such behaviour was tested); never fail an item for not testing "
                          "excluded behaviour.")
+# CAPA-046 (r103 SWE3-02, r159 SWE3-01): the SWE.3 inspector failed the mandated register access ("no RCC base
+# 0x56028000 in the code"); the author then added an integer-to-pointer address unit and the phase ran out of budget
+REGISTER_BLOCK_NOTE = ("Register access is fixed by the SWE.2 architecture (ADR-0009): the driver uses only the extern "
+                       "volatile uint32_t ll_rcc_regs array, which the linker places at the RCC base on target and the "
+                       "test harness defines on host. No base address, no defining unit and no integer-to-pointer "
+                       "cast in the driver code is the required design, not a finding: never ask for them.")
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
                     "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE or PENDING owner allocation review), "
                     "judge SWE1-01 against that "
@@ -762,6 +768,7 @@ def inspector_prompt(phase: str) -> str:
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
+             *([REGISTER_BLOCK_NOTE] if phase in ("SWE.2", "SWE.3") else []),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              *([WORK_ORDER_SCOPE_NOTE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "

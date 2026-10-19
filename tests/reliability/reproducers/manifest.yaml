@@ -541,3 +541,14 @@ reproducers:
     operations: [SWE.1/author, SWE.2/author, SWE.3/author, SWE.4/author, SWE.5/author, SWE.6/author]
     root_cause: "On the Codex ACP path the reply contract ('Finish with ONLY this JSON') sat in the middle of a long prompt (the proxy prepended its tool note) and Codex ran at default verbosity; Codex added prose to most final replies (r143-r152) and in r153 SWE.1 replied twice without the JSON, which the strict contract rejects, exhausting the rework budget with valid work products."
     remedy: "Codex runs with model_verbosity = low and the proxy appends the factory reply rule as the LAST prompt item; the strict reply contract is unchanged (owner decision 2026-10-19: produce just what is expected)."
+  - id: RPR-050
+    script: rpr050_inspector_asks_for_rcc_base.py
+    sha256: 4e9cfef50f8899575fa843eee58b005797e5cf1a03026e11cd2692b1059c95b5
+    symptom_signature: "SWE.3 inspector not told the register-block design and LL gate accepts an authored compile unit"
+    observed_in: r103, r159
+    baseline_revision: 5053d0e54d42e73f173e969c6201ee58ae0f16de
+    fix_revision: 41823779b83caf2f7446c9ee8df7c4f92af25a98
+    error_codes: ["INSPECTION_FAIL:SWE3-01", "INSPECTION_FAIL:SWE3-02", "CODE:UNDOCUMENTED_FUNCTION", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/inspect, SWE.3/author]
+    root_cause: "The SWE.2/SWE.3 inspector prompts never stated the mandated register access (extern ll_rcc_regs placed by the linker, no integer-to-pointer casts; SWE.2 author prompt, ADR-0009), so the DeepSeek inspector failed the correct design for lacking the RCC base address in C (r103 SWE3-02, r159 SWE3-01); the LL author answered with an authored address unit and pointer helpers, which the LL implementation gate did not reject as a non-header-only unit, and SWE.3 exhausted its rework budget. With such a unit the header-only oracle would also have crashed at link time."
+    remedy: "SWE.2/SWE.3 inspector prompts carry REGISTER_BLOCK_NOTE; the LL implementation gate reports IMPL:LL_EXTRA_COMPILE_UNIT for any authored .c beside the generated unit; an oracle link failure returns BUILD_FAILED (ORACLE_BUILD_FAILED finding in contract mode)."

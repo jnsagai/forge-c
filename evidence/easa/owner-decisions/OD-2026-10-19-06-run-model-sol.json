@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-19-06",
+  "decided_on": "2026-10-19",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Model for work-order runs",
+  "statement": "for now on, use Claude Sol 6.1 for the runs, we resume with deepseek later",
+  "interpretation": "Sol 6.1 = the owner-approved Codex Sol 6.1 (codex-gpt-6.1-sol, reasoning high) behind the forge ACP proxy; no Claude model of that name exists in the factory",
+  "decision": "Every new LL and HAL work order launches with --acp-authors codex (author roles on Sol 6.1). Inspectors and non-author nodes stay on DeepSeek: the ACP path serves author roles only, and moving inspectors needs new wiring plus a separate owner decision. DeepSeek-only authoring resumes when the owner says so.",
+  "not_changed": "AFO policy (OBSERVE_ONLY) allowed_model_profiles; runs already in flight (batch d376c70)"
+}

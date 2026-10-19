@@ -168,6 +168,13 @@ def _check_ll(ws: Path) -> dict:
         if m.group(2).strip() not in ("void", ""):
             findings.append(f"IMPL:LL_SIGNATURE_NOT_VOID:{m.group(1)}")
     findings += _reg_block_defined(ws)
+    # CAPA-046 (r159): the LL is header-only (ADR-0009); the only compile unit is the generated one. An authored unit
+    # (r159: an integer-to-pointer address helper, after the inspector asked for the RCC base in C) escapes the
+    # size/stack measurement of the generated unit and cannot link with the header-only oracle.
+    from ..layer import LL_TU
+
+    findings += [f"IMPL:LL_EXTRA_COMPILE_UNIT:{p.relative_to(ws).as_posix()}"
+                 for p in sorted([*ws.glob("software/src/*.c"), *ws.glob("software/ll/*.c")]) if p != ws / LL_TU]
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "ll_defined": len([f for f in wanted if f in ll_defs]),
                       "ll_functions": len(ll_defs)}}
