@@ -1,0 +1,22 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "python -m forge_factory.optimization  /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r161/forge-c-WO-0002B-STM32N6-RCC-HAL-r161-review.zip /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r162/forge-c-WO-0002B-STM32N6-RCC-HAL-r162-review.zip /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r163/forge-c-WO-0002B-STM32N6-RCC-HAL-r163-review.zip /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-r164/forge-c-WO-0002B-STM32N6-RCC-HAL-r164-review.zip --out evidence/v0.4/optimization/t015-hal-r161-r164.json && python -c \"import json; d=json.load(open('evidence/v0.4/optimization/t015-hal-r161-r164.json')); assert all(p['instructions_status']=='MEASURED' and all(v['status']=='OK' for v in p['instructions'].values()) and p['archive_unchanged'] for p in d['packages']); print('pareto', [x[-24:] for x in d['pareto']['pareto_front']], 'common cases', len(d['pareto']['common_cases']))\""
+  ],
+  "duration_s": 387.151,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d3fd7cb6321c04b7b5035e8661f52d49f4058bb6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/001-T-015/20261019T115923.log",
+  "log_sha256": "b8a335bf2a5bfa75270b6098d33e4d14f55d1da1bddcaffe85ee20e720e09a29",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "001-T-015",
+  "ts_utc": "2026-10-19T11:59:23.953057Z"
+}
