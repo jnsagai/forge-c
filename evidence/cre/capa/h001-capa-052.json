@@ -1,0 +1,100 @@
+{
+  "CAPA-052": {
+    "history": [
+      {
+        "at": "2026-10-20T06:59:21.925100Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[\"CAPA-052\"]",
+        "from_state": null,
+        "reason": "h001 (2026-10-20T06:53:12Z): with DeepSeek suspended (OD-2026-10-20-03) and every agent node on ACP (CAPA-051), Fabro's server-side run-title generation still called deepseek-flash through the forge gateway",
+        "seq": 425,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T06:59:21.951595Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 426,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T06:59:22.045414Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-056 assigned",
+        "seq": 427,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T07:24:12.581003Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[\"reproducer-run:rr-8a00b4437b6e9639cede\", \"reproducer-run:rr-27f7772a0c02e5d913a5\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 428,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T07:24:12.629140Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[\"git:625ed0245a68..4d89805f1512\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 4d89805f1512 (patch 7806 bytes)",
+        "seq": 429,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T07:24:12.734359Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[\"reproducer-run:rr-69cfd0d2fa229da94446\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-056 absent at 4d89805f1512",
+        "seq": 430,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T07:24:12.774803Z",
+        "capa_id": "CAPA-052",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 431,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "625ed0245a6840535416c18cca514306f39225bf",
+      "4d89805f1512529d0063eba3fa4e10e6247a09a2",
+      "pd-b80c0915a73b8ef70bb6"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<4d89805f1512"
+      ],
+      "candidate_patch_sha256": "1629ea68d0d7216c4536e3721df890ce72202f4e58390b612e7a5ee0750310b6",
+      "capa_id": "CAPA-052",
+      "created_at": "2026-10-20T06:59:21.925100Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-052"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-056",
+      "reproducer_id": "RPR-056",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-8a00b4437b6e9639cede",
+        "reproducer-run:rr-27f7772a0c02e5d913a5"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the gateway forwarded every request; the suspension was enforced only on the workflow graph",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T07:24:12.774803Z"
+    }
+  }
+}
