@@ -1,0 +1,26 @@
+# Peripheral profile (feature 009): independent watchdog, RM0486 Rev 4 chapter 59 (pp. 2979-2994);
+# secure base 0x56004800, 1 KB (RM0486 p.179, Table 3).
+schema: forge-c/peripheral-profile/0.1
+id: iwdg
+name: Independent watchdog (IWDG)
+register_prefix: IWDG
+base_address: "0x56004800"
+window_bytes: 1024
+system_name: IWDG LL driver
+rm:
+  doc: RM0486
+  chapter: 59
+  key_sections: ["59.7.1", "59.7.2", "59.7.3", "59.7.4"]
+ll:
+  header: stm32n6xx_ll_iwdg.h
+  compile_unit: stm32n6xx_ll_iwdg.c
+  function_prefix: LL_IWDG_
+  register_block: ll_iwdg_regs
+  register_count: 256
+hal:
+  header: stm32n6xx_hal_iwdg.h
+  source: stm32n6xx_hal_iwdg.c
+  function_prefix: HAL_IWDG_
+sim:
+  model: iwdg_model.py
+  platform: stm32n6_iwdg.repl
