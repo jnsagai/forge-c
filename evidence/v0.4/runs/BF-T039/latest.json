@@ -1,0 +1,11 @@
+{
+  "task": "BF-T039",
+  "status": "PASS",
+  "decision": "pd-74f389bcf9d6daec63f9",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "main d83148a",
+  "candidate": "617ee29 = d83148a + feature 008 branch at 0219f0d without evidence/",
+  "hard_gates": "all PASS (protected_files, policy_integrity, prevention, quality_process, golden_benchmark, holdout)",
+  "regression": "assurance.regress --full on ede3048: PASS (design-006, negatives, design-check-002, legacy-v0.1, factory-test)"
+}
