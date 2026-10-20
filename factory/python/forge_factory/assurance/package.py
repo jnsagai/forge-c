@@ -127,7 +127,9 @@ def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
     att = attestation(ws)
     claims = phase_claims(gates, log)
     scope_rec = scope_dispositions(ws, stage)
-    model_txt = (Path(__file__).resolve().parents[3] / "sim/stm32n6/rcc_model.py")
+    from ..layer import profile
+
+    model_txt = (Path(__file__).resolve().parents[3] / "sim/stm32n6" / profile(ws)["sim"]["model"])  # feature 009
     lim = T.limitations(ws, model_txt.read_text() if model_txt.is_file() else "")
     from ..inspection.defects import all_defects, owner_dispositions
 

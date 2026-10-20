@@ -169,12 +169,15 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
                      integrity(ctx.workspace, tests, asserted))
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_renode") if ok else []
+    from ...layer import register_prefix
+
+    pfx = register_prefix(ctx.workspace)  # feature 009 (i003 said "RCC model" for the IWDG model)
     return result(ctx, "PASS" if ok and not undeclared else "FAIL", f"renode cortex-m55: {passed} checks passed, "
-                  f"{failed} failed ({len(tests)} images; behavioural RCC model)"
+                  f"{failed} failed ({len(tests)} images; behavioural {pfx} model)"
                   + ("; undeclared test change - declare it" if undeclared else ""), [ctx.store(log)],
                   (undeclared + issues)[:30],
                   {"passed": passed, "failed": failed, "images": per, "cpu": "cortex-m55",
-                   "platform": "forge-stm32n6-rcc-min (CPU+NVIC+AXISRAM+behavioural RCC)",
+                   "platform": f"forge-stm32n6-{pfx.lower()}-min (CPU+NVIC+AXISRAM+behavioural {pfx})",
                    "target_evidence": "simulated", "silicon_verified": False}, "renode",
                   tool_version(renode), 0 if ok else 1, None, a.model_dump(), log)
 

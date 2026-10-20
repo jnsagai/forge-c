@@ -1,0 +1,79 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "a76e9579d5c2e1a8a5337e5bc166832af8f7dbd6",
+  "baseline_sha256": "4c953f218413beadfa36522b0c21b220bd7fc93efa1fdad3844b602595c12910",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "a9f72aa113e388d13e2aed581e135b0916d9bad7",
+  "candidate_sha256": "71d8f2f43c9972c47765959a576972c45346d835a786b61151f184900d61fb57",
+  "decision": "REJECTED",
+  "decision_id": "pd-018120ceff0abae63379",
+  "evaluated_at": "2026-10-20T06:50:18.943644Z",
+  "evaluator_id": "cre-promotion-runner@a9f72aa113e3",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:a76e9579d5c2..a9f72aa113e3"
+      ],
+      "name": "protected_files",
+      "reason_code": "PROTECTED_PATH_CHANGE",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:policy_integrity"
+      ],
+      "name": "policy_integrity",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "name": "prevention",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "protected paths changed: A:evidence/cre/decisions/pd-646b5ed9fb3970231fe2.json, A:evidence/v0.4/runs/PG-T018/latest.json, A:evidence/v0.4/runs/PG-T018/runall.py, A:evidence/v0.4/runs/PG-T018/verifiers-after-WO-0002A-STM32N6-RCC-LL-r170.json, A:evidence/v0.4/runs/PG-T018/verifiers-after-WO-0002B-STM32N6-RCC-HAL-r164.json",
+    "sandbox: 3862 protected paths read-only (OS) in the candidate/baseline worktrees"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

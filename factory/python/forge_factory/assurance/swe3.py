@@ -155,13 +155,16 @@ def seeded_probe_campaign() -> list[dict]:
 LOOP = re.compile(r"\b(while|for)\s*\((.*?)\)\s*\{", re.S)
 
 
-def invariant_findings(code: dict[str, str], header_defs: str, idx: dict[str, dict], mitigation_stated: bool) -> list[str]:
+def invariant_findings(code: dict[str, str], header_defs: str, idx: dict[str, dict], mitigation_stated: bool,
+                       block: str = "ll_rcc_regs", polls: str = "IsReady|IsEnabled") -> list[str]:
+    """`block`/`polls` (feature 009): the work order's register block and the LL query names a wait loop polls
+    (IWDG: IsActive / IsActiveFlag_*); the defaults are the RCC ones."""
     f = []
     rmw_by_reg: dict[str, set[str]] = {}
     for path, text in code.items():
         for fm in re.finditer(r"^[A-Za-z_][\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*\{(.*?)^\}", text, re.S | re.M):
             body = fm.group(2)
-            for w in hardware.check_writes(body, header_defs, idx):
+            for w in hardware.check_writes(body, header_defs, idx, block):
                 if w.startswith("NON_ATOMIC_RMW:"):
                     rmw_by_reg.setdefault(w.split(":")[1], set()).add(fm.group(1))
             for lm in LOOP.finditer(body):
@@ -170,7 +173,7 @@ def invariant_findings(code: dict[str, str], header_defs: str, idx: dict[str, di
                 names = {a or b for a, b in counters} - {"LL_RCC_HSI_IsReady", "LL_RCC_HSE_IsReady"}
                 stepped = any(re.search(rf"\b{re.escape(n)}\s*(\+\+|--|\+=|-=)|(\+\+|--){re.escape(n)}\b", body)
                               for n in names)  # dry-run FP r96: a down-counter (count != 0U; count--) is a bound
-                if re.search(r"IsReady|IsEnabled|ll_rcc_regs", cond) and not stepped:
+                if re.search(rf"{polls}|{re.escape(block)}", cond) and not stepped:
                     f.append(f"LOOP_UNBOUNDED:{fm.group(1)}@{Path(path).name}")
         for m in re.finditer(r"^\s*static\s+(?!inline|const|hal_status_t|void|uint32_t\s+\w+\s*\()[\w\s]+\b(\w+)\s*(=[^;]*)?;",
                              text, re.M):

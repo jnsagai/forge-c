@@ -113,11 +113,11 @@ def check_requirements(ws: Path) -> dict:
                         for _reg, fld in FIELD_REF.findall(t):
                             if fld not in pg:
                                 f.append(f"REQ_SOURCE_MISMATCH:{rid}:{fld} not on p.{m.group(1)}")
-    f += contradictions(reqs)
+    f += contradictions(reqs, pfx)
     return {"verdict": "FAIL" if f else "PASS", "major_findings": f, "requirements": len(reqs)}
 
 
-def contradictions(reqs: list[dict]) -> list[str]:
+def contradictions(reqs: list[dict], prefix: str = "RCC") -> list[str]:
     out = []
     bound: dict[str, tuple[str, str]] = {}
     for r in reqs:
@@ -134,7 +134,7 @@ def contradictions(reqs: list[dict]) -> list[str]:
                 bound.setdefault(key, (r["id"], m.group(1)))
     trig: dict[tuple[str, str], tuple[str, str]] = {}
     for r in reqs:
-        m = re.match(r"When (.+?), the .+? shall (set|clear) (RCC_[A-Z0-9]+\.[A-Z0-9_]+)", r["text"])
+        m = re.match(rf"When (.+?), the .+? shall (set|clear) ({prefix}_[A-Z0-9]+\.[A-Z0-9_]+)", r["text"])
         if m:
             key = (m.group(1).lower(), m.group(3))
             if key in trig and trig[key][1] != m.group(2):
@@ -202,6 +202,11 @@ def _cycles(edges: list[tuple[str, str]]) -> list[list[str]]:
     return out
 
 
+# feature 009 (i003): an element declared by its bare name ('actor Caller', 'component Foo') is declared too
+BARE_DECL = re.compile(r"^\s*(?:actor|participant|component|node|rectangle|database|interface|package|artifact|folder|"
+                       r"frame|cloud|queue|card|collections|agent|storage|boundary|control|entity)\s+(\w+)\s*$", re.M)
+
+
 def check_architecture(ws: Path) -> dict:
     ws = Path(ws)
     st = (ws / STATIC).read_text(errors="replace") if (ws / STATIC).is_file() else ""
@@ -209,7 +214,7 @@ def check_architecture(ws: Path) -> dict:
     md = (ws / ARCH_MD).read_text(errors="replace") if (ws / ARCH_MD).is_file() else ""
     model = parse_architecture(st)
     f = []
-    declared = set(re.findall(r"\bas\s+(\w+)", st)) | set(model["swcs"])
+    declared = set(re.findall(r"\bas\s+(\w+)", st)) | set(model["swcs"]) | set(BARE_DECL.findall(st))
     labels = set(re.findall(r'^\s*(?:component|node|rectangle|database|interface|package|artifact|folder|frame|cloud|'
                             r'queue|card|collections|agent|storage)\s+"([^"\\]+)', st, re.M)) | \
         set(re.findall(r"^\s*\[([^\]\\]+)\]", st, re.M))
@@ -240,8 +245,11 @@ def check_architecture(ws: Path) -> dict:
         if not any(c and (c == x or c in x or x in c) for c in (name, alias) for x in static_names):
             f.append(f"ARCH_VIEW_INCONSISTENT:dynamic participant {name} not in static view")
     hal = list((ws / "software/hal").glob("*.c")) if (ws / "software/hal").is_dir() else []
+    from ..layer import register_block
+
+    block = register_block(ws)  # feature 009: the work order's register block (ll_rcc_regs for RCC)
     for p in hal:
-        if "ll_rcc_regs[" in p.read_text(errors="replace"):
+        if f"{block}[" in p.read_text(errors="replace"):
             f.append(f"ARCH_LAYER_BYPASS:{p.name} accesses registers directly")
     return {"verdict": "FAIL" if f else "PASS", "major_findings": f, "shared_registers": {k: v for k, v in shared.items()}}
 
@@ -249,17 +257,18 @@ def check_architecture(ws: Path) -> dict:
 def shared_registers(ws: Path) -> dict[str, list[str]]:
     """Registers written with read-modify-write by two or more functions (interrupt/concurrency exposure)."""
     ws = Path(ws)
-    from ..layer import api_prefix, ll_header
+    from ..layer import api_prefix, ll_header, register_block, register_prefix
 
     hdr = ws / ll_header(ws)
     if not hdr.is_file():
         return {}
     text = hdr.read_text(errors="replace")
-    defs = {m.group(1): int(m.group(2), 0) for m in hardware.DEFINE.finditer(text)}
+    write = hardware.write_rx(register_block(ws))  # feature 009: the work order's prefix and register block
+    defs = {m.group(1): int(m.group(2), 0) for m in hardware.define_rx(register_prefix(ws)).finditer(text)}
     by_word: dict[int, set[str]] = {}
     fn_rx = r"static\s+inline\s+[\w\s\*]+?\b(" + re.escape(api_prefix("LL", ws)) + r"\w+)\s*\([^)]*\)\s*\{(.*?)\n\}"
     for fm in re.finditer(fn_rx, text, re.S):
-        for w in hardware.WRITE.finditer(fm.group(2)):
+        for w in write.finditer(fm.group(2)):
             if w.group(2) in ("|=", "&="):
                 word = hardware._eval_index(w.group(1), defs)
                 if word is not None:

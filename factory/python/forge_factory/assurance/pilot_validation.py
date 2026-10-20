@@ -57,6 +57,12 @@ def measure(zip_path: Path, inputs_from: Path) -> dict:
             summary = json.loads(z.read("evidence/assurance/summary.json")) \
                 if "evidence/assurance/summary.json" in z.namelist() else {}
         base = shadow._workspace_from_package(x, inputs_from)
+        if not (base / LL).is_file():  # feature 009: the seeds are RCC code; another peripheral's package is N/A
+            return {"schema": "forge-c/easa-pilot-validation-measure/0.1", "package": zip_path.name,
+                    "archive_sha256": before, "archive_unchanged": sha256_file(zip_path) == before,
+                    "pilot_check": chk["status"], "status": "NOT_APPLICABLE", "seeds": [], "seeded_applied": 0,
+                    "seeded_missed": [], "findings_to_review": [], "measured_at": utc_now(),
+                    "reason": f"the seeded-defect set is defined for RCC packages ({LL} absent)"}
         ref = _detect(base)
         seeds = []
         for sid, rel, rx, new, cls in SEEDS:

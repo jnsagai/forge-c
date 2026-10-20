@@ -33,3 +33,21 @@ def test_iwdg_prompts_name_the_iwdg_key_sections():
     prompts = dict(re.findall(r'\n  (\w+) \[[^\n]*?prompt="((?:[^"\\]|\\.)*)"', g))
     for node in ("swe1_author", "swe2_author"):
         assert "59.7.1_IWDG_key_register_IWDG_KR.md" in prompts[node] and "unavailable" not in prompts[node], node
+
+
+# owner request 2026-10-20 ("a watchdog HAL driver"): the HAL layer prompts are IWDG too
+HAL_RCC_ONLY = re.compile(r"HSE|HSI(?!_contract)[A-Z_]|RDY|oscillat|selector|IWDG_CR\b|ready flag|AHB1", re.I)
+
+
+def test_iwdg_hal_prompts_have_no_rcc_content():
+    g, _ = build("WO-T", layer="HAL", trace=True, isolation=True, chunk_lines=150, peripheral="iwdg")
+    prompts = dict(re.findall(r'\n  (\w+) \[[^\n]*?prompt="((?:[^"\\]|\\.)*)"', g))
+    assert len(prompts) >= 15
+    bad = {n: sorted(set(RCC_DOMAIN.findall(p) + HSI_RCC.findall(p) + HAL_RCC_ONLY.findall(p))) for n, p in prompts.items()}
+    assert {n: b for n, b in bad.items() if b} == {}
+    assert "HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout)" in prompts["swe2_author"]
+    assert "// HAL_IWDG API prototypes (SWE.3 HAL author)" in prompts["swe3_hal_author"]
+    assert "LL_IWDG_IsActiveFlag_PVU" in prompts["swe3_hal_author"] and "status = HAL_TIMEOUT;" in prompts["swe3_hal_author"]
+    assert '\\"busy\\":\\"IWDG_SR.PVU\\"' in prompts["swe1_author"]  # quotes are escaped in the graph
+    assert "ut_iwdg_init" in prompts["swe4_test_author"]
+    assert "never_ready the update flags never clear" in prompts["swe5_target_author"]

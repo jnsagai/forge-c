@@ -95,8 +95,28 @@ def set_clear_aliases(idx: dict[str, dict]) -> dict[str, tuple[str, str]]:
 
 
 # ---- code scan -------------------------------------------------------------------------------------------------
-DEFINE = re.compile(r"^\s*#\s*define\s+(LL_RCC_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", re.M)
-WRITE = re.compile(r"ll_rcc_regs\s*\[\s*([^\]]+?)\s*\]\s*(\|=|&=|=)(?!=)\s*([^;]+);")
+def prefix_of_index(idx: dict[str, dict]) -> str:
+    """Feature 009: the RM register prefix of an index (IWDG_KR -> IWDG); RCC for an empty index."""
+    return next(iter(idx)).split("_", 1)[0] if idx else "RCC"
+
+
+def define_rx(prefix: str = "RCC") -> re.Pattern:
+    """Numeric LL_<PPP>_ defines of an LL header."""
+    return re.compile(rf"^\s*#\s*define\s+(LL_{prefix}_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", re.M)
+
+
+def write_rx(block: str = "ll_rcc_regs") -> re.Pattern:
+    """Writes through the LL register-block array (ADR-0009), e.g. ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = ..."""
+    return re.compile(rf"{re.escape(block)}\s*\[\s*([^\]]+?)\s*\]\s*(\|=|&=|=)(?!=)\s*([^;]+);")
+
+
+def block_of(prefix: str) -> str:
+    """The register-block name of a prefix by the profile convention (ll_rcc_regs, ll_iwdg_regs)."""
+    return f"ll_{prefix.lower()}_regs"
+
+
+DEFINE = define_rx("RCC")
+WRITE = write_rx("ll_rcc_regs")
 
 
 def _eval_index(expr: str, defs: dict[str, int]) -> int | None:
@@ -112,13 +132,13 @@ def _eval_index(expr: str, defs: dict[str, int]) -> int | None:
         return None
 
 
-def scan_writes(code: str, header_defs: str) -> list[dict]:
-    defs = {m.group(1): int(m.group(2), 0) for m in DEFINE.finditer(header_defs)}
+def scan_writes(code: str, header_defs: str, prefix: str = "RCC", block: str | None = None) -> list[dict]:
+    defs = {m.group(1): int(m.group(2), 0) for m in define_rx(prefix).finditer(header_defs)}
     out = []
-    for m in WRITE.finditer(code):
+    for m in write_rx(block or block_of(prefix)).finditer(code):
         word = _eval_index(m.group(1), defs)
         rhs = m.group(3)
-        masks = re.findall(r"LL_RCC_\w+_MSK", rhs)
+        masks = re.findall(rf"LL_{prefix}_\w+_MSK", rhs)
         lit = [] if masks else [int(re.sub(r"[uUlL]+$", "", x), 0)
                                 for x in re.findall(r"\b(?:0x[0-9A-Fa-f]+|\d+)[uUlL]*\b", rhs)]
         value = 0
@@ -131,11 +151,13 @@ def scan_writes(code: str, header_defs: str) -> list[dict]:
     return out
 
 
-def check_writes(code: str, header_defs: str, idx: dict[str, dict]) -> list[str]:
+def check_writes(code: str, header_defs: str, idx: dict[str, dict], block: str | None = None) -> list[str]:
+    """`block`: the register-block array (feature 009: the work order's profile; default by the prefix convention)."""
     by_off = {r["offset"]: r for r in idx.values()}
     aliases = set_clear_aliases(idx)
+    p = prefix_of_index(idx)
     f = []
-    for w in scan_writes(code, header_defs):
+    for w in scan_writes(code, header_defs, p, block):
         if w["word"] is None:
             f.append(f"UNRESOLVED_REGISTER_INDEX:line {w['line']}")
             continue
@@ -152,7 +174,7 @@ def check_writes(code: str, header_defs: str, idx: dict[str, dict]) -> list[str]
         for b in range(32):
             if touched >> b & 1 and b in reg["access_by_bit"] and reg["access_by_bit"][b] not in WRITEABLE:
                 f.append(f"RO_FIELD_WRITE:{reg['name']}:bit {b}:line {w['line']}")
-        known = {f"LL_RCC_{reg['name'][4:]}_{fld}_MSK" for fld in reg["fields"]}
+        known = {f"LL_{p}_{reg['name'][len(p) + 1:]}_{fld}_MSK" for fld in reg["fields"]}
         for mk in w["masks"]:
             if mk not in known:
                 f.append(f"UNKNOWN_FIELD:{mk}:for {reg['name']}:line {w['line']}")
@@ -178,8 +200,12 @@ SIM_READY = re.compile(r"READY_MASK\s*=\s*(0x[0-9A-Fa-f]+)|RCC_SR.*?RCC_CR\s*&\s
 
 def simulator_mismatches(model_text: str, idx: dict[str, dict]) -> list[str]:
     """AT-084: compare the behavioural Renode RCC model with the RM (ready-flag derivation, reset values, set/clear
-    registers). Every difference is a fidelity limitation of simulated evidence, never hidden."""
+    registers). Every difference is a fidelity limitation of simulated evidence, never hidden. Feature 009: the
+    comparison rules exist for the RCC model only; another peripheral's model is reported not comparable."""
     out = []
+    if idx and prefix_of_index(idx) != "RCC":
+        return [f"SIMULATOR_MODEL_NOT_COMPARABLE:no RM comparison rule for the {prefix_of_index(idx)} model "
+                "(LIMITATION: the model is not checked against the RM)"]
     m = SIM_READY.search(model_text)
     sr, cr = idx.get("RCC_SR"), idx.get("RCC_CR")
     if not (m and sr and cr):
@@ -208,14 +234,16 @@ def simulator_mismatches(model_text: str, idx: dict[str, dict]) -> list[str]:
 
 
 def check_defines(header: str, idx: dict[str, dict]) -> list[str]:
-    """Independent re-check of LL_RCC_<REG>_OFFSET/_<FIELD>_POS/_MSK defines against the RM index (a different
-    parser than inspection/regmap.py, which generates AND checks the defines - common-cause finding F-02)."""
+    """Independent re-check of LL_<PPP>_<REG>_OFFSET/_<FIELD>_POS/_MSK defines against the RM index (a different
+    parser than inspection/regmap.py, which generates AND checks the defines - common-cause finding F-02). The prefix
+    is the index's (feature 009)."""
     f = []
-    for name, val in re.findall(r"#\s*define\s+(LL_RCC_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", header):
-        m = re.match(r"LL_RCC_([A-Z0-9]+)_(OFFSET|([A-Z0-9]+)_(POS|MSK))$", name)
+    p = prefix_of_index(idx)
+    for name, val in re.findall(rf"#\s*define\s+(LL_{p}_\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)U?L?\s*\)?", header):
+        m = re.match(rf"LL_{p}_([A-Z0-9]+)_(OFFSET|([A-Z0-9]+)_(POS|MSK))$", name)
         if not m:
             continue
-        v, reg = int(val, 0), idx.get("RCC_" + m.group(1))
+        v, reg = int(val, 0), idx.get(f"{p}_" + m.group(1))
         if reg is None:
             f.append(f"DEFINE_UNKNOWN_REGISTER:{name}")
             continue

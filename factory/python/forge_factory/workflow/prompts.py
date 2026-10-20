@@ -934,6 +934,47 @@ def peripheralize(text: str) -> str:
          "(the start key and the refresh key are two entries)"),
         ("(one unit per group, e.g. HSI, HSE, GPDMA1, ADC12;", "(one unit per function group;"),
     ]
+    hal = [  # HAL layer (owner request 2026-10-20); skipped when the profile has no HAL text
+        ("exactly like: - **SWR-001** When the HSI enable is requested, the RCC driver shall set RCC_CR.HSION.",
+         "exactly like: - **SWR-001** " + t["hal_requirement_example"] if "hal_requirement_example" in t else None),
+        ("(e.g. '- **SWR-0nn** While no oscillator enable has been requested after reset, the RCC driver shall leave "
+         "RCC_CR.HSEON at its reset value 0.')", t.get("hal_reset_example")),
+        ("one requirement per failure response (ready timeout -> the driver clears the enable bit it set (driver fallback "
+         "state: oscillator/clock off) and returns HAL_TIMEOUT; invalid parameter -> HAL_ERROR without register writes, "
+         "naming the invalid values: a NULL pointer, an unknown selector, and a timeout argument of 0 or greater than "
+         "HAL_RCC_TIMEOUT_VALUE)", t.get("hal_failure_responses")),
+        ("Interfaces (each HAL_RCC_ API with hal_status_t, named exactly HAL_RCC_<Name>_Enable, HAL_RCC_<Name>_Disable, "
+         "HAL_RCC_<Name>_Reset or HAL_RCC_<Name>_ReleaseReset where <Name> is HSI, HSE, MSI, LSI, LSE, PLL1..PLL4 or the "
+         "peripheral, e.g. HAL_RCC_HSI_Enable)", t.get("hal_api")),
+        ("showing an oscillator enable with the ready path (HAL_OK) and the timeout path (HAL_TIMEOUT) using the "
+         "allocated HAL_RCC_ function names, plus a peripheral clock enable or reset sequence", t.get("hal_dynamic_view")),
+        ("Oscillator/PLL Enable functions wait for the ready flag with a timeout like this example (adapt names; if the "
+         "architecture passes a timeout or config parameter, use it instead of HAL_RCC_TIMEOUT_VALUE and check pointer "
+         "parameters for NULL and a timeout of 0 or greater than HAL_RCC_TIMEOUT_VALUE first, returning HAL_ERROR before "
+         "any register write): ", t["hal_wait_rule"] + " " if "hal_wait_rule" in t else None),
+        (HAL_EXAMPLE, t.get("hal_example")),
+        (" Disable functions wait until IsReady() == 0U the same way; peripheral clock enable/disable and reset functions "
+         "call the LL function and return HAL_OK.", " " + t["hal_wait_rest"] if "hal_wait_rest" in t else None),
+        ("// HAL_RCC API", f"// HAL_{pr['register_prefix']} API"),
+        (CONTRACT_SWE1_HAL, " " + t["hal_contract_rule"] if "hal_contract_rule" in t else None),
+        ('{"case":"HSE_ENABLE","swr":"SWR-002","register":"RCC_CR","field":"HSEON","op":"set","ready":"RCC_SR.HSERDY",'
+         '"status":"HAL_OK"}', t.get("hal_effect_example")),
+        (', e.g. "&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }" and "{timeout}" where the caller passes '
+         'the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, an unknown selector)',
+         t.get("hal_args_example")),
+        (FAKE_UT_EXAMPLE, t.get("hal_ut_example")),
+        ("Wait-for-ready functions get a ready case and a timeout case; peripheral enable/reset functions check the bit "
+         "in RCC_AHB1ENR / RCC_AHB1RSTR.", t.get("hal_ut_rule")),
+        ("(enable oscillator then peripheral clock then reset sequence, and a forced timeout)", t.get("hal_integration")),
+        ("write software/tests/target/test_rcc_target.c (RCC model sets each RCC_SR ready flag when its RCC_CR enable bit "
+         "is set) and software/tests/target/test_rcc_target_timeout.c (RCC model never sets ready flags: every wait must "
+         "end in HAL_TIMEOUT)", t.get("hal_target_tests")),
+    ]
+    hal.append(("ready flags preset by the test", "status flags preset by the test"))
+    if "hal_api" in t:  # NULL checks of the configuration pointer need <stddef.h> (the LL includes <stdint.h> only)
+        hal.append(("'#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum",
+                    "'#include <stddef.h>', '#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum"))
+    frags += [(o, n) for o, n in hal if n is not None]
     for old, new in frags:
         text = text.replace(old, new)
     import re as _re
