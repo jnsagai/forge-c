@@ -4,6 +4,7 @@ id: rcc
 name: Reset and clock control (RCC)
 register_prefix: RCC
 base_address: "0x56028000"
+mm_page: 176
 window_bytes: 4096
 system_name: RCC LL driver
 rm:

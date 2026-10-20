@@ -142,6 +142,17 @@
           "type": "string"
         }
       }
+    },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "texts replacing the RCC domain content of the generic prompts (non-RCC peripherals)"
+    },
+    "mm_page": {
+      "type": "integer",
+      "description": "RM page of the memory-map line for the base address"
     }
   }
 }

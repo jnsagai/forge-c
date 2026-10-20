@@ -5,6 +5,7 @@ id: iwdg
 name: Independent watchdog (IWDG)
 register_prefix: IWDG
 base_address: "0x56004800"
+mm_page: 179
 window_bytes: 1024
 system_name: IWDG LL driver
 rm:
@@ -25,3 +26,65 @@ hal:
 sim:
   model: iwdg_model.py
   platform: stm32n6_iwdg.repl
+# Prompt texts that replace the RCC domain content of the generic LL prompts (feature 009, FR-006). They describe
+# the IWDG work-order scope; hardware facts stay in the RM0486 chapter 59 inputs (cite RM0486 p.N).
+prompt:
+  swe1_cover: >-
+    Cover (only what the IWDG scope names): starting the watchdog (write the start key 0x0000CCCC to IWDG_KR.KEY),
+    refreshing the counter (write 0x0000AAAA to IWDG_KR.KEY), enabling write access to IWDG_PR/IWDG_RLR (write
+    0x00005555 to IWDG_KR.KEY) and disabling it (write any other key value, e.g. 0x00000000), setting the prescaler
+    (write the requested value to IWDG_PR.PR, within its 4-bit range) and the reload value (write the requested value to
+    IWDG_RLR.RL, within its 12-bit range), and status queries (return 1U when IWDG_SR.PVU, IWDG_SR.RVU or IWDG_SR.ONF is
+    set, else 0U); one requirement per function and value, naming the register field (e.g. IWDG_KR.KEY); then a
+    reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after reset, the IWDG LL driver
+    shall not write any IWDG register.'). The window option (IWDG_WINR), the early wake-up interrupt (IWDG_EWCR,
+    IWDG_ICR), option bytes, low-power and debug freeze are out of scope.
+  swe1_effect_example: '{"case":"START","swr":"SWR-001","register":"IWDG_KR","field":"KEY","op":"write","value":"0xCCCC"}'
+  swe1_effect_rule: >-
+    Use op "write" with "value" (an integer or "0x..." string) for a field the requirement writes a value to (keys,
+    prescaler, reload); a function that writes a caller-supplied value gets one entry with a representative value and
+    the api_calls args pass that value. Query functions get op no_write with register/field.
+  ll_api: >-
+    static inline functions named exactly LL_IWDG_Enable (start key), LL_IWDG_ReloadCounter (refresh key),
+    LL_IWDG_EnableWriteAccess and LL_IWDG_DisableWriteAccess (register access keys), LL_IWDG_SetPrescaler(uint32_t
+    prescaler) and LL_IWDG_SetReloadCounter(uint32_t counter) (value writes, masked to the field), and
+    LL_IWDG_IsActiveFlag_PVU, LL_IWDG_IsActiveFlag_RVU and LL_IWDG_IsActive (status flags, return uint32_t 1U or 0U);
+    keys are written to the whole IWDG_KR register (a write-only key register: never read-modify-write it); list in
+    Interfaces exactly the functions of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_iwdg (LL, header-only) and the IWDG register block (0x56004800, RM0486 p.179)
+    and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_iwdg, IWDG, showing the start sequence (enable write access, set prescaler and
+    reload, then the caller polls the PVU/RVU update flags - the caller bounds the loop - then start) and a refresh,
+    using the allocated LL_IWDG_ function names
+  ut_example: |-
+    static void ut_iwdg_start(void)
+    {
+        ut_reset_regs();
+        LL_IWDG_Enable();
+        CHECK("UT-001", (ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] & LL_IWDG_KR_KEY_MSK) == 0x0000CCCCU);
+        LL_IWDG_SetPrescaler(4U);
+        CHECK("UT-002", (ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & LL_IWDG_PR_PR_MSK) == 4U);
+        CHECK("UT-003", LL_IWDG_IsActiveFlag_PVU() == 0U);
+        ll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_PVU_MSK;
+        CHECK("UT-004", LL_IWDG_IsActiveFlag_PVU() == 1U);
+    }
+  ut_rule: >-
+    Key and value functions check the written field value; query functions get a flag-set and a flag-clear case.
+  target_model: >-
+    The simulated IWDG (factory/sim/stm32n6/iwdg_model.py) is behavioural: every register starts at 0 except IWDG_RLR
+    (0x00000FFF); IWDG_KR is write-only and reads 0; writes to IWDG_PR and IWDG_RLR take effect only after the access key
+    0x5555 was written to IWDG_KR (a later 0x0000 key or the start key locks them again) and then set IWDG_SR.PVU or
+    IWDG_SR.RVU until the next read of IWDG_SR; the start key 0xCCCC sets IWDG_SR.ONF; in scenario never_ready the PVU
+    and RVU flags never clear. Expected values in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_iwdg_target.c (access key, prescaler and reload writes reach IWDG_PR/IWDG_RLR and the
+    update flags report them; start sets the enable status) and software/tests/target/test_iwdg_target_timeout.c (in
+    scenario never_ready a poll of at most 1000 iterations never sees the update flags clear)
+  field_mask_example: LL_IWDG_KR_KEY_MSK
+  query_example: LL_IWDG_IsActive()
+  integration: >-
+    the start sequence (access key, prescaler and reload writes, a bounded poll of the update flags with the flag preset,
+    the same poll ending without the flag clearing when it is never cleared, then the start key) and a counter refresh
+  requirement_example: When the IWDG start function is called, the IWDG LL driver shall write 0xCCCC to IWDG_KR.KEY.
