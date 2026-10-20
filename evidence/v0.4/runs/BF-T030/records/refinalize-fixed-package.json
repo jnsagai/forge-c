@@ -1,0 +1,16 @@
+{
+  "archive": "/tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/refin/archives/WO-REPRO-b001/forge-c-WO-REPRO-b001-review.zip",
+  "archive_ref": "archive:sha256:409b6daad88777ad8dcedda1657c56b74b2a81e8e8f44e120891cc11a0530953",
+  "archive_sha256": "409b6daad88777ad8dcedda1657c56b74b2a81e8e8f44e120891cc11a0530953",
+  "finalized_at": "2026-10-20T01:26:27.788056Z",
+  "gap_count": 2,
+  "gaps": [
+    "missing_or_empty_file:safety/software_safety_analysis.md",
+    "missing_or_empty_file:safety/tool_assurance_assessment.md"
+  ],
+  "package_status": "BLOCKED",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-REPRO-b001",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

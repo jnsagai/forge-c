@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "bytes": 6378,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+      "path": "software/ll/stm32n6xx_ll_rcc.h",
+      "role": "delivered_code",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be"
+    },
+    {
+      "bytes": 289,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+      "path": "software/src/stm32n6xx_ll_rcc.c",
+      "role": "delivered_code",
+      "sha256": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
+    }
+  ],
+  "injected_at": "2026-10-20T00:47:13.613625Z",
+  "schema": "forge-c/delivery-injection/0.1",
+  "swe1_baseline_hash": "edd499b7e01fc91ae5cc12767ace62372d838a52eb0fcdf0ac42ef80e7d35534",
+  "swe1_baseline_id": "BL-SWE.1-001"
+}
