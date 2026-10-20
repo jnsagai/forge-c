@@ -717,3 +717,14 @@ reproducers:
     operations: [robot/ForgeTarget, SWE.6/run_robot]
     root_cause: "ForgeTarget._objects built only software/hal/*.c and the factory LL measurement unit (static inline LL_<PPP>_ functions of the profile header); ST's header-only LL (__STATIC_INLINE, vendor includes) produced no unit, so the stack keyword found no call graph (b007 SWR-021 FAIL, DEF-004/005 FACTORY) and the flash and RAM keywords summed zero objects and passed their budgets with 0 B."
     remedy: "Without HAL sources or an LL unit, ForgeTarget builds the delivery's generated scope unit (brownfield.cmsis.delivered_unit) with the vendor target flags; with nothing to build it raises instead of measuring 0 B. ST b007 measures 172 B flash, 0 B RAM, 8 B stack. The delivered-unit signature regex is line-anchored (a '#define __STATIC_INLINE static inline' line no longer matches)."
+  - id: RPR-066
+    script: rpr066_header_only_delivery_no_c_source.py
+    sha256: 9c41d0a71037a3ff9cac6363c767c4f97464c74b1c80f2c4355acd4bd79d977b
+    symptom_signature: "header-only delivery leaves the package C-source view empty"
+    observed_in: b008
+    baseline_revision: 0feeb644ee6108ca73eb8c15c22a2360656f2922
+    fix_revision: f896363abe02effc3be2d95a6313234698491f7e
+    error_codes: ["missing_required_pattern:software/src/*.c", "missing_or_empty_section:software/src"]
+    operations: [release/finalize]
+    root_cause: "The release policy (factory/release-manager, protected) requires a C-source view software/src/*.c; finalize filled it from software/hal and software/src only. A greenfield LL ships its generated compile unit there, but a header-only delivery (ST LL, __STATIC_INLINE) has none, so b008 - complete through SWE.6 - was BLOCKED on two packaging gaps."
+    remedy: "finalize.stage_delivered_unit stages the factory-generated build-only unit (brownfield.cmsis.delivered_unit: delivered headers + scope wrappers, no driver logic) as software/src/forge_delivered_unit.c, marked as generated and not delivered code, when the stage has no C source. The protected release policy is unchanged. Re-finalizing a copy of b008 leaves only the 5 delivered-code guideline findings (owner dispositions)."
