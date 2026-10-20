@@ -1,0 +1,29 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-08",
+  "decided_on": null,
+  "decided_by": null,
+  "status": "PENDING_OWNER_SIGNATURE",
+  "subject": "IWDG safety documents SSA-IWDG-001 and TAA-IWDG-001 version 1.2 (drafts): HAL v2 (h005) closing SSA-IWDG-FND-07 and FND-08",
+  "request": {
+    "by": "Jefferson Nascimento (owner)",
+    "on": "2026-10-20",
+    "statements": [
+      "go",
+      "I sign"
+    ],
+    "context": "'go' asked for the FND-07/FND-08 fix (HAL v2, h005 READY_FOR_OFFLINE_REVIEW). 'I sign' was written on 2026-10-20 in reply to the agent's note that closing FND-07/FND-08 in the documents needs an owner-signed update, BEFORE the v1.2 drafts existed."
+  },
+  "agent_note": "The agent did not treat 'I sign' as a signature of a document the owner had not seen: a signature binds a specific text (SHA-256). The drafts are prepared unsigned; the owner is asked to confirm the exact v1.2 files by their SHA-256 below (or name changes), after which the signature section, the register entries in config/factory/safety-scope.yaml and this record are completed in an owner-decision commit.",
+  "drafts": {
+    "software_safety_analysis": "config/factory/safety-documents/SC-IWDG-2026-10-20/v1.2/software_safety_analysis.md",
+    "tool_assurance_assessment": "config/factory/safety-documents/SC-IWDG-2026-10-20/v1.2/tool_assurance_assessment.md"
+  },
+  "draft_sha256": {
+    "software_safety_analysis.md": "1c5163f72a77851965c18224687bef7236f65ea005e72f3ecd87e0ef2f24a727",
+    "tool_assurance_assessment.md": "3e94d71dd56ee6733cd148baa3668905a4e5b27483fa8077495236a125207c02"
+  },
+  "basis": "bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286 (0009a and 0009b inputs; verified against the h004 and h005 manifests)",
+  "changes": "SSA: FND-07 and FND-08 CLOSED on h005 host, oracle and simulator evidence; AOU-11 revised and AOU-13 (system time base) added; FND-13 (SWE.5 boundary integration) and FND-14 (no silicon/real-clock evidence for the closure) added; Q-13, Q-14. TAA: h004/h005 model use and refused run-title requests; T-26 to T-28 (stack with reference time base, startup-invariant mapping check, time-base stubs); TAA-IWDG-FND-11 to FND-13; Q-10 to Q-12.",
+  "not_changed": "The signed v1.0/v1.1 files and their register entries; hsi_hash and allocation_review_ref null; no compliance, certification or safety approval."
+}
