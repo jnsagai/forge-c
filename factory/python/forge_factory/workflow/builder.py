@@ -90,6 +90,16 @@ CODE_NODES = ("swe3_ll_author", "swe3_hal_author", "swe3_fix_author", "swe3_auth
 MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR-0005 #15)
 
 
+def scale_timeouts(dot: str, scale: float) -> str:
+    """Owner trial 2026-10-20 (local Qwen at ~3 tokens/s on an 8 GB GPU): every node timeout multiplied by `scale`.
+    Opt-in per work order (workorder --timeout-scale, recorded in the manifest); scale 1 leaves the graph unchanged."""
+    if scale == 1:
+        return dot
+    import re
+
+    return re.sub(r'timeout="(\d+)s"', lambda m: f'timeout="{int(round(int(m.group(1)) * scale))}s"', dot)
+
+
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
           sections: dict[str, str] | None = None, code_model: str | None = None,
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
