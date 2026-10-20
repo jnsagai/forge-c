@@ -1,9 +1,9 @@
 {
- "graph:hal": "84ccd8b016fb081aefe11c3f21f7a9a3725f9875989fcc4d6fdd0feee1bbea54",
- "graph:hal_fix_allowed": "1f882586ab77e06921ead9c19ad4b14c4df3635883da11b5e2072adba642ac32",
+ "graph:hal": "1ca5adc94b84099c7ea9848e608ce1278634fc1956bd7f3edb92d3de97d60ce1",
+ "graph:hal_fix_allowed": "75d9dd9bafd4f337adcb65994e8b652c41ebf80255ba2d76f435369c1e3e6893",
  "graph:legacy": "cb0cdf33ca0fe7c52f69f72b699e290d6a0d9348a6316ed40980e2c64c8256bb",
- "graph:ll": "f7b6090b4add1ba488141d7d241355e233f03b287c7c9ae6d050026e03b88fd1",
- "graph:ll_brownfield": "a1ca0ae21d865c176d03c701863bfb8aadd9b2970424ba664c4cdbe5bbc953f8",
+ "graph:ll": "6d883b000c1d90a43284843bf838eacb7a213eaa53ce1cd28e70dfcc745479bd",
+ "graph:ll_brownfield": "3d1a1789845649aeac90df91f4b2a49c0c930756b40800e965e7db1a5ebaad40",
  "regmap:software/ll/stm32n6xx_ll_rcc.h": "9488cdc0bcab43f50350c12dc18fb14dbc6f839852d4944a327df46518eec56f",
  "regmap:software/src/stm32n6xx_ll_rcc.c": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
 }
