@@ -17,6 +17,7 @@ ll:
   function_prefix: LL_IWDG_
   register_block: ll_iwdg_regs
   register_count: 256
+  void_signatures: false   # LL_IWDG_SetPrescaler(uint32_t), LL_IWDG_SetReloadCounter(uint32_t)
 hal:
   header: stm32n6xx_hal_iwdg.h
   source: stm32n6xx_hal_iwdg.c

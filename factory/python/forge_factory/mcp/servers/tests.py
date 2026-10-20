@@ -170,10 +170,10 @@ def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
         return result(ctx, "FAIL", "llvm-profdata merge failed", [ctx.store(m.stderr)], ["PROFDATA_MERGE_FAILED"],
                       tool="llvm-profdata")
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c")) if (ctx.workspace / d).is_dir()]
-    from ...layer import LL_HEADER, layer_of
+    from ...layer import layer_of, ll_header
 
-    if layer_of(ctx.workspace) == "LL" and (ctx.workspace / LL_HEADER).is_file():  # ADR-0009: header-only code
-        srcs.append(str(ctx.workspace / LL_HEADER))
+    if layer_of(ctx.workspace) == "LL" and (ctx.workspace / ll_header(ctx.workspace)).is_file():  # ADR-0009
+        srcs.append(str(ctx.workspace / ll_header(ctx.workspace)))
     objs = [str(exes[0])] + [x for e in exes[1:] for x in ("-object", str(e))]
     r = run_argv(["llvm-cov", "export", "-summary-only", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)
     rep = run_argv(["llvm-cov", "report", "-show-mcdc-summary", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)

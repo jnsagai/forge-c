@@ -55,3 +55,32 @@ def test_iwdg_register_map_is_generated_with_iwdg_names_only(ws):
     tu = (ws / "software/src/stm32n6xx_ll_iwdg.c").read_text()
     assert '#include "stm32n6xx_ll_iwdg.h"' in tu and "rcc" not in tu.lower()
     assert regmap.check_regmap(ws)["verdict"] == "PASS"
+
+
+SWE2 = ("## Register table\n\n| Register | Offset | Bits | Access | Source |\n|---|---|---|---|---|\n"
+        "| IWDG_KR | 0x000 | 15:0 | w | RM0486 p.2989 |\n| IWDG_PR | 0x004 | 3:0 | rw | RM0486 p.2989 |\n"
+        "| IWDG_RLR | 0x008 | 11:0 | rw | RM0486 p.2990 |\n| IWDG_SR | 0x00C | 8,1,0 | r | RM0486 p.2990 |\n\n"
+        "## Requirement allocation table\n\n| Requirement | Function | Note |\n|---|---|---|\n"
+        "| SWR-001 | LL_IWDG_Enable | KR start key |\n| SWR-002 | LL_IWDG_SetPrescaler | PR value |\n")
+
+
+def test_iwdg_harness_and_implementation_check(ws):
+    from forge_factory.inspection import regmap
+    from forge_factory.inspection.implementation import check_implementation
+    from forge_factory.workflow.scaffold import scaffold
+
+    (ws / "workproducts/SWE.2").mkdir(parents=True)
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(SWE2)
+    regmap.generate(ws)
+    h = ws / "software/ll/stm32n6xx_ll_iwdg.h"
+    h.write_text(h.read_text().replace(regmap.functions_marker(ws), regmap.functions_marker(ws) + "\n"
+        "static inline void LL_IWDG_Enable(void)\n{\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000CCCCU;\n}\n"
+        "static inline void LL_IWDG_SetPrescaler(uint32_t prescaler)\n{\n"
+        "    ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] = (prescaler & LL_IWDG_PR_PR_MSK);\n}\n"))
+    r = check_implementation(ws)
+    assert r["verdict"] == "PASS", r["major_findings"]  # LL functions with a value parameter are allowed for IWDG
+    out = scaffold(ws)
+    t = (ws / out["file"]).read_text()
+    assert out["file"] == "software/tests/unit/test_iwdg.c"
+    assert '#include "stm32n6xx_ll_iwdg.h"' in t and "volatile uint32_t ll_iwdg_regs[LL_IWDG_REG_COUNT];" in t
+    assert "rcc" not in t.lower()
