@@ -62,7 +62,7 @@
 - [X] PG-T017 Example `examples/0009b-iwdg-hal` (HAL on the verified i003 LL); dry prepare and scaffold.
 - [X] PG-T018 Observe-only assurance helpers profile-driven (corpus, mutation, target, verifiers, sentence oracle, Renode
   summary label).
-- [ ] PG-T019 [US4] Live IWDG HAL run; evidence in `evidence/v0.4/runs/PG-T019/`.
+- [X] PG-T019 [US4] Live IWDG HAL run; evidence in `evidence/v0.4/runs/PG-T019/`.
 - [X] PG-T020 CRE CHANGE promotion and PR.
 
 ## Strategy

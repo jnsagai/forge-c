@@ -1,0 +1,26 @@
+{
+  "code_sha": "3eb3f9d02d3c59ae66af451491a7817e2559ac7aa124c8ff067f1a5a3225526d",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T08:26:47.015315Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-005"
+  ],
+  "requirement_quote": "When HAL_IWDG_Init is requested with any invalid parameter (a NULL configuration pointer or a prescaler above 7 or a reload value above 0xFFF or a timeout argument of 0 or greater than HAL_IWDG_TIMEOUT_VALUE), the IWDG driver shall return HAL_ERROR without accessing any IWDG register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected trace label: the NULL invalid-input CHECK printed only UT-005-NULL, while the frozen requirements trace cites UT-005. Renamed that CHECK id to UT-005; all assertions and expected values are unchanged.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "7500f69454c1560698bfbeb0081906c96e6c63827bba902338318b161ef2902b"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "task": "PG-T019",
-  "status": "IN_PROGRESS",
+  "status": "PASS",
   "runs": {
     "h001": {
       "work_order": "WO-0009B-STM32N6-IWDG-HAL-h001",
@@ -55,6 +55,42 @@
         "h002/DEF-002.json",
         "h002/DEF-003.json",
         "h002/DEF-004.json"
+      ]
+    },
+    "h003": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h003",
+      "fabro_run_id": "01M5C5R3YP5RJRZF2GMTFCGDMV",
+      "factory_commit": "55e9532 (CAPA-054 head)",
+      "result": "SWE.1-SWE.6 inspections PASS (SWE.3 and SWE.4 reworked once); package READY_FOR_OFFLINE_REVIEW with 0 gaps - the first complete HAL package on a non-RCC peripheral",
+      "package": {
+        "status": "READY_FOR_OFFLINE_REVIEW",
+        "gaps": 0,
+        "archive_sha256": "c0073b6b58701859146b274dba4ed0ed4818f36c87c341ab0f81b72fce53b01b",
+        "safety_documents": "owner-signed SSA-IWDG-001/TAA-IWDG-001 v1.0 (OD-2026-10-20-05; they analyse the LL - the HAL is an open finding)"
+      },
+      "measurements": {
+        "unit": "PASS (fake LL)",
+        "coverage_host": "line 100%, branch 100%, MC/DC 100%",
+        "integration": "PASS (host)",
+        "renode": "11 checks passed, 0 failed (behavioural IWDG model)",
+        "robot": "12/12 tests, 12/12 requirements verified",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "target_size": "text=140 data=0 bss=0"
+      },
+      "test_defects_declared": [
+        "DEF-001 (UT-005 check id)",
+        "DEF-002 (secondary @test annotations)"
+      ],
+      "deepseek": "no request reached DeepSeek; the run-title request was refused by the gateway (CAPA-052)",
+      "not_claimed": "offline review candidate only: no compliance, certification, safety approval or production release",
+      "files": [
+        "h003/gate-log.jsonl",
+        "h003/package.json",
+        "h003/stm32n6xx_hal_iwdg.c",
+        "h003/stm32n6xx_hal_iwdg.h",
+        "h003/software_requirements.md",
+        "h003/DEF-001.json",
+        "h003/DEF-002.json"
       ]
     }
   }
