@@ -20,7 +20,7 @@ from .architecture import ARCH, SECTIONS_DIR, _rows, _sections
 LL_HEADER = "software/ll/stm32n6xx_ll_rcc.h"
 GUARD = "STM32N6XX_LL_RCC_H"
 FUNCTIONS_MARKER = "// LL_RCC access functions (SWE.3 LL author)"  # line comment: a dropped '*/' cannot hide code
-_BIT = re.compile(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", re.M)
+_BIT = re.compile(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[\d+(?::\d+)?\])?\s*:", re.M)
 # CAPA-050 (LL r166): a table row may name the register alone (RCC_CR) or with its field (RCC_CR.HSION, RCC_CR[HSION],
 # `RCC_CR`); the register is the leading RCC_ name. A '_' joined name (RCC_CR_HSION) stays one name: NOT_IN_RM.
 _REG_CELL = re.compile(r"`?(RCC_[A-Z0-9_]+)`?(?:$|[\s.\[(:/,])")

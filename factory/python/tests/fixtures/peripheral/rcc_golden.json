@@ -1,0 +1,9 @@
+{
+ "graph:hal": "ec7ce8a166addafff22516187b89e64c9cc79627e66e6da5d361abc5925800be",
+ "graph:hal_fix_allowed": "e3c8b25b342ba1ecab86f6c24ad2adea2d4b797c15fd62202f951e6d99e529e9",
+ "graph:legacy": "ba59e402665efeeb61b45a88a97b0a18908c7b6a1b289ed2aca238405c40e5be",
+ "graph:ll": "ba725d8c99be4bc070aaa9ad77d63d11e69e46770ec00e782a126706aab2957d",
+ "graph:ll_brownfield": "e8d894f3328430f0010d59990093d5c3f2ad18608961e9a3ff731e1b72434a5c",
+ "regmap:software/ll/stm32n6xx_ll_rcc.h": "9488cdc0bcab43f50350c12dc18fb14dbc6f839852d4944a327df46518eec56f",
+ "regmap:software/src/stm32n6xx_ll_rcc.c": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
+}

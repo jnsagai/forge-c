@@ -33,7 +33,7 @@ def parse_section(text: str) -> dict | None:
         return None
     reset = re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text)
     fields: dict[str, dict] = {}
-    for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", text, re.M):
+    for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[\d+(?::\d+)?\])?\s*:", text, re.M):
         msb, lsb = int(m.group(1)), int(m.group(2) or m.group(1))
         if lsb <= msb <= 31:
             fields.setdefault(m.group(3), {"msb": msb, "lsb": lsb, "access": set()})
