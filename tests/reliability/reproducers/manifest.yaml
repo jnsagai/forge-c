@@ -706,3 +706,14 @@ reproducers:
     operations: [tests/llvm_coverage, SWE.4/inspect]
     root_cause: "forge-tests-mcp llvm_coverage summarised every line of the source files it was given; for a delivery those are whole vendor headers (ST stm32n6xx_ll_rcc.h/ll_bus.h, about 28k lines), so the figure (line 1.21% in b006) said nothing about the 11 scope functions the unit tests target, and the SWE.4 inspector had no scope coverage to judge."
     remedy: "For a delivery with a scope, llvm_coverage adds scope_function_pct, scope_region_pct, scope_branch_pct and the unexecuted scope functions from the per-function export, and leads its summary with them; the whole-file figures stay in the metrics. Greenfield coverage is unchanged."
+  - id: RPR-065
+    script: rpr065_robot_measures_no_delivered_code.py
+    sha256: 93984cfb90ebb0b9858d5ab5302d715340182045da0f66ca475b8ccdc2df0d00
+    symptom_signature: "Robot driver measurement builds nothing for a header-only delivery"
+    observed_in: b007
+    baseline_revision: 1c63cb5631d9992d6088e318e689501bb5c8d44b
+    fix_revision: 593a013c94034d3ebd5dc103a818604fc15078fd
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_robot:FAIL", "VT:SWR_NOT_VERIFIED"]
+    operations: [robot/ForgeTarget, SWE.6/run_robot]
+    root_cause: "ForgeTarget._objects built only software/hal/*.c and the factory LL measurement unit (static inline LL_<PPP>_ functions of the profile header); ST's header-only LL (__STATIC_INLINE, vendor includes) produced no unit, so the stack keyword found no call graph (b007 SWR-021 FAIL, DEF-004/005 FACTORY) and the flash and RAM keywords summed zero objects and passed their budgets with 0 B."
+    remedy: "Without HAL sources or an LL unit, ForgeTarget builds the delivery's generated scope unit (brownfield.cmsis.delivered_unit) with the vendor target flags; with nothing to build it raises instead of measuring 0 B. ST b007 measures 172 B flash, 0 B RAM, 8 B stack. The delivered-unit signature regex is line-anchored (a '#define __STATIC_INLINE static inline' line no longer matches)."
