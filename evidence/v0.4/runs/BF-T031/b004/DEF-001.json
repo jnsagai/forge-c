@@ -1,0 +1,45 @@
+{
+  "detected_phase": "SWE.2",
+  "evidence_refs": [
+    "workproducts/SWE.1/software_requirements.md",
+    "software/hal/stm32n6xx_hal_rcc.c:73",
+    "software/ll/stm32n6xx_ll_rcc.h",
+    "workproducts/SWE.1/register_effects.json"
+  ],
+  "history": [
+    {
+      "status": "OPEN",
+      "ts": "2026-10-20T01:57:47.249094Z"
+    },
+    {
+      "note": "delivered code: fixed at SWE.3 entry (found before SWE.3)",
+      "status": "IN_FIX",
+      "ts": "2026-10-20T02:00:02.548765Z"
+    },
+    {
+      "baseline_id": "BL-SWE.3-001",
+      "status": "FIXED",
+      "ts": "2026-10-20T02:05:48.104137Z"
+    },
+    {
+      "status": "VERIFIED",
+      "tools": [
+        "run_unit"
+      ],
+      "ts": "2026-10-20T02:09:45.261283Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "CODE",
+  "reported_by": "swe2-author",
+  "requirement_ids": [
+    "SWR-008"
+  ],
+  "requirement_quote": "return HAL_TIMEOUT with that oscillator off as the driver fallback state.",
+  "schema": "forge-c/defect/0.5",
+  "status": "VERIFIED",
+  "summary": "HAL_RCC_HSE_Enable leaves HSEON set after HSERDY timeout: its ready == 0U branch sets HAL_TIMEOUT without calling LL_RCC_HSE_Disable. SWR-008 requires the oscillator off. Smallest fix: add LL_RCC_HSE_Disable before status = HAL_TIMEOUT.",
+  "target_kind": "DELIVERED_CODE",
+  "target_phase": "SWE.3",
+  "test_files": {}
+}

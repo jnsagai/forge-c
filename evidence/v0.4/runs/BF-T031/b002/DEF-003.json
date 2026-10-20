@@ -1,0 +1,28 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "inspection/SWE.3/INS-SWE.3-002.json",
+    ".forge-run/defects/DEF-001.json",
+    ".forge-run/defects/DEF-002.json",
+    "software/hal/stm32n6xx_hal_rcc.c"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T01:46:37.687766Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [
+    "SWR-009"
+  ],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "SWE.3 INS-SWE.3-002 SWE3-03/SWE3-06 cannot be fixed under FIX_ALLOWED: CODE report rejected SAME_PHASE_USE_REWORK:SWE.3 (inv-7a308b2b7c2e4899); DEF-001/DEF-002 are FACTORY/ESCALATED, no CODE IN_FIX exists. Route HSE timeout rollback defect to file-specific CODE IN_FIX for software/hal/stm32n6xx_hal_rcc.c.",
+  "target_phase": null,
+  "test_files": {}
+}

@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "bytes": 4396,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002B-STM32N6-RCC-HAL-r164 (factory-generated, 2026-10-19), seeded defect added 2026-10-20 for feature 008 validation (delivery/SEEDED_DEFECT.md)",
+      "path": "software/hal/stm32n6xx_hal_rcc.c",
+      "role": "delivered_code",
+      "sha256": "a4b259a463a5a1bfec8d3bdbf2e1d5adcddcb06c66324b72f44a1c1434f30271"
+    },
+    {
+      "bytes": 1675,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002B-STM32N6-RCC-HAL-r164 (factory-generated, 2026-10-19), seeded defect added 2026-10-20 for feature 008 validation (delivery/SEEDED_DEFECT.md)",
+      "path": "software/hal/stm32n6xx_hal_rcc.h",
+      "role": "delivered_code",
+      "sha256": "670366c1605b0894ea721e8cdb5fff05687d2a0ab43ec951c4170a48d5bf5f94"
+    }
+  ],
+  "injected_at": "2026-10-20T01:57:06.218223Z",
+  "schema": "forge-c/delivery-injection/0.1",
+  "swe1_baseline_hash": "9636c762c0a37938a5188c3f5ca5361737173aec43b53c13d817445d8265830c",
+  "swe1_baseline_id": "BL-SWE.1-001"
+}

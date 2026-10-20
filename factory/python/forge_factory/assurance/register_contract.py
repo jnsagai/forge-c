@@ -108,6 +108,15 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
     return out[:15]
 
 
+def _no_delivered_code(ws: Path, call) -> bool:
+    """Brownfield (feature 008): SWE.2 marks a case no delivered function implements with function NONE."""
+    if not (isinstance(call, dict) and str(call.get("function", "")).upper() == "NONE"):
+        return False
+    from ..brownfield import is_brownfield, manifest_of
+
+    return is_brownfield(manifest_of(ws))
+
+
 def check_calls(ws: Path) -> list[str]:
     from .oracle_gen import allocation
 
@@ -119,10 +128,15 @@ def check_calls(ws: Path) -> list[str]:
     if d.get("schema") != "forge-c/api-calls/1" or not isinstance(calls, dict):
         return [f"CONTRACT_SCHEMA:{CALLS}: need schema forge-c/api-calls/1 and a calls object"]
     arch = Path(ws) / "workproducts/SWE.2/software_architecture.md"
-    alloc = allocation(arch.read_text(errors="replace")) if arch.is_file() else {}
+    from ..brownfield import manifest_of
+
+    names = set(((manifest_of(ws).get("delivery") or {}).get("scope") or {}).get("functions") or [])
+    alloc = allocation(arch.read_text(errors="replace"), names) if arch.is_file() else {}
     out = []
     for e in eff.get("effects") or []:
         case, c = e.get("case"), calls.get(e.get("case"))
+        if _no_delivered_code(ws, c):  # feature 008: a NO_CODE conformance finding, not a contract error
+            continue
         if not isinstance(c, dict):
             out.append(f"CONTRACT_CASE_WITHOUT_CALL:{CALLS}:{case}")
             continue
@@ -146,6 +160,9 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
     idx, out, notes = _rm_index(ws), [], []
     for e in eff.get("effects") or []:
         c = (d.get("calls") or {}).get(e.get("case"))
+        if _no_delivered_code(ws, c):  # feature 008: nothing to call; conformance reports NO_CODE
+            notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no delivered function (NONE)")
+            continue
         if not isinstance(c, dict) or e.get("op") not in OPS:
             notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no call or op")
             continue
@@ -178,13 +195,25 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     cs, notes = cases(ws)
     if not cs:
         return []
-    src = [f'#include "{api_header}"', "#include <stddef.h>", "void forge_contract_calls(void);",
+    from ..brownfield import delivered_paths, is_brownfield, manifest_of
+
+    m = manifest_of(ws)
+    compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]
+    if is_brownfield(m):  # feature 008: all delivered headers, vendor includes and the delivery's build settings
+        b = m["delivery"].get("build") or {}
+        headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
+        include_dirs = [*include_dirs, Path(ws) / "inputs/vendor/include"]
+        extra = [f"-D{d}" for d in b.get("defines") or []]
+        if b.get("style") == "cmsis":
+            compiler = ["arm-none-eabi-gcc", "-std=c11", "-mcpu=cortex-m55", "-mthumb"] + \
+                (["-mcmse"] if b.get("secure") else [])
+    src = [*(f'#include "{h}"' for h in headers), "#include <stddef.h>", "void forge_contract_calls(void);",
            "void forge_contract_calls(void)", "{"]
     src += [f"    (void){call_text(c, '10U')}; /* {c['case']} */" for c in cs] + ["}", ""]
     with tempfile.TemporaryDirectory() as td:
         t = Path(td) / "contract_calls.c"
         t.write_text("\n".join(src))
-        r = subprocess.run(["gcc", "-std=c99", "-fsyntax-only", "-Werror=implicit-function-declaration",
+        r = subprocess.run([*compiler, "-fsyntax-only", "-Werror=implicit-function-declaration", *extra,
                             *sum((["-I", str(d)] for d in include_dirs), []), str(t)], capture_output=True, text=True)
     if r.returncode == 0:
         return []

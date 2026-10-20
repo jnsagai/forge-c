@@ -1,0 +1,47 @@
+{
+  "task": "BF-T030",
+  "status": "PASS_WITH_DEFECT_FOUND",
+  "work_order": "WO-0008A-STM32N6-RCC-LL-b001",
+  "fabro_run_id": "01M5BC7M9VVMEPYFKS06BDPBHW",
+  "factory_commit": "9eda82c",
+  "example": "examples/0008a-rcc-ll-delivered",
+  "models": {
+    "authors": "Codex Sol 6.1 (ACP)",
+    "inspectors": "Claude Opus 5.5 (ACP)",
+    "swe4_test_author": "deepseek-flash"
+  },
+  "phase_inspections": {
+    "SWE.1": "PASS",
+    "SWE.2": "PASS",
+    "SWE.3": "PASS",
+    "SWE.4": "PASS",
+    "SWE.5": "PASS",
+    "SWE.6": "PASS"
+  },
+  "delivery": {
+    "injected_after": "BL-SWE.1-001",
+    "conformance_findings": 0,
+    "code_mode": "FROZEN"
+  },
+  "official_package": {
+    "status": "BLOCKED",
+    "gap_count": 51,
+    "archive_sha256": "e9cfee34a6fc702c5bb3331396f08216bf9c5f1cc6436fb4134b3eacd25c163a",
+    "cause": "factory defect in feature 008: finalize crashed (PermissionError) rewriting the read-only delivered software/src file for the flat package view; the run's fallback sealed the partial stage (write-once, not altered)"
+  },
+  "fixed_refinalize_in_scratch": {
+    "factory_commit": "79a9bc2",
+    "status": "BLOCKED",
+    "gap_count": 2,
+    "gaps": [
+      "missing_or_empty_file:safety/software_safety_analysis.md",
+      "missing_or_empty_file:safety/tool_assurance_assessment.md"
+    ],
+    "note": "same workspace copy, deterministic finalizer only; the 2 gaps are the owner-signed safety documents (example 0008a is not in the owner's RCC safety scope)"
+  },
+  "success_criteria": {
+    "SC-001": "all six phases PASS, delivered code UNCHANGED at packaging (fixed finalizer); official package affected by the defect",
+    "SC-004": "trace map covers all 16 scope functions; conformance 0 findings",
+    "SC-007": "run 00:44-01:15 UTC = about 31 min (<= 60 min)"
+  }
+}

@@ -68,7 +68,8 @@ def _copy_tree(src: Path, dst: Path, pattern: str = "*") -> int:
                 t = dst / f.relative_to(src)
                 t.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(f, t)
-                n += 1
+                t.chmod(t.stat().st_mode | 0o200)  # feature 008 (b001): read-only delivered/provided files stay
+                n += 1                              # read-only in the workspace; the staged copy is a build input
     return n
 
 
@@ -149,6 +150,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     from ..inspection import defects  # ADR-0008: open/escalated defects are unresolved findings (never hidden)
 
     findings += [{"id": g, "severity": "major", "detail": "defect register"} for g in defects.gaps(ws)]
+    from ..brownfield.package import findings as delivered_findings  # feature 008 (FR-009); [] for greenfield
+
+    findings += delivered_findings(ws)
     detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
               "target_runs": [r["result"]["status"] for r in tgt]}
     return checks, findings, detail
@@ -292,6 +296,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     stage.mkdir(parents=True)
     wo = json.loads((ws / ".forge-run/manifest.json").read_text()) if (ws / ".forge-run/manifest.json").is_file() else {}
     budgets = wo.get("budgets", {})
+    from ..brownfield.safety_drafts import write as safety_drafts  # feature 008 (FR-015): drafts only, never signed
+
+    safety_drafts(ws)
     for d in ("workproducts", "safety", "traceability", "verification", "inspection", "configuration"):
         _copy_tree(ws / d, stage / d)
     owner_docs = owner_safety_documents(wo, stage)
@@ -321,6 +328,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         if ins:
             _w(stage, f"inspection/{p}/inspection_record.json", pretty_json(ins[-1]))
     checks, findings, detail = derive_gates(ws, budgets)
+    from ..brownfield.package import stage as delivery_stage  # feature 008: delivery record (FR-017); [] greenfield
+
+    owner_docs += delivery_stage(ws, stage)
     res = tool_results(ws)
 
     def summary(server: str, op: str, extra: dict | None = None) -> str:

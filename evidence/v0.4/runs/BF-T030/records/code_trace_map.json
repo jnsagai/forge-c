@@ -1,0 +1,149 @@
+{
+  "schema": "forge-c/code-trace-map/0.1",
+  "rows": [
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSI_Enable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-01",
+      "uspecs": [
+        "USPEC-LL-01-01"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSI_Disable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-01",
+      "uspecs": [
+        "USPEC-LL-01-02"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSI_IsReady",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-01",
+      "uspecs": [
+        "USPEC-LL-01-03"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSE_Enable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-02",
+      "uspecs": [
+        "USPEC-LL-02-01"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSE_Disable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-02",
+      "uspecs": [
+        "USPEC-LL-02-02"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_HSE_IsReady",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-02",
+      "uspecs": [
+        "USPEC-LL-02-03"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_GPDMA1_Enable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-03",
+      "uspecs": [
+        "USPEC-LL-03-01"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_GPDMA1_Disable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-03",
+      "uspecs": [
+        "USPEC-LL-03-02"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_GPDMA1_IsEnabled",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-03",
+      "uspecs": [
+        "USPEC-LL-03-03"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_GPDMA1_ForceReset",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-03",
+      "uspecs": [
+        "USPEC-LL-03-04"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_GPDMA1_ReleaseReset",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-03",
+      "uspecs": [
+        "USPEC-LL-03-05"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_ADC12_Enable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-04",
+      "uspecs": [
+        "USPEC-LL-04-01"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_ADC12_Disable",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-04",
+      "uspecs": [
+        "USPEC-LL-04-02"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_ADC12_IsEnabled",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-04",
+      "uspecs": [
+        "USPEC-LL-04-03"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_ADC12_ForceReset",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-04",
+      "uspecs": [
+        "USPEC-LL-04-04"
+      ]
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "function": "LL_RCC_ADC12_ReleaseReset",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be",
+      "unit": "SWU-LL-04",
+      "uspecs": [
+        "USPEC-LL-04-05"
+      ]
+    }
+  ]
+}

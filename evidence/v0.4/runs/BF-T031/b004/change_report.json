@@ -1,0 +1,15 @@
+{
+  "changes": [
+    {
+      "corrected_sha256": "53b5a8bcdd1d6250bbbe1c467042be8e5e20d4ab054ec4c65277e3e6975d477f",
+      "defects": [
+        "DEF-001"
+      ],
+      "diff": "--- delivered/software/hal/stm32n6xx_hal_rcc.c\n+++ corrected/software/hal/stm32n6xx_hal_rcc.c\n@@ -67,6 +67,7 @@\n     } while ((ready == 0U) && (count < timeout));\n     if (ready == 0U)\n     {\n+      LL_RCC_HSE_Disable();\n       status = HAL_TIMEOUT;\n     }\n     else\n",
+      "original_sha256": "a4b259a463a5a1bfec8d3bdbf2e1d5adcddcb06c66324b72f44a1c1434f30271",
+      "path": "software/hal/stm32n6xx_hal_rcc.c"
+    }
+  ],
+  "code_mode": "FIX_ALLOWED",
+  "schema": "forge-c/change-report/0.1"
+}

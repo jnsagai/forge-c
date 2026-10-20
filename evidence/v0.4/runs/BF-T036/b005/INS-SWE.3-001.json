@@ -1,0 +1,153 @@
+{
+  "author_role": "swe3-author",
+  "baseline_hash": "8bb9428c569f814f9586b2b07b81d27f23e9f6622715c7f17b076f9c9e9f57fb",
+  "baseline_id": "BL-SWE.3-001",
+  "checklist_sha256": "fc3b64a4d487fce07db4015c1947cae802bdb670536d2453c960fc461fad2dbe",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "GL-GUARD-01:software/ll/stm32n6xx_ll_bus.h:1; GL-MACRO-01:software/ll/stm32n6xx_ll_bus.h:38; GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:449; GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:489; GL-ARG-01:softw",
+      "id": "SWE3-07",
+      "severity": "major"
+    },
+    {
+      "detail": "REGMAP:NO_REGISTER_DEFINES",
+      "id": "SWE3-08",
+      "severity": "major"
+    },
+    {
+      "detail": "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Enable; IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Disable; IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_IsReady; IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSE_Enable; IMPL:LL_NOT_STATIC",
+      "id": "SWE3-09",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.3-001",
+  "inspector_role": "swe3-inspector",
+  "items": {
+    "SWE3-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-07": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-07-2026-10-20T025601.440219Z.json"
+      ],
+      "findings": [
+        "GL-GUARD-01:software/ll/stm32n6xx_ll_bus.h:1",
+        "GL-MACRO-01:software/ll/stm32n6xx_ll_bus.h:38",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:449",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:489",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:525",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:561",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:601",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:637",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:679",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:717",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:751",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:785",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:823",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:857",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:879",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:897",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:911",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:925",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:939",
+        "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:953"
+      ],
+      "source": "deterministic",
+      "verdict": "FAIL"
+    },
+    "SWE3-08": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-08-2026-10-20T025601.482606Z.json"
+      ],
+      "findings": [
+        "REGMAP:NO_REGISTER_DEFINES"
+      ],
+      "source": "deterministic",
+      "verdict": "FAIL"
+    },
+    "SWE3-09": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-09-2026-10-20T025601.660132Z.json"
+      ],
+      "findings": [
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Enable",
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Disable",
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_IsReady",
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSE_Enable",
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSE_Disable",
+        "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSE_IsReady",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_CLKP_Disable",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_CLKP_Enable",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_CLKP_IsEnabled",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_HSECSS",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_HSERDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_HSIRDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_LSECSS",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_LSERDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_LSIRDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_MSIRDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_PLL1RDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_PLL2RDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_PLL3RDY",
+        "IMPL:LL_NOT_ALLOCATED:LL_RCC_ClearFlag_PLL4RDY"
+      ],
+      "source": "deterministic",
+      "verdict": "FAIL"
+    },
+    "SWE3-10": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-10-2026-10-20T025606.114066Z.json",
+        "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv",
+        "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.csv"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.3",
+  "recorded_at": "2026-10-20T02:56:06.114472Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

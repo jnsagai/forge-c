@@ -121,6 +121,29 @@ def _outputs(role: dict) -> list[str]:
         rid, [f"reports/{rid}/<run>.json"])
 
 
+# feature 008: brownfield work orders (delivered existing code), per author role
+BROWNFIELD = {
+    "swe2-author": [
+        "When `.forge-run/manifest.json` has a `delivery` block, describe the architecture the DELIVERED code "
+        "actually has (read the delivered files listed in the manifest); use the delivered function names in the "
+        "allocation table and `api_calls.json`.",
+        "A requirement case no delivered function implements gets function `NONE` (a NO_CODE finding for the owner); "
+        "list delivered scope functions no requirement needs under `## Delivered functions without requirement`."],
+    "swe3-author": [
+        "When `.forge-run/manifest.json` has a `delivery` block, the code under `software/` is DELIVERED existing "
+        "code (origin, licence and fingerprints in the manifest).",
+        "FROZEN: never write or edit a delivered file (the policy refuses it); your outputs are the SWE.3 work "
+        "products only - `workproducts/SWE.3/detailed_design.md`, `unit_specifications.md`, "
+        "`detailed_design/SWU-*.puml` and `code_trace_map.json` (from the factory seed) - describing the delivered "
+        "code exactly as it is.",
+        "FIX_ALLOWED: change a delivered file only while a CODE defect for it is IN_FIX, with the smallest change "
+        "inside the scope functions; never add a source file.",
+        "A disagreement between the delivered code and a requirement is a CODE defect "
+        "(`forge-evidence-mcp.report_defect`), never a reason to weaken the design description, a requirement or a "
+        "test."],
+}
+
+
 def render(role: dict) -> str:
     rid, phase = role["id"], role.get("phase")
     inspector = rid.endswith("-inspector")
@@ -165,6 +188,9 @@ def render(role: dict) -> str:
     proc += ROLE_SPECIFIC.get(rid, [])
     if proc:
         lines += ["## Procedure"] + [f"{i}. {p}" for i, p in enumerate(proc, 1)] + [""]
+    if rid in BROWNFIELD:
+        lines += ["## Brownfield work orders (feature 008)"] + \
+            [f"{i}. {p}" for i, p in enumerate(BROWNFIELD[rid], 1)] + [""]
     constraint = ("Read-only inspection: never modify author-owned artifact revisions. Report factual findings with "
                   "severity, evidence ref and owner. " if inspector else "")
     lines += ["## Constraints",

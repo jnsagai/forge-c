@@ -1,0 +1,69 @@
+{
+  "schema": "forge-c/api-calls/1",
+  "calls": {
+    "HSI_ENABLE": {
+      "function": "LL_RCC_HSI_Enable",
+      "args": []
+    },
+    "HSI_DISABLE": {
+      "function": "LL_RCC_HSI_Disable",
+      "args": []
+    },
+    "HSE_ENABLE": {
+      "function": "LL_RCC_HSE_Enable",
+      "args": []
+    },
+    "HSE_DISABLE": {
+      "function": "LL_RCC_HSE_Disable",
+      "args": []
+    },
+    "HSI_READY_QUERY": {
+      "function": "LL_RCC_HSI_IsReady",
+      "args": []
+    },
+    "HSE_READY_QUERY": {
+      "function": "LL_RCC_HSE_IsReady",
+      "args": []
+    },
+    "GPDMA1_CLOCK_ENABLE": {
+      "function": "LL_RCC_GPDMA1_Enable",
+      "args": []
+    },
+    "GPDMA1_CLOCK_DISABLE": {
+      "function": "LL_RCC_GPDMA1_Disable",
+      "args": []
+    },
+    "GPDMA1_CLOCK_IS_ENABLED": {
+      "function": "LL_RCC_GPDMA1_IsEnabled",
+      "args": []
+    },
+    "GPDMA1_RESET_ASSERT": {
+      "function": "LL_RCC_GPDMA1_ForceReset",
+      "args": []
+    },
+    "GPDMA1_RESET_RELEASE": {
+      "function": "LL_RCC_GPDMA1_ReleaseReset",
+      "args": []
+    },
+    "ADC12_CLOCK_ENABLE": {
+      "function": "LL_RCC_ADC12_Enable",
+      "args": []
+    },
+    "ADC12_CLOCK_DISABLE": {
+      "function": "LL_RCC_ADC12_Disable",
+      "args": []
+    },
+    "ADC12_CLOCK_IS_ENABLED": {
+      "function": "LL_RCC_ADC12_IsEnabled",
+      "args": []
+    },
+    "ADC12_RESET_ASSERT": {
+      "function": "LL_RCC_ADC12_ForceReset",
+      "args": []
+    },
+    "ADC12_RESET_RELEASE": {
+      "function": "LL_RCC_ADC12_ReleaseReset",
+      "args": []
+    }
+  }
+}

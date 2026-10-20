@@ -1,0 +1,44 @@
+{
+  "build_check": {
+    "command": [
+      "clang",
+      "-std=c11",
+      "-fsyntax-only",
+      "-Wall",
+      "-Wextra",
+      "-I/tmp/forge-bf-build-92oxsejk/software/ll",
+      "-I/tmp/forge-bf-build-92oxsejk/software/src"
+    ],
+    "exit_code": 0,
+    "log": "$ clang ... _check_stm32n6xx_ll_rcc.c\n\n$ clang ... software/src/stm32n6xx_ll_rcc.c\n",
+    "log_sha256": "f15ef716aa1df5ed6d341662c2277fd0ca6c03819b6898d325cd7a32f30cc36d",
+    "status": "PASS",
+    "warnings": 0
+  },
+  "checked_at": "2026-10-20T00:43:48.062716Z",
+  "code_mode": "FROZEN",
+  "files": [
+    {
+      "bytes": 6378,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+      "path": "software/ll/stm32n6xx_ll_rcc.h",
+      "role": "delivered_code",
+      "sha256": "3fb34b4ed5105b7cb196d770476901875eb63d1d4efa84ed7d9ce4cc594e54be"
+    },
+    {
+      "bytes": 289,
+      "licence": "Apache-2.0",
+      "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+      "path": "software/src/stm32n6xx_ll_rcc.c",
+      "role": "delivered_code",
+      "sha256": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
+    }
+  ],
+  "issues": [],
+  "licence": "Apache-2.0",
+  "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+  "schema": "forge-c/delivery-intake/0.1",
+  "status": "ACCEPTED",
+  "work_order": "WO-0008A-STM32N6-RCC-LL-b001"
+}

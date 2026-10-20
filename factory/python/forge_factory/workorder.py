@@ -193,6 +193,11 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         data, rec = provided_ll(provided_from)
         inputs[rec["path"]] = data
         provided.append(rec)
+    intake = None
+    if spec.get("delivery"):  # feature 008: brownfield intake before any workspace or agent (US1, FR-001..FR-006)
+        from .brownfield import delivery as BD
+
+        intake = BD.intake(spec, example, wo, {r["path"]: inputs[r["path"]] for r in provided})
     head = create_workspace(ws, inputs)
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
@@ -253,6 +258,14 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
             (ws / doc["path"]).chmod(0o444)
         manifest["owner_safety_documents"] = sc.get("documents") or []
         manifest["owner_safety_document_issues"] = sc.get("document_issues") or []
+    if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
+        from .brownfield import delivery as BD
+
+        manifest["delivery"] = spec["delivery"]
+        manifest["code_mode"] = spec["delivery"]["code_mode"]
+        manifest["delivered"] = intake["files"]
+        manifest["delivery_intake"] = {"status": intake["status"], "build_check": intake["build_check"]["status"],
+                                       "store": str(BD.store_dir(wo))}
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 
@@ -376,7 +389,7 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
-        labels: dict[str, str] | None = None, resume_upto: str | None = None) -> dict:
+        labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False) -> dict:
     if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
         from .acp import codex_home
 
@@ -393,7 +406,12 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         claude_home.ensure()
         if not claude_home.logged_in():
             raise RuntimeError(f"{claude_home.home()} is not logged in (run: CLAUDE_CONFIG_DIR=<it> claude auth login)")
+    if resume and json.loads((example / "workorder.json").read_text()).get("delivery"):
+        raise ValueError("BROWNFIELD_RESUME_NOT_SUPPORTED: start a new brownfield work order (the delivered code must "
+                         "enter after a SWE.1 frozen in the same work order)")
     ws, manifest = prepare(example, wo, provided_from)
+    if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
+        return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
     phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
@@ -406,7 +424,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
-                         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION)
+                         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+                         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None)
     prof = model_profile(model, provider, code_model, nodes)
     if acp_authors:
         from . import acp
@@ -474,11 +493,20 @@ def main(argv: list[str] | None = None) -> int:
                     help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates")
     ap.add_argument("--acp-inspectors", choices=["claude"], default=None,
                     help="OD-2026-10-19-08: inspectors + Release Manager on Claude (owner account) via the same gates")
+    ap.add_argument("--intake-only", action="store_true",
+                    help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop")
     a = ap.parse_args(argv)
-    res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-              resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
-              acp_inspectors=a.acp_inspectors)
-    print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace")}
+    from .brownfield.delivery import DeliveryBlocked
+
+    try:
+        res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
+                  resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
+                  acp_inspectors=a.acp_inspectors, intake_only=a.intake_only)
+    except DeliveryBlocked as exc:  # FR-003..FR-005: refused before any agent ran; the record is in the store
+        print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake",
+                          "issues": str(exc).split(";")}))
+        return 2
+    print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace", "intake")}
                      | {"status": (res.get("package") or {}).get("package_status")}))
     return 0
 

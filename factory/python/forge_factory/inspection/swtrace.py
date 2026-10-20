@@ -415,6 +415,12 @@ def run_doxygen(ws: Path, files: list[Path]) -> dict:
 
 def check_code(ws: Path, units: list[dict] | None = None, doxygen: bool = True) -> dict:
     units = units if units is not None else parse_units(_read(ws, UNITS_MD))
+    from ..brownfield import is_brownfield, manifest_of
+
+    if is_brownfield(manifest_of(ws)):  # feature 008: delivered code carries no tags; the trace map replaces them
+        from ..brownfield.trace import check_code as delivered_code_trace
+
+        return delivered_code_trace(ws, units)
     by_unit = {u["id"]: u for u in units}
     spec_unit = {s["id"]: u["id"] for u in units for s in u["specs"]}
     f, rows = [], []

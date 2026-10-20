@@ -1,0 +1,45 @@
+{
+  "task": "BF-T036",
+  "status": "BLOCKED_WITH_NAMED_GAPS",
+  "runs": {
+    "b003": {
+      "work_order": "WO-0008C-ST-RCC-LL-b003",
+      "fabro_run_id": "01M5BHVHXCD933S0H14TVEKXC2",
+      "factory_commit": "1890afb",
+      "delivery": "ST stm32n6xx-hal-driver v1.4.0 LL (BSD-3-Clause), 11 scope functions, CMSIS device v1.4.0 + STM32CubeN6 v1.4.0 CMSIS core as dependencies, secure build",
+      "result": "BLOCKED at SWE.2 (identical deterministic rejection); package BLOCKED gaps=43",
+      "what_worked": "intake ACCEPTED (13 fingerprinted files, build check PASS with arm-none-eabi-gcc), SWE.1 frozen and inspected PASS, ST code injected after SWE.1",
+      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names, so ST's LL_AHB1_GRP1_* functions were 'not allocated' (CONTRACT_FUNCTION_NOT_ALLOCATED); fixed: delivered scope function names are recognised in brownfield work orders (test_vendor_function_names_count_as_allocated)"
+    },
+    "b005": {
+      "work_order": "WO-0008C-ST-RCC-LL-b005",
+      "fabro_run_id": "01M5BJJFQQDW5NYHTF5H2K82GS",
+      "factory_commit": "e67df6d",
+      "phases": "SWE.1 PASS, SWE.2 PASS (architecture recovered from ST's code), SWE.3 BLOCKED (rework budget)",
+      "conformance_of_st_code": "CONFORMANT (0 findings) against the requirements derived independently from RM0486, after fixing a factory parser defect: the run itself recorded 3 false NO_REQUIREMENT findings because the allocation parser read only the second table column (fixed; re-checked on the b005 work products)",
+      "swe3_blocking_items": {
+        "SWE3-07": [
+          "GL-GUARD-01:software/ll/stm32n6xx_ll_bus.h:1",
+          "GL-MACRO-01:software/ll/stm32n6xx_ll_bus.h:38",
+          "GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:449"
+        ],
+        "SWE3-08": [
+          "REGMAP:NO_REGISTER_DEFINES"
+        ],
+        "SWE3-09": [
+          "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Enable",
+          "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_Disable",
+          "IMPL:LL_NOT_STATIC_INLINE:LL_RCC_HSI_IsReady"
+        ]
+      },
+      "blocking_reason": "SWE3-07/08/09 are written for the factory's own code style (Cube2 guideline subset, LL_RCC_ register defines, LL implementation rules); on ST's classic-Cube CMSIS code they fail by construction and FROZEN code cannot be reworked. The brownfield checklist version is an owner decision (specs/008-brownfield-work-orders/proposals/checklist-v0.4-brownfield.md).",
+      "package": {
+        "status": "BLOCKED",
+        "gap_count": 44
+      }
+    }
+  },
+  "success_criteria": {
+    "SC-006": "BLOCKED with every gap named: the package lists the SWE.3 checklist items and the phases not run; origin ST, licence BSD-3-Clause and fingerprints are in configuration/delivery.json"
+  }
+}

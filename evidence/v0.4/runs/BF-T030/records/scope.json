@@ -1,0 +1,103 @@
+{
+  "excluded": [],
+  "excluded_count": 0,
+  "functions": [
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 75,
+      "name": "LL_RCC_HSI_Enable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 85,
+      "name": "LL_RCC_HSI_Disable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 95,
+      "name": "LL_RCC_HSI_IsReady"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 105,
+      "name": "LL_RCC_HSE_Enable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 115,
+      "name": "LL_RCC_HSE_Disable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 125,
+      "name": "LL_RCC_HSE_IsReady"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 135,
+      "name": "LL_RCC_GPDMA1_Enable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 145,
+      "name": "LL_RCC_GPDMA1_Disable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 155,
+      "name": "LL_RCC_GPDMA1_IsEnabled"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 165,
+      "name": "LL_RCC_GPDMA1_ForceReset"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 175,
+      "name": "LL_RCC_GPDMA1_ReleaseReset"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 185,
+      "name": "LL_RCC_ADC12_Enable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 195,
+      "name": "LL_RCC_ADC12_Disable"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 205,
+      "name": "LL_RCC_ADC12_IsEnabled"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 215,
+      "name": "LL_RCC_ADC12_ForceReset"
+    },
+    {
+      "file": "software/ll/stm32n6xx_ll_rcc.h",
+      "kind": "static_inline",
+      "line": 225,
+      "name": "LL_RCC_ADC12_ReleaseReset"
+    }
+  ],
+  "schema": "forge-c/delivery-scope/0.1"
+}

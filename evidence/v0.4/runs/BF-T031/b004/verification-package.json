@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-10-20T02:20:25.824847Z",
+  "code_mode": "FIX_ALLOWED",
+  "files": [
+    {
+      "actual": "53b5a8bcdd1d6250bbbe1c467042be8e5e20d4ab054ec4c65277e3e6975d477f",
+      "defects": [
+        "DEF-001"
+      ],
+      "expected": "a4b259a463a5a1bfec8d3bdbf2e1d5adcddcb06c66324b72f44a1c1434f30271",
+      "path": "software/hal/stm32n6xx_hal_rcc.c",
+      "status": "CHANGED_BY_FIX"
+    },
+    {
+      "actual": "670366c1605b0894ea721e8cdb5fff05687d2a0ab43ec951c4170a48d5bf5f94",
+      "expected": "670366c1605b0894ea721e8cdb5fff05687d2a0ab43ec951c4170a48d5bf5f94",
+      "path": "software/hal/stm32n6xx_hal_rcc.h",
+      "status": "UNCHANGED"
+    }
+  ],
+  "schema": "forge-c/delivery-verification/0.1",
+  "status": "CHANGED_BY_FIX",
+  "step": "package"
+}

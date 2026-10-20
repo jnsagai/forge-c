@@ -93,7 +93,7 @@ MODEL_ATTR = "model"  # Fabro 0.362 per-node model attribute (live-verified, ADR
 def build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
           sections: dict[str, str] | None = None, code_model: str | None = None,
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
-          isolation: bool = False) -> tuple[str, dict]:
+          isolation: bool = False, brownfield: str | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
     from . import prompts
@@ -102,6 +102,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
+    prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     dot, nodes = _build(work_order, phases, goal, sections)
     if code_model:
         for n in CODE_NODES:
@@ -155,6 +156,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
             units = "swe3_units"  # CAPA-028/029: deterministic unit-spec/design/MISRA scaffold (trace profile only)
             if prompts.TRACE["on"]:
                 chain = chain + [units]
+            check = "swe3_delivery_check"
+            if prompts.BROWNFIELD["mode"]:  # feature 008: no code generator or code author; the fix node is rework only
+                chain = [check]
             entry = chain[0]
             for n_ in chain:
                 if n_ not in (regmap, units):
@@ -168,8 +172,15 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                     fix: f'  {fix} [label="SWE.3 fix author (compile + deterministic checks)", '
                          f'max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(fix3_author_prompt())}"]',
                     units: f'  {units} [shape=parallelogram, label="SWE.3 unit specification and design scaffold '
-                           f'(deterministic)", script="{_q(unit_scaffold_cmd())}"]'}
-            L += [spec[n_] for n_ in chain] + [f"  {x} -> {y}" for x, y in zip(chain, chain[1:] + [a], strict=True)]
+                           f'(deterministic)", script="{_q(unit_scaffold_cmd())}"]',
+                    check: f'  {check} [shape=parallelogram, label="SWE.3 delivered code check, trace-map seed '
+                           f'(deterministic)", script="{_q(gate_cmd(phase, "verify", "delivery_check"))}"]'}
+            if prompts.BROWNFIELD["mode"]:
+                nodes[fix] = {"role": "swe3-author", "phase": phase}
+                L += [spec[check], spec[fix], f'  {check} -> {a} [condition="outcome=succeeded"]',
+                      f"  {check} -> finalize", f"  {fix} -> {a}"]
+            else:
+                L += [spec[n_] for n_ in chain] + [f"  {x} -> {y}" for x, y in zip(chain, chain[1:] + [a], strict=True)]
         if phase == "SWE.4":  # unit tests written in their own fresh context; rework re-enters at the SWE.4 author
             from .prompts import unit_test_author_prompt
 
@@ -195,15 +206,23 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(robot_scaffold_cmd())}"]',
                   f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
-        if prev != "start":
+        if prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
+            # feature 008 (FR-007): the delivered code enters only after SWE.1 is frozen and inspected
+            inj = "delivery_inject"
+            L += [f'  {inj} [shape=parallelogram, label="Delivered code injected after SWE.1 (deterministic)", '
+                  f'script="{_q(gate_cmd("SWE.1", "verify", "delivery_inject"))}"]',
+                  f'  {prev} -> {inj} [condition="outcome=succeeded"]',
+                  f'  {inj} -> {entry} [condition="outcome=succeeded"]', f"  {inj} -> finalize"]
+        elif prev != "start":
             L.append(f'  {prev} -> {entry} [condition="outcome=succeeded"]')
         if phase == restart:
             L.append(f"  start -> {entry}")
         L.append(f"  {a} -> {ag}")
         if phase == "SWE.3":
             v = "swe3_verify"
-            L.append(f'  {v} [shape=parallelogram, label="SWE.3 HAL guideline verification node", '
-                     f'script="{_q(gate_cmd(phase, "verify", "hal_guideline"))}"]')
+            vcheck = "delivery" if prompts.BROWNFIELD["mode"] else "hal_guideline"
+            L.append(f'  {v} [shape=parallelogram, label="SWE.3 {"delivered code" if vcheck == "delivery" else "HAL guideline"} '
+                     f'verification node", script="{_q(gate_cmd(phase, "verify", vcheck))}"]')
             L += [f'  {ag} -> {v} [condition="outcome=succeeded"]', f'  {ag} -> {rt}',
                   f'  {v} -> {ins} [condition="outcome=succeeded"]', f'  {v} -> {rt}']
         else:

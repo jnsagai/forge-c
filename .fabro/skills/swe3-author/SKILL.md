@@ -61,6 +61,12 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 5. No heap, no unbounded recursion, `volatile` register access, read-modify-write via masks.
 6. Compile and analyse only through `forge-build-mcp`/`forge-analysis-mcp`; never claim MISRA compliance from Cppcheck output.
 
+## Brownfield work orders (feature 008)
+1. When `.forge-run/manifest.json` has a `delivery` block, the code under `software/` is DELIVERED existing code (origin, licence and fingerprints in the manifest).
+2. FROZEN: never write or edit a delivered file (the policy refuses it); your outputs are the SWE.3 work products only - `workproducts/SWE.3/detailed_design.md`, `unit_specifications.md`, `detailed_design/SWU-*.puml` and `code_trace_map.json` (from the factory seed) - describing the delivered code exactly as it is.
+3. FIX_ALLOWED: change a delivered file only while a CODE defect for it is IN_FIX, with the smallest change inside the scope functions; never add a source file.
+4. A disagreement between the delivered code and a requirement is a CODE defect (`forge-evidence-mcp.report_defect`), never a reason to weaken the design description, a requirement or a test.
+
 ## Constraints
 Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 32000-token / 35-turn budget is near.
 

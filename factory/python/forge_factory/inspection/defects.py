@@ -111,6 +111,30 @@ def _requirement_texts(ws: Path) -> dict[str, str]:
     return {r.req_id: r.text for r in extract(p.read_text(errors="replace"))} if p.is_file() else {}
 
 
+def _frozen_delivery(ws: Path) -> bool:
+    from ..brownfield import code_mode, manifest_of
+
+    return code_mode(manifest_of(ws)) == "FROZEN"
+
+
+def _delivered_code(ws: Path) -> bool:
+    from ..brownfield import is_brownfield, manifest_of
+
+    return is_brownfield(manifest_of(ws))
+
+
+def claim_delivered_fixes(ws: Path) -> list[str]:
+    """Feature 008 (FIX_ALLOWED): at SWE.3 entry, CODE defects against the delivered code found before SWE.3 (by the
+    SWE.1/SWE.2 work) are claimed for fixing (IN_FIX) without spending an upstream loop."""
+    out = []
+    for d in all_defects(ws):
+        if d["status"] == "OPEN" and d.get("target_kind") == "DELIVERED_CODE" and d["target_phase"] == "SWE.3":
+            _event(d, "IN_FIX", note="delivered code: fixed at SWE.3 entry (found before SWE.3)")
+            _save(ws, d)
+            out.append(d["id"])
+    return out
+
+
 def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summary: str,
            requirement_ids: list[str], test_files: list[str], evidence_refs: list[str],
            requirement_quote: str = "") -> dict:
@@ -120,9 +144,15 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     if detected_phase not in PHASES:
         raise DefectError(f"UNKNOWN_PHASE:{detected_phase}")
     target = detected_phase if kind == "TEST" else KIND_TARGET.get(kind)
-    if target is not None and PHASES.index(target) > PHASES.index(detected_phase):
+    frozen = kind == "CODE" and _frozen_delivery(ws)
+    if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
+        target = None
+    early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2", "SWE.3")
+    if early_fix:  # feature 008 (FIX_ALLOWED, b002): delivered code exists before SWE.3 and is fixed in SWE.3
+        pass
+    elif target is not None and PHASES.index(target) > PHASES.index(detected_phase):
         raise DefectError(f"TARGET_NOT_UPSTREAM:{target}>{detected_phase}")
-    if target is not None and kind != "TEST" and target == detected_phase:
+    if target is not None and kind != "TEST" and target == detected_phase and not early_fix:
         raise DefectError(f"SAME_PHASE_USE_REWORK:{target}")
     if not summary.strip():
         raise DefectError("NO_SUMMARY")
@@ -189,9 +219,16 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
            "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
     if kind == "TEST":
         rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
-    od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" else None
+    if frozen or early_fix:
+        rec["target_kind"] = "DELIVERED_CODE"
+    od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" or frozen else None
     if od is not None:  # the owner already decided this input issue: recorded, not escalated again
         _event(rec, "DISPOSITIONED", disposition=od["id"], by=od.get("approved_by"), note=od.get("disposition"))
+    elif frozen:
+        _event(rec, "ESCALATED", note="FROZEN delivered code: a finding for the owner (no rework loop); an owner "
+                                      "disposition may accept it as a deviation")
+    elif early_fix and detected_phase == "SWE.3":  # found in SWE.3 itself: fixed by the SWE.3 rework now
+        _event(rec, "IN_FIX", note="delivered code (FIX_ALLOWED): fixed in the SWE.3 rework")
     elif kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
@@ -267,7 +304,9 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
     issues = []
     results = _tool_results(ws)
     for d in all_defects(ws):
-        if d["detected_phase"] != phase or d["status"] not in ("FIXED", "IN_FIX"):
+        early = d.get("target_kind") == "DELIVERED_CODE" and d["detected_phase"] in ("SWE.1", "SWE.2", "SWE.3") \
+            and phase == "SWE.4"  # feature 008: verified by the first requirement-based tests after the fix
+        if (d["detected_phase"] != phase and not early) or d["status"] not in ("FIXED", "IN_FIX"):
             continue
         changed = [t for t, h in d["test_files"].items() if t.startswith("software/tests/")  # CAPA-012
                    and (not (ws / t).is_file() or sha256_file(ws / t) != h)]

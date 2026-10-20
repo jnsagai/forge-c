@@ -1,0 +1,94 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 RCC hardware abstraction (HAL) driver - delivered code with a seeded defect (brownfield, feature 008)",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 14 + memory map p.176"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.14 RCC register interface + memory map p.176 (owner decision 2026-10-15)",
+  "safety_allocation": "OUT_OF_SCOPE: QM development, no safety allocation or safety claims (owner decision 2026-10-15)"
+ },
+ "scope": [
+  "HAL: hal_status_t API with HAL_RCC_ prefix, const config pointers, parameter checks, timeout-bounded waits, built only on the PROVIDED LL_RCC_ functions",
+  "HSI and HSE oscillator enable/disable with ready-flag wait in RCC_SR bounded by a caller-supplied timeout",
+  "Peripheral clock enable/disable and peripheral reset through the LL",
+  "The LL header is provided read-only (verified LL work order) and is not modified",
+  "Out of scope: PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+ ],
+ "system_names": [
+  "RCC driver",
+  "RCC HAL driver",
+  "STM32N6 RCC driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+   "role": "reference_manual_rcc_chapter"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "HAL",
+ "layer_note": "Feature 008 FIX_ALLOWED validation delivery: the HAL code of the factory's own greenfield work order WO-0002B-STM32N6-RCC-HAL-r164 with ONE seeded defect (the HSE ready-timeout path no longer disables HSE). Built on the provided, verified LL of an LL work order (--provided-from).",
+ "delivery": {
+  "code_mode": "FIX_ALLOWED",
+  "origin": "Forge-C greenfield work order WO-0002B-STM32N6-RCC-HAL-r164 (factory-generated, 2026-10-19), seeded defect added 2026-10-20 for feature 008 validation (delivery/SEEDED_DEFECT.md)",
+  "licence": "Apache-2.0",
+  "licence_allows_modification": true,
+  "source": "delivery",
+  "files": [
+   {
+    "from": "stm32n6xx_hal_rcc.c",
+    "to": "software/hal/stm32n6xx_hal_rcc.c"
+   },
+   {
+    "from": "stm32n6xx_hal_rcc.h",
+    "to": "software/hal/stm32n6xx_hal_rcc.h"
+   }
+  ],
+  "scope": {
+   "functions": [
+    "HAL_RCC_HSI_Enable",
+    "HAL_RCC_HSI_Disable",
+    "HAL_RCC_HSE_Enable",
+    "HAL_RCC_HSE_Disable",
+    "HAL_RCC_GPDMA1_Enable",
+    "HAL_RCC_GPDMA1_Disable",
+    "HAL_RCC_GPDMA1_Reset",
+    "HAL_RCC_ADC12_Enable",
+    "HAL_RCC_ADC12_Disable",
+    "HAL_RCC_ADC12_Reset"
+   ],
+   "note": "HAL oscillator enable/disable with a bounded ready wait; GPDMA1/ADC12 clock enable/disable and reset"
+  },
+  "build": {
+   "style": "forge",
+   "defines": []
+  }
+ }
+}
