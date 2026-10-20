@@ -123,7 +123,9 @@ def step_author(store: Store, phase: str, text: str) -> int:
         elif phase == "SWE.2":
             generated += RC.check_calls(store.workspace)
         elif phase == "SWE.3":
-            hdr = "stm32n6xx_ll_rcc.h" if lay == "LL" else "stm32n6xx_hal_rcc.h"
+            from ..layer import hal_h, ll_header
+
+            hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name  # feature 009
             generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
                                                              store.workspace / "software/ll"], hdr)
     from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
