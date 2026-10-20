@@ -3,17 +3,17 @@
 | Field | Value |
 |---|---|
 | Document | TAA-IWDG-001, version 1.2 |
-| Status | **DRAFT v1.2 for owner review — not approved** (v1.1 signed 2026-10-20, OD-2026-10-20-06, stays in force until v1.2 is signed) |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-20 |
 | Safety scope | SC-IWDG-2026-10-20, target ASIL B (owner decision 2026-10-20, OD-2026-10-20-04) |
 | Product | IWDG LL driver (example `0009a-iwdg-ll`) and IWDG HAL driver on that LL (example `0009b-iwdg-hal`) |
 | Basis | Work order inputs, source requirements hash `bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286`; toolchain as used by `WO-0009A-STM32N6-IWDG-LL-i003` (factory commit 83ee4c7) and by the HAL runs `WO-0009B-STM32N6-IWDG-HAL-h001` to `-h003` (factory commits 856c3fb, 029fd6e, 55e9532); (v1.2) HAL v2 runs `-h004` and `-h005` (factory commits 61a5f98, 2e59a38) |
 | Drafted by | Claude Opus 5.5 (Claude Code), v1.0, v1.1 and v1.2 2026-10-20, from the factory records listed in section 8 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> DRAFT v1.2 for owner review — not approved. Version 1.1 (signed, OD-2026-10-20-06, file
-> `../v1.1/tool_assurance_assessment.md`) is unchanged and remains the signed document for 0009a/0009b. This draft
-> enters no work order until the owner signs it and its register entry is updated (OD-2026-10-20-08, pending). It is
-> a tool confidence assessment, not a tool qualification certificate, a safety approval or a certification.
+> Signed version 1.2 (owner decision OD-2026-10-20-08). It applies to IWDG work orders (LL and HAL v2)
+> whose inputs match the basis above. Any edit to this file, or a change to the work order inputs, un-signs it
+> until it is re-reviewed. It records the reviewer's engineering judgement; it is not a safety approval or
+> certification. It supersedes version 1.1 (OD-2026-10-20-06, file `../v1.1/tool_assurance_assessment.md`, kept unchanged).
 
 ## Change log
 
@@ -263,12 +263,12 @@ is not a tool qualification certificate, a safety approval or a certification.
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-12 | (v1.1 answers: Q-01, Q-02, Q-06 and Q-07 accepted; Q-05 findings open; Q-03, Q-04, Q-08 and Q-09 open) |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I sign" (2026-10-20), in reply to the v1.2 drafts sent with their SHA-256 (SSA 1c5163f7..., TAA 3e94d71d...) |
+| Answers to Q-01 to Q-12 | Q-01, Q-02, Q-06 and Q-07: accepted (v1.1). Q-10 and Q-11: the TI, TD and TCL of T-26 to T-28 and the AI-model approach for the HAL v2 accepted as drafted. Q-05: the findings stay open. Q-03, Q-04, Q-08, Q-09 and Q-12: not answered at signing; they remain open. |
+| Changes made during review | None to the analysis; status and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-20 |
 
 Signing records the reviewer's engineering judgement on the confidence in these tools for the stated use cases. It
 is not a tool qualification certificate, a safety approval or a certification.

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | SSA-IWDG-001, version 1.2 |
-| Status | **DRAFT v1.2 for owner review — not approved** (v1.1 signed 2026-10-20, OD-2026-10-20-06, stays in force until v1.2 is signed) |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-20 |
 | Safety scope | SC-IWDG-2026-10-20, target ASIL B (owner decision 2026-10-20, OD-2026-10-20-04) |
 | Product | IWDG LL driver (example `0009a-iwdg-ll`) and IWDG HAL driver on that LL (example `0009b-iwdg-hal`) |
 | Basis | Work order inputs, source requirements hash `bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286` |
@@ -11,10 +11,10 @@
 | Drafted by | Claude Opus 5.5 (Claude Code), v1.0, v1.1 and v1.2 2026-10-20, from the factory records listed in sections 10 and 12 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> DRAFT v1.2 for owner review — not approved. Version 1.1 (signed, OD-2026-10-20-06, file
-> `../v1.1/software_safety_analysis.md`) is unchanged and remains the signed document for 0009a/0009b. This draft
-> enters no work order until the owner signs it and its register entry is updated (OD-2026-10-20-08, pending).
-> Signing would record the reviewer's engineering judgement; it is not a safety approval or certification.
+> Signed version 1.2 (owner decision OD-2026-10-20-08). It applies to IWDG work orders (LL and HAL v2)
+> whose inputs match the basis above. Any edit to this file, or a change to the work order inputs, un-signs it
+> until it is re-reviewed. It records the reviewer's engineering judgement; it is not a safety approval or
+> certification. It supersedes version 1.1 (OD-2026-10-20-06, file `../v1.1/software_safety_analysis.md`, kept unchanged).
 
 ## Change log
 
@@ -329,12 +329,12 @@ approval of an item, a release decision or a certification.
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-14 | (v1.1 answers: Q-01 and Q-11 accepted; Q-02 and Q-12 findings open; Q-03 to Q-10 open) |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I sign" (2026-10-20), in reply to the v1.2 drafts sent with their SHA-256 (SSA 1c5163f7..., TAA 3e94d71d...) |
+| Answers to Q-01 to Q-14 | Q-01 and Q-11: accepted (v1.1). Q-13: the closure of FND-07 and FND-08 on host, oracle and simulator evidence accepted as drafted, with silicon evidence still open (FND-14). Q-14: AOU-13 and the revised AOU-11 accepted as drafted. Q-02 and Q-12: the remaining findings stay open and are listed with the package. Q-03 to Q-10: not answered at signing; they remain open. |
+| Changes made during review | None to the analysis; status and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-20 |
 
 Signing records the reviewer's engineering judgement on this analysis for the stated basis. It is not a safety
 approval of an item, a release decision or a certification.
