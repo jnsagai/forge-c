@@ -4,8 +4,9 @@
 # "never_ready" (timeout path). All other registers (e.g. AHB1ENR 0x250, AHB1RSTR 0x210) are plain storage.
 # Feature 008 (ST pilot, CMSIS code): the full 8 KB RCC window (RM0486 memory map 0x56028000-0x56029FFF) and the RM's
 # set/clear registers: writing 1s to a set register (e.g. RCC_CSR 0x800, RCC_AHB1ENSR 0xA50) sets those bits in its
-# target register (RCC_CR, RCC_AHB1ENR), a clear register (RCC_CCR 0x1000, RCC_AHB1ENCR 0x1250) clears them; reading a
-# set/clear register returns its target register (an assumption of this model, NOT_VERIFIED against silicon).
+# target register (RCC_CR, RCC_AHB1ENR), a clear register (RCC_CCR 0x1000, RCC_AHB1ENCR 0x1250) clears them. CAPA-065
+# (rc1 0008a): the RM0486 fields of the set/clear registers are write-only ('w', e.g. RCC_CSR p.647), so a read of a
+# set/clear register returns 0 (it used to return the target register, which made full-register snapshots change).
 # The table is generated from the RM0486 section files (test_brownfield_st_host checks it).
 SCENARIO = "default"
 READY_MASK = 0x00000F1F
@@ -100,8 +101,9 @@ if request.IsInit:
     regs = {}
 elif request.IsRead:
     off = request.Offset
-    off = SET_ALIAS.get(off, CLEAR_ALIAS.get(off, off))
-    if off == 0x004:
+    if off in SET_ALIAS or off in CLEAR_ALIAS:  # CAPA-065: write-only set/clear registers read as 0
+        request.Value = 0
+    elif off == 0x004:
         cr = regs.get(0x000, 0)
         request.Value = 0 if SCENARIO == "never_ready" else (cr & READY_MASK)
     else:

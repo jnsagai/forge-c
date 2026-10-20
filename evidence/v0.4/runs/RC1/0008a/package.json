@@ -1,0 +1,15 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0008A-STM32N6-RCC-LL-rc1/forge-c-WO-0008A-STM32N6-RCC-LL-rc1-review.zip",
+  "archive_ref": "archive:sha256:0aedce9ab1425e40aa991dd614f12c8bf92bfc2fb4c217ba4d4b19326a12ae61",
+  "archive_sha256": "0aedce9ab1425e40aa991dd614f12c8bf92bfc2fb4c217ba4d4b19326a12ae61",
+  "finalized_at": "2026-10-20T18:15:36.971891Z",
+  "gap_count": 1,
+  "gaps": [
+    "unresolved_finding:escalated_defect:DEF-003:FACTORY"
+  ],
+  "package_status": "BLOCKED",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0008A-STM32N6-RCC-LL-rc1",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

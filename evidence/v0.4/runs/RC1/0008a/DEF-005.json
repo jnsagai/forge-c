@@ -1,0 +1,26 @@
+{
+  "code_sha": "f003c1bd5858edc04bc55284548f94800d9f4628b54f349084c57357ec8f9db3",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T18:12:09.635061Z"
+    }
+  ],
+  "id": "DEF-005",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "preserving every other bit of that register and every other register in the array.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Completed DEF-004 correction by seeding every target-RAM array element, including SR, with each required pattern. The MMIO-only SR seeding exclusion is unnecessary for independent RAM. Complete-array expectations and all checks are retained.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_isolation.c": "5e308c847cc0504644e6c6bea8d0543d8499d79067162571c3996c6ab2798c64"
+  }
+}
