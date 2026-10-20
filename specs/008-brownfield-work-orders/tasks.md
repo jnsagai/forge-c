@@ -143,11 +143,11 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
 ## Phase 9: User Story 6 — ST pilot (P3)
 
 - [X] BF-T032 [US6] Download and fingerprint the vendor dependencies (cmsis-device-n6 v1.4.0, CMSIS 6 core v6.x headers) with provenance, as for the HAL driver. Write the HAL configuration (RCC only) and `stm32_assert.h` from the templates as declared inputs.
-- [ ] BF-T033 [US6] CMSIS adapter in `factory/python/forge_factory/brownfield/cmsis.py`, used by the build/tests/sim servers for `build.style: cmsis`:
+- [X] BF-T033 [US6] CMSIS adapter in `factory/python/forge_factory/brownfield/cmsis.py`, used by the build/tests/sim servers for `build.style: cmsis`:
   - a host device shim (RCC in RAM) and a tick stub;
   - manifest include dirs and defines;
   - warnings recorded instead of `-Werror` for delivered files.
-- [ ] BF-T034 [US6] Simulator: RCC window 8 KB, and CSR/CCR plus AHB1ENSR/ENCR/RSTSR/RSTCR set/clear semantics in `factory/sim/stm32n6/rcc_model.py` (greenfield behaviour unchanged). Robot policy accepts `RCC_<REG>_<FIELD>` tokens.
+- [X] BF-T034 [US6] Simulator: RCC window 8 KB, and CSR/CCR plus AHB1ENSR/ENCR/RSTSR/RSTCR set/clear semantics in `factory/sim/stm32n6/rcc_model.py` (greenfield behaviour unchanged). Robot policy accepts `RCC_<REG>_<FIELD>` tokens.
 - [X] BF-T035 [US6] Create `examples/0008c-st-cube-rcc/` (FROZEN, LL style cmsis, 11 scope functions) and tests for its intake.
 - [X] BF-T036 [US6] Live pilot run. Record SC-006 evidence in `evidence/v0.4/runs/BF-T036/`.
 
@@ -201,3 +201,12 @@ safety drafts, the ST pilot, and release.
 - **BF-T034, NOT_DONE:** Renode set/clear registers and the 8 KB window.
 - **BF-T036:** pending the pilot run.
 - **BF-T038–BF-T040:** pending the final tree.
+
+## ST pilot completion (2026-10-20, owner "address all")
+
+- BF-T033/BF-T034 ticked: CRE `pd-91dc5ef219b00f44a16e` plus CAPA-056..062 and the delivered-code disposition support
+  (`pd-307af136c18b4ee7a10d`, owner decision OD-2026-10-20-07).
+- Live runs: b006 (blocked SWE.4), b007 (blocked SWE.6), b008 (SWE.1-SWE.6 PASS; packaging gaps), **b009
+  READY_FOR_OFFLINE_REVIEW with 0 gaps** on ST's delivered RCC code. Evidence: `evidence/v0.4/runs/BF-T033/`.
+- Limitations: host tests are 64-bit (address-to-uint32_t casts only testable on target); the Renode model's reads of a
+  set/clear register return its target register (NOT_VERIFIED against silicon).
