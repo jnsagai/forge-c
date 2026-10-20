@@ -45,20 +45,20 @@ decisions:
     approved_at: '2026-10-20'
     hsi_hash: null
     allocation_review_ref: null
-    # OD-2026-10-20-05: signed by the owner on 2026-10-20 (version 1.0). The documents analyse the IWDG LL (i003); the
-    # HAL example 0009b has the same inputs and basis, but its HAL code is not analysed in them (open finding).
+    # OD-2026-10-20-05: version 1.0 signed 2026-10-20 (IWDG LL). OD-2026-10-20-06: version 1.1, which also analyses the
+    # HAL (h003, example 0009b), signed by the owner on 2026-10-20 and registered below; it supersedes v1.0 (files kept).
     safety_documents:
       software_safety_analysis:
-        path: config/factory/safety-documents/SC-IWDG-2026-10-20/software_safety_analysis.md
+        path: config/factory/safety-documents/SC-IWDG-2026-10-20/v1.1/software_safety_analysis.md
         basis: bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286
-        sha256: e2a97bb7859c71fcf2f673cf461903088a689abbac567ff72a66bf19520f9426
+        sha256: d70f0c724885eea488a2424db6fb6a3401a4ef3dfcdddd3a4bb88a7ed9aada78
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-20'
-        decision: OD-2026-10-20-05
+        decision: OD-2026-10-20-06  # v1.1 (LL + HAL); supersedes v1.0 (OD-2026-10-20-05, file kept)
       tool_assurance_assessment:
-        path: config/factory/safety-documents/SC-IWDG-2026-10-20/tool_assurance_assessment.md
+        path: config/factory/safety-documents/SC-IWDG-2026-10-20/v1.1/tool_assurance_assessment.md
         basis: bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286
-        sha256: 2825e4d2ae1c0df8e2711cdc4687ed7ff240c5897c90a71a6a4abb4bfe183063
+        sha256: d7c7ff647d63b92e8520d1b4fa8f4be6eb319a4df10c864ff747c75b9714ca2d
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-20'
-        decision: OD-2026-10-20-05
+        decision: OD-2026-10-20-06  # v1.1 (LL + HAL); supersedes v1.0 (OD-2026-10-20-05, file kept)
