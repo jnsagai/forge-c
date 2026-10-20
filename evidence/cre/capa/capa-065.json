@@ -1,0 +1,100 @@
+{
+  "CAPA-065": {
+    "history": [
+      {
+        "at": "2026-10-20T18:20:45.700530Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[\"CAPA-065\"]",
+        "from_state": null,
+        "reason": "rc1 0008a (WO-0008A-STM32N6-RCC-LL-rc1): SWE.1-SWE.6 PASS but package BLOCKED on escalated DEF-003 (FACTORY): full-array preservation failed on a register other than CR/SR",
+        "seq": 516,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T18:20:45.751282Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 517,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T18:20:45.879888Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-069 assigned",
+        "seq": 518,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T18:22:59.555745Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[\"reproducer-run:rr-071397684f7503a112fd\", \"reproducer-run:rr-e38233a716f7066bd5ab\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 519,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T18:22:59.584138Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[\"git:7ec4af1a8e55..0e31a13ed44d\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 0e31a13ed44d (patch 2516 bytes)",
+        "seq": 520,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T18:22:59.624032Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[\"reproducer-run:rr-c77b19831d89e24f9ac1\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-069 absent at 0e31a13ed44d",
+        "seq": 521,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T18:22:59.646943Z",
+        "capa_id": "CAPA-065",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 522,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "7ec4af1a8e5523da7c08a217f551bd05a5a14766",
+      "0e31a13ed44d9f6191dda022e30cbbf3bfba41cf",
+      "pd-5120955982cfdde0c9d2"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<0e31a13ed44d"
+      ],
+      "candidate_patch_sha256": "ead316b8fd1918144c1825b68a666c66bd4e294e1a7fc5bc714c185d4245b1ee",
+      "capa_id": "CAPA-065",
+      "created_at": "2026-10-20T18:20:45.700530Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-065"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-069",
+      "reproducer_id": "RPR-069",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-071397684f7503a112fd",
+        "reproducer-run:rr-e38233a716f7066bd5ab"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the RCC model returned the target register on reads of write-only set/clear registers",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T18:22:59.646943Z"
+    }
+  }
+}

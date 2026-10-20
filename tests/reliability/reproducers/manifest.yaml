@@ -750,3 +750,14 @@ reproducers:
     operations: [release/finalize]
     root_cause: "finalize copied evidence/v0.4/inventory/tool-inventory.json (the 2026-10-14 host inventory: qwen3:8b, Renode and the formal tools missing, no Codex/Claude/Renode 1.17/PlantUML) into every package as configuration/toolchain_versions.json, and known_limitations listed every registry-DISABLED operation even when the run had executed it (Renode). The signed tool assurance assessment recorded this as TAA-FND-04."
     remedy: "finalize.tool_records builds the record from evidence/tool-results.jsonl (each tool with the version its MCP result recorded, the calling operations, call counts and times) and .forge-run/model-profile.json (Codex authors, Claude inspectors, the run model and its status); known_limitations names only DISABLED operations not used by this run. The PlantUML entry states that the jar version is not recorded."
+  - id: RPR-069
+    script: rpr069_setclear_read_returns_target.py
+    sha256: 26ace75715b2a7e3c29c88aa369d16fb28e043fd55563bacdc52c42077381ced
+    symptom_signature: "a read of a write-only set/clear register returns its target register"
+    observed_in: rc1 (WO-0008A-STM32N6-RCC-LL-rc1)
+    baseline_revision: 7ec4af1a8e5523da7c08a217f551bd05a5a14766
+    fix_revision: 0e31a13ed44d9f6191dda022e30cbbf3bfba41cf
+    error_codes: ["unresolved_finding:escalated_defect:FACTORY"]
+    operations: [sim/rcc_model, SWE.6/run_robot]
+    root_cause: "The 8 KB RCC model added for the ST pilot (feature 008 follow-up) returned the target register on a read of a set/clear register, an assumption marked NOT_VERIFIED. RM0486 marks those fields write-only ('w', e.g. RCC_CSR p.647), so they read 0; with the old behaviour, a factory-style SWE.6 full-register preservation check saw RCC_CSR change whenever RCC_CR was written, and the author escalated DEF-003 (FACTORY) - the regression campaign rc1 package for 0008a stayed BLOCKED."
+    remedy: "A read of a set/clear register returns 0 (write-only per RM0486); writes still set/clear their target register. The NOT_VERIFIED assumption is replaced by the RM access type."
