@@ -110,7 +110,8 @@ AUTHOR_STEPS = {
         "upstream id. Never invent an allocation.",
         "write_file traceability/requirements_to_tests.csv with header requirement_id,test_id,test_file and one row per SWR: "
         "test_id UT-001.. and test_file software/tests/unit/test_rcc.c for requirements a host unit test verifies; for "
-        "flash, static RAM, stack and target-only requirements test_id = the SWR id and test_file = "
+        "flash, static RAM, stack, target-only and reset/startup ('While no ... after reset') requirements test_id = the SWR "
+        "id and test_file = "
         "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite).",
         "Call mcp__forge_docs_mcp__validate_artifact with path workproducts/SWE.1/software_requirements.md and check ears; "
         "fix and repeat until status PASS.",
