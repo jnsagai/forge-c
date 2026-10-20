@@ -799,7 +799,12 @@ INSPECT_DELIVERED = (
 
 def brownfield_swe3_steps() -> list[str]:
     x, swc = _t()
-    return [s.replace("{x}", x).replace("{swc}", swc) for s in BROWNFIELD_SWE3]
+    fix = [FIX_DEFECTS.format(p="SWE.3") + " For each such CODE defect against the delivered code, change the "
+           "delivered file with the smallest edit inside the scope functions that makes it meet the quoted "
+           "requirement, then compile with mcp__forge_build_mcp__compile (profiles target-cm55-gcc and host-clang); "
+           "describe the correction in detailed_design.md '## Corrections of the delivered code'."] \
+        if BROWNFIELD["mode"] == "FIX_ALLOWED" else []
+    return fix + [s.replace("{x}", x).replace("{swc}", swc) for s in BROWNFIELD_SWE3]
 
 
 def brownfield_fix3_steps() -> list[str]:

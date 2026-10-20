@@ -117,6 +117,24 @@ def _frozen_delivery(ws: Path) -> bool:
     return code_mode(manifest_of(ws)) == "FROZEN"
 
 
+def _delivered_code(ws: Path) -> bool:
+    from ..brownfield import is_brownfield, manifest_of
+
+    return is_brownfield(manifest_of(ws))
+
+
+def claim_delivered_fixes(ws: Path) -> list[str]:
+    """Feature 008 (FIX_ALLOWED): at SWE.3 entry, CODE defects against the delivered code found before SWE.3 (by the
+    SWE.1/SWE.2 work) are claimed for fixing (IN_FIX) without spending an upstream loop."""
+    out = []
+    for d in all_defects(ws):
+        if d["status"] == "OPEN" and d.get("target_kind") == "DELIVERED_CODE" and d["target_phase"] == "SWE.3":
+            _event(d, "IN_FIX", note="delivered code: fixed at SWE.3 entry (found before SWE.3)")
+            _save(ws, d)
+            out.append(d["id"])
+    return out
+
+
 def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summary: str,
            requirement_ids: list[str], test_files: list[str], evidence_refs: list[str],
            requirement_quote: str = "") -> dict:
@@ -129,7 +147,10 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     frozen = kind == "CODE" and _frozen_delivery(ws)
     if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
         target = None
-    if target is not None and PHASES.index(target) > PHASES.index(detected_phase):
+    early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2")
+    if early_fix:  # feature 008 (FIX_ALLOWED, b002): delivered code exists before SWE.3; it is fixed at SWE.3 entry
+        pass
+    elif target is not None and PHASES.index(target) > PHASES.index(detected_phase):
         raise DefectError(f"TARGET_NOT_UPSTREAM:{target}>{detected_phase}")
     if target is not None and kind != "TEST" and target == detected_phase:
         raise DefectError(f"SAME_PHASE_USE_REWORK:{target}")
@@ -198,7 +219,7 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
            "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
     if kind == "TEST":
         rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
-    if frozen:
+    if frozen or early_fix:
         rec["target_kind"] = "DELIVERED_CODE"
     od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" or frozen else None
     if od is not None:  # the owner already decided this input issue: recorded, not escalated again
@@ -281,7 +302,9 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
     issues = []
     results = _tool_results(ws)
     for d in all_defects(ws):
-        if d["detected_phase"] != phase or d["status"] not in ("FIXED", "IN_FIX"):
+        early = d.get("target_kind") == "DELIVERED_CODE" and d["detected_phase"] in ("SWE.1", "SWE.2") \
+            and phase == "SWE.4"  # feature 008: verified by the first requirement-based tests after the fix
+        if (d["detected_phase"] != phase and not early) or d["status"] not in ("FIXED", "IN_FIX"):
             continue
         changed = [t for t, h in d["test_files"].items() if t.startswith("software/tests/")  # CAPA-012
                    and (not (ws / t).is_file() or sha256_file(ws / t) != h)]

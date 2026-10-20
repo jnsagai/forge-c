@@ -34,8 +34,13 @@ def run(store, phase: str, check: str, state, fail_code) -> int:
 
         v = verify(ws, "swe3_entry")
         s = seed(ws) if v["status"] != "MISMATCH" else {"rows": 0}
+        claimed = []
+        if code_mode(manifest_of(ws)) == "FIX_ALLOWED":
+            from ..inspection.defects import claim_delivered_fixes
+
+            claimed = claim_delivered_fixes(ws)
         state(ws, phase, {"step": "delivery_check", "result": v["status"], "issues": v["issues"][:10],
-                          "trace_seed_rows": s["rows"]})
+                          "trace_seed_rows": s["rows"], "claimed_defects": claimed})
         print(json.dumps({"delivery": v["status"], "issues": v["issues"][:10], "trace_seed_rows": s["rows"],
                           "seed": "workproducts/SWE.3/code_trace_map.seed.json",
                           "facts": "workproducts/SWE.3/delivered_code_facts.json"}))

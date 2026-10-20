@@ -115,3 +115,27 @@ def test_trace_map_keeps_the_delivered_fingerprint_after_a_fix(ws):
     (ws / T.MAP).write_text(json.dumps({"schema": T.SCHEMA, "rows": [dict(r, unit="SWU-LL-01",
                                                                            uspecs=["USPEC-LL-01-01"]) for r in seed]}))
     assert not [f for f in T.check_code(ws, units)["major_findings"] if "FINGERPRINT" in f]
+
+
+def test_code_defect_found_at_swe2_is_claimed_at_swe3_entry(ws):
+    """b002 (2026-10-20): the SWE.2 author found the seeded delivered-code defect but report_defect(CODE) refused
+    TARGET_NOT_UPSTREAM; in a brownfield work order the code exists before SWE.3, so the defect is accepted and fixed
+    at SWE.3 entry."""
+    from forge_factory.brownfield import gates as G
+    from forge_factory.inspection import defects
+
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n")
+    rec = defects.report(ws, detected_phase="SWE.2", reported_by="swe2-author", kind="CODE",
+                         summary="HSI enable sets the wrong bit", requirement_ids=["SWR-001"], test_files=[],
+                         evidence_refs=[f"{H}:75"], requirement_quote="the RCC LL driver shall set RCC_CR.HSION")
+    assert rec["status"] == "OPEN" and rec["target_phase"] == "SWE.3" and rec["target_kind"] == "DELIVERED_CODE"
+    a = _auth(ws)
+    assert a.decide("swe3_fix_author", "write_file", {"path": H, "content": "x\n"}).code == "DELIVERED_CODE_NO_DEFECT"
+    rows = []
+    assert G.run(type("S", (), {"workspace": ws})(), "SWE.3", "delivery_check",
+                 lambda w, ph, payload: rows.append(payload), lambda w, ph, st: 11) == 0
+    assert rows[-1]["claimed_defects"] == [rec["id"]]
+    assert json.loads((ws / f".forge-run/defects/{rec['id']}.json").read_text())["status"] == "IN_FIX"
+    assert a.decide("swe3_fix_author", "write_file", {"path": H, "content": "x\n"}).allow
