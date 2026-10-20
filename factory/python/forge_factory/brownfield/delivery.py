@@ -73,13 +73,14 @@ def _pick(root: Path, rel: str) -> Path:
     return p
 
 
-def build_check(files: dict[str, bytes], style: str, defines: list[str]) -> dict:
+def build_check(files: dict[str, bytes], style: str, defines: list[str], secure: bool = False) -> dict:
     """Syntax/semantic check of the delivered code with the declared dependencies (FR-004): every delivered .c, and a
-    translation unit per delivered header, compiled with clang -fsyntax-only in a scratch copy of the layout."""
-    clang = shutil.which("clang")
+    translation unit per delivered header, compiled -fsyntax-only in a scratch copy of the layout. Factory-style code
+    is checked with host clang; vendor (CMSIS) code with the target compiler arm-none-eabi-gcc (newlib headers)."""
+    clang = shutil.which("clang") if style != "cmsis" else shutil.which("arm-none-eabi-gcc")
     if not clang:
         return {"status": "NOT_RUN", "command": [], "exit_code": None, "log_sha256": None, "warnings": 0,
-                "reason": "clang not found on PATH"}
+                "reason": "compiler not found on PATH"}
     with tempfile.TemporaryDirectory(prefix="forge-bf-build-") as td:
         root = Path(td)
         for rel, data in files.items():
@@ -87,8 +88,7 @@ def build_check(files: dict[str, bytes], style: str, defines: list[str]) -> dict
             (root / rel).write_bytes(data)
         incs = sorted({str((root / rel).parent) for rel in files})
         incs = [str(root / "inputs/vendor/include")] * any(r.startswith("inputs/vendor/include/") for r in files) + incs
-        target = (["--target=thumbv8.1m.main-none-eabi", "-mcpu=cortex-m55", "-ffreestanding"]
-                  if style == "cmsis" else [])
+        target = (["-mcpu=cortex-m55", "-mthumb"] + (["-mcmse"] if secure else []) if style == "cmsis" else [])
         base = [clang, "-std=c11", "-fsyntax-only", "-Wall", "-Wextra", *target,
                 *[f"-I{i}" for i in dict.fromkeys(incs)], *[f"-D{d}" for d in defines]]
         units = []
@@ -160,7 +160,8 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
                 resolved.append({"name": name, "file": x.file, "line": x.line, "kind": x.kind})
         excluded = sorted({x.name for x in defs} - set(d["scope"]["functions"]))
     if not issues:
-        build = build_check({**(extra or {}), **files}, d["build"]["style"], d["build"].get("defines") or [])
+        build = build_check({**(extra or {}), **files}, d["build"]["style"], d["build"].get("defines") or [],
+                            bool(d["build"].get("secure")))
         if build["status"] != "PASS":
             issues.append(f"DELIVERY_BUILD_{build['status']}")
     rec = {"schema": INTAKE_SCHEMA, "work_order": wo, "checked_at": utc_now(),
