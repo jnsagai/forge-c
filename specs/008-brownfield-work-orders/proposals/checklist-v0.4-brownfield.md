@@ -1,7 +1,6 @@
 # Proposal for owner decision: brownfield SWE.3 checklist (feature 008, research R8, task BF-T019)
 
-**Status:** proposal only. `factory/checklists/**` is a protected path, so a new checklist version is added only by
-an owner-decision commit. Nothing below is in effect.
+**Status:** ACCEPTED by the owner on 2026-10-20 (OD-2026-10-20-02): `factory/checklists/v0.4-brownfield/SWE.3.yaml`.
 
 ## Why
 

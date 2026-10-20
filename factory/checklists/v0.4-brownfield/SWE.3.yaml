@@ -1,0 +1,70 @@
+# Owner decision OD-2026-10-20-02 (accepted proposal specs/008-brownfield-work-orders/proposals/checklist-v0.4-brownfield.md).
+# Used ONLY for work orders whose manifest has a `delivery` block (feature 008); greenfield work orders keep v0.4.
+# Phases without a file here use factory/checklists/v0.4. Same base (hash-pinned v0.3) and the same item IDs as v0.4:
+# SWE3-07..09 are decided by deterministic checks of the DELIVERED code, SWE3-10 is unchanged.
+schema: forge-c/inspection-checklist/v0.4
+phase: SWE.3
+version: 0.4-brownfield
+extends:
+  path: factory/release-manager/checklists/SWE.3.yaml
+  sha256: 58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af
+policy_overrides: {}  # may only ADD checks; v0.3 policy is inherited unchanged
+additional_checks:
+- id: SWE3-07
+  required: true
+  severity_if_failed: major
+  criterion: The delivered code is checked against the guideline declared for it. Forge-style deliveries use the ST
+    Cube2 HAL SAD v1.2 rule subset; a vendor delivery with no factory guideline has every rule hit recorded as a
+    delivered-code finding (package gap, owner disposition). FAIL when a FIX_ALLOWED forge-style delivery breaks a rule
+    or a rule hit is not recorded as a finding.
+  deterministic_check: delivered_guideline
+  verification_node: gate --step verify --phase SWE.3 --check delivery
+  rules: config/factory/guidelines/st-cube2-hal-v1.2.yaml
+  source: owner decision OD-2026-10-20-02 (proposal checklist-v0.4-brownfield item 1)
+  evidence:
+  - workproduct_reference
+  - guideline_report_reference
+  - recorded_verdict
+- id: SWE3-08
+  required: true
+  severity_if_failed: major
+  criterion: The register definitions the delivered code uses match the RM0486 register descriptions in the work-order
+    inputs - forge style the LL_<PPP>_ offset/mask defines; CMSIS style the <PPP>_TypeDef member offsets and the
+    <PPP>_<REG>_<FIELD>_Msk masks of the vendor device header, compiled as static assertions with the target compiler.
+    A mismatch is a recorded finding against the delivered or vendor input. FAIL when the probes cannot be built, or a
+    FIX_ALLOWED forge-style delivery has a mismatch.
+  deterministic_check: delivered_register_definitions
+  verification_node: gate --step verify --phase SWE.3 --check delivery
+  source: owner decision OD-2026-10-20-02 (proposal checklist-v0.4-brownfield item 2)
+  evidence:
+  - workproduct_reference
+  - register_map_report_reference
+  - recorded_verdict
+- id: SWE3-09
+  required: true
+  severity_if_failed: major
+  criterion: Every function allocated in the SWE.2 architecture exists in the delivered code (any style), and the
+    delivered fingerprints are unchanged, or changed only by a linked CODE-defect fix (FIX_ALLOWED). An allocated
+    function absent from the delivery is a recorded NO_CODE finding (FROZEN); a fingerprint mismatch always fails.
+  deterministic_check: delivered_implementation
+  verification_node: gate --step verify --phase SWE.3 --check delivery
+  source: owner decision OD-2026-10-20-02 (proposal checklist-v0.4-brownfield item 3)
+  evidence:
+  - workproduct_reference
+  - implementation_report_reference
+  - recorded_verdict
+- id: SWE3-10
+  required: true
+  severity_if_failed: major
+  criterion: Every software unit has a PlantUML detailed design that renders and a ReqIF unit specification (generated
+    from unit_specifications.md, XSD-valid); every USPEC item traces to an SWR allocated to the unit's SWC and every
+    allocated SWR is refined; every function carries Doxygen @unit/@spec tags of its unit, Doxygen runs without warnings
+    and every USPEC is referenced by code. Matrices 2 and 3 are generated.
+  deterministic_check: unit_spec_and_code_trace
+  applies_when: owner_trace_profile
+  verification_node: gate --step author --phase SWE.3 (presence) and inspection deterministic item
+  source: owner addendum 2026-10-17 (EASA-OR-003..006, EASA-OR-010); specs/006-enhanced-ai-software-assurance/owner-addendum-2026-10-17.md
+  evidence:
+  - workproduct_reference
+  - traceability_matrix_reference
+  - recorded_verdict
