@@ -130,7 +130,7 @@ def cloud_tokens(a: dict, meter: Path) -> dict:
     unknown = 0
     for line in meter.read_text().splitlines():
         r = json.loads(line)
-        if not (a["started"] <= r.get("ts_utc", "") <= a["finished"]):
+        if not (a["started"] <= r.get("ts_utc", "") <= a["finished"]) or r.get("refused"):  # CAPA-052: never sent
             continue
         calls += 1
         if r.get("tokens_input") is None:
