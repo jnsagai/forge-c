@@ -1,0 +1,100 @@
+{
+  "CAPA-056": {
+    "history": [
+      {
+        "at": "2026-10-20T11:37:48.130212Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[\"CAPA-056\"]",
+        "from_state": null,
+        "reason": "b006 (WO-0008C-ST-RCC-LL-b006) SWE.3: target-cm55-gcc compile FAIL on inputs/vendor/include/m-profile/armv7m_cachel1.h:117 (-Werror sign conversion); measure_elf BLOCKED; authors escalated DEF-001 (FACTORY)",
+        "seq": 453,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T11:37:48.214697Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 454,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T11:37:48.359421Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-060 assigned",
+        "seq": 455,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T11:40:01.377888Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[\"reproducer-run:rr-9d6e6cdedeba2957169c\", \"reproducer-run:rr-a2fc1e2431663c2a8a25\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 456,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T11:40:01.427407Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[\"git:e71c98c0e3e4..1f4d745bac43\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 1f4d745bac43 (patch 5511 bytes)",
+        "seq": 457,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T11:40:01.543247Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[\"reproducer-run:rr-14ee420b1577abc464d7\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-060 absent at 1f4d745bac43",
+        "seq": 458,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T11:40:01.586472Z",
+        "capa_id": "CAPA-056",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 459,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "e71c98c0e3e4ec14f7ed68531e60b7d85a2d2d30",
+      "1f4d745bac436a3bd76209edc554495ff8f9d102",
+      "pd-0afe5f8c50006bba9b6b"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<1f4d745bac43"
+      ],
+      "candidate_patch_sha256": "9b1e1d9861152a7f1144f309feee4b06a8fedf20de513c9dcee17130f616fd7a",
+      "capa_id": "CAPA-056",
+      "created_at": "2026-10-20T11:37:48.130212Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-056"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-060",
+      "reproducer_id": "RPR-060",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-9d6e6cdedeba2957169c",
+        "reproducer-run:rr-a2fc1e2431663c2a8a25"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the build server applied the factory warning policy (-Werror) to delivered and vendor code",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T11:40:01.586472Z"
+    }
+  }
+}
