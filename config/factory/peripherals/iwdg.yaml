@@ -88,3 +88,95 @@ prompt:
     the start sequence (access key, prescaler and reload writes, a bounded poll of the update flags with the flag preset,
     the same poll ending without the flag clearing when it is never cleared, then the start key) and a counter refresh
   requirement_example: When the IWDG start function is called, the IWDG LL driver shall write 0xCCCC to IWDG_KR.KEY.
+  # ---- HAL layer (owner request 2026-10-20: "a watchdog HAL driver"); RM0486 59.3, window option disabled ----------
+  hal_requirement_example: When the watchdog initialisation is requested with a valid configuration, the IWDG driver shall write the configured prescaler to IWDG_PR.PR.
+  hal_reset_example: >-
+    (e.g. '- **SWR-0nn** While no watchdog initialisation has been requested after reset, the IWDG driver shall not
+    write any IWDG register.')
+  hal_failure_responses: >-
+    one requirement per failure response (update timeout -> IWDG_SR.PVU or IWDG_SR.RVU is still set after the timeout:
+    the driver returns HAL_TIMEOUT without writing the refresh key; a started IWDG cannot be stopped, so the fallback
+    state is the running watchdog and a watchdog reset follows unless the caller recovers; invalid parameter ->
+    HAL_ERROR without register writes, naming the invalid values: a NULL configuration pointer, a prescaler above 7, a
+    reload value above 0xFFF, and a timeout argument of 0 or greater than HAL_IWDG_TIMEOUT_VALUE)
+  hal_api: >-
+    Interfaces (each HAL_IWDG_ API with hal_status_t: HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout)
+    with typedef struct {uint32_t prescaler; uint32_t reload;} hal_iwdg_config_t - starts the watchdog, enables register
+    access, writes IWDG_PR and IWDG_RLR, waits until IWDG_SR.PVU and IWDG_SR.RVU are 0 for at most timeout polling
+    iterations, then refreshes the counter - and HAL_IWDG_Refresh(void) - writes the refresh key)
+  hal_dynamic_view: >-
+    showing HAL_IWDG_Init with the update path (PVU and RVU cleared: refresh, HAL_OK) and the timeout path (a flag still
+    set after the timeout: no refresh, HAL_TIMEOUT) using the allocated HAL_IWDG_ function names, plus a HAL_IWDG_Refresh
+  hal_wait_rule: >-
+    HAL_IWDG_Init follows RM0486 59.3 (start key, access key, prescaler, reload, wait until both update flags are 0,
+    refresh) with the wait bounded like this example (adapt names; check the pointer for NULL, the prescaler (at most 7),
+    the reload (at most 0xFFF) and a timeout of 0 or greater than HAL_IWDG_TIMEOUT_VALUE first, returning HAL_ERROR
+    before any register write):
+  hal_example: |-
+    hal_status_t HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout)
+    {
+        hal_status_t status;
+        uint32_t count = 0U;
+        LL_IWDG_Enable();
+        LL_IWDG_EnableWriteAccess();
+        LL_IWDG_SetPrescaler(p_config->prescaler);
+        LL_IWDG_SetReloadCounter(p_config->reload);
+        while (((LL_IWDG_IsActiveFlag_PVU() != 0U) || (LL_IWDG_IsActiveFlag_RVU() != 0U)) && (count < timeout))
+        {
+            count++;
+        }
+        if ((LL_IWDG_IsActiveFlag_PVU() != 0U) || (LL_IWDG_IsActiveFlag_RVU() != 0U))
+        {
+            status = HAL_TIMEOUT;
+        }
+        else
+        {
+            LL_IWDG_ReloadCounter();
+            status = HAL_OK;
+        }
+        return status;
+    }
+  hal_wait_rest: >-
+    (the parameter checks come first, see above; on a timeout there is no refresh and the watchdog keeps running).
+    HAL_IWDG_Refresh calls LL_IWDG_ReloadCounter and returns HAL_OK.
+  hal_contract_rule: >-
+    The oracle sees only the register values after the call: HAL_IWDG_Init with a valid configuration gets op write
+    entries for IWDG_PR.PR and IWDG_RLR.RL (the configured values) and for IWDG_KR.KEY with value 0xAAAA (the last key
+    written), status HAL_OK; update timeout: op write IWDG_PR.PR (written before the wait) with "busy":"IWDG_SR.PVU" (the
+    flag is held set) and status HAL_TIMEOUT; invalid parameter: one entry per invalid value (NULL pointer, prescaler
+    above 7, reload above 0xFFF, timeout 0, timeout above HAL_IWDG_TIMEOUT_VALUE) with op no_write and status HAL_ERROR
+    (no register/field); HAL_IWDG_Refresh: op write IWDG_KR.KEY value 0xAAAA, status HAL_OK. The key order is verified by
+    the unit tests, not by the contract.
+  hal_ut_example: |-
+    static void ut_iwdg_init(void)
+    {
+        hal_status_t st;
+        const hal_iwdg_config_t cfg = {4U, 0x0FFFU};
+        ut_reset();
+        st = HAL_IWDG_Init(&cfg, 10U);
+        CHECK("UT-001", st == HAL_OK);
+        CHECK("UT-001-PRESCALER", ll_fake_last_arg(LL_FAKE_LL_IWDG_SetPrescaler, 0U) == 4U);
+        CHECK("UT-001-ORDER", ll_fake_index_of(LL_FAKE_LL_IWDG_EnableWriteAccess, 1U) < ll_fake_index_of(LL_FAKE_LL_IWDG_SetPrescaler, 1U));
+        ut_reset();
+        ll_fake_return_from(LL_FAKE_LL_IWDG_IsActiveFlag_PVU, 1U, 1U);  /* the update never completes */
+        st = HAL_IWDG_Init(&cfg, 10U);
+        CHECK("UT-002", st == HAL_TIMEOUT);
+        CHECK("UT-002-NO-REFRESH", ll_fake_calls(LL_FAKE_LL_IWDG_ReloadCounter) == 0U);
+    }
+  hal_ut_rule: >-
+    HAL_IWDG_Init gets an update case (flags clear: HAL_OK, the prescaler and reload passed to the LL, the key order and
+    the final refresh), a timeout case (a flag scripted set: HAL_TIMEOUT, no refresh) and one HAL_ERROR case per invalid
+    parameter with no LL call; HAL_IWDG_Refresh checks the refresh call.
+  hal_integration: >-
+    (HAL_IWDG_Init with a valid configuration on the real LL - the update flags are clear - then HAL_IWDG_Refresh, and a
+    forced timeout with IWDG_SR.PVU preset and never cleared)
+  hal_effect_example: '{"case":"INIT_PRESCALER","swr":"SWR-002","register":"IWDG_PR","field":"PR","op":"write","value":4,"status":"HAL_OK"}'
+  hal_args_example: >-
+    , e.g. "&(const hal_iwdg_config_t){ .prescaler = 4U, .reload = 0x0FFFU }" and "{timeout}" where the caller passes
+    the timeout; invalid cases pass the invalid value (NULL, a prescaler of 8U, a reload of 0x1000U, 0U,
+    HAL_IWDG_TIMEOUT_VALUE + 1U)
+  hal_target_tests: >-
+    write software/tests/target/test_iwdg_target.c (HAL_IWDG_Init with a valid configuration returns HAL_OK on the IWDG
+    model: IWDG_PR and IWDG_RLR hold the configured values, IWDG_SR.ONF is set; HAL_IWDG_Refresh returns HAL_OK) and
+    software/tests/target/test_iwdg_target_timeout.c (in scenario never_ready the update flags never clear: HAL_IWDG_Init
+    returns HAL_TIMEOUT)

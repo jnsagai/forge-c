@@ -114,6 +114,13 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
                 out.append(f"CONTRACT_READY_NOT_IN_RM:{where}:{ready}")
         if ready == "never" and (op != "clear" or e.get("status") != "HAL_TIMEOUT"):
             out.append(f"CONTRACT_TIMEOUT_CASE:{where}: a never-ready case clears the enable bit and returns HAL_TIMEOUT")
+        busy = e.get("busy")  # IWDG HAL (owner request 2026-10-20): a status flag the oracle holds set (never clears)
+        if busy is not None:
+            m = _field_rx(ws).match(str(busy))
+            if not m or m.group(1) not in idx or m.group(2) not in idx[m.group(1)]["fields"]:
+                out.append(f"CONTRACT_BUSY_NOT_IN_RM:{where}:{busy}")
+            if e.get("status") != "HAL_TIMEOUT":
+                out.append(f"CONTRACT_BUSY_CASE:{where}: a case whose busy flag never clears returns HAL_TIMEOUT")
     covered = {e.get("swr") for e in effects}
     from ..layer import register_prefix
 
@@ -198,7 +205,7 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
             continue
         case = {"case": e["case"], "swr": e.get("swr"), "function": c["function"], "args": list(c.get("args") or []),
                 "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None,
-                "value": _value(e.get("value"))}
+                "value": _value(e.get("value")), "busy": None}
         # CAPA-047 (r164): a no_write effect that names a register means "this register is not written by the
         # call" (the call may legitimately write other registers); without a register it means no access at all
         if e["op"] != "no_write" or e.get("register"):
@@ -216,6 +223,10 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
             if m and m.group(1) in idx and m.group(2) in idx[m.group(1)]["fields"]:
                 rf = idx[m.group(1)]["fields"][m.group(2)]
                 case["ready"] = (idx[m.group(1)]["offset"] // 4, 1 << rf["lsb"])
+            m = _field_rx(ws).match(str(e.get("busy") or ""))
+            if m and m.group(1) in idx and m.group(2) in idx[m.group(1)]["fields"]:
+                bf = idx[m.group(1)]["fields"][m.group(2)]
+                case["busy"] = (idx[m.group(1)]["offset"] // 4, 1 << bf["lsb"])
         out.append(case)
     return out, notes
 

@@ -25,3 +25,21 @@ def _dashboard_sign_in_on(monkeypatch):
     """The committed dashboard-access config may switch sign-in off (OD-2026-10-19-09); tests exercise the token
     mode unless a test sets FORGE_DASHBOARD_AUTH itself."""
     monkeypatch.setenv("FORGE_DASHBOARD_AUTH", "token")
+
+
+@pytest.fixture(autouse=True)
+def _prompt_state_restored():
+    """workflow.builder.build() sets module-level prompt state (layer, trace, isolation, brownfield mode, peripheral
+    profile); a test that builds a brownfield or IWDG graph must not leak that state into later tests (the CAPA-051
+    test left BROWNFIELD mode FIX_ALLOWED and broke test_at093 when run after it)."""
+    from forge_factory.workflow import prompts as P
+
+    names = ("CHUNK", "LAYER", "TRACE", "ISOLATION", "BROWNFIELD", "PERIPHERAL")
+    saved = {n: dict(getattr(P, n)) for n in names}
+    sections = dict(P.SECTIONS)
+    yield
+    for n, v in saved.items():
+        getattr(P, n).clear()
+        getattr(P, n).update(v)
+    P.SECTIONS.clear()
+    P.SECTIONS.update(sections)

@@ -206,7 +206,7 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
              f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
              "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
-        t = 5 if c["never_ready"] else 10
+        t = 5 if c["never_ready"] or c.get("busy") else 10
         lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
                   f"{c['function']} (contract + RM constants) */", "    memset((void *)regs, 0, sizeof regs);"]
         if c["op"] != "no_write":
@@ -217,6 +217,8 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
             lines.append(f"    regs[{c['word']}U] = 0x{(pre | other):08X}U;")
             if c["ready"] and c["op"] == "set":
                 lines.append(f"    regs[{c['ready'][0]}U] |= 0x{c['ready'][1]:08X}U;")
+        if c.get("busy"):  # a status flag held set: the call must give up after a bounded wait
+            lines.append(f"    regs[{c['busy'][0]}U] |= 0x{c['busy'][1]:08X}U; /* busy, never clears */")
         lines += ["    memcpy(before, (const void *)regs, sizeof before);", "    shim_n = 0UL;"]
         call = call_text(c, f"{t}U")
         lines.append(f"    {{ hal_status_t st = {call};" if c["status"] else f"    {{ (void){call};")
@@ -232,6 +234,8 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
             conds.append(f"((regs[{c['word']}U] & ~0x{c['mask']:08X}U) == (before[{c['word']}U] & ~0x{c['mask']:08X}U))")
         if c["never_ready"]:
             conds.append(f"(shim_n <= {t + 2}UL) && (shim_n >= 2UL)")
+        if c.get("busy"):  # bounded: at most a few register accesses per poll of the timeout
+            conds.append(f"(shim_n <= {4 * (t + 2) + 8}UL) && (shim_n >= {t}UL)")
         if c["status"]:
             conds.append(f"(st == {c['status']})")
         lines += [f"      int ok = {' && '.join(conds)};",

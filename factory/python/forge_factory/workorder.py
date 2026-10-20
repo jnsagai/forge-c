@@ -113,13 +113,18 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
     return files, index
 
 
-def provided_ll(source_wo: str) -> tuple[bytes, dict]:
+def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, dict]:
     """ADR-0009: the HAL work order builds on the LL header of an earlier LL work order whose six phases all passed
     their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance."""
     from .inspection.engine import PHASES, Store
-    from .layer import LL_HEADER, layer_of
+    from .layer import layer_of, ll_header, profile
 
     src = state_dir() / "workorders" / source_wo / "workspace"
+    if not (src / ".forge-run/manifest.json").is_file():
+        raise FileNotFoundError(f"PROVIDED_LL_MISSING:{source_wo}:no work order workspace")
+    LL_HEADER = ll_header(src)  # noqa: N806 - feature 009: the source work order's peripheral
+    if peripheral is not None and profile(src)["id"] != peripheral:
+        raise ValueError(f"PROVIDED_LL_OTHER_PERIPHERAL:{source_wo}:{profile(src)['id']} (work order: {peripheral})")
     if not (src / LL_HEADER).is_file():
         raise FileNotFoundError(f"PROVIDED_LL_MISSING:{source_wo}:{LL_HEADER}")
     if layer_of(src) != "LL":
@@ -190,7 +195,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     if layer == "HAL":
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
-        data, rec = provided_ll(provided_from)
+        data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
         inputs[rec["path"]] = data
         provided.append(rec)
     intake = None

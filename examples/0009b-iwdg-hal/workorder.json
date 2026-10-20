@@ -1,0 +1,59 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 independent watchdog (IWDG) HAL driver (on the verified IWDG LL driver)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 59 (IWDG) + memory map p.179"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.59 IWDG register interface + memory map p.179 (IWDG secure base 0x56004800)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the IWDG work orders"
+  },
+  "scope": [
+    "HAL: hal_status_t API with HAL_IWDG_ prefix, a const configuration pointer, parameter checks and a timeout-bounded wait, built only on the PROVIDED LL_IWDG_ functions",
+    "Initialise the watchdog (RM0486 59.3, window option disabled): start key, register access key, prescaler (IWDG_PR.PR) and reload (IWDG_RLR.RL), wait until the update flags IWDG_SR.PVU and IWDG_SR.RVU are cleared (bounded by a caller-supplied timeout), then refresh the counter",
+    "Refresh the watchdog counter",
+    "The LL header is provided read-only (verified IWDG LL work order) and is not modified",
+    "Out of scope: window option (IWDG_WINR), early wake-up interrupt (IWDG_EWCR, IWDG_ICR), hardware watchdog option bytes, low-power freeze, debug freeze; stopping the watchdog (impossible once started)"
+  ],
+  "system_names": [
+    "IWDG HAL driver",
+    "IWDG driver",
+    "STM32N6 IWDG HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0009-iwdg-st/inputs/RM0486-rev4-ch59-iwdg.md",
+      "role": "reference_manual_iwdg_chapter"
+    },
+    {
+      "path": "../0009-iwdg-st/inputs/RM0486-rev4-memory-map-excerpt-iwdg.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0009-iwdg-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "ADR-0009 + feature 009: built on the PROVIDED LL header of a verified 0009a IWDG LL work order (--provided-from); peripheral profile config/factory/peripherals/iwdg.yaml",
+  "peripheral": "iwdg"
+}
