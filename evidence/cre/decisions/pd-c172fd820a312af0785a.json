@@ -1,0 +1,154 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "fb5b63026e00978a61ae57f32418305c192b5489",
+  "baseline_sha256": "9cf2a280153465934b194d8a03072bc304431f9d41441a6cd1785413b507db5a",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "015bc9d3ed7c99717f0bef033b0f4757ca4ae5c3",
+  "candidate_sha256": "24ef1fac36108c5479cf1ca387adc5b5bae172f4b2e29aaeaca887375ef469d9",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "decision_id": "pd-c172fd820a312af0785a",
+  "evaluated_at": "2026-10-20T14:46:04.678636Z",
+  "evaluator_id": "cre-promotion-runner@015bc9d3ed7c",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:fb5b63026e00..015bc9d3ed7c"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-202a62d5bf43f75d662b",
+        "reproducer-run:rr-316443e3cf6a151e16b6"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-3b9d9ce89242f10724f9",
+        "reproducer-run:rr-39a4bfa546d7777dc75e",
+        "reproducer-run:rr-7fbe16d95825b7982493",
+        "reproducer-run:rr-0abb40f17cb5dfdc204a",
+        "reproducer-run:rr-6fc0e82039517b60a841",
+        "reproducer-run:rr-2d4cde1145e5cc46ffd3",
+        "reproducer-run:rr-dc432d4da554f9024e5a",
+        "reproducer-run:rr-5b7a87331423bb8aaf5f",
+        "reproducer-run:rr-a51d88dbfe32c66647b2",
+        "reproducer-run:rr-07d27631e45a5085f384",
+        "reproducer-run:rr-26e501ef6139ea2186af",
+        "reproducer-run:rr-08a649df4b45f5b9fdd6",
+        "reproducer-run:rr-88319b4c71e176303d00",
+        "reproducer-run:rr-2b21e61c27d92d4e96ca",
+        "reproducer-run:rr-03a258494f5bc6b63a1b",
+        "reproducer-run:rr-3db2024310d57f4d9137",
+        "reproducer-run:rr-047e09d94d2dd1b063a9",
+        "reproducer-run:rr-368490fa739a0a85a071",
+        "reproducer-run:rr-aa9ec74ab850ea4a4758",
+        "reproducer-run:rr-f5e14bb4d7dec3fce236",
+        "reproducer-run:rr-9802b317704bd4846e67",
+        "reproducer-run:rr-ebea8cdd19dd43870ab7",
+        "reproducer-run:rr-329e9ad85eaed27c7ac1",
+        "reproducer-run:rr-4959dedadfeb3ec4fdc5",
+        "reproducer-run:rr-7785043965b8a8e06b10",
+        "reproducer-run:rr-5c8322a97900a174a1db",
+        "reproducer-run:rr-82cc1b36923f8d76c1d2",
+        "reproducer-run:rr-314f5501328c8472863f",
+        "reproducer-run:rr-896c5a6a135b2149fb37",
+        "reproducer-run:rr-6f34c59fc50ad538ca29",
+        "reproducer-run:rr-60cb347690d894a6fe9a",
+        "reproducer-run:rr-5990d4343b457ec25b2d",
+        "reproducer-run:rr-ad854034a0a7fb63ff7f",
+        "reproducer-run:rr-4321a658ce2686db83a1",
+        "reproducer-run:rr-a778f33b4df264d5b21c",
+        "reproducer-run:rr-5691126d71eba774ffe2",
+        "reproducer-run:rr-ab34f6e857a5c51bc824",
+        "reproducer-run:rr-42d1d6a673868d49a5f7",
+        "reproducer-run:rr-e8e0ea50996bc0f86c56",
+        "reproducer-run:rr-b69920a588e4464899ce",
+        "reproducer-run:rr-9cbfba71e030b472d25a",
+        "reproducer-run:rr-ffcd3255daeef11fa4f0",
+        "reproducer-run:rr-1f964ff6ef13c3774e91",
+        "reproducer-run:rr-e49d793c19cb49e3d5a8",
+        "reproducer-run:rr-0d12a559f2f9cca22677",
+        "reproducer-run:rr-ed197fe2e19db1358f4e",
+        "reproducer-run:rr-e778b6efaabe6f806fc4",
+        "reproducer-run:rr-b5c6f75124cee3d61e0f",
+        "reproducer-run:rr-5664706fe35cd8d9efba",
+        "reproducer-run:rr-e70375f7b2e673cdad67",
+        "reproducer-run:rr-49d3ca5034596a2b56a2",
+        "reproducer-run:rr-33c5dfbe612f1ee0a06a",
+        "reproducer-run:rr-6c72909429485810eb26",
+        "reproducer-run:rr-1e1a1655ae3e8f76b33c",
+        "reproducer-run:rr-8e5f0bd239253d3b1d98",
+        "reproducer-run:rr-b38c09c9f44a313703e4",
+        "reproducer-run:rr-d150d724fce1558a87c3",
+        "reproducer-run:rr-b993414942756f8e55dd",
+        "reproducer-run:rr-9da4cc14791873120018",
+        "reproducer-run:rr-3cd841513ed989d75b4c",
+        "reproducer-run:rr-a5e02a6411e067bcbba3",
+        "reproducer-run:rr-141447c8bd40b63db8ae",
+        "reproducer-run:rr-72383dab71245d0e9b94",
+        "reproducer-run:rr-fb836f8e105a42e96c52",
+        "reproducer-run:rr-e25972ad0533003c21e6",
+        "reproducer-run:rr-cbdd31ffb5c789459d26",
+        "reproducer-run:rr-c01e6e72670ae1804923"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:fe403a3e9b98401f",
+        "baseline-tests:exit0:sha256:5597c976302f7275",
+        "design:exit0"
+      ],
+      "name": "quality_process",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-8d954fa729c2eb8972ad",
+        "benchmark-run:br-1069036000437e91f480"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-a06990d1fd8c753402de",
+        "benchmark-run:br-6bd970449fc3014831b5"
+      ],
+      "name": "holdout",
+      "reason_code": null,
+      "result": "PASS"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 4122 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "efficiency (informational, n=1 run each, not a gate): golden duration 10.0s -> 10.1s; model tokens 0 -> 0",
+    "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-202a62d5bf43f75d662b",
+    "reproducer-run:rr-316443e3cf6a151e16b6"
+  ],
+  "schema_version": "1.0"
+}

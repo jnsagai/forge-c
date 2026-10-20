@@ -1,0 +1,100 @@
+{
+  "CAPA-063": {
+    "history": [
+      {
+        "at": "2026-10-20T14:43:42.263796Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[\"CAPA-063\"]",
+        "from_state": null,
+        "reason": "h004 (WO-0009B-STM32N6-IWDG-HAL-h004) SWE.6 BLOCKED: Robot 12/13, SWR-012 stack not bounded (external HAL_GetTick); authors escalated DEF-003 (FACTORY)",
+        "seq": 502,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T14:43:42.325054Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 503,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T14:43:42.434284Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-067 assigned",
+        "seq": 504,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T14:46:04.787348Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[\"reproducer-run:rr-202a62d5bf43f75d662b\", \"reproducer-run:rr-316443e3cf6a151e16b6\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 505,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T14:46:04.809321Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[\"git:fb5b63026e00..015bc9d3ed7c\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 015bc9d3ed7c (patch 3785 bytes)",
+        "seq": 506,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T14:46:04.849299Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[\"reproducer-run:rr-c01e6e72670ae1804923\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-067 absent at 015bc9d3ed7c",
+        "seq": 507,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T14:46:04.863352Z",
+        "capa_id": "CAPA-063",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 508,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "fb5b63026e00978a61ae57f32418305c192b5489",
+      "015bc9d3ed7c99717f0bef033b0f4757ca4ae5c3",
+      "pd-c172fd820a312af0785a"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<015bc9d3ed7c"
+      ],
+      "candidate_patch_sha256": "c995a770af950f9f112cff3eed9134370acfb348ca5ea04bf656e253a371c5ae",
+      "capa_id": "CAPA-063",
+      "created_at": "2026-10-20T14:43:42.263796Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-063"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-067",
+      "reproducer_id": "RPR-067",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-202a62d5bf43f75d662b",
+        "reproducer-run:rr-316443e3cf6a151e16b6"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the stack call-graph measurement had no model for the HAL's declared external time base",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T14:46:04.863352Z"
+    }
+  }
+}

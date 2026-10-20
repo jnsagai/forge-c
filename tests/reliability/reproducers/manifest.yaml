@@ -728,3 +728,14 @@ reproducers:
     operations: [release/finalize]
     root_cause: "The release policy (factory/release-manager, protected) requires a C-source view software/src/*.c; finalize filled it from software/hal and software/src only. A greenfield LL ships its generated compile unit there, but a header-only delivery (ST LL, __STATIC_INLINE) has none, so b008 - complete through SWE.6 - was BLOCKED on two packaging gaps."
     remedy: "finalize.stage_delivered_unit stages the factory-generated build-only unit (brownfield.cmsis.delivered_unit: delivered headers + scope wrappers, no driver logic) as software/src/forge_delivered_unit.c, marked as generated and not delivered code, when the stage has no C source. The protected release policy is unchanged. Re-finalizing a copy of b008 leaves only the 5 delivered-code guideline findings (owner dispositions)."
+  - id: RPR-067
+    script: rpr067_stack_external_time_base.py
+    sha256: 13f27e072615b6fddb4d54e4d7bad0d61037cd52224e02e112ed2d1d030e854c
+    symptom_signature: "driver stack unbounded by the HAL's external time base"
+    observed_in: h004
+    baseline_revision: fb5b63026e00978a61ae57f32418305c192b5489
+    fix_revision: 015bc9d3ed7c99717f0bef033b0f4757ca4ae5c3
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_robot:FAIL", "VT:SWR_NOT_VERIFIED"]
+    operations: [robot/ForgeTarget, SWE.6/run_robot]
+    root_cause: "The IWDG HAL v2 (FND-07) bounds its wait with the external system time base HAL_GetTick (provided by the system and the tests). ForgeTarget._stack treats any call to a function outside the measured driver as an unknown bound, so the stack requirement SWR-012 could not be verified (DEF-003 FACTORY)."
+    remedy: "For a profile with hal.time_base, the stack measurement adds a reference leaf implementation of the time base (a free-running counter, as in the tests) to the call graph and logs the assumption that the system's time base is a leaf of no larger frame; flash/RAM measurements do not include it."
