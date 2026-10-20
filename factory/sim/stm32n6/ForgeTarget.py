@@ -20,6 +20,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from robot.api import logger
 from robot.api.deco import keyword, library
 
 
@@ -114,6 +115,8 @@ class ForgeTarget:
             units = [u] if u else []
         if not units:  # CAPA-061: nothing built is never a 0-byte PASS of a flash, RAM or stack budget
             raise AssertionError("no driver unit to measure (no HAL source, no LL unit, no delivered scope)")
+        if sub == "stack":  # CAPA-063 (h004): the HAL's external time base is charged as a leaf reference
+            units += self._time_base_unit(out)
         for c in units:
             o = out / (c.stem + ".o")
             r = subprocess.run([cc, "-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os",
@@ -146,6 +149,24 @@ class ForgeTarget:
             return []
         unit = out / "forge_ll_measure.c"
         unit.write_text(text)
+        return [unit]
+
+    def _time_base_unit(self, out: Path) -> list[Path]:
+        """CAPA-063 (h004): a HAL whose waits are bounded by an external time base (profile hal.time_base, e.g.
+        HAL_GetTick) calls a function outside the driver, so the stack bound was unknown. The call chain is measured
+        with a reference LEAF implementation (a free-running counter, as in the tests); the assumption that the
+        system's time base is a leaf no deeper than this reference is logged with the result. Stack only: the
+        reference is never counted in the driver's flash or RAM."""
+        from forge_factory.layer import profile
+
+        tb = profile(self.ws)["hal"].get("time_base")
+        if not tb:
+            return []
+        self.assumptions = [f"external time base {tb}() measured as a reference leaf (free-running counter); the "
+                            f"system's {tb}() must be a leaf of no larger frame"]
+        unit = out / "forge_time_base_reference.c"
+        unit.write_text(f"#include <stdint.h>\nuint32_t {tb}(void);\nuint32_t {tb}(void)\n{{\n"
+                        "    static uint32_t forge_ticks;\n    forge_ticks++;\n    return forge_ticks;\n}\n")
         return [unit]
 
     def _sizes(self) -> dict[str, int]:
@@ -214,7 +235,10 @@ class ForgeTarget:
 
     @keyword("Driver Stack Should Be At Most")
     def driver_stack_should_be_at_most(self, limit_bytes: int) -> int:
+        self.assumptions = []
         stack, unbounded = self._stack()
+        for a in self.assumptions:  # CAPA-063: stated in the Robot log, never silent
+            logger.info(f"ASSUMPTION: {a}")
         if unbounded:
             raise AssertionError(f"driver stack not bounded: {'; '.join(unbounded[:3])}")
         if stack > int(limit_bytes):
