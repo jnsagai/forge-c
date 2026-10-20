@@ -42,7 +42,7 @@
 
 - [X] PG-T010 [US3] IWDG Renode model and platform; profile-driven model selection in `mcp/servers/sim.py`.
 - [X] PG-T011 [US4] IWDG prompt profile (examples, API shape) and `examples/0009a-iwdg-ll/workorder.json`.
-- [ ] PG-T012 [US4] Live IWDG LL run; evidence in `evidence/v0.4/runs/PG-T012/`.
+- [X] PG-T012 [US4] Live IWDG LL run; evidence in `evidence/v0.4/runs/PG-T012/`.
 
 ## Phase 7: Release
 
@@ -65,4 +65,6 @@ module, with the equivalence test as the guard.
 - **PG-T007 limits:** the HAL-layer paths (`provided_ll`, `ll_fake`) and the observe-only assurance helpers (corpus,
   mutation, target, verifiers, `oracle_gen.derive` sentence parsing) still assume RCC. The IWDG work order is LL only
   and uses the register contract, so they are not on its path. They are a follow-up for a HAL peripheral.
-- **PG-T012:** live run i001 in progress.
+- **PG-T012:** i001 BLOCKED at SWE.2 and i002 BLOCKED at SWE.5 (4 factory defects found and fixed). i003 on 83ee4c7:
+  SWE.1-SWE.6 PASS; package BLOCKED only on the 2 owner safety documents (IWDG has no owner safety scope).
+  Evidence: `evidence/v0.4/runs/PG-T012/latest.json`.
