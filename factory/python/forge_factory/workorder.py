@@ -281,7 +281,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
 
     (ws / ".forge-run/checklists").mkdir(parents=True, exist_ok=True)
     for ph in PHASES:  # read-only copy of the resolved (hash-pinned) checklist for inspectors
-        cl = load_checklist(ph)
+        cl = load_checklist(ph, brownfield=bool(spec.get("delivery")))
         (ws / f".forge-run/checklists/{ph}.json").write_text(pretty_json(
             {"phase": ph, "version": cl["version"], "sha256": cl["sha256"],
              "checks": [{k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}

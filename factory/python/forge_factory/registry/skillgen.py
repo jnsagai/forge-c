@@ -121,7 +121,7 @@ def _outputs(role: dict) -> list[str]:
         rid, [f"reports/{rid}/<run>.json"])
 
 
-# feature 008: brownfield work orders (delivered existing code), per author role
+# feature 008: brownfield work orders (delivered existing code), per author role (and the SWE.3 inspector)
 BROWNFIELD = {
     "swe2-author": [
         "When `.forge-run/manifest.json` has a `delivery` block, describe the architecture the DELIVERED code "
@@ -141,6 +141,12 @@ BROWNFIELD = {
         "A disagreement between the delivered code and a requirement is a CODE defect "
         "(`forge-evidence-mcp.report_defect`), never a reason to weaken the design description, a requirement or a "
         "test."],
+    "swe3-inspector": [  # OD-2026-10-20-02
+        "When `.forge-run/manifest.json` has a `delivery` block, the SWE.3 checklist is `v0.4-brownfield` (read "
+        "`.forge-run/checklists/SWE.3.json`): SWE3-07..09 are decided by deterministic checks of the DELIVERED code "
+        "(reports `verification/static/delivered_*.json`); a delivered-code finding recorded in "
+        "`.forge-run/delivery/code_findings.json` is an owner finding (package gap), not a reason to fail the author "
+        "in FROZEN mode."],
 }
 
 

@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ...inspection.engine import InspectionError, Store, load_checklist
+from ...inspection.engine import InspectionError, Store
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
 
 Phase = Literal["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
@@ -210,7 +210,7 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
     # inspector's finding and sent the author into a rework cycle with nothing to fix. Refuse instead (nothing is
     # recorded) so the inspector resubmits; the inspector node is bounded by max_visits and its turn cap.
     try:
-        checklist = load_checklist(a.phase)
+        checklist = Store(ctx.workspace).checklist(a.phase)
     except Exception:  # noqa: BLE001 - the engine reports checklist problems itself
         checklist = {"checks": []}
     missing = [c["id"] for c in checklist["checks"]

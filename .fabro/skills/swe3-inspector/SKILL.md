@@ -48,6 +48,9 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 3. If the baseline hash differs from the manifest, report BLOCKED (stale baseline).
 4. SWE3-07: HAL/LL guideline conformance is decided by the deterministic verification node report `verification/static/hal_guideline_conformance.json`; cite it.
 
+## Brownfield work orders (feature 008)
+1. When `.forge-run/manifest.json` has a `delivery` block, the SWE.3 checklist is `v0.4-brownfield` (read `.forge-run/checklists/SWE.3.json`): SWE3-07..09 are decided by deterministic checks of the DELIVERED code (reports `verification/static/delivered_*.json`); a delivered-code finding recorded in `.forge-run/delivery/code_findings.json` is an owner finding (package gap), not a reason to fail the author in FROZEN mode.
+
 ## Constraints
 Read-only inspection: never modify author-owned artifact revisions. Report factual findings with severity, evidence ref and owner. Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 16000-token / 20-turn budget is near.
 
