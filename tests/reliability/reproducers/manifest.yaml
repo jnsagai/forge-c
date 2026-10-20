@@ -684,3 +684,14 @@ reproducers:
     operations: [SWE.1/author, SWE.4/author, SWE.4/inspect]
     root_cause: "The SWE.1 mapping rule sent only flash/RAM/stack/target-only requirements to the Robot suite; a reset/startup invariant (b006 SWR-018: 'While no LL function has been called after reset, the RCC LL driver shall not write any RCC register') was mapped to host unit test UT-018, which can only check its own freshly reset RAM struct. The SWE.4 inspector rightly failed it as tautological (SWE4-02) and its traces (SWE4-06); the authors could not make a host test observe pre-main state, and SWE.4 BLOCKED."
     remedy: "The SWE.1 author gate reports SWE1:STARTUP_INVARIANT_ON_HOST_TEST for a 'While ... after reset' requirement mapped under software/tests/unit/, naming the Robot mapping; the SWE.1 prompt includes reset/startup requirements in the Robot rule."
+  - id: RPR-064
+    script: rpr064_delivery_coverage_whole_files.py
+    sha256: 91615ea86934f34d5c693dd89449c1441f6736ca0f3b7337d397715e21987bca
+    symptom_signature: "delivery coverage reported only over whole delivered files"
+    observed_in: b006
+    baseline_revision: cb132162a9f2c44768af984d0b3e241bc6241884
+    fix_revision: 645c071922688e1dc781cb8f7d6d6ba80bac8722
+    error_codes: ["COVERAGE_NOT_SCOPED"]
+    operations: [tests/llvm_coverage, SWE.4/inspect]
+    root_cause: "forge-tests-mcp llvm_coverage summarised every line of the source files it was given; for a delivery those are whole vendor headers (ST stm32n6xx_ll_rcc.h/ll_bus.h, about 28k lines), so the figure (line 1.21% in b006) said nothing about the 11 scope functions the unit tests target, and the SWE.4 inspector had no scope coverage to judge."
+    remedy: "For a delivery with a scope, llvm_coverage adds scope_function_pct, scope_region_pct, scope_branch_pct and the unexecuted scope functions from the per-function export, and leads its summary with them; the whole-file figures stay in the metrics. Greenfield coverage is unchanged."
