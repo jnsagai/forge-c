@@ -215,6 +215,7 @@ CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local model
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
 TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
 ISOLATION = {"on": False}  # CAPA-038: HAL unit tests run on the generated LL test double (set by the builder)
+BROWNFIELD = {"mode": None}  # feature 008: None (greenfield) | FROZEN | FIX_ALLOWED (set by the builder)
 
 
 def small() -> str:
@@ -661,6 +662,10 @@ def triage_prompt(k: int) -> str:
 
 def fix3_author_prompt() -> str:
     """SWE.3 fix step (rework entry): make the code compile on both profiles and pass the deterministic checks."""
+    if BROWNFIELD["mode"]:  # feature 008: work products first; delivered code only for an IN_FIX CODE defect
+        steps = ["Call use_skill with skill_name swe3-author.", READ, small(), delivered_note(), FIX.format(p="SWE.3"),
+                 FIX_DEFECTS.format(p="SWE.3")] + brownfield_fix3_steps() + [REPLY]
+        return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
         ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
@@ -730,11 +735,99 @@ def contract_step(phase: str) -> list[str]:
     return []
 
 
+# ---- feature 008: brownfield (delivered existing code) -------------------------------------------------------------
+TRACE_MAP = "workproducts/SWE.3/code_trace_map.json"
+
+
+def delivered_note() -> str:
+    mode = BROWNFIELD["mode"]
+    rule = ("FROZEN: never write or edit any delivered file (the policy refuses it); describe and verify the code exactly "
+            "as delivered" if mode == "FROZEN" else
+            "FIX_ALLOWED: a delivered file may change ONLY to fix a CODE defect that is IN_FIX for that file, with the "
+            "smallest change; everything else is described and verified as delivered")
+    return ("DELIVERED CODE (brownfield work order): the driver code under software/ (see .forge-run/manifest.json "
+            f"'delivery' and 'delivered') existed before this work order. {rule}. If the delivered code disagrees with "
+            "a requirement, that is a CODE defect against the delivered code (report it with evidence; in FROZEN mode it "
+            "goes to the owner), never a reason to weaken a requirement or a test.")
+
+
+BROWNFIELD_SWE2 = (
+    "The code is DELIVERED and already exists: read the delivered files listed in .forge-run/manifest.json 'delivered' "
+    "(role delivered_code) and describe the architecture the delivered code ACTUALLY has (components, register access, "
+    "the functions it defines) - never a design it does not have. In the requirement allocation table and in "
+    "workproducts/SWE.2/api_calls.json use the delivered function names exactly. If NO delivered function implements a "
+    "requirement case, set that case's api_calls function to \"NONE\" (args []) and write 'NONE (no delivered code)' in "
+    "its allocation row: the gate reports it as a NO_CODE finding for the owner. Add a section '## Delivered functions "
+    "without requirement' listing every delivered scope function that no requirement needs (or 'none').")
+BROWNFIELD_SWE3 = [
+    "read_file workproducts/SWE.3/delivered_code_facts.json (deterministic facts of the delivered scope functions: "
+    "file, line, kind, register effects) and workproducts/SWE.3/code_trace_map.seed.json.",
+    "Call mcp__forge_analysis_mcp__cppcheck and mcp__forge_analysis_mcp__clang_analyze, then "
+    "mcp__forge_build_mcp__measure_elf and mcp__forge_build_mcp__stack_usage with profile target-cm55-gcc. Do NOT fix "
+    "findings in the delivered code: report them as the tools gave them.",
+    "write_file workproducts/SWE.3/detailed_design.md: '# Detailed design'; a table | Function | Purpose | "
+    "Registers/bits (RM0486 page) | SWR IDs | with one row per delivered scope function, describing what the delivered "
+    "code DOES (from its source and delivered_code_facts.json); '## Static analysis and MISRA (subset)' with the "
+    "cppcheck and clang results exactly as reported (MISRA compliance is not claimed); '## Resource usage' with the "
+    "measured values next to the architecture budgets; '## Deviations of the delivered code' listing every place where "
+    "the delivered code does not do what an allocated requirement states (or 'none').",
+    "UNIT SPECIFICATIONS (gate-checked, UNIT:*/CODE:* issues): write_file workproducts/SWE.3/unit_specifications.md - "
+    "the software units are the function groups of the SWE.2 allocation table (one unit per group, e.g. HSI, HSE, "
+    "GPDMA1, ADC12; unit ids SWU-{x}-01, SWU-{x}-02, ... in table order). For each unit: '## SWU-{x}-nn: <name>', "
+    "'- SWC: {swc}', '- Functions: <exact delivered C function names of the unit>', '- Design: "
+    "workproducts/SWE.3/detailed_design/SWU-{x}-nn.puml', then one line per behaviour of the delivered functions: "
+    "'- **USPEC-{x}-nn-mm** <the behaviour the unit shall implement> Traces: SWR-001, SWR-003' (only SWRs allocated to "
+    "{swc}; every allocated SWR traced by at least one item; resource budgets and initial-state invariants are "
+    "component-level, not units). For EACH unit write_file workproducts/SWE.3/detailed_design/<unit id>.puml: a "
+    "PlantUML activity diagram between @startuml and @enduml whose title contains the unit id and which names every "
+    "function of the unit.",
+    "CODE TRACE MAP (the delivered code has no trace tags and must not be edited): write_file " + TRACE_MAP + " - "
+    "the seed with every row's 'unit' and 'uspecs' filled: {\"schema\":\"forge-c/code-trace-map/0.1\",\"rows\":"
+    "[{\"function\":\"<name>\",\"file\":\"<path>\",\"sha256\":\"<as in the seed>\",\"unit\":\"SWU-{x}-01\","
+    "\"uspecs\":[\"USPEC-{x}-01-01\"]}, ...]}. Keep file and sha256 exactly as in the seed; every delivered scope "
+    "function appears once and every USPEC item is mapped to at least one delivered function.",
+    "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.3 baseline."]
+
+
+INSPECT_DELIVERED = (
+    "DELIVERED CODE (brownfield): the code under software/ existed before this work order and is judged, not authored, "
+    "here. Judge this phase's work products against the requirements AND against the delivered code (a work product "
+    "that describes behaviour the code does not have FAILS). A defect in the delivered code itself is reported with "
+    "mcp__forge_evidence_mcp__report_defect kind CODE (it goes to the owner in FROZEN mode); it is not a finding "
+    "against a work product that describes the code correctly.")
+
+
+def brownfield_swe3_steps() -> list[str]:
+    x, swc = _t()
+    return [s.replace("{x}", x).replace("{swc}", swc) for s in BROWNFIELD_SWE3]
+
+
+def brownfield_fix3_steps() -> list[str]:
+    if BROWNFIELD["mode"] == "FIX_ALLOWED":
+        return ["Fix the SWE.3 work products (detailed design, unit specifications, " + TRACE_MAP + ") for every "
+                "finding. For each CODE defect IN_FIX (glob .forge-run/defects/DEF-*.json), change the delivered file "
+                "it names with the smallest edit that makes the code meet the quoted requirement, then call "
+                "mcp__forge_build_mcp__compile with profile target-cm55-gcc and host-clang; update the trace map "
+                "sha256 of a changed file to its new value from workproducts/SWE.3/delivered_code_facts.json only "
+                "after the gate re-seeds it. Never change a delivered file without an IN_FIX CODE defect for it.",
+                "Reply PASS when the work products are fixed and both compiles PASS."]
+    return ["Fix ONLY the SWE.3 work products (workproducts/SWE.3/detailed_design.md, unit_specifications.md, the "
+            "unit designs and " + TRACE_MAP + ") for every finding of the newest inspection or gate entry. The "
+            "delivered code is FROZEN: never write or edit software/ (a problem in the delivered code is a CODE defect "
+            "for the owner, never a code change).", "Reply PASS when every work-product finding is fixed."]
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
+    if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
+        body = brownfield_swe3_steps()
+    elif BROWNFIELD["mode"] and phase == "SWE.2":
+        body = body[:1] + [BROWNFIELD_SWE2] + body[1:]
+    if BROWNFIELD["mode"] and phase != "SWE.1":
+        body = [delivered_note()] + body
     if _layer() == "HAL" and phase == "SWE.2":  # ADR-0009: the HAL is designed on the PROVIDED, frozen LL
         body = [x.replace("Read workproducts/SWE.1/software_requirements.md and",
                           "Read workproducts/SWE.1/software_requirements.md, software/ll/stm32n6xx_ll_rcc.h (PROVIDED "
@@ -747,6 +840,8 @@ def author_prompt(phase: str) -> str:
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
         [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
     tr = {"SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "ut", "SWE.5": "it", "SWE.6": "vt"}.get(phase)
+    if BROWNFIELD["mode"] and phase == "SWE.3":
+        tr = None  # the brownfield SWE.3 steps carry their own unit/trace rules (no generated scaffold, no code tags)
     if tr and trace_step(tr):  # owner trace rules go before the final 'gate freezes the baseline' step
         body = body[:-1] + trace_step(tr) + body[-1:]
     if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
@@ -769,6 +864,7 @@ def inspector_prompt(phase: str) -> str:
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
+             *([INSPECT_DELIVERED] if BROWNFIELD["mode"] and phase != "SWE.1" else []),
              *([REGISTER_BLOCK_NOTE] if phase in ("SWE.2", "SWE.3") else []),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              *([WORK_ORDER_SCOPE_NOTE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),

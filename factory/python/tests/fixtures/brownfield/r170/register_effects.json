@@ -1,0 +1,117 @@
+{
+  "schema": "forge-c/register-effects/1",
+  "effects": [
+    {
+      "case": "HSI_ENABLE",
+      "swr": "SWR-001",
+      "register": "RCC_CR",
+      "field": "HSION",
+      "op": "set"
+    },
+    {
+      "case": "HSI_DISABLE",
+      "swr": "SWR-002",
+      "register": "RCC_CR",
+      "field": "HSION",
+      "op": "clear"
+    },
+    {
+      "case": "HSE_ENABLE",
+      "swr": "SWR-003",
+      "register": "RCC_CR",
+      "field": "HSEON",
+      "op": "set"
+    },
+    {
+      "case": "HSE_DISABLE",
+      "swr": "SWR-004",
+      "register": "RCC_CR",
+      "field": "HSEON",
+      "op": "clear"
+    },
+    {
+      "case": "HSI_READY_QUERY",
+      "swr": "SWR-005",
+      "register": "RCC_SR",
+      "field": "HSIRDY",
+      "op": "no_write"
+    },
+    {
+      "case": "HSE_READY_QUERY",
+      "swr": "SWR-006",
+      "register": "RCC_SR",
+      "field": "HSERDY",
+      "op": "no_write"
+    },
+    {
+      "case": "GPDMA1_CLOCK_ENABLE",
+      "swr": "SWR-007",
+      "register": "RCC_AHB1ENR",
+      "field": "GPDMA1EN",
+      "op": "set"
+    },
+    {
+      "case": "GPDMA1_CLOCK_DISABLE",
+      "swr": "SWR-008",
+      "register": "RCC_AHB1ENR",
+      "field": "GPDMA1EN",
+      "op": "clear"
+    },
+    {
+      "case": "GPDMA1_CLOCK_IS_ENABLED",
+      "swr": "SWR-009",
+      "register": "RCC_AHB1ENR",
+      "field": "GPDMA1EN",
+      "op": "no_write"
+    },
+    {
+      "case": "GPDMA1_RESET_ASSERT",
+      "swr": "SWR-010",
+      "register": "RCC_AHB1RSTR",
+      "field": "GPDMA1RST",
+      "op": "set"
+    },
+    {
+      "case": "GPDMA1_RESET_RELEASE",
+      "swr": "SWR-011",
+      "register": "RCC_AHB1RSTR",
+      "field": "GPDMA1RST",
+      "op": "clear"
+    },
+    {
+      "case": "ADC12_CLOCK_ENABLE",
+      "swr": "SWR-012",
+      "register": "RCC_AHB1ENR",
+      "field": "ADC12EN",
+      "op": "set"
+    },
+    {
+      "case": "ADC12_CLOCK_DISABLE",
+      "swr": "SWR-013",
+      "register": "RCC_AHB1ENR",
+      "field": "ADC12EN",
+      "op": "clear"
+    },
+    {
+      "case": "ADC12_CLOCK_IS_ENABLED",
+      "swr": "SWR-014",
+      "register": "RCC_AHB1ENR",
+      "field": "ADC12EN",
+      "op": "no_write"
+    },
+    {
+      "case": "ADC12_RESET_ASSERT",
+      "swr": "SWR-015",
+      "register": "RCC_AHB1RSTR",
+      "field": "ADC12RST",
+      "op": "set"
+    },
+    {
+      "case": "ADC12_RESET_RELEASE",
+      "swr": "SWR-016",
+      "register": "RCC_AHB1RSTR",
+      "field": "ADC12RST",
+      "op": "clear"
+    }
+  ]
+}

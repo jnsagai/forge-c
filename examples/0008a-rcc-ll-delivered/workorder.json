@@ -1,0 +1,100 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 RCC low-level (LL) driver - delivered code (brownfield, feature 008)",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 14 + memory map p.176"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.14 RCC register interface + memory map p.176 (owner decision 2026-10-15)",
+  "safety_allocation": "OUT_OF_SCOPE: QM development, no safety allocation or safety claims (owner decision 2026-10-15)"
+ },
+ "scope": [
+  "LL (header-only, static inline, (void) functions): read/write RCC registers through the generated register-block array ll_rcc_regs (extern; placed at the RCC base by the linker, defined in RAM by host tests), indexed by the generated LL_RCC_<REG>_OFFSET / 4U",
+  "HSI and HSE oscillator enable/disable (RCC_CR HSION/HSEON or their set/clear registers) and ready-flag query in RCC_SR (no waiting: the caller bounds its polling)",
+  "Peripheral clock enable/disable/is-enabled for AHB1-5 and APB1L/1H/2/4L/4H/5 enable registers (RCC_xxxENR, RM0486 14.10.79-14.10.90)",
+  "Peripheral reset assert/release via RCC_xxxRSTR (RM0486 14.10.64-14.10.74)",
+  "Out of scope: HAL API (status codes, parameter checks, timeouts - work order 0002b), PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+ ],
+ "system_names": [
+  "RCC LL driver",
+  "RCC driver",
+  "STM32N6 RCC LL driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+   "role": "reference_manual_rcc_chapter"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "LL",
+ "layer_note": "Feature 008 validation delivery: the LL code produced by the factory's own greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (READY package, archive sha256 ba2f86f5d00abd8e813309a4d65d81ab5310d55f80ccf8d2ca3e2c83e92e34cb), delivered back as existing code. Requirements are derived from the same RM sections, independently of it.",
+ "delivery": {
+  "code_mode": "FROZEN",
+  "origin": "Forge-C greenfield work order WO-0002A-STM32N6-RCC-LL-r170 (factory-generated, 2026-10-20)",
+  "licence": "Apache-2.0",
+  "licence_allows_modification": true,
+  "source": "delivery",
+  "files": [
+   {
+    "from": "stm32n6xx_ll_rcc.h",
+    "to": "software/ll/stm32n6xx_ll_rcc.h"
+   },
+   {
+    "from": "stm32n6xx_ll_rcc.c",
+    "to": "software/src/stm32n6xx_ll_rcc.c"
+   }
+  ],
+  "scope": {
+   "functions": [
+    "LL_RCC_HSI_Enable",
+    "LL_RCC_HSI_Disable",
+    "LL_RCC_HSI_IsReady",
+    "LL_RCC_HSE_Enable",
+    "LL_RCC_HSE_Disable",
+    "LL_RCC_HSE_IsReady",
+    "LL_RCC_GPDMA1_Enable",
+    "LL_RCC_GPDMA1_Disable",
+    "LL_RCC_GPDMA1_IsEnabled",
+    "LL_RCC_GPDMA1_ForceReset",
+    "LL_RCC_GPDMA1_ReleaseReset",
+    "LL_RCC_ADC12_Enable",
+    "LL_RCC_ADC12_Disable",
+    "LL_RCC_ADC12_IsEnabled",
+    "LL_RCC_ADC12_ForceReset",
+    "LL_RCC_ADC12_ReleaseReset"
+   ],
+   "note": "HSI/HSE oscillator on/off/ready; GPDMA1 and ADC12 clock enable/disable/query and reset assert/release"
+  },
+  "build": {
+   "style": "forge",
+   "defines": []
+  }
+ }
+}

@@ -128,6 +128,39 @@ class Authorizer:
                 return [tin[k]]
         return ["."] if tool in ("grep", "glob", "list_dir") else [""]
 
+    # -- feature 008: brownfield work orders -----------------------------------------------
+    def _manifest(self) -> dict:
+        from ..brownfield import manifest_of
+
+        return manifest_of(self.workspace)
+
+    def _hidden_from(self, role_id: str, phase: str | None) -> list[str]:
+        """Paths a requirement author (SWE.1 roles) may not read in a brownfield work order."""
+        from ..brownfield import DELIVERY_DIR, delivered_paths
+
+        if not (role_id == "swe1-author" or phase == "SWE.1"):
+            return []
+        m = self._manifest()
+        paths = delivered_paths(m, None)
+        return paths + [f"{DELIVERY_DIR}/**", "workproducts/SWE.3/delivered_code_facts.json",
+                        "workproducts/SWE.3/code_trace_map*.json"] if paths else []
+
+    def _delivered_write(self, role_id: str, rel: str) -> str | None:
+        from ..brownfield import code_mode, delivered_paths
+
+        m = self._manifest()
+        if rel not in delivered_paths(m):
+            return None
+        if code_mode(m) != "FIX_ALLOWED":
+            return "DELIVERED_CODE_FROZEN"
+        if role_id != "swe3-author":
+            return "DELIVERED_CODE_FIX_ROLE_ONLY"
+        from ..brownfield.verify import _code_defects, _defect_files
+
+        if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d) for d in _code_defects(self.workspace)):
+            return "DELIVERED_CODE_NO_DEFECT"
+        return None
+
     # -- decision -----------------------------------------------------------------------
     def decide(self, node_id: str | None, tool: str, tool_input: dict | None) -> Decision:
         tin = tool_input if isinstance(tool_input, dict) else {}
@@ -156,12 +189,18 @@ class Authorizer:
                 return Decision(False, "PHASE_MISMATCH", f"{role.phase}!={phase}", role_id, op)
             return Decision(True, "ALLOW_MCP", op, role_id, op)
         if tool in READ_TOOLS:
+            hidden = self._hidden_from(role_id, phase)
             for raw in self._paths(tool, tin):
                 rel = self._rel(raw or ".")
                 if rel is None:
                     return Decision(False, "PATH_OUTSIDE_WORKSPACE", str(raw)[:80], role_id)
                 if _match(rel, SECRET_READ_DENY):
                     return Decision(False, "SECRET_PATH_DENIED", rel, role_id)
+                if hidden and (_match(rel, hidden) or (tool in ("grep", "glob", "list_dir") and any(
+                        (self.workspace / h).exists() and (rel in (".", "") or h.startswith(rel.rstrip("/") + "/"))
+                        for h in hidden if "*" not in h))):
+                    # feature 008 (FR-007): requirement authors never read the delivered code
+                    return Decision(False, "DELIVERED_CODE_HIDDEN_FROM_REQUIREMENTS", rel, role_id)
                 if role_id in ("fabric-repair", "mcp-integrator") and _match(rel, PRODUCT_PATHS):
                     return Decision(False, "PRODUCT_BASELINE_DENIED", rel, role_id)
             return Decision(True, "ALLOW_READ", tool, role_id)
@@ -181,6 +220,9 @@ class Authorizer:
                     else self.protected
                 if _match(rel, protected):
                     return Decision(False, "PROTECTED_PATH_DENIED", rel, role_id)
+                denied = self._delivered_write(role_id, rel)
+                if denied:  # feature 008 (FR-013/FR-014): delivered code is frozen or changes only for a CODE defect
+                    return Decision(False, denied, rel, role_id)
                 if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
             return Decision(True, "ALLOW_WRITE", tool, role_id)

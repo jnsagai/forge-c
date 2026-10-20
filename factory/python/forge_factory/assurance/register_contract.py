@@ -108,6 +108,15 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
     return out[:15]
 
 
+def _no_delivered_code(ws: Path, call) -> bool:
+    """Brownfield (feature 008): SWE.2 marks a case no delivered function implements with function NONE."""
+    if not (isinstance(call, dict) and str(call.get("function", "")).upper() == "NONE"):
+        return False
+    from ..brownfield import is_brownfield, manifest_of
+
+    return is_brownfield(manifest_of(ws))
+
+
 def check_calls(ws: Path) -> list[str]:
     from .oracle_gen import allocation
 
@@ -123,6 +132,8 @@ def check_calls(ws: Path) -> list[str]:
     out = []
     for e in eff.get("effects") or []:
         case, c = e.get("case"), calls.get(e.get("case"))
+        if _no_delivered_code(ws, c):  # feature 008: a NO_CODE conformance finding, not a contract error
+            continue
         if not isinstance(c, dict):
             out.append(f"CONTRACT_CASE_WITHOUT_CALL:{CALLS}:{case}")
             continue
@@ -146,6 +157,9 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
     idx, out, notes = _rm_index(ws), [], []
     for e in eff.get("effects") or []:
         c = (d.get("calls") or {}).get(e.get("case"))
+        if _no_delivered_code(ws, c):  # feature 008: nothing to call; conformance reports NO_CODE
+            notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no delivered function (NONE)")
+            continue
         if not isinstance(c, dict) or e.get("op") not in OPS:
             notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no call or op")
             continue

@@ -149,6 +149,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     from ..inspection import defects  # ADR-0008: open/escalated defects are unresolved findings (never hidden)
 
     findings += [{"id": g, "severity": "major", "detail": "defect register"} for g in defects.gaps(ws)]
+    from ..brownfield.package import findings as delivered_findings  # feature 008 (FR-009); [] for greenfield
+
+    findings += delivered_findings(ws)
     detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
               "target_runs": [r["result"]["status"] for r in tgt]}
     return checks, findings, detail
@@ -321,6 +324,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         if ins:
             _w(stage, f"inspection/{p}/inspection_record.json", pretty_json(ins[-1]))
     checks, findings, detail = derive_gates(ws, budgets)
+    from ..brownfield.package import stage as delivery_stage  # feature 008: delivery record (FR-017); [] greenfield
+
+    owner_docs += delivery_stage(ws, stage)
     res = tool_results(ws)
 
     def summary(server: str, op: str, extra: dict | None = None) -> str:

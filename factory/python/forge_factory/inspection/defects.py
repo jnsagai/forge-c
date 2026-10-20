@@ -111,6 +111,12 @@ def _requirement_texts(ws: Path) -> dict[str, str]:
     return {r.req_id: r.text for r in extract(p.read_text(errors="replace"))} if p.is_file() else {}
 
 
+def _frozen_delivery(ws: Path) -> bool:
+    from ..brownfield import code_mode, manifest_of
+
+    return code_mode(manifest_of(ws)) == "FROZEN"
+
+
 def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summary: str,
            requirement_ids: list[str], test_files: list[str], evidence_refs: list[str],
            requirement_quote: str = "") -> dict:
@@ -120,6 +126,9 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     if detected_phase not in PHASES:
         raise DefectError(f"UNKNOWN_PHASE:{detected_phase}")
     target = detected_phase if kind == "TEST" else KIND_TARGET.get(kind)
+    frozen = kind == "CODE" and _frozen_delivery(ws)
+    if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
+        target = None
     if target is not None and PHASES.index(target) > PHASES.index(detected_phase):
         raise DefectError(f"TARGET_NOT_UPSTREAM:{target}>{detected_phase}")
     if target is not None and kind != "TEST" and target == detected_phase:
@@ -189,9 +198,14 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
            "summary": summary[:400], "requirement_quote": requirement_quote[:300]}
     if kind == "TEST":
         rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
-    od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" else None
+    if frozen:
+        rec["target_kind"] = "DELIVERED_CODE"
+    od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" or frozen else None
     if od is not None:  # the owner already decided this input issue: recorded, not escalated again
         _event(rec, "DISPOSITIONED", disposition=od["id"], by=od.get("approved_by"), note=od.get("disposition"))
+    elif frozen:
+        _event(rec, "ESCALATED", note="FROZEN delivered code: a finding for the owner (no rework loop); an owner "
+                                      "disposition may accept it as a deviation")
     elif kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":

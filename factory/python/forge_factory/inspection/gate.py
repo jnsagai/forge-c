@@ -411,6 +411,10 @@ def step_return(store: Store, phase: str) -> int:
 
 
 def step_verify(store: Store, phase: str, check: str) -> int:
+    if check in ("delivery_inject", "delivery_check", "delivery"):  # feature 008 brownfield nodes
+        from ..brownfield import gates as BG
+
+        return BG.run(store, phase, check, _state, fail_code)
     if check == "hal_guideline":
         from .guideline import check_workspace
         from .implementation import check_implementation
