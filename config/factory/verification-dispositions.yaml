@@ -15,3 +15,16 @@ dispositions:
     approved_by: Jefferson Nascimento
     approved_at: '2026-10-18'
     reference: "owner instruction 2026-10-18 on DEF-005: 'go with 2'"
+  - id: OD-2026-10-20-07
+    examples: [0008c-st-cube-rcc]
+    # feature 008: a disposition of DELIVERED-CODE findings (FROZEN vendor code), matched on the recorded finding id
+    delivered_finding_regex: '^GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus\.h:(879|897|911|925|939)$'
+    disposition: ACCEPTED_VENDOR_NAMING_STYLE
+    limitation: >-
+      ST's delivered stm32n6xx_ll_bus.h (STM32CubeN6 stm32n6xx-hal-driver v1.4.0) names the parameter of the in-scope
+      AHB1 bus functions `Periphs`; GL-ARG-01 of the factory's Cube2 HAL guideline subset (parameters in lower case) is
+      not the vendor's LL naming convention. The owner accepts these 5 findings as a naming-style deviation of the
+      delivered code, not a defect; the code is unchanged (FROZEN).
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-20'
+    reference: "owner answer 2026-10-20 to the agent's question on the 5 GL-ARG-01 findings of b008: 'Disposition them (Recommended)'"

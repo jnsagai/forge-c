@@ -1,0 +1,27 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T12:27:01.114243Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017",
+    "SWR-022"
+  ],
+  "requirement_quote": "When any specified register write function is called, the RCC LL driver shall modify only the bit named for that function in SWR-001, SWR-002, SWR-004, SWR-005, SWR-007, SWR-008, SWR-010, SWR-011, SWR-012, SWR-013, SWR-015 or SWR-016 and preserve all other bits of its register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Fixed grouped annotations that omitted USPEC bindings: one annotated function per owner UT. Folded unowned UT-023..028 into UT-017/022 across all four groups. Retained every behavioral predicate, expected mask and matrix case.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "e9cdf9983eb1b783b7836bffd3f2aa5bfd48cf2c817f0a948449a233a6c67bb4"
+  }
+}

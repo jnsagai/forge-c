@@ -1,9 +1,9 @@
 {
- "graph:hal": "ec7ce8a166addafff22516187b89e64c9cc79627e66e6da5d361abc5925800be",
- "graph:hal_fix_allowed": "81f11a82a6051d0336961656f7dbb0d3ec0aec332f42e2bc229405bf8fd5f1ae",
- "graph:legacy": "ba59e402665efeeb61b45a88a97b0a18908c7b6a1b289ed2aca238405c40e5be",
- "graph:ll": "ba725d8c99be4bc070aaa9ad77d63d11e69e46770ec00e782a126706aab2957d",
- "graph:ll_brownfield": "398efcf17f67c33b7d0f8e8083b8d8722c93446ca0d6e3bf65b2863d319a3dcf",
+ "graph:hal": "84ccd8b016fb081aefe11c3f21f7a9a3725f9875989fcc4d6fdd0feee1bbea54",
+ "graph:hal_fix_allowed": "1f882586ab77e06921ead9c19ad4b14c4df3635883da11b5e2072adba642ac32",
+ "graph:legacy": "cb0cdf33ca0fe7c52f69f72b699e290d6a0d9348a6316ed40980e2c64c8256bb",
+ "graph:ll": "f7b6090b4add1ba488141d7d241355e233f03b287c7c9ae6d050026e03b88fd1",
+ "graph:ll_brownfield": "a1ca0ae21d865c176d03c701863bfb8aadd9b2970424ba664c4cdbe5bbc953f8",
  "regmap:software/ll/stm32n6xx_ll_rcc.h": "9488cdc0bcab43f50350c12dc18fb14dbc6f839852d4944a327df46518eec56f",
  "regmap:software/src/stm32n6xx_ll_rcc.c": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
 }

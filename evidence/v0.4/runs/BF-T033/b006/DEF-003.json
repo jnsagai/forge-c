@@ -1,0 +1,37 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    ".forge-run/gates/gate-log.jsonl",
+    "workproducts/SWE.2/software_architecture.md",
+    "workproducts/SWE.3/code_trace_map.seed.json",
+    "workproducts/SWE.3/unit_specifications.md"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T11:09:27.439842Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-010",
+    "SWR-011",
+    "SWR-012",
+    "SWR-013",
+    "SWR-014",
+    "SWR-015",
+    "SWR-016"
+  ],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "SWE.3 trace schema permits one owning unit per delivered function, but the required GPDMA1 and ADC12 units share all five bus functions. Unique seed rows tracing both units trigger CODE:SPEC_OF_OTHER_UNIT; duplicate rows violate the explicit once-per-function contract. Support shared unit ownership in the trace validator/schema.",
+  "target_phase": null,
+  "test_files": {}
+}

@@ -1,0 +1,27 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T11:25:16.558220Z"
+    }
+  ],
+  "id": "DEF-005",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017",
+    "SWR-022"
+  ],
+  "requirement_quote": "When an HSI or HSE ready query or a GPDMA1 or ADC12 clock is-enabled query is called, the RCC LL driver shall leave every RCC register unchanged.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected aggregate CHECK ownership with dedicated API-calling UT-017/UT-022 functions. Strengthened preservation with an explicit alias model. Unit suite and trace pass; expected masks and snapshots retained.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "dfb2b8ff5b31813255629fd42d2c59fbd93f2c282b626e6cd925722e2bad7b58"
+  }
+}

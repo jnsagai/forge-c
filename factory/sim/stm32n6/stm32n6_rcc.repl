@@ -10,7 +10,8 @@ nvic: IRQControllers.NVIC @ sysbus 0xE000E000
 axisram: Memory.MappedMemory @ sysbus 0x34000000
     size: 0x200000
 
+// RCC window: RM0486 memory map 0x56028000-0x56029FFF (8 KB)
 rcc: Python.PythonPeripheral @ sysbus 0x56028000
-    size: 0x1000
+    size: 0x2000
     initable: true
     filename: "RCC_MODEL_PATH"

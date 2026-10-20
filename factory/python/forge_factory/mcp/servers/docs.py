@@ -29,7 +29,44 @@ class DocIn(ToolInput):
     pass
 
 
+BROWNFIELD_CHECKS = {"hal_guideline": ("delivered_guideline",), "register_map": ("delivered_register_definitions",),
+                     "implementation": ("delivered_implementation",),
+                     "swe3_all": ("delivered_guideline", "delivered_register_definitions", "delivered_implementation")}
+
+
+def _brownfield_swe3(ctx: ToolContext, a: ValidateIn) -> dict:
+    """CAPA-057 (b006 DEF-002): for a delivery the SWE.3 checks are the v0.4-brownfield items (OD-2026-10-20-02), not
+    the factory-style rules (ll_rcc_regs defines, static inline, Cube2 guideline on vendor code). Findings in the
+    delivered code are reported for the record (the SWE.3 verify node records them as owner findings); the author
+    fails only on what it must act on: a build/probe failure, a fingerprint change, or a fixable (FIX_ALLOWED,
+    forge-style) finding."""
+    from ...brownfield import checks as K
+    from ...brownfield import code_mode, manifest_of
+
+    m = manifest_of(ctx.workspace)
+    fixable = code_mode(m) == "FIX_ALLOWED" and K.style_of(m) == "forge"
+    reps, blocking, info = {}, [], []
+    for name in BROWNFIELD_CHECKS[a.check]:
+        rep = K.RUN[name](ctx.workspace, m)
+        reps[name] = rep
+        if rep.get("build") in ("FAIL", "NOT_RUN") and rep.get("probes"):
+            blocking.append(f"{name}:REGISTER_PROBES_{rep['build']}")
+        blocking += [f"{name}:{x}" for x in rep["findings"] if x.startswith("DELIVERY:") or fixable]
+        info += [f"DELIVERED_FINDING(recorded for the owner):{x}" for x in rep["findings"]
+                 if not (x.startswith("DELIVERY:") or fixable)]
+    verdict = "FAIL" if blocking else "PASS"
+    return result(ctx, verdict, f"SWE.3 delivered-code checks ({a.check}): {len(blocking)} blocking, {len(info)} "
+                  "recorded findings", [ctx.store(json.dumps(reps, indent=1).encode(), "json")], (blocking + info)[:30],
+                  {"blocking": len(blocking), "recorded_findings": len(info)}, "forge-brownfield-checks",
+                  input_obj=a.model_dump())
+
+
 def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
+    if a.check in BROWNFIELD_CHECKS:
+        from ...brownfield import is_brownfield, manifest_of
+
+        if is_brownfield(manifest_of(ctx.workspace)):
+            return _brownfield_swe3(ctx, a)
     if a.check == "hal_guideline":
         rep = check_workspace(ctx.workspace)
         issues = [f"{v['rule']}:{v['file'].split('/')[-1]}:{v['line']}" for v in rep["violations"]]

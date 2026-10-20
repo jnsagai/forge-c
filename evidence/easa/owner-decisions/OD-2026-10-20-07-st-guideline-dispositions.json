@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-07",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Disposition of the 5 GL-ARG-01 guideline findings in ST's delivered stm32n6xx_ll_bus.h (ST pilot 0008c, run b008)",
+  "statements": ["Disposition them (Recommended)"],
+  "context": "b008 passed SWE.1-SWE.6 on ST's delivered RCC code; its package was BLOCKED only by these 5 findings (parameter `Periphs` not lower case). Option chosen over keeping them as open gaps.",
+  "decision": "ACCEPTED_VENDOR_NAMING_STYLE for exactly the 5 findings (ll_bus.h lines 879, 897, 911, 925, 939); the limitation is stated in every 0008c package; the delivered code is unchanged (FROZEN).",
+  "not_changed": "The guideline, the checklist and the delivered code; the disposition is not a safety approval and covers no other finding."
+}

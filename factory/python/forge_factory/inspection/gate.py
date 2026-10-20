@@ -102,6 +102,9 @@ def step_author(store: Store, phase: str, text: str) -> int:
 
         rq = reqif_export(store.workspace)
         generated += [f"REQIF:{i}" for i in rq["issues"]]
+        from .test_mapping import startup_on_host  # CAPA-059: startup invariants are target-observed (Robot)
+
+        generated += startup_on_host(store.workspace)
     if phase == "SWE.2" and (store.workspace / "workproducts/SWE.2/architecture_static.puml").is_file():
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 

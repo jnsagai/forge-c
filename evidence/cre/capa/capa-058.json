@@ -1,0 +1,100 @@
+{
+  "CAPA-058": {
+    "history": [
+      {
+        "at": "2026-10-20T11:44:29.874732Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[\"CAPA-058\"]",
+        "from_state": null,
+        "reason": "b006 (WO-0008C-ST-RCC-LL-b006) SWE.3: CODE:SPEC_OF_OTHER_UNIT for LL_AHB1_GRP1_* shared by the GPDMA1 and ADC12 units; authors escalated DEF-003 (FACTORY)",
+        "seq": 467,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T11:44:29.915574Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 468,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T11:44:29.986294Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-062 assigned",
+        "seq": 469,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T11:47:04.267169Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[\"reproducer-run:rr-3308743f1823c7257965\", \"reproducer-run:rr-5d2d4cfabb73ab75cc5a\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 470,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T11:47:04.289997Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[\"git:1d478607670a..7eb6b34c5bc6\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 7eb6b34c5bc6 (patch 6856 bytes)",
+        "seq": 471,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T11:47:04.332538Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[\"reproducer-run:rr-8271bcad503599e7d9f1\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-062 absent at 7eb6b34c5bc6",
+        "seq": 472,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T11:47:04.348652Z",
+        "capa_id": "CAPA-058",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 473,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "1d478607670a53dd69eb7b88a75a8db39e81b66f",
+      "7eb6b34c5bc6840103b72e40c72c517bd19c199a",
+      "pd-633966bd7411e580bd52"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<7eb6b34c5bc6"
+      ],
+      "candidate_patch_sha256": "5a040c61eb729421d3fbfcb51bef9af72e48cc68de60decade6ffa8dd70d6616",
+      "capa_id": "CAPA-058",
+      "created_at": "2026-10-20T11:44:29.874732Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-058"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-062",
+      "reproducer_id": "RPR-062",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-3308743f1823c7257965",
+        "reproducer-run:rr-5d2d4cfabb73ab75cc5a"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the trace map schema allowed exactly one owning unit per delivered function",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T11:47:04.348652Z"
+    }
+  }
+}

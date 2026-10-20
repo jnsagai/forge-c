@@ -1,0 +1,29 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "inspection/SWE.4/INS-SWE.4-002.json",
+    "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T11:32:44.737295Z"
+    }
+  ],
+  "id": "DEF-008",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-018"
+  ],
+  "requirement_quote": "While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "SWE4-06: removed the false UT-018 links to all sixteen operation USPECs. SWR-018 is COMPONENT_LEVEL in matrix 2; UT-018 observes only the no-call startup invariant and retains its full volatile snapshot CHECK. Operation tests retain their own USPEC links, now in individual annotations for every CHECK ID. This corrects DEF-007's incorrect association; no expectations or delivered code changed.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "cf2afd006f598f2bd711fe9bb09857c6fedaa8c35da71b4f1b44d8a9423c926f"
+  }
+}

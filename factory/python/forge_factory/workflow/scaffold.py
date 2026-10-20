@@ -61,6 +61,26 @@ def unit_test(ws: Path | None = None) -> str:
     return f"software/tests/unit/test_{profile(ws)['id']}.c"
 
 
+def cmsis_harness(ws: Path) -> str:
+    """Harness for a CMSIS delivery: the peripheral instance is a RAM struct (forge_host_device.h), reset by
+    ut_reset_regs(); the delivered headers are included unchanged."""
+    from ..brownfield import delivered_paths, manifest_of
+    from ..brownfield.cmsis import instance
+
+    pfx = instance(ws)
+    var = f"forge_host_{pfx.lower()}"
+    heads = "".join(f'#include "{Path(h).name}"\n' for h in delivered_paths(manifest_of(ws)) if h.endswith(".h"))
+    return (HARNESS.replace('#include "stm32n6xx_hal_rcc.h"\n\nvolatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];\n',
+                            "#include <string.h>\n#define FORGE_HOST_DEVICE_IMPLEMENTATION /* defines " + var +
+                            " once, here */\n#include \"forge_host_device.h\" /* " + pfx + " -> RAM struct " + var +
+                            " (host only) */\n" + heads)
+            .replace("""    uint32_t i;
+    for (i = 0U; i < LL_RCC_REG_COUNT; i++)
+    {
+        ll_rcc_regs[i] = 0U;
+    }""", f"    (void)memset((void *)&{var}, 0, sizeof({var}));"))
+
+
 def _for_peripheral(text: str, ws: Path) -> str:
     """The RCC harness text with the work order's peripheral names (identity for RCC)."""
     from ..layer import profile
@@ -79,6 +99,12 @@ def scaffold(ws: Path) -> dict:
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
     p.parent.mkdir(parents=True, exist_ok=True)
+    from ..brownfield.cmsis import is_cmsis, write_host_device
+
+    if is_cmsis(ws):  # feature 008 (ST pilot): the delivered CMSIS code on the generated host device map
+        write_host_device(ws)
+        p.write_text(cmsis_harness(ws), encoding="utf-8")
+        return {"status": "PASS", "created": True, "file": UNIT_TEST, "host_device": True}
     if hal_unit_isolation(ws):  # CAPA-038: generated LL test double + harness that uses it
         from .ll_fake import write
 

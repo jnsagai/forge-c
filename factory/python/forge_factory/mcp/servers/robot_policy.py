@@ -181,7 +181,9 @@ def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[
             checks = _checks(scenario_dir / scn)
             exprs += [e for i, e in checks.items() if cid is None or i == cid or not i.isdigit()]
         blob = " ".join(exprs)
-        field_seen = any(f in blob or f.split("_")[-2] in blob for f in fields)  # macro, or the bare field name
+        rx = re.compile(rf"\b{pr['register_prefix']}_([A-Z0-9]+)\.([A-Z][A-Z0-9_]+)\b")
+        vendor = {f"{pr['register_prefix']}_{r}_{f}" for r, f in rx.findall(text)}  # CMSIS mask names (ST pilot)
+        field_seen = any(f in blob or f.split("_")[-2] in blob for f in fields) or any(v in blob for v in vendor)
         missing = sorted(h for h in hal if h not in blob) if hal else ([] if field_seen else sorted(fields))
         if missing:
             scn = ",".join(sorted({s for s, _ in obs[rid]})) or "a scenario"

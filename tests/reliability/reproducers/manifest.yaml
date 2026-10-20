@@ -651,3 +651,80 @@ reproducers:
     operations: [assurance/swe12.check_requirements]
     root_cause: "check_requirements read only the first 'RM0486 p.N' of each source line (re.search) and required every field the requirement names to be on that page. Requirements cite several pages ('RM0486 p.2989; RM0486 p.2990; RM0486 p.2991'); fields on the later pages (i003 RVU/ONF, r164 HSIRDY/HSERDY) were reported as REQ_SOURCE_MISMATCH although they are on a cited page. Observe-only SWE.1 assurance verdict FAIL on both IWDG and RCC."
     remedy: "cited_pages() collects every page of every source line (lists and bounded ranges, p./pp., en dash); a field is a mismatch only when it is on none of them; REQ_SOURCE_PAGE_NOT_IN_INPUTS is reported per source line when none of its pages is in the inputs. RCC results change by design: r164 SWR-001/002/007 no longer get the false finding."
+  - id: RPR-060
+    script: rpr060_delivered_compile_werror.py
+    sha256: 5060f9feb134030387afc3915c08c76fb5f6d646e756066c7c69cbe44192f115
+    symptom_signature: "delivered CMSIS code fails the target build on vendor-header warnings"
+    observed_in: b006
+    baseline_revision: e71c98c0e3e4ec14f7ed68531e60b7d85a2d2d30
+    fix_revision: 1f4d745bac436a3bd76209edc554495ff8f9d102
+    error_codes: ["BUILD_FAIL", "NO_OBJECTS"]
+    operations: [build/compile, build/measure_elf]
+    root_cause: "forge-build-mcp compile used the factory's own warning policy (-Werror -Wconversion -Wsign-conversion -pedantic) for a frozen delivery and passed the vendor include directory with -I; ST's CMSIS armv7m_cachel1.h line 117 warns under -Wsign-conversion, so the target build failed, no object was emitted and measure_elf was BLOCKED (DEF-001 FACTORY)."
+    remedy: "For a delivery the warning flags drop -Werror and every warning is recorded as an issue; the vendor include and host device directories are passed with -isystem (third-party headers). Factory-written code keeps -Werror."
+  - id: RPR-061
+    script: rpr061_swe3_all_greenfield_on_delivery.py
+    sha256: 4c894132e2eacbcdfb54fa98cc1afc9d8b2af5c5186ef607c26ea61d547b9720
+    symptom_signature: "swe3_all applies greenfield checks to a delivery"
+    observed_in: b006
+    baseline_revision: 6e37c09443f0d2e20f5992822becb59edf992e06
+    fix_revision: f3e72507e9bfc1cc60261324c7eaff6cd762046c
+    error_codes: ["REGMAP:NO_REGISTER_DEFINES", "IMPL:LL_NOT_STATIC_INLINE"]
+    operations: [docs/validate_artifact]
+    root_cause: "OD-2026-10-20-02 moved the SWE.3 checklist items of a delivery to the delivered-code checks (brownfield/checks.py), but the author-facing validator forge-docs-mcp.validate_artifact (hal_guideline, register_map, implementation, swe3_all) still ran the greenfield checks; on the ST delivery it reported 491+ findings the frozen author cannot act on, and the authors escalated DEF-002 (FACTORY)."
+    remedy: "For a delivery the four SWE.3 checks run brownfield/checks.py: blocking only for probe build failures, fingerprint changes and fixable (FIX_ALLOWED, forge-style) findings; every other delivered-code finding is returned as recorded for the owner."
+  - id: RPR-062
+    script: rpr062_trace_map_shared_function.py
+    sha256: 38337242a09b2e0b30da6fb040e4f56180ae52a9d7b942120f84c469c4171b63
+    symptom_signature: "a delivered function shared by two units cannot be traced"
+    observed_in: b006
+    baseline_revision: 1d478607670a53dd69eb7b88a75a8db39e81b66f
+    fix_revision: 7eb6b34c5bc6840103b72e40c72c517bd19c199a
+    error_codes: ["CODE:SPEC_OF_OTHER_UNIT", "CODE:TRACE_MAP_DUPLICATE_FUNCTION"]
+    operations: [SWE.3/author, brownfield/trace]
+    root_cause: "brownfield.trace.check_code took one owning unit per delivered function, while the unit design of a vendor delivery can legitimately share a function between units (ST's LL_AHB1_GRP1_* serve both the GPDMA1 and the ADC12 unit); the SWE.3 author could satisfy neither the uniqueness rule nor the unit rule and escalated DEF-003 (FACTORY), after two rework cycles."
+    remedy: "A trace-map row's unit may be a list of owning units; each USPEC must belong to one of them, and each listed unit must name the function. The SWE.3 brownfield prompt describes the list form."
+  - id: RPR-063
+    script: rpr063_startup_invariant_on_host_test.py
+    sha256: 0188c16bff8e5ca6a23dbfe88fc1e6f3f4a5f12da0af07cc944bd4b36ba15fd1
+    symptom_signature: "SWE.1 gate accepts a startup invariant mapped to a host unit test"
+    observed_in: b006
+    baseline_revision: c5bfd310ea92416babafbd85c6336133535b23a6
+    fix_revision: 3456ba7ed8cb23af8b4c8680c43ee28998d405fe
+    error_codes: ["SWE4-02", "SWE4-06", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.1/author, SWE.4/author, SWE.4/inspect]
+    root_cause: "The SWE.1 mapping rule sent only flash/RAM/stack/target-only requirements to the Robot suite; a reset/startup invariant (b006 SWR-018: 'While no LL function has been called after reset, the RCC LL driver shall not write any RCC register') was mapped to host unit test UT-018, which can only check its own freshly reset RAM struct. The SWE.4 inspector rightly failed it as tautological (SWE4-02) and its traces (SWE4-06); the authors could not make a host test observe pre-main state, and SWE.4 BLOCKED."
+    remedy: "The SWE.1 author gate reports SWE1:STARTUP_INVARIANT_ON_HOST_TEST for a 'While ... after reset' requirement mapped under software/tests/unit/, naming the Robot mapping; the SWE.1 prompt includes reset/startup requirements in the Robot rule."
+  - id: RPR-064
+    script: rpr064_delivery_coverage_whole_files.py
+    sha256: 91615ea86934f34d5c693dd89449c1441f6736ca0f3b7337d397715e21987bca
+    symptom_signature: "delivery coverage reported only over whole delivered files"
+    observed_in: b006
+    baseline_revision: cb132162a9f2c44768af984d0b3e241bc6241884
+    fix_revision: 645c071922688e1dc781cb8f7d6d6ba80bac8722
+    error_codes: ["COVERAGE_NOT_SCOPED"]
+    operations: [tests/llvm_coverage, SWE.4/inspect]
+    root_cause: "forge-tests-mcp llvm_coverage summarised every line of the source files it was given; for a delivery those are whole vendor headers (ST stm32n6xx_ll_rcc.h/ll_bus.h, about 28k lines), so the figure (line 1.21% in b006) said nothing about the 11 scope functions the unit tests target, and the SWE.4 inspector had no scope coverage to judge."
+    remedy: "For a delivery with a scope, llvm_coverage adds scope_function_pct, scope_region_pct, scope_branch_pct and the unexecuted scope functions from the per-function export, and leads its summary with them; the whole-file figures stay in the metrics. Greenfield coverage is unchanged."
+  - id: RPR-065
+    script: rpr065_robot_measures_no_delivered_code.py
+    sha256: 93984cfb90ebb0b9858d5ab5302d715340182045da0f66ca475b8ccdc2df0d00
+    symptom_signature: "Robot driver measurement builds nothing for a header-only delivery"
+    observed_in: b007
+    baseline_revision: 1c63cb5631d9992d6088e318e689501bb5c8d44b
+    fix_revision: 593a013c94034d3ebd5dc103a818604fc15078fd
+    error_codes: ["REQUIRED_TOOL_NOT_PASS:run_robot:FAIL", "VT:SWR_NOT_VERIFIED"]
+    operations: [robot/ForgeTarget, SWE.6/run_robot]
+    root_cause: "ForgeTarget._objects built only software/hal/*.c and the factory LL measurement unit (static inline LL_<PPP>_ functions of the profile header); ST's header-only LL (__STATIC_INLINE, vendor includes) produced no unit, so the stack keyword found no call graph (b007 SWR-021 FAIL, DEF-004/005 FACTORY) and the flash and RAM keywords summed zero objects and passed their budgets with 0 B."
+    remedy: "Without HAL sources or an LL unit, ForgeTarget builds the delivery's generated scope unit (brownfield.cmsis.delivered_unit) with the vendor target flags; with nothing to build it raises instead of measuring 0 B. ST b007 measures 172 B flash, 0 B RAM, 8 B stack. The delivered-unit signature regex is line-anchored (a '#define __STATIC_INLINE static inline' line no longer matches)."
+  - id: RPR-066
+    script: rpr066_header_only_delivery_no_c_source.py
+    sha256: 9c41d0a71037a3ff9cac6363c767c4f97464c74b1c80f2c4355acd4bd79d977b
+    symptom_signature: "header-only delivery leaves the package C-source view empty"
+    observed_in: b008
+    baseline_revision: 0feeb644ee6108ca73eb8c15c22a2360656f2922
+    fix_revision: f896363abe02effc3be2d95a6313234698491f7e
+    error_codes: ["missing_required_pattern:software/src/*.c", "missing_or_empty_section:software/src"]
+    operations: [release/finalize]
+    root_cause: "The release policy (factory/release-manager, protected) requires a C-source view software/src/*.c; finalize filled it from software/hal and software/src only. A greenfield LL ships its generated compile unit there, but a header-only delivery (ST LL, __STATIC_INLINE) has none, so b008 - complete through SWE.6 - was BLOCKED on two packaging gaps."
+    remedy: "finalize.stage_delivered_unit stages the factory-generated build-only unit (brownfield.cmsis.delivered_unit: delivered headers + scope wrappers, no driver logic) as software/src/forge_delivered_unit.c, marked as generated and not delivered code, when the stage has no C source. The protected release policy is unchanged. Re-finalizing a copy of b008 leaves only the 5 delivered-code guideline findings (owner dispositions)."

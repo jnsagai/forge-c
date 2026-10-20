@@ -1,0 +1,27 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T12:22:55.388538Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017",
+    "SWR-022"
+  ],
+  "requirement_quote": "When any specified register write function is called, the RCC LL driver shall modify only the bit named for that function in SWR-001, SWR-002, SWR-004, SWR-005, SWR-007, SWR-008, SWR-010, SWR-011, SWR-012, SWR-013, SWR-015 or SWR-016 and preserve all other bits of its register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Fixed duplicate CHECK IDs by accumulating predicates and emitting each ID once. Added UT-023 through UT-028 for other groups. Expected masks and behavior unchanged.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "7a10bb7a5e11662792d32260a711a3c135735db00fd48da8457fd915352ea60c"
+  }
+}

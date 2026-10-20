@@ -1,0 +1,28 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "artifact:sha256:0129374cb9045994dce41bb7111c60784ac1b069f192fc069e00b4b8ff537ac7"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T14:37:58.795377Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "When any bit-writing function specified in SWR-001 through SWR-016 is called, the RCC LL driver shall change only the bit named by its applicable requirement and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "UT-017 incorrectly aggregated results without calling its allocated APIs. Corrected to call all bit-writing APIs and check exact single-bit alias commands for both masks. Existing logical-bit preservation assertions remain. Added USPEC annotations. Full unit suite PASS.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "a6e5a91dd389f44bab35fd551a7d5923099ce990cd38d1862a6caa9c0127660e"
+  }
+}

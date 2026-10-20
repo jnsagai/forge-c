@@ -79,8 +79,11 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     from ...workflow.scaffold import unit_test
 
     fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
-    incs = [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS + [f"software/tests/{level}"]
-            if (ctx.workspace / d).is_dir()]
+    from ...brownfield.cmsis import host_flags
+
+    # feature 008 (ST pilot): a CMSIS delivery compiles on the host against the generated host device directory
+    incs = host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS +
+                                        [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
     if fake and modified(ctx.workspace):
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
@@ -192,9 +195,46 @@ def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
                "region_pct": pct("regions"), "mcdc_pct": pct("mcdc"), "environment": "host",
                "target_evidence": False}
     refs = [ctx.store(r.stdout, "json"), ctx.store(rep.stdout + rep.stderr), ctx.store(prof.read_bytes(), "profdata")]
-    return result(ctx, "PASS", f"line {metrics['line_pct']}% branch {metrics['branch_pct']}% "
-                  f"MC/DC {metrics['mcdc_pct']}% (host)", refs, [], metrics, "llvm-cov", tool_version("llvm-cov"),
+    summary = f"line {metrics['line_pct']}% branch {metrics['branch_pct']}% MC/DC {metrics['mcdc_pct']}% (host)"
+    scope = _scope_coverage(ctx, prof, objs, srcs)
+    if scope is not None:  # CAPA-060 (b006): a delivery's headers hold far more than the scope (ST: 28k lines, 1.2%)
+        metrics.update(scope)
+        summary = (f"scope ({scope['scope_functions']} delivered functions): functions {scope['scope_function_pct']}% "
+                   f"regions {scope['scope_region_pct']}% branches {scope['scope_branch_pct']}% (host); whole delivered "
+                   f"files line {metrics['line_pct']}%")
+    return result(ctx, "PASS", summary, refs, [], metrics, "llvm-cov", tool_version("llvm-cov"),
                   r.exit_code, r.duration_ms + rep.duration_ms, a.model_dump(), r.stdout)
+
+
+def _scope_coverage(ctx: ToolContext, prof: Path, objs: list[str], srcs: list[str]) -> dict | None:
+    """CAPA-060: coverage of the delivered scope functions only (from llvm-cov's per-function export); None when the
+    work order has no delivery scope."""
+    from ...brownfield import DELIVERY_DIR, is_brownfield, manifest_of
+
+    sp = ctx.workspace / DELIVERY_DIR / "scope.json"
+    if not (is_brownfield(manifest_of(ctx.workspace)) and sp.is_file()):
+        return None
+    names = {f["name"] for f in json.loads(sp.read_text()).get("functions", [])}
+    r = run_argv(["llvm-cov", "export", f"-instr-profile={prof}", *objs, *srcs], prof.parent, 120, ALLOW)
+    try:
+        fns = json.loads(r.stdout)["data"][0]["functions"]
+    except (ValueError, KeyError, IndexError):
+        return None
+    best: dict[str, dict] = {}
+    for f in fns:  # one entry per test binary/TU: keep the most executed instance of each scope function
+        n = f["name"].split(":")[-1]
+        if n in names and (n not in best or f["count"] > best[n]["count"]):
+            best[n] = f
+    regions = [rg for f in best.values() for rg in f.get("regions", []) if len(rg) > 7 and rg[7] == 0]
+    branches = [b for f in best.values() for b in f.get("branches", [])]
+
+    def pct(hit: int, n: int) -> float | None:
+        return round(100.0 * hit / n, 2) if n else None
+
+    return {"scope_functions": len(names), "scope_function_pct": pct(sum(f["count"] > 0 for f in best.values()), len(names)),
+            "scope_region_pct": pct(sum(rg[4] > 0 for rg in regions), len(regions)),
+            "scope_branch_pct": pct(sum((b[4] > 0) + (b[5] > 0) for b in branches), 2 * len(branches)),
+            "scope_not_executed": sorted(names - {n for n, f in best.items() if f["count"] > 0})}
 
 
 def gcov_coverage(ctx: ToolContext, a: CovIn) -> dict:

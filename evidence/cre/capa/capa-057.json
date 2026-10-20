@@ -1,0 +1,100 @@
+{
+  "CAPA-057": {
+    "history": [
+      {
+        "at": "2026-10-20T11:41:16.951777Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[\"CAPA-057\"]",
+        "from_state": null,
+        "reason": "b006 (WO-0008C-ST-RCC-LL-b006) SWE.3: validate_artifact swe3_all FAIL with greenfield findings on the frozen ST delivery; authors escalated DEF-002 (FACTORY)",
+        "seq": 460,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T11:41:17.050935Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 461,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T11:41:17.186768Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-061 assigned",
+        "seq": 462,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T11:43:29.722759Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[\"reproducer-run:rr-32e5487b7a9fbc8be93e\", \"reproducer-run:rr-a77df3c6eb171f81ab4e\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 463,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T11:43:29.745369Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[\"git:6e37c09443f0..f3e72507e9bf\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix f3e72507e9bf (patch 4362 bytes)",
+        "seq": 464,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T11:43:29.784383Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[\"reproducer-run:rr-bbfc723a3f5ede7ce985\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-061 absent at f3e72507e9bf",
+        "seq": 465,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T11:43:29.805942Z",
+        "capa_id": "CAPA-057",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 466,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "6e37c09443f0d2e20f5992822becb59edf992e06",
+      "f3e72507e9bfc1cc60261324c7eaff6cd762046c",
+      "pd-8d8929e9f72779c49027"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<f3e72507e9bf"
+      ],
+      "candidate_patch_sha256": "aed14bb6408e5cc73fc77c214caffb5de9cf8cc7f323ab18a74bb9c22d0f2c15",
+      "capa_id": "CAPA-057",
+      "created_at": "2026-10-20T11:41:16.951777Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-057"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-061",
+      "reproducer_id": "RPR-061",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-32e5487b7a9fbc8be93e",
+        "reproducer-run:rr-a77df3c6eb171f81ab4e"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the author-facing validator was not switched to the v0.4-brownfield checks with the checklist (OD-2026-10-20-02)",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T11:43:29.805942Z"
+    }
+  }
+}

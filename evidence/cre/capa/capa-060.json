@@ -1,0 +1,100 @@
+{
+  "CAPA-060": {
+    "history": [
+      {
+        "at": "2026-10-20T11:57:30.516221Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[\"CAPA-060\"]",
+        "from_state": null,
+        "reason": "b006 (WO-0008C-ST-RCC-LL-b006) SWE.4: llvm_coverage line 1.21% over the whole ST headers; no coverage of the delivered scope functions",
+        "seq": 481,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T11:57:47.780238Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 482,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T11:57:47.935463Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-064 assigned",
+        "seq": 483,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T11:59:48.433389Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[\"reproducer-run:rr-6de8d613d09600a7f02f\", \"reproducer-run:rr-229a75f4f26ac501e709\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 484,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T11:59:48.451810Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[\"git:cb132162a9f2..645c07192268\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 645c07192268 (patch 4495 bytes)",
+        "seq": 485,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T11:59:48.487380Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[\"reproducer-run:rr-71f9f466098b78b406b5\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-064 absent at 645c07192268",
+        "seq": 486,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T11:59:48.499508Z",
+        "capa_id": "CAPA-060",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 487,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "cb132162a9f2c44768af984d0b3e241bc6241884",
+      "645c071922688e1dc781cb8f7d6d6ba80bac8722",
+      "pd-501674430f9fd497a586"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<645c07192268"
+      ],
+      "candidate_patch_sha256": "38a65b9a1c58f5002be80003ee58e35a10a4874cfeb44c79634e79184aadb486",
+      "capa_id": "CAPA-060",
+      "created_at": "2026-10-20T11:57:30.516221Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-060"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-064",
+      "reproducer_id": "RPR-064",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-6de8d613d09600a7f02f",
+        "reproducer-run:rr-229a75f4f26ac501e709"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "coverage was computed over whole delivered files, not over the delivery scope",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T11:59:48.499508Z"
+    }
+  }
+}

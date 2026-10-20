@@ -106,11 +106,20 @@ class ForgeTarget:
         out = self.wd / sub
         out.mkdir(parents=True, exist_ok=True)
         objs = []
-        for c in [*sorted((self.ws / "software/hal").glob("*.c")), *self._ll_units(out)]:
+        from forge_factory.brownfield.cmsis import delivered_unit, target_flags
+
+        units = [*sorted((self.ws / "software/hal").glob("*.c")), *self._ll_units(out)]
+        if not units:  # CAPA-061 (b007): a header-only delivery (ST LL) is measured through its scope wrappers
+            u = delivered_unit(self.ws, out)
+            units = [u] if u else []
+        if not units:  # CAPA-061: nothing built is never a 0-byte PASS of a flash, RAM or stack budget
+            raise AssertionError("no driver unit to measure (no HAL source, no LL unit, no delivered scope)")
+        for c in units:
             o = out / (c.stem + ".o")
             r = subprocess.run([cc, "-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os",
                                 "-ffunction-sections", "-fdata-sections", f"-I{self.ws / 'software/hal'}",
-                                f"-I{self.ws / 'software/ll'}", *(extra or []), "-c", str(c), "-o", str(o)],
+                                f"-I{self.ws / 'software/ll'}", *target_flags(self.ws), *(extra or []), "-c", str(c),
+                                "-o", str(o)],
                                capture_output=True, text=True, timeout=120, cwd=out)
             if r.returncode != 0:
                 raise AssertionError(f"driver build failed: {r.stderr[-300:]}")
