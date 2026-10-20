@@ -1,0 +1,13 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0009A-STM32N6-IWDG-LL-rc1/forge-c-WO-0009A-STM32N6-IWDG-LL-rc1-review.zip",
+  "archive_ref": "archive:sha256:a3b570623ad57e5c88a9b7ec349257c7a2161476ab31ddd890954b8bd59c3ecf",
+  "archive_sha256": "a3b570623ad57e5c88a9b7ec349257c7a2161476ab31ddd890954b8bd59c3ecf",
+  "finalized_at": "2026-10-20T19:55:08.572600Z",
+  "gap_count": 0,
+  "gaps": [],
+  "package_status": "READY_FOR_OFFLINE_REVIEW",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0009A-STM32N6-IWDG-LL-rc1",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}
