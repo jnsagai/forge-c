@@ -1,0 +1,99 @@
+{
+ "not_supported:['no control/data-flow or scheduling ana": {
+  "findings": [
+   "no control/data-flow or scheduling analyzer installed"
+  ],
+  "status": "NOT_SUPPORTED"
+ },
+ "v_api_execution": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_arch": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_bounded_proof": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+  ],
+  "status": "PASS"
+ },
+ "v_concurrency": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_eva": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:RCC_CR"
+  ],
+  "status": "PASS"
+ },
+ "v_fault_injection": {
+  "findings": [
+   "planned_register_faults (host model): NOT_RUN",
+   "clock_failure / clock security: NOT_SUPPORTED: behavioural RCC model has no clock tree",
+   "interrupt / preemption during read-modify-write: NOT_SUPPORTED: no interrupt source modelled",
+   "brown-out / reset during operation: NOT_SUPPORTED: no power model"
+  ],
+  "status": "PASS"
+ },
+ "v_fidelity": {
+  "findings": {
+   "SWE.5": [],
+   "SWE.6": []
+  },
+  "status": {
+   "SWE.5": "PASS",
+   "SWE.6": "PASS"
+  }
+ },
+ "v_integration": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_misra": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_mutation": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_negative_boundary": {
+  "findings": [
+   "NOT_APPLICABLE:the LL API takes no parameters"
+  ],
+  "status": "NOT_APPLICABLE"
+ },
+ "v_observation": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_oracle": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_register_semantics": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_renode_raw": {
+  "findings": [
+   "LIMITATION:PER_CHECK_PASS_IDS_NOT_RECORDED (requirement observation via TCHECK is inferred)"
+  ],
+  "status": "PASS"
+ },
+ "v_requirements": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_resource_budgets": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_two_way": {
+  "findings": [],
+  "status": "PASS"
+ }
+}

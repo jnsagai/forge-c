@@ -2,6 +2,15 @@
 the observe-only hook (never by an agent). Each run writes a report under .forge-run/assurance/reports/<phase>/ with
 its sha256; that report is the evidence the assurance gate accepts. A requirement without an executable verifier
 returns NOT_SUPPORTED (it is never satisfied by default); AI inspection text is never a verifier.
+
+Feature 009 (PG-T018): the verifiers take the work order's peripheral profile (LL header, compile unit, unit test,
+API/register prefixes, register block, simulator model). Remaining peripheral limits, stated not hidden:
+  * negative/boundary cases and the timeout/invalid oracle cases are derived for the RCC HAL timeout contract only
+    (another peripheral: NOT_SUPPORTED with the reason);
+  * the simulator-vs-RM comparison and the set/clear (non-atomic RMW) alias rules exist for RCC only (another model:
+    SIMULATOR_MODEL_NOT_COMPARABLE, no alias findings);
+  * the mutation operators written for RCC fields/registers apply to RCC only; no key-value operator exists;
+  * the seeded-defect corpus and pilot validation are RCC campaigns (another package: NOT_APPLICABLE).
 """
 from __future__ import annotations
 
@@ -22,8 +31,17 @@ def _code(ws: Path) -> dict[str, str]:
 
 
 def _hdr(ws: Path) -> str:
-    p = ws / "software/ll/stm32n6xx_ll_rcc.h"
+    from ..layer import ll_header
+
+    p = ws / ll_header(ws)  # feature 009: the work order's LL header (RCC: stm32n6xx_ll_rcc.h)
     return p.read_text(errors="replace") if p.is_file() else ""
+
+
+def _api_rx(ws: Path) -> str:
+    """Feature 009: the LL/HAL function-name pattern of the work order's peripheral ((?:HAL|LL)_RCC_ for RCC)."""
+    from ..layer import api_prefix
+
+    return "(?:" + "|".join(re.escape(api_prefix(x, ws)) for x in ("HAL", "LL")) + ")"
 
 
 def _idx(ws: Path) -> dict:
@@ -63,9 +81,14 @@ def v_register_semantics(ws: Path) -> dict:
     idx = _idx(ws)
     if not idx:
         return {"status": "NOT_SUPPORTED", "findings": ["RM sections not in the work-order inputs"]}
+    from ..layer import ll_header, register_block
+
+    if not _hdr(ws):  # feature 009: never a PASS from an empty (wrong-peripheral) header
+        return {"status": "NOT_SUPPORTED", "findings": [f"no LL header {ll_header(ws)} in the workspace"]}
     f = hardware.check_defines(_hdr(ws), idx)
     for text in _code(ws).values():
-        f += [x for x in hardware.check_writes(text, _hdr(ws), idx) if not x.startswith("NON_ATOMIC_RMW")]
+        f += [x for x in hardware.check_writes(text, _hdr(ws), idx, register_block(ws))
+              if not x.startswith("NON_ATOMIC_RMW")]
     return {"status": _ok(f), "findings": f}
 
 
@@ -84,13 +107,19 @@ def v_misra(ws: Path) -> dict:
 def v_concurrency(ws: Path) -> dict:
     md = (ws / swe12.ARCH_MD).read_text(errors="replace") if (ws / swe12.ARCH_MD).is_file() else ""
     stated = bool(re.search(r"(shared[- ]resource|interrupt|IRQ|concurren|reentran|critical section)", md, re.I))
-    f = swe3.invariant_findings(_code(ws), _hdr(ws), _idx(ws), stated)
+    from ..layer import register_block
+
+    rcc = register_block(ws) == "ll_rcc_regs"  # feature 009: other peripherals also poll IsActive/IsActiveFlag_*
+    f = swe3.invariant_findings(_code(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
+                                "IsReady|IsEnabled" if rcc else "IsReady|IsEnabled|IsActive")
     return {"status": _ok(f), "findings": f, "mitigation_stated": stated}
 
 
 def v_oracle(ws: Path) -> dict:
+    from ..layer import api_header
+
     layer = layer_of(ws)
-    hdr = "stm32n6xx_ll_rcc.h" if layer == "LL" else "stm32n6xx_hal_rcc.h"
+    hdr = Path(api_header("LL" if layer == "LL" else "HAL", ws)).name  # feature 009: the work order's API header
     srcs = [] if layer == "LL" else sorted((ws / "software/hal").glob("*.c"))
     r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], srcs, hdr)
     f = [f"ORACLE_FAIL:{x[1]}:{x[2]}" for x in r.get("results", []) if x[3] == "FAIL"]
@@ -104,7 +133,9 @@ def v_oracle(ws: Path) -> dict:
 
 
 def _unit_test(ws: Path) -> Path | None:
-    p = ws / "software/tests/unit/test_rcc.c"
+    from ..workflow.scaffold import unit_test
+
+    p = ws / unit_test(ws)  # feature 009: test_<peripheral>.c (RCC: test_rcc.c)
     return p if p.is_file() else None
 
 
@@ -114,11 +145,14 @@ def v_mutation(ws: Path) -> dict:
     ut = _unit_test(ws)
     if ut is None:
         return {"status": "NOT_RUN", "findings": ["no unit test"]}
+    from ..layer import hal_c, ll_header, ll_tu, register_prefix
+
     layer = layer_of(ws)
-    target = "ll/stm32n6xx_ll_rcc.h" if layer == "LL" else "hal/stm32n6xx_hal_rcc.c"
-    used = set(re.findall(r"\b((?:LL|HAL)_RCC_\w+)\s*\(", "\n".join(_code(ws).values()) + ut.read_text()))
+    target = (ll_header(ws) if layer == "LL" else hal_c(ws)).removeprefix("software/")
+    used = set(re.findall(rf"\b({_api_rx(ws)}\w+)\s*\(", "\n".join(_code(ws).values()) + ut.read_text()))
     c = mutation.run_campaign(ws / "software", target, [ut], used_symbols=used,
-                              extra_sources=[] if layer == "LL" else [])
+                              extra_sources=[] if layer == "LL" else [], prefix=register_prefix(ws),
+                              ll_unit=Path(ll_tu(ws)).name)
     surv = [f"SURVIVOR:{m['op']}@{m['line']}:{m['original'][:50]}" for m in c["mutants"] if m["outcome"] == "SURVIVED"]
     r = c["record"]
     return {"status": "FAIL" if surv else "PASS", "findings": surv,
@@ -130,8 +164,10 @@ def v_api_execution(ws: Path) -> dict:
     ut = _unit_test(ws)
     if ut is None:
         return {"status": "NOT_RUN", "findings": ["no unit test"]}
+    from ..layer import ll_tu
+
     if layer_of(ws) == "LL":
-        tu = ws / "software/src/stm32n6xx_ll_rcc.c"
+        tu = ws / ll_tu(ws)
         srcs = [tu] if tu.is_file() else []
     else:
         srcs = sorted((ws / "software/hal").glob("*.c"))
@@ -146,7 +182,7 @@ def v_api_execution(ws: Path) -> dict:
     for name, n in r["function_counts"].items():  # static (inline) functions are exported as "<file>:<name>"
         key = name.split(":")[-1]
         counts[key] = max(counts.get(key, 0), n)
-    defined = sorted(set(re.findall(r"^[\w\s\*]*?\b((?:HAL|LL)_RCC_\w+)\s*\([^;{)]*\)\s*\{",
+    defined = sorted(set(re.findall(rf"^[\w\s\*]*?\b({_api_rx(ws)}\w+)\s*\([^;{{)]*\)\s*\{{",
                                     "\n".join(_code(ws).values()), re.M)))
     f = coverage.api_execution(counts, defined, ut.read_text())
     return {"status": _ok(f), "findings": f,
@@ -168,13 +204,15 @@ def v_integration(ws: Path) -> dict:
     ops = {r.get("op") for r in swtrace._tool_records(ws) if (r.get("result") or {}).get("status") == "PASS"}
     tt = {str(p): p.read_text(errors="replace") for d in ("target", "integration")
           for p in (ws / "software/tests" / d).glob("*.c")}
-    c = T.integration_categories(tt, ops)
+    from ..layer import register_prefix
+
+    c = T.integration_categories(tt, ops, register_prefix(ws))
     return {"status": "FAIL" if c["missing"] else "PASS",
             "findings": [f"INTEGRATION_CATEGORY_MISSING:{m}" for m in c["missing"]]}
 
 
 def v_fault_injection(ws: Path) -> dict:
-    st = T.fault_injection_status(ws, list((ws / "software/tests/target").glob("*.c")))
+    st = T.fault_injection_status(ws, list((ws / "software/tests/target").glob("*.c")))  # names the profile's model
     injected = [k for k, v in st.items() if v == "INJECTED"]
     return {"status": "PASS" if injected else "NOT_RUN", "findings": [f"{k}: {v}" for k, v in st.items() if v != "INJECTED"],
             "classes": st}
@@ -265,6 +303,9 @@ def v_resource_budgets(ws: Path) -> dict:
 _ESCALATION = re.compile(r"[^.\n]*\b(HIL|hardware[- ]in[- ]the[- ]loop|on (?:the )?(?:real )?(?:silicon|hardware|target "
                          r"board)|physical (?:target|hardware|board))\b[^.\n]*", re.I)
 _NEGATED = re.compile(r"\b(not|no|never|without|cannot|n't|outside|deferred|unavailable|NOT_AVAILABLE|limitation)\b", re.I)
+# i003: "... rather than proving those effects on silicon" negates the claim; "on silicon rather than in simulation"
+# does not, so only a 'rather than' BEFORE the escalation term counts
+_RATHER = re.compile(r"\brather than\b", re.I)
 
 
 def v_fidelity(ws: Path, phase: str) -> dict:
@@ -280,7 +321,8 @@ def v_fidelity(ws: Path, phase: str) -> dict:
     if not re.search(r"\b(renode|host|simulat\w*|emulat\w*)\b", text, re.I):
         f.append(f"FIDELITY_LABEL_MISSING:{phase} report does not name its execution environment ({', '.join(envs)})")
     for m in _ESCALATION.finditer(text):
-        if not _NEGATED.search(m.group(0)):
+        term = re.search(r"HIL|hardware[- ]in[- ]the[- ]loop|silicon|hardware|target board|physical", m.group(0), re.I)
+        if not _NEGATED.search(m.group(0)) and not _RATHER.search(m.group(0)[:term.start() if term else 0]):
             f += [x for op in res for x in T.check_claim("HIL", op)][:1]
             f.append(f"CLAIM_TEXT:{m.group(0).strip()[:120]}")
             break
@@ -291,7 +333,13 @@ def v_negative_boundary(ws: Path) -> dict:
     """SWE.4 NEGATIVE_BOUNDARY_CASES: requirement-derived invalid and boundary arguments of every parameterised API
     call are exercised by the unit tests (static search for the literal arguments: LIMITATION)."""
     if layer_of(ws) == "LL":
-        return {"status": "NOT_APPLICABLE", "findings": ["NOT_APPLICABLE:the LL API takes no parameters"]}
+        from ..layer import profile
+
+        if profile(ws)["ll"].get("void_signatures", True):
+            return {"status": "NOT_APPLICABLE", "findings": ["NOT_APPLICABLE:the LL API takes no parameters"]}
+        # feature 009 (IWDG): LL functions take values (prescaler, reload); no boundary rule is derived for them
+        return {"status": "NOT_SUPPORTED", "findings": ["the LL API takes parameters; no requirement-derived boundary "
+                                                        "case rule exists for this peripheral's LL (LIMITATION)"]}
     req = (ws / swtrace.REQS).read_text(errors="replace") if (ws / swtrace.REQS).is_file() else ""
     hdr = next((p for p in sorted((ws / "software/hal").glob("*.h"))), None)
     cases = oracle_gen.derive_timeouts(req, hdr.read_text(errors="replace") if hdr else "", _idx(ws))

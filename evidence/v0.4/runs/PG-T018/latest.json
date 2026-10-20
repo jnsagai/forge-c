@@ -1,0 +1,27 @@
+{
+  "task": "PG-T018 (observe-only assurance helpers peripheral-generic; owner request 2026-10-20 'remove the remaining RCC assumptions so a watchdog HAL driver can run')",
+  "status": "PASS",
+  "decision": "pd-646b5ed9fb3970231fe2",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "main a76e957",
+  "candidate": "c194f89",
+  "method": "runall.py runs every EASA verifier (assurance/verifiers.py VERIFIERS) on copies of the i003 (IWDG LL), r170 (RCC LL) and r164 (RCC HAL) workspaces, on main and on the candidate; status + findings recorded",
+  "rcc_equivalence": "r170 and r164: every verifier status and finding identical before/after",
+  "i003_before_after": {
+    "v_api_execution": "NOT_RUN 'no unit test' (looked for test_rcc.c) -> PASS",
+    "v_mutation": "NOT_RUN 'no unit test' -> FAIL: SURVIVOR DEF_OFFSET_SHIFT on LL_IWDG_SR_OFFSET (the i003 unit test reads SR through the header's own offset macro: a real test-adequacy finding)",
+    "v_oracle": "NOT_SUPPORTED, 0 cases (stm32n6xx_ll_rcc.h not found) -> PASS (register contract, 18 cases)",
+    "v_negative_boundary": "NOT_APPLICABLE 'the LL API takes no parameters' (false for LL_IWDG_SetPrescaler) -> NOT_SUPPORTED with LIMITATION",
+    "v_arch": "FAIL ARCH_UNDECLARED_ENDPOINT:Caller (bare 'actor Caller' not parsed) -> PASS",
+    "v_fidelity SWE.5": "FAIL (CLAIM_TEXT '... rather than proving those effects on silicon' read as a HIL claim) -> PASS; 'verified on silicon rather than in simulation' still flagged (test)",
+    "v_fault_injection": "text 'behavioural RCC model' -> 'behavioural IWDG model'",
+    "v_register_semantics / v_concurrency": "PASS before was vacuous (empty RCC header); now PASS measured on the IWDG header (27 defines, 6 writes; seeded wrong mask and RO write are caught in tests)"
+  },
+  "not_fixed": {
+    "v_requirements SWE.1": "REQ_SOURCE_MISMATCH:SWR-013:RVU/ONF not on p.2989 - generic verifier defect, not an RCC assumption: each field is required on EACH cited page instead of ANY (RVU/ONF are on p.2990/2991, also cited). The same false positive hits RCC r164 (HSIRDY on p.482). Fixing it changes RCC verdicts, so it needs its own CAPA.",
+    "observe-only gate items independent of the peripheral": "AI_PASS_NOT_EVIDENCE:INDEPENDENT_INSPECTION, FLOW_SCHEDULING_ANALYSIS NOT_SUPPORTED (no analyzer) - same on RCC"
+  },
+  "tests": "test_peripheral_assurance.py 14 passed; all test_easa_*.py, test_peripheral_*.py and test_m7_governance_release.py passed (32 files); validate_design PASS; ruff clean",
+  "not_run": "run_renode label change not exercised on Renode in a test (string from the profile's register prefix)"
+}

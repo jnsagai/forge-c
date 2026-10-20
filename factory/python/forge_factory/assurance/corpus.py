@@ -100,6 +100,9 @@ def run(zip_path: Path, inputs_from: Path) -> dict:
         with zipfile.ZipFile(zip_path) as z:
             z.extractall(x)
         base = shadow._workspace_from_package(x, inputs_from)
+        if not (base / LL).is_file():  # feature 009: the corpus variants are RCC code; another peripheral is N/A
+            return {"subject": str(zip_path.name), "status": "NOT_APPLICABLE", "variants": [],
+                    "reason": f"the defect corpus is defined for the RCC HAL package ({LL} absent)"}
         (base / "software/hal").mkdir(exist_ok=True)
         ref_f, ref_e, ref_x = _factory_tests(base), _easa(base), _formal(base)
         rows = []

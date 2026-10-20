@@ -25,9 +25,9 @@ def environment_of(op: str) -> str:
 
 
 def fidelity_record(env_id: str, kind: str, mcu: str, version: str | None, observations: list[str],
-                    limitations: list[str], rig: dict | None = None) -> dict:
+                    limitations: list[str], rig: dict | None = None, peripherals: list[str] | None = None) -> dict:
     rec = {"environment_id": env_id, "kind": kind, "mcu_target": mcu, "simulation_version": version,
-           "observed_peripherals": ["RCC"], "limitations": limitations,
+           "observed_peripherals": peripherals or ["RCC"], "limitations": limitations,
            "physical_hardware_verified": kind in ("HIL", "PHYSICAL") and rig_ok(rig),
            "observations_refs": observations}
     rec["schema_issues"] = contracts.errors("hardware-fidelity", {k: v for k, v in rec.items() if k != "schema_issues"})
@@ -132,16 +132,27 @@ def requirement_observation(requirements: list[str], suite_text: str, scenario_t
             "basis": "executed Robot assertions on Renode (simulated target), not file names or tags"}
 
 
-def integration_categories(test_texts: dict[str, str], tool_ops_passed: set[str] | None = None) -> dict:
+def integration_categories(test_texts: dict[str, str], tool_ops_passed: set[str] | None = None,
+                           prefix: str = "RCC") -> dict:
     """T048: integration evidence must include interface, boundary, negative/timeout and resource cases. Resource
     usage counts only as an executed measurement (measure_elf / stack_usage PASS), never as report text."""
     t = "\n".join(test_texts.values())
     ops = tool_ops_passed or set()
-    cats = {"interface": bool(re.search(r"\bIF-\d{2}\b|\b(?:HAL|LL)_RCC_\w+\s*\(", t)),
+    cats = {"interface": bool(re.search(rf"\bIF-\d{{2}}\b|\b(?:HAL|LL)_{prefix}_\w+\s*\(", t)),
             "boundary": bool(re.search(r"TIMEOUT_VALUE\s*\+\s*1U?|\(\s*0U?\s*\)|\b1001U?\b|\b1000U?\b", t)),
             "negative_timeout": bool(re.search(r"HAL_TIMEOUT|HAL_ERROR|never_ready|IsReady\(\)\s*==\s*0U", t)),
             "resource": {"measure_elf", "stack_usage"} <= ops}
     return {"categories": cats, "missing": [k for k, v in cats.items() if not v]}
+
+
+def _model(ws: Path) -> str:
+    """Feature 009: the peripheral of the work order's simulator model (RCC by default)."""
+    try:
+        from ..layer import register_prefix
+
+        return register_prefix(ws)
+    except Exception:  # noqa: BLE001 - an unreadable profile keeps the historical RCC wording
+        return "RCC"
 
 
 def fault_injection_status(ws: Path, target_tests: list[Path]) -> dict:
@@ -151,7 +162,7 @@ def fault_injection_status(ws: Path, target_tests: list[Path]) -> dict:
     out = {"ready_flag_never_set (timeout)": "INJECTED" if any(p.stem.endswith("_timeout") for p in target_tests)
            else "NOT_RUN",
            "planned_register_faults (host model)": "PLANNED" if plan.is_file() else "NOT_RUN",
-           "clock_failure / clock security": "NOT_SUPPORTED: behavioural RCC model has no clock tree",
+           "clock_failure / clock security": f"NOT_SUPPORTED: behavioural {_model(ws)} model has no clock tree",
            "interrupt / preemption during read-modify-write": "NOT_SUPPORTED: no interrupt source modelled",
            "brown-out / reset during operation": "NOT_SUPPORTED: no power model"}
     return out
@@ -175,8 +186,8 @@ def b2b_applicability(ws: Path, work_order_id: str) -> dict:
 
 def limitations(ws: Path, sim_model_text: str) -> list[str]:
     idx = hardware.index(Path(ws) / "inputs/sections/RM0486") if (Path(ws) / "inputs/sections/RM0486").is_dir() else {}
-    out = ["Renode behavioural RCC model is not silicon, not HIL; no clock-tree timing, security filtering or "
-           "interrupts", "silicon revision UNSPECIFIED"]
+    out = [f"Renode behavioural {_model(Path(ws))} model is not silicon, not HIL; no clock-tree timing, security "
+           "filtering or interrupts", "silicon revision UNSPECIFIED"]
     out += hardware.simulator_mismatches(sim_model_text, idx) if idx else ["SIMULATOR_MODEL_NOT_COMPARABLE"]
     er = hardware.errata_status(ws)
     if er["status"] != "BASELINED":

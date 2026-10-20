@@ -1,0 +1,104 @@
+{
+ "not_supported:['no control/data-flow or scheduling ana": {
+  "findings": [
+   "no control/data-flow or scheduling analyzer installed"
+  ],
+  "status": "NOT_SUPPORTED"
+ },
+ "v_api_execution": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_arch": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_bounded_proof": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:IWDG_KR"
+  ],
+  "status": "PASS"
+ },
+ "v_concurrency": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_eva": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:IWDG_KR"
+  ],
+  "status": "PASS"
+ },
+ "v_fault_injection": {
+  "findings": [
+   "planned_register_faults (host model): NOT_RUN",
+   "clock_failure / clock security: NOT_SUPPORTED: behavioural IWDG model has no clock tree",
+   "interrupt / preemption during read-modify-write: NOT_SUPPORTED: no interrupt source modelled",
+   "brown-out / reset during operation: NOT_SUPPORTED: no power model"
+  ],
+  "status": "PASS"
+ },
+ "v_fidelity": {
+  "findings": {
+   "SWE.5": [],
+   "SWE.6": []
+  },
+  "status": {
+   "SWE.5": "PASS",
+   "SWE.6": "PASS"
+  }
+ },
+ "v_integration": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_misra": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_mutation": {
+  "findings": [
+   "SURVIVOR:DEF_OFFSET_SHIFT@30:#define LL_IWDG_SR_OFFSET 0x00CU"
+  ],
+  "status": "FAIL"
+ },
+ "v_negative_boundary": {
+  "findings": [
+   "the LL API takes parameters; no requirement-derived boundary case rule exists for this peripheral's LL (LIMITATION)"
+  ],
+  "status": "NOT_SUPPORTED"
+ },
+ "v_observation": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_oracle": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_register_semantics": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_renode_raw": {
+  "findings": [
+   "LIMITATION:PER_CHECK_PASS_IDS_NOT_RECORDED (requirement observation via TCHECK is inferred)"
+  ],
+  "status": "PASS"
+ },
+ "v_requirements": {
+  "findings": [
+   "REQ_SOURCE_MISMATCH:SWR-013:RVU not on p.2989",
+   "REQ_SOURCE_MISMATCH:SWR-013:ONF not on p.2989"
+  ],
+  "status": "FAIL"
+ },
+ "v_resource_budgets": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_two_way": {
+  "findings": [],
+  "status": "PASS"
+ }
+}

@@ -1,0 +1,111 @@
+{
+ "not_supported:['no control/data-flow or scheduling ana": {
+  "findings": [
+   "no control/data-flow or scheduling analyzer installed"
+  ],
+  "status": "NOT_SUPPORTED"
+ },
+ "v_api_execution": {
+  "findings": [
+   "no unit test"
+  ],
+  "status": "NOT_RUN"
+ },
+ "v_arch": {
+  "findings": [
+   "ARCH_UNDECLARED_ENDPOINT:Caller"
+  ],
+  "status": "FAIL"
+ },
+ "v_bounded_proof": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:IWDG_KR"
+  ],
+  "status": "PASS"
+ },
+ "v_concurrency": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_eva": {
+  "findings": [
+   "LIMITATION:UNSUPPORTED_PARAMETER:IWDG_KR"
+  ],
+  "status": "PASS"
+ },
+ "v_fault_injection": {
+  "findings": [
+   "planned_register_faults (host model): NOT_RUN",
+   "clock_failure / clock security: NOT_SUPPORTED: behavioural RCC model has no clock tree",
+   "interrupt / preemption during read-modify-write: NOT_SUPPORTED: no interrupt source modelled",
+   "brown-out / reset during operation: NOT_SUPPORTED: no power model"
+  ],
+  "status": "PASS"
+ },
+ "v_fidelity": {
+  "findings": {
+   "SWE.5": [
+    "FIDELITY_ESCALATION:HIL claimed for RENODE evidence (run_renode)",
+    "CLAIM_TEXT:protection and update status, rather than proving those effects on silicon"
+   ],
+   "SWE.6": []
+  },
+  "status": {
+   "SWE.5": "FAIL",
+   "SWE.6": "PASS"
+  }
+ },
+ "v_integration": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_misra": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_mutation": {
+  "findings": [
+   "no unit test"
+  ],
+  "status": "NOT_RUN"
+ },
+ "v_negative_boundary": {
+  "findings": [
+   "NOT_APPLICABLE:the LL API takes no parameters"
+  ],
+  "status": "NOT_APPLICABLE"
+ },
+ "v_observation": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_oracle": {
+  "findings": [],
+  "status": "NOT_SUPPORTED"
+ },
+ "v_register_semantics": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_renode_raw": {
+  "findings": [
+   "LIMITATION:PER_CHECK_PASS_IDS_NOT_RECORDED (requirement observation via TCHECK is inferred)"
+  ],
+  "status": "PASS"
+ },
+ "v_requirements": {
+  "findings": [
+   "REQ_SOURCE_MISMATCH:SWR-013:RVU not on p.2989",
+   "REQ_SOURCE_MISMATCH:SWR-013:ONF not on p.2989"
+  ],
+  "status": "FAIL"
+ },
+ "v_resource_budgets": {
+  "findings": [],
+  "status": "PASS"
+ },
+ "v_two_way": {
+  "findings": [],
+  "status": "PASS"
+ }
+}
