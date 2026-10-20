@@ -23,7 +23,7 @@ from pathlib import Path
 from robot.api.deco import keyword, library
 
 
-def _measure_unit(header_text: str) -> str | None:
+def _measure_unit(header_text: str, ws: Path | None = None) -> str | None:
     """Same generator as forge_factory.layer.ll_measure_unit (CAPA-018); this library runs outside the package."""
     import sys
 
@@ -32,7 +32,7 @@ def _measure_unit(header_text: str) -> str | None:
         sys.path.append(pkg)
     from forge_factory.layer import ll_measure_unit
 
-    return ll_measure_unit(header_text)
+    return ll_measure_unit(header_text, ws)
 
 
 @library(scope="SUITE")
@@ -67,7 +67,7 @@ class ForgeTarget:
         ok, _log, errs = build_image(self.ws, src, elf)
         if not ok:
             raise AssertionError(f"build failed for {src.name}: {'; '.join(errs[:4])}")
-        res, _out = run_image(renode, elf, scenario, self.wd)
+        res, _out = run_image(renode, elf, scenario, self.wd, self.ws)
         if res is None or not res["magic_ok"] or not res["done"]:
             raise AssertionError(f"{src.name} [{scenario}] produced no complete result on the target model")
         self.last, self.last_name, self.last_src = res, f"{src.name} [{scenario}]", src
@@ -127,10 +127,12 @@ class ForgeTarget:
             layer = json.loads((self.ws / ".forge-run/manifest.json").read_text()).get("layer")
         except (OSError, ValueError):
             layer = None
-        hdr = self.ws / "software/ll/stm32n6xx_ll_rcc.h"
+        from forge_factory.layer import ll_header
+
+        hdr = self.ws / ll_header(self.ws)
         if layer != "LL" or not hdr.is_file():
             return []
-        text = _measure_unit(hdr.read_text(errors="replace"))
+        text = _measure_unit(hdr.read_text(errors="replace"), self.ws)
         if text is None:
             return []
         unit = out / "forge_ll_measure.c"

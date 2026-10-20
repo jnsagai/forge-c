@@ -66,7 +66,7 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
             if not (p.name in seen or seen.add(p.name))]
     incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
                                      "software/tests/software") if (ws / d).is_dir()]
-    b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(SIM_DIR / "link.ld"),
+    b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
                   str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
     lines = b.stderr.decode(errors="replace").splitlines()
     # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
@@ -78,13 +78,35 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
     return b.exit_code == 0, b.stdout + b.stderr, errs
 
 
-def run_image(renode: str, elf: Path, scenario: str, wd: Path) -> tuple[dict | None, bytes]:
-    """Run an image on the Forge-C STM32N6 platform with the given RCC scenario; read the RAM mailbox."""
-    model = wd / f"rcc_model_{scenario}.py"
+def linker_script(ws: Path | None, wd: Path) -> Path:
+    """The platform linker script; feature 009: the register-block symbol of the work order's peripheral (RCC: the
+    shared link.ld unchanged)."""
+    from ...layer import profile
+
+    pr = profile(ws)
+    if pr["id"] == "rcc":
+        return SIM_DIR / "link.ld"
+    text = re.sub(r"^ll_rcc_regs = 0x56028000;.*$", f"{pr['ll']['register_block']} = {pr['base_address']};  "
+                  f"/* {pr['register_prefix']} register block (RM0486 p.{pr.get('mm_page')}) */",
+                  (SIM_DIR / "link.ld").read_text(), flags=re.M)
+    out = wd / f"link_{pr['id']}.ld"
+    out.write_text(text)
+    return out
+
+
+def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None = None) -> tuple[dict | None, bytes]:
+    """Run an image on the Forge-C STM32N6 platform with the given model scenario; read the RAM mailbox. Feature 009:
+    the peripheral model and platform come from the work order's profile (RCC by default)."""
+    from ...layer import profile
+
+    pr = profile(ws)
+    stem = Path(pr["sim"]["model"]).stem
+    model = wd / f"{stem}_{scenario}.py"
     model.write_text(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
-                            (SIM_DIR / "rcc_model.py").read_text(), flags=re.M))
+                            (SIM_DIR / pr["sim"]["model"]).read_text(), flags=re.M))
     repl = wd / f"platform_{scenario}.repl"
-    repl.write_text((SIM_DIR / "stm32n6_rcc.repl").read_text().replace("RCC_MODEL_PATH", str(model)))
+    repl.write_text((SIM_DIR / pr["sim"]["platform"]).read_text().replace(f"{pr['register_prefix']}_MODEL_PATH",
+                                                                          str(model)))
     words = "\n".join(f"sysbus ReadDoubleWord {MAILBOX + 4 * k:#x}" for k in range(12))
     resc = wd / f"run_{elf.stem}.resc"
     resc.write_text(f'mach create "stm32n6"\nmachine LoadPlatformDescription @{repl}\nsysbus LoadELF @{elf}\n'
@@ -129,7 +151,7 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
             issues += errs
             failed += 1
             continue
-        res, out = run_image(renode, elf, scenario, wd)
+        res, out = run_image(renode, elf, scenario, wd, ctx.workspace)
         log += out
         if res is None or not res["magic_ok"] or not res["done"]:
             issues.append(f"NO_RESULT:{t.name}:{scenario}")

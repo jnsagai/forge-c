@@ -144,7 +144,7 @@ def ll_instances(ctx: ToolContext, od: Path) -> Path | None:
         return None
     from ...layer import ll_measure_unit
 
-    text = ll_measure_unit(hdr.read_text(errors="replace"))
+    text = ll_measure_unit(hdr.read_text(errors="replace"), ctx.workspace)
     if text is None:
         return None
     p = od / "forge_ll_measure.c"
