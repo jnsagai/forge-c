@@ -31,3 +31,15 @@ findings:
 
 Any edit to either file, or a change to the RCC work order inputs, un-signs it. The HSI and the allocation review
 remain open ASIL B gaps in the observe-only assurance check.
+
+## Extension (OD-2026-10-20-04) — drafts, not signed
+
+| Document | Path | SHA-256 | Status |
+|---|---|---|---|
+| SSA-IWDG-001 v0.1 | `config/factory/safety-documents/SC-IWDG-2026-10-20/software_safety_analysis.md` | `4147ff60c4361dc8bf9f4898f2038311cb6dfa7c0a664b5376b5029e79b75ffe` | DRAFT, registered unsigned (scope SC-IWDG-2026-10-20, ASIL B) |
+| TAA-IWDG-001 v0.1 | `config/factory/safety-documents/SC-IWDG-2026-10-20/tool_assurance_assessment.md` | `b9d0188a52d4187eb79e1d777a324ef59f66c64005a051f27a000d0e37b834c3` | DRAFT, registered unsigned |
+| SSA-RCC-001 v1.1 | `config/factory/safety-documents/SC-RCC-2026-10-18/v1.1/software_safety_analysis.md` | `cbc2c6482d00e75a4f5d9f9b79b89d067c4d78d481c1bd491e4742e8bcf1a3ca` | DRAFT, not registered (v1.0 stays in force) |
+| TAA-RCC-001 v1.1 | `config/factory/safety-documents/SC-RCC-2026-10-18/v1.1/tool_assurance_assessment.md` | `433460e8591a682117ee8de618c9bf2699fa884b95a4cbaec200fc1bc6fc6132` | DRAFT, not registered (v1.0 stays in force) |
+
+The IWDG package stays BLOCKED until the owner signs the IWDG drafts. The brownfield RCC examples 0008a/0008b/0008c
+join SC-RCC-2026-10-18 when the owner signs v1.1 and the register points to the v1.1 files.

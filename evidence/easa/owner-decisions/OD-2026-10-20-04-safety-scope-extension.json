@@ -1,0 +1,21 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-04",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Extension of the product safety scope and the safety documents to the brownfield RCC examples (0008a/0008b/0008c) and to the IWDG watchdog (0009a)",
+  "statements": [
+    "for 3 please extend",
+    "Which target ASIL do you set for the IWDG (watchdog) product scope? -> \"ASIL B\"",
+    "For the RCC brownfield examples (0008a/b/c), the signed RCC SSA/TAA v1.0 match their inputs but were written for factory-generated code. How should they be extended? -> \"Draft v1.1 to sign (Recommended)\""
+  ],
+  "decision": "IWDG: new scope decision SC-IWDG-2026-10-20 (example 0009a-iwdg-ll, target ASIL B set by the owner) in config/factory/safety-scope.yaml, with drafts SSA-IWDG-001 and TAA-IWDG-001 v0.1 registered UNSIGNED (basis bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286). RCC brownfield: drafts SSA-RCC-001 and TAA-RCC-001 v1.1 under config/factory/safety-documents/SC-RCC-2026-10-18/v1.1/, NOT registered; 0008a/0008b/0008c join SC-RCC-2026-10-18 only when the owner signs v1.1.",
+  "drafts": {
+    "SSA-IWDG-001 v0.1": {"path": "config/factory/safety-documents/SC-IWDG-2026-10-20/software_safety_analysis.md", "sha256": "4147ff60c4361dc8bf9f4898f2038311cb6dfa7c0a664b5376b5029e79b75ffe"},
+    "TAA-IWDG-001 v0.1": {"path": "config/factory/safety-documents/SC-IWDG-2026-10-20/tool_assurance_assessment.md", "sha256": "b9d0188a52d4187eb79e1d777a324ef59f66c64005a051f27a000d0e37b834c3"},
+    "SSA-RCC-001 v1.1": {"path": "config/factory/safety-documents/SC-RCC-2026-10-18/v1.1/software_safety_analysis.md", "sha256": "cbc2c6482d00e75a4f5d9f9b79b89d067c4d78d481c1bd491e4742e8bcf1a3ca"},
+    "TAA-RCC-001 v1.1": {"path": "config/factory/safety-documents/SC-RCC-2026-10-18/v1.1/tool_assurance_assessment.md", "sha256": "433460e8591a682117ee8de618c9bf2699fa884b95a4cbaec200fc1bc6fc6132"}
+  },
+  "agent_note": "All four documents were drafted by Claude Opus 5.5 (Claude Code) and carry the draft marker; nothing is signed. The basis hashes were computed as workorder.prepare does; 0002a, 0002b, 0008a, 0008b and 0008c share basis c62aa88c..., and the IWDG basis equals the inputs of run i003. The v1.1 drafts record the CAPA-051 finding: swe3_hal_author and swe4_test_author ran on DeepSeek before CAPA-051, and HAL r164 also ran its inspectors and Release Manager on DeepSeek.",
+  "not_changed": "The signed v1.0 RCC documents and their register entries (OD-2026-10-19-12); hsi_hash and allocation_review_ref stay null for both scopes; no safety approval, release decision or certification."
+}
