@@ -518,7 +518,8 @@ def check_results(raws: list[Path]) -> dict[str, str]:
     for p in raws:
         if p.suffix not in (".log", ".txt"):
             continue
-        for m in re.finditer(r"^\s*([A-Z]{2,4}-\d{3})([\w-]*)\s+(PASS|FAIL)\b", p.read_text(errors="replace"), re.M):
+        # i002 (IWDG SWE.5): an author-defined CHECK printed 'IT-001: PASS'; the colon form counts as well
+        for m in re.finditer(r"^\s*([A-Z]{2,4}-\d{3})([\w-]*):?\s+(PASS|FAIL)\b", p.read_text(errors="replace"), re.M):
             tid, ok = m.group(1), m.group(3)
             if res.get(tid) != "FAIL":
                 res[tid] = ok

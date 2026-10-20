@@ -99,3 +99,12 @@ def test_iwdg_robot_suite_header_and_observation_tokens(ws):
     assert "IWDG behavioural model: see iwdg_model.py" in text and "LL_IWDG_KR_KEY_MSK" in text
     assert "RCC" not in text and "rcc" not in text
     assert required_tokens("shall write 0xCCCC to IWDG_KR.KEY.", "IWDG", "LL_IWDG_")[1] == {"LL_IWDG_KR_KEY_MSK"}
+
+
+def test_check_results_accept_the_colon_form(tmp_path):
+    """i002: the SWE.5 author's CHECK printed 'IT-001: PASS'; swtrace saw no result line and SWE.5 blocked."""
+    from forge_factory.inspection.swtrace import check_results
+
+    log = tmp_path / "run.log"
+    log.write_text("IT-001: PASS\nIT-002 PASS\nIT-003-a: FAIL\nIT-003-b PASS\n")
+    assert check_results([log]) == {"IT-001": "PASS", "IT-002": "PASS", "IT-003": "FAIL"}
