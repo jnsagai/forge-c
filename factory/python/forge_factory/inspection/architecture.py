@@ -103,7 +103,7 @@ def check_architecture(ws: Path) -> dict:
 
     layer = layer_of(ws)
     if layer in ("LL", "HAL"):  # layer-scoped work orders (ADR-0009); the legacy combined layer is unchanged
-        pre = api_prefix(layer)
+        pre = api_prefix(layer, ws)
         alloc_names = set(re.findall(rf"\b{pre}\w+", found["requirement_allocation"] or ""))
         for n in sorted(set(re.findall(rf"\b{pre}\w+", found["interfaces"] or "")) - alloc_names):
             if n[len(pre):] != n[len(pre):].upper() and "<" not in n:

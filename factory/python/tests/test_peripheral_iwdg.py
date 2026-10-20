@@ -84,3 +84,18 @@ def test_iwdg_harness_and_implementation_check(ws):
     assert out["file"] == "software/tests/unit/test_iwdg.c"
     assert '#include "stm32n6xx_ll_iwdg.h"' in t and "volatile uint32_t ll_iwdg_regs[LL_IWDG_REG_COUNT];" in t
     assert "rcc" not in t.lower()
+
+
+def test_iwdg_robot_suite_header_and_observation_tokens(ws):
+    from forge_factory.mcp.servers.robot_policy import required_tokens
+    from forge_factory.workflow import robot_scaffold as R
+
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the IWDG start function is called, the IWDG LL driver shall write 0xCCCC to IWDG_KR.KEY.\n")
+    out = R.scaffold(ws)
+    text = (ws / out["file"]).read_text()
+    assert out["file"] == "software/tests/software/test_iwdg_requirements.robot"
+    assert "IWDG behavioural model: see iwdg_model.py" in text and "LL_IWDG_KR_KEY_MSK" in text
+    assert "RCC" not in text and "rcc" not in text
+    assert required_tokens("shall write 0xCCCC to IWDG_KR.KEY.", "IWDG", "LL_IWDG_")[1] == {"LL_IWDG_KR_KEY_MSK"}
