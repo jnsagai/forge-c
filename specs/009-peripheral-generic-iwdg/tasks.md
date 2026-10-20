@@ -50,20 +50,20 @@
 
 ## Phase 8: HAL layer on a non-RCC peripheral (owner request 2026-10-20: "remove the remaining RCC assumptions so a watchdog HAL driver can run")
 
-- [ ] PG-T014 [US1] IWDG HAL prompt texts in `config/factory/peripherals/iwdg.yaml` (RM0486 59.3, window option disabled:
+- [X] PG-T014 [US1] IWDG HAL prompt texts in `config/factory/peripherals/iwdg.yaml` (RM0486 59.3, window option disabled:
   `HAL_IWDG_Init(cfg, timeout)` and `HAL_IWDG_Refresh`) and the HAL fragments of `peripheralize()`; test: the IWDG HAL
   prompts carry no RCC content (`test_peripheral_prompts.py`).
-- [ ] PG-T015 [US1] Provided LL and LL test double per peripheral: `workorder.provided_ll` (source header from the source
+- [X] PG-T015 [US1] Provided LL and LL test double per peripheral: `workorder.provided_ll` (source header from the source
   work order's profile, same peripheral required), `ll_fake` (register block and fake header from the profile),
   `run_unit` messages; tests in `test_peripheral_hal.py` (the i003 IWDG LL header and the prompt's unit-test example).
-- [ ] PG-T016 [US2] Register-contract option `busy` (a status flag the oracle holds set; the call returns HAL_TIMEOUT after
+- [X] PG-T016 [US2] Register-contract option `busy` (a status flag the oracle holds set; the call returns HAL_TIMEOUT after
   a bounded wait) in `register_contract.py` and the oracle; test: oracle PASS on a correct IWDG HAL, FAIL on a HAL
   without the final refresh and on one that ignores the update flags.
-- [ ] PG-T017 Example `examples/0009b-iwdg-hal` (HAL on the verified i003 LL); dry prepare and scaffold.
-- [ ] PG-T018 Observe-only assurance helpers profile-driven (corpus, mutation, target, verifiers, sentence oracle, Renode
+- [X] PG-T017 Example `examples/0009b-iwdg-hal` (HAL on the verified i003 LL); dry prepare and scaffold.
+- [X] PG-T018 Observe-only assurance helpers profile-driven (corpus, mutation, target, verifiers, sentence oracle, Renode
   summary label).
 - [ ] PG-T019 [US4] Live IWDG HAL run; evidence in `evidence/v0.4/runs/PG-T019/`.
-- [ ] PG-T020 CRE CHANGE promotion and PR.
+- [X] PG-T020 CRE CHANGE promotion and PR.
 
 ## Strategy
 

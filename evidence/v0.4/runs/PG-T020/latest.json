@@ -1,0 +1,12 @@
+{
+  "task": "PG-T020",
+  "status": "PASS",
+  "decision": "pd-7c7dd5641636eae7691b",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "main a76e957",
+  "candidate": "efcbe6d = a76e957 + diff(a76e957..a9f72aa) without evidence/ (HAL slice c76a519 + merged PG-T018 branch d306b03)",
+  "first_gate": "pd-018120ceff0abae63379 REJECTED (protected_files): the first candidate was the branch head itself, which carries the PG-T018 oracle commit's evidence files",
+  "tests": "64 affected test files passed (2 skipped) on a9f72aa; ruff clean; validate_design PASS",
+  "pr": "pending owner acceptance"
+}
