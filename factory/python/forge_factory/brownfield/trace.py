@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 from ..common import pretty_json, sha256_bytes
-from . import DELIVERY_DIR, delivered_paths, manifest_of, reference_paths
+from . import DELIVERY_DIR, manifest_of, reference_paths
 from . import scope as S
 
 MAP = "workproducts/SWE.3/code_trace_map.json"
