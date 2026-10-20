@@ -1,0 +1,28 @@
+{
+  "code_sha": "24cd564d5ad06f41573abdb3e897d38ead05b75bf11c808f8bda07ae2f5a818a",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:3b21fc922a586befc362473d7a745e762b5ef3199ed731bfc536a3d0a896803c"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T15:30:33.292832Z"
+    }
+  ],
+  "id": "DEF-004",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-006"
+  ],
+  "requirement_quote": "return HAL_TIMEOUT with the started watchdog running and write-protected.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Check 62 wrongly measured ticks from API entry without capturing the update-wait start. Corrected it to check HAL_TIMEOUT at timeout_ms=1; checks 6/61 retain busy, running and write-protection assertions. SWR-008 checks 8/81 retain elapsed bounds and wraparound.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_timeout.c": "92b919830e63057607d409031de749ee677299f2ba4c62f9c0e639972a0b0f8f"
+  }
+}

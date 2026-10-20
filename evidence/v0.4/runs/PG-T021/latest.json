@@ -1,6 +1,6 @@
 {
   "task": "PG-T021 (IWDG HAL v2: SSA-IWDG-FND-07/FND-08)",
-  "status": "IN_PROGRESS",
+  "status": "PASS",
   "owner_request": "go (2026-10-20), after the agent proposed fixing FND-07/FND-08 after the ST pilot",
   "decision": "pd-ea6e2bd4c0229a31aac7",
   "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
@@ -26,6 +26,28 @@
         "h004/software_requirements.md",
         "h004/DEF-001..003.json"
       ]
+    },
+    "h005": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h005",
+      "fabro_run_id": "01M5CWEGY40G71B97511R29NZE",
+      "factory_commit": "own worktree at the CAPA-063 evidence head",
+      "result": "SWE.1-SWE.6 PASS; package READY_FOR_OFFLINE_REVIEW with 0 gaps (archive 45a8cffd4ebee309...)",
+      "fnd_07": "SWR-008: the update wait is bounded by timeout_ms of elapsed HAL_GetTick (no iteration bound) - verified by unit tests (elapsed-time checks) and Robot",
+      "fnd_08": "SWR-006: on timeout the registers are write-protected (LL_IWDG_DisableWriteAccess), no refresh, HAL_TIMEOUT - verified in the never_ready scenario",
+      "capa_059_effective": "the startup invariant SWR-010 was mapped to the Robot suite (scn_reset_refresh.c)",
+      "capa_063_effective": "SWR-013 stack <= 128 B verified with the logged ASSUMPTION on the external time base",
+      "measurements": {
+        "unit": "PASS",
+        "coverage_host": "line 100%, branch 100%, MC/DC 100%",
+        "integration": "PASS",
+        "renode": "18 checks passed, 0 failed (behavioural IWDG model)",
+        "robot": "14/14 tests, 14/14 requirements",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "flash": "212 B"
+      },
+      "safety_documents": "the package carries the owner-signed SSA/TAA-IWDG v1.1, which still list FND-07/FND-08 as open; closing them in the documents needs an owner-signed update",
+      "deepseek": "no request reached DeepSeek (gateway refusals only)",
+      "not_claimed": "offline review candidate only: no compliance, certification, safety approval or production release"
     }
   }
 }

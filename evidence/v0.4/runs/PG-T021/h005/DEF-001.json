@@ -1,0 +1,35 @@
+{
+  "code_sha": "24cd564d5ad06f41573abdb3e897d38ead05b75bf11c808f8bda07ae2f5a818a",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T15:14:45.271216Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-014"
+  ],
+  "requirement_quote": "The IWDG driver shall implement its hal_status_t HAL_IWDG_Init API with a const configuration pointer and its hal_status_t HAL_IWDG_Refresh API exclusively through the provided LL_IWDG_ functions for IWDG register access.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Owner-trace refactoring introduced duplicate CHECK IDs rejected by run_unit. Combine existing predicates into one CHECK per canonical UT ID, preserving all assertions and expected values; keep one directly preceding owner annotation per test function.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "ad52148d18eb5ef5ce55587c50aa8c85a5193e78b5a618024803c223b82c7b52"
+  }
+}

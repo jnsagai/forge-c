@@ -65,7 +65,7 @@
 - [X] PG-T019 [US4] Live IWDG HAL run; evidence in `evidence/v0.4/runs/PG-T019/`.
 - [X] PG-T020 CRE CHANGE promotion and PR.
 
-- [ ] PG-T021 [US4] IWDG HAL v2 (owner 'go' 2026-10-20): close SSA-IWDG-FND-07 (wait bounded in time by the
+- [X] PG-T021 [US4] IWDG HAL v2 (owner 'go' 2026-10-20): close SSA-IWDG-FND-07 (wait bounded in time by the
   HAL_GetTick time base, not iterations) and FND-08 (write-protect on timeout); profile hal.time_base; live run h004;
   evidence in `evidence/v0.4/runs/PG-T021/`. The signed v1.1 documents keep FND-07/08 open until the owner signs an
   update.
