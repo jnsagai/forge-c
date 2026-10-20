@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/code-trace-map/0.1",
+  "title": "workproducts/SWE.3/code_trace_map.json - delivered function -> unit -> unit specifications",
+  "type": "object",
+  "required": ["schema", "rows"],
+  "properties": {
+    "schema": {"const": "forge-c/code-trace-map/0.1"},
+    "rows": {"type": "array", "minItems": 1, "items": {"oneOf": [
+      {"type": "object", "required": ["function", "file", "sha256", "unit", "uspecs"], "additionalProperties": false,
+       "properties": {"function": {"type": "string"}, "file": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                      "unit": {"type": "string", "pattern": "^SWU-[A-Z]+-[0-9]{2,3}$"},
+                      "uspecs": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^USPEC-"}}}},
+      {"type": "object", "required": ["function", "out_of_scope", "reason"], "additionalProperties": false,
+       "properties": {"function": {"type": "string"}, "out_of_scope": {"const": true}, "reason": {"type": "string", "minLength": 10}}}]}}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/conformance/0.1",
+  "title": ".forge-run/delivery/conformance.json and change_report.json",
+  "$defs": {
+    "finding": {"type": "object", "required": ["id", "kind", "function", "requirement", "evidence", "status"],
+      "properties": {"id": {"type": "string", "pattern": "^CF-[0-9]{3}$"},
+                     "kind": {"enum": ["NO_REQUIREMENT", "NO_CODE", "CONTRADICTION"]},
+                     "function": {"type": "string"}, "requirement": {"type": "string"},
+                     "reference": {"type": "string"}, "evidence": {"type": "string"},
+                     "status": {"enum": ["OPEN", "DISPOSITIONED"]}, "disposition": {"type": "string"}}},
+    "conformance": {"type": "object", "required": ["schema", "phase", "findings"],
+      "properties": {"schema": {"const": "forge-c/conformance/0.1"}, "phase": {"type": "string"},
+                     "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}}}},
+    "change_report": {"type": "object", "required": ["schema", "code_mode", "changes"],
+      "properties": {"schema": {"const": "forge-c/change-report/0.1"}, "code_mode": {"const": "FIX_ALLOWED"},
+                     "changes": {"type": "array", "items": {"type": "object",
+                       "required": ["path", "defects", "original_sha256", "corrected_sha256", "diff"],
+                       "properties": {"path": {"type": "string"}, "defects": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+                                      "original_sha256": {"type": "string"}, "corrected_sha256": {"type": "string"},
+                                      "diff": {"type": "string"}, "reverified": {"type": "string"}}}}}}
+  }
+}

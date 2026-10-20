@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/delivery-record/0.1",
+  "title": "Brownfield delivery records: manifest.delivered entries and .forge-run/delivery/{intake,injection,verification-*}.json",
+  "$defs": {
+    "delivered_file": {"type": "object", "required": ["path", "sha256", "bytes", "role", "origin", "licence"],
+      "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                     "bytes": {"type": "integer", "minimum": 0},
+                     "role": {"enum": ["delivered_code", "delivered_dependency"]},
+                     "origin": {"type": "string"}, "licence": {"type": "string"}}},
+    "intake": {"type": "object", "required": ["schema", "status", "issues", "files", "build_check"],
+      "properties": {"schema": {"const": "forge-c/delivery-intake/0.1"}, "status": {"enum": ["ACCEPTED", "BLOCKED"]},
+                     "issues": {"type": "array", "items": {"type": "string", "pattern": "^DELIVERY_[A-Z_]+(:.*)?$"}},
+                     "files": {"type": "array", "items": {"$ref": "#/$defs/delivered_file"}},
+                     "build_check": {"type": "object", "required": ["status"],
+                       "properties": {"status": {"enum": ["PASS", "FAIL", "NOT_RUN"]}, "command": {"type": "array"},
+                                      "exit_code": {"type": ["integer", "null"]}, "log_sha256": {"type": ["string", "null"]},
+                                      "warnings": {"type": "integer"}}}}},
+    "injection": {"type": "object", "required": ["schema", "swe1_baseline_id", "swe1_baseline_hash", "files", "injected_at"],
+      "properties": {"schema": {"const": "forge-c/delivery-injection/0.1"}, "swe1_baseline_id": {"type": "string"},
+                     "swe1_baseline_hash": {"type": "string"}, "files": {"type": "array", "items": {"$ref": "#/$defs/delivered_file"}},
+                     "injected_at": {"type": "string"}}},
+    "verification": {"type": "object", "required": ["schema", "step", "status", "files"],
+      "properties": {"schema": {"const": "forge-c/delivery-verification/0.1"}, "step": {"type": "string"},
+                     "status": {"enum": ["UNCHANGED", "CHANGED_BY_FIX", "MISMATCH"]},
+                     "files": {"type": "array", "items": {"type": "object", "required": ["path", "expected", "actual", "status"],
+                       "properties": {"path": {"type": "string"}, "expected": {"type": "string"}, "actual": {"type": ["string", "null"]},
+                                      "status": {"enum": ["UNCHANGED", "CHANGED_BY_FIX", "MISMATCH", "MISSING"]},
+                                      "defects": {"type": "array", "items": {"type": "string"}}}}}}}
+  }
+}
