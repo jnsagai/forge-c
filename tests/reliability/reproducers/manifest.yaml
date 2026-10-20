@@ -673,3 +673,14 @@ reproducers:
     operations: [SWE.3/author, brownfield/trace]
     root_cause: "brownfield.trace.check_code took one owning unit per delivered function, while the unit design of a vendor delivery can legitimately share a function between units (ST's LL_AHB1_GRP1_* serve both the GPDMA1 and the ADC12 unit); the SWE.3 author could satisfy neither the uniqueness rule nor the unit rule and escalated DEF-003 (FACTORY), after two rework cycles."
     remedy: "A trace-map row's unit may be a list of owning units; each USPEC must belong to one of them, and each listed unit must name the function. The SWE.3 brownfield prompt describes the list form."
+  - id: RPR-063
+    script: rpr063_startup_invariant_on_host_test.py
+    sha256: 0188c16bff8e5ca6a23dbfe88fc1e6f3f4a5f12da0af07cc944bd4b36ba15fd1
+    symptom_signature: "SWE.1 gate accepts a startup invariant mapped to a host unit test"
+    observed_in: b006
+    baseline_revision: c5bfd310ea92416babafbd85c6336133535b23a6
+    fix_revision: 3456ba7ed8cb23af8b4c8680c43ee28998d405fe
+    error_codes: ["SWE4-02", "SWE4-06", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.1/author, SWE.4/author, SWE.4/inspect]
+    root_cause: "The SWE.1 mapping rule sent only flash/RAM/stack/target-only requirements to the Robot suite; a reset/startup invariant (b006 SWR-018: 'While no LL function has been called after reset, the RCC LL driver shall not write any RCC register') was mapped to host unit test UT-018, which can only check its own freshly reset RAM struct. The SWE.4 inspector rightly failed it as tautological (SWE4-02) and its traces (SWE4-06); the authors could not make a host test observe pre-main state, and SWE.4 BLOCKED."
+    remedy: "The SWE.1 author gate reports SWE1:STARTUP_INVARIANT_ON_HOST_TEST for a 'While ... after reset' requirement mapped under software/tests/unit/, naming the Robot mapping; the SWE.1 prompt includes reset/startup requirements in the Robot rule."

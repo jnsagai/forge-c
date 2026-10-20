@@ -1,0 +1,100 @@
+{
+  "CAPA-059": {
+    "history": [
+      {
+        "at": "2026-10-20T11:50:37.057345Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[\"CAPA-059\"]",
+        "from_state": null,
+        "reason": "b006 (WO-0008C-ST-RCC-LL-b006) SWE.4 BLOCKED: UT-018 for the startup invariant SWR-018 judged tautological (SWE4-02) and mis-traced (SWE4-06) through the whole rework budget",
+        "seq": 474,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T11:50:39.294342Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 475,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T11:50:39.548902Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-063 assigned",
+        "seq": 476,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T11:52:42.138909Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[\"reproducer-run:rr-8028247ac4a9aa526b5a\", \"reproducer-run:rr-bb2aeb42786dee7a6128\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 477,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T11:52:42.160483Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[\"git:c5bfd310ea92..3456ba7ed8cb\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 3456ba7ed8cb (patch 7174 bytes)",
+        "seq": 478,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T11:52:42.196808Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[\"reproducer-run:rr-39a4bf3602bde8b2378f\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-063 absent at 3456ba7ed8cb",
+        "seq": 479,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T11:52:42.209844Z",
+        "capa_id": "CAPA-059",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 480,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "c5bfd310ea92416babafbd85c6336133535b23a6",
+      "3456ba7ed8cb23af8b4c8680c43ee28998d405fe",
+      "pd-114e835ea693c7984ef6"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<3456ba7ed8cb"
+      ],
+      "candidate_patch_sha256": "d2d3a10e869026ced3384f180fd382119d89c9219a3c5d0069d1306347229aea",
+      "capa_id": "CAPA-059",
+      "created_at": "2026-10-20T11:50:37.057345Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-059"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-063",
+      "reproducer_id": "RPR-063",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-8028247ac4a9aa526b5a",
+        "reproducer-run:rr-bb2aeb42786dee7a6128"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "startup invariants were mapped to host unit tests by the SWE.1 rule, and no gate caught it before SWE.4",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T11:52:42.209844Z"
+    }
+  }
+}
