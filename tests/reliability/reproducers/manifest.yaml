@@ -651,3 +651,14 @@ reproducers:
     operations: [build/compile, build/measure_elf]
     root_cause: "forge-build-mcp compile used the factory's own warning policy (-Werror -Wconversion -Wsign-conversion -pedantic) for a frozen delivery and passed the vendor include directory with -I; ST's CMSIS armv7m_cachel1.h line 117 warns under -Wsign-conversion, so the target build failed, no object was emitted and measure_elf was BLOCKED (DEF-001 FACTORY)."
     remedy: "For a delivery the warning flags drop -Werror and every warning is recorded as an issue; the vendor include and host device directories are passed with -isystem (third-party headers). Factory-written code keeps -Werror."
+  - id: RPR-061
+    script: rpr061_swe3_all_greenfield_on_delivery.py
+    sha256: 4c894132e2eacbcdfb54fa98cc1afc9d8b2af5c5186ef607c26ea61d547b9720
+    symptom_signature: "swe3_all applies greenfield checks to a delivery"
+    observed_in: b006
+    baseline_revision: 6e37c09443f0d2e20f5992822becb59edf992e06
+    fix_revision: f3e72507e9bfc1cc60261324c7eaff6cd762046c
+    error_codes: ["REGMAP:NO_REGISTER_DEFINES", "IMPL:LL_NOT_STATIC_INLINE"]
+    operations: [docs/validate_artifact]
+    root_cause: "OD-2026-10-20-02 moved the SWE.3 checklist items of a delivery to the delivered-code checks (brownfield/checks.py), but the author-facing validator forge-docs-mcp.validate_artifact (hal_guideline, register_map, implementation, swe3_all) still ran the greenfield checks; on the ST delivery it reported 491+ findings the frozen author cannot act on, and the authors escalated DEF-002 (FACTORY)."
+    remedy: "For a delivery the four SWE.3 checks run brownfield/checks.py: blocking only for probe build failures, fingerprint changes and fixable (FIX_ALLOWED, forge-style) findings; every other delivered-code finding is returned as recorded for the owner."
