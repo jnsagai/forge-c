@@ -57,6 +57,23 @@
         "b007/package.json",
         "b007/DEF-001..005.json"
       ]
+    },
+    "b008": {
+      "work_order": "WO-0008C-ST-RCC-LL-b008",
+      "fabro_run_id": "01M5CNVAH79A3F3BT74TAH3JSM",
+      "factory_commit": "0feeb64 at launch; PROVENANCE NOTE: at about 13:25Z the shared run worktree was checked out to df3119c+ (IWDG-only additions: hal.time_base, prompt texts, oracle/harness stubs inert for RCC) while b008 was in SWE.4, so its SWE.4 route through SWE.6 gates ran on that superset - an agent error, disclosed here",
+      "result": "SWE.1-SWE.6 PASS on ST's delivered RCC code: unit tests (scope coverage functions/regions/branches 100%), integration, Renode 59/59, Robot 21/21 tests and 21/21 requirements, cppcheck 0, flash 172 B, stack 8 B",
+      "package": "BLOCKED, 7 gaps: 2 packaging (no C source of a header-only delivery: CAPA-062) and 5 GL-ARG-01 findings in ST's ll_bus.h (owner disposition OD-2026-10-20-07)",
+      "refinalize_with_fixes": "a copy re-finalized with CAPA-062 and OD-2026-10-20-07: READY_FOR_OFFLINE_REVIEW, 0 gaps",
+      "files": [
+        "b008/gate-log.jsonl",
+        "b008/package.json",
+        "b008/DEF-001..005.json"
+      ]
     }
+  },
+  "disposition_support": {
+    "decision": "pd-307af136c18b4ee7a10d",
+    "owner_decision": "OD-2026-10-20-07"
   }
 }
