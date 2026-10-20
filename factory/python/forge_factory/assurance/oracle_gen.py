@@ -21,14 +21,16 @@ SET_CLEAR = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear)
 SHIM = ("#include <stdint.h>\nvolatile uint32_t (*shim_regs(void))[1024];\n#define ll_rcc_regs (*shim_regs())\n")
 
 
-def allocation(arch_md: str) -> dict[str, list[str]]:
-    """SWR -> allocated API functions, from the rows of the SWE.2 architecture tables."""
+def allocation(arch_md: str, names: set[str] | None = None) -> dict[str, list[str]]:
+    """SWR -> allocated API functions, from the rows of the SWE.2 architecture tables. `names`: further function
+    names to recognise (feature 008: the delivered scope functions, e.g. ST's LL_AHB1_GRP1_EnableClock)."""
     out: dict[str, list[str]] = {}
     for line in arch_md.splitlines():
         if not line.lstrip().startswith("|"):
             continue
         swrs = re.findall(r"\bSWR-\d{3}\b", line)
         fns = re.findall(r"\b((?:HAL|LL)_RCC_[A-Za-z0-9_]+)\b", line)
+        fns += [w for w in re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", line) if names and w in names and w not in fns]
         fns = [f for f in fns if not re.search(r"_(OFFSET|MSK|POS|VALUE)$", f)]
         for s in swrs:
             out.setdefault(s, [])

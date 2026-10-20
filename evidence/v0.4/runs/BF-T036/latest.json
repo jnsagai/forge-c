@@ -1,0 +1,15 @@
+{
+  "task": "BF-T036",
+  "status": "IN_PROGRESS",
+  "runs": {
+    "b003": {
+      "work_order": "WO-0008C-ST-RCC-LL-b003",
+      "fabro_run_id": "01M5BHVHXCD933S0H14TVEKXC2",
+      "factory_commit": "1890afb",
+      "delivery": "ST stm32n6xx-hal-driver v1.4.0 LL (BSD-3-Clause), 11 scope functions, CMSIS device v1.4.0 + STM32CubeN6 v1.4.0 CMSIS core as dependencies, secure build",
+      "result": "BLOCKED at SWE.2 (identical deterministic rejection); package BLOCKED gaps=43",
+      "what_worked": "intake ACCEPTED (13 fingerprinted files, build check PASS with arm-none-eabi-gcc), SWE.1 frozen and inspected PASS, ST code injected after SWE.1",
+      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names, so ST's LL_AHB1_GRP1_* functions were 'not allocated' (CONTRACT_FUNCTION_NOT_ALLOCATED); fixed: delivered scope function names are recognised in brownfield work orders (test_vendor_function_names_count_as_allocated)"
+    }
+  }
+}

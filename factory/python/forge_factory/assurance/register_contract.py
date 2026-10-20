@@ -128,7 +128,10 @@ def check_calls(ws: Path) -> list[str]:
     if d.get("schema") != "forge-c/api-calls/1" or not isinstance(calls, dict):
         return [f"CONTRACT_SCHEMA:{CALLS}: need schema forge-c/api-calls/1 and a calls object"]
     arch = Path(ws) / "workproducts/SWE.2/software_architecture.md"
-    alloc = allocation(arch.read_text(errors="replace")) if arch.is_file() else {}
+    from ..brownfield import manifest_of
+
+    names = set(((manifest_of(ws).get("delivery") or {}).get("scope") or {}).get("functions") or [])
+    alloc = allocation(arch.read_text(errors="replace"), names) if arch.is_file() else {}
     out = []
     for e in eff.get("effects") or []:
         case, c = e.get("case"), calls.get(e.get("case"))

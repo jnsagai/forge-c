@@ -1,0 +1,137 @@
+{
+  "build_check": {
+    "command": [
+      "arm-none-eabi-gcc",
+      "-std=c11",
+      "-fsyntax-only",
+      "-Wall",
+      "-Wextra",
+      "-mcpu=cortex-m55",
+      "-mthumb",
+      "-mcmse",
+      "-I/tmp/forge-bf-build-xr7lwd6o/inputs/vendor/include",
+      "-I/tmp/forge-bf-build-xr7lwd6o/inputs/vendor/include/m-profile",
+      "-I/tmp/forge-bf-build-xr7lwd6o/software/ll",
+      "-DSTM32N657xx"
+    ],
+    "exit_code": 0,
+    "log": "$ clang ... _check_stm32n6xx_ll_bus.c\n\n$ clang ... _check_stm32n6xx_ll_rcc.c\n",
+    "log_sha256": "94a7999204fc3dc1a200b8164912def81d8683f68baa217e4737c5aff75be989",
+    "status": "PASS",
+    "warnings": 0
+  },
+  "checked_at": "2026-10-20T02:22:03.783088Z",
+  "code_mode": "FROZEN",
+  "files": [
+    {
+      "bytes": 340069,
+      "licence": "BSD-3-Clause",
+      "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+      "path": "software/ll/stm32n6xx_ll_rcc.h",
+      "role": "delivered_code",
+      "sha256": "266f62d888a25022f7015c6694219a6f1e9dca671b6eb5578e2ba33166dc647e"
+    },
+    {
+      "bytes": 183835,
+      "licence": "BSD-3-Clause",
+      "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+      "path": "software/ll/stm32n6xx_ll_bus.h",
+      "role": "delivered_code",
+      "sha256": "5531f55470d517b40420aa7b81f492120e291e413b4309f9bdec0d590b8fb39d"
+    },
+    {
+      "bytes": 7076,
+      "licence": "Apache-2.0",
+      "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+      "path": "inputs/vendor/include/stm32n6xx.h",
+      "role": "delivered_dependency",
+      "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+    },
+    {
+      "bytes": 3599048,
+      "licence": "Apache-2.0",
+      "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+      "path": "inputs/vendor/include/stm32n657xx.h",
+      "role": "delivered_dependency",
+      "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+    },
+    {
+      "bytes": 2504,
+      "licence": "Apache-2.0",
+      "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+      "path": "inputs/vendor/include/system_stm32n6xx.h",
+      "role": "delivered_dependency",
+      "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+    },
+    {
+      "bytes": 319985,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/core_cm55.h",
+      "role": "delivered_dependency",
+      "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+    },
+    {
+      "bytes": 1936,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/cmsis_version.h",
+      "role": "delivered_dependency",
+      "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+    },
+    {
+      "bytes": 9265,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/cmsis_compiler.h",
+      "role": "delivered_dependency",
+      "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+    },
+    {
+      "bytes": 30171,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/cmsis_gcc.h",
+      "role": "delivered_dependency",
+      "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+    },
+    {
+      "bytes": 20698,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+      "role": "delivered_dependency",
+      "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+    },
+    {
+      "bytes": 13982,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+      "role": "delivered_dependency",
+      "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+    },
+    {
+      "bytes": 22537,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+      "role": "delivered_dependency",
+      "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+    },
+    {
+      "bytes": 13032,
+      "licence": "Apache-2.0",
+      "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+      "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+      "role": "delivered_dependency",
+      "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+    }
+  ],
+  "issues": [],
+  "licence": "BSD-3-Clause",
+  "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+  "schema": "forge-c/delivery-intake/0.1",
+  "status": "ACCEPTED",
+  "work_order": "WO-0008C-ST-RCC-LL-b003"
+}

@@ -69,3 +69,20 @@ def test_contract_calls_compile_against_the_vendor_headers(ws):
 
     _contract(ws)
     assert RC.check_compiles(ws, [ws / "software/ll"], "stm32n6xx_ll_rcc.h") == []
+
+
+def test_vendor_function_names_count_as_allocated(ws):
+    """b003 (2026-10-20): the ST pilot blocked at SWE.2 with CONTRACT_FUNCTION_NOT_ALLOCATED because the allocation
+    parser only knew (HAL|LL)_RCC_ names; delivered scope functions are recognised in brownfield work orders."""
+    from forge_factory.assurance import register_contract as RC
+
+    _contract(ws)
+    rows = ["| SWR-%03d | %s | SWC_LL | %s |" % (i, f, a) for i, (f, a) in enumerate([
+        ("LL_RCC_HSI_Enable", "-"), ("LL_RCC_HSI_Disable", "-"), ("LL_RCC_HSE_Enable", "-"), ("LL_RCC_HSE_Disable", "-"),
+        ("LL_RCC_HSI_IsReady", "-"), ("LL_RCC_HSE_IsReady", "-")], 1)]
+    eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
+    calls = json.loads((ws / "workproducts/SWE.2/api_calls.json").read_text())["calls"]
+    rows += [f"| {e['swr']} | {calls[e['case']]['function']} | SWC_LL | {calls[e['case']]['args']} |" for e in eff]
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(
+        "## Requirement allocation table\n\n| SWR | Function | SWC | Args |\n|---|---|---|---|\n" + "\n".join(rows) + "\n")
+    assert not [x for x in RC.check_calls(ws) if "NOT_ALLOCATED" in x]
