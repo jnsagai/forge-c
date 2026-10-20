@@ -1,0 +1,25 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "artifact:sha256:7a247f216daa128dd9023f73a02422b1e0c5d45526eb71616fc466071887f7bb",
+    "workproducts/SWE.2/software_architecture.md",
+    "software/hal/stm32n6xx_hal_iwdg.c"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T07:03:06.037242Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "swe3_all reports NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2 despite the frozen architecture allocating HAL_IWDG_Init and HAL_IWDG_Refresh in its Function column; repair allocation parsing.",
+  "target_phase": null,
+  "test_files": {}
+}

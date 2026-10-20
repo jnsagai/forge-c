@@ -107,7 +107,7 @@ def _allocation_map(ws) -> dict[str, list[str]]:
     p = ws / ARCH
     if not p.is_file():
         return {}
-    pre = api_prefix(layer_of(ws))
+    pre = api_prefix(layer_of(ws), ws)  # CAPA-053 (h001): the work order's peripheral, not the RCC default
     body = next((b for h, b in _sections(p.read_text(errors="replace")).items() if re.search(r"allocation", h)), "")
     out: dict[str, list[str]] = {}
     for row in _rows(body):

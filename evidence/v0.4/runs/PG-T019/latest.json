@@ -1,0 +1,20 @@
+{
+  "task": "PG-T019",
+  "status": "IN_PROGRESS",
+  "runs": {
+    "h001": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h001",
+      "fabro_run_id": "01M5C1BRKCGW39HKFGHE2TDEN9",
+      "factory_commit": "856c3fb (PR #18 head)",
+      "provided_ll": "WO-0009A-STM32N6-IWDG-LL-i003 software/ll/stm32n6xx_ll_iwdg.h (sha256 5996e7e6...)",
+      "models": "14 author nodes on Codex Sol 6.1, 7 inspector/Release Manager nodes on Claude Opus 5.5; no agent node on the run model",
+      "result": "SWE.1 PASS (12 IWDG HAL requirements, one contract rework) and SWE.2 PASS; the SWE.3 HAL author wrote HAL_IWDG_Init (RM0486 59.3 sequence with a bounded PVU/RVU wait) and HAL_IWDG_Refresh; BLOCKED at SWE.3 (rework budget exhausted)",
+      "factory_defects": [
+        "CAPA-053: the SWE.3 implementation check read the SWE.2 allocation with the RCC prefix (IMPL:NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2); the authors escalated it themselves as factory defects DEF-001/DEF-002",
+        "CAPA-052: Fabro's server-side run-title generation reached the suspended DeepSeek once at 06:53:12Z (failed, no tokens reported); the gateway now refuses suspended providers and the running cloud gateway was stopped"
+      ],
+      "package": "BLOCKED, 31 gaps (archive 178ce7f68fc3612d), downstream phases not run",
+      "files": ["h001/gate-log.jsonl", "h001/package.json", "h001/stm32n6xx_hal_iwdg.c", "h001/stm32n6xx_hal_iwdg.h", "h001/software_requirements.md", "h001/software_architecture.md", "h001/DEF-001.json", "h001/DEF-002.json"]
+    }
+  }
+}

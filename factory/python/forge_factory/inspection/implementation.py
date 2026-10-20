@@ -28,7 +28,7 @@ _CODE_LINE = re.compile(r"^\s*(?:static\s+|inline\s+|const\s+)*(?:void|u?int\d+_
 def allocated_functions(ws: Path, prefix: str | None = None) -> list[str]:
     from ..layer import api_prefix, layer_of
 
-    prefix = prefix or api_prefix(layer_of(ws))  # ADR-0009: LL work orders allocate LL_RCC_ functions
+    prefix = prefix or api_prefix(layer_of(ws), ws)  # ADR-0009 + CAPA-053: the layer's prefix of this peripheral
     p = ws / ARCH
     if not p.is_file():
         return []

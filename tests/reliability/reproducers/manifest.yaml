@@ -618,3 +618,14 @@ reproducers:
     operations: [llm_gateway/chat, fabro/run_title_generation]
     root_cause: "CAPA-051 guards the workflow graph (no agent node on the suspended run model), but the Fabro server itself generates a run title with its default run model (deepseek-flash) for every new run, through the forge LLM gateway, which forwarded every request upstream. h001 at 2026-10-20T06:53:12Z reached api.deepseek.com (it failed with 'response_format type is unavailable', so no tokens were reported)."
     remedy: "The gateway maps its upstream host to a provider and refuses every request (chat and models) while config/factory/model-suspensions.yaml suspends that provider, before reading the body or opening a connection; it records the refusal (upstream_called false), which cost and token metrics ignore. Read per request: lifting the suspension needs no restart."
+  - id: RPR-057
+    script: rpr057_hal_allocation_rcc_prefix.py
+    sha256: bec0d336ee5f4b3550aac76ab5aae69927aff890f47536e419dcc934c3f950cc
+    symptom_signature: "HAL allocation read with the RCC prefix on a non-RCC work order"
+    observed_in: h001
+    baseline_revision: 625ed0245a6840535416c18cca514306f39225bf
+    fix_revision: 40a3b31228f77704876063e716ee7e55942fbf38
+    error_codes: ["IMPL:NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/verify, SWE.3/author, evidence/allocation_map]
+    root_cause: "inspection.implementation.allocated_functions and mcp.servers.evidence._allocation_map called layer.api_prefix(layer_of(ws)) without the workspace, so the default (RCC) profile gave HAL_RCC_; the IWDG LL runs used the LL path where the same call was not reached with a HAL layer. h001's SWE.2 allocated HAL_IWDG_Init/HAL_IWDG_Refresh, the check found none and SWE.3 exhausted its rework budget; the authors escalated DEF-001/DEF-002 (FACTORY)."
+    remedy: "Both callers pass the workspace, so the prefix comes from the work order's peripheral profile."

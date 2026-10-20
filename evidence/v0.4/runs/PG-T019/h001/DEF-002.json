@@ -1,0 +1,26 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "workproducts/SWE.2/architecture_static.puml",
+    "software/hal/stm32n6xx_hal_iwdg.c",
+    "artifact:sha256:7a247f216daa128dd9023f73a02422b1e0c5d45526eb71616fc466071887f7bb",
+    "artifact:sha256:d199958459e4f35789d62fb98788a29e8254a37aecfe6d74aedf822cc0b00bd4"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T07:07:30.623213Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "SWE.3 validator reports IMPL:NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2 (allocated=0, hal_defined=0). Frozen architecture_static.puml names both HAL APIs and allocates SWR-001..012 to SWC_HAL; both APIs exist in software/hal/stm32n6xx_hal_iwdg.c. Fix validator API discovery outside SWE.3 author scope.",
+  "target_phase": null,
+  "test_files": {}
+}
