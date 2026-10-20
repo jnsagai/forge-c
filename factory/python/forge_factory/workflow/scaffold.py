@@ -54,9 +54,27 @@ HARNESS_FAKE = re.sub(r"static void ut_reset_regs\(void\)\n\{.*?\n\}", lambda _m
     '#include "stm32n6xx_hal_rcc.h" /* its LL include resolves to software/tests/unit/ll_fake */\n'), count=1, flags=re.S)
 
 
+def unit_test(ws: Path | None = None) -> str:
+    """Feature 009: the unit-test file of the work order's peripheral (RCC: the historical test_rcc.c)."""
+    from ..layer import profile
+
+    return f"software/tests/unit/test_{profile(ws)['id']}.c"
+
+
+def _for_peripheral(text: str, ws: Path) -> str:
+    """The RCC harness text with the work order's peripheral names (identity for RCC)."""
+    from ..layer import profile
+
+    pr = profile(ws)
+    return (text.replace("stm32n6xx_hal_rcc.h", pr["hal"]["header"]).replace("stm32n6xx_ll_rcc.h", pr["ll"]["header"])
+            .replace("ll_rcc_regs", pr["ll"]["register_block"]).replace("LL_RCC_REG_COUNT",
+                                                                         f"{pr['ll']['function_prefix']}REG_COUNT"))
+
+
 def scaffold(ws: Path) -> dict:
     from ..layer import hal_unit_isolation, layer_of
 
+    UNIT_TEST = unit_test(ws)  # noqa: N806 - feature 009: per-peripheral file name
     p = ws / UNIT_TEST
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
@@ -65,11 +83,11 @@ def scaffold(ws: Path) -> dict:
         from .ll_fake import write
 
         write(ws)
-        p.write_text(HARNESS_FAKE, encoding="utf-8")
+        p.write_text(_for_peripheral(HARNESS_FAKE, ws), encoding="utf-8")
         return {"status": "PASS", "created": True, "file": UNIT_TEST, "ll_fake": True}
     text = HARNESS if layer_of(ws) != "LL" else HARNESS.replace('#include "stm32n6xx_hal_rcc.h"',
                                                                   '#include "stm32n6xx_ll_rcc.h"')  # ADR-0009
-    p.write_text(text, encoding="utf-8")
+    p.write_text(_for_peripheral(text, ws), encoding="utf-8")
     return {"status": "PASS", "created": True, "file": UNIT_TEST}
 
 

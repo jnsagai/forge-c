@@ -21,7 +21,13 @@ SET_CLEAR = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear)
 SHIM = ("#include <stdint.h>\nvolatile uint32_t (*shim_regs(void))[1024];\n#define ll_rcc_regs (*shim_regs())\n")
 
 
-def allocation(arch_md: str, names: set[str] | None = None) -> dict[str, list[str]]:
+def shim_text(block: str = "ll_rcc_regs", count: int = 1024) -> str:
+    """Feature 009: the oracle's register-block shim for the work order's peripheral (RCC: SHIM)."""
+    return SHIM.replace("ll_rcc_regs", block).replace("[1024]", f"[{count}]")
+
+
+def allocation(arch_md: str, names: set[str] | None = None, prefixes: tuple[str, ...] = ("HAL_RCC_", "LL_RCC_")
+               ) -> dict[str, list[str]]:
     """SWR -> allocated API functions, from the rows of the SWE.2 architecture tables. `names`: further function
     names to recognise (feature 008: the delivered scope functions, e.g. ST's LL_AHB1_GRP1_EnableClock)."""
     out: dict[str, list[str]] = {}
@@ -29,7 +35,7 @@ def allocation(arch_md: str, names: set[str] | None = None) -> dict[str, list[st
         if not line.lstrip().startswith("|"):
             continue
         swrs = re.findall(r"\bSWR-\d{3}\b", line)
-        fns = re.findall(r"\b((?:HAL|LL)_RCC_[A-Za-z0-9_]+)\b", line)
+        fns = re.findall(r"\b((?:" + "|".join(re.escape(x) for x in prefixes) + r")[A-Za-z0-9_]+)\b", line)
         fns += [w for w in re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", line) if names and w in names and w not in fns]
         fns = [f for f in fns if not re.search(r"_(OFFSET|MSK|POS|VALUE)$", f)]
         for s in swrs:
@@ -189,16 +195,16 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None) -
     return "\n".join(lines)
 
 
-def contract_source(cases: list[dict], include: str) -> str:
+def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024) -> str:
     """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
     bits of the register unchanged, a no_write case leaves its named register unchanged (no register named: no
     register access at all), a bounded poll for a never-ready case."""
     from .register_contract import call_text
 
-    lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stddef.h>", "#include <stdio.h>",
-             "#include <string.h>", "volatile uint32_t regs[1024];", "unsigned long shim_n;",
-             "volatile uint32_t (*shim_regs(void))[1024] { shim_n++; return &regs; }", "static int fails;",
-             "int main(void)", "{", "    uint32_t before[1024];"]
+    lines = [f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
+             "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
+             f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
+             "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
         t = 5 if c["never_ready"] else 10
         lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
@@ -206,6 +212,8 @@ def contract_source(cases: list[dict], include: str) -> str:
         if c["op"] != "no_write":
             other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
             pre = c["mask"] if c["op"] == "clear" and not c["never_ready"] else 0
+            if c["op"] == "write":  # feature 009: the field is preset to the complement of the value written
+                pre = (~(c["value"] << c["lsb"])) & c["mask"]
             lines.append(f"    regs[{c['word']}U] = 0x{(pre | other):08X}U;")
             if c["ready"] and c["op"] == "set":
                 lines.append(f"    regs[{c['ready'][0]}U] |= 0x{c['ready'][1]:08X}U;")
@@ -217,6 +225,8 @@ def contract_source(cases: list[dict], include: str) -> str:
             conds.append(f"(regs[{c['word']}U] == before[{c['word']}U])")
         elif c["op"] == "no_write":                # no register named: no register access at all
             conds.append("(shim_n == 0UL)")
+        elif c["op"] == "write":  # feature 009: the field holds the value (a key/value register is written whole)
+            conds.append(f"((regs[{c['word']}U] & 0x{c['mask']:08X}U) == 0x{(c['value'] << c['lsb']) & c['mask']:08X}U)")
         else:
             conds.append(f"((regs[{c['word']}U] & 0x{c['mask']:08X}U) {'!=' if c['op'] == 'set' else '=='} 0U)")
             conds.append(f"((regs[{c['word']}U] & ~0x{c['mask']:08X}U) == (before[{c['word']}U] & ~0x{c['mask']:08X}U))")
@@ -245,7 +255,10 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
     if contract:  # owner decision 2026-10-19 (option B): the machine-readable contract replaces sentence parsing
         cases, notes = RC.cases(ws)
         extra: list[dict] = []
-        src = contract_source(cases, api_header)
+        from ..layer import profile
+
+        pr = profile(ws)
+        src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"])
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
     else:
         cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
@@ -266,7 +279,9 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         return {"status": "NOT_RUN", "notes": notes, "provenance": prov}
     with tempfile.TemporaryDirectory() as td:
         t = Path(td)
-        (t / "shim.h").write_text(SHIM)
+        from ..layer import profile as _profile
+
+        (t / "shim.h").write_text(shim_text(_profile(ws)["ll"]["register_block"], _profile(ws)["ll"]["register_count"]))
         (t / "oracle.c").write_text(src)
         inc = sum((["-I", str(d)] for d in include_dirs), []) + ["-include", str(t / "shim.h")]
         objs = []

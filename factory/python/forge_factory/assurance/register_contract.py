@@ -21,10 +21,10 @@ from pathlib import Path
 
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 CALLS = "workproducts/SWE.2/api_calls.json"
-OPS = ("set", "clear", "no_write")
+OPS = ("set", "clear", "no_write", "write")  # write (feature 009): the field holds "value" after the call
 STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
-FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")
+FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
 SAFE_ARG = re.compile(r"^[A-Za-z0-9_&(){}.=, +\-*/\[\]]*$")
 CALL_IN_ARG = re.compile(r"[A-Za-z_]\w*\s*\(")  # a function call inside an argument is refused (no hidden logic)
 SWR_LINE = re.compile(r"\*\*(SWR-\d{3})\*\*\s*(.+)")
@@ -54,14 +54,20 @@ def _rm_index(ws: Path) -> dict:
     return index(d) if d.is_dir() else {}
 
 
+def _field_rx(ws: Path) -> re.Pattern:
+    from ..layer import register_prefix
+
+    return re.compile(rf"^({register_prefix(ws)}_[A-Z0-9]+)\.([A-Z0-9_]+)$")
+
+
 def _requirements(ws: Path) -> dict[str, str]:
     p = Path(ws) / "workproducts/SWE.1/software_requirements.md"
     return {m.group(1): m.group(2) for m in SWR_LINE.finditer(p.read_text(errors="replace"))} if p.is_file() else {}
 
 
-def _needs_contract(text: str) -> bool:
+def _needs_contract(text: str, prefix: str = "RCC") -> bool:
     """A requirement that sets or clears a named register bit through the driver API (not a reset-value statement)."""
-    return bool(re.search(r"\bRCC_[A-Z0-9]+\.[A-Z0-9_]+", text)) and bool(
+    return bool(re.search(rf"\b{prefix}_[A-Z0-9]+\.[A-Z0-9_]+", text)) and bool(
         re.search(r"\b(set|clear|clears|assert|release)\b", text, re.I)) and "reset value" not in text.lower()
 
 
@@ -93,18 +99,27 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
         r = idx.get(reg)
         if r is None or fld not in r["fields"]:
             out.append(f"CONTRACT_NOT_IN_RM:{where}:{reg}.{fld}")
+        elif op == "write":
+            width = r["fields"][fld]["msb"] - r["fields"][fld]["lsb"] + 1
+            v = _value(e.get("value"))
+            if v is None or not 0 <= v < (1 << width):
+                out.append(f"CONTRACT_WRITE_VALUE:{where}:{e.get('value')!r} (an integer that fits {reg}.{fld}, "
+                           f"{width} bits)")
         elif swr in reqs and f"{reg}.{fld}" not in reqs[swr] and not (reg in reqs[swr] and fld in reqs[swr]):
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
         if ready not in (None, "never"):
-            m = FIELD_RX.match(str(ready))
+            m = _field_rx(ws).match(str(ready))
             if not m or m.group(1) not in idx or m.group(2) not in idx[m.group(1)]["fields"]:
                 out.append(f"CONTRACT_READY_NOT_IN_RM:{where}:{ready}")
         if ready == "never" and (op != "clear" or e.get("status") != "HAL_TIMEOUT"):
             out.append(f"CONTRACT_TIMEOUT_CASE:{where}: a never-ready case clears the enable bit and returns HAL_TIMEOUT")
     covered = {e.get("swr") for e in effects}
+    from ..layer import register_prefix
+
+    pfx = register_prefix(ws)
     out += [f"CONTRACT_SWR_NOT_COVERED:{s} (it sets or clears a register bit: add its effects)"
-            for s, t in sorted(reqs.items()) if _needs_contract(t) and s not in covered]
+            for s, t in sorted(reqs.items()) if _needs_contract(t, pfx) and s not in covered]
     return out[:15]
 
 
@@ -115,6 +130,18 @@ def _no_delivered_code(ws: Path, call) -> bool:
     from ..brownfield import is_brownfield, manifest_of
 
     return is_brownfield(manifest_of(ws))
+
+
+def _value(v) -> int | None:
+    """A contract write value: an integer or a hexadecimal/decimal string (e.g. "0xCCCC")."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, int):
+        return v
+    try:
+        return int(str(v), 0)
+    except (TypeError, ValueError):
+        return None
 
 
 def check_calls(ws: Path) -> list[str]:
@@ -129,9 +156,12 @@ def check_calls(ws: Path) -> list[str]:
         return [f"CONTRACT_SCHEMA:{CALLS}: need schema forge-c/api-calls/1 and a calls object"]
     arch = Path(ws) / "workproducts/SWE.2/software_architecture.md"
     from ..brownfield import manifest_of
+    from ..layer import profile
 
     names = set(((manifest_of(ws).get("delivery") or {}).get("scope") or {}).get("functions") or [])
-    alloc = allocation(arch.read_text(errors="replace"), names) if arch.is_file() else {}
+    pr = profile(ws)  # feature 009 (i001): the work order's API prefixes, not only (HAL|LL)_RCC_
+    pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
+    alloc = allocation(arch.read_text(errors="replace"), names, pfx) if arch.is_file() else {}
     out = []
     for e in eff.get("effects") or []:
         case, c = e.get("case"), calls.get(e.get("case"))
@@ -167,7 +197,8 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
             notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no call or op")
             continue
         case = {"case": e["case"], "swr": e.get("swr"), "function": c["function"], "args": list(c.get("args") or []),
-                "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None}
+                "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None,
+                "value": _value(e.get("value"))}
         # CAPA-047 (r164): a no_write effect that names a register means "this register is not written by the
         # call" (the call may legitimately write other registers); without a register it means no access at all
         if e["op"] != "no_write" or e.get("register"):
@@ -177,8 +208,11 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
                 notes.append(f"ORACLE_NOT_DERIVABLE:{e['case']}:{e.get('register')}.{e.get('field')} not in RM")
                 continue
             case.update(word=r["offset"] // 4, mask=((1 << (fld["msb"] - fld["lsb"] + 1)) - 1) << fld["lsb"],
-                        register=e["register"], field=e["field"])
-            m = FIELD_RX.match(str(e.get("ready") or ""))
+                        lsb=fld["lsb"], register=e["register"], field=e["field"])
+            if e["op"] == "write" and case["value"] is None:
+                notes.append(f"ORACLE_NOT_DERIVABLE:{e['case']}:write without a value")
+                continue
+            m = _field_rx(ws).match(str(e.get("ready") or ""))
             if m and m.group(1) in idx and m.group(2) in idx[m.group(1)]["fields"]:
                 rf = idx[m.group(1)]["fields"][m.group(2)]
                 case["ready"] = (idx[m.group(1)]["offset"] // 4, 1 << rf["lsb"])

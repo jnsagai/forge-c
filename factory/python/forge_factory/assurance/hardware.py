@@ -26,14 +26,14 @@ def _bit_columns(line: str) -> dict[int, int] | None:
     return {int(m.group(0)): (m.start() + m.end()) // 2 for m in toks}
 
 
-def parse_section(text: str) -> dict | None:
-    name = re.search(r"^#+ .*\((RCC_[A-Z0-9_]+)\)\s*$", text, re.M)
+def parse_section(text: str, prefix: str = "RCC") -> dict | None:
+    name = re.search(rf"^#+ .*\(({prefix}_[A-Z0-9_]+)\)\s*$", text, re.M)
     off = re.search(r"Address offset:\s*(0x[0-9a-fA-F]+)", text)
     if not (name and off):
         return None
     reset = re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text)
     fields: dict[str, dict] = {}
-    for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)\s*:", text, re.M):
+    for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[\d+(?::\d+)?\])?\s*:", text, re.M):
         msb, lsb = int(m.group(1)), int(m.group(2) or m.group(1))
         if lsb <= msb <= 31:
             fields.setdefault(m.group(3), {"msb": msb, "lsb": lsb, "access": set()})
@@ -62,10 +62,19 @@ def parse_section(text: str) -> dict | None:
             "read_only": bool(access_by_bit) and all(a == "r" for a in access_by_bit.values())}
 
 
-def index(sections_dir: Path) -> dict[str, dict]:
+def _prefix_of(sections_dir: Path) -> str:
+    """Feature 009: RM register prefix of the work order owning <ws>/inputs/sections/<DOC> (RCC by default)."""
+    from ..layer import register_prefix
+
+    ws = Path(sections_dir).parents[2] if len(Path(sections_dir).parents) > 2 else None
+    return register_prefix(ws) if ws is not None and (ws / ".forge-run/manifest.json").is_file() else "RCC"
+
+
+def index(sections_dir: Path, prefix: str | None = None) -> dict[str, dict]:
     out: dict[str, dict] = {}
+    prefix = prefix or _prefix_of(sections_dir)
     for p in sorted(Path(sections_dir).glob("*.md")):
-        r = parse_section(p.read_text(errors="replace"))
+        r = parse_section(p.read_text(errors="replace"), prefix)
         if r and r["name"] not in out:
             out[r["name"]] = r
     return out

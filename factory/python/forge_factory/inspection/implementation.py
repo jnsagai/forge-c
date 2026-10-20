@@ -81,6 +81,10 @@ def check_implementation(ws: Path) -> dict:
     for rec in provided(ws):  # ADR-0009: the HAL work order must not change the PROVIDED, verified LL
         if not (ws / rec["path"]).is_file() or sha256_file(ws / rec["path"]) != rec["sha256"]:
             findings.append(f"IMPL:PROVIDED_COMPONENT_CHANGED:{rec['path']}")
+    from ..layer import hal_c, hal_h, ll_header, profile
+
+    HAL_H, HAL_C, LL_H = hal_h(ws), hal_c(ws), ll_header(ws)  # noqa: N806 - feature 009: per-peripheral names
+    prof = profile(ws)
     raw = {rel: (ws / rel).read_text(errors="replace") if (ws / rel).is_file() else None for rel in (HAL_H, HAL_C, LL_H)}
     for rel, txt in raw.items():
         if txt is None:
@@ -105,13 +109,8 @@ def check_implementation(ws: Path) -> dict:
         findings.append("IMPL:NO_LL_ACCESS_FUNCTIONS")
     # The register block is placed by the linker (target) / defined by the test harness (host); a driver definition
     # collides with the harness (r38). Only the extern declaration in the LL header is allowed.
-    for src in sorted(ws.glob("software/**/*.c")):
-        if "/tests/" in src.as_posix():
-            continue
-        if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+ll_rcc_regs\s*\[", strip_c(src.read_text(errors="replace")), re.M) \
-                and not re.search(r"\bextern\b[^;]*\bll_rcc_regs\b", strip_c(src.read_text(errors="replace"))):
-            findings.append(f"IMPL:REG_BLOCK_DEFINED_IN_DRIVER:{src.relative_to(ws).as_posix()}")
-    called = set(re.findall(r"\b(LL_RCC_\w+)\s*\(", code.get(HAL_C, "")))
+    findings += _reg_block_defined(ws)
+    called = set(re.findall(r"\b(" + re.escape(prof["ll"]["function_prefix"]) + r"\w+)\s*\(", code.get(HAL_C, "")))
     findings += [f"IMPL:LL_CALL_UNDEFINED:{f}" for f in sorted(called - set(ll_defs))]
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "hal_defined": len([f for f in wanted if f in hal_defs]),
@@ -119,13 +118,16 @@ def check_implementation(ws: Path) -> dict:
 
 
 def _reg_block_defined(ws: Path) -> list[str]:
+    from ..layer import register_block
+
+    blk = re.escape(register_block(ws))
     out = []
     for src in sorted(ws.glob("software/**/*.c")):
         if "/tests/" in src.as_posix():
             continue
         code = strip_c(src.read_text(errors="replace"))
-        if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+ll_rcc_regs\s*\[", code, re.M) \
-                and not re.search(r"\bextern\b[^;]*\bll_rcc_regs\b", code):
+        if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+" + blk + r"\s*\[", code, re.M) \
+                and not re.search(r"\bextern\b[^;]*\b" + blk + r"\b", code):
             out.append(f"IMPL:REG_BLOCK_DEFINED_IN_DRIVER:{src.relative_to(ws).as_posix()}")
     return out
 
@@ -133,6 +135,10 @@ def _reg_block_defined(ws: Path) -> list[str]:
 def _check_ll(ws: Path) -> dict:
     """ADR-0009 LL work order: every LL_RCC_ function allocated in SWE.2 is a static inline definition in the LL
     header; no commented-out code; the register block is only declared (extern)."""
+    from ..layer import ll_header, ll_tu, profile
+
+    LL_H, prof = ll_header(ws), profile(ws)  # noqa: N806 - feature 009: per-peripheral names
+    pfx, blk = prof["ll"]["function_prefix"], re.escape(prof["ll"]["register_block"])
     findings: list[str] = []
     p = ws / LL_H
     if not p.is_file():
@@ -142,7 +148,7 @@ def _check_ll(ws: Path) -> dict:
         txt = p.read_text(errors="replace")
         findings += [f"IMPL:COMMENTED_OUT_CODE:{LL_H}:{n}" for n in commented_out_code(txt)[:10]]
     ll_defs = _defs(strip_c(txt))
-    wanted = allocated_functions(ws, "LL_RCC_")
+    wanted = allocated_functions(ws, pfx)
     if not wanted:
         findings.append("IMPL:NO_ALLOCATED_LL_FUNCTIONS_IN_SWE2")
     for f in wanted:
@@ -162,19 +168,18 @@ def _check_ll(ws: Path) -> dict:
                  for m in re.finditer(r"\b(?:while|for)\s*\(|\bdo\s*\{", code)][:10]
     # CAPA-019 (r84): the author replaced the generated register block by a pointer API; the unit harness, regmap and
     # measurement all use the extern array, and SWE.2/SWE.3 contradicted each other until the loop budget ran out
-    if txt and not re.search(r"\bextern\s+volatile\s+uint32_t\s+ll_rcc_regs\s*\[[^\]]+\]", code):
+    if txt and not re.search(r"\bextern\s+volatile\s+uint32_t\s+" + blk + r"\s*\[[^\]]+\]", code):
         findings.append("IMPL:LL_REG_BLOCK_DECLARATION_MISSING")
-    for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(LL_RCC_\w+)\s*\(([^)]*)\)\s*\{", code, re.M):
-        if m.group(2).strip() not in ("void", ""):
+    for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(" + re.escape(pfx) + r"\w+)\s*\(([^)]*)\)\s*\{",
+                         code, re.M):
+        if prof["ll"].get("void_signatures", True) and m.group(2).strip() not in ("void", ""):
             findings.append(f"IMPL:LL_SIGNATURE_NOT_VOID:{m.group(1)}")
     findings += _reg_block_defined(ws)
     # CAPA-046 (r159): the LL is header-only (ADR-0009); the only compile unit is the generated one. An authored unit
     # (r159: an integer-to-pointer address helper, after the inspector asked for the RCC base in C) escapes the
     # size/stack measurement of the generated unit and cannot link with the header-only oracle.
-    from ..layer import LL_TU
-
     findings += [f"IMPL:LL_EXTRA_COMPILE_UNIT:{p.relative_to(ws).as_posix()}"
-                 for p in sorted([*ws.glob("software/src/*.c"), *ws.glob("software/ll/*.c")]) if p != ws / LL_TU]
+                 for p in sorted([*ws.glob("software/src/*.c"), *ws.glob("software/ll/*.c")]) if p != ws / ll_tu(ws)]
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "ll_defined": len([f for f in wanted if f in ll_defs]),
                       "ll_functions": len(ll_defs)}}

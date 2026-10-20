@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/peripheral-profile/0.1",
+  "title": "Peripheral profile (config/factory/peripherals/<id>.yaml)",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "register_prefix",
+    "base_address",
+    "window_bytes",
+    "rm",
+    "ll",
+    "hal",
+    "sim",
+    "system_name"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "forge-c/peripheral-profile/0.1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]{1,15}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "register_prefix": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]{1,15}$"
+    },
+    "base_address": {
+      "type": "string",
+      "pattern": "^0x[0-9A-Fa-f]{8}$"
+    },
+    "window_bytes": {
+      "type": "integer",
+      "minimum": 4
+    },
+    "system_name": {
+      "type": "string"
+    },
+    "rm": {
+      "type": "object",
+      "required": [
+        "doc",
+        "chapter",
+        "key_sections"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "doc": {
+          "type": "string",
+          "pattern": "^RM[0-9]{4}$"
+        },
+        "chapter": {
+          "type": "integer"
+        },
+        "key_sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)+$"
+          }
+        }
+      }
+    },
+    "ll": {
+      "type": "object",
+      "required": [
+        "header",
+        "compile_unit",
+        "function_prefix",
+        "register_block",
+        "register_count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "string",
+          "pattern": "^stm32n6xx_ll_[a-z0-9]+\\.h$"
+        },
+        "compile_unit": {
+          "type": "string",
+          "pattern": "^stm32n6xx_ll_[a-z0-9]+\\.c$"
+        },
+        "function_prefix": {
+          "type": "string",
+          "pattern": "^LL_[A-Z0-9]+_$"
+        },
+        "register_block": {
+          "type": "string",
+          "pattern": "^ll_[a-z0-9]+_regs$"
+        },
+        "register_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "void_signatures": {
+          "type": "boolean",
+          "description": "LL access functions take no parameters (RCC: true; default true)"
+        }
+      }
+    },
+    "hal": {
+      "type": "object",
+      "required": [
+        "header",
+        "source",
+        "function_prefix"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "function_prefix": {
+          "type": "string",
+          "pattern": "^HAL_[A-Z0-9]+_$"
+        }
+      }
+    },
+    "sim": {
+      "type": "object",
+      "required": [
+        "model",
+        "platform"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "texts replacing the RCC domain content of the generic prompts (non-RCC peripherals)"
+    },
+    "mm_page": {
+      "type": "integer",
+      "description": "RM page of the memory-map line for the base address"
+    }
+  }
+}

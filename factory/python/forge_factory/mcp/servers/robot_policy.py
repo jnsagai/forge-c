@@ -92,10 +92,12 @@ TCHECK = re.compile(r"TCHECK\(\s*([^,]+?)\s*,(.*?)\)\s*;", re.S)
 DRIVER_CALL = re.compile(r"\b(?:HAL|LL)_RCC_\w+\s*\(")  # a call into the driver under test (not a mask macro)
 
 
-def required_tokens(requirement_text: str) -> tuple[set[str], set[str]]:
-    """HAL statuses and register fields a requirement names; fields as their generated LL mask macro."""
+def required_tokens(requirement_text: str, prefix: str = "RCC", define: str = "LL_RCC_") -> tuple[set[str], set[str]]:
+    """HAL statuses and register fields a requirement names; fields as their generated LL mask macro (feature 009:
+    the work order's register prefix and define prefix; RCC by default)."""
+    rx = REG_FIELD if prefix == "RCC" else re.compile(rf"\b{prefix}_([A-Z0-9]+)\.([A-Z][A-Z0-9_]+)\b")
     return set(HAL_STATUS.findall(requirement_text)), \
-        {f"LL_RCC_{reg}_{field}_MSK" for reg, field in REG_FIELD.findall(requirement_text)}
+        {f"{define}{reg}_{field}_MSK" for reg, field in rx.findall(requirement_text)}
 
 
 def _checks(scenario: Path) -> dict[str, str]:
@@ -166,8 +168,12 @@ def observed_checks(suite: Path) -> dict[str, list[tuple[str, str | None]]]:
 def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[str, str]) -> list[str]:
     issues = []
     obs = observed_checks(suite)
+    from ...layer import profile
+
+    ws = Path(suite).parents[3] if len(Path(suite).parents) > 3 else None
+    pr = profile(ws if ws is not None and (ws / ".forge-run/manifest.json").is_file() else None)
     for rid, text in sorted(requirements.items()):
-        hal, fields = required_tokens(text)
+        hal, fields = required_tokens(text, pr["register_prefix"], pr["ll"]["function_prefix"])
         if not (hal or fields) or rid not in obs:
             continue  # size/budget requirements and untagged ids are judged by the other checks
         exprs = []

@@ -64,7 +64,9 @@ class Checker:
     def __init__(self, ws: Path, rules: dict):
         self.ws, self.rules = ws, rules
         self.sev = {r["id"]: r for r in rules["rules"]}
-        self.ppp = rules["peripheral"].lower()
+        from ..layer import profile  # feature 009: the work order's peripheral (the rule file names RCC by default)
+
+        self.ppp = profile(ws)["id"] if (Path(ws) / ".forge-run/manifest.json").is_file() else rules["peripheral"].lower()
         self.PPP = self.ppp.upper()
         self.series = rules["series_prefix"]
         self.violations: list[dict] = []
@@ -214,7 +216,7 @@ class Checker:
     def check_hal_header_macros(self, p: Path, raw: str) -> None:
         s = strip_c(raw)
         for m in re.finditer(r"^\s*#\s*define\s+(HAL_[A-Z0-9_]+)\s*\([^)]*\)\s*(.*)$", s, re.M):
-            if re.search(r"->|READ_REG|WRITE_REG|SET_BIT|CLEAR_BIT|MODIFY_REG|\bRCC\b", m.group(2)):
+            if re.search(r"->|READ_REG|WRITE_REG|SET_BIT|CLEAR_BIT|MODIFY_REG|\b" + self.PPP + r"\b", m.group(2)):
                 self.v("GL-MACRO-02", self.rel(p), _line(s, m.start()),
                        f"exported macro {m.group(1)} accesses registers")
         if "hal_status_t" not in s and p.name.endswith(f"hal_{self.ppp}.h"):

@@ -42,11 +42,14 @@ def is_agent_reply(text: str) -> bool:
 
 def rm_offsets(ws: Path) -> dict[str, int]:
     """Register name -> documented address offset from the RM0486 section files (`#### ... (RCC_CR)` + offset)."""
+    from ..layer import register_prefix
+
     out: dict[str, int] = {}
     d = ws / SECTIONS_DIR
+    pfx = register_prefix(ws)
     for f in sorted(d.glob("*.md")) if d.is_dir() else []:
         text = f.read_text(errors="replace")[:2000]
-        name = re.search(r"^#+ .*\((RCC_[A-Z0-9_]+)\)\s*$", text, re.M)
+        name = re.search(rf"^#+ .*\(({pfx}_[A-Z0-9_]+)\)\s*$", text, re.M)
         off = re.search(r"Address offset:\s*(0x[0-9a-fA-F]+)", text)
         if name and off:
             out.setdefault(name.group(1), int(off.group(1), 16))
@@ -88,7 +91,11 @@ def check_architecture(ws: Path) -> dict:
     findings += [f"SWE2:UNKNOWN_SWR:{r}" for r in sorted(referenced - known)] if known else []
     # ADR-0009 (r80): a generic placeholder such as LL_RCC_<Peripheral>_Enable allocates nothing implementable;
     # the implementation check could then pass without the requirement being implemented
-    for ph in sorted(set(re.findall(r"\b(?:LL|HAL)_RCC_\w*<[^>|]*>\w*", found["requirement_allocation"] or ""))):
+    from ..layer import profile as _profile
+
+    _pf = _profile(ws)
+    _api = "|".join(re.escape(x) for x in (_pf["ll"]["function_prefix"], _pf["hal"]["function_prefix"]))
+    for ph in sorted(set(re.findall(rf"\b(?:{_api})\w*<[^>|]*>\w*", found["requirement_allocation"] or ""))):
         findings.append(f"SWE2:PLACEHOLDER_API:{ph}")
     # CAPA-010 (r82): the Interfaces section listed LL_RCC_MSI/LSI/LSE/PLLx_IsReady that the allocation table and
     # the code never had; every API the interfaces name must be allocated (macros ALL-CAPS, placeholders excluded)
@@ -96,7 +103,7 @@ def check_architecture(ws: Path) -> dict:
 
     layer = layer_of(ws)
     if layer in ("LL", "HAL"):  # layer-scoped work orders (ADR-0009); the legacy combined layer is unchanged
-        pre = api_prefix(layer)
+        pre = api_prefix(layer, ws)
         alloc_names = set(re.findall(rf"\b{pre}\w+", found["requirement_allocation"] or ""))
         for n in sorted(set(re.findall(rf"\b{pre}\w+", found["interfaces"] or "")) - alloc_names):
             if n[len(pre):] != n[len(pre):].upper() and "<" not in n:

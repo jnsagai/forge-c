@@ -46,19 +46,44 @@ def _doc(text: str) -> str:
     return re.sub(r"\s+", " ", t).strip()[:160]
 
 
-def build_suite(markdown: str) -> str:
+def suite(ws: Path | None = None) -> str:
+    """Feature 009: the requirement suite of the work order's peripheral (RCC: the historical file name)."""
+    from ..layer import profile
+
+    return f"software/tests/software/test_{profile(ws)['id']}_requirements.robot"
+
+
+def header(ws: Path | None = None) -> str:
+    """HEADER for the work order's peripheral (identity for RCC)."""
+    from ..layer import profile
+
+    pr = profile(ws)
+    if pr["id"] == "rcc":
+        return HEADER
+    d, blk = pr["ll"]["function_prefix"], pr["ll"]["register_block"]
+    rcc_model = ("(RCC model: RCC_SR reads RCC_CR & 0xF1F, read-only;\n#" + " " * 62 +
+                 "other registers plain storage starting at 0)")
+    return (HEADER.replace(rcc_model, f"({pr['register_prefix']} behavioural model: see {pr['sim']['model']})")
+            .replace("(ready flags never set: waits time out)", "(update flags never clear: waits time out)")
+            .replace("ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)",
+                     f"{blk}[{d}<REG>_OFFSET / 4U] & {d}<REG>_<FIELD>_MSK (e.g. "
+                     f"{(pr.get('prompt') or {}).get('field_mask_example', d + '<REG>_<FIELD>_MSK')})"))
+
+
+def build_suite(markdown: str, ws: Path | None = None) -> str:
     cases = [f"{r.req_id}\n    [Documentation]    {_doc(r.text)}\n    [Tags]    {r.req_id}\n    {PLACEHOLDER}: "
              f"{r.req_id}\n" for r in extract(markdown)]
-    return HEADER + "\n".join(cases)
+    return header(ws) + "\n".join(cases)
 
 
 def scaffold(ws: Path) -> dict:
+    SUITE = suite(ws)  # noqa: N806 - feature 009: per-peripheral file name
     p, req = ws / SUITE, ws / REQS
     if p.is_file():  # never overwrite an authored suite (rework keeps the author's work)
         return {"status": "PASS", "created": False, "file": SUITE}
     if not req.is_file():
         return {"status": "FAIL", "created": False, "file": SUITE, "issue": f"NO_REQUIREMENTS:{REQS}"}
-    text = build_suite(req.read_text(encoding="utf-8"))
+    text = build_suite(req.read_text(encoding="utf-8"), ws)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text, encoding="utf-8")
     return {"status": "PASS", "created": True, "file": SUITE, "test_cases": text.count("[Tags]")}

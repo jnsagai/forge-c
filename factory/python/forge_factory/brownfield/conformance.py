@@ -45,7 +45,11 @@ def _allocated_functions(ws: Path, names: set[str]) -> set[str]:
     p = Path(ws) / ARCH
     if not p.is_file():
         return set()
-    return {f for fns in allocation(p.read_text(errors="replace"), names).values() for f in fns}
+    from ..layer import profile
+
+    pr = profile(ws)
+    pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
+    return {f for fns in allocation(p.read_text(errors="replace"), names, pfx).values() for f in fns}
 
 
 def check(ws: Path, phase: str, write: bool = True) -> dict:
@@ -111,6 +115,15 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                     "code (cannot be checked)")
                 continue
             expected_bits[reg] = expected_bits.get(reg, 0) | mask
+            if op == "write":  # feature 009: the field must hold the value (a whole-register write is expected)
+                lsb = (mask & -mask).bit_length() - 1
+                want = (int(str(x.get("value")), 0) << lsb) & mask if x.get("value") is not None else None
+                if not any(g.register == reg and g.op == "write" and g.mask is not None and want is not None
+                           and g.mask & mask == want for g in writes):
+                    add("CONTRADICTION", fn, swr, f"case {case}: expected {reg}.{field} = {x.get('value')}; the code "
+                        "does: " + ("; ".join(f"{g.op} {g.register} {g.mask if g.mask is None else hex(g.mask)}"
+                                              for g in writes) or "no register write"))
+                continue
             hit = [g for g in writes if g.register == reg and g.op == op and g.mask is not None and g.mask & mask]
             if not hit:
                 seen = "; ".join(f"{g.op} {g.via or g.register} mask {g.mask if g.mask is None else hex(g.mask)}"
@@ -125,7 +138,7 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
             elif allowed is not None and g.mask is not None and g.mask & ~allowed:
                 add("CONTRADICTION", fn, swr, f"case {case}: changes {g.register} bits {hex(g.mask & ~allowed)} that "
                     "the requirement does not name")
-            if g.op == "write" and not g.via:
+            if g.op == "write" and not g.via and not any(x.get("op") == "write" for x in exps):
                 add("CONTRADICTION", fn, swr, f"case {case}: plain write to shared register {g.register} overwrites "
                     f"its other bits ({g.text.strip()[:80]})")
     allocated = _allocated_functions(ws, set(scope)) | used

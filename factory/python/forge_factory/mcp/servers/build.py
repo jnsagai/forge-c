@@ -137,14 +137,14 @@ def ll_instances(ctx: ToolContext, od: Path) -> Path | None:
     """CAPA-013 (r83): the header-only LL compiles to nothing, so size and stack read 0 bytes / 0 functions. For LL
     work orders a measurement unit in the BUILD directory (never a product source) instantiates every LL access
     function once, non-inline, so measure_elf and stack_usage measure the real code."""
-    from ...layer import LL_HEADER
+    from ...layer import ll_header
 
-    hdr = ctx.workspace / LL_HEADER
+    hdr = ctx.workspace / ll_header(ctx.workspace)
     if not hdr.is_file():
         return None
     from ...layer import ll_measure_unit
 
-    text = ll_measure_unit(hdr.read_text(errors="replace"))
+    text = ll_measure_unit(hdr.read_text(errors="replace"), ctx.workspace)
     if text is None:
         return None
     p = od / "forge_ll_measure.c"

@@ -53,7 +53,7 @@ def check_views(ws: Path, render: bool = False) -> dict:
     if not re.search(r"^\s*(component|package|node|rectangle|interface)\b|\[[^\]]+\]", st, re.M):
         findings.append("VIEWS:STATIC_HAS_NO_COMPONENTS")
     layer = layer_of(ws)  # ADR-0009: an LL work order has no HAL component and no HAL timeout path
-    for comp in components(layer):
+    for comp in components(layer, ws):
         if comp not in st:
             findings.append(f"VIEWS:STATIC_MISSING_COMPONENT:{comp}")
     if not re.search(r"^\s*(participant|actor|boundary|control|entity)\b|->", dy, re.M):

@@ -6,6 +6,8 @@ exact file formats the deterministic gates check. The SKILL remains the role con
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from ..inspection.engine import load_checklist
 
 READ = ("When you write_file, put real line breaks in the content (one C statement per line); never write \\n escape "
@@ -824,7 +826,9 @@ def brownfield_fix3_steps() -> list[str]:
 
 def author_prompt(phase: str) -> str:
     n = phase[-1]
-    fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
+    pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
+    keys = pr["rm"]["key_sections"] if pr else ["14.10.1", "14.10.2", "14.10.79", "14.10.64"]
+    fills = {"s1": sec(*keys)}
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
@@ -879,3 +883,86 @@ def inspector_prompt(phase: str) -> str:
              'Finish with ONLY JSON: {"status":"PASS" or "REWORK","artifacts":["inspection/' + phase +
              '/<INS id>.json"],"issues":["<item id: finding>"],"next_action":"next" or "rework"}']
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+
+
+# ---- feature 009: prompts for a peripheral other than RCC -----------------------------------------------------------
+PERIPHERAL = {"profile": None}  # set by the builder: the work order's peripheral profile (None or RCC: unchanged)
+
+
+def peripheralize(text: str) -> str:
+    """The RCC prompt with the work order's peripheral: RCC domain fragments are replaced by the profile's prompt texts,
+    then RCC identifiers by the profile's names. RCC (or no profile) returns the text unchanged."""
+    pr = PERIPHERAL["profile"]
+    if not pr or pr["id"] == "rcc":
+        return text
+    t = pr.get("prompt") or {}
+    swe1 = LL_AUTHOR_STEPS["SWE.1"][1]
+    cover = swe1[swe1.index("Cover:"):swe1.index("Add three measurable")]
+    frags = [
+        (cover, t.get("swe1_cover", "") + " "),
+        ('{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",\"op\":\"set\"}',
+         t.get("swe1_effect_example", "")),
+        ('{"case":"HSI_ENABLE","swr":"SWR-001","register":"RCC_CR","field":"HSION","op":"set"}', t.get("swe1_effect_example", "")),
+        (CONTRACT_SWE1_LL, " LL functions return nothing: no status and no ready. " + t.get("swe1_effect_rule", "")),
+        ("op is set, clear or no_write", 'op is set, clear, write (with "value") or no_write'),
+        (LL_API, t.get("ll_api", LL_API)),
+        ("one concrete function per oscillator and per peripheral, e.g. LL_RCC_GPDMA1_Enable - never a placeholder such "
+         "as LL_RCC_<Peripheral>_Enable", "one concrete function per key, value and flag - never a placeholder"),
+        ("a Caller, the component stm32n6xx_ll_rcc (LL, header-only) and the RCC register block (0x56028000) and their "
+         "dependencies (Caller -> LL -> registers)", t.get("swe2_static_view", "")),
+        ("participants Caller, stm32n6xx_ll_rcc, RCC, showing an oscillator enable followed by the caller polling the LL "
+         "ready query (the caller bounds the loop), plus a peripheral clock enable and a reset assert/release sequence, "
+         "using the allocated LL_RCC_ function names", t.get("swe2_dynamic_view", "")),
+        (LL_UT_EXAMPLE, t.get("ut_example", "")),
+        ("Enable/Disable and ForceReset/ReleaseReset cases check the named bit AND that a preset unrelated bit of the same "
+         "register is preserved; IsReady/IsEnabled get a flag-set and a flag-clear case.", t.get("ut_rule", "")),
+        ("(e.g. 'ut_hsi_enable();')", "(e.g. 'ut_" + pr["id"] + "_start();')"),
+        (TARGET_MODEL, t.get("target_model", "")),
+        ("always the _MSK macro, e.g. LL_RCC_CR_HSION_MSK; never LL_RCC_CR_HSION",
+         f"always the _MSK macro, e.g. {t.get('field_mask_example', '')}; never the field name without _MSK"),
+        ("'r == 1U with r = LL_RCC_..._IsReady()'", f"'r == 1U with r = {t.get('query_example', '')}'"),
+        ("When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.",
+         t.get("requirement_example", "")),
+        ("no waiting, no timeouts, no parameters, no error codes", "no waiting, no timeouts, no error codes"),
+        ("(e.g. interrupts, PLL, low-power modes)", "(e.g. interrupts, low-power modes)"),
+        ("// LL_RCC access functions", f"// LL_{pr['register_prefix']} access functions"),
+        ("one unit per group, e.g. HSI, HSE, ADC12, GPDMA1", "one unit per function group"),
+        ("EVERY requirement that sets or clears a register bit - one entry per bit and per oscillator/peripheral/function "
+         "(HSI enable and HSE enable are two entries)",
+         "EVERY requirement that sets, clears or writes a register field - one entry per field, value and function "
+         "(the start key and the refresh key are two entries)"),
+        ("(one unit per group, e.g. HSI, HSE, GPDMA1, ADC12;", "(one unit per function group;"),
+    ]
+    for old, new in frags:
+        text = text.replace(old, new)
+    import re as _re
+
+    m = _re.search(r"write software/tests/target/test_rcc_target\.c \(.*?\) and software/tests/target/test_rcc_target_"
+                   r"timeout\.c \(.*?polls\)", text)
+    if m and t.get("target_tests"):
+        text = text.replace(m.group(0), t["target_tests"])
+    m = _re.search(r"exercising the LL sequences a HAL will use: .*?preserve each other's bits\.", text)
+    if m and t.get("integration"):
+        text = text.replace(m.group(0), f"exercising the LL sequences a caller will use: {t['integration']}.")
+    pfx, llh, halh = pr["register_prefix"], Path(pr["ll"]["header"]).stem, Path(pr["hal"]["header"]).stem
+    names = [("stm32n6xx_ll_rcc", llh), ("stm32n6xx_hal_rcc", halh), ("LL_RCC_", pr["ll"]["function_prefix"]),
+             ("HAL_RCC_", pr["hal"]["function_prefix"]), ("ll_rcc_regs", pr["ll"]["register_block"]),
+             ("test_rcc", f"test_{pr['id']}"), ("rcc_model.py", pr["sim"]["model"]), ("0x56028000", pr["base_address"]),
+             ("p.176", f"p.{pr.get('mm_page', 0)}"), ("RCC LL driver", pr["system_name"])]
+    for old, new in names:
+        text = text.replace(old, new)
+    text = _re.sub(r"\bRCC_", f"{pfx}_", text)
+    return _re.sub(r"\bRCC\b", pfx, text)
+
+
+def _peripheral_prompts() -> None:
+    """Every prompt builder returns its text through peripheralize() (identity for RCC)."""
+    import functools
+
+    for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
+                 "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
+        f = globals()[name]
+        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(_f(*a, **k)))
+
+
+_peripheral_prompts()

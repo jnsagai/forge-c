@@ -37,7 +37,7 @@ REG_REF = re.compile(r"\b(RCC_[A-Z0-9]+)\b")
 ASSUME = re.compile(r"\b(TBD|TBC|to be (defined|confirmed)|assum\w*|if possible|unless otherwise|as needed|etc\.?)\b", re.I)
 TIME_WORDS = re.compile(r"\b(wait|timeout|within|bounded|poll\w*|delay|until)\b", re.I)
 # measured false positives on r101 (SWR-017/018 "register"/"write" observables) widened this vocabulary
-OBSERVABLE = re.compile(r"\b(RCC_[A-Z0-9]+(\.[A-Z0-9_]+)?|HAL_[A-Z_]+|return\w*|registers?|bits?|flags?|writes?|"
+_OBSERVABLE = OBSERVABLE = re.compile(r"\b(RCC_[A-Z0-9]+(\.[A-Z0-9_]+)?|HAL_[A-Z_]+|return\w*|registers?|bits?|flags?|writes?|"
                         r"map file|image|compiled|linked|\d+\s*(bytes?|iterations?|ms|us|cycles?))\b", re.I)
 PARAM_BOUND = re.compile(r"(requested timeout|timeout (argument|parameter)|TIMEOUT_VALUE)", re.I)  # dry-run FP r96
 
@@ -70,6 +70,12 @@ def _pages(sections_dir: Path) -> dict[int, str]:
 
 def check_requirements(ws: Path) -> dict:
     ws = Path(ws)
+    from ..layer import register_prefix
+
+    pfx = register_prefix(ws)  # feature 009: the work order's register prefix (RCC by default)
+    FIELD_REF = re.compile(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z][A-Z0-9_]*)\b")  # noqa: N806
+    REG_REF = re.compile(rf"\b({pfx}_[A-Z0-9]+)\b")  # noqa: N806
+    OBSERVABLE = re.compile(_OBSERVABLE.pattern.replace("RCC_", f"{pfx}_"), re.I)  # noqa: N806
     text = (ws / REQS).read_text(errors="replace") if (ws / REQS).is_file() else ""
     if not text:
         return {"verdict": "FAIL", "major_findings": ["REQ:MISSING"]}
@@ -243,13 +249,16 @@ def check_architecture(ws: Path) -> dict:
 def shared_registers(ws: Path) -> dict[str, list[str]]:
     """Registers written with read-modify-write by two or more functions (interrupt/concurrency exposure)."""
     ws = Path(ws)
-    hdr = ws / "software/ll/stm32n6xx_ll_rcc.h"
+    from ..layer import api_prefix, ll_header
+
+    hdr = ws / ll_header(ws)
     if not hdr.is_file():
         return {}
     text = hdr.read_text(errors="replace")
     defs = {m.group(1): int(m.group(2), 0) for m in hardware.DEFINE.finditer(text)}
     by_word: dict[int, set[str]] = {}
-    for fm in re.finditer(r"static\s+inline\s+[\w\s\*]+?\b(LL_RCC_\w+)\s*\([^)]*\)\s*\{(.*?)\n\}", text, re.S):
+    fn_rx = r"static\s+inline\s+[\w\s\*]+?\b(" + re.escape(api_prefix("LL", ws)) + r"\w+)\s*\([^)]*\)\s*\{(.*?)\n\}"
+    for fm in re.finditer(fn_rx, text, re.S):
         for w in hardware.WRITE.finditer(fm.group(2)):
             if w.group(2) in ("|=", "&="):
                 word = hardware._eval_index(w.group(1), defs)

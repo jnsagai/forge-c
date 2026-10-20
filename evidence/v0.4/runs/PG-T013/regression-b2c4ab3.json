@@ -1,0 +1,131 @@
+{
+  "cases": [
+    {
+      "actual_observation": "exit 0",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "/home/jefferson/forge-c-afo-t001/specs/006-enhanced-ai-software-assurance/validate_spec.py"
+      ],
+      "case_id": "design-006",
+      "command_digest": "f38b71827c8de3e2ee781971745dfcc9b87e8da1e3f56394c5eb5cdb903d4df9",
+      "duration_ms": 184,
+      "exit_code": 0,
+      "expected_observation": "exit 0",
+      "input_sha256": "116527378d6e89ed8b4a2ef8ec2eefdd33985690a01cd5d4d87ea187262d1e20",
+      "output_sha256": "b8f881a26f0b8b6cc919f3e91f0db72b2f63056cdbf17707718c109fddd2dd61",
+      "output_tail": "PASS DESIGN ONLY: 72 FR, 72 tasks, 84 AT, 47 provisional ASIL-B ++ refs, 13 schemas, 30 enhanced techniques\nNOT TESTED: runtime, real tools, HIL, ISO conformance, production release, ASPICE rating.\n\n--- stderr ---\n",
+      "started_at_utc": "2026-10-20T05:02:05.245934Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    },
+    {
+      "actual_observation": "exit 1",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "/tmp/tmph138zxaz/spec-46-methods/validate_spec.py"
+      ],
+      "case_id": "design-006-negative-46-methods",
+      "command_digest": "5f30ca7e7f09edfe8b01cd55377fbd028c91b157652ddd54e180d90ac26d58aa",
+      "duration_ms": 176,
+      "exit_code": 1,
+      "expected_observation": "exit !=0",
+      "input_sha256": "a2ce718038c4e75bb6e685d6c69d0e3d11b4b69a8cb93672ee642b1b60a7838a",
+      "output_sha256": "a384b95d9e3cd4cf0dd7ffd63a4f8f9bdec813769279a760a69449e0a3c58d5e",
+      "output_tail": "err ---\nTraceback (most recent call last):\n  File \"/tmp/tmph138zxaz/spec-46-methods/validate_spec.py\", line 57, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/tmp/tmph138zxaz/spec-46-methods/validate_spec.py\", line 27, in main\n    methods=catalog['methods'];assert len(methods)==47,len(methods)\n                                      ^^^^^^^^^^^^^^^^\nAssertionError: 46\n",
+      "started_at_utc": "2026-10-20T05:02:05.487487Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    },
+    {
+      "actual_observation": "exit 1",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "/tmp/tmph138zxaz/spec-checked-entry/validate_spec.py"
+      ],
+      "case_id": "design-006-negative-checked-entry",
+      "command_digest": "a2e4ef1e40bfc08d9f310bdc9a308343bea69839dc2ef9fe09f7c87bf0c48928",
+      "duration_ms": 180,
+      "exit_code": 1,
+      "expected_observation": "exit !=0",
+      "input_sha256": "7ee575d91cc74bfc4e9946922e951aee9a0b6aebb485b1885227491b27e8eef1",
+      "output_sha256": "ff03e988eaacb41ed9be25c4868ceb1be7ec1973a200980cc3055d1aedaf29b0",
+      "output_tail": "entry/validate_spec.py\", line 57, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/tmp/tmph138zxaz/spec-checked-entry/validate_spec.py\", line 32, in main\n    assert all(m['asil_recommendations']['B']=='++' and not m['normative_checked'] for m in methods)\n           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "started_at_utc": "2026-10-20T05:02:05.731292Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    },
+    {
+      "actual_observation": "exit 0",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "tests/spec/validate_design.py"
+      ],
+      "case_id": "design-check-002",
+      "command_digest": "9ec0493d904468e5c398610b39318b23bbce11156a37d35b437cdf13a6d7626d",
+      "duration_ms": 212,
+      "exit_code": 0,
+      "expected_observation": "exit 0",
+      "input_sha256": "dab62cf25f5ef1498032284e18c421bfdd9e0b72baee40c22795c209ded8b471",
+      "output_sha256": "d6220cd8e759b2087c2178cf5860388d1ffeb4f7ff3792a6164bd0ed1135b7ad",
+      "output_tail": "test_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok\ntest_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok\ntest_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.106s\n\nOK\n",
+      "started_at_utc": "2026-10-20T05:02:05.944161Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    },
+    {
+      "actual_observation": "exit 0",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "case_id": "legacy-v0.1",
+      "command_digest": "cdca246c8c7f0547297d83da2643c9f41d8257826ee74d67e4204ff41e94cad1",
+      "duration_ms": 79,
+      "exit_code": 0,
+      "expected_observation": "exit 0",
+      "input_sha256": "65c9f8f0e133ec333adc6fd7c9f2c8cd7371275660aaf865e4a3fb73e6c846b3",
+      "output_sha256": "af4c1956c2c2180de49767b6151f9aee88fe1988cc5097c048ef828809154ce8",
+      "output_tail": "\n--- stderr ---\n................\n----------------------------------------------------------------------\nRan 16 tests in 0.018s\n\nOK\n",
+      "started_at_utc": "2026-10-20T05:02:06.024329Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    },
+    {
+      "actual_observation": "exit 0",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "factory/python/tests"
+      ],
+      "case_id": "factory-test",
+      "command_digest": "e94875cfaa6b3ddedd2340a45c001107d394bcbab16d4bf08ad76bb9152d6ac8",
+      "duration_ms": 1315351,
+      "exit_code": 0,
+      "expected_observation": "exit 0",
+      "input_sha256": "46530ee1f775759e92e6b38d9dbdc225520f093c39477d54f2d52d9afb7422d2",
+      "output_sha256": "8dc4ce39c7e0b8cd517281b5c9b4e1a8f55899f00c24120cff64fe6df1f7134b",
+      "output_tail": "........................................................ [ 69%]\n........................................................................ [ 76%]\n...............s.......................................s................ [ 84%]\n........................................................................ [ 92%]\n..........s..................s.......................s.........s..s..... [100%]\n\n--- stderr ---\n",
+      "started_at_utc": "2026-10-20T05:24:01.376911Z",
+      "status": "PASS",
+      "tool_id": "python",
+      "tool_version": "Python 3.13.13"
+    }
+  ],
+  "generated_at": "2026-10-20T05:24:01.378145Z",
+  "negative_controls_effective": true,
+  "schema": "forge-c/easa-regression/0.1",
+  "status": "PASS"
+}

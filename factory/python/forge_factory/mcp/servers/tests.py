@@ -170,10 +170,10 @@ def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
         return result(ctx, "FAIL", "llvm-profdata merge failed", [ctx.store(m.stderr)], ["PROFDATA_MERGE_FAILED"],
                       tool="llvm-profdata")
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c")) if (ctx.workspace / d).is_dir()]
-    from ...layer import LL_HEADER, layer_of
+    from ...layer import layer_of, ll_header
 
-    if layer_of(ctx.workspace) == "LL" and (ctx.workspace / LL_HEADER).is_file():  # ADR-0009: header-only code
-        srcs.append(str(ctx.workspace / LL_HEADER))
+    if layer_of(ctx.workspace) == "LL" and (ctx.workspace / ll_header(ctx.workspace)).is_file():  # ADR-0009
+        srcs.append(str(ctx.workspace / ll_header(ctx.workspace)))
     objs = [str(exes[0])] + [x for e in exes[1:] for x in ("-object", str(e))]
     r = run_argv(["llvm-cov", "export", "-summary-only", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)
     rep = run_argv(["llvm-cov", "report", "-show-mcdc-summary", f"-instr-profile={prof}", *objs, *srcs], bdir, 60, ALLOW)
@@ -289,8 +289,13 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                   if not any(f" in {b}" in i for b in builds)]  # a scenario that does not build is fixed first
     if unobserved == [x for x in unobserved if x.startswith("HOW_TO_OBSERVE")]:
         unobserved = []
+    from ...layer import profile
     from .robot_policy import DRIVER_CALL, TCHECK, required_tokens
 
+    _pr = profile(ctx.workspace)  # feature 009: the work order's driver prefixes (RCC by default)
+    if _pr["id"] != "rcc":
+        DRIVER_CALL = re.compile(rf"\b(?:{re.escape(_pr['hal']['function_prefix'])}|"  # noqa: N806
+                                 rf"{re.escape(_pr['ll']['function_prefix'])})\w+\s*\(")
     exprs = []  # r64: authors spent their budget reading files to learn what a failed check tested - say it here
     failed_checks = []  # ADR-0008 L11: structured copy for the route gate's safety net (test-integrity record)
     for reqs_, full in failing:
@@ -303,7 +308,8 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                 cond = " ".join(m.group(2).split())
                 expr = _with_setter(cond, src[:m.start()])
                 exprs.append(f"CHECK_EXPR:{scn}#{cid}:" + expr[:100])
-            named = {t for r_ in reqs_ for ts in required_tokens(texts.get(r_, "")) for t in ts}
+            named = {t for r_ in reqs_ for ts in required_tokens(texts.get(r_, ""), _pr["register_prefix"],
+                                                                 _pr["ll"]["function_prefix"]) for t in ts}
             failed_checks.append({"requirements": reqs_, "scenario": scn, "check": cid, "expr": expr[:200],
                                   "observes": sorted(t for t in named if t in cond),
                                   "driver_call": bool(DRIVER_CALL.search(expr))})

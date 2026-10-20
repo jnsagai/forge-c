@@ -1,0 +1,67 @@
+{
+  "task": "PG-T012",
+  "status": "PASS",
+  "runs": {
+    "i001": {
+      "work_order": "WO-0009A-STM32N6-IWDG-LL-i001",
+      "fabro_run_id": "01M5BPJEFE9RTFCA8XY201XT14",
+      "factory_commit": "4c19dc6",
+      "result": "SWE.1 PASS (first non-RCC requirements, IWDG write-op contract accepted); BLOCKED at SWE.2 (identical deterministic rejection)",
+      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names (CONTRACT_FUNCTION_NOT_ALLOCATED for every LL_IWDG_ function); fixed: the profile prefixes are used; re-checked on the i001 work products (no finding)",
+      "second_defect": "SWE.1/SWE.2 prompts named the RCC key sections (14.10.1/2/79/64), unavailable in the IWDG inputs: the SWE.2 author wrote every IWDG register offset 'unresolved'; fixed: the profile's key sections (59.7.1-59.7.4)"
+    },
+    "i002": {
+      "work_order": "WO-0009A-STM32N6-IWDG-LL-i002",
+      "fabro_run_id": "01M5BQBRVNPZ7D7FB6QGFQKW5Y",
+      "factory_commit": "af8a975",
+      "result": "SWE.1, SWE.2, SWE.3 (verify PASS) and SWE.4 PASS on the IWDG LL; BLOCKED at SWE.5 (identical deterministic rejection)",
+      "factory_defects": [
+        "SWE.3 author gate compiled the contract calls against stm32n6xx_ll_rcc.h (fixed 86fd403); the author worked around it with a compatibility header stm32n6xx_ll_rcc.h that includes the IWDG header - an artefact of the defect, not needed after the fix",
+        "swtrace's result parser accepted only 'IT-001 PASS'; the author's CHECK printed 'IT-001: PASS' and the gate's hint did not name the format: the colon form is now accepted"
+      ],
+      "generated_ll_header": "i002/stm32n6xx_ll_iwdg.h"
+    },
+    "i003": {
+      "work_order": "WO-0009A-STM32N6-IWDG-LL-i003",
+      "fabro_run_id": "01M5BS299G2998VHE9NZQX86MH",
+      "factory_commit": "83ee4c7",
+      "result": "SWE.1-SWE.6 inspections PASS on the IWDG LL (rework: SWE.1 x1, SWE.2 x1, SWE.4 x1; SWE.3 hal_guideline verify PASS); first complete non-RCC run",
+      "measurements": {
+        "unit": "PASS 1/1 suite",
+        "integration": "PASS 1/1 (host)",
+        "renode": "31 checks passed, 0 failed (2 images, IWDG model)",
+        "robot": "16/16 tests, 16/16 requirements verified",
+        "coverage_host": "line 100%, branch 100%, MC/DC not measured",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "target_size": "text=160 data=0 bss=0 (cm55 gcc)"
+      },
+      "ll_api": [
+        "LL_IWDG_Enable",
+        "LL_IWDG_ReloadCounter",
+        "LL_IWDG_EnableWriteAccess",
+        "LL_IWDG_DisableWriteAccess",
+        "LL_IWDG_SetPrescaler",
+        "LL_IWDG_SetReloadCounter",
+        "LL_IWDG_IsActiveFlag_PVU",
+        "LL_IWDG_IsActiveFlag_RVU",
+        "LL_IWDG_IsActive"
+      ],
+      "package": {
+        "status": "BLOCKED",
+        "gaps": [
+          "missing_or_empty_file:safety/software_safety_analysis.md",
+          "missing_or_empty_file:safety/tool_assurance_assessment.md"
+        ],
+        "reason": "IWDG has no owner safety scope or owner-signed safety documents (owner decision)",
+        "archive_sha256": "a7ba9c27ba379956abdf8671bc4685fe273a3d85dc64c93851b6ec7817491043"
+      },
+      "files": [
+        "i003/gate-log.jsonl",
+        "i003/package.json",
+        "i003/stm32n6xx_ll_iwdg.h",
+        "i003/software_requirements.md"
+      ],
+      "not_claimed": "no compliance, certification or safety approval"
+    }
+  }
+}

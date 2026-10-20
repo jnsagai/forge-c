@@ -258,6 +258,16 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
             (ws / doc["path"]).chmod(0o444)
         manifest["owner_safety_documents"] = sc.get("documents") or []
         manifest["owner_safety_document_issues"] = sc.get("document_issues") or []
+    if spec.get("peripheral"):  # feature 009: the peripheral profile this work order builds (RCC when absent)
+        from .peripheral import load as load_profile
+
+        prof = load_profile(spec["peripheral"])
+        have = {ln.split(" | ")[0] for ln in index_lines if " | " in ln}
+        missing = [x for x in prof["rm"]["key_sections"] if x not in have]
+        if missing:
+            raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
+        manifest["peripheral"] = prof["id"]
+        manifest["peripheral_profile_sha256"] = prof["sha256"]
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 
@@ -425,7 +435,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
-                         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None)
+                         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
+                         peripheral=manifest.get("peripheral"))
     prof = model_profile(model, provider, code_model, nodes)
     if acp_authors:
         from . import acp
