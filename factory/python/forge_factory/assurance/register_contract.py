@@ -156,9 +156,12 @@ def check_calls(ws: Path) -> list[str]:
         return [f"CONTRACT_SCHEMA:{CALLS}: need schema forge-c/api-calls/1 and a calls object"]
     arch = Path(ws) / "workproducts/SWE.2/software_architecture.md"
     from ..brownfield import manifest_of
+    from ..layer import profile
 
     names = set(((manifest_of(ws).get("delivery") or {}).get("scope") or {}).get("functions") or [])
-    alloc = allocation(arch.read_text(errors="replace"), names) if arch.is_file() else {}
+    pr = profile(ws)  # feature 009 (i001): the work order's API prefixes, not only (HAL|LL)_RCC_
+    pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
+    alloc = allocation(arch.read_text(errors="replace"), names, pfx) if arch.is_file() else {}
     out = []
     for e in eff.get("effects") or []:
         case, c = e.get("case"), calls.get(e.get("case"))

@@ -1,0 +1,177 @@
+{
+  "schema": "forge-c/register-effects/1",
+  "effects": [
+    {
+      "case": "START",
+      "swr": "SWR-001",
+      "register": "IWDG_KR",
+      "field": "KEY",
+      "op": "write",
+      "value": "0xCCCC",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_Enable",
+          "args": []
+        }
+      ]
+    },
+    {
+      "case": "REFRESH",
+      "swr": "SWR-002",
+      "register": "IWDG_KR",
+      "field": "KEY",
+      "op": "write",
+      "value": "0xAAAA",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_ReloadCounter",
+          "args": []
+        }
+      ]
+    },
+    {
+      "case": "ENABLE_WRITE_ACCESS",
+      "swr": "SWR-003",
+      "register": "IWDG_KR",
+      "field": "KEY",
+      "op": "write",
+      "value": "0x5555",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_EnableWriteAccess",
+          "args": []
+        }
+      ]
+    },
+    {
+      "case": "DISABLE_WRITE_ACCESS",
+      "swr": "SWR-004",
+      "register": "IWDG_KR",
+      "field": "KEY",
+      "op": "write",
+      "value": "0x0000",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_DisableWriteAccess",
+          "args": []
+        }
+      ]
+    },
+    {
+      "case": "SET_PRESCALER",
+      "swr": "SWR-005",
+      "register": "IWDG_PR",
+      "field": "PR",
+      "op": "write",
+      "value": "0xA",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_SetPrescaler",
+          "args": [
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "case": "SET_RELOAD",
+      "swr": "SWR-006",
+      "register": "IWDG_RLR",
+      "field": "RL",
+      "op": "write",
+      "value": "0xABC",
+      "api_calls": [
+        {
+          "function": "LL_IWDG_SetReloadCounter",
+          "args": [
+            2748
+          ]
+        }
+      ]
+    },
+    {
+      "case": "PVU_SET_QUERY",
+      "swr": "SWR-007",
+      "register": "IWDG_SR",
+      "field": "PVU",
+      "op": "no_write"
+    },
+    {
+      "case": "PVU_CLEAR_QUERY",
+      "swr": "SWR-008",
+      "register": "IWDG_SR",
+      "field": "PVU",
+      "op": "no_write"
+    },
+    {
+      "case": "RVU_SET_QUERY",
+      "swr": "SWR-009",
+      "register": "IWDG_SR",
+      "field": "RVU",
+      "op": "no_write"
+    },
+    {
+      "case": "RVU_CLEAR_QUERY",
+      "swr": "SWR-010",
+      "register": "IWDG_SR",
+      "field": "RVU",
+      "op": "no_write"
+    },
+    {
+      "case": "ONF_SET_QUERY",
+      "swr": "SWR-011",
+      "register": "IWDG_SR",
+      "field": "ONF",
+      "op": "no_write"
+    },
+    {
+      "case": "ONF_CLEAR_QUERY",
+      "swr": "SWR-012",
+      "register": "IWDG_SR",
+      "field": "ONF",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_KEY_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_KR",
+      "field": "KEY",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_PRESCALER_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_PR",
+      "field": "PR",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_RELOAD_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_RLR",
+      "field": "RL",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_STATUS_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_SR",
+      "field": "PVU",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_RVU_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_SR",
+      "field": "RVU",
+      "op": "no_write"
+    },
+    {
+      "case": "STARTUP_ONF_UNCHANGED",
+      "swr": "SWR-013",
+      "register": "IWDG_SR",
+      "field": "ONF",
+      "op": "no_write"
+    }
+  ]
+}

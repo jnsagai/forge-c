@@ -45,7 +45,11 @@ def _allocated_functions(ws: Path, names: set[str]) -> set[str]:
     p = Path(ws) / ARCH
     if not p.is_file():
         return set()
-    return {f for fns in allocation(p.read_text(errors="replace"), names).values() for f in fns}
+    from ..layer import profile
+
+    pr = profile(ws)
+    pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
+    return {f for fns in allocation(p.read_text(errors="replace"), names, pfx).values() for f in fns}
 
 
 def check(ws: Path, phase: str, write: bool = True) -> dict:

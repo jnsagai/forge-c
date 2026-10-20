@@ -1,0 +1,13 @@
+{
+  "task": "PG-T012",
+  "status": "IN_PROGRESS",
+  "runs": {
+    "i001": {
+      "work_order": "WO-0009A-STM32N6-IWDG-LL-i001",
+      "fabro_run_id": "01M5BPJEFE9RTFCA8XY201XT14",
+      "factory_commit": "4c19dc6",
+      "result": "SWE.1 PASS (first non-RCC requirements, IWDG write-op contract accepted); BLOCKED at SWE.2 (identical deterministic rejection)",
+      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names (CONTRACT_FUNCTION_NOT_ALLOCATED for every LL_IWDG_ function); fixed: the profile prefixes are used; re-checked on the i001 work products (no finding)"
+    }
+  }
+}
