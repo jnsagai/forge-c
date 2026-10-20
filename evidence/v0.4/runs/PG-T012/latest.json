@@ -7,7 +7,8 @@
       "fabro_run_id": "01M5BPJEFE9RTFCA8XY201XT14",
       "factory_commit": "4c19dc6",
       "result": "SWE.1 PASS (first non-RCC requirements, IWDG write-op contract accepted); BLOCKED at SWE.2 (identical deterministic rejection)",
-      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names (CONTRACT_FUNCTION_NOT_ALLOCATED for every LL_IWDG_ function); fixed: the profile prefixes are used; re-checked on the i001 work products (no finding)"
+      "factory_defect": "the SWE.2 allocation parser recognised only (HAL|LL)_RCC_ function names (CONTRACT_FUNCTION_NOT_ALLOCATED for every LL_IWDG_ function); fixed: the profile prefixes are used; re-checked on the i001 work products (no finding)",
+      "second_defect": "SWE.1/SWE.2 prompts named the RCC key sections (14.10.1/2/79/64), unavailable in the IWDG inputs: the SWE.2 author wrote every IWDG register offset 'unresolved'; fixed: the profile's key sections (59.7.1-59.7.4)"
     }
   }
 }

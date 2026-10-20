@@ -826,7 +826,9 @@ def brownfield_fix3_steps() -> list[str]:
 
 def author_prompt(phase: str) -> str:
     n = phase[-1]
-    fills = {"s1": sec("14.10.1", "14.10.2", "14.10.79", "14.10.64")}
+    pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
+    keys = pr["rm"]["key_sections"] if pr else ["14.10.1", "14.10.2", "14.10.79", "14.10.64"]
+    fills = {"s1": sec(*keys)}
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
