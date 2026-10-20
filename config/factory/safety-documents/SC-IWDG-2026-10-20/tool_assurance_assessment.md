@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Document | TAA-IWDG-001, version 0.1 |
-| Status | **DRAFT for owner review — not approved** |
+| Document | TAA-IWDG-001, version 1.0 |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-20 |
 | Safety scope | SC-IWDG-2026-10-20, target ASIL B (owner decision 2026-10-20, OD-2026-10-20-04) |
 | Product | IWDG LL driver (example `0009a-iwdg-ll`) |
 | Basis | Work order inputs, source requirements hash `bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286`; toolchain as used by `WO-0009A-STM32N6-IWDG-LL-i003` (factory commit 83ee4c7) |
 | Drafted by | Claude Opus 5.5 (Claude Code), 2026-10-20, from the factory records listed in section 8 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> DRAFT for owner review — not approved. This draft does not enter any work order or package until the owner signs
-> it and records approver, date and SHA-256 in `config/factory/safety-scope.yaml`. It is a tool confidence
-> assessment, not a tool qualification certificate, a safety approval or a certification.
+> Signed version (owner decision OD-2026-10-20-05). It applies to IWDG work orders whose inputs match the basis
+> above. Any edit to this file, or a change to the work order inputs, un-signs it until it is re-reviewed. It
+> records the reviewer's engineering judgement; it is not a safety approval or certification.
 
 ## 1. Purpose and scope
 
@@ -111,12 +111,12 @@ i003 tool result and from `arm-none-eabi-gcc --version` and `fabro --version` on
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-05 | |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I approve all" (2026-10-20), in reply to "Sign the drafts in PR #16 when you're satisfied with them" |
+| Answers to Q-01 to Q-05 | Q-01 and Q-02: the AI-model approach and the proposed TI, TD and TCL accepted as drafted. Q-05: the findings are not fixed before signing; they stay open. Q-03 and Q-04: not answered at signing; they remain open. |
+| Changes made during review | None to the analysis; status, version and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-20 |
 
 Signing records the reviewer's engineering judgement on the confidence in these tools for the stated use cases. It
 is not a tool qualification certificate, a safety approval or a certification.

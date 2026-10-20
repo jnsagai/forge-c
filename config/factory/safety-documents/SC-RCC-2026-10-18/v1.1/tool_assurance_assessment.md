@@ -3,17 +3,17 @@
 | Field | Value |
 |---|---|
 | Document | TAA-RCC-001, version 1.1 |
-| Status | **DRAFT v1.1 for owner review — not approved** (v1.0 signed 2026-10-19 stays in force for 0002a/0002b until v1.1 is signed) |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-20 |
 | Safety scope | SC-RCC-2026-10-18, target ASIL B (owner decision 2026-10-18) |
 | Product | RCC LL driver (example `0002a-arm_55_rcc_ll`) and RCC HAL driver (example `0002b-arm_55_rcc_hal`); delivered RCC code (brownfield examples `0008a-rcc-ll-delivered`, `0008b-rcc-hal-delivered`, `0008c-st-cube-rcc`) |
 | Basis | Work order inputs, source requirements hash `c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4`; toolchain as used by LL `WO-0002A-STM32N6-RCC-LL-r168` (factory commit c9f836a); brownfield tools as used by b001, b004 and b005 (feature 008, merged b040c90); model routing as fixed by CAPA-051 (a76e957) |
 | Drafted by | Claude Opus 5.5 (Claude Code), v1.0 2026-10-19, v1.1 2026-10-20, from the factory records listed in section 8 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> DRAFT v1.1 for owner review — not approved. Version 1.0 (signed, OD-2026-10-19-12, file
-> `../tool_assurance_assessment.md`) is unchanged and remains the signed document for 0002a/0002b. This draft
-> enters no work order until the owner signs it and its register entry is updated. It is a tool confidence
-> assessment, not a tool qualification certificate, a safety approval or a certification.
+> Signed version (owner decision OD-2026-10-20-05). It applies to RCC work orders (generated and delivered code) whose inputs match the basis
+> above. Any edit to this file, or a change to the work order inputs, un-signs it until it is re-reviewed. It
+> records the reviewer's engineering judgement; it is not a safety approval or certification.
+> It supersedes version 1.0 (OD-2026-10-19-12, file `../tool_assurance_assessment.md`, kept unchanged for the record).
 
 ## Change log v1.0 → v1.1
 
@@ -153,12 +153,12 @@ r168, r170, b001, b004 and b005; `evidence/cre/capa/i003-capas.json` (CAPA-051);
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-07 | (v1.0 answers: Q-01 and Q-02 accepted; Q-03 and Q-04 open; Q-05 now answered by OD-2026-10-20-03) |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I approve all" (2026-10-20), in reply to "Sign the drafts in PR #16 when you're satisfied with them" |
+| Answers to Q-01 to Q-07 | Q-01 and Q-02: accepted (v1.0). Q-06: the classification of the brownfield tools accepted as drafted. Q-04: the findings stay open. Q-05: answered by OD-2026-10-20-03 (DeepSeek suspended). Q-03 and Q-07: not answered at signing; they remain open. |
+| Changes made during review | None to the analysis; status, version and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-20 |
 
 Signing records the reviewer's engineering judgement on the confidence in these tools for the stated use cases. It
 is not a tool qualification certificate, a safety approval or a certification.

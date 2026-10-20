@@ -43,3 +43,12 @@ remain open ASIL B gaps in the observe-only assurance check.
 
 The IWDG package stays BLOCKED until the owner signs the IWDG drafts. The brownfield RCC examples 0008a/0008b/0008c
 join SC-RCC-2026-10-18 when the owner signs v1.1 and the register points to the v1.1 files.
+
+## 2026-10-20: OD-2026-10-20-05 ("I approve all")
+
+- IWDG: SSA-IWDG-001 and TAA-IWDG-001 signed as version 1.0 (scope SC-IWDG-2026-10-20, ASIL B; examples 0009a and
+  0009b). The documents analyse the IWDG LL; the HAL (0009b) is not analysed in them (open finding).
+- RCC: SSA-RCC-001 and TAA-RCC-001 signed as version 1.1 (`SC-RCC-2026-10-18/v1.1/`); they supersede v1.0 for every
+  example of SC-RCC-2026-10-18, which now also lists the brownfield examples 0008a, 0008b and 0008c. The v1.0 files
+  are kept unchanged.
+- All four: "Approved with open findings".

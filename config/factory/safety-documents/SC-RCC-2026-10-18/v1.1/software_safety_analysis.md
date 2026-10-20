@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | SSA-RCC-001, version 1.1 |
-| Status | **DRAFT v1.1 for owner review — not approved** (v1.0 signed 2026-10-19 stays in force for 0002a/0002b until v1.1 is signed) |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-20 |
 | Safety scope | SC-RCC-2026-10-18, target ASIL B (owner decision 2026-10-18) |
 | Product | RCC LL driver (example `0002a-arm_55_rcc_ll`) and RCC HAL driver (example `0002b-arm_55_rcc_hal`); delivered RCC code (brownfield examples `0008a-rcc-ll-delivered`, `0008b-rcc-hal-delivered`, `0008c-st-cube-rcc`) |
 | Basis | Work order inputs, source requirements hash `c62aa88ca3c53f3a58de023f1e6f164df97da8b053d5ddbcaa92cbd58121f7d4` |
@@ -11,10 +11,10 @@
 | Drafted by | Claude Opus 5.5 (Claude Code), v1.0 2026-10-19, v1.1 2026-10-20, from the factory records listed in sections 10 and 12 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> DRAFT v1.1 for owner review — not approved. Version 1.0 (signed, OD-2026-10-19-12, file
-> `../software_safety_analysis.md`) is unchanged and remains the signed document for 0002a/0002b. This draft enters
-> no work order until the owner signs it and its register entry is updated. Signing would record the reviewer's
-> engineering judgement; it is not a safety approval or certification.
+> Signed version (owner decision OD-2026-10-20-05). It applies to RCC work orders (generated and delivered code) whose inputs match the basis
+> above. Any edit to this file, or a change to the work order inputs, un-signs it until it is re-reviewed. It
+> records the reviewer's engineering judgement; it is not a safety approval or certification.
+> It supersedes version 1.0 (OD-2026-10-19-12, file `../software_safety_analysis.md`, kept unchanged for the record).
 
 ## Change log v1.0 → v1.1
 
@@ -182,12 +182,12 @@ analysis; it is then re-reviewed.
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-10 | (v1.0 answers: Q-01 accepted; Q-02 findings open; Q-03 to Q-07 open) |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "I approve all" (2026-10-20), in reply to "Sign the drafts in PR #16 when you're satisfied with them" |
+| Answers to Q-01 to Q-10 | Q-01: ASR-01 to ASR-07 accepted (v1.0). Q-02: the findings stay open and are listed with the package. Q-08: one analysis for the generated and the delivered RCC code accepted as drafted. Q-03 to Q-07, Q-09 and Q-10: not answered at signing; they remain open. |
+| Changes made during review | None to the analysis; status, version and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-20 |
 
 Signing records the reviewer's engineering judgement on this analysis for the stated basis. It is not a safety
 approval of an item, a release decision or a certification.

@@ -1,0 +1,18 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-05",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Acceptance of PRs #16, #17 and #18; signature of the IWDG safety documents (v1.0) and the RCC safety documents v1.1; the IWDG HAL example 0009b joins the IWDG ASIL B scope",
+  "statements": ["I approve all"],
+  "context": "Reply to the agent's list: (1) review PRs #16, #17 and #18; (2) sign the drafts in PR #16 when satisfied; (3) should the HAL example 0009b join the IWDG ASIL B scope (same inputs as 0009a)?",
+  "decision": "PR #17 merged (5f4267f) and PR #18 merged (87d4bd0) with merge commits; PR #16 merged with this signature commit. SSA-IWDG-001 and TAA-IWDG-001 signed as version 1.0, SSA-RCC-001 and TAA-RCC-001 signed as version 1.1 (superseding v1.0, whose files are kept unchanged), each 'Approved with open findings'. The register in config/factory/safety-scope.yaml records approver, date, SHA-256 and basis. SC-RCC-2026-10-18 now lists 0008a, 0008b and 0008c; SC-IWDG-2026-10-20 lists 0009b-iwdg-hal.",
+  "documents": {
+    "SC-IWDG-2026-10-20/software_safety_analysis.md": "e2a97bb7859c71fcf2f673cf461903088a689abbac567ff72a66bf19520f9426",
+    "SC-IWDG-2026-10-20/tool_assurance_assessment.md": "2825e4d2ae1c0df8e2711cdc4687ed7ff240c5897c90a71a6a4abb4bfe183063",
+    "SC-RCC-2026-10-18/v1.1/software_safety_analysis.md": "dbf5b3ec62d5189a6eb9125ff93532209986ae26f0604eb2e3134972ef37abfc",
+    "SC-RCC-2026-10-18/v1.1/tool_assurance_assessment.md": "f7febbc552d881b9384e1d0c95bb061bb9455f943d2bcd20bae7b9cf58c4d804"
+  },
+  "agent_note": "The documents were drafted by Claude Opus 5.5 and signed by the owner without changes; the signature records the owner's engineering judgement. Approach questions (assumed safety requirements, AI-model approach, tool classifications, one RCC analysis for generated and delivered code) are recorded as accepted as drafted; the findings stay open; the other questions were not answered at signing and stay open. The IWDG documents analyse the IWDG LL (i003); the HAL example 0009b shares their basis, so they apply to it mechanically, but its HAL code is not analysed in them - recorded as an open finding in the scope file.",
+  "not_changed": "hsi_hash and allocation_review_ref stay null in both scopes (open ASIL B gaps); assurance mode OBSERVE_ONLY; DeepSeek suspended (OD-2026-10-20-03); no compliance, certification or safety approval."
+}
