@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 from ..common import pretty_json, sha256_bytes
-from . import DELIVERY_DIR, delivered_paths, manifest_of
+from . import DELIVERY_DIR, delivered_paths, manifest_of, reference_paths
 from . import scope as S
 
 MAP = "workproducts/SWE.3/code_trace_map.json"
@@ -28,9 +28,9 @@ def seed(ws: Path) -> dict:
     ws = Path(ws)
     m = manifest_of(ws)
     style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
-    texts = {rel: (ws / rel).read_text(errors="replace") for rel in delivered_paths(m, None) if (ws / rel).is_file()}
+    texts = {rel: (ws / rel).read_text(errors="replace") for rel in reference_paths(m) if (ws / rel).is_file()}
     macros = S.constant_macros(list(texts.values()))
-    defs = {d.name: d for rel in delivered_paths(m) if rel in texts for d in S.index(texts[rel], rel)}
+    defs = {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
     rows, facts = [], []
     for f in scope_functions(ws):
         sha = sha256_bytes((ws / f["file"]).read_bytes()) if (ws / f["file"]).is_file() else None

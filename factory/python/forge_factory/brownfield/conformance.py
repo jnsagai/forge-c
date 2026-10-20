@@ -16,10 +16,11 @@ import re
 from pathlib import Path
 
 from ..common import pretty_json, utc_now
-from . import DELIVERY_DIR, delivered_paths, manifest_of
+from . import DELIVERY_DIR, delivered_paths, manifest_of, reference_paths
 from . import scope as S
 
 EFFECTS = "workproducts/SWE.1/register_effects.json"
+INVARIANT_RX = re.compile(r"^While no\b.{0,80}\bhas been (called|requested)\b", re.I)  # initial-state requirement
 CALLS = "workproducts/SWE.2/api_calls.json"
 ARCH = "workproducts/SWE.2/software_architecture.md"
 
@@ -55,9 +56,9 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
     ws = Path(ws)
     m = manifest_of(ws)
     style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
-    texts = {rel: (ws / rel).read_text(errors="replace") for rel in delivered_paths(m, None) if (ws / rel).is_file()}
+    texts = {rel: (ws / rel).read_text(errors="replace") for rel in reference_paths(m) if (ws / rel).is_file()}
     macros = S.constant_macros(list(texts.values()))
-    defs = {d.name: d for rel in delivered_paths(m) if rel in texts for d in S.index(texts[rel], rel)}
+    defs = {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
     scope_p = ws / DELIVERY_DIR / "scope.json"
     scope = [x["name"] for x in json.loads(scope_p.read_text()).get("functions", [])] if scope_p.is_file() else []
     try:
@@ -74,6 +75,9 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
         findings.append({"id": f"CF-{len(findings) + 1:03d}", "kind": kind, "function": function,
                          "requirement": requirement, "reference": reference, "evidence": evidence, "status": "OPEN"})
 
+    from ..inspection.swtrace import swr_texts
+
+    invariants = {sid for sid, text in swr_texts(ws).items() if INVARIANT_RX.search(text)}
     used: set[str] = set()
     by_case: dict[str, list[dict]] = {}
     for e in effects:
@@ -82,6 +86,9 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
         swr = exps[0].get("swr", "")
         call = calls.get(case) or {}
         fn = str(call.get("function", ""))
+        if fn.upper() == "NONE" and swr in invariants and all(x.get("op") == "no_write" for x in exps):
+            continue  # an initial-state invariant ('While no ... has been called ... shall not write'): nothing to
+            # call, met by the absence of start-up code and verified by the reset-state tests
         if not fn or fn.upper() == "NONE" or fn not in defs:
             add("NO_CODE", "" if fn.upper() in ("", "NONE") else fn, swr,
                 f"case {case}: no delivered function implements it" + (f" ({fn} is not in the delivered code)"
@@ -93,8 +100,11 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
         expected_bits: dict[str, int] = {}
         for x in exps:
             reg, field, op = x.get("register"), x.get("field"), x.get("op")
+            if op == "no_write" and not reg:
+                continue  # 'no register access' for one input (e.g. an invalid parameter): branch-dependent, so
+                # it is judged by the requirement-based tests, not by static extraction
             if op == "no_write":
-                bad = [g for g in writes if not reg or g.register == reg]
+                bad = [g for g in writes if g.register == reg]
                 for g in bad:
                     add("CONTRADICTION", fn, swr, f"case {case}: requirement says no write to {reg or 'any register'}; "
                         f"the code does {g.op} on {g.via or g.register} ({g.text.strip()[:80]})", x.get("source", ""))

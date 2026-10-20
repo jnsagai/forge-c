@@ -36,3 +36,11 @@ def delivered_paths(manifest: dict | None, role: str | None = "delivered_code") 
     if not is_brownfield(manifest):
         return []
     return [d["path"] for d in manifest.get("delivered") or [] if role is None or d.get("role") == role]
+
+
+def reference_paths(manifest: dict | None) -> list[str]:
+    """Delivered code + dependencies + provided read-only files (e.g. the HAL's LL header): every file whose
+    definitions resolve calls and register masks of the delivered code (b002: the HAL's LL calls were unresolved)."""
+    if not is_brownfield(manifest):
+        return []
+    return delivered_paths(manifest, None) + [p["path"] for p in manifest.get("provided") or []]

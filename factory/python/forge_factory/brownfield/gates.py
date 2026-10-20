@@ -75,6 +75,34 @@ def code_checks(ws: Path) -> dict:
             "implementation": imp["verdict"], "findings": findings}
 
 
+def file_contradictions(ws: Path, findings: list[dict]) -> list[str]:
+    """FIX_ALLOWED: one CODE defect (IN_FIX) per contradicted requirement of a delivered function, unless one is
+    already open or in fix; evidence = the function's delivered location and the requirement text."""
+    from ..inspection import defects
+    from ..inspection.swtrace import swr_texts
+
+    texts = swr_texts(ws)
+    scope = {f["name"]: f for f in json.loads((ws / DELIVERY_DIR / "scope.json").read_text()).get("functions", [])}
+    busy = {(r, d.get("target_kind")) for d in defects.all_defects(ws) if d["kind"] == "CODE"
+            and d["status"] in ("OPEN", "IN_FIX") for r in d["requirement_ids"]}
+    out = []
+    for f in findings:
+        req, fn = f.get("requirement"), f.get("function")
+        if f["kind"] != "CONTRADICTION" or not req or fn not in scope or (req, "DELIVERED_CODE") in busy:
+            continue
+        quote = " ".join(texts.get(req, "").split())[:200]
+        try:
+            rec = defects.report(ws, detected_phase="SWE.3", reported_by="brownfield-conformance", kind="CODE",
+                                 summary=f"{fn}: {f['evidence']}"[:400], requirement_ids=[req], test_files=[],
+                                 evidence_refs=[f"{scope[fn]['file']}:{scope[fn]['line']}"], requirement_quote=quote)
+        except defects.DefectError as exc:
+            out.append(f"NOT_FILED:{req}:{exc}"[:120])
+            continue
+        busy.add((req, "DELIVERED_CODE"))
+        out.append(rec["id"])
+    return out
+
+
 def _verify_swe3(store, phase: str, state, fail_code) -> int:
     from ..inspection.misra_matrix import build as misra_matrix
     from .conformance import check as conformance
@@ -90,11 +118,13 @@ def _verify_swe3(store, phase: str, state, fail_code) -> int:
                                             "code_checks": cc, "conformance": cf["status"],
                                             "delivery": v["status"]}))
     # FROZEN: the author cannot change the code, so code problems are owner findings (package gaps), never rework.
-    # FIX_ALLOWED: code problems are fixed through CODE defects filed by the tests; the gate still records them.
-    verdict = "FAIL" if v["status"] == "MISMATCH" else "PASS"
+    # FIX_ALLOWED: a conformance contradiction becomes a CODE defect in fix and SWE.3 reworks (b002).
+    filed = file_contradictions(ws, cf["findings"]) if mode == "FIX_ALLOWED" else []
+    verdict = "FAIL" if v["status"] == "MISMATCH" or (mode == "FIX_ALLOWED" and any(
+        f["kind"] == "CONTRADICTION" for f in cf["findings"])) else "PASS"
     state(ws, phase, {"step": "verify", "check": "delivery", "verdict": verdict, "code_mode": mode,
                       "delivery": v["status"], "code_findings": len(cc["findings"]),
-                      "conformance_findings": len(cf["findings"])})
+                      "conformance_findings": len(cf["findings"]), "defects_filed": filed})
     print(json.dumps({"verdict": verdict, "delivery": v["status"], "issues": v["issues"][:10],
                       "code_findings": cc["findings"][:10], "conformance": cf["status"],
                       "conformance_findings": [f"{f['kind']}:{f['function']}:{f['requirement']}"

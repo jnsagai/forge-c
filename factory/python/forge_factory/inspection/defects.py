@@ -147,12 +147,12 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     frozen = kind == "CODE" and _frozen_delivery(ws)
     if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
         target = None
-    early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2")
-    if early_fix:  # feature 008 (FIX_ALLOWED, b002): delivered code exists before SWE.3; it is fixed at SWE.3 entry
+    early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2", "SWE.3")
+    if early_fix:  # feature 008 (FIX_ALLOWED, b002): delivered code exists before SWE.3 and is fixed in SWE.3
         pass
     elif target is not None and PHASES.index(target) > PHASES.index(detected_phase):
         raise DefectError(f"TARGET_NOT_UPSTREAM:{target}>{detected_phase}")
-    if target is not None and kind != "TEST" and target == detected_phase:
+    if target is not None and kind != "TEST" and target == detected_phase and not early_fix:
         raise DefectError(f"SAME_PHASE_USE_REWORK:{target}")
     if not summary.strip():
         raise DefectError("NO_SUMMARY")
@@ -227,6 +227,8 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
     elif frozen:
         _event(rec, "ESCALATED", note="FROZEN delivered code: a finding for the owner (no rework loop); an owner "
                                       "disposition may accept it as a deviation")
+    elif early_fix and detected_phase == "SWE.3":  # found in SWE.3 itself: fixed by the SWE.3 rework now
+        _event(rec, "IN_FIX", note="delivered code (FIX_ALLOWED): fixed in the SWE.3 rework")
     elif kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
@@ -302,7 +304,7 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
     issues = []
     results = _tool_results(ws)
     for d in all_defects(ws):
-        early = d.get("target_kind") == "DELIVERED_CODE" and d["detected_phase"] in ("SWE.1", "SWE.2") \
+        early = d.get("target_kind") == "DELIVERED_CODE" and d["detected_phase"] in ("SWE.1", "SWE.2", "SWE.3") \
             and phase == "SWE.4"  # feature 008: verified by the first requirement-based tests after the fix
         if (d["detected_phase"] != phase and not early) or d["status"] not in ("FIXED", "IN_FIX"):
             continue

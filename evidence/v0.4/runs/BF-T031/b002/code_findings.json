@@ -1,0 +1,13 @@
+{
+  "code_checks": {
+    "findings": [],
+    "guideline": "PASS",
+    "implementation": "PASS",
+    "register_map": "PASS",
+    "style": "forge"
+  },
+  "code_mode": "FIX_ALLOWED",
+  "conformance": "FINDINGS",
+  "delivery": "UNCHANGED",
+  "schema": "forge-c/delivered-code-findings/0.1"
+}

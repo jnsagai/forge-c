@@ -139,3 +139,33 @@ def test_code_defect_found_at_swe2_is_claimed_at_swe3_entry(ws):
     assert rows[-1]["claimed_defects"] == [rec["id"]]
     assert json.loads((ws / f".forge-run/defects/{rec['id']}.json").read_text())["status"] == "IN_FIX"
     assert a.decide("swe3_fix_author", "write_file", {"path": H, "content": "x\n"}).allow
+
+
+def test_fix_allowed_contradiction_files_a_code_defect_in_fix_and_reworks(tmp_path, monkeypatch):
+    """b002: a conformance contradiction in FIX_ALLOWED mode is filed as a CODE defect (IN_FIX) by the SWE.3 verify
+    node, which fails so that SWE.3 reworks; the fix author may then change the delivered file."""
+    from brownfield_fixtures import MUTANTS
+    from forge_factory.brownfield import gates as G
+
+    def fix_allowed(spec):
+        spec["delivery"]["code_mode"] = "FIX_ALLOWED"
+    w, _ = WO.prepare(example_copy(tmp_path, header=MUTANTS["wrong_mask"][0](HEADER), mutate=fix_allowed, name="m"),
+                      "WO-X-2")
+    add_contract(w)
+    (w / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n")
+    pass_swe1(monkeypatch)
+    assert inject(w)["status"] == "INJECTED"
+    rows = []
+    rc = G.run(type("S", (), {"workspace": w})(), "SWE.3", "delivery", lambda ws, ph, p: rows.append(p),
+               lambda ws, ph, st: 11)
+    assert rc == 11 and rows[-1]["verdict"] == "FAIL" and rows[-1]["conformance_findings"] >= 1
+    filed = [x for x in rows[-1]["defects_filed"] if x.startswith("DEF-")]
+    assert len(filed) == 1
+    d = json.loads((w / f".forge-run/defects/{filed[0]}.json").read_text())
+    assert d["status"] == "IN_FIX" and d["kind"] == "CODE" and d["target_kind"] == "DELIVERED_CODE"
+    assert d["evidence_refs"][0].startswith(f"{H}:")
+    assert _auth(w).decide("swe3_fix_author", "edit_file", {"path": H}).allow
+    G.run(type("S", (), {"workspace": w})(), "SWE.3", "delivery", lambda ws, ph, p: rows.append(p),
+          lambda ws, ph, st: 11)
+    assert rows[-1]["defects_filed"] == []  # not filed twice while in fix

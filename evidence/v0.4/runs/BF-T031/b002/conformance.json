@@ -1,0 +1,169 @@
+{
+  "checked_at": "2026-10-20T01:48:29.724156Z",
+  "findings": [
+    {
+      "evidence": "case HSI_ENABLE: field RCC_CR.HSION has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSI_Enable",
+      "id": "CF-001",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-001",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case HSE_ENABLE: field RCC_CR.HSEON has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSE_Enable",
+      "id": "CF-002",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-002",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case HSI_DISABLE: field RCC_CR.HSION has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSI_Disable",
+      "id": "CF-003",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-003",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case HSE_DISABLE: field RCC_CR.HSEON has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSE_Disable",
+      "id": "CF-004",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-004",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case GPDMA1_ENABLE: field RCC_AHB1ENR.GPDMA1EN has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_GPDMA1_Enable",
+      "id": "CF-005",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-005",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case ADC12_ENABLE: field RCC_AHB1ENR.ADC12EN has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_ADC12_Enable",
+      "id": "CF-006",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-005",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case GPDMA1_DISABLE: field RCC_AHB1ENR.GPDMA1EN has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_GPDMA1_Disable",
+      "id": "CF-007",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-006",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case ADC12_DISABLE: field RCC_AHB1ENR.ADC12EN has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_ADC12_Disable",
+      "id": "CF-008",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-006",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case GPDMA1_RESET: field RCC_AHB1RSTR.GPDMA1RST has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_GPDMA1_Reset",
+      "id": "CF-009",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-007",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case ADC12_RESET: field RCC_AHB1RSTR.ADC12RST has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_ADC12_Reset",
+      "id": "CF-010",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-007",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_HSI: no delivered function implements it",
+      "function": "",
+      "id": "CF-011",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_HSE: no delivered function implements it",
+      "function": "",
+      "id": "CF-012",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_GPDMA1_CLOCK: no delivered function implements it",
+      "function": "",
+      "id": "CF-013",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_ADC12_CLOCK: no delivered function implements it",
+      "function": "",
+      "id": "CF-014",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_GPDMA1_RESET: no delivered function implements it",
+      "function": "",
+      "id": "CF-015",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case STARTUP_ADC12_RESET: no delivered function implements it",
+      "function": "",
+      "id": "CF-016",
+      "kind": "NO_CODE",
+      "reference": "",
+      "requirement": "SWR-008",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case HSI_READY_TIMEOUT: field RCC_CR.HSION has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSI_Enable",
+      "id": "CF-017",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-009",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "case HSE_READY_TIMEOUT: field RCC_CR.HSEON has no definition in the delivered code (cannot be checked)",
+      "function": "HAL_RCC_HSE_Enable",
+      "id": "CF-018",
+      "kind": "CONTRADICTION",
+      "reference": "",
+      "requirement": "SWR-009",
+      "status": "OPEN"
+    }
+  ],
+  "phase": "package",
+  "schema": "forge-c/conformance/0.1"
+}

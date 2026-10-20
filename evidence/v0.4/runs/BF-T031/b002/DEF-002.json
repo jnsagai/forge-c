@@ -1,0 +1,28 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "inspection/SWE.3/INS-SWE.3-001.json",
+    ".forge-run/defects/DEF-001.json",
+    "software/hal/stm32n6xx_hal_rcc.c",
+    "workproducts/SWE.1/software_requirements.md"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T01:41:32.287212Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [
+    "SWR-009"
+  ],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "SWE.3 rework blocked: CODE report denied SAME_PHASE_USE_REWORK:SWE.3; FIX_ALLOWED forbids source edits without IN_FIX CODE. Route SWE3-03/SWE3-06 HSE timeout defect to file-specific IN_FIX.",
+  "target_phase": null,
+  "test_files": {}
+}

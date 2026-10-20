@@ -1,0 +1,27 @@
+{
+  "detected_phase": "SWE.2",
+  "evidence_refs": [
+    "software/hal/stm32n6xx_hal_rcc.c",
+    "workproducts/SWE.1/software_requirements.md",
+    "workproducts/SWE.1/register_effects.json"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T01:32:15.446837Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "FACTORY",
+  "reported_by": "swe2-author",
+  "requirement_ids": [
+    "SWR-009"
+  ],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "SWE.2 cannot record required delivered CODE defect: report_defect(CODE) rejects TARGET_NOT_UPSTREAM:SWE.3>SWE.2. HAL_RCC_HSE_Enable omits LL_RCC_HSE_Disable on timeout, violating SWR-009. Route this code finding to its owner.",
+  "target_phase": null,
+  "test_files": {}
+}

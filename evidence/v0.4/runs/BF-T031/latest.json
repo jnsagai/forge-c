@@ -1,0 +1,21 @@
+{
+  "task": "BF-T031",
+  "status": "IN_PROGRESS",
+  "runs": {
+    "b002": {
+      "work_order": "WO-0008B-STM32N6-RCC-HAL-b002",
+      "fabro_run_id": "01M5BEQPA789JZXXMTFHEP4M98",
+      "factory_commit": "79a9bc2",
+      "result": "BLOCKED at SWE.3 (rework budget exhausted); package BLOCKED gaps=50",
+      "what_worked": [
+        "intake, SWE.1 frozen, delivered HAL injected after SWE.1, SWE.2 PASS",
+        "the seeded defect was found independently twice: by the SWE.2 author (DEF-001) and by the SWE.3 inspector (SWE3-03/SWE3-06)"
+      ],
+      "factory_defects_found": [
+        "report_defect refused a CODE defect against delivered code detected at SWE.2 (TARGET_NOT_UPSTREAM) and at SWE.3 (SAME_PHASE_USE_REWORK); in FIX_ALLOWED the author could then not get the write window (DEF-001..003 escalated as FACTORY)",
+        "conformance did not resolve the LL functions in the PROVIDED header, giving 18 false findings; static no-write cases for invalid parameters and the start-up invariant were also false findings"
+      ],
+      "fixes": "e7116ed (early CODE defects claimed at SWE.3 entry) and the commit after it (SWE.3 CODE defects in fix immediately, provided definitions resolved, invariant / branch-dependent no-write cases left to tests, contradictions in FIX_ALLOWED filed as CODE defects in fix); on the b002 work products conformance now reports exactly the seeded defect"
+    }
+  }
+}

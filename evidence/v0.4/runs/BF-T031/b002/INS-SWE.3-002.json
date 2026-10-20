@@ -1,0 +1,108 @@
+{
+  "author_role": "swe3-author",
+  "baseline_hash": "b4587a8fb789e91415de2251600336e765b16f531c878e3ff6018aaea0889f6b",
+  "baseline_id": "BL-SWE.3-002",
+  "checklist_sha256": "fc3b64a4d487fce07db4015c1947cae802bdb670536d2453c960fc461fad2dbe",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "HAL_RCC_HSE_Enable timeout path (hal_rcc.c L68-71) returns HAL_TIMEOUT with HSEON set; SWR-009 fallback missing",
+      "id": "SWE3-03",
+      "severity": "major"
+    },
+    {
+      "detail": "baselined source does not implement USPEC-HAL-02-03/SWR-009 (no LL_RCC_HSE_Disable before HAL_TIMEOUT); CODE report refu",
+      "id": "SWE3-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.3-002",
+  "inspector_role": "swe3-inspector",
+  "items": {
+    "SWE3-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [
+        "HAL_RCC_HSE_Enable timeout path (hal_rcc.c L68-71) returns HAL_TIMEOUT with HSEON set; SWR-009 fallback missing"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE3-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE3-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.3/BL-SWE.3-002.json"
+      ],
+      "findings": [
+        "baselined source does not implement USPEC-HAL-02-03/SWR-009 (no LL_RCC_HSE_Disable before HAL_TIMEOUT); CODE report refu"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE3-07": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-07-2026-10-20T014447.452126Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE3-08": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-08-2026-10-20T014447.492898Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE3-09": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-09-2026-10-20T014447.497031Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE3-10": {
+      "evidence_refs": [
+        "inspection/SWE.3/deterministic/SWE3-10-2026-10-20T014452.865515Z.json",
+        "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv",
+        "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.csv"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.3",
+  "recorded_at": "2026-10-20T01:44:52.865947Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}
