@@ -1,0 +1,10 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-01",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Acceptance of PR #13 (feature 008 brownfield work orders) and PR #14 (feature 009 peripheral-generic factory, IWDG pilot)",
+  "statements": ["I approve the PRs."],
+  "decision": "Both PRs merged into main with merge commits: PR #13 as b040c90, PR #14 (retargeted from the 008 branch to main after #13 merged) as e7cd8ea. CRE decisions pd-74f389bcf9d6daec63f9 (008) and pd-d548a41db6592b72cdc7 (009), both ELIGIBLE_FOR_OFFLINE_REVIEW.",
+  "not_changed": "No compliance, certification or safety approval; the brownfield checklist, the safety scope extension and the DeepSeek suspension are separate decisions (OD-2026-10-20-02..04)."
+}
