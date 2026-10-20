@@ -21,7 +21,7 @@ from pathlib import Path
 
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 CALLS = "workproducts/SWE.2/api_calls.json"
-OPS = ("set", "clear", "no_write")
+OPS = ("set", "clear", "no_write", "write")  # write (feature 009): the field holds "value" after the call
 STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
 FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
@@ -99,6 +99,12 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
         r = idx.get(reg)
         if r is None or fld not in r["fields"]:
             out.append(f"CONTRACT_NOT_IN_RM:{where}:{reg}.{fld}")
+        elif op == "write":
+            width = r["fields"][fld]["msb"] - r["fields"][fld]["lsb"] + 1
+            v = _value(e.get("value"))
+            if v is None or not 0 <= v < (1 << width):
+                out.append(f"CONTRACT_WRITE_VALUE:{where}:{e.get('value')!r} (an integer that fits {reg}.{fld}, "
+                           f"{width} bits)")
         elif swr in reqs and f"{reg}.{fld}" not in reqs[swr] and not (reg in reqs[swr] and fld in reqs[swr]):
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
@@ -124,6 +130,18 @@ def _no_delivered_code(ws: Path, call) -> bool:
     from ..brownfield import is_brownfield, manifest_of
 
     return is_brownfield(manifest_of(ws))
+
+
+def _value(v) -> int | None:
+    """A contract write value: an integer or a hexadecimal/decimal string (e.g. "0xCCCC")."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, int):
+        return v
+    try:
+        return int(str(v), 0)
+    except (TypeError, ValueError):
+        return None
 
 
 def check_calls(ws: Path) -> list[str]:
@@ -176,7 +194,8 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
             notes.append(f"ORACLE_NOT_DERIVABLE:{e.get('case')}:no call or op")
             continue
         case = {"case": e["case"], "swr": e.get("swr"), "function": c["function"], "args": list(c.get("args") or []),
-                "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None}
+                "op": e["op"], "status": e.get("status"), "never_ready": e.get("ready") == "never", "ready": None,
+                "value": _value(e.get("value"))}
         # CAPA-047 (r164): a no_write effect that names a register means "this register is not written by the
         # call" (the call may legitimately write other registers); without a register it means no access at all
         if e["op"] != "no_write" or e.get("register"):
@@ -186,7 +205,10 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
                 notes.append(f"ORACLE_NOT_DERIVABLE:{e['case']}:{e.get('register')}.{e.get('field')} not in RM")
                 continue
             case.update(word=r["offset"] // 4, mask=((1 << (fld["msb"] - fld["lsb"] + 1)) - 1) << fld["lsb"],
-                        register=e["register"], field=e["field"])
+                        lsb=fld["lsb"], register=e["register"], field=e["field"])
+            if e["op"] == "write" and case["value"] is None:
+                notes.append(f"ORACLE_NOT_DERIVABLE:{e['case']}:write without a value")
+                continue
             m = _field_rx(ws).match(str(e.get("ready") or ""))
             if m and m.group(1) in idx and m.group(2) in idx[m.group(1)]["fields"]:
                 rf = idx[m.group(1)]["fields"][m.group(2)]
