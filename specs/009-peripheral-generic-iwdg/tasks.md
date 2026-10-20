@@ -46,7 +46,7 @@
 
 ## Phase 7: Release
 
-- [ ] PG-T013 Full regression, CRE CHANGE promotion, PR (stacked on PR #13).
+- [X] PG-T013 Full regression, CRE CHANGE promotion, PR (stacked on PR #13).
 
 ## Strategy
 

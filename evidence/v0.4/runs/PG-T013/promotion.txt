@@ -1,0 +1,11 @@
+ELIGIBLE_FOR_OFFLINE_REVIEW pd-d548a41db6592b72cdc7 candidate 2a0eb66390a2 baseline 617ee29b5d2b
+  protected_files   PASS     
+  policy_integrity  PASS     
+  reproducer        NOT_RUN  NOT_APPLICABLE_FOR_CHANGE
+  prevention        PASS     
+  quality_process   PASS     
+  golden_benchmark  PASS     
+  holdout           PASS     
+  - sandbox: 3690 protected paths read-only (OS) in the candidate/baseline worktrees
+  - efficiency (informational, n=1 run each, not a gate): golden duration 9.5s -> 8.1s; model tokens 0 -> 0
+  - all hard gates passed; eligible for OFFLINE review only - no automatic deployment

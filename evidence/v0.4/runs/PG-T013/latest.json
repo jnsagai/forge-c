@@ -1,0 +1,12 @@
+{
+  "task": "PG-T013",
+  "status": "PASS",
+  "decision": "pd-d548a41db6592b72cdc7",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "617ee29 = main d83148a + feature 008 without evidence/ (the 008 promotion candidate)",
+  "candidate": "2a0eb66 = 617ee29 + diff(0edde98..b2c4ab3) without evidence/",
+  "hard_gates": "all PASS (protected_files, policy_integrity, prevention, quality_process, golden_benchmark, holdout); reproducer NOT_APPLICABLE_FOR_CHANGE",
+  "regression": "assurance.regress --full on b2c4ab3: PASS (design-006, negatives x2, design-check-002, legacy-v0.1, factory-test); validate_design, 005/006 spec validators and ruff PASS",
+  "pr": "PR #14 (stacked on PR #13), awaiting owner acceptance"
+}
