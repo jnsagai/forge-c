@@ -24,7 +24,7 @@ CALLS = "workproducts/SWE.2/api_calls.json"
 OPS = ("set", "clear", "no_write")
 STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
-FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")
+FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
 SAFE_ARG = re.compile(r"^[A-Za-z0-9_&(){}.=, +\-*/\[\]]*$")
 CALL_IN_ARG = re.compile(r"[A-Za-z_]\w*\s*\(")  # a function call inside an argument is refused (no hidden logic)
 SWR_LINE = re.compile(r"\*\*(SWR-\d{3})\*\*\s*(.+)")
@@ -54,14 +54,20 @@ def _rm_index(ws: Path) -> dict:
     return index(d) if d.is_dir() else {}
 
 
+def _field_rx(ws: Path) -> re.Pattern:
+    from ..layer import register_prefix
+
+    return re.compile(rf"^({register_prefix(ws)}_[A-Z0-9]+)\.([A-Z0-9_]+)$")
+
+
 def _requirements(ws: Path) -> dict[str, str]:
     p = Path(ws) / "workproducts/SWE.1/software_requirements.md"
     return {m.group(1): m.group(2) for m in SWR_LINE.finditer(p.read_text(errors="replace"))} if p.is_file() else {}
 
 
-def _needs_contract(text: str) -> bool:
+def _needs_contract(text: str, prefix: str = "RCC") -> bool:
     """A requirement that sets or clears a named register bit through the driver API (not a reset-value statement)."""
-    return bool(re.search(r"\bRCC_[A-Z0-9]+\.[A-Z0-9_]+", text)) and bool(
+    return bool(re.search(rf"\b{prefix}_[A-Z0-9]+\.[A-Z0-9_]+", text)) and bool(
         re.search(r"\b(set|clear|clears|assert|release)\b", text, re.I)) and "reset value" not in text.lower()
 
 
@@ -97,14 +103,17 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
         if ready not in (None, "never"):
-            m = FIELD_RX.match(str(ready))
+            m = _field_rx(ws).match(str(ready))
             if not m or m.group(1) not in idx or m.group(2) not in idx[m.group(1)]["fields"]:
                 out.append(f"CONTRACT_READY_NOT_IN_RM:{where}:{ready}")
         if ready == "never" and (op != "clear" or e.get("status") != "HAL_TIMEOUT"):
             out.append(f"CONTRACT_TIMEOUT_CASE:{where}: a never-ready case clears the enable bit and returns HAL_TIMEOUT")
     covered = {e.get("swr") for e in effects}
+    from ..layer import register_prefix
+
+    pfx = register_prefix(ws)
     out += [f"CONTRACT_SWR_NOT_COVERED:{s} (it sets or clears a register bit: add its effects)"
-            for s, t in sorted(reqs.items()) if _needs_contract(t) and s not in covered]
+            for s, t in sorted(reqs.items()) if _needs_contract(t, pfx) and s not in covered]
     return out[:15]
 
 
@@ -178,7 +187,7 @@ def cases(ws: Path) -> tuple[list[dict], list[str]]:
                 continue
             case.update(word=r["offset"] // 4, mask=((1 << (fld["msb"] - fld["lsb"] + 1)) - 1) << fld["lsb"],
                         register=e["register"], field=e["field"])
-            m = FIELD_RX.match(str(e.get("ready") or ""))
+            m = _field_rx(ws).match(str(e.get("ready") or ""))
             if m and m.group(1) in idx and m.group(2) in idx[m.group(1)]["fields"]:
                 rf = idx[m.group(1)]["fields"][m.group(2)]
                 case["ready"] = (idx[m.group(1)]["offset"] // 4, 1 << rf["lsb"])
