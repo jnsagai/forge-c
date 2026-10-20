@@ -217,7 +217,7 @@ CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local model
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
 TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
 ISOLATION = {"on": False}  # CAPA-038: HAL unit tests run on the generated LL test double (set by the builder)
-BROWNFIELD = {"mode": None}  # feature 008: None (greenfield) | FROZEN | FIX_ALLOWED (set by the builder)
+BROWNFIELD = {"mode": None, "style": None}  # feature 008: mode None | FROZEN | FIX_ALLOWED; delivery code style
 
 
 def small() -> str:
@@ -997,6 +997,61 @@ def peripheralize(text: str) -> str:
     return _re.sub(r"\bRCC\b", pfx, text)
 
 
+CMSIS_UT_EXAMPLE = ("static void ut_hsi(void)\n{\n    ut_reset_regs();\n    LL_RCC_HSI_Enable();\n"
+                    "    CHECK(\"UT-001\", forge_host_rcc.CSR == RCC_CSR_HSIONS);\n"
+                    "    CHECK(\"UT-002\", LL_RCC_HSI_IsReady() == 0U);\n"
+                    "    forge_host_rcc.SR = RCC_SR_HSIRDY;\n    CHECK(\"UT-003\", LL_RCC_HSI_IsReady() == 1U);\n}")
+CMSIS_REGS = ("the delivered code accesses the peripheral as RCC-><REG> (CMSIS); RM0486 set/clear registers are written "
+              "with 1s only for the bits to change (RCC_CSR/RCC_CCR -> RCC_CR, RCC_<bus>ENSR/ENCR -> RCC_<bus>ENR, "
+              "RCC_<bus>RSTSR/RSTCR -> RCC_<bus>RSTR)")
+
+
+def cmsisize(text: str) -> str:
+    """Feature 008 (ST pilot): test prompts for a CMSIS delivery (vendor code with RCC->REG access and vendor masks)
+    instead of the factory register array; identity for every other work order."""
+    if not (BROWNFIELD["mode"] and BROWNFIELD.get("style") == "cmsis"):
+        return text
+    frags = [
+        ("software/tests/unit/test_rcc.c (GENERATED harness: fake ll_rcc_regs, ut_reset_regs(), CHECK(id, cond), markers; "
+         "never change it), software/ll/stm32n6xx_ll_rcc.h (the LL_RCC_ functions to test)",
+         "software/tests/unit/test_rcc.c (GENERATED harness: the RCC instance is the host RAM struct forge_host_rcc of "
+         "software/tests/host_device/forge_host_device.h, ut_reset_regs() clears it, CHECK(id, cond), markers; never "
+         "change it), the delivered headers of .forge-run/manifest.json 'delivered' (the scope functions to test are in "
+         ".forge-run/delivery/scope.json)"),
+        ("For EACH LL_RCC_ function group", "For EACH group of delivered scope functions"),
+        ("use ONLY LL_RCC_<REG>_OFFSET / _MSK defines that exist in software/ll/stm32n6xx_ll_rcc.h",
+         "observe registers ONLY as forge_host_rcc.<REG> with the vendor masks RCC_<REG>_<FIELD> of "
+         "inputs/vendor/include/stm32n657xx.h (" + CMSIS_REGS + "; on the host every register is plain RAM, so check the "
+         "register the code writes)"),
+        (LL_UT_EXAMPLE, CMSIS_UT_EXAMPLE),
+        ("Enable/Disable and ForceReset/ReleaseReset cases check the named bit AND that a preset unrelated bit of the same "
+         "register is preserved;",
+         "Enable/Disable and ForceReset/ReleaseReset cases check that exactly the named bit is written to the set/clear "
+         "register (a write of other bits would change them on silicon);"),
+        ("on LL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_rcc_regs "
+         "definition (the linker places it).",
+         "on LL return values and RCC-><REG> & RCC_<REG>_<FIELD> bits of the vendor header (the RCC model applies the "
+         "set/clear registers to their target, so check the target, e.g. RCC->CR & RCC_CR_HSION; include "
+         "stm32n6xx_ll_bus.h too for the bus functions). No printf, no stdlib."),
+        ("with conditions on LL return values and ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK bits "
+         "(always the _MSK macro, e.g. LL_RCC_CR_HSION_MSK; never LL_RCC_CR_HSION). No printf, no stdlib, no ll_rcc_regs "
+         "definition.",
+         "with conditions on LL return values and RCC-><REG> & RCC_<REG>_<FIELD> bits of the vendor header (e.g. "
+         "RCC->CR & RCC_CR_HSION; the RCC model applies the set/clear registers to their target; include "
+         "stm32n6xx_ll_bus.h too for the bus functions). No printf, no stdlib."),
+        (REGISTER_BLOCK_NOTE, "Register access is the DELIVERED vendor design: the delivered code accesses the "
+         "peripheral through the CMSIS instance (RCC->REG, the vendor device header's base address and RCC_TypeDef); on "
+         "host tests the factory maps it to a RAM struct (forge_host_device.h), on target the platform maps the secure "
+         "RCC base. That is the delivered design, not a finding against this phase's work products."),
+        ("(define 'volatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];' and a CHECK macro like the unit harness)",
+         "(first '#define FORGE_HOST_DEVICE_IMPLEMENTATION' and '#include \"forge_host_device.h\"', then the delivered "
+         "headers and a CHECK macro like the unit harness; " + CMSIS_REGS + "; observe forge_host_rcc.<REG>)"),
+    ]
+    for old, new in frags:
+        text = text.replace(old, new)
+    return text
+
+
 def _peripheral_prompts() -> None:
     """Every prompt builder returns its text through peripheralize() (identity for RCC)."""
     import functools
@@ -1004,7 +1059,7 @@ def _peripheral_prompts() -> None:
     for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
                  "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
         f = globals()[name]
-        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(_f(*a, **k)))
+        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
 
 
 _peripheral_prompts()

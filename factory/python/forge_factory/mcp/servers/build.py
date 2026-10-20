@@ -64,11 +64,20 @@ def sources(ctx: ToolContext) -> list[Path]:
         p = ctx.workspace / d
         if p.is_dir():
             out += sorted(x for x in p.glob("*.c") if not x.is_symlink())
+    if not out:  # feature 008 (ST pilot): a header-only delivery gets a generated build-only unit (outside the delivery)
+        from ...brownfield.cmsis import delivered_unit
+
+        u = delivered_unit(ctx.workspace, ctx.workspace / "build" / "delivered")
+        out = [u] if u else []
     return out
 
 
-def includes(ctx: ToolContext) -> list[str]:
-    return [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
+def includes(ctx: ToolContext, profile: str = "target-cm55-gcc") -> list[str]:
+    from ...brownfield.cmsis import host_flags, target_flags
+
+    # feature 008 (ST pilot): a CMSIS delivery needs the vendor device headers (target) or the host device map (host)
+    vendor = target_flags(ctx.workspace) if profile.startswith("target") else host_flags(ctx.workspace)
+    return vendor + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
 
 
 def configure(ctx: ToolContext, a: ConfigureIn) -> dict:
@@ -105,7 +114,7 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
             srcs = [*srcs, inst]
     for src in srcs:
         obj = od / (src.stem + ".o")
-        argv = [prof["cc"], *prof["flags"], *WARN, *[f"-D{m}" for m in a.defines], *includes(ctx), "-fstack-usage",
+        argv = [prof["cc"], *prof["flags"], *WARN, *[f"-D{m}" for m in a.defines], *includes(ctx, a.profile), "-fstack-usage",
                 "-c", str(src), "-o", str(obj)]
         r = run_argv(argv, od, 180, ALLOW)
         total_ms += r.duration_ms

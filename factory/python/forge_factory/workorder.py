@@ -461,7 +461,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
-                         peripheral=manifest.get("peripheral"))
+                         peripheral=manifest.get("peripheral"),
+                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"))
     prof = model_profile(model, provider, code_model, nodes)
     if acp_authors:
         from . import acp

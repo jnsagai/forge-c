@@ -66,6 +66,9 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
             if not (p.name in seen or seen.add(p.name))]
     incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
                                      "software/tests/software") if (ws / d).is_dir()]
+    from ...brownfield.cmsis import target_flags
+
+    incs += target_flags(ws)  # feature 008 (ST pilot): vendor includes, defines, -mcmse (RCC_S at the secure base)
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
                   str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
     lines = b.stderr.decode(errors="replace").splitlines()

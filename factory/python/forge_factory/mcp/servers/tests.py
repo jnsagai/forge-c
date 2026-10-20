@@ -79,8 +79,11 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     from ...workflow.scaffold import unit_test
 
     fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
-    incs = [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS + [f"software/tests/{level}"]
-            if (ctx.workspace / d).is_dir()]
+    from ...brownfield.cmsis import host_flags
+
+    # feature 008 (ST pilot): a CMSIS delivery compiles on the host against the generated host device directory
+    incs = host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS +
+                                        [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
     if fake and modified(ctx.workspace):
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "

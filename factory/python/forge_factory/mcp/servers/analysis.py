@@ -35,7 +35,10 @@ def srcs(ctx: ToolContext) -> list[str]:
 
 
 def incs(ctx: ToolContext) -> list[str]:
-    return [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
+    from ...brownfield.cmsis import host_flags
+
+    # feature 008 (ST pilot): a CMSIS delivery is analysed on the host device map (the core headers are Arm-only)
+    return host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
 
 
 def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
@@ -76,6 +79,11 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
 
 def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
     files = [f for f in srcs(ctx) if f.endswith(".c")]
+    if not files:  # feature 008 (ST pilot): the generated build-only unit of a header-only delivery
+        from ...brownfield.cmsis import delivered_unit
+
+        u = delivered_unit(ctx.workspace, ctx.workspace / "build" / "delivered")
+        files = [str(u)] if u else []
     if not files:
         return result(ctx, "BLOCKED", "no C sources", issues=["NO_SOURCES"], tool="clang")
     log, issues, ms = b"", [], 0.0
