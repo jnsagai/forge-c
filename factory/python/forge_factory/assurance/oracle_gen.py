@@ -204,7 +204,8 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None, b
     return "\n".join(lines)
 
 
-def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024) -> str:
+def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024,
+                    time_base: str | None = None) -> str:
     """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
     bits of the register unchanged, a no_write case leaves its named register unchanged (no register named: no
     register access at all), a bounded poll for a never-ready case."""
@@ -213,6 +214,8 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
     lines = [f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
              "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
              f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
+             *([f"static uint32_t forge_tick; uint32_t {time_base}(void) {{ forge_tick++; return forge_tick; }}"]
+               if time_base else []),  # FND-07: the HAL's time base, +1 ms per call
              "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
         t = 5 if c["never_ready"] or c.get("busy") else 10
@@ -271,7 +274,8 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         from ..layer import profile
 
         pr = profile(ws)
-        src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"])
+        src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"],
+                              pr["hal"].get("time_base"))
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
     else:
         from ..layer import profile, register_prefix

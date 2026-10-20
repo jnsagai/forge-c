@@ -81,6 +81,20 @@ def cmsis_harness(ws: Path) -> str:
     }""", f"    (void)memset((void *)&{var}, 0, sizeof({var}));"))
 
 
+def _time_base(text: str, ws: Path) -> str:
+    """SSA-IWDG FND-07: a HAL whose waits are bounded by a system time base gets a deterministic host stub (+1 ms per
+    call, reset by ut_reset); identity when the profile names no time base (RCC)."""
+    from ..layer import profile
+
+    tb = profile(ws)["hal"].get("time_base")
+    if not tb:
+        return text
+    text = text.replace("static int failures = 0;\n", "static int failures = 0;\n/* host time base of the HAL (+1 ms per "
+                        f"call; ut_reset() restarts it) */\nstatic uint32_t ut_tick = 0U;\nuint32_t {tb}(void);\n"
+                        f"uint32_t {tb}(void)\n{{\n    ut_tick++;\n    return ut_tick;\n}}\n", 1)
+    return text.replace("    ll_fake_reset();\n}", "    ll_fake_reset();\n    ut_tick = 0U;\n}", 1)
+
+
 def _for_peripheral(text: str, ws: Path) -> str:
     """The RCC harness text with the work order's peripheral names (identity for RCC)."""
     from ..layer import profile
@@ -109,7 +123,7 @@ def scaffold(ws: Path) -> dict:
         from .ll_fake import write
 
         write(ws)
-        p.write_text(_for_peripheral(HARNESS_FAKE, ws), encoding="utf-8")
+        p.write_text(_time_base(_for_peripheral(HARNESS_FAKE, ws), ws), encoding="utf-8")
         return {"status": "PASS", "created": True, "file": UNIT_TEST, "ll_fake": True}
     text = HARNESS if layer_of(ws) != "LL" else HARNESS.replace('#include "stm32n6xx_hal_rcc.h"',
                                                                   '#include "stm32n6xx_ll_rcc.h"')  # ADR-0009

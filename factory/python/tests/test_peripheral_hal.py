@@ -19,6 +19,7 @@ I003_LL = REPO_ROOT / "evidence/v0.4/runs/PG-T012/i003/stm32n6xx_ll_iwdg.h"
 LL = ("static inline void LL_IWDG_Enable(void)\n{\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000CCCCU;\n}\n"
       "static inline void LL_IWDG_ReloadCounter(void)\n{\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000AAAAU;\n}\n"
       "static inline void LL_IWDG_EnableWriteAccess(void)\n{\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x00005555U;\n}\n"
+      "static inline void LL_IWDG_DisableWriteAccess(void)\n{\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x00000000U;\n}\n"
       "static inline void LL_IWDG_SetPrescaler(uint32_t prescaler)\n{\n"
       "    ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] = (prescaler & LL_IWDG_PR_PR_MSK);\n}\n"
       "static inline void LL_IWDG_SetReloadCounter(uint32_t counter)\n{\n"
@@ -32,18 +33,19 @@ HAL_H = """#ifndef STM32N6XX_HAL_IWDG_H
 #include <stddef.h>
 #include "stm32n6xx_ll_iwdg.h"
 typedef enum {HAL_OK = 0U, HAL_ERROR = 1U, HAL_TIMEOUT = 2U} hal_status_t;
-#define HAL_IWDG_TIMEOUT_VALUE 1000U
+#define HAL_IWDG_TIMEOUT_MS 48U
+uint32_t HAL_GetTick(void);
 typedef struct {uint32_t prescaler; uint32_t reload;} hal_iwdg_config_t;
 hal_status_t HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout);
 hal_status_t HAL_IWDG_Refresh(void);
 #endif /* STM32N6XX_HAL_IWDG_H */
 """
-CHECKS = ("    if ((p_config == NULL) || (timeout == 0U) || (timeout > HAL_IWDG_TIMEOUT_VALUE) ||\n"
+CHECKS = ("    if ((p_config == NULL) || (timeout_ms == 0U) || (timeout_ms > HAL_IWDG_TIMEOUT_MS) ||\n"
           "        (p_config->prescaler > 7U) || (p_config->reload > 0xFFFU))\n    {\n        return HAL_ERROR;\n    }\n")
 
 
 def _hal_c(example: str) -> str:
-    body = example.replace("    uint32_t count = 0U;\n", "    uint32_t count = 0U;\n" + CHECKS, 1)
+    body = example.replace("    uint32_t start;\n", "    uint32_t start;\n" + CHECKS, 1)
     return ('#include "stm32n6xx_hal_iwdg.h"\n\n' + body +
             "\n\nhal_status_t HAL_IWDG_Refresh(void)\n{\n    LL_IWDG_ReloadCounter();\n    return HAL_OK;\n}\n")
 
@@ -65,8 +67,8 @@ EFFECTS = [
      "status": "HAL_OK"},
     {"case": "INIT_REFRESH", "swr": "SWR-003", "register": "IWDG_KR", "field": "KEY", "op": "write",
      "value": "0xAAAA", "status": "HAL_OK"},
-    {"case": "INIT_TIMEOUT", "swr": "SWR-004", "register": "IWDG_PR", "field": "PR", "op": "write", "value": 4,
-     "busy": "IWDG_SR.PVU", "status": "HAL_TIMEOUT"},
+    {"case": "INIT_TIMEOUT", "swr": "SWR-004", "register": "IWDG_KR", "field": "KEY", "op": "write", "value": "0x0000",
+     "busy": "IWDG_SR.PVU", "status": "HAL_TIMEOUT"},  # FND-08: write-protected after a timeout
     {"case": "INIT_NULL", "swr": "SWR-005", "op": "no_write", "status": "HAL_ERROR"},
     {"case": "REFRESH", "swr": "SWR-006", "register": "IWDG_KR", "field": "KEY", "op": "write", "value": "0xAAAA",
      "status": "HAL_OK"}]
@@ -117,6 +119,10 @@ def test_oracle_on_an_iwdg_hal(tmp_path, monkeypatch):
     assert ignores_flags != _hal_c(EXAMPLE)
     r = _oracle(_hal_ws(tmp_path / "b", monkeypatch, ignores_flags))
     assert r["status"] == "FAIL", r
+    no_protect = _hal_c(EXAMPLE).replace("        LL_IWDG_DisableWriteAccess();\n", "", 1)  # FND-08 regression
+    assert no_protect != _hal_c(EXAMPLE)
+    r = _oracle(_hal_ws(tmp_path / "c", monkeypatch, no_protect))
+    assert r["status"] == "FAIL", r
 
 
 @pytest.mark.skipif(not shutil.which("gcc"), reason="gcc not available")
@@ -131,7 +137,11 @@ def test_ll_fake_from_the_i003_iwdg_header_runs_the_prompt_example(tmp_path):
     (tmp_path / "stm32n6xx_hal_iwdg.h").write_text(HAL_H)
     (tmp_path / "hal.c").write_text(_hal_c(EXAMPLE))
     pr = load("iwdg")
-    harness = scaffold._for_peripheral(scaffold.HARNESS_FAKE, None).replace("stm32n6xx_hal_rcc.h", pr["hal"]["header"])
+    iw = tmp_path / "iw"
+    (iw / ".forge-run").mkdir(parents=True)
+    (iw / ".forge-run/manifest.json").write_text('{"layer": "HAL", "peripheral": "iwdg"}')
+    harness = scaffold._time_base(scaffold._for_peripheral(scaffold.HARNESS_FAKE, iw), iw)  # FND-07: HAL_GetTick stub
+    assert "uint32_t HAL_GetTick(void)" in harness and "ut_tick = 0U;" in harness
     test = harness.replace(scaffold.TEST_CASES_MARKER, pr["prompt"]["hal_ut_example"]).replace(
         scaffold.TEST_CALLS_MARKER, "ut_iwdg_init();")
     (tmp_path / "test_iwdg.c").write_text(test)
@@ -140,7 +150,7 @@ def test_ll_fake_from_the_i003_iwdg_header_runs_the_prompt_example(tmp_path):
                         str(tmp_path / "hal.c"), "-o", str(exe)], capture_output=True, text=True)
     assert b.returncode == 0, b.stderr[-2000:]
     r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=30)
-    assert r.returncode == 0 and "FAIL" not in r.stdout and r.stdout.count("PASS") == 5, r.stdout
+    assert r.returncode == 0 and "FAIL" not in r.stdout and r.stdout.count("PASS") == 7, r.stdout
 
 
 def test_fake_header_and_provided_ll_follow_the_profile(tmp_path):

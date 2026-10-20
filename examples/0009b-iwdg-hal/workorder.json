@@ -14,7 +14,8 @@
   },
   "scope": [
     "HAL: hal_status_t API with HAL_IWDG_ prefix, a const configuration pointer, parameter checks and a timeout-bounded wait, built only on the PROVIDED LL_IWDG_ functions",
-    "Initialise the watchdog (RM0486 59.3, window option disabled): start key, register access key, prescaler (IWDG_PR.PR) and reload (IWDG_RLR.RL), wait until the update flags IWDG_SR.PVU and IWDG_SR.RVU are cleared (bounded by a caller-supplied timeout), then refresh the counter",
+    "Initialise the watchdog (RM0486 59.3, window option disabled): start key, register access key, prescaler (IWDG_PR.PR) and reload (IWDG_RLR.RL), wait until the update flags IWDG_SR.PVU and IWDG_SR.RVU are cleared - the wait bounded in TIME by a caller-supplied timeout in milliseconds of the system time base HAL_GetTick() (at most 48 ms, covering the RM0486 update time of up to 6 LSI periods), never by a count of polling iterations - then refresh the counter",
+    "On an update timeout: write-protect IWDG_PR/IWDG_RLR again (a key other than 0x5555), do not refresh, and return HAL_TIMEOUT; the started watchdog keeps running (it cannot be stopped)",
     "Refresh the watchdog counter",
     "The LL header is provided read-only (verified IWDG LL work order) and is not modified",
     "Out of scope: window option (IWDG_WINR), early wake-up interrupt (IWDG_EWCR, IWDG_ICR), hardware watchdog option bytes, low-power freeze, debug freeze; stopping the watchdog (impossible once started)"
@@ -54,6 +55,6 @@
     }
   ],
   "layer": "HAL",
-  "layer_note": "ADR-0009 + feature 009: built on the PROVIDED LL header of a verified 0009a IWDG LL work order (--provided-from); peripheral profile config/factory/peripherals/iwdg.yaml",
+  "layer_note": "ADR-0009 + feature 009: built on the PROVIDED LL header of a verified 0009a IWDG LL work order (--provided-from); peripheral profile config/factory/peripherals/iwdg.yaml; v2 scope (owner 'go' 2026-10-20) closes SSA-IWDG-FND-07 (time-bounded wait) and FND-08 (re-protect on timeout)",
   "peripheral": "iwdg"
 }
