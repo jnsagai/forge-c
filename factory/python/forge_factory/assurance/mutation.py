@@ -33,11 +33,20 @@ OPS = [  # name, regex, replacement (None = computed)
     ("DEF_OFFSET_SHIFT", r"(#define LL_RCC_\w+_OFFSET )0x(\w+)U", None),
 ]
 OPERATOR_SET_VERSION = "forge-mut-ops/1.0"
+RCC_ONLY = {"HSI_TO_HSE_MSK", "HSE_TO_HSI_MSK", "ADC_TO_DMA", "SR_TO_CR"}  # RCC register/field names
 
 
-def mutants(text: str) -> list[dict]:
+def ops_for(prefix: str = "RCC") -> list[tuple]:
+    """Feature 009: the operator set for a peripheral - the generic operators on its LL_<PPP>_ names; the operators
+    written for RCC fields/registers apply to RCC only (they cannot match another peripheral's code)."""
+    if prefix == "RCC":
+        return OPS
+    return [(n, rx.replace("LL_RCC_", f"LL_{prefix}_"), rep) for n, rx, rep in OPS if n not in RCC_ONLY]
+
+
+def mutants(text: str, prefix: str = "RCC") -> list[dict]:
     out = []
-    for name, rx, rep in OPS:
+    for name, rx, rep in ops_for(prefix):
         for m in re.finditer(rx, text, re.M):
             if name == "DEF_BIT_SHIFT":
                 new = m.group(1) + "0x0000000%xU" % ((int(m.group(2)) << 1) & 0xF or 1)
@@ -72,7 +81,9 @@ def equivalence_reason(text: str, mut: dict, used_symbols: set[str], referenced:
 
 
 def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_symbols: set[str] | None = None,
-                 extra_sources: list[str] | None = None, timeout_s: int = 5, cc: str = "gcc") -> dict:
+                 extra_sources: list[str] | None = None, timeout_s: int = 5, cc: str = "gcc", prefix: str = "RCC",
+                 ll_unit: str = "stm32n6xx_ll_rcc.c") -> dict:
+    """`prefix`/`ll_unit` (feature 009): the work order's register prefix and generated LL compile unit."""
     """Mutate one file of a copied tree, rebuild every test program and run it. Never touches `sw_dir`."""
     src = (Path(sw_dir) / target_rel).read_text()
     code_hash = hashlib.sha256(src.encode()).hexdigest()
@@ -85,7 +96,7 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
     referenced = set(re.findall(r"\b[A-Za-z_]\w*\b", own_body + "\n".join(others)))
     results = []
     tool = subprocess.run([cc, "--version"], capture_output=True, text=True).stdout.splitlines()[0]
-    for mu in mutants(src):
+    for mu in mutants(src, prefix):
         eq = equivalence_reason(src, mu, used, referenced) if used_symbols is not None else None
         with tempfile.TemporaryDirectory() as td:
             t = Path(td) / "sw"
@@ -97,7 +108,7 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
             # driver compile units: software/src (packaged flat view) or software/hal (live workspace); the generated
             # LL compile unit only includes the header and is skipped (the tests include the header themselves)
             by_name = {p.name: str(p) for d in ("src", "hal") for p in sorted((t / d).glob("*.c"))
-                       if not p.name.endswith("ll_rcc.c")}  # packaged flat view duplicates hal/*.c in src/
+                       if not p.name.endswith(ll_unit.removeprefix("stm32n6xx_"))}  # flat view duplicates hal/*.c
             if target_rel.endswith(".c"):
                 by_name[Path(target_rel).name] = str(t / target_rel)  # always the mutated copy
             srcs = sorted(by_name.values()) + [str(t / s) for s in (extra_sources or [])]
@@ -123,7 +134,7 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
         results.append({k: v for k, v in mu.items() if k != "text"} | {"outcome": outcome, "detail": detail})
     n = {k: sum(r["outcome"] == k for r in results) for k in ("KILLED", "SURVIVED", "INVALID", "EQUIVALENT")}
     rec = {"campaign_id": "MC-" + hashlib.sha256((code_hash + "".join(t.name for t in test_files)).encode()).hexdigest()[:12],
-           "code_hash": code_hash, "operator_set": [OPERATOR_SET_VERSION] + sorted({o[0] for o in OPS}),
+           "code_hash": code_hash, "operator_set": [OPERATOR_SET_VERSION] + sorted({o[0] for o in ops_for(prefix)}),
            "eligible": n["KILLED"] + n["SURVIVED"], "killed": n["KILLED"], "survived": n["SURVIVED"],
            "equivalent": n["EQUIVALENT"], "invalid": n["INVALID"], "mutant_refs": [r["id"] for r in results],
            "tool_version": tool, "result": "MEASURED" if results else "UNKNOWN"}

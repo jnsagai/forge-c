@@ -44,9 +44,11 @@ def allocation(arch_md: str, names: set[str] | None = None, prefixes: tuple[str,
     return out
 
 
-def prototypes(header: str) -> dict[str, str]:
-    """Function name -> parameter list (from prototypes or static inline definitions)."""
-    return {m.group(1): m.group(2).strip() for m in re.finditer(r"\b((?:HAL|LL)_RCC_\w+)\s*\(([^)]*)\)\s*[;{]", header)}
+def prototypes(header: str, prefix: str = "RCC") -> dict[str, str]:
+    """Function name -> parameter list (from prototypes or static inline definitions); `prefix` (feature 009): the
+    work order's register prefix (HAL_<PPP>_/LL_<PPP>_ functions)."""
+    return {m.group(1): m.group(2).strip()
+            for m in re.finditer(rf"\b((?:HAL|LL)_{prefix}_\w+)\s*\(([^)]*)\)\s*[;{{]", header)}
 
 
 SELECTED = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear) the selected (?P<kind>enable|reset) bit "
@@ -54,7 +56,7 @@ SELECTED = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear) 
 
 
 def _selected(sid: str, sel: re.Match, fns: list[str], protos: dict[str, str], idx: dict[str, dict],
-              notes: list[str]) -> list[dict]:
+              notes: list[str], prefix: str = "RCC") -> list[dict]:
     """HAL_RCC_<P>_Enable/_Disable -> <P>EN, _Reset/_ReleaseReset -> <P>RST (or LL_RCC_<P>_ForceReset...) of the
     register the requirement names; the bit position comes from the RM index."""
     reg = idx.get(sel["reg"])
@@ -64,7 +66,7 @@ def _selected(sid: str, sel: re.Match, fns: list[str], protos: dict[str, str], i
         return out
     suffix = "EN" if sel["kind"] == "enable" else "RST"
     for fn in fns:
-        m = re.match(r"(?:HAL|LL)_RCC_([A-Z0-9]+)_(\w+)$", fn)
+        m = re.match(rf"(?:HAL|LL)_{prefix}_([A-Z0-9]+)_(\w+)$", fn)
         if not m or fn not in protos or "*" in protos[fn]:
             continue
         fld = reg["fields"].get(m.group(1) + suffix)
@@ -77,16 +79,21 @@ def _selected(sid: str, sel: re.Match, fns: list[str], protos: dict[str, str], i
     return out
 
 
-def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict]) -> tuple[list[dict], list[str]]:
-    alloc, protos = allocation(arch_md), prototypes(header)
+def derive(requirements_md: str, arch_md: str, header: str, idx: dict[str, dict],
+           prefix: str = "RCC") -> tuple[list[dict], list[str]]:
+    """Sentence-parsing oracle (work orders without a register contract). `prefix` (feature 009): the work order's
+    register prefix; RCC_SR ready pairing applies to RCC only (no such register in another peripheral's index)."""
+    alloc, protos = allocation(arch_md, prefixes=(f"HAL_{prefix}_", f"LL_{prefix}_")), prototypes(header, prefix)
+    set_clear = SET_CLEAR if prefix == "RCC" else re.compile(SET_CLEAR.pattern.replace("RCC_", f"{prefix}_"))
+    selected = SELECTED if prefix == "RCC" else re.compile(SELECTED.pattern.replace("RCC_", f"{prefix}_"))
     cases, notes = [], []
     for m in re.finditer(r"\*\*(SWR-\d{3})\*\*\s*(.+)", requirements_md):
         sid, text = m.group(1), m.group(2)
-        sm = SET_CLEAR.search(text)
+        sm = set_clear.search(text)
         if not sm:
-            sel = SELECTED.search(text)
+            sel = selected.search(text)
             if sel:  # "set the selected enable bit of RCC_AHB1ENR": field from the SWE.2 API name contract
-                cases += _selected(sid, sel, alloc.get(sid, []), protos, idx, notes)
+                cases += _selected(sid, sel, alloc.get(sid, []), protos, idx, notes, prefix)
             continue
         reg, fld = idx.get(sm["reg"]), sm["fld"]
         if reg is None or fld not in reg["fields"]:
@@ -172,11 +179,13 @@ def _call(fn: str, params: str) -> str:
     return f"{fn}({', '.join(args)})"
 
 
-def c_source(cases: list[dict], include: str, extra: list[dict] | None = None) -> str:
-    lines = [f'#include "{include}"', "#undef ll_rcc_regs", "#include <stdio.h>", "#include <string.h>",
-             "volatile uint32_t regs[1024];", "unsigned long shim_n;",
-             "volatile uint32_t (*shim_regs(void))[1024] { shim_n++; return &regs; }", "static int fails;",
-             "int main(void)", "{", "    uint32_t before[1024];"]
+def c_source(cases: list[dict], include: str, extra: list[dict] | None = None, block: str = "ll_rcc_regs",
+             count: int = 1024) -> str:
+    """Sentence-parsing oracle program; `block`/`count` (feature 009): the work order's register block (as the shim)."""
+    lines = [f'#include "{include}"', f"#undef {block}", "#include <stdio.h>", "#include <string.h>",
+             f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
+             f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
+             "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
         pre = c["mask"] if c["op"] == "clear" else 0
         other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
@@ -261,9 +270,12 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"])
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
     else:
-        cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx)
+        from ..layer import profile, register_prefix
+
+        cases, notes = derive(req, arch, hdr_path.read_text(errors="replace"), idx, register_prefix(ws))
         extra = derive_timeouts(req, hdr_path.read_text(errors="replace"), idx) if api_header.endswith("hal_rcc.h") else []
-        src = c_source(cases, api_header, extra)
+        pr = profile(ws)
+        src = c_source(cases, api_header, extra, pr["ll"]["register_block"], pr["ll"]["register_count"])
         contract_digests = []
     prov = {"oracle_id": "OR-" + hashlib.sha256(src.encode()).hexdigest()[:12], "work_order_id": ws.parent.name,
             "requirement_refs": sorted({c["swr"] for c in cases if c.get("swr")}),
