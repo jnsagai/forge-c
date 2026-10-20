@@ -112,15 +112,20 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
         inst = ll_instances(ctx, od)
         if inst is not None:
             srcs = [*srcs, inst]
+    from ...brownfield import is_brownfield, manifest_of
+
+    # CAPA-056 (b006): delivered code is frozen input - its warnings are recorded findings, not build failures
+    delivered = is_brownfield(manifest_of(ctx.workspace))
+    warn = [w for w in WARN if w != "-Werror"] if delivered else WARN
     for src in srcs:
         obj = od / (src.stem + ".o")
-        argv = [prof["cc"], *prof["flags"], *WARN, *[f"-D{m}" for m in a.defines], *includes(ctx, a.profile), "-fstack-usage",
+        argv = [prof["cc"], *prof["flags"], *warn, *[f"-D{m}" for m in a.defines], *includes(ctx, a.profile), "-fstack-usage",
                 "-c", str(src), "-o", str(obj)]
         r = run_argv(argv, od, 180, ALLOW)
         total_ms += r.duration_ms
         log += b"$ " + " ".join(argv).encode() + b"\n" + r.stdout + r.stderr + b"\n"
-        if r.exit_code != 0:
-            failed += 1
+        if r.exit_code != 0 or delivered:
+            failed += r.exit_code != 0
             for line in (r.stderr.decode(errors="replace")).splitlines():
                 if ": error:" in line or ": warning:" in line:
                     issues.append(line.split(str(ctx.workspace) + "/")[-1][:120])

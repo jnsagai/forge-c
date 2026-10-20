@@ -104,7 +104,8 @@ def host_flags(ws: Path) -> list[str]:
     if not is_cmsis(ws):
         return []
     write_host_device(ws)
-    return [f"-I{Path(ws) / HOST_DIR}", *[f"-D{d}" for d in build_settings(ws).get("defines") or []]]
+    # CAPA-056: third-party headers are system headers (their warnings are not the delivery's or the factory's)
+    return ["-isystem", str(Path(ws) / HOST_DIR), *[f"-D{d}" for d in build_settings(ws).get("defines") or []]]
 
 
 def target_flags(ws: Path) -> list[str]:
@@ -112,7 +113,7 @@ def target_flags(ws: Path) -> list[str]:
     if not is_cmsis(ws):
         return []
     b = build_settings(ws)
-    return [f"-I{Path(ws) / VENDOR_DIR}", *[f"-D{d}" for d in b.get("defines") or []],
+    return ["-isystem", str(Path(ws) / VENDOR_DIR), *[f"-D{d}" for d in b.get("defines") or []],
             *(["-mcmse"] if b.get("secure") else [])]
 
 
