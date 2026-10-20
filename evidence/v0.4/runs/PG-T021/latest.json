@@ -1,0 +1,13 @@
+{
+  "task": "PG-T021 (IWDG HAL v2: SSA-IWDG-FND-07/FND-08)",
+  "status": "IN_PROGRESS",
+  "owner_request": "go (2026-10-20), after the agent proposed fixing FND-07/FND-08 after the ST pilot",
+  "decision": "pd-ea6e2bd4c0229a31aac7",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "0feeb64 (feat/008-st-pilot-host)",
+  "candidate": "df3119c",
+  "design": "HAL_IWDG_Init(cfg, timeout_ms): wait bounded in time by HAL_GetTick (<= 48 ms, RM0486 update time up to 6 LSI periods); on timeout LL_IWDG_DisableWriteAccess (key 0x0000) then HAL_TIMEOUT, no refresh",
+  "tests": "43 affected files passed (1 skipped); oracle FAILs a HAL without the final refresh, one that ignores the update flags, and one that forgets the write-protect; LL test double runs the v2 unit-test example 7/7; RCC goldens unchanged",
+  "live_run": "h004 pending"
+}
