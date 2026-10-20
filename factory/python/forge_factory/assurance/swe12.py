@@ -68,6 +68,17 @@ def _pages(sections_dir: Path) -> dict[int, str]:
     return out
 
 
+def cited_pages(src: str) -> list[int]:
+    """RM0486 pages one source cites: 'RM0486 p.480; RM0486 p.482', 'p.2989-2991', 'pp. 2989-2991', 'p.12, 14'."""
+    out: list[int] = []
+    for m in re.finditer(r"RM0486\s+pp?\.\s*(\d+(?:\s*[-\u2013]\s*\d+)?(?:\s*,\s*\d+(?:\s*[-\u2013]\s*\d+)?)*)", src):
+        for part in m.group(1).split(","):
+            a, _, b = part.replace("\u2013", "-").partition("-")
+            lo, hi = int(a), int(b) if b.strip() else int(a)
+            out += [n for n in range(lo, min(hi, lo + 20) + 1) if n not in out]  # bounded range
+    return out
+
+
 def check_requirements(ws: Path) -> dict:
     ws = Path(ws)
     from ..layer import register_prefix
@@ -102,17 +113,20 @@ def check_requirements(ws: Path) -> dict:
             for reg in set(REG_REF.findall(t)) - {x for x, _ in FIELD_REF.findall(t)}:
                 if reg not in idx and not reg.endswith("_TIMEOUT_VALUE"):
                     f.append(f"REQ_UNKNOWN_REGISTER:{rid}:{reg}")
-        if pages:
+        if pages and FIELD_REF.search(t):
+            # CAPA-055: a field must appear on ANY page the requirement cites (all sources, page lists and ranges),
+            # not on every cited page - i003 SWR-013 cites p.2989-2991 with RVU on p.2990 and ONF on p.2991
+            cited: list[int] = []
             for src in r["sources"]:
-                m = re.search(r"RM0486\s+p\.(\d+)", src)
-                if m and FIELD_REF.search(t):
-                    pg = pages.get(int(m.group(1)), "")
-                    if not pg:
-                        f.append(f"REQ_SOURCE_PAGE_NOT_IN_INPUTS:{rid}:p.{m.group(1)}")
-                    else:
-                        for _reg, fld in FIELD_REF.findall(t):
-                            if fld not in pg:
-                                f.append(f"REQ_SOURCE_MISMATCH:{rid}:{fld} not on p.{m.group(1)}")
+                got = cited_pages(src)
+                if got and not any(pages.get(n) for n in got):
+                    f.append(f"REQ_SOURCE_PAGE_NOT_IN_INPUTS:{rid}:p.{got[0]}")
+                cited += [n for n in got if n not in cited]
+            text_of = "".join(pages.get(n, "") for n in cited)
+            if text_of:
+                for _reg, fld in FIELD_REF.findall(t):
+                    if fld not in text_of:
+                        f.append(f"REQ_SOURCE_MISMATCH:{rid}:{fld} not on p.{'/'.join(map(str, cited))}")
     f += contradictions(reqs, pfx)
     return {"verdict": "FAIL" if f else "PASS", "major_findings": f, "requirements": len(reqs)}
 

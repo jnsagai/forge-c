@@ -1,0 +1,101 @@
+{
+  "CAPA-055": {
+    "history": [
+      {
+        "at": "2026-10-20T08:55:08.848620Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[\"CAPA-055\"]",
+        "from_state": null,
+        "reason": "PG-T018 (observe-only SWE.1 verifier): REQ_SOURCE_MISMATCH:SWR-013 RVU/ONF not on p.2989 on IWDG i003 and HSIRDY/HSERDY not on p.480 on RCC r164, although each requirement also cites the page that holds the field",
+        "seq": 446,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T08:55:08.904101Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 447,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T08:55:09.005260Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-059 assigned",
+        "seq": 448,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T10:54:31.265050Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[\"reproducer-run:rr-67842d10884e774d4b33\", \"reproducer-run:rr-6d047c4e98bde05316ac\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 449,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T10:54:31.326542Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[\"git:e66f50740e1b..c925a1477cfc\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix c925a1477cfc (patch 5184 bytes)",
+        "seq": 450,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T10:54:31.458998Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[\"reproducer-run:rr-7b320797c1dc0dffb0b4\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-059 absent at c925a1477cfc",
+        "seq": 451,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T10:54:31.505556Z",
+        "capa_id": "CAPA-055",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 452,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "e66f50740e1bc94c0760c737182e5224910559a5",
+      "c925a1477cfc574779fa960c6f0f5b9d161dbf90",
+      "pd-9f52b51548ed5fe14ec4"
+    ],
+    "note": "RCC results change by design: WO-0002B r164 SWR-001/002/007 no longer get the false REQ_SOURCE_MISMATCH (SWE.1 requirement check FAIL -> PASS on a copy); IWDG i003 SWR-013 likewise (FAIL -> PASS)",
+    "record": {
+      "affected_versions": [
+        "forge-c@<c925a1477cfc"
+      ],
+      "candidate_patch_sha256": "dd8e10b900bc8d1b321d71a4ab9815f95c4f1c82a10db794b3423b0e4d35eb0e",
+      "capa_id": "CAPA-055",
+      "created_at": "2026-10-20T08:55:08.848620Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-055"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-059",
+      "reproducer_id": "RPR-059",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-67842d10884e774d4b33",
+        "reproducer-run:rr-6d047c4e98bde05316ac"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "swe12.check_requirements read only the first cited page of each source line and required every field on it",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T10:54:31.505556Z"
+    }
+  }
+}
