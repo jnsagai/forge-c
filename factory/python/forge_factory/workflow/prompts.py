@@ -862,8 +862,9 @@ def author_prompt(phase: str) -> str:
 
 def inspector_prompt(phase: str) -> str:
     n = phase[-1]
-    items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in load_checklist(phase)["checks"])
-    example = "; ".join(f"{c['id']}=PASS" for c in load_checklist(phase)["checks"][:2])
+    checks = load_checklist(phase, brownfield=bool(BROWNFIELD["mode"]))["checks"]  # OD-2026-10-20-02
+    items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in checks)
+    example = "; ".join(f"{c['id']}=PASS" for c in checks[:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file. You have at most 20 "

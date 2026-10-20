@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-02",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Brownfield SWE.3 checklist version v0.4-brownfield (proposal specs/008-brownfield-work-orders/proposals/checklist-v0.4-brownfield.md, research R8, task BF-T019)",
+  "statements": ["for 2 I approve your proposal"],
+  "decision": "Items 1-3 of the proposal accepted as written. factory/checklists/v0.4-brownfield/SWE.3.yaml adds SWE3-07..09 decided on the delivered code (declared guideline or recorded findings; register definitions the delivered code uses, CMSIS via static-assertion probes; allocated functions present and fingerprints unchanged or changed by a linked fix) and keeps SWE3-10. It extends the same hash-pinned v0.3 base. The engine selects it only for manifests with a delivery block; greenfield keeps v0.4 unchanged.",
+  "follow_up": "The factory change (engine selection, delivered-code checks) goes through the CRE promotion gate. The proposal's further ST-pilot items (host device shim, Renode 8 KB RCC window and set/clear registers, Robot CMSIS tokens) are factory changes, not part of this decision.",
+  "not_changed": "factory/checklists/v0.4 and the v0.3 base are unchanged; no compliance, certification or safety approval."
+}

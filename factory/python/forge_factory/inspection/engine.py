@@ -58,8 +58,14 @@ class InspectionError(ValueError):
     pass
 
 
-def load_checklist(phase: str, root: Path = REPO_ROOT) -> dict:
-    overlay = yaml.safe_load((root / f"factory/checklists/v0.4/{phase}.yaml").read_text())
+BROWNFIELD_CHECKLISTS = "factory/checklists/v0.4-brownfield"  # OD-2026-10-20-02: delivery work orders only
+
+
+def load_checklist(phase: str, root: Path = REPO_ROOT, brownfield: bool = False) -> dict:
+    f = root / f"{BROWNFIELD_CHECKLISTS}/{phase}.yaml"
+    if not (brownfield and f.is_file()):  # phases without a brownfield version keep v0.4
+        f = root / f"factory/checklists/v0.4/{phase}.yaml"
+    overlay = yaml.safe_load(f.read_text())
     base_path = root / overlay["extends"]["path"]
     if sha256_file(base_path) != overlay["extends"]["sha256"]:
         raise InspectionError(f"CHECKLIST_BASE_TAMPERED:{phase}")
@@ -232,6 +238,18 @@ class Store:
                 out[c["id"]] = {"verdict": rep["verdict"], "evidence_refs": [rpath.relative_to(self.workspace).as_posix()]
                                 + [m["file"] for m in rep["matrices"]], "findings": rep["major_findings"][:20],
                                 "source": "deterministic"}
+            elif c.get("deterministic_check") in ("delivered_guideline", "delivered_register_definitions",
+                                                  "delivered_implementation"):
+                from ..brownfield.checks import item
+
+                rep = item(self.workspace, c["deterministic_check"])
+                rdir = self.insp / phase / "deterministic"
+                rdir.mkdir(parents=True, exist_ok=True)
+                rpath = rdir / f"{c['id']}-{utc_now().replace(':', '')}.json"
+                rpath.write_text(pretty_json(rep))
+                out[c["id"]] = {"verdict": rep["verdict"], "evidence_refs": [rpath.relative_to(self.workspace)
+                                                                             .as_posix()],
+                                "findings": rep["major_findings"][:20], "source": "deterministic"}
             elif c.get("deterministic_check") == "hal_guideline_conformance":
                 from .guideline import check_workspace
 
@@ -255,7 +273,7 @@ class Store:
             raise InspectionError(f"UNKNOWN_BASELINE:{baseline_id}")
         if bl["author_role"] == inspector_role:
             raise InspectionError("AUTHOR_EQUALS_INSPECTOR")
-        checklist = self.applicable(load_checklist(phase))
+        checklist = self.applicable(self.checklist(phase))
         stale = self.stale_reason(phase, bl)
         det = self.deterministic_items(phase, checklist)
         items, open_findings = {}, list(findings or [])
@@ -310,6 +328,12 @@ class Store:
                     start = max(start, str(json.loads(x).get("ts") or ""))
         return start
 
+    def checklist(self, phase: str) -> dict:
+        """The checklist of this work order: v0.4-brownfield for a delivery (OD-2026-10-20-02), else v0.4."""
+        from ..brownfield import is_brownfield, manifest_of
+
+        return load_checklist(phase, brownfield=is_brownfield(manifest_of(self.workspace)))
+
     def applicable(self, checklist: dict) -> dict:
         """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in."""
         from ..layer import swtrace_enabled
@@ -319,7 +343,7 @@ class Store:
                                         if c.get("applies_when") != "owner_trace_profile" or on]}
 
     def gate(self, phase: str) -> dict:
-        checklist = load_checklist(phase)
+        checklist = self.checklist(phase)
         max_cycles = int(checklist["policy"]["maximum_rework_cycles"])
         ins = self.inspections(phase)
         bl = self.latest_baseline(phase)

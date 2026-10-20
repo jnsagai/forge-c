@@ -52,27 +52,34 @@ def run(store, phase: str, check: str, state, fail_code) -> int:
 
 
 def code_checks(ws: Path) -> dict:
-    """The greenfield SWE.3 code checks, run on the delivered code (style forge); NOT_APPLICABLE for other styles."""
+    """The delivered-code checks of the v0.4-brownfield SWE.3 items (OD-2026-10-20-02, brownfield/checks.py), every
+    finding recorded (no truncation: the checklist items verify that each one is recorded). Forge style also keeps
+    the greenfield reports (guideline, register map, implementation) under verification/static/."""
+    from .checks import findings as delivered
+
     m = manifest_of(ws)
     style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
-    if style != "forge":
-        return {"style": style, "guideline": "NOT_APPLICABLE", "register_map": "NOT_APPLICABLE",
-                "implementation": "NOT_APPLICABLE", "findings": []}
-    from ..inspection.guideline import check_workspace
-    from ..inspection.implementation import check_implementation
-    from ..inspection.regmap import check_regmap
+    rep = delivered(ws)
+    gl, rd, im = (rep["delivered_guideline"], rep["delivered_register_definitions"], rep["delivered_implementation"])
+    found = gl["findings"] + rd["findings"] + [f for f in im["findings"] if not f.startswith("DELIVERY:")]
+    out = {"style": style, "guideline": "FINDINGS" if gl["findings"] else "PASS",
+           "register_map": rd["build"] if rd["build"] in ("FAIL", "NOT_RUN") and rd["probes"] else
+           ("FINDINGS" if rd["findings"] else "PASS"),
+           "implementation": "FINDINGS" if im["findings"] else "PASS", "findings": found}
+    if style == "forge":
+        from ..inspection.guideline import check_workspace
+        from ..inspection.implementation import check_implementation
+        from ..inspection.regmap import check_regmap
 
-    rep, reg, imp = check_workspace(ws), check_regmap(ws), check_implementation(ws)
-    out = ws / "verification/static"
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "hal_guideline_conformance.json").write_text(pretty_json(rep))
-    (out / "register_map_conformance.json").write_text(pretty_json(reg))
-    (out / "implementation_completeness.json").write_text(pretty_json(imp))
-    findings = [f"GUIDELINE:{v.get('rule')}:{v.get('file', '')}:{v.get('line', '')}" for v in rep["violations"]][:20] + \
-        [f"REGISTER_MAP:{x}" for x in reg["major_findings"]][:20] + \
-        [f"IMPLEMENTATION:{x}" for x in imp["major_findings"]][:20]
-    return {"style": style, "guideline": rep["verdict"], "register_map": reg["verdict"],
-            "implementation": imp["verdict"], "findings": findings}
+        g, reg, imp = check_workspace(ws), check_regmap(ws), check_implementation(ws)
+        st = ws / "verification/static"
+        st.mkdir(parents=True, exist_ok=True)
+        (st / "hal_guideline_conformance.json").write_text(pretty_json(g))
+        (st / "register_map_conformance.json").write_text(pretty_json(reg))
+        (st / "implementation_completeness.json").write_text(pretty_json(imp))
+        out.update(guideline=g["verdict"], register_map=reg["verdict"], implementation=imp["verdict"])
+        out["findings"] += [f"IMPLEMENTATION:{x}" for x in imp["major_findings"]]
+    return out
 
 
 def file_contradictions(ws: Path, findings: list[dict]) -> list[str]:

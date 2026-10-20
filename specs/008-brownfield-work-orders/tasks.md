@@ -88,12 +88,12 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
 - [X] BF-T015 [US3] Protection in `factory/python/forge_factory/policy/authz.py`: delivered paths are protected for every role in FROZEN mode, and the refusal is logged with code `DELIVERED_CODE_FROZEN`.
 - [X] BF-T016 [US3] Implement `factory/python/forge_factory/brownfield/verify.py` (`verify_delivery(ws, step)`): compare the delivered fingerprints, write `verification-<step>.json`, and return MISMATCH issues. Call it from SWE.3 verify, at the start of SWE.4, and from `release/finalize.py`.
 - [X] BF-T017 [US3] Implement the code trace map in `factory/python/forge_factory/brownfield/trace.py`: `seed(ws)`, which writes `workproducts/SWE.3/code_trace_map.seed.json` with the scope functions, files and fingerprints, and `check(ws)`, which validates the contract rules from data-model.md.
-- [ ] BF-T018 [US3] Brownfield hooks in the inspection code:
+- [X] BF-T018 [US3] Brownfield hooks in the inspection code:
   - `inspection/swtrace.py`: code trace from the trace map;
   - `inspection/implementation.py`: scope functions exist and fingerprints match;
   - `inspection/regmap.py`: no generation, check-only;
   - `inspection/engine.py`: select checklist `v0.4-brownfield` for brownfield manifests.
-- [ ] BF-T019 [US3] Add `factory/checklists/v0.4-brownfield/` (protected path → owner-decision commit with OD record): a copy of v0.4 with the SWE.3 items remapped as in research R8.
+- [X] BF-T019 [US3] Add `factory/checklists/v0.4-brownfield/` (protected path → owner-decision commit with OD record): a copy of v0.4 with the SWE.3 items remapped as in research R8.
 - [X] BF-T020 [US3] Brownfield SWE.3 chain in `factory/python/forge_factory/workflow/builder.py`: drop regmap and the LL/HAL authors; `delivery_check` → `swe3_author` (recovered design) → verify; FIX_ALLOWED keeps `swe3_fix_author`. Brownfield prompt variants for SWE.2/SWE.3 in `workflow/prompts.py`: describe the delivered code, the trace map, no code edits. SKILL.md brownfield sections for the swe2/swe3 authors, re-pinned in `config/factory/skills.lock.json`.
 - [X] BF-T021 [US3] FROZEN defect routing in `factory/python/forge_factory/inspection/defects.py`:
   - CODE defects (filed and auto) against delivered code become `ESCALATED` with `target_kind: DELIVERED_CODE`, with no rework loop;
@@ -184,10 +184,13 @@ safety drafts, the ST pilot, and release.
     fixed. The re-run is b004.
 
 **Not done or partial (not ticked):**
-- **BF-T018, partial:** the code trace uses the trace map (done), and the implementation/register-map checks run on
-  delivered code in the SWE.3 verify node (done). Engine checklist selection waits for BF-T019.
-- **BF-T019, NOT_DONE:** owner decision required (protected path). Proposal:
-  `proposals/checklist-v0.4-brownfield.md`.
+- **BF-T018 and BF-T019, done 2026-10-20** (owner decision OD-2026-10-20-02, CRE `pd-5c45faab3e615e227181`):
+  - `factory/checklists/v0.4-brownfield/SWE.3.yaml`;
+  - the engine selects it for delivery manifests;
+  - the delivered-code checks live in `brownfield/checks.py` rather than in `implementation.py`/`regmap.py`, so the
+    greenfield modules stay unchanged;
+  - tests: `test_brownfield_checklist.py`. On the ST pilot inputs, 14 CMSIS probes match RM0486, and a seeded vendor
+    mismatch is found.
 - **BF-T028, deviation:** the safety drafts are generated deterministically from the run's records (no model node),
   which is cheaper and cannot invent content. The spec's "AI-drafted" wording is met as "factory-drafted".
 - **BF-T031:** pending the b004 result.

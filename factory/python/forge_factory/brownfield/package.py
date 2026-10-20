@@ -39,10 +39,11 @@ def findings(ws: Path) -> list[dict]:
              "severity": "major", "detail": f["evidence"][:200]} for f in cf["findings"] if f["status"] == "OPEN"]
     if cf["status"] == "NOT_RUN":
         out.append({"id": "CONFORMANCE:NOT_RUN", "severity": "major", "detail": "; ".join(cf["issues"])[:200]})
-    if code_mode(m) == "FROZEN":
+    style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
+    if code_mode(m) == "FROZEN" or style != "forge":  # OD-2026-10-20-02: vendor findings are owner gaps in any mode
         cc = (_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []
-        out += [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major", "detail": "delivered code check (FROZEN)"}
-                for x in cc]
+        out += [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
+                 "detail": f"delivered code check ({code_mode(m)}, {style} style)"} for x in cc]
     return out
 
 
