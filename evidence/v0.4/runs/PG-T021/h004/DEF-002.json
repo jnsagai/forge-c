@@ -1,0 +1,28 @@
+{
+  "code_sha": "3f9e341220e5dd1a34c9730aaad830f7ed07933013a1bbcc3f67772728215c8b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "artifact:sha256:06350a8adff5353a512497bc7914e2fa4e8dc73acfd284387abd4c593fb8689e"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T14:04:32.226081Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-013"
+  ],
+  "requirement_quote": "The IWDG driver shall expose HAL_IWDG_Init with a const configuration pointer and timeout_ms and HAL_IWDG_Refresh with hal_status_t return values, implementing all IWDG register operations through the provided LL_IWDG_ functions.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "UT-009 indirect calls were invisible to API trace checks. Retained typed pointers and assertions; directly called both APIs. Removed invalid SWR/SWU @verifies tokens across UT-001..009. Unit, coverage and trace PASS.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "5e60d7335bfa08c01ee9083718e01a34d6761af9da0ea77bf47a444955152cc1"
+  }
+}

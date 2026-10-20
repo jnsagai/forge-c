@@ -9,5 +9,23 @@
   "candidate": "df3119c",
   "design": "HAL_IWDG_Init(cfg, timeout_ms): wait bounded in time by HAL_GetTick (<= 48 ms, RM0486 update time up to 6 LSI periods); on timeout LL_IWDG_DisableWriteAccess (key 0x0000) then HAL_TIMEOUT, no refresh",
   "tests": "43 affected files passed (1 skipped); oracle FAILs a HAL without the final refresh, one that ignores the update flags, and one that forgets the write-protect; LL test double runs the v2 unit-test example 7/7; RCC goldens unchanged",
-  "live_run": "h004 pending"
+  "live_run": "h004 then h005",
+  "runs": {
+    "h004": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h004",
+      "fabro_run_id": "01M5CQTKCY2M1XF4MP21KV4Y5H",
+      "factory_commit": "the PG-T021 oracle head of feat/009-iwdg-hal-fnd07-08 (batch7)",
+      "result": "SWE.1-SWE.5 PASS with the time-bounded HAL v2 (SWE.4 authors turned polling-count assertions into elapsed-time bounds); SWE.6 BLOCKED: Robot 12/13, SWR-012 stack not bounded because of the external HAL_GetTick",
+      "factory_defect": "CAPA-063 (DEF-003)",
+      "package": "BLOCKED, 7 gaps",
+      "files": [
+        "h004/gate-log.jsonl",
+        "h004/package.json",
+        "h004/stm32n6xx_hal_iwdg.c",
+        "h004/stm32n6xx_hal_iwdg.h",
+        "h004/software_requirements.md",
+        "h004/DEF-001..003.json"
+      ]
+    }
+  }
 }
