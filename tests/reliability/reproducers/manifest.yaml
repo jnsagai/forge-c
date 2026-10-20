@@ -607,3 +607,14 @@ reproducers:
     operations: [workorder/run, acp/attach]
     root_cause: "acp.attach matched each node statement with a single-line regex. swe4_test_author (unit-test example) and swe3_hal_author (HAL example) carry prompts with real line breaks, so their statements span several lines, never matched, and kept the Fabro run model (DeepSeek) in runs launched with --acp-authors codex. The DeepSeek usage meter shows those calls (i003 SWE.4, 2026-10-20T04:3x-04:42Z)."
     remedy: "attach and native_agent_nodes parse whole node statements (quote-aware, multi-line); workorder.run refuses a suspended run-model provider (config/factory/model-suspensions.yaml, OD-2026-10-20-03) unless every agent node is on an ACP backend."
+  - id: RPR-057
+    script: rpr057_hal_allocation_rcc_prefix.py
+    sha256: bec0d336ee5f4b3550aac76ab5aae69927aff890f47536e419dcc934c3f950cc
+    symptom_signature: "HAL allocation read with the RCC prefix on a non-RCC work order"
+    observed_in: h001
+    baseline_revision: 625ed0245a6840535416c18cca514306f39225bf
+    fix_revision: 40a3b31228f77704876063e716ee7e55942fbf38
+    error_codes: ["IMPL:NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.3/verify, SWE.3/author, evidence/allocation_map]
+    root_cause: "inspection.implementation.allocated_functions and mcp.servers.evidence._allocation_map called layer.api_prefix(layer_of(ws)) without the workspace, so the default (RCC) profile gave HAL_RCC_; the IWDG LL runs used the LL path where the same call was not reached with a HAL layer. h001's SWE.2 allocated HAL_IWDG_Init/HAL_IWDG_Refresh, the check found none and SWE.3 exhausted its rework budget; the authors escalated DEF-001/DEF-002 (FACTORY)."
+    remedy: "Both callers pass the workspace, so the prefix comes from the work order's peripheral profile."

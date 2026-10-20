@@ -1,0 +1,100 @@
+{
+  "CAPA-053": {
+    "history": [
+      {
+        "at": "2026-10-20T07:24:46.788966Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[\"CAPA-053\"]",
+        "from_state": null,
+        "reason": "h001 (WO-0009B-STM32N6-IWDG-HAL-h001) BLOCKED at SWE.3: IMPL:NO_ALLOCATED_HAL_FUNCTIONS_IN_SWE2 although SWE.2 allocates HAL_IWDG_Init and HAL_IWDG_Refresh; authors escalated factory defects DEF-001/DEF-002",
+        "seq": 432,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T07:24:46.826840Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 433,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T07:24:46.911413Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-057 assigned",
+        "seq": 434,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T07:28:18.093271Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[\"reproducer-run:rr-f3c1ce8d8256f7ddad4c\", \"reproducer-run:rr-9f5db4ffae8f9204e54a\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 435,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T07:28:18.140822Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[\"git:625ed0245a68..40a3b31228f7\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 40a3b31228f7 (patch 3568 bytes)",
+        "seq": 436,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T07:28:18.258170Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[\"reproducer-run:rr-a5b79ac37b7926b50afe\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-057 absent at 40a3b31228f7",
+        "seq": 437,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T07:28:18.296335Z",
+        "capa_id": "CAPA-053",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 438,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "625ed0245a6840535416c18cca514306f39225bf",
+      "40a3b31228f77704876063e716ee7e55942fbf38",
+      "pd-4f8c9ac73ee2b54221ef"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<40a3b31228f7"
+      ],
+      "candidate_patch_sha256": "e31621fdd78896468c182378cbcaec990ce65bfadce7af792b89b40e1fc1acb3",
+      "capa_id": "CAPA-053",
+      "created_at": "2026-10-20T07:24:46.788966Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-053"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-057",
+      "reproducer_id": "RPR-057",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-f3c1ce8d8256f7ddad4c",
+        "reproducer-run:rr-9f5db4ffae8f9204e54a"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "allocated_functions / _allocation_map took the API prefix of the default RCC profile (workspace not passed)",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T07:28:18.296335Z"
+    }
+  }
+}
