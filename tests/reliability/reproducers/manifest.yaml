@@ -607,6 +607,17 @@ reproducers:
     operations: [workorder/run, acp/attach]
     root_cause: "acp.attach matched each node statement with a single-line regex. swe4_test_author (unit-test example) and swe3_hal_author (HAL example) carry prompts with real line breaks, so their statements span several lines, never matched, and kept the Fabro run model (DeepSeek) in runs launched with --acp-authors codex. The DeepSeek usage meter shows those calls (i003 SWE.4, 2026-10-20T04:3x-04:42Z)."
     remedy: "attach and native_agent_nodes parse whole node statements (quote-aware, multi-line); workorder.run refuses a suspended run-model provider (config/factory/model-suspensions.yaml, OD-2026-10-20-03) unless every agent node is on an ACP backend."
+  - id: RPR-056
+    script: rpr056_gateway_calls_suspended_provider.py
+    sha256: f2321741f78a52c8ab4d5a46adb4786296049191e58e3fe01ce90fa86ee1ea5a
+    symptom_signature: "gateway forwards a request to a suspended provider"
+    observed_in: h001
+    baseline_revision: 625ed0245a6840535416c18cca514306f39225bf
+    fix_revision: 4d89805f1512529d0063eba3fa4e10e6247a09a2
+    error_codes: ["MODEL_SUSPENDED"]
+    operations: [llm_gateway/chat, fabro/run_title_generation]
+    root_cause: "CAPA-051 guards the workflow graph (no agent node on the suspended run model), but the Fabro server itself generates a run title with its default run model (deepseek-flash) for every new run, through the forge LLM gateway, which forwarded every request upstream. h001 at 2026-10-20T06:53:12Z reached api.deepseek.com (it failed with 'response_format type is unavailable', so no tokens were reported)."
+    remedy: "The gateway maps its upstream host to a provider and refuses every request (chat and models) while config/factory/model-suspensions.yaml suspends that provider, before reading the body or opening a connection; it records the refusal (upstream_called false), which cost and token metrics ignore. Read per request: lifting the suspension needs no restart."
   - id: RPR-057
     script: rpr057_hal_allocation_rcc_prefix.py
     sha256: bec0d336ee5f4b3550aac76ab5aae69927aff890f47536e419dcc934c3f950cc

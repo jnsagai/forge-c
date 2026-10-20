@@ -10,6 +10,10 @@ thinks by default. FR-025 forbids requesting or storing hidden reasoning. This g
   answer for generated output (dropped tool call, ADR-0003 addendum); every attempt is metered.
 
 It never calls a model on its own and holds no credentials. Bind loopback only.
+
+CAPA-052 (h001, OD-2026-10-20-03): while the owner suspends the upstream's provider (config/factory/model-suspensions.yaml),
+every request is refused here and never reaches the provider - Fabro's server-side run-title generation called the
+suspended DeepSeek through this gateway once per run, outside the workflow graph that CAPA-051 guards.
 """
 from __future__ import annotations
 
@@ -134,6 +138,12 @@ class Meter:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
 
+    def refusal(self, model: str | None, reason: str) -> None:
+        """CAPA-052: a request refused before any upstream call (no tokens, no cost)."""
+        with self.path.open("a") as f:
+            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "refused": reason,
+                                "upstream_called": False}, sort_keys=True) + "\n")
+
     def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
                shape: dict | None = None) -> None:
         rec = {"ts_utc": utc_now(), "model": model or "unknown",
@@ -150,6 +160,19 @@ class Meter:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
 
 
+PROVIDER_HOSTS = {"api.deepseek.com": "deepseek"}  # upstream host -> run-model provider (model-suspensions.yaml)
+
+
+def suspended(upstream: str, path: Path | None = None) -> dict | None:
+    """The owner's suspension of this upstream's provider, read on every request (lifting it needs no restart)."""
+    from urllib.parse import urlparse
+
+    from .workorder import suspension
+
+    provider = PROVIDER_HOSTS.get(urlparse(upstream).hostname or "")
+    return suspension(provider, path) if provider else None
+
+
 def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                transport: httpx.AsyncBaseTransport | None = None) -> FastAPI:
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None)
@@ -161,14 +184,27 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
     async def health() -> dict:
         return {"status": "ok", "upstream": upstream}
 
+    def refused(model: str | None) -> JSONResponse | None:
+        s = suspended(upstream)
+        if not s:
+            return None
+        meter.refusal(model, f"MODEL_SUSPENDED:{s['provider']}:{s['decision']}")
+        return JSONResponse({"error": {"message": f"MODEL_SUSPENDED: {s['provider']} is suspended by the owner "
+                                       f"({s['decision']}); the forge gateway did not call the provider",
+                                       "type": "model_suspended"}}, status_code=503)
+
     @app.get("/v1/models")
     async def models() -> Response:
+        if (r := refused(None)) is not None:
+            return r
         r = await client.get("/v1/models")
         return Response(r.content, status_code=r.status_code, media_type="application/json")
 
     @app.post("/v1/chat/completions")
     @app.post("/chat/completions")
     async def chat(request: Request):
+        if (r := refused(None)) is not None:  # CAPA-052: before reading the body, before any upstream call
+            return r
         if COST_CAP_USD > 0 and spent_usd(meter.path) >= COST_CAP_USD:  # paid upstream: hard spend cap
             return JSONResponse({"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached",
                                            "type": "cost_cap"}}, status_code=429)
