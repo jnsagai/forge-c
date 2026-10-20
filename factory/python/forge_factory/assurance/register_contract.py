@@ -192,13 +192,25 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     cs, notes = cases(ws)
     if not cs:
         return []
-    src = [f'#include "{api_header}"', "#include <stddef.h>", "void forge_contract_calls(void);",
+    from ..brownfield import delivered_paths, is_brownfield, manifest_of
+
+    m = manifest_of(ws)
+    compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]
+    if is_brownfield(m):  # feature 008: all delivered headers, vendor includes and the delivery's build settings
+        b = m["delivery"].get("build") or {}
+        headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
+        include_dirs = [*include_dirs, Path(ws) / "inputs/vendor/include"]
+        extra = [f"-D{d}" for d in b.get("defines") or []]
+        if b.get("style") == "cmsis":
+            compiler = ["arm-none-eabi-gcc", "-std=c11", "-mcpu=cortex-m55", "-mthumb"] + \
+                (["-mcmse"] if b.get("secure") else [])
+    src = [*(f'#include "{h}"' for h in headers), "#include <stddef.h>", "void forge_contract_calls(void);",
            "void forge_contract_calls(void)", "{"]
     src += [f"    (void){call_text(c, '10U')}; /* {c['case']} */" for c in cs] + ["}", ""]
     with tempfile.TemporaryDirectory() as td:
         t = Path(td) / "contract_calls.c"
         t.write_text("\n".join(src))
-        r = subprocess.run(["gcc", "-std=c99", "-fsyntax-only", "-Werror=implicit-function-declaration",
+        r = subprocess.run([*compiler, "-fsyntax-only", "-Werror=implicit-function-declaration", *extra,
                             *sum((["-I", str(d)] for d in include_dirs), []), str(t)], capture_output=True, text=True)
     if r.returncode == 0:
         return []
