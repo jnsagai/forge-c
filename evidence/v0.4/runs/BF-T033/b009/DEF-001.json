@@ -1,0 +1,28 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "artifact:sha256:5bf57f8cdd3b0c29d99f3cc058d14a06e056816df796bb6a3c203a691081159a"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T14:35:05.241995Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "When any bit-writing function specified in SWR-001 through SWR-016 is called, the RCC LL driver shall change only the bit named by its applicable requirement and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Host run: 1 passed, 1 failed; duplicate CHECK IDs were my TEST error. Corrected to one CHECK per ID without changing expectations. IDs: UT-001,UT-002,UT-003,UT-004,UT-005,UT-006,UT-007,UT-008,UT-009,UT-010,UT-011,UT-012,UT-013,UT-014,UT-015,UT-016,UT-017. Corrected tests await rerun; run_unit was limited to once.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "6796ef32dc5253959de2568be1e9e4c4ba361ab3ddf6e881047bc3a2d010f94a"
+  }
+}
