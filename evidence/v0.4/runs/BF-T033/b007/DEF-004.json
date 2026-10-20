@@ -1,0 +1,28 @@
+{
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:606306425d619bf7704ab2206d1d5b97ff7e1a9655b9f7ea4d4ffd791eff518b"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T12:41:28.907545Z"
+    }
+  ],
+  "id": "DEF-004",
+  "kind": "FACTORY",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-021"
+  ],
+  "requirement_quote": "The RCC LL driver shall use at most 128 bytes of stack for any scoped LL function call in the target verification build.",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "Robot passes 21/22 tests and verifies 21/22 requirements. SWR-021 fails because factory stack measurement produces no call graph and measures no driver functions. Scoped ST LL functions are header-only and exercised by target scenarios. Support wrapper/call-chain stack attribution without weakening the 128-byte bound. No driver stack violation is established.",
+  "target_phase": null,
+  "test_files": {
+    "software/tests/software/scn_nonblocking.c": "e0429644645b2adf76c49e51abb94ffad7394f6c142e4c2aacc7666f777d493e",
+    "software/tests/software/test_rcc_requirements.robot": "cb582445d539c7c313faae321f796c80b64dbbd142506a8180209d4518185132"
+  }
+}

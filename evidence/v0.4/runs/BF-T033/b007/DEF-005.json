@@ -1,0 +1,29 @@
+{
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:31d84c386179b708f7d3ab58295d3f932509893d67359305fd325a74cfdfe139",
+    "build/delivered/forge_delivered_unit.c",
+    "build/target-cm55-gcc/forge_delivered_unit.su"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T12:45:11.069116Z"
+    }
+  ],
+  "id": "DEF-005",
+  "kind": "FACTORY",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-021"
+  ],
+  "requirement_quote": "The RCC LL driver shall use at most 128 bytes of stack for any scoped LL function call in the target verification build.",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "DEF-004 persists: Robot passes 21/22; stack attribution finds no driver functions or call graph. Generated wrappers already cover all 11 scoped APIs; target .su records 0 bytes except EnableClock at 8 bytes. Robot stack directory is empty. Preserve the correct <=128 bound; factory must attribute wrappers and verify call chains. No driver violation established.",
+  "target_phase": null,
+  "test_files": {
+    "software/tests/software/test_rcc_requirements.robot": "cb582445d539c7c313faae321f796c80b64dbbd142506a8180209d4518185132"
+  }
+}

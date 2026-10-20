@@ -42,6 +42,21 @@
         "b006/software_requirements.md",
         "b006/requirements_to_tests.csv"
       ]
+    },
+    "b007": {
+      "work_order": "WO-0008C-ST-RCC-LL-b007",
+      "fabro_run_id": "01M5CJYXTXE2XXJBYVJ5QJAT9C",
+      "factory_commit": "1c63cb5",
+      "result": "SWE.1-SWE.5 PASS on ST's delivered RCC code (CAPA-056..060 effective); SWE.6 BLOCKED: Robot 21/22, SWR-021 stack not measurable (header-only delivery not built by the Robot library; flash/RAM had passed on 0 B)",
+      "factory_defects": [
+        "CAPA-061 (DEF-004/005)"
+      ],
+      "package": "BLOCKED, 15 gaps",
+      "files": [
+        "b007/gate-log.jsonl",
+        "b007/package.json",
+        "b007/DEF-001..005.json"
+      ]
     }
   }
 }
