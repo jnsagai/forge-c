@@ -86,3 +86,23 @@ def test_vendor_function_names_count_as_allocated(ws):
     (ws / "workproducts/SWE.2/software_architecture.md").write_text(
         "## Requirement allocation table\n\n| SWR | Function | SWC | Args |\n|---|---|---|---|\n" + "\n".join(rows) + "\n")
     assert not [x for x in RC.check_calls(ws) if "NOT_ALLOCATED" in x]
+
+
+def test_query_functions_allocated_in_any_table_column_are_not_findings(ws):
+    """b005 (2026-10-20): the SWE.2 author wrote '| SWR-003 | SWC_LL | LL_RCC_HSI_IsReady(void), ... |' (function in
+    the third column) and query requirements have no register-effect case: 3 false NO_REQUIREMENT findings."""
+    _contract(ws)
+    calls = json.loads((ws / "workproducts/SWE.2/api_calls.json").read_text())
+    for k in [k for k in calls["calls"] if "READY" in k or "IS_ENABLED" in k]:
+        del calls["calls"][k]
+    (ws / "workproducts/SWE.2/api_calls.json").write_text(json.dumps(calls))
+    eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())
+    eff["effects"] = [e for e in eff["effects"] if e["op"] != "no_write"]
+    (ws / "workproducts/SWE.1/register_effects.json").write_text(json.dumps(eff))
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(
+        "## Requirement allocation table\n\n| SWR | SWC | Function |\n|---|---|---|\n"
+        "| SWR-003 | SWC_LL | LL_RCC_HSI_IsReady(void), both HSIRDY values |\n"
+        "| SWR-006 | SWC_LL | LL_RCC_HSE_IsReady(void), both HSERDY values |\n"
+        "| SWR-009 | SWC_LL | LL_AHB1_GRP1_IsEnabledClock(LL_AHB1_GRP1_PERIPH_GPDMA1) |\n")
+    r = C.check(ws, "SWE.3", write=False)
+    assert not [f for f in r["findings"] if f["kind"] == "NO_REQUIREMENT"], r["findings"]

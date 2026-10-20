@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-10-20T03:00:17.777429Z",
+  "findings": [
+    {
+      "evidence": "delivered scope function LL_RCC_HSI_IsReady implements no requirement case and is not in the SWE.2 allocation table",
+      "function": "LL_RCC_HSI_IsReady",
+      "id": "CF-001",
+      "kind": "NO_REQUIREMENT",
+      "reference": "",
+      "requirement": "",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "delivered scope function LL_RCC_HSE_IsReady implements no requirement case and is not in the SWE.2 allocation table",
+      "function": "LL_RCC_HSE_IsReady",
+      "id": "CF-002",
+      "kind": "NO_REQUIREMENT",
+      "reference": "",
+      "requirement": "",
+      "status": "OPEN"
+    },
+    {
+      "evidence": "delivered scope function LL_AHB1_GRP1_IsEnabledClock implements no requirement case and is not in the SWE.2 allocation table",
+      "function": "LL_AHB1_GRP1_IsEnabledClock",
+      "id": "CF-003",
+      "kind": "NO_REQUIREMENT",
+      "reference": "",
+      "requirement": "",
+      "status": "OPEN"
+    }
+  ],
+  "phase": "package",
+  "schema": "forge-c/conformance/0.1"
+}

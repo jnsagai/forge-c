@@ -37,19 +37,15 @@ def _field_mask(register: str, field: str, macros: dict[str, str]) -> int | None
     return None
 
 
-def _allocated_functions(ws: Path) -> set[str]:
-    """Function names in the SWE.2 requirement allocation table (a function allocated to any requirement)."""
+def _allocated_functions(ws: Path, names: set[str]) -> set[str]:
+    """Delivered functions named in any requirement row of the SWE.2 architecture tables (any column: b005 put the
+    function in the third column, and query requirements have no register-effect case to link them)."""
+    from ..assurance.oracle_gen import allocation
+
     p = Path(ws) / ARCH
     if not p.is_file():
         return set()
-    names, on = set(), False
-    for ln in p.read_text(errors="replace").splitlines():
-        if ln.startswith("## "):
-            on = "allocation" in ln.lower()
-            continue
-        if on and ln.startswith("|") and re.search(r"\bSWR-\d+", ln):
-            names |= set(re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\b", ln.split("|")[2] if ln.count("|") > 2 else ""))
-    return names
+    return {f for fns in allocation(p.read_text(errors="replace"), names).values() for f in fns}
 
 
 def check(ws: Path, phase: str, write: bool = True) -> dict:
@@ -132,7 +128,7 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
             if g.op == "write" and not g.via:
                 add("CONTRADICTION", fn, swr, f"case {case}: plain write to shared register {g.register} overwrites "
                     f"its other bits ({g.text.strip()[:80]})")
-    allocated = _allocated_functions(ws) | used
+    allocated = _allocated_functions(ws, set(scope)) | used
     for fn in scope:
         if fn not in allocated:
             add("NO_REQUIREMENT", fn, "", f"delivered scope function {fn} implements no requirement case and is not "

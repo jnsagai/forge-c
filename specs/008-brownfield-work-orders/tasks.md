@@ -149,7 +149,7 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
   - warnings recorded instead of `-Werror` for delivered files.
 - [ ] BF-T034 [US6] Simulator: RCC window 8 KB, and CSR/CCR plus AHB1ENSR/ENCR/RSTSR/RSTCR set/clear semantics in `factory/sim/stm32n6/rcc_model.py` (greenfield behaviour unchanged). Robot policy accepts `RCC_<REG>_<FIELD>` tokens.
 - [X] BF-T035 [US6] Create `examples/0008c-st-cube-rcc/` (FROZEN, LL style cmsis, 11 scope functions) and tests for its intake.
-- [ ] BF-T036 [US6] Live pilot run. Record SC-006 evidence in `evidence/v0.4/runs/BF-T036/`.
+- [X] BF-T036 [US6] Live pilot run. Record SC-006 evidence in `evidence/v0.4/runs/BF-T036/`.
 
 ## Phase 10: Polish and release
 
