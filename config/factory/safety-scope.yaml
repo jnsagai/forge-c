@@ -47,6 +47,10 @@ decisions:
     allocation_review_ref: null
     # OD-2026-10-20-05: signed by the owner on 2026-10-20 (version 1.0). The documents analyse the IWDG LL (i003); the
     # HAL example 0009b has the same inputs and basis, but its HAL code is not analysed in them (open finding).
+    # OD-2026-10-20-06 (pending owner signature): version 1.1 DRAFTS of both documents, which also analyse the HAL
+    # (h003), exist under config/factory/safety-documents/SC-IWDG-2026-10-20/v1.1/. They are NOT signed and NOT
+    # registered: the v1.0 entries below stay in force for 0009a/0009b until the owner signs v1.1 and the register is
+    # updated to the v1.1 files.
     safety_documents:
       software_safety_analysis:
         path: config/factory/safety-documents/SC-IWDG-2026-10-20/software_safety_analysis.md
