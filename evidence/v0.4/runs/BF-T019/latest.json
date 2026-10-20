@@ -1,0 +1,13 @@
+{
+  "task": "BF-T019",
+  "status": "PASS",
+  "owner_decision": "OD-2026-10-20-02",
+  "decision": "pd-5c45faab3e615e227181",
+  "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "kind": "CHANGE",
+  "baseline": "84f56a9 = main a76e957 + owner-decision commit (factory/checklists/v0.4-brownfield)",
+  "candidate": "9d887dd",
+  "tests": "test_brownfield_checklist.py 8 passed; brownfield, peripheral, agents/skills, T009 gates, loopbacks, M7 and every engine test: all passed (1 skipped)",
+  "st_pilot_measurement": "WO-0008C b005 work products (copy): 14 register probes (8 registers, 6 masks) compile and match RM0486; 5 GL-ARG-01 guideline hits inside the scope functions (332 in the full 28k-line headers); all 11 allocated functions delivered",
+  "not_run": "a live brownfield run on the new checklist (the ST pilot also needs the host device shim, Renode RCC window and Robot CMSIS tokens from the proposal's follow-up list)"
+}
