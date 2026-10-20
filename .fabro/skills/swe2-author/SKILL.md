@@ -44,6 +44,10 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 1. Produce the outputs, then freeze them with `forge-evidence-mcp.freeze_baseline`.
 2. On REWORK input, address each finding ID and refreeze; never edit inspection records.
 
+## Brownfield work orders (feature 008)
+1. When `.forge-run/manifest.json` has a `delivery` block, describe the architecture the DELIVERED code actually has (read the delivered files listed in the manifest); use the delivered function names in the allocation table and `api_calls.json`.
+2. A requirement case no delivered function implements gets function `NONE` (a NO_CODE finding for the owner); list delivered scope functions no requirement needs under `## Delivered functions without requirement`.
+
 ## Constraints
 Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 32000-token / 35-turn budget is near.
 

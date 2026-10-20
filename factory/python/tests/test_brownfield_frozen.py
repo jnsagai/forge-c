@@ -180,3 +180,17 @@ def test_safety_drafts_are_marked_unsigned_and_claim_free(ws):
     ssa = (ws / paths[0]).read_text()
     assert "LL_RCC_HSI_Enable" in ssa and "lost update of RCC_CR" in ssa
     assert not (ws / "safety/software_safety_analysis.md").exists()  # never at the signed path
+
+
+def test_staging_copies_read_only_delivered_files_writable(tmp_path):
+    """b001 (2026-10-20): finalize crashed with PermissionError rewriting software/src/<file> for the flat package
+    view, because the stage copy kept the delivered file's 0444 mode."""
+    from forge_factory.release.finalize import _copy_tree, _w
+
+    src = tmp_path / "ws/software/src"
+    src.mkdir(parents=True)
+    (src / "a.c").write_text("int a;\n")
+    (src / "a.c").chmod(0o444)
+    assert _copy_tree(tmp_path / "ws/software/src", tmp_path / "stage/software/src") == 1
+    _w(tmp_path / "stage", "software/src/a.c", b"int a;\n")  # the flat view rewrites the same path
+    assert (src / "a.c").stat().st_mode & 0o222 == 0  # the workspace file itself stays read-only

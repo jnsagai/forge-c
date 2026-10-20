@@ -68,7 +68,8 @@ def _copy_tree(src: Path, dst: Path, pattern: str = "*") -> int:
                 t = dst / f.relative_to(src)
                 t.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(f, t)
-                n += 1
+                t.chmod(t.stat().st_mode | 0o200)  # feature 008 (b001): read-only delivered/provided files stay
+                n += 1                              # read-only in the workspace; the staged copy is a build input
     return n
 
 

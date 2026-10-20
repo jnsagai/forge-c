@@ -44,7 +44,7 @@
     },
     "swe2-author": {
       "path": ".fabro/skills/swe2-author/SKILL.md",
-      "sha256": "efe54b9f5f6fa91c0feaabcbb701cae1064be350857b25960bd91af1ddd7b701"
+      "sha256": "70d47db44558035296710da37f220dbe5ad6ffac65789d53897eb9d330a7561d"
     },
     "swe2-inspector": {
       "path": ".fabro/skills/swe2-inspector/SKILL.md",
@@ -52,7 +52,7 @@
     },
     "swe3-author": {
       "path": ".fabro/skills/swe3-author/SKILL.md",
-      "sha256": "7c160132533179b709af0211cf49ca693634dffd0abcf1c008d71b5ee7fc793f"
+      "sha256": "3a918b111805e7ece66ae060b2001c924f89550d132b5d2222d9ef4de8d9c369"
     },
     "swe3-inspector": {
       "path": ".fabro/skills/swe3-inspector/SKILL.md",
