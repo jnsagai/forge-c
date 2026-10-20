@@ -45,9 +45,19 @@ def test_iwdg_hal_prompts_have_no_rcc_content():
     assert len(prompts) >= 15
     bad = {n: sorted(set(RCC_DOMAIN.findall(p) + HSI_RCC.findall(p) + HAL_RCC_ONLY.findall(p))) for n, p in prompts.items()}
     assert {n: b for n, b in bad.items() if b} == {}
-    assert "HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout)" in prompts["swe2_author"]
+    assert "HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout_ms)" in prompts["swe2_author"]
     assert "// HAL_IWDG API prototypes (SWE.3 HAL author)" in prompts["swe3_hal_author"]
     assert "LL_IWDG_IsActiveFlag_PVU" in prompts["swe3_hal_author"] and "status = HAL_TIMEOUT;" in prompts["swe3_hal_author"]
     assert '\\"busy\\":\\"IWDG_SR.PVU\\"' in prompts["swe1_author"]  # quotes are escaped in the graph
     assert "ut_iwdg_init" in prompts["swe4_test_author"]
     assert "never_ready the update flags never clear" in prompts["swe5_target_author"]
+
+
+def test_iwdg_hal_waits_are_bounded_in_time_fnd07():
+    """SSA-IWDG-FND-07/FND-08 (owner 'go' 2026-10-20): the IWDG HAL wait is bounded by the HAL_GetTick time base, never
+    by polling iterations, and a timeout write-protects the registers."""
+    g, _ = build("WO-T", layer="HAL", trace=True, isolation=True, chunk_lines=150, peripheral="iwdg")
+    prompts = dict(re.findall(r'\n  (\w+) \[[^\n]*?prompt="((?:[^"\\]|\\.)*)"', g))
+    assert not any("TIMEOUT_VALUE" in p for p in prompts.values())
+    assert "'uint32_t HAL_GetTick(void);'" in prompts["swe3_hal_author"] and "LL_IWDG_DisableWriteAccess();" in prompts["swe3_hal_author"]
+    assert "write-protect key" in prompts["swe1_author"] and "never by a count of polling iterations" in prompts["swe1_author"]

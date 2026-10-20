@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 6.1 (Python 3.13.13 on linux)" generated="20261020 15:32:04.690" rpa="false" schemaversion="4">
+<suite id="s1" name="Test Iwdg Requirements" source="/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-0009B-STM32N6-IWDG-HAL-h005/workspace/software/tests/software/test_iwdg_requirements.robot">
+<test id="s1-t1" name="SWR-001" line="18">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:04.709" endtime="20261020 15:32:08.410"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>1</arg>
+<status status="PASS" starttime="20261020 15:32:08.411" endtime="20261020 15:32:08.412"/>
+</kw>
+<doc>When HAL_IWDG_Init is requested with a valid configuration, the IWDG driver shall start the watchdog by writing 0xCCCC to IWDG_KR.KEY before enabling register w</doc>
+<tag>SWR-001</tag>
+<status status="PASS" starttime="20261020 15:32:04.709" endtime="20261020 15:32:08.412"/>
+</test>
+<test id="s1-t2" name="SWR-002" line="24">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:08.413" endtime="20261020 15:32:12.014"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>2</arg>
+<status status="PASS" starttime="20261020 15:32:12.014" endtime="20261020 15:32:12.015"/>
+</kw>
+<doc>When HAL_IWDG_Init is requested with a valid configuration, the IWDG driver shall enable register write access by writing 0x5555 to IWDG_KR.KEY after the start</doc>
+<tag>SWR-002</tag>
+<status status="PASS" starttime="20261020 15:32:08.413" endtime="20261020 15:32:12.015"/>
+</test>
+<test id="s1-t3" name="SWR-003" line="30">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:12.016" endtime="20261020 15:32:15.623"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>3</arg>
+<status status="PASS" starttime="20261020 15:32:15.623" endtime="20261020 15:32:15.623"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>31</arg>
+<status status="PASS" starttime="20261020 15:32:15.624" endtime="20261020 15:32:15.624"/>
+</kw>
+<doc>When HAL_IWDG_Init is requested with a valid configuration, the IWDG driver shall write the configured prescaler to IWDG_PR.PR with IWDG_SR.PVU clear.</doc>
+<tag>SWR-003</tag>
+<status status="PASS" starttime="20261020 15:32:12.015" endtime="20261020 15:32:15.624"/>
+</test>
+<test id="s1-t4" name="SWR-004" line="37">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:15.624" endtime="20261020 15:32:19.515"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>4</arg>
+<status status="PASS" starttime="20261020 15:32:19.516" endtime="20261020 15:32:19.516"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>41</arg>
+<status status="PASS" starttime="20261020 15:32:19.517" endtime="20261020 15:32:19.517"/>
+</kw>
+<doc>When HAL_IWDG_Init is requested with a valid configuration, the IWDG driver shall write the configured reload value to IWDG_RLR.RL with IWDG_SR.RVU clear.</doc>
+<tag>SWR-004</tag>
+<status status="PASS" starttime="20261020 15:32:15.624" endtime="20261020 15:32:19.517"/>
+</test>
+<test id="s1-t5" name="SWR-005" line="44">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:19.517" endtime="20261020 15:32:23.292"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>5</arg>
+<status status="PASS" starttime="20261020 15:32:23.293" endtime="20261020 15:32:23.293"/>
+</kw>
+<doc>When both IWDG_SR.PVU and IWDG_SR.RVU are clear within the configured timeout_ms after configuration updates in HAL_IWDG_Init, the IWDG driver shall write 0xAAA</doc>
+<tag>SWR-005</tag>
+<status status="PASS" starttime="20261020 15:32:19.517" endtime="20261020 15:32:23.294"/>
+</test>
+<test id="s1-t6" name="SWR-006" line="50">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_timeout.c</arg>
+<arg>scenario=never_ready</arg>
+<status status="PASS" starttime="20261020 15:32:23.294" endtime="20261020 15:32:26.473"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>6</arg>
+<status status="PASS" starttime="20261020 15:32:26.474" endtime="20261020 15:32:26.474"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>61</arg>
+<status status="PASS" starttime="20261020 15:32:26.475" endtime="20261020 15:32:26.475"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>62</arg>
+<status status="PASS" starttime="20261020 15:32:26.475" endtime="20261020 15:32:26.475"/>
+</kw>
+<doc>If IWDG_SR.PVU or IWDG_SR.RVU is still set when timeout_ms milliseconds of the system time base HAL_GetTick() have elapsed during HAL_IWDG_Init, then the IWDG d</doc>
+<tag>SWR-006</tag>
+<status status="PASS" starttime="20261020 15:32:23.294" endtime="20261020 15:32:26.475"/>
+</test>
+<test id="s1-t7" name="SWR-007" line="58">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_invalid.c</arg>
+<status status="PASS" starttime="20261020 15:32:26.476" endtime="20261020 15:32:30.039"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>7</arg>
+<status status="PASS" starttime="20261020 15:32:30.040" endtime="20261020 15:32:30.041"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>71</arg>
+<status status="PASS" starttime="20261020 15:32:30.041" endtime="20261020 15:32:30.041"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>72</arg>
+<status status="PASS" starttime="20261020 15:32:30.041" endtime="20261020 15:32:30.041"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>73</arg>
+<status status="PASS" starttime="20261020 15:32:30.042" endtime="20261020 15:32:30.042"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>74</arg>
+<status status="PASS" starttime="20261020 15:32:30.042" endtime="20261020 15:32:30.042"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>75</arg>
+<status status="PASS" starttime="20261020 15:32:30.042" endtime="20261020 15:32:30.043"/>
+</kw>
+<doc>If HAL_IWDG_Init receives any invalid parameter (a NULL configuration pointer; a prescaler above 7; a reload value above 0xFFF; a timeout_ms of 0 or greater tha</doc>
+<tag>SWR-007</tag>
+<status status="PASS" starttime="20261020 15:32:26.476" endtime="20261020 15:32:30.043"/>
+</test>
+<test id="s1-t8" name="SWR-008" line="69">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_timeout.c</arg>
+<arg>scenario=never_ready</arg>
+<status status="PASS" starttime="20261020 15:32:30.044" endtime="20261020 15:32:33.533"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>8</arg>
+<status status="PASS" starttime="20261020 15:32:33.534" endtime="20261020 15:32:33.534"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>81</arg>
+<status status="PASS" starttime="20261020 15:32:33.534" endtime="20261020 15:32:33.535"/>
+</kw>
+<doc>While HAL_IWDG_Init waits for completion of configuration updates, the IWDG driver shall bound the wait by the caller s timeout_ms measured using elapsed HAL_Ge</doc>
+<tag>SWR-008</tag>
+<status status="PASS" starttime="20261020 15:32:30.043" endtime="20261020 15:32:33.535"/>
+</test>
+<test id="s1-t9" name="SWR-009" line="76">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_refresh.c</arg>
+<status status="PASS" starttime="20261020 15:32:33.536" endtime="20261020 15:32:37.362"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>9</arg>
+<status status="PASS" starttime="20261020 15:32:37.362" endtime="20261020 15:32:37.363"/>
+</kw>
+<doc>When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to IWDG_KR.KEY to reload the counter and return HAL_OK.</doc>
+<tag>SWR-009</tag>
+<status status="PASS" starttime="20261020 15:32:33.535" endtime="20261020 15:32:37.363"/>
+</test>
+<test id="s1-t10" name="SWR-010" line="82">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_reset_refresh.c</arg>
+<status status="PASS" starttime="20261020 15:32:37.363" endtime="20261020 15:32:40.651"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>10</arg>
+<status status="PASS" starttime="20261020 15:32:40.652" endtime="20261020 15:32:40.652"/>
+</kw>
+<doc>While no watchdog initialisation has been requested after reset, the IWDG driver shall not write any IWDG register.</doc>
+<tag>SWR-010</tag>
+<status status="PASS" starttime="20261020 15:32:37.363" endtime="20261020 15:32:40.652"/>
+</test>
+<test id="s1-t11" name="SWR-011" line="88">
+<kw name="Driver Flash Size Should Be At Most" library="ForgeTarget">
+<arg>4096</arg>
+<status status="PASS" starttime="20261020 15:32:40.653" endtime="20261020 15:32:40.697"/>
+</kw>
+<doc>The IWDG driver shall occupy at most 4096 bytes of flash.</doc>
+<tag>SWR-011</tag>
+<status status="PASS" starttime="20261020 15:32:40.652" endtime="20261020 15:32:40.697"/>
+</test>
+<test id="s1-t12" name="SWR-012" line="93">
+<kw name="Driver Static RAM Should Be At Most" library="ForgeTarget">
+<arg>64</arg>
+<status status="PASS" starttime="20261020 15:32:40.698" endtime="20261020 15:32:40.732"/>
+</kw>
+<doc>The IWDG driver shall occupy at most 64 bytes of static RAM.</doc>
+<tag>SWR-012</tag>
+<status status="PASS" starttime="20261020 15:32:40.698" endtime="20261020 15:32:40.732"/>
+</test>
+<test id="s1-t13" name="SWR-013" line="98">
+<kw name="Driver Stack Should Be At Most" library="ForgeTarget">
+<arg>128</arg>
+<msg timestamp="20261020 15:32:40.788" level="INFO">ASSUMPTION: external time base HAL_GetTick() measured as a reference leaf (free-running counter); the system's HAL_GetTick() must be a leaf of no larger frame</msg>
+<status status="PASS" starttime="20261020 15:32:40.733" endtime="20261020 15:32:40.788"/>
+</kw>
+<doc>The IWDG driver shall use at most 128 bytes of stack.</doc>
+<tag>SWR-013</tag>
+<status status="PASS" starttime="20261020 15:32:40.732" endtime="20261020 15:32:40.788"/>
+</test>
+<test id="s1-t14" name="SWR-014" line="103">
+<kw name="Run Target Scenario" library="ForgeTarget">
+<arg>scn_config.c</arg>
+<status status="PASS" starttime="20261020 15:32:40.789" endtime="20261020 15:32:44.311"/>
+</kw>
+<kw name="Target Check Should Pass" library="ForgeTarget">
+<arg>14</arg>
+<status status="PASS" starttime="20261020 15:32:44.311" endtime="20261020 15:32:44.312"/>
+</kw>
+<doc>The IWDG driver shall implement its hal_status_t HAL_IWDG_Init API with a const configuration pointer and its hal_status_t HAL_IWDG_Refresh API exclusively thro</doc>
+<tag>SWR-014</tag>
+<status status="PASS" starttime="20261020 15:32:40.788" endtime="20261020 15:32:44.312"/>
+</test>
+<status status="PASS" starttime="20261020 15:32:04.691" endtime="20261020 15:32:44.314"/>
+</suite>
+<statistics>
+<total>
+<stat pass="14" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="0" skip="0">SWR-001</stat>
+<stat pass="1" fail="0" skip="0">SWR-002</stat>
+<stat pass="1" fail="0" skip="0">SWR-003</stat>
+<stat pass="1" fail="0" skip="0">SWR-004</stat>
+<stat pass="1" fail="0" skip="0">SWR-005</stat>
+<stat pass="1" fail="0" skip="0">SWR-006</stat>
+<stat pass="1" fail="0" skip="0">SWR-007</stat>
+<stat pass="1" fail="0" skip="0">SWR-008</stat>
+<stat pass="1" fail="0" skip="0">SWR-009</stat>
+<stat pass="1" fail="0" skip="0">SWR-010</stat>
+<stat pass="1" fail="0" skip="0">SWR-011</stat>
+<stat pass="1" fail="0" skip="0">SWR-012</stat>
+<stat pass="1" fail="0" skip="0">SWR-013</stat>
+<stat pass="1" fail="0" skip="0">SWR-014</stat>
+</tag>
+<suite>
+<stat pass="14" fail="0" skip="0" id="s1" name="Test Iwdg Requirements">Test Iwdg Requirements</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

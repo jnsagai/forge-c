@@ -1,0 +1,28 @@
+{
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:72ffe2796adbf2b26ef6b8847d61ad656e3be08d27636a5889b6acdf86e440e1"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T14:13:07.897238Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "FACTORY",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-012"
+  ],
+  "requirement_quote": "The IWDG driver shall use at most 128 bytes of stack.",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "run_robot passes 12/13 tests; SWR-012 is unverified because stack analysis rejects external HAL_GetTick. Scenarios provide this required time base. Include its stack in the driver call-chain measurement; keep the 128-byte bound. No evidence of driver stack overflow.",
+  "target_phase": null,
+  "test_files": {
+    "software/tests/software/scn_config.c": "a154fae15d2ab0c9be7ea5da11eef6a41ce9dada2fc5db3160f5d10de5188b61",
+    "software/tests/software/test_iwdg_requirements.robot": "d292ff8218d7ba7df95aa12457131dfccfeeef3e1e2354bb201bebb88b0db069"
+  }
+}

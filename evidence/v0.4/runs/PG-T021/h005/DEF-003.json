@@ -1,0 +1,35 @@
+{
+  "code_sha": "24cd564d5ad06f41573abdb3e897d38ead05b75bf11c808f8bda07ae2f5a818a",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T15:18:20.563787Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-014"
+  ],
+  "requirement_quote": "The IWDG driver shall implement its hal_status_t HAL_IWDG_Init API with a const configuration pointer and its hal_status_t HAL_IWDG_Refresh API exclusively through the provided LL_IWDG_ functions for IWDG register access.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected owner trace annotations: @verifies incorrectly included SWR and SWU IDs, which are not unit specification IDs. Retained only the existing USPEC IDs directly above each test function. No predicates, expected values or CHECK IDs changed. Full host suite and coverage PASS.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "dd195bbf8255458d07500a24431be5b1082d86220586bb3f4903956b40d64bd2"
+  }
+}

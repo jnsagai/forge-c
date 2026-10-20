@@ -1,0 +1,21 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0009B-STM32N6-IWDG-HAL-h004/forge-c-WO-0009B-STM32N6-IWDG-HAL-h004-review.zip",
+  "archive_ref": "archive:sha256:2ca48bcd288848c293628900529f636b9d8d0dd9a422370ba3f2c42e229aca9d",
+  "archive_sha256": "2ca48bcd288848c293628900529f636b9d8d0dd9a422370ba3f2c42e229aca9d",
+  "finalized_at": "2026-10-20T14:16:30.882787Z",
+  "gap_count": 7,
+  "gaps": [
+    "failed_or_missing_quality_check:software_verification",
+    "failed_or_missing_quality_check:swe6_inspection",
+    "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+    "missing_or_empty_section:inspection/SWE.6",
+    "run_not_completed:INCOMPLETE",
+    "unresolved_finding:SWE.6:GATE_REWORK",
+    "unresolved_finding:escalated_defect:DEF-003:FACTORY"
+  ],
+  "package_status": "BLOCKED",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "INCOMPLETE",
+  "run_id": "WO-0009B-STM32N6-IWDG-HAL-h004",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

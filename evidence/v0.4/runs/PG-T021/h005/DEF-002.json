@@ -1,0 +1,26 @@
+{
+  "code_sha": "24cd564d5ad06f41573abdb3e897d38ead05b75bf11c808f8bda07ae2f5a818a",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T15:17:13.041363Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-014"
+  ],
+  "requirement_quote": "The IWDG driver shall implement its hal_status_t HAL_IWDG_Init API with a const configuration pointer and its hal_status_t HAL_IWDG_Refresh API exclusively through the provided LL_IWDG_ functions for IWDG register access.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "UT-010 invoked Init only through a typed function pointer, so validate_trace could not identify a direct allocated API call. Retain signature checks and existing Init predicates, and explicitly call both public APIs within UT-010.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "e720f89fe6ee4daee0b8532b9b39e13f30797a7c2e713eb46bdabbf2a0946d23"
+  }
+}

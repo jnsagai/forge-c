@@ -1,0 +1,26 @@
+{
+  "code_sha": "3f9e341220e5dd1a34c9730aaad830f7ed07933013a1bbcc3f67772728215c8b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T14:01:52.819340Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-006"
+  ],
+  "requirement_quote": "without using a count of polling iterations as the timeout.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected exact polling-count assertions to elapsed-time bounds. Added variable-rate ticks, wraparound and shared-deadline cases. Consolidating each owner UT ID into one CHECK while retaining all subchecks fixes duplicate assertion IDs.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "93a8f1178479977166babb363341d0c3dc5cc27337b466ed4744f1019afa745c"
+  }
+}
