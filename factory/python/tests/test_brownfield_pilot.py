@@ -77,7 +77,7 @@ def test_vendor_function_names_count_as_allocated(ws):
     from forge_factory.assurance import register_contract as RC
 
     _contract(ws)
-    rows = ["| SWR-%03d | %s | SWC_LL | %s |" % (i, f, a) for i, (f, a) in enumerate([
+    rows = [f"| SWR-{i:03d} | {f} | SWC_LL | {a} |" for i, (f, a) in enumerate([
         ("LL_RCC_HSI_Enable", "-"), ("LL_RCC_HSI_Disable", "-"), ("LL_RCC_HSE_Enable", "-"), ("LL_RCC_HSE_Disable", "-"),
         ("LL_RCC_HSI_IsReady", "-"), ("LL_RCC_HSE_IsReady", "-")], 1)]
     eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
