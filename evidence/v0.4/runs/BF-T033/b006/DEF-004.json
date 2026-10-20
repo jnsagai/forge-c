@@ -1,0 +1,27 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T11:21:02.147582Z"
+    }
+  ],
+  "id": "DEF-004",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017",
+    "SWR-022"
+  ],
+  "requirement_quote": "When an HSI or HSE ready query or a GPDMA1 or ADC12 clock is-enabled query is called, the RCC LL driver shall leave every RCC register unchanged.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected duplicate static CHECK identifiers UT-017 and UT-022 rejected by the unit runner. Preservation and complete RCC snapshot conditions now accumulate across all grouped cases, with one final CHECK per shared identifier. Expected vendor masks and query return values are unchanged. Initial evidence: artifact:sha256:88fe62b3cc8b830f2b4cc3e429751410ce61b52574430910858d47f4a9672133.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "d346ceb8fb2a147041de432c2dd2e905024cb7980d967fbe7f6110b35789e606"
+  }
+}

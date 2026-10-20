@@ -19,6 +19,29 @@
       "host tests are 64-bit (no 32-bit libc): functions casting register addresses to uint32_t are target-only",
       "reads of a set/clear register return its target register in the model (NOT_VERIFIED against silicon)"
     ],
-    "live_run": "pending (b006)"
+    "live_run": "b006 then b007 (see runs)"
+  },
+  "runs": {
+    "b006": {
+      "work_order": "WO-0008C-ST-RCC-LL-b006",
+      "fabro_run_id": "01M5CF5XP6V5T603GY9G901N3Y",
+      "factory_commit": "e71c98c",
+      "result": "SWE.1, SWE.2 and SWE.3 PASS on ST's delivered RCC code (first time past SWE.3: v0.4-brownfield checklist, delivered-code findings recorded GL-ARG-01 x5, 14 CMSIS probes); host unit tests PASS on the host device map; BLOCKED at SWE.4 (rework budget) on the startup invariant SWR-018",
+      "factory_defects": [
+        "CAPA-056 (DEF-001: -Werror on vendor CMSIS header, no object)",
+        "CAPA-057 (DEF-002: swe3_all greenfield rules on a delivery)",
+        "CAPA-058 (DEF-003: shared unit ownership in the trace map)",
+        "CAPA-059 (startup invariant mapped to a host unit test)",
+        "CAPA-060 (coverage over whole headers: line 1.21%)"
+      ],
+      "package": "BLOCKED, 34 gaps (run incomplete)",
+      "files": [
+        "b006/gate-log.jsonl",
+        "b006/package.json",
+        "b006/DEF-001..008.json",
+        "b006/software_requirements.md",
+        "b006/requirements_to_tests.csv"
+      ]
+    }
   }
 }

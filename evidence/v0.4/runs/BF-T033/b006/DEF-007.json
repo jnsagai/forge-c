@@ -1,0 +1,29 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "inspection/SWE.4/INS-SWE.4-001.json",
+    "artifact:sha256:ab415c59ee013dfaebb63fa4d27192893283b8f938a6953213761b2ad4e5d9e1"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T11:29:59.691145Z"
+    }
+  ],
+  "id": "DEF-007",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-018"
+  ],
+  "requirement_quote": "While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "UT-018 incorrectly placed SWR-018 in @verifies, which accepts USPEC IDs. Corrected links to existing unit items for their common before-call boundary; operation tests still verify behavior. Retained DEF-006 startup observation and negative control. Expected values and delivered code unchanged. Full host regression PASS.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "52a92014a3a5161e33dcaca14ef19a4f50cc60e90eb209c608076e586bd0b6f3"
+  }
+}

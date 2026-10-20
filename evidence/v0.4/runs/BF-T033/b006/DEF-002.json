@@ -1,0 +1,26 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "artifact:sha256:84c6c426c39c9926c2bf067f7e09e8b7d2d8b63a0146c8828ed57693a6787821",
+    "workproducts/SWE.3/delivered_code_facts.json",
+    "software/ll/stm32n6xx_ll_rcc.h",
+    ".forge-run/manifest.json"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T11:06:21.147037Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "swe3_all validator applies greenfield checks to frozen CMSIS delivery: reports NO_REGISTER_DEFINES, LL_NOT_STATIC_INLINE for delivered __STATIC_INLINE functions, and out-of-scope APIs as unallocated.",
+  "target_phase": null,
+  "test_files": {}
+}

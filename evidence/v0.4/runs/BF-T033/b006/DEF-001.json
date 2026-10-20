@@ -1,0 +1,28 @@
+{
+  "detected_phase": "SWE.3",
+  "evidence_refs": [
+    "artifact:sha256:3de595c0b6e874f0e89749a4d3b872e9acf24512f5b469245d1a77e86fd0483f",
+    "workproducts/SWE.3/delivered_code_facts.json"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T11:04:06.513536Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "FACTORY",
+  "reported_by": "swe3-author",
+  "requirement_ids": [
+    "SWR-019",
+    "SWR-020",
+    "SWR-021"
+  ],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "Fixed target-cm55-gcc profile rejects delivered CMSIS cache-header sign conversions under -Werror; no object is emitted, so required flash/static RAM measurement is blocked.",
+  "target_phase": null,
+  "test_files": {}
+}

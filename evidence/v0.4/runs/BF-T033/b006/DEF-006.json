@@ -1,0 +1,30 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "inspection/SWE.4/INS-SWE.4-001.json",
+    "artifact:sha256:013ed045e7bb6f4417c24979d1a2fdcf0fd90accfd206b15abc97001fd3e0366",
+    "artifact:sha256:ab415c59ee013dfaebb63fa4d27192893283b8f938a6953213761b2ad4e5d9e1"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T11:28:02.527257Z"
+    }
+  ],
+  "id": "DEF-006",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-018"
+  ],
+  "requirement_quote": "While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "SWE4-02: UT-018 incorrectly asserted zero immediately after memset. It now snapshots RCC in preinit and checks the full volatile array first in main, before resets or LL calls. A temporary constructor CR write caused UT-018 FAIL; removing that injected harness fault restored full PASS. Host startup/reset-image limits are documented.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "145ef8d52372e90406c58460905b3945c56c51e51e0df85c18a5596f846d4323"
+  }
+}
