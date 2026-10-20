@@ -1,0 +1,100 @@
+{
+  "CAPA-054": {
+    "history": [
+      {
+        "at": "2026-10-20T08:06:26.550003Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[\"CAPA-054\"]",
+        "from_state": null,
+        "reason": "h002 (WO-0009B-STM32N6-IWDG-HAL-h002): SWE.1-SWE.6 PASS but package BLOCKED on DEF-001 (FACTORY): the swe4-author skill requires verification/unit/unit_verification_summary.json, the write policy denies it",
+        "seq": 439,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T08:06:26.571933Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 440,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T08:06:26.630947Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-058 assigned",
+        "seq": 441,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T08:09:38.925138Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[\"reproducer-run:rr-805e3553df38a47175fb\", \"reproducer-run:rr-93c3bf42cda616367ad3\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 442,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T08:09:38.950404Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[\"git:b59aee5a5552..fb61b3dfb95a\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix fb61b3dfb95a (patch 7742 bytes)",
+        "seq": 443,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T08:09:38.994551Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[\"reproducer-run:rr-fae48294f02e67a3d78b\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-058 absent at fb61b3dfb95a",
+        "seq": 444,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T08:09:39.007818Z",
+        "capa_id": "CAPA-054",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 445,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "b59aee5a55522c707fbec2d46584e3cc3adea000",
+      "fb61b3dfb95a3ef106c795c9dbcbd53afde99f9f",
+      "pd-85ae8648f1096332915d"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<fb61b3dfb95a"
+      ],
+      "candidate_patch_sha256": "4757ae454a554241d0c5378260fb9b6340907b9bf5c0da2797796675211c2c21",
+      "capa_id": "CAPA-054",
+      "created_at": "2026-10-20T08:06:26.550003Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-054"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-058",
+      "reproducer_id": "RPR-058",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-805e3553df38a47175fb",
+        "reproducer-run:rr-93c3bf42cda616367ad3"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "skillgen.PHASE_OUTPUTS named packager-generated evidence files as author outputs (SWE.4-SWE.6)",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T08:09:39.007818Z"
+    }
+  }
+}

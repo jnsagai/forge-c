@@ -1,0 +1,30 @@
+{
+  "code_sha": "3eb3f9d02d3c59ae66af451491a7817e2559ac7aa124c8ff067f1a5a3225526d",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T08:29:04.235210Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-002",
+    "SWR-003",
+    "SWR-005",
+    "SWR-006",
+    "SWR-008"
+  ],
+  "requirement_quote": "When HAL_IWDG_Init is requested with any invalid parameter (a NULL configuration pointer or a prescaler above 7 or a reload value above 0xFFF or a timeout argument of 0 or greater than HAL_IWDG_TIMEOUT_VALUE), the IWDG driver shall return HAL_ERROR without accessing any IWDG register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected the Init test group's owner annotation: secondary @test lines were not recognized, leaving USPEC-HAL-01-01, -03, -04 and -05 unverified by the gate despite passing CHECKs. The opening @test UT-001 now lists all six Init USPEC items exercised by this grouped function. CHECK ids UT-001/002/003/005/006/008, conditions and expected values are unchanged.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "ecfca2d9b3e37eb8cab1bb719a0fe1c3f533f860d2d673a373ec94ed6ed909ab"
+  }
+}

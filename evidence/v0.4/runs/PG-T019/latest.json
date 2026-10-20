@@ -1,6 +1,6 @@
 {
   "task": "PG-T019",
-  "status": "IN_PROGRESS",
+  "status": "PASS",
   "runs": {
     "h001": {
       "work_order": "WO-0009B-STM32N6-IWDG-HAL-h001",
@@ -14,7 +14,84 @@
         "CAPA-052: Fabro's server-side run-title generation reached the suspended DeepSeek once at 06:53:12Z (failed, no tokens reported); the gateway now refuses suspended providers and the running cloud gateway was stopped"
       ],
       "package": "BLOCKED, 31 gaps (archive 178ce7f68fc3612d), downstream phases not run",
-      "files": ["h001/gate-log.jsonl", "h001/package.json", "h001/stm32n6xx_hal_iwdg.c", "h001/stm32n6xx_hal_iwdg.h", "h001/software_requirements.md", "h001/software_architecture.md", "h001/DEF-001.json", "h001/DEF-002.json"]
+      "files": [
+        "h001/gate-log.jsonl",
+        "h001/package.json",
+        "h001/stm32n6xx_hal_iwdg.c",
+        "h001/stm32n6xx_hal_iwdg.h",
+        "h001/software_requirements.md",
+        "h001/software_architecture.md",
+        "h001/DEF-001.json",
+        "h001/DEF-002.json"
+      ]
+    },
+    "h002": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h002",
+      "fabro_run_id": "01M5C3CJS5GFZ1W51T49TDGR2X",
+      "factory_commit": "029fd6e (CAPA-053 head)",
+      "result": "SWE.1-SWE.6 inspections PASS on the IWDG HAL (SWE.3 and SWE.4 reworked once); first complete HAL run on a non-RCC peripheral",
+      "measurements": {
+        "unit": "PASS (fake LL, UT-001..UT-010)",
+        "coverage_host": "line 100%, branch 100%, MC/DC 100%",
+        "integration": "PASS (host)",
+        "renode": "8 checks passed, 0 failed (behavioural IWDG model)",
+        "robot": "14/14 tests, 14/14 requirements verified",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "target_size": "text=144 data=0 bss=0"
+      },
+      "test_defects_declared": [
+        "DEF-002 (unit test ids)",
+        "DEF-003 (held-flag timeout tests needed timeout exhaustion)",
+        "DEF-004 (target observation of SWR-002)"
+      ],
+      "package": "BLOCKED, 1 gap: escalated factory defect DEF-001 (CAPA-054: swe4-author skill named packager evidence)",
+      "deepseek": "no request reached DeepSeek (gateway stopped, then refusing; last upstream call 06:53:12Z in h001)",
+      "files": [
+        "h002/gate-log.jsonl",
+        "h002/package.json",
+        "h002/stm32n6xx_hal_iwdg.c",
+        "h002/stm32n6xx_hal_iwdg.h",
+        "h002/DEF-001.json",
+        "h002/DEF-002.json",
+        "h002/DEF-003.json",
+        "h002/DEF-004.json"
+      ]
+    },
+    "h003": {
+      "work_order": "WO-0009B-STM32N6-IWDG-HAL-h003",
+      "fabro_run_id": "01M5C5R3YP5RJRZF2GMTFCGDMV",
+      "factory_commit": "55e9532 (CAPA-054 head)",
+      "result": "SWE.1-SWE.6 inspections PASS (SWE.3 and SWE.4 reworked once); package READY_FOR_OFFLINE_REVIEW with 0 gaps - the first complete HAL package on a non-RCC peripheral",
+      "package": {
+        "status": "READY_FOR_OFFLINE_REVIEW",
+        "gaps": 0,
+        "archive_sha256": "c0073b6b58701859146b274dba4ed0ed4818f36c87c341ab0f81b72fce53b01b",
+        "safety_documents": "owner-signed SSA-IWDG-001/TAA-IWDG-001 v1.0 (OD-2026-10-20-05; they analyse the LL - the HAL is an open finding)"
+      },
+      "measurements": {
+        "unit": "PASS (fake LL)",
+        "coverage_host": "line 100%, branch 100%, MC/DC 100%",
+        "integration": "PASS (host)",
+        "renode": "11 checks passed, 0 failed (behavioural IWDG model)",
+        "robot": "12/12 tests, 12/12 requirements verified",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "target_size": "text=140 data=0 bss=0"
+      },
+      "test_defects_declared": [
+        "DEF-001 (UT-005 check id)",
+        "DEF-002 (secondary @test annotations)"
+      ],
+      "deepseek": "no request reached DeepSeek; the run-title request was refused by the gateway (CAPA-052)",
+      "not_claimed": "offline review candidate only: no compliance, certification, safety approval or production release",
+      "files": [
+        "h003/gate-log.jsonl",
+        "h003/package.json",
+        "h003/stm32n6xx_hal_iwdg.c",
+        "h003/stm32n6xx_hal_iwdg.h",
+        "h003/software_requirements.md",
+        "h003/DEF-001.json",
+        "h003/DEF-002.json"
+      ]
     }
   }
 }

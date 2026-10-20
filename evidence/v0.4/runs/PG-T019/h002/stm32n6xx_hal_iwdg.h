@@ -1,0 +1,18 @@
+#ifndef STM32N6XX_HAL_IWDG_H
+#define STM32N6XX_HAL_IWDG_H
+#include <stddef.h>
+#include "stm32n6xx_ll_iwdg.h"
+typedef enum {HAL_OK=0U,HAL_ERROR=1U,HAL_TIMEOUT=2U} hal_status_t;
+#define HAL_IWDG_TIMEOUT_VALUE 1000U
+/** @brief Independent watchdog configuration. */
+typedef struct
+{
+    uint32_t prescaler; /**< Prescaler encoding accepted by HAL_IWDG_Init. */
+    uint32_t reload; /**< Reload counter value accepted by HAL_IWDG_Init. */
+} hal_iwdg_config_t;
+
+hal_status_t HAL_IWDG_Init(const hal_iwdg_config_t *p_config, uint32_t timeout);
+hal_status_t HAL_IWDG_Refresh(void);
+
+// HAL_IWDG API prototypes (SWE.3 HAL author)
+#endif /* STM32N6XX_HAL_IWDG_H */

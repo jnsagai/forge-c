@@ -1,0 +1,33 @@
+{
+  "code_sha": "9c1786f187fbfaff771e853e95a75b297461791956853083714ab1a27f75ee9c",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T07:48:49.389609Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-014"
+  ],
+  "requirement_quote": "The IWDG driver shall perform all IWDG register operations exclusively through the provided LL_IWDG_ functions.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected test identifiers: UT-001 through UT-007 and UT-010 previously appeared only as suffixed CHECK labels. Renamed one existing assertion per test to the exact owner CSV identifier; conditions and all remaining assertions are unchanged. No driver defect.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "84a4dd876c2720163ba8bc92726388a92608a2519d26e1db6d3224b3c6acae39"
+  }
+}
