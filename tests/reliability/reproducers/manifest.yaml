@@ -662,3 +662,14 @@ reproducers:
     operations: [docs/validate_artifact]
     root_cause: "OD-2026-10-20-02 moved the SWE.3 checklist items of a delivery to the delivered-code checks (brownfield/checks.py), but the author-facing validator forge-docs-mcp.validate_artifact (hal_guideline, register_map, implementation, swe3_all) still ran the greenfield checks; on the ST delivery it reported 491+ findings the frozen author cannot act on, and the authors escalated DEF-002 (FACTORY)."
     remedy: "For a delivery the four SWE.3 checks run brownfield/checks.py: blocking only for probe build failures, fingerprint changes and fixable (FIX_ALLOWED, forge-style) findings; every other delivered-code finding is returned as recorded for the owner."
+  - id: RPR-062
+    script: rpr062_trace_map_shared_function.py
+    sha256: 38337242a09b2e0b30da6fb040e4f56180ae52a9d7b942120f84c469c4171b63
+    symptom_signature: "a delivered function shared by two units cannot be traced"
+    observed_in: b006
+    baseline_revision: 1d478607670a53dd69eb7b88a75a8db39e81b66f
+    fix_revision: 7eb6b34c5bc6840103b72e40c72c517bd19c199a
+    error_codes: ["CODE:SPEC_OF_OTHER_UNIT", "CODE:TRACE_MAP_DUPLICATE_FUNCTION"]
+    operations: [SWE.3/author, brownfield/trace]
+    root_cause: "brownfield.trace.check_code took one owning unit per delivered function, while the unit design of a vendor delivery can legitimately share a function between units (ST's LL_AHB1_GRP1_* serve both the GPDMA1 and the ADC12 unit); the SWE.3 author could satisfy neither the uniqueness rule nor the unit rule and escalated DEF-003 (FACTORY), after two rework cycles."
+    remedy: "A trace-map row's unit may be a list of owning units; each USPEC must belong to one of them, and each listed unit must name the function. The SWE.3 brownfield prompt describes the list form."
