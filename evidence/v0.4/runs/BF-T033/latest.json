@@ -1,0 +1,24 @@
+{
+  "task": "BF-T033",
+  "st_pilot_followup_2026_10_20": {
+    "owner_request": "address all (2026-10-20)",
+    "decision": "pd-91dc5ef219b00f44a16e",
+    "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+    "kind": "CHANGE",
+    "baseline": "main e66f507",
+    "candidate": "f0a6a34",
+    "changes": [
+      "host device map for CMSIS deliveries (vendor device headers + host core stub, RCC -> RAM struct) in unit/integration tests and analysis",
+      "build-only scope unit for header-only deliveries (11 wrappers, 172 B target text)",
+      "vendor include/defines/-mcmse in Renode images",
+      "RCC Renode model: 8 KB window, 41 RM0486 set/clear register pairs",
+      "CMSIS test prompts; Robot observation accepts vendor mask names"
+    ],
+    "tests": "test_brownfield_st_host.py 6 passed (host run_unit PASS on ST code, Renode 5/5 on ST code, alias table == RM0486); 31 affected files passed (2 skipped); validate_design PASS",
+    "limitations": [
+      "host tests are 64-bit (no 32-bit libc): functions casting register addresses to uint32_t are target-only",
+      "reads of a set/clear register return its target register in the model (NOT_VERIFIED against silicon)"
+    ],
+    "live_run": "pending (b006)"
+  }
+}
