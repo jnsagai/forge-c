@@ -787,7 +787,9 @@ BROWNFIELD_SWE3 = [
     "the seed with every row's 'unit' and 'uspecs' filled: {\"schema\":\"forge-c/code-trace-map/0.1\",\"rows\":"
     "[{\"function\":\"<name>\",\"file\":\"<path>\",\"sha256\":\"<as in the seed>\",\"unit\":\"SWU-{x}-01\","
     "\"uspecs\":[\"USPEC-{x}-01-01\"]}, ...]}. Keep file and sha256 exactly as in the seed; every delivered scope "
-    "function appears once and every USPEC item is mapped to at least one delivered function.",
+    "function appears once and every USPEC item is mapped to at least one delivered function. A function that several "
+    "units use (e.g. one bus clock function for two peripherals) lists all of them: \"unit\":[\"SWU-{x}-03\","
+    "\"SWU-{x}-04\"] with the USPEC items of each.",
     "Do not call freeze_baseline: when you reply PASS the deterministic gate freezes the SWE.3 baseline."]
 
 

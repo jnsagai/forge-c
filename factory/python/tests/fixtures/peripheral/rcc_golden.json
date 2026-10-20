@@ -1,9 +1,9 @@
 {
  "graph:hal": "ec7ce8a166addafff22516187b89e64c9cc79627e66e6da5d361abc5925800be",
- "graph:hal_fix_allowed": "81f11a82a6051d0336961656f7dbb0d3ec0aec332f42e2bc229405bf8fd5f1ae",
+ "graph:hal_fix_allowed": "7c26ae71da14a9da26c925fa2f43b3b0b30f57d1bf4726bce0cd86b30b383141",
  "graph:legacy": "ba59e402665efeeb61b45a88a97b0a18908c7b6a1b289ed2aca238405c40e5be",
  "graph:ll": "ba725d8c99be4bc070aaa9ad77d63d11e69e46770ec00e782a126706aab2957d",
- "graph:ll_brownfield": "398efcf17f67c33b7d0f8e8083b8d8722c93446ca0d6e3bf65b2863d319a3dcf",
+ "graph:ll_brownfield": "c2a92383cff0f7917383a9fbee601be5aa5a22cef49a8bfcd62789d68332f8f1",
  "regmap:software/ll/stm32n6xx_ll_rcc.h": "9488cdc0bcab43f50350c12dc18fb14dbc6f839852d4944a327df46518eec56f",
  "regmap:software/src/stm32n6xx_ll_rcc.c": "99bc067588be3b09a9f1606e052319edce95ac0394c967b29f8a1892c7fb1e34"
 }

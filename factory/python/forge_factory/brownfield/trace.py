@@ -93,21 +93,25 @@ def check_code(ws: Path, units: list[dict]) -> dict:
         if rel in texts and sha != current and not (m.get("code_mode") == "FIX_ALLOWED" and sha == expected.get(rel)):
             # FIX_ALLOWED: the delivered fingerprint stays valid after a fix (verify_delivery governs the change)
             f.append(f"CODE:TRACE_MAP_FINGERPRINT_MISMATCH:{fn}@{rel}")
-        u = str(r.get("unit", ""))
-        if u not in by_unit:
-            f.append(f"CODE:UNKNOWN_UNIT_REF:{fn}:{u}")
-        elif fn not in by_unit[u]["functions"]:
-            f.append(f"CODE:FUNCTION_UNIT_MISMATCH:{fn}:{u}")
+        # CAPA-058 (b006 DEF-003): a delivered function shared by several units (ST's bus functions serve GPDMA1 and
+        # ADC12) lists every owning unit; each USPEC must belong to one of them
+        us = [str(x) for x in r["unit"]] if isinstance(r.get("unit"), list) else [str(r.get("unit", ""))]
+        u = us[0] if len(us) == 1 else ",".join(us)
+        for x in us:
+            if x not in by_unit:
+                f.append(f"CODE:UNKNOWN_UNIT_REF:{fn}:{x}")
+            elif fn not in by_unit[x]["functions"]:
+                f.append(f"CODE:FUNCTION_UNIT_MISMATCH:{fn}:{x}")
         specs = r.get("uspecs") or []
         if not specs:
             f.append(f"CODE:UNDOCUMENTED_FUNCTION:{fn}@{rel} (no uspecs in the trace map)")
         for s in specs:
             if spec_unit.get(s) is None:
                 f.append(f"CODE:UNKNOWN_SPEC_REF:{fn}:{s}")
-            elif spec_unit[s] != u:
+            elif spec_unit[s] not in us:
                 f.append(f"CODE:SPEC_OF_OTHER_UNIT:{fn}:{s}")
-            rows.append({"function": fn, "file": rel, "unit": u, "uspec": s,
-                         "status": "TRACED" if spec_unit.get(s) == u else "INVALID"})
+            rows.append({"function": fn, "file": rel, "unit": spec_unit.get(s, u), "uspec": s,
+                         "status": "TRACED" if spec_unit.get(s) in us else "INVALID"})
     f += [f"CODE:TRACE_MAP_DUPLICATE_FUNCTION:{fn}" for fn, n in seen.items() if n > 1]
     f += [f"CODE:SCOPE_FUNCTION_NOT_IN_TRACE_MAP:{fn}" for fn in scope if fn not in seen]
     referenced = {r["uspec"] for r in rows if r["status"] == "TRACED"}
