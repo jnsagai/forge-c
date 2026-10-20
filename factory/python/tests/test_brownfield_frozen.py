@@ -164,3 +164,19 @@ def test_brownfield_graph_has_no_code_generator_and_greenfield_is_unchanged():
     g2, nodes2 = build("WO-T", layer="LL", trace=True, chunk_lines=150)
     assert "delivery" not in g2 and "swe3_regmap" in nodes2 or "  swe3_regmap [" in g2
     assert "DELIVERED CODE" not in g2
+
+
+def test_safety_drafts_are_marked_unsigned_and_claim_free(ws):
+    from forge_factory.assurance.scope import DRAFT_MARK, claim_text_findings
+    from forge_factory.brownfield.safety_drafts import write
+
+    T.seed(ws)
+    paths = write(ws)
+    assert paths == ["safety/drafts/software_safety_analysis.md", "safety/drafts/tool_assurance_assessment.md"]
+    for p in paths:
+        text = (ws / p).read_text()
+        assert DRAFT_MARK.search(text) and claim_text_findings({"target_asil": "B"}, text) == []
+        assert sha256_bytes((ws / "software/ll/stm32n6xx_ll_rcc.h").read_bytes()) in text
+    ssa = (ws / paths[0]).read_text()
+    assert "LL_RCC_HSI_Enable" in ssa and "lost update of RCC_CR" in ssa
+    assert not (ws / "safety/software_safety_analysis.md").exists()  # never at the signed path

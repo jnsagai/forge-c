@@ -89,7 +89,9 @@ def check_code(ws: Path, units: list[dict]) -> dict:
             f.append(f"CODE:TRACE_MAP_FUNCTION_NOT_IN_SCOPE:{fn}")
         if defined.get(fn) != rel:
             f.append(f"CODE:TRACE_MAP_FUNCTION_NOT_IN_FILE:{fn}@{rel}")
-        if rel in texts and sha != sha256_bytes((ws / rel).read_bytes()):
+        current = sha256_bytes((ws / rel).read_bytes()) if rel in texts else None
+        if rel in texts and sha != current and not (m.get("code_mode") == "FIX_ALLOWED" and sha == expected.get(rel)):
+            # FIX_ALLOWED: the delivered fingerprint stays valid after a fix (verify_delivery governs the change)
             f.append(f"CODE:TRACE_MAP_FINGERPRINT_MISMATCH:{fn}@{rel}")
         u = str(r.get("unit", ""))
         if u not in by_unit:

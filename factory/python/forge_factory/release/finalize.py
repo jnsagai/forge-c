@@ -295,6 +295,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     stage.mkdir(parents=True)
     wo = json.loads((ws / ".forge-run/manifest.json").read_text()) if (ws / ".forge-run/manifest.json").is_file() else {}
     budgets = wo.get("budgets", {})
+    from ..brownfield.safety_drafts import write as safety_drafts  # feature 008 (FR-015): drafts only, never signed
+
+    safety_drafts(ws)
     for d in ("workproducts", "safety", "traceability", "verification", "inspection", "configuration"):
         _copy_tree(ws / d, stage / d)
     owner_docs = owner_safety_documents(wo, stage)

@@ -807,9 +807,9 @@ def brownfield_fix3_steps() -> list[str]:
         return ["Fix the SWE.3 work products (detailed design, unit specifications, " + TRACE_MAP + ") for every "
                 "finding. For each CODE defect IN_FIX (glob .forge-run/defects/DEF-*.json), change the delivered file "
                 "it names with the smallest edit that makes the code meet the quoted requirement, then call "
-                "mcp__forge_build_mcp__compile with profile target-cm55-gcc and host-clang; update the trace map "
-                "sha256 of a changed file to its new value from workproducts/SWE.3/delivered_code_facts.json only "
-                "after the gate re-seeds it. Never change a delivered file without an IN_FIX CODE defect for it.",
+                "mcp__forge_build_mcp__compile with profile target-cm55-gcc and host-clang. Change only lines inside "
+                "the delivered scope functions; keep the trace map rows (the delivered fingerprints stay valid). Never "
+                "change a delivered file without an IN_FIX CODE defect, and never add a new source file.",
                 "Reply PASS when the work products are fixed and both compiles PASS."]
     return ["Fix ONLY the SWE.3 work products (workproducts/SWE.3/detailed_design.md, unit_specifications.md, the "
             "unit designs and " + TRACE_MAP + ") for every finding of the newest inspection or gate entry. The "

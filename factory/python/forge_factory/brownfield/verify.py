@@ -29,10 +29,33 @@ def _code_defects(ws: Path) -> list[dict]:
     return out
 
 
-def _defect_files(d: dict) -> set[str]:
-    """Delivered files a CODE defect names (location `file:line`, or any evidence path)."""
+def _defect_files(d: dict, delivered: list[str] | None = None) -> set[str]:
+    """Delivered files a CODE defect names (evidence `file:line` or paths in its summary). A defect found by failing
+    tests names no source file: it then covers every delivered code file (the change report still links each change
+    to it, and changes are confined to the scope's functions)."""
     txt = json.dumps({k: d.get(k) for k in ("location", "evidence_refs", "summary", "files")})
-    return set(re.findall(r"software/(?:ll|hal|src)/[A-Za-z0-9_.-]+\.[ch]", txt))
+    named = set(re.findall(r"software/(?:ll|hal|src)/[A-Za-z0-9_.-]+\.[ch]", txt))
+    return named or set(delivered or [])
+
+
+def _outside_scope(old: str, new: str, rel: str, scope: set[str]) -> list[str]:
+    """Functions outside the scope whose bodies a change touches (FR-014: fixes stay in scope)."""
+    import difflib as _d
+
+    from . import scope as S
+
+    changed: set[int] = set()
+    for tag, _i1, _i2, j1, j2 in _d.SequenceMatcher(None, old.splitlines(), new.splitlines()).get_opcodes():
+        if tag != "equal":
+            changed |= set(range(j1 + 1, max(j2, j1 + 1) + 1))
+    out = []
+    for d in S.index(new, rel):
+        if d.name in scope or d.kind == "macro":
+            continue
+        end = d.line + d.body.count("\n") + 1
+        if any(d.line <= n <= end for n in changed):
+            out.append(d.name)
+    return out
 
 
 def verify(ws: Path, step: str) -> dict:
@@ -55,8 +78,13 @@ def verify(ws: Path, step: str) -> dict:
             rows.append({"path": rel, "expected": exp, "actual": None, "status": "MISSING"})
             issues.append(f"DELIVERY_FILE_MISSING:{rel}")
             continue
-        fixing = [x["id"] for x in defects if x.get("status") in FIX_STATES and rel in _defect_files(x)]
-        ok = mode == "FIX_ALLOWED" and d["role"] == "delivered_code" and fixing
+        code_files = [x["path"] for x in m.get("delivered") or [] if x.get("role") == "delivered_code"]
+        fixing = [x["id"] for x in defects if x.get("status") in FIX_STATES and rel in _defect_files(x, code_files)]
+        outside = _outside_scope(store.get(rel, b"").decode("utf-8", errors="replace"), p.read_text(errors="replace"),
+                                 rel, set((m.get("delivery") or {}).get("scope", {}).get("functions") or []))
+        if outside:
+            issues.append(f"DELIVERY_CHANGE_OUTSIDE_SCOPE:{rel}:{','.join(outside[:5])}")
+        ok = mode == "FIX_ALLOWED" and d["role"] == "delivered_code" and fixing and not outside
         rows.append({"path": rel, "expected": exp, "actual": act, "status": "CHANGED_BY_FIX" if ok else "MISMATCH",
                      "defects": fixing})
         if not ok:

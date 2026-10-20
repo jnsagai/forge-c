@@ -149,15 +149,19 @@ class Authorizer:
         from ..brownfield import code_mode, delivered_paths
 
         m = self._manifest()
-        if rel not in delivered_paths(m):
+        code = delivered_paths(m)
+        if not code:
             return None
+        if rel not in code:  # no new driver source next to the delivered code (it would escape verification)
+            return "BROWNFIELD_NEW_CODE_FILE" if rel.startswith(("software/ll/", "software/hal/", "software/src/",
+                                                                   "software/include/")) else None
         if code_mode(m) != "FIX_ALLOWED":
             return "DELIVERED_CODE_FROZEN"
         if role_id != "swe3-author":
             return "DELIVERED_CODE_FIX_ROLE_ONLY"
         from ..brownfield.verify import _code_defects, _defect_files
 
-        if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d) for d in _code_defects(self.workspace)):
+        if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d, code) for d in _code_defects(self.workspace)):
             return "DELIVERED_CODE_NO_DEFECT"
         return None
 
