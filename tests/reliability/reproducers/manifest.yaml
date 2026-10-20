@@ -596,3 +596,14 @@ reproducers:
     operations: [SWE.3/regmap, SWE.3/author]
     root_cause: "The SWE.2 register-table contract asks for one row per register/bit with a 'name' column; the r166 author wrote register.field names (RCC_CR.HSION). The register map generator accepted only bare RCC_ names, found none, BLOCKED and skipped writing the generated LL compile unit; the SWE.3 author wrote its own compile unit, which the CAPA-046 check rejects and which no author tool can delete, until the rework budget ran out."
     remedy: "The generator takes the leading RCC_ register name of a register.field / register[field] / backticked cell, and writes the constant LL compile unit before any BLOCKED return."
+  - id: RPR-055
+    script: rpr055_acp_attach_multiline_prompt.py
+    sha256: 7b655b4611b0a623a5317c65f5e317858c3809eb708575417e9709f971153f90
+    symptom_signature: "author node with a multi-line prompt left on the run model"
+    observed_in: i003
+    baseline_revision: e7cd8ea3f504cdb22b9aaef8e3b483f57fda4bb0
+    fix_revision: 87c312f83cee347c12bd9c2a0e1faa0ac39461bd
+    error_codes: ["MODEL_SUSPENDED"]
+    operations: [workorder/run, acp/attach]
+    root_cause: "acp.attach matched each node statement with a single-line regex. swe4_test_author (unit-test example) and swe3_hal_author (HAL example) carry prompts with real line breaks, so their statements span several lines, never matched, and kept the Fabro run model (DeepSeek) in runs launched with --acp-authors codex. The DeepSeek usage meter shows those calls (i003 SWE.4, 2026-10-20T04:3x-04:42Z)."
+    remedy: "attach and native_agent_nodes parse whole node statements (quote-aware, multi-line); workorder.run refuses a suspended run-model provider (config/factory/model-suspensions.yaml, OD-2026-10-20-03) unless every agent node is on an ACP backend."

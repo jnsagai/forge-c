@@ -1,0 +1,83 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "e7cd8ea3f504cdb22b9aaef8e3b483f57fda4bb0",
+  "baseline_sha256": "3351ceff63cd81b2e3854b89c1e34a9ec1d5bb45b3b1669d7791d9f15f120c0e",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "87c312f83cee347c12bd9c2a0e1faa0ac39461bd",
+  "candidate_sha256": "6100edf3cad1f6e1c6afa36a1faa3f9f66fb7e5bf1ca63040e380ac2f5302a37",
+  "decision": "REJECTED",
+  "decision_id": "pd-43595ffaaf98a448698d",
+  "evaluated_at": "2026-10-20T05:40:00.389105Z",
+  "evaluator_id": "cre-promotion-runner@87c312f83cee",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:e7cd8ea3f504..87c312f83cee"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-91cc62725a1306b39603",
+        "reproducer-run:rr-3eb35e8b0475e1b20038"
+      ],
+      "name": "reproducer",
+      "reason_code": "NOT_REPRODUCED",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "name": "prevention",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 3840 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "reproducer RPR-055: BASELINE_NOT_REPRODUCED:ERROR"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-91cc62725a1306b39603",
+    "reproducer-run:rr-3eb35e8b0475e1b20038"
+  ],
+  "schema_version": "1.0"
+}

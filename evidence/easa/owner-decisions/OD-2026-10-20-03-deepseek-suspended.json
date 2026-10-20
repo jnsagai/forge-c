@@ -1,0 +1,16 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-20-03",
+  "decided_on": "2026-10-20",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "DeepSeek suspended as a run model (answers TAA Q-05 and finding TAA-FND-03)",
+  "statements": [
+    "stop using deepseek at all, just resume when I say so",
+    "I dont have more credits for deepseek, don use it",
+    "replace deepseek by other model, claude or codex by now"
+  ],
+  "decision": "No agent node runs on DeepSeek until the owner says otherwise. Authors run on Codex Sol 6.1 and the inspectors and the Release Manager on Claude Opus 5.5 (OD-2026-10-19-06/08). config/factory/model-suspensions.yaml lists the provider; workorder.run refuses a DeepSeek run unless every agent node is on an ACP backend.",
+  "finding": "CAPA-051: the swe4_test_author node (all runs) and swe3_hal_author (LL+HAL runs) were never moved to Codex because their prompts span several lines; they ran on DeepSeek in every Codex-author run, including the runs behind the signed RCC documents. The signed tool assurance assessment TAA-RCC-001 records swe4_test_author on DeepSeek (T-03) but not swe3_hal_author; its statement that authors run on Codex is incomplete for the HAL author.",
+  "fix": "CAPA-051, RPR-055, promotion decision pd-11778a310f1f636ea8d1 (ELIGIBLE_FOR_OFFLINE_REVIEW)",
+  "not_changed": "The signed documents are not edited (they are hash-pinned); the TAA finding stays for the owner. The cloud benchmark Fabro server keeps deepseek-flash as its configured default model, which serves no agent node."
+}

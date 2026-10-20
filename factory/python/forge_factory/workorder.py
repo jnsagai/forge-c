@@ -396,6 +396,22 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
     return rid
 
 
+MODEL_SUSPENSIONS = REPO_ROOT / "config/factory/model-suspensions.yaml"
+
+
+def suspension(provider: str, path: Path | None = None) -> dict | None:
+    """The owner's suspension of a run-model provider (OD-2026-10-20-03), or None."""
+    import yaml
+
+    p = path or MODEL_SUSPENSIONS
+    if not p.is_file():
+        return None
+    for s in (yaml.safe_load(p.read_text()) or {}).get("suspended") or []:
+        if s.get("provider") == provider:
+            return s
+    return None
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
@@ -416,6 +432,10 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         claude_home.ensure()
         if not claude_home.logged_in():
             raise RuntimeError(f"{claude_home.home()} is not logged in (run: CLAUDE_CONFIG_DIR=<it> claude auth login)")
+    suspended = suspension(provider)
+    if suspended and not (acp_authors and acp_inspectors):  # OD-2026-10-20-03: no agent node on a suspended model
+        raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes would run on the "
+                           "suspended run model; use --acp-authors codex --acp-inspectors claude")
     if resume and json.loads((example / "workorder.json").read_text()).get("delivery"):
         raise ValueError("BROWNFIELD_RESUME_NOT_SUPPORTED: start a new brownfield work order (the delivered code must "
                          "enter after a SWE.1 frozen in the same work order)")
@@ -458,6 +478,15 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                                   "note": "inspectors and the Release Manager on Claude; deterministic nodes unchanged"}
         manifest["acp_inspectors"] = ins_nodes
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if suspended:  # CAPA-051: every agent node must have left the run model, multi-line prompts included
+        from . import acp
+
+        native = acp.native_agent_nodes(graph)
+        if native:
+            raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes left on the run "
+                               f"model: {', '.join(native)}")
+        prof["run_model_note"] = (f"{model} ({provider}) is suspended ({suspended['decision']}); it serves no agent "
+                                  "node in this run")
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
