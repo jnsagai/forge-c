@@ -251,6 +251,40 @@ def sup_reports(ws: Path, stage: Path, checks: dict, findings: list[dict], detai
        f"is a rework/change requiring re-inspection): `{json.dumps(revs)}`\n")
 
 
+def tool_records(ws: Path) -> dict:
+    """CAPA-064 (TAA-RCC FND-04): the tools and models THIS run used - each tool with the version its MCP result
+    recorded and the operations that called it - and the run's model profile (authors, inspectors, the run model and
+    its status). Replaces the shipped 2026-10-14 host inventory, which named qwen3:8b and omitted Codex, Claude and
+    Renode 1.17."""
+    tools: dict[str, dict] = {}
+    for r in tool_results(ws):
+        pv = r["result"].get("provenance") or {}
+        name, ver = pv.get("tool") or "unrecorded", pv.get("version") or "NOT_RECORDED"
+        e = tools.setdefault(f"{name}|{ver}", {"tool": name, "version": ver, "operations": set(), "calls": 0,
+                                                "first_utc": r.get("ts_utc"), "last_utc": r.get("ts_utc")})
+        e["operations"].add(f"{r['server']}.{r['op']}")
+        e["calls"] += 1
+        e["last_utc"] = r.get("ts_utc") or e["last_utc"]
+    for e in tools.values():
+        e["operations"] = sorted(e["operations"])
+        if e["tool"] == "plantuml":
+            e["note"] = "version is the forge wrapper's; the PlantUML jar version is NOT_RECORDED by the tool result"
+    try:
+        prof = json.loads((Path(ws) / ".forge-run/model-profile.json").read_text())
+    except (OSError, ValueError):
+        prof = {}
+    models = {k: {kk: v for kk, v in (prof.get(k) or {}).items() if kk != "nodes"} | {"nodes": len((prof.get(k) or {}).get(
+        "nodes") or [])} for k in ("acp_authors", "acp_inspectors") if prof.get(k)}
+    models["run_model"] = {"model": prof.get("default"), "provider": prof.get("provider"),
+                           "note": prof.get("run_model_note") or prof.get("note")}
+    return {"schema": "forge-c/run-tool-records/0.1", "source": "evidence/tool-results.jsonl + .forge-run/model-profile.json",
+            "tools": sorted(tools.values(), key=lambda e: (e["tool"], e["version"])), "models": models}
+
+
+def stage_tool_records(ws: Path, stage: Path) -> None:
+    _w(stage, "configuration/toolchain_versions.json", pretty_json(tool_records(ws)))
+
+
 def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[str],
                       owner_docs: list[str] | None = None) -> None:
     lines = ["# Known limitations and declared safety gaps (generated from facts)", "",
@@ -261,7 +295,8 @@ def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[st
              "- Target verification: " + ("performed" if checks["target_verification"]
                                           else "NOT_PERFORMED (no target/simulator evidence)") + ".",
              f"- Footprint scope: {detail['footprint']['scope']}.",
-             "- Disabled optional tools/operations: " + (", ".join(disabled) or "none")]
+             "- Optional tools/operations declared DISABLED in the registry and not used in this run: "
+             + (", ".join(disabled) or "none")]
     lines += [f"- Unmet check: `{k}`" for k, v in sorted(checks.items()) if not v]
     lines += owner_docs or []
     _w(stage, "safety/known_limitations.md", "\n".join(lines) + "\n")
@@ -357,14 +392,13 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
                     "runs": detail["target_runs"]}))
     from ..mcp.preflight import op_catalog
 
-    disabled = sorted(k for k, e in op_catalog().items() if e["status"] == "DISABLED")
+    used = {f"{r['server']}.{r['op']}" for r in tool_results(ws)}  # CAPA-064: an operation this run used is not "disabled"
+    disabled = sorted(k for k, e in op_catalog().items() if e["status"] == "DISABLED" and k not in used)
     known_limitations(stage, checks, detail, disabled, owner_docs)
     sup_reports(ws, stage, checks, findings, detail)
     if not (stage / "configuration/target_baseline.json").is_file():
         _w(stage, "configuration/target_baseline.json", pretty_json(wo.get("target", {"status": "UNSPECIFIED"})))
-    inv = REPO_ROOT / "evidence/v0.4/inventory/tool-inventory.json"
-    if inv.is_file():
-        _w(stage, "configuration/toolchain_versions.json", inv.read_bytes())
+    stage_tool_records(ws, stage)  # CAPA-064 (TAA-RCC FND-04): this run's tools and models, not a stale inventory
     operational_inventory(ws, stage, run_id, fabro_run_id)
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
     quality = {"run_status": "COMPLETED" if all_phases_pass else "INCOMPLETE", "checks": checks,
