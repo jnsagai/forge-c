@@ -1,0 +1,34 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "artifact:sha256:c233cbb4ca1b68501ed66118cf433a5780a0ec7c3fe28071a74915bab75a3f27"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T13:12:31.143021Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-003",
+    "SWR-006",
+    "SWR-009",
+    "SWR-010",
+    "SWR-014",
+    "SWR-015",
+    "SWR-017"
+  ],
+  "requirement_quote": "When a scoped register write function is called, the RCC LL driver shall change only the bit named for that function in RCC_CR.HSION, RCC_CR.HSEON, RCC_AHB1ENR.GPDMA1EN, RCC_AHB1ENR.ADC12EN, RCC_AHB1RSTR.GPDMA1RST or RCC_AHB1RSTR.ADC12RST and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected duplicate CHECK IDs by aggregating all subcases into one CHECK per UT ID. Conditions and expected values are unchanged. Host execution passed; duplicate-ID validation failed. Corrected source needs verification; only one run_unit call was authorized.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "da72c1e85323a019947172ada94462c3ce160357c593d0ed68370151d2f007fb"
+  }
+}

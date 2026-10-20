@@ -1,0 +1,46 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    "inspection/SWE.4/INS-SWE.4-001.json",
+    "artifact:sha256:808e1abea36fe2ed1ab009bdef93f4094ab09f2129213756489d002f872bbf9e"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T13:19:52.193808Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-010",
+    "SWR-011",
+    "SWR-012",
+    "SWR-013",
+    "SWR-014",
+    "SWR-015",
+    "SWR-016",
+    "SWR-017",
+    "SWR-020"
+  ],
+  "requirement_quote": "When a scoped register write function is called, the RCC LL driver shall change only the bit named for that function in RCC_CR.HSION, RCC_CR.HSEON, RCC_AHB1ENR.GPDMA1EN, RCC_AHB1ENR.ADC12EN, RCC_AHB1RSTR.GPDMA1RST or RCC_AHB1RSTR.ADC12RST and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "SWE4-06 correction: grouped annotations assigned disable/query/reset specs to enable-only CHECKs. Split into one function and precise owner annotation per UT ID. All original comparisons and expected values remain in shared helpers. UT-017 now aggregates preservation across all four groups. Full host run PASS inv-92d832de999e4199.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "8e8d8f7590ca21edcc1785174a528a41b3369d64b6fbdca249ab0c7ab1ceea43"
+  }
+}

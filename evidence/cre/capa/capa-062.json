@@ -1,0 +1,100 @@
+{
+  "CAPA-062": {
+    "history": [
+      {
+        "at": "2026-10-20T13:46:11.850011Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[\"CAPA-062\"]",
+        "from_state": null,
+        "reason": "b008 (WO-0008C-ST-RCC-LL-b008) SWE.1-SWE.6 PASS; package BLOCKED on missing_required_pattern:software/src/*.c and missing_or_empty_section:software/src (header-only delivery)",
+        "seq": 495,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-20T13:46:11.874745Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 496,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-20T13:46:11.987886Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-066 assigned",
+        "seq": 497,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-20T13:48:34.317600Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[\"reproducer-run:rr-1605716b186e9d4d5949\", \"reproducer-run:rr-bf9fcb7e44980b94ba61\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 498,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-20T13:48:34.341256Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[\"git:0feeb644ee61..f896363abe02\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix f896363abe02 (patch 3511 bytes)",
+        "seq": 499,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-20T13:48:34.389380Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[\"reproducer-run:rr-038519f393492186b0ef\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-066 absent at f896363abe02",
+        "seq": 500,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-20T13:48:34.405195Z",
+        "capa_id": "CAPA-062",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 501,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "0feeb644ee6108ca73eb8c15c22a2360656f2922",
+      "f896363abe02effc3be2d95a6313234698491f7e",
+      "pd-5912171f2f2daa709a71"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<f896363abe02"
+      ],
+      "candidate_patch_sha256": "b41b29060bcb6df8346487d9339c93266d447d995257cc5cbd1fca9586e04d1c",
+      "capa_id": "CAPA-062",
+      "created_at": "2026-10-20T13:46:11.850011Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-062"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-066",
+      "reproducer_id": "RPR-066",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-1605716b186e9d4d5949",
+        "reproducer-run:rr-bf9fcb7e44980b94ba61"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the packager had no C-source view for a header-only delivery",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-20T13:48:34.405195Z"
+    }
+  }
+}

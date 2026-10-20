@@ -1,0 +1,46 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [
+    ".forge-run/gates/gate-log.jsonl",
+    "artifact:sha256:202133ba0e8778f35daeb9a68ebee3b8c85abcdd02f4a4f09dca772c3c1c741a"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T13:16:10.886620Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-010",
+    "SWR-011",
+    "SWR-012",
+    "SWR-013",
+    "SWR-014",
+    "SWR-015",
+    "SWR-016",
+    "SWR-017",
+    "SWR-020"
+  ],
+  "requirement_quote": "When a scoped register write function is called, the RCC LL driver shall change only the bit named for that function in RCC_CR.HSION, RCC_CR.HSEON, RCC_AHB1ENR.GPDMA1EN, RCC_AHB1ENR.ADC12EN, RCC_AHB1RSTR.GPDMA1RST or RCC_AHB1RSTR.ADC12RST and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected owner trace annotations: the leading @test @verifies line above each grouped test function now lists every USPEC exercised by that function. Secondary @test lines did not establish owner verification for the remaining items. Test conditions, expected values and CHECK IDs are unchanged. Full host run_unit PASS (inv-136edd33bead4c99); coverage PASS (inv-fb1ffbbd64334b55).",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "e9a92f58a3bda36983a3dd665120d6523e6297b437b7a70b5c4b076b95870a85"
+  }
+}

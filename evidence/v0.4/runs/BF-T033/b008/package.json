@@ -1,0 +1,21 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0008C-ST-RCC-LL-b008/forge-c-WO-0008C-ST-RCC-LL-b008-review.zip",
+  "archive_ref": "archive:sha256:b3a7d11ed5cb09a5c7b41ebe9eb8a0ca92e96b320f3448f41921b0cc6b7dd3eb",
+  "archive_sha256": "b3a7d11ed5cb09a5c7b41ebe9eb8a0ca92e96b320f3448f41921b0cc6b7dd3eb",
+  "finalized_at": "2026-10-20T13:39:33.221976Z",
+  "gap_count": 7,
+  "gaps": [
+    "missing_or_empty_section:software/src",
+    "missing_required_pattern:software/src/*.c",
+    "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:879",
+    "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:897",
+    "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:911",
+    "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:925",
+    "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_bus.h:939"
+  ],
+  "package_status": "BLOCKED",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0008C-ST-RCC-LL-b008",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

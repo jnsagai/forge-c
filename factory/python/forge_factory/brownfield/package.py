@@ -43,7 +43,34 @@ def findings(ws: Path) -> list[dict]:
     if code_mode(m) == "FROZEN" or style != "forge":  # OD-2026-10-20-02: vendor findings are owner gaps in any mode
         cc = (_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []
         out += [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
-                 "detail": f"delivered code check ({code_mode(m)}, {style} style)"} for x in cc]
+                 "detail": f"delivered code check ({code_mode(m)}, {style} style)"} for x in cc
+                if disposition_of(ws, x) is None]  # OD-2026-10-20-07: an owner disposition settles the finding
+    return out
+
+
+def disposition_of(ws: Path, finding: str) -> dict | None:
+    """The owner disposition (verification-dispositions.yaml, copied read-only by prepare) whose delivered_finding_regex
+    matches this recorded delivered-code finding; never written by an agent."""
+    import re
+
+    from ..inspection.defects import owner_dispositions
+
+    for d in owner_dispositions(ws):
+        rx = d.get("delivered_finding_regex")
+        if rx and re.search(rx, finding):
+            return d
+    return None
+
+
+def dispositioned(ws: Path) -> list[str]:
+    """Limitation lines for the delivered-code findings an owner disposition settles."""
+    cc = (_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []
+    out = []
+    for x in cc:
+        d = disposition_of(ws, x)
+        if d is not None:
+            out.append(f"DELIVERED_CODE finding {x} dispositioned by {d['id']} ({d['disposition']}; {d['approved_by']}, "
+                       f"{d['approved_at']}): {' '.join(str(d['limitation']).split())}")
     return out
 
 
@@ -84,4 +111,5 @@ def stage(ws: Path, stage_dir: Path) -> list[str]:
         ch = _load(ws, "change_report.json").get("changes") or []
         lines.append(f"- Corrections of the delivered code: {len(ch)} file(s), each linked to a CODE defect "
                      "(delivery/change_report.json).")
+    lines += [f"- {x}" for x in dispositioned(ws)]  # OD-2026-10-20-07: stated in every package, never hidden
     return lines

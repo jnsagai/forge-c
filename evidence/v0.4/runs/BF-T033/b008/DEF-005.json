@@ -1,0 +1,44 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T13:33:37.376189Z"
+    }
+  ],
+  "id": "DEF-005",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-001",
+    "SWR-002",
+    "SWR-003",
+    "SWR-004",
+    "SWR-005",
+    "SWR-006",
+    "SWR-007",
+    "SWR-008",
+    "SWR-009",
+    "SWR-010",
+    "SWR-011",
+    "SWR-012",
+    "SWR-013",
+    "SWR-014",
+    "SWR-015",
+    "SWR-016",
+    "SWR-017"
+  ],
+  "requirement_quote": "When a scoped register write function is called, the RCC LL driver shall change only the bit named for that function in RCC_CR.HSION, RCC_CR.HSEON, RCC_AHB1ENR.GPDMA1EN, RCC_AHB1ENR.ADC12EN, RCC_AHB1RSTR.GPDMA1RST or RCC_AHB1RSTR.ADC12RST and preserve all other bits of that register.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Original TCHECKs referenced Boolean accumulators, hiding named register fields from observation. Added direct register-field and query expressions to existing numbered checks, retaining all accumulated assertions and expected values. Initial run passed 21 tests but verified only 4 requirements.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_bus.c": "77025d78cc81d8a660687c3f0c292ebf7569f48cbfec136a6f6fbb0bbbaffe48",
+    "software/tests/software/scn_oscillators.c": "fadd97a9f751a4a6d1ae25862b02763a226bee53102d94fa60ea5fe27744d2c0",
+    "software/tests/software/scn_preservation.c": "e3b20d3254d3b49db47ab0c4eb8edefb4fa7b03b15462ef6db771f0973d1a2e2"
+  }
+}
