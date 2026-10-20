@@ -1,0 +1,27 @@
+{
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:dfe5df5378e9023079e6e11bead5ec6e39d7af9d7012eaa6f961a7785bef0140"
+  ],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T18:09:59.527677Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "FACTORY",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "preserving every other bit of that register and every other register in the array.",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "Robot passes 20/21 requirements. Full-array preservation fails on a register other than CR/SR; CR and model-derived SR checks pass. Header operations are single masked OR/AND writes. Investigate the model/array discrepancy before attributing a CODE defect. Assertions remain intact.",
+  "target_phase": null,
+  "test_files": {
+    "software/tests/software/scn_isolation.c": "6a12dad316b6295a39ff902ad394f7281a96251bfea9964c373e557794a58439"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "code_sha": "f003c1bd5858edc04bc55284548f94800d9f4628b54f349084c57357ec8f9db3",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T17:55:48.527400Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "preserving every other bit of that register and every other register in the array.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected duplicate CHECK source IDs by combining result and snapshot assertions per UT ID and retaining one UT-017 CHECK. Added zero, all-one and alternating seed patterns; expected behavior is unchanged.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_rcc.c": "32978f0609ec7b3f50bff484db6b768387538e5d18e17ef2793dd61a5108a7d5"
+  }
+}

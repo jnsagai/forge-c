@@ -1,0 +1,28 @@
+{
+  "code_sha": "f003c1bd5858edc04bc55284548f94800d9f4628b54f349084c57357ec8f9db3",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T18:07:11.664804Z"
+    }
+  ],
+  "id": "DEF-002",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "preserving every other bit of that register and every other register in the array.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Test correction: accumulate full-array preservation results across all seeded patterns and publish each TCHECK identifier once. Previously the scenario repeated identifiers for 96 events. Query checks additionally observe the named masks explicitly; expected query values remain 0U and 1U.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_isolation.c": "c66c679631f3bfb001c98d83d6f8a5fc2d11ef06601313f8d5fd47b9c4fb1494",
+    "software/tests/software/scn_oscillators.c": "e9077330a59524be688fca2b4530996c9f92f0a5d49a3b1b84ba04d415a752a9",
+    "software/tests/software/scn_peripherals.c": "eaeacdaf40a1bcafb2d5e86a82aa5e2552af0499781b9bfead0347554242149d"
+  }
+}

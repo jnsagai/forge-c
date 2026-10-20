@@ -1,0 +1,28 @@
+{
+  "code_sha": "f003c1bd5858edc04bc55284548f94800d9f4628b54f349084c57357ec8f9db3",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [
+    "artifact:sha256:45058d00c404ac995f1d868b7377a96f82a8f495d1a1deaaf9a0004c35856cfa"
+  ],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T18:12:03.780225Z"
+    }
+  ],
+  "id": "DEF-004",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-017"
+  ],
+  "requirement_quote": "preserving every other bit of that register and every other register in the array.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected isolation to use target RAM backing: MMIO alias reads track their target and SR follows CR, so full-array snapshots falsely detected other writes (DEF-003). Retained all operations, patterns, states and full-array checks; removed the SR exception.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_isolation.c": "5e215da70f3a0b3dbada9d55f98794c0a7852760a3a7833a90acd07f1743a26a"
+  }
+}
