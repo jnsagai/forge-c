@@ -1,0 +1,23 @@
+{
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "approved inputs / factory assets are changed by a human only",
+      "status": "ESCALATED",
+      "ts": "2026-10-20T07:47:28.604422Z"
+    }
+  ],
+  "id": "DEF-001",
+  "kind": "FACTORY",
+  "reported_by": "swe4-author",
+  "requirement_ids": [],
+  "requirement_quote": "",
+  "schema": "forge-c/defect/0.5",
+  "status": "ESCALATED",
+  "summary": "Unit tests PASS (UT-001 through UT-010). The swe4-author skill requires verification/unit/unit_verification_summary.json, but write_file returns FORGE_POLICY:WRITE_SCOPE_DENIED and the file is absent. Align role scope or generate the summary in run_unit.",
+  "target_phase": null,
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "b9eb585df9cd1329a78ad2d76be32ba775187e7cfec0e930ab506fb7ba02e9a6"
+  }
+}

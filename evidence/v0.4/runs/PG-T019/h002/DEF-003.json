@@ -1,0 +1,27 @@
+{
+  "code_sha": "9c1786f187fbfaff771e853e95a75b297461791956853083714ab1a27f75ee9c",
+  "detected_phase": "SWE.4",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T07:51:53.671197Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "TEST",
+  "reported_by": "swe4-author",
+  "requirement_ids": [
+    "SWR-006",
+    "SWR-007"
+  ],
+  "requirement_quote": "If IWDG_SR.PVU or IWDG_SR.RVU is still set after the supplied timeout during HAL_IWDG_Init with valid arguments",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "SWE4-02: corrected held-flag tests to require timeout exhaustion before HAL_TIMEOUT. Previously one poll passed. UT-006 now checks polls >= timeout; UT-007 retains both <= bounds. Driver and fake unchanged.",
+  "target_phase": "SWE.4",
+  "test_files": {
+    "software/tests/unit/test_iwdg.c": "650b300807804bb66597e26ab5e3cefecb5ed2730627ddbae975fa0bbddd9599"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "code_sha": "9c1786f187fbfaff771e853e95a75b297461791956853083714ab1a27f75ee9c",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T07:59:44.054870Z"
+    }
+  ],
+  "id": "DEF-004",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-002"
+  ],
+  "requirement_quote": "When HAL_IWDG_Init receives valid arguments, the IWDG driver shall write 0xCCCC followed by 0x5555 to IWDG_KR.KEY before configuring the prescaler and reload, and write 0xAAAA to IWDG_KR.KEY only if IWDG_SR.PVU and IWDG_SR.RVU both equal zero within the supplied timeout.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected incomplete SWR-002 target observation: TCHECK(2), already asserted by the Robot test, now names KR.KEY and both update flags. KR is write-only and correctly reads zero in the behavioural model; both flags must be clear after successful initialization. The previous check named only ONF and status, leaving SWR-002 unobserved.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_initialization.c": "c9c5497857ab1389f5d89378aa545c480ee82b7541d00d99bd793e9a811ff1d9",
+    "software/tests/software/test_iwdg_requirements.robot": "baa050174c2496ca292eed97dbe0c32a4acc8c5a5cac021e4b8396f1c2fd0e34"
+  }
+}
