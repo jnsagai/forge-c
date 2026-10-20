@@ -1,0 +1,16 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0008B-STM32N6-RCC-HAL-b004/forge-c-WO-0008B-STM32N6-RCC-HAL-b004-review.zip",
+  "archive_ref": "archive:sha256:18b1ebe0a5ee4cbf024ca81efd36dc39c8b311b25d1e782e87c8041cd40d6588",
+  "archive_sha256": "18b1ebe0a5ee4cbf024ca81efd36dc39c8b311b25d1e782e87c8041cd40d6588",
+  "finalized_at": "2026-10-20T02:20:43.533237Z",
+  "gap_count": 2,
+  "gaps": [
+    "missing_or_empty_file:safety/software_safety_analysis.md",
+    "missing_or_empty_file:safety/tool_assurance_assessment.md"
+  ],
+  "package_status": "BLOCKED",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0008B-STM32N6-RCC-HAL-b004",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

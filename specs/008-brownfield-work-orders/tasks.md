@@ -138,7 +138,7 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
 ## Phase 8: Validation runs
 
 - [X] BF-T030 Live FROZEN run of 0008a (Codex authors, Claude inspectors). Record SC-001, SC-004 and SC-007 evidence in `evidence/v0.4/runs/BF-T030/`.
-- [ ] BF-T031 Live FIX_ALLOWED run of 0008b. Record SC-003 evidence in `evidence/v0.4/runs/BF-T031/`.
+- [X] BF-T031 Live FIX_ALLOWED run of 0008b. Record SC-003 evidence in `evidence/v0.4/runs/BF-T031/`.
 
 ## Phase 9: User Story 6 — ST pilot (P3)
 

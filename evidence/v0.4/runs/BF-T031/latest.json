@@ -1,6 +1,6 @@
 {
   "task": "BF-T031",
-  "status": "IN_PROGRESS",
+  "status": "PASS",
   "runs": {
     "b002": {
       "work_order": "WO-0008B-STM32N6-RCC-HAL-b002",
@@ -16,6 +16,40 @@
         "conformance did not resolve the LL functions in the PROVIDED header, giving 18 false findings; static no-write cases for invalid parameters and the start-up invariant were also false findings"
       ],
       "fixes": "e7116ed (early CODE defects claimed at SWE.3 entry) and the commit after it (SWE.3 CODE defects in fix immediately, provided definitions resolved, invariant / branch-dependent no-write cases left to tests, contradictions in FIX_ALLOWED filed as CODE defects in fix); on the b002 work products conformance now reports exactly the seeded defect"
+    },
+    "b004": {
+      "work_order": "WO-0008B-STM32N6-RCC-HAL-b004",
+      "fabro_run_id": "01M5BG6J5817FM895WFS650JW9",
+      "factory_commit": "1890afb",
+      "phases": "SWE.1-SWE.6 inspections PASS (run 01:53-02:20 UTC, about 27 min)",
+      "defect_lifecycle": "DEF-001 CODE (filed by the SWE.2 author against the delivered HAL) OPEN -> IN_FIX (claimed at SWE.3 entry) -> FIXED (SWE.3 inspection PASS) -> VERIFIED (SWE.4 requirement-based tests)",
+      "change_report": [
+        {
+          "path": "software/hal/stm32n6xx_hal_rcc.c",
+          "defects": [
+            "DEF-001"
+          ],
+          "original": "a4b259a463a5a1bfec8d3bdbf2e1d5adcddcb06c66324b72f44a1c1434f30271",
+          "corrected": "53b5a8bcdd1d6250bbbe1c467042be8e5e20d4ab054ec4c65277e3e6975d477f",
+          "lines_added": 1,
+          "lines_removed": 0
+        }
+      ],
+      "corrected_equals_pre_seed_r164": true,
+      "untouched_files": "software/hal/stm32n6xx_hal_rcc.h UNCHANGED",
+      "package": {
+        "status": "BLOCKED",
+        "gap_count": 2,
+        "gaps": [
+          "missing_or_empty_file:safety/software_safety_analysis.md",
+          "missing_or_empty_file:safety/tool_assurance_assessment.md"
+        ],
+        "note": "the 2 gaps are the owner-signed safety documents (example 0008b is not in the owner's RCC safety scope)"
+      }
     }
+  },
+  "success_criteria": {
+    "SC-003": "PASS: 100% of changed lines (1 added) belong to the change linked to DEF-001; the header is byte-identical; the corrected file equals the pre-seed r164 file",
+    "SC-007": "PASS: about 27 min"
   }
 }
