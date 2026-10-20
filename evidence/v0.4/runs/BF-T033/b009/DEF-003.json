@@ -1,0 +1,31 @@
+{
+  "code_sha": "37ebefaca08ec90ca23e08980f75727d6e374aa8a2a94e181fd76c620aa6ad9b",
+  "detected_phase": "SWE.6",
+  "evidence_refs": [],
+  "history": [
+    {
+      "note": "test corrected in its own phase; reviewed by the inspector and the human",
+      "status": "DECLARED",
+      "ts": "2026-10-20T14:48:37.634644Z"
+    }
+  ],
+  "id": "DEF-003",
+  "kind": "TEST",
+  "reported_by": "swe6-author",
+  "requirement_ids": [
+    "SWR-003",
+    "SWR-006",
+    "SWR-009",
+    "SWR-014"
+  ],
+  "requirement_quote": "When the HSI ready query is called, the RCC LL driver shall return 1U when RCC_SR.HSIRDY equals 1U, else 0U.",
+  "schema": "forge-c/defect/0.5",
+  "status": "DECLARED",
+  "summary": "Corrected test observability only: existing aggregate assertions passed, but TCHECK expressions lacked directly named register fields. Added checks 103, 106, 109 and 114 for register bits and query results, with corresponding Robot assertions. Preserved all existing zero/one query checks.",
+  "target_phase": "SWE.6",
+  "test_files": {
+    "software/tests/software/scn_bus.c": "a7199e591fcd5d620182e7b1226401352073f4b9c344618724874f68d60b99e5",
+    "software/tests/software/scn_oscillators.c": "f2d2ca0314762d1c8a25e14d97ca89158a34efb04621bcd4ded13f86c44d37fa",
+    "software/tests/software/test_rcc_requirements.robot": "617c6d266dd830dba9ac7248f0259c2eafae28c5c7f0aa14d03cd9922eea434b"
+  }
+}

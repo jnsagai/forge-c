@@ -1,0 +1,13 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0008C-ST-RCC-LL-b009/forge-c-WO-0008C-ST-RCC-LL-b009-review.zip",
+  "archive_ref": "archive:sha256:b59fd3e0defad987b53d5f88ee8b67f2d562ff58d0008e969ce51ec95c5ead5a",
+  "archive_sha256": "b59fd3e0defad987b53d5f88ee8b67f2d562ff58d0008e969ce51ec95c5ead5a",
+  "finalized_at": "2026-10-20T14:53:52.155062Z",
+  "gap_count": 0,
+  "gaps": [],
+  "package_status": "READY_FOR_OFFLINE_REVIEW",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0008C-ST-RCC-LL-b009",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

@@ -1,0 +1,74 @@
+# Software requirements
+
+Scope: header-only RCC LL register operations for HSI, HSE, GPDMA1 and ADC12. Set and clear requirements describe the resulting logical register bits; the manifest permits the delivered ST set/clear register aliases. Verification uses a register-array model that applies those aliases to the logical registers before comparing results. Each peripheral requirement concerns the individual named peripheral. Register operations do not add waiting, timeouts, parameter handling, error codes, or status returns to void functions.
+
+- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.
+  - Source: RM0486 p.480
+  - Verification: Host register-array test: after the call, RCC_CR.HSION equals 1U.
+- **SWR-002** When the HSI disable function is called, the RCC LL driver shall clear RCC_CR.HSION.
+  - Source: RM0486 p.480
+  - Verification: Host register-array test: after the call, RCC_CR.HSION equals 0U.
+- **SWR-003** When the HSI ready query is called, the RCC LL driver shall return 1U when RCC_SR.HSIRDY equals 1U, else 0U.
+  - Source: RM0486 p.482
+  - Verification: Host register-array test: initialize RCC_SR.HSIRDY to 0U and 1U with other flags varied; the returned values equal 0U and 1U respectively.
+- **SWR-004** When the HSE enable function is called, the RCC LL driver shall set RCC_CR.HSEON.
+  - Source: RM0486 p.480
+  - Verification: Host register-array test: after the call, RCC_CR.HSEON equals 1U.
+- **SWR-005** When the HSE disable function is called, the RCC LL driver shall clear RCC_CR.HSEON.
+  - Source: RM0486 p.480
+  - Verification: Host register-array test: after the call, RCC_CR.HSEON equals 0U.
+- **SWR-006** When the HSE ready query is called, the RCC LL driver shall return 1U when RCC_SR.HSERDY equals 1U, else 0U.
+  - Source: RM0486 p.482
+  - Verification: Host register-array test: initialize RCC_SR.HSERDY to 0U and 1U with other flags varied; the returned values equal 0U and 1U respectively.
+- **SWR-007** When the GPDMA1 clock enable function is called, the RCC LL driver shall set RCC_AHB1ENR.GPDMA1EN.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: after the call for GPDMA1, RCC_AHB1ENR.GPDMA1EN equals 1U.
+- **SWR-008** When the GPDMA1 clock disable function is called, the RCC LL driver shall clear RCC_AHB1ENR.GPDMA1EN.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: after the call for GPDMA1, RCC_AHB1ENR.GPDMA1EN equals 0U.
+- **SWR-009** When the GPDMA1 clock is-enabled query is called, the RCC LL driver shall return 1U when RCC_AHB1ENR.GPDMA1EN equals 1U, else 0U.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: initialize RCC_AHB1ENR.GPDMA1EN to 0U and 1U with ADC12EN varied; the returned values equal 0U and 1U respectively.
+- **SWR-010** When the GPDMA1 reset assert function is called, the RCC LL driver shall set RCC_AHB1RSTR.GPDMA1RST.
+  - Source: RM0486 p.548
+  - Verification: Host register-array test: after the call for GPDMA1, RCC_AHB1RSTR.GPDMA1RST equals 1U.
+- **SWR-011** When the GPDMA1 reset release function is called, the RCC LL driver shall clear RCC_AHB1RSTR.GPDMA1RST.
+  - Source: RM0486 p.548
+  - Verification: Host register-array test: after the call for GPDMA1, RCC_AHB1RSTR.GPDMA1RST equals 0U.
+- **SWR-012** When the ADC12 clock enable function is called, the RCC LL driver shall set RCC_AHB1ENR.ADC12EN.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: after the call for ADC12, RCC_AHB1ENR.ADC12EN equals 1U.
+- **SWR-013** When the ADC12 clock disable function is called, the RCC LL driver shall clear RCC_AHB1ENR.ADC12EN.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: after the call for ADC12, RCC_AHB1ENR.ADC12EN equals 0U.
+- **SWR-014** When the ADC12 clock is-enabled query is called, the RCC LL driver shall return 1U when RCC_AHB1ENR.ADC12EN equals 1U, else 0U.
+  - Source: RM0486 p.575
+  - Verification: Host register-array test: initialize RCC_AHB1ENR.ADC12EN to 0U and 1U with GPDMA1EN varied; the returned values equal 0U and 1U respectively.
+- **SWR-015** When the ADC12 reset assert function is called, the RCC LL driver shall set RCC_AHB1RSTR.ADC12RST.
+  - Source: RM0486 p.548
+  - Verification: Host register-array test: after the call for ADC12, RCC_AHB1RSTR.ADC12RST equals 1U.
+- **SWR-016** When the ADC12 reset release function is called, the RCC LL driver shall clear RCC_AHB1RSTR.ADC12RST.
+  - Source: RM0486 p.548
+  - Verification: Host register-array test: after the call for ADC12, RCC_AHB1RSTR.ADC12RST equals 0U.
+- **SWR-017** When any bit-writing function specified in SWR-001 through SWR-016 is called, the RCC LL driver shall change only the bit named by its applicable requirement and preserve all other bits of that register.
+  - Source: RM0486 p.480, p.548, p.575
+  - Verification: Host register-array tests for every specified write: initialize the selected bit to both values and other bits to alternating and complementary patterns; the final register equals the initial register with only the selected bit assigned its required value.
+- **SWR-018** While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.
+  - Source: RM0486 p.479, p.481, p.548, p.575
+  - Verification: SWE.6 Robot startup test: initialize and snapshot the RCC register array, execute startup without LL calls, and verify every RCC array value remains unchanged.
+- **SWR-019** The RCC LL driver shall contribute at most 4096 bytes of flash for the in-scope functions in the target resource measurement build.
+  - Source: work-order budget (owner development target)
+  - Verification: SWE.6 Robot size-tool check: the linked in-scope driver flash contribution is at most 4096 bytes.
+- **SWR-020** The RCC LL driver shall contribute 0 bytes of static RAM by keeping no persistent state, within the 64-byte owner development budget.
+  - Source: work-order budget (owner development target)
+  - Verification: SWE.6 Robot size-tool check: driver-attributed static data and zero-initialized data total 0 bytes, which is within 64 bytes.
+- **SWR-021** The RCC LL driver shall use at most 128 bytes of stack per in-scope function call in the target resource measurement build.
+  - Source: work-order budget (owner development target)
+  - Verification: SWE.6 Robot stack-tool check: the maximum stack usage attributed to any in-scope call, including any callees, is at most 128 bytes.
+
+## Open points
+
+- Target safety allocation: ASIL B (SC-RCC-2026-10-18); software safety allocation PENDING owner allocation review. No software safety requirements are allocated.
+- The manifest records upstream status NOT_PROVIDED and identifies an unapproved DRAFT_TEMPLATE with placeholders; inputs/upstream-inputs.yaml is absent. No approved upstream SSR or bidirectional system-to-software safety allocation is available.
+- Target silicon revision is UNSPECIFIED in the manifest.
+- Flash, static RAM and stack budgets are work-order owner development targets; approved system-level resource allocations are not provided.

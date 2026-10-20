@@ -70,10 +70,35 @@
         "b008/package.json",
         "b008/DEF-001..005.json"
       ]
+    },
+    "b009": {
+      "work_order": "WO-0008C-ST-RCC-LL-b009",
+      "fabro_run_id": "01M5CSH6HY5PT8GYK0YS968K62",
+      "factory_commit": "0670b9f (own worktree)",
+      "result": "SWE.1-SWE.6 PASS on ST's delivered RCC code (STM32CubeN6 stm32n6xx-hal-driver v1.4.0, FROZEN, 11 scope functions)",
+      "package": {
+        "status": "READY_FOR_OFFLINE_REVIEW",
+        "gaps": 0,
+        "archive_sha256_prefix": "b59fd3e0defad987",
+        "dispositions": "OD-2026-10-20-07 (5 GL-ARG-01 vendor naming findings, stated as limitations)",
+        "safety_documents": "owner-signed RCC SSA/TAA v1.1 (OD-2026-10-20-05)"
+      },
+      "measurements": {
+        "unit": "PASS (host device map)",
+        "coverage_scope": "functions/regions/branches 100% of 11 delivered functions",
+        "integration": "PASS (host)",
+        "renode": "66 checks passed, 0 failed (8 KB RCC model with RM0486 set/clear registers)",
+        "robot": "21/21 tests, 21/21 requirements",
+        "cppcheck": "0 general, 0 MISRA subset",
+        "flash": "172 B",
+        "stack": "8 B"
+      },
+      "not_claimed": "offline review candidate only: no compliance, certification, safety approval or production release"
     }
   },
   "disposition_support": {
     "decision": "pd-307af136c18b4ee7a10d",
     "owner_decision": "OD-2026-10-20-07"
-  }
+  },
+  "status": "PASS"
 }
