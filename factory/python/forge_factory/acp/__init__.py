@@ -33,17 +33,74 @@ def acp_command(ws: _Path, node: str, agent: str = "codex") -> str:
             + (f" --agent {agent}" if agent != "codex" else ""))
 
 
+_NODE = _re.compile(r"^([ \t]*)(\w+) \[", _re.M)
+
+
+def _close(text: str, i: int) -> int | None:
+    """Index of the ']' closing the attribute list that starts at `i`, outside double-quoted strings (backslash
+    escapes honoured); None when it never closes."""
+    q = False
+    while i < len(text):
+        c = text[i]
+        if q and c == "\\":
+            i += 2
+            continue
+        if c == '"':
+            q = not q
+        elif c == "]" and not q:
+            return i
+        i += 1
+    return None
+
+
+def statements(graph: str):
+    """Every `name [attrs]` node statement as (start, end, indent, name, attrs); attrs may span lines (CAPA-051: a
+    prompt holding real line breaks, e.g. a code example, spans several lines)."""
+    pos = 0
+    for m in _NODE.finditer(graph):
+        if m.start() < pos:
+            continue
+        end = _close(graph, m.end())
+        if end is None or graph[end + 1:].split("\n", 1)[0].strip():
+            continue
+        pos = end + 1
+        yield m.start(), end + 1, m.group(1), m.group(2), graph[m.end():end]
+
+
+def _split_attrs(attrs: str) -> list[str]:
+    out, q, i, start = [], False, 0, 0
+    while i < len(attrs):
+        c = attrs[i]
+        if q and c == "\\":
+            i += 2
+            continue
+        if c == '"':
+            q = not q
+        elif c == "," and not q:
+            out.append(attrs[start:i])
+            start = i + 1
+        i += 1
+    out.append(attrs[start:])
+    return [a.strip() for a in out if a.strip()]
+
+
 def attach(graph: str, nodes: dict[str, dict], ws: _Path, roles: tuple[str, ...] = ("-author",),
            agent: str = "codex") -> tuple[str, list[str]]:
     """Make the agent nodes whose role ends with one of `roles` ACP nodes of `agent` (codex | claude); API-only
     attributes are removed. Returns the new graph text and the converted node ids."""
-    done = []
-    out = []
-    for line in graph.splitlines():
-        m = _re.match(r"^(\s*)(\w+) \[(.*)\]\s*$", line)
-        if m and m.group(2) in nodes and nodes[m.group(2)].get("role", "").endswith(roles) and 'prompt="' in line:
-            attrs = _re.sub(r'(^|,\s*)model="[^"]*"', "", m.group(3)).lstrip(", ")
-            line = f'{m.group(1)}{m.group(2)} [backend="acp", acp.command="{acp_command(ws, m.group(2), agent)}", {attrs}]'
-            done.append(m.group(2))
-        out.append(line)
-    return "\n".join(out) + ("\n" if graph.endswith("\n") else ""), done
+    done, out, pos = [], [], 0
+    for start, end, indent, name, attrs in statements(graph):
+        if name in nodes and nodes[name].get("role", "").endswith(roles) and 'prompt="' in attrs:
+            kept = ", ".join(a for a in _split_attrs(attrs) if not a.startswith("model="))
+            out += [graph[pos:start], f'{indent}{name} [backend="acp", acp.command="{acp_command(ws, name, agent)}", '
+                    f'{kept}]']
+            pos = end
+            done.append(name)
+    out.append(graph[pos:])
+    return "".join(out), done
+
+
+def native_agent_nodes(graph: str) -> list[str]:
+    """Agent nodes (a prompt) that would run on the Fabro run model rather than on an ACP backend."""
+    return [name for _s, _e, _i, name, attrs in statements(graph)
+            if 'prompt="' in attrs and 'backend="acp"' not in attrs]

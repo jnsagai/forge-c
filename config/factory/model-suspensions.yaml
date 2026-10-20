@@ -1,0 +1,14 @@
+# Owner decisions suspending a run-model provider. While a provider is listed here, workorder.run refuses a work
+# order that would leave any agent node (any node with a prompt) on the Fabro run model of that provider: every agent
+# node must run on an ACP backend (authors on Codex, inspectors and the Release Manager on Claude). Only the owner
+# removes an entry.
+schema_version: '1.0'
+suspended:
+  - provider: deepseek
+    decision: OD-2026-10-20-03
+    since: '2026-10-20'
+    statements:
+      - "stop using deepseek at all, just resume when I say so"
+      - "I dont have more credits for deepseek, don use it"
+      - "replace deepseek by other model, claude or codex by now"
+    resume: only on a new owner decision
