@@ -140,8 +140,8 @@ def delivered_unit(ws: Path, out_dir: Path) -> Path | None:
     lines = ["/* GENERATED build-only unit (forge_factory.brownfield.cmsis): delivered headers + scope wrappers */",
              *[f'#include "{Path(h).name}"' for h in headers]]
     for name in scope:
-        sig = re.search(r"(?:__STATIC_INLINE|static\s+inline)\s+([A-Za-z_][\w\s]*?[\w*])\s+" + re.escape(name)
-                        + r"\s*\(([^)]*)\)\s*\{", code)
+        sig = re.search(r"^[ \t]*(?:__STATIC_INLINE|__STATIC_FORCEINLINE|static[ \t]+inline)[ \t]+"
+                        r"([A-Za-z_][\w \t]*?[\w*])[ \t]+" + re.escape(name) + r"\s*\(([^)]*)\)\s*\{", code, re.M)
         if not sig:
             continue
         ret, params = " ".join(sig.group(1).split()), sig.group(2).strip()
