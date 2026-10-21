@@ -129,6 +129,8 @@ def validate(doc, schema: dict, path: str = "$") -> list[str]:
             out.append(f"{path}: {doc!r} does not match {schema['pattern']}")
         if schema.get("minLength") and len(doc) < schema["minLength"]:
             out.append(f"{path}: shorter than {schema['minLength']}")
+        if "maxLength" in schema and len(doc) > schema["maxLength"]:
+            out.append(f"{path}: longer than {schema['maxLength']} characters")
     if tt == "object":
         for k in schema.get("required", []):
             if k not in doc:
@@ -142,6 +144,8 @@ def validate(doc, schema: dict, path: str = "$") -> list[str]:
     if tt == "array":
         if len(doc) < schema.get("minItems", 0):
             out.append(f"{path}: fewer than {schema['minItems']} items")
+        if "maxItems" in schema and len(doc) > schema["maxItems"]:
+            out.append(f"{path}: more than {schema['maxItems']} items (merge related entries)")
         for i, v in enumerate(doc):
             out += validate(v, schema.get("items", {}), f"{path}[{i}]")
     return out

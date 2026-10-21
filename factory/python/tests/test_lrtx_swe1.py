@@ -345,3 +345,11 @@ def test_effects_may_not_write_read_only_fields(ws):
     assert any(f.startswith("[wvu_set] effect WVU: IWDG_SR.WVU is read-only in RM0486 (access r)") for f in found), found
     ok = swe1.validate_group(ws, ANSWERS["requirements:IWDG_SR_2"], g, SYS, index(ws / "inputs/sections/RM0486"))
     assert not any("read-only" in f for f in ok)
+
+
+def test_schema_validator_enforces_upper_bounds():
+    s = {"type": "object", "properties": {"a": {"type": "array", "maxItems": 2, "items": {"type": "string",
+                                                                                         "maxLength": 3}}}}
+    assert S.validate({"a": ["x", "y"]}, s) == []
+    errs = S.validate({"a": ["x", "y", "long"]}, s)
+    assert "$.a: more than 2 items (merge related entries)" in errs and "$.a[2]: longer than 3 characters" in errs

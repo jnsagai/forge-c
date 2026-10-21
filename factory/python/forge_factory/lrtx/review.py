@@ -19,7 +19,9 @@ from . import visit as V
 
 VERDICT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["verdict", "findings", "evidence_checked"],
                   "properties": {"verdict": {"type": "string", "enum": ["PASS", "FAIL"]},
-                                 "findings": {"type": "array", "items": {"type": "string", "minLength": 10}},
+                                 # lrtx7 (2026-10-21): check_inspection accepts at most 10 findings per item
+                                 "findings": {"type": "array", "maxItems": 10,
+                                              "items": {"type": "string", "minLength": 10}},
                                  "evidence_checked": {"type": "array", "minItems": 1, "items": {"type": "string"}}}}
 MAX_FILE_CHARS = 40_000
 
@@ -200,7 +202,11 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         return _reply(ws, phase, "FAILED", ["BASELINE_CHANGED_DURING_INSPECTION"], budget)
     ctx = ToolContext(server="forge-evidence-mcp", op="check_inspection", role=role, phase=phase, workspace=ws,
                       run_id=json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"])
-    res = EV.check_inspection(ctx, EV.InspectIn(phase=phase, baseline_id=bl["baseline_id"], verdicts=verdicts))
+    try:
+        res = EV.check_inspection(ctx, EV.InspectIn(phase=phase, baseline_id=bl["baseline_id"], verdicts=verdicts))
+    except ValueError as exc:  # pydantic ValidationError: a contract mismatch is a factory finding, not a crash
+        return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
+                      budget)
     S.record(ws, f"{phase}/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                      "result": res, "items": sorted(verdicts)})
     status = "PASS" if res["status"] == "PASS" else "REWORK"

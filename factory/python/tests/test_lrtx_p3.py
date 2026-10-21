@@ -331,3 +331,18 @@ def test_recorded_gaps_later_phase_evidence_and_present_startup_rules_are_re_jud
     real = "SWR-001 requires the driver to set IWDG_SR.WVU, which is a read-only hardware status flag."
     assert review.fact_conflicts(ws1, "SWE.1", "SWE1-02", [real]) == []
     assert review.fact_conflicts(ws1, "SWE.2", "SWE2-01", false[:1]) == []  # SWE.1 rules only
+
+
+def test_every_schema_valid_verdict_fits_the_check_inspection_contract():
+    """lrtx7 (2026-10-21): 11+ findings for one item passed the task schema but check_inspection refused the record."""
+    from forge_factory.mcp.servers import evidence as EV
+
+    many = {"verdict": "FAIL", "findings": [f"finding number {i} about SWR-001" for i in range(11)],
+            "evidence_checked": ["workproducts/SWE.1/software_requirements.md"]}
+    assert any("findings" in e for e in S.validate(many, review.VERDICT_SCHEMA))
+    ten = {**many, "findings": many["findings"][:10]}
+    assert S.validate(ten, review.VERDICT_SCHEMA) == []
+    EV.InspectIn(phase="SWE.1", baseline_id="BL-SWE.1-001",
+                 verdicts={"SWE1-01": {"verdict": "FAIL", "findings": ten["findings"],
+                                       "evidence_refs": ["configuration/baselines/SWE.1/BL-SWE.1-001.json",
+                                                         *["x"] * 8]}})
