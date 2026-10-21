@@ -255,3 +255,28 @@ Run summary:
     checklist maximum.
   - So the extension only ever applies to author-gate cycles; every extended cycle in earlier evidence had
     `failed_inspections: 0`. It affects the Codex/Claude line in the same way.
+
+## lrtxq1 — QM experiment, factory c31bda9, 2026-10-21 19:49–19:59 UTC: one inspector finding left; rework cycles burnt
+
+- **Work order:** example `0009q-iwdg-ll-qm`, the 0009a IWDG LL work order under the owner QM scope
+  SC-IWDG-QM-2026-10-21 (OD-2026-10-21-01).
+  - It is not part of the T024 campaign and not comparable with the ASIL B line.
+- **Run summary:** `verify.json` PASS; package BLOCKED (48 gaps). 22 calls in 9.5 minutes, 4.5 Wh GPU energy at
+  100 % sample coverage.
+- **Author:** frozen on the first visit (13 calls). The safety file states the QM scope as the author instructions
+  prescribe.
+- **Inspection:**
+  - 7 of 8 SWE.1 items PASS on the first inspection, including SWE1-01, SWE1-02, SWE1-05 and SWE1-06, which failed
+    in every ASIL B run.
+  - The only finding is SWE1-03: "no failure handling or safe states specified". The rc1 work order has the same
+    content (one reset/startup requirement, no failure-handling requirement), and the Claude inspector passed
+    SWE1-03 on it at the first inspection.
+  - So this is the local inspector being stricter than the reference inspector, not a defect of the work products.
+- **Factory defect (structured rework):** cycles 2 and 3 were each spent in about 10 seconds without any change.
+  - The SWE1-03 finding names no requirement, so it was routed to the cross-cutting task.
+  - The model returned the same answer in one call (5.7 s), and the unchanged validator accepted it.
+  - The identical baseline BL-SWE.1-001 was frozen again, and the inspection reused its verdicts for that baseline
+    (0 calls).
+  - The cross-cutting instructions only ask for the reset/startup behaviour and the coverage rules, so the task has
+    no stated place for a failure-handling requirement.
+  - A rework visit that leaves every answer unchanged should not count as a reworked baseline.

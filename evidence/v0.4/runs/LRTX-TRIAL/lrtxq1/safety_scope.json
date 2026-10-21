@@ -1,0 +1,30 @@
+{
+  "approved_at": "2026-10-21",
+  "approved_by": "Jefferson Nascimento",
+  "document_issues": [
+    "SAFETY_DOC_NOT_REGISTERED:software_safety_analysis",
+    "SAFETY_DOC_NOT_REGISTERED:tool_assurance_assessment"
+  ],
+  "documents": [],
+  "na": {
+    "software_safety_analysis": {
+      "approved_at": "2026-10-21",
+      "approved_by": "Jefferson Nascimento",
+      "rationale": "QM development scope set by the owner for this experiment: no safety requirements are allocated to the IWDG LL software, so no software safety analysis is performed. The work order makes no safety claim."
+    },
+    "tool_assurance_assessment": {
+      "approved_at": "2026-10-21",
+      "approved_by": "Jefferson Nascimento",
+      "rationale": "QM development scope set by the owner for this experiment: no ISO 26262 tool confidence is claimed for the tools that produced or verified this work order, so no tool assurance assessment is performed."
+    }
+  },
+  "scope": {
+    "allocation_review_ref": null,
+    "hsi_hash": null,
+    "product_asil_source": "approved:owner-decision-2026-10-21 by Jefferson Nascimento - QM development scope for the local-profile experiment 0009q-iwdg-ll-qm (ASPICE evidence only, no ISO 26262 safety claims; owner instruction \"define the scope and go ahead\", OD-2026-10-21-01)",
+    "scope_id": "SC-IWDG-QM-2026-10-21",
+    "source_requirements_hash": "bfee8b2ee260d6e114e2cf92b77336da4c8534e11efd53cf3c2a7995910b9286",
+    "target_asil": "QM",
+    "work_order_id": "WO-0009Q-STM32N6-IWDG-LL-QM-lrtxq1"
+  }
+}
