@@ -205,8 +205,12 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
     used = {x for v in alloc.values() for x in v}
     out += [f"function {n} is not allocated to any requirement" for n in fns if n not in used]
     for s, text in func.items():
-        out += [f"{s} names {n}, which is not a defined function" for n in set(_fn_rx(ws).findall(text))
-                if n not in fns and not n.endswith(("_OFFSET", "_MSK", "_POS"))]
+        # T016 SWE.2 trial (2026-10-21): the bare finding left the model naming the function differently through all
+        # repairs (LL_IWDG_IsActive for LL_IWDG_IsEnabled); the frozen requirement fixes the name, so say what to do
+        out += [f"{s} names {n}, which is not a defined function - the frozen SWE.1 requirement fixes this name: "
+                f"define the function as {n} (rename the function you gave another name) and allocate {s} to it"
+                + (f" (functions now allocated to {s}: {', '.join(alloc[s])})" if alloc.get(s) else "")
+                for n in sorted(set(_fn_rx(ws).findall(text))) if n not in fns and not n.endswith(("_OFFSET", "_MSK", "_POS"))]
     calls = {c["case"]: c for c in doc["calls"]}
     for e in effects(ws):
         c = calls.get(e["case"])

@@ -116,3 +116,14 @@ def test_wrong_write_argument_and_compliance_claim_are_findings(ws1):
     nopoll = json.loads(json.dumps(DESIGN))
     nopoll["sequences"][0]["steps"][2]["repeat_until"] = ""
     assert any("polling loop" in f for f in swe2.validate_design(ws1, nopoll, IFACE))
+
+
+def test_a_function_named_differently_from_the_requirement_gets_an_actionable_finding(ws1):
+    # T016 SWE.2 trial (2026-10-21): the model kept LL_IWDG_IsActive for the required LL_IWDG_IsEnabled
+    from forge_factory.assurance.hardware import index
+
+    renamed = json.loads(json.dumps(IFACE).replace("LL_IWDG_Enable\"", "LL_IWDG_Start\""))
+    out = swe2.validate_interfaces(ws1, renamed, index(ws1 / "inputs/sections/RM0486"))
+    hint = [f for f in out if "names LL_IWDG_Enable, which is not a defined function" in f]
+    assert hint and "define the function as LL_IWDG_Enable" in hint[0] and "allocated to" in hint[0]
+    assert "LL_IWDG_Start" in hint[0]
