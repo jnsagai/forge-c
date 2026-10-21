@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.hostsnap",
+    "--backup",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z",
+    "--evidence",
+    "evidence/v0.4/runs/LRTX-T003/host-snapshot-summary.json"
+  ],
+  "duration_s": 4.146,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "731e84fc9f468465dc67e954316e13334fe1534e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T003/20261021T112949.log",
+  "log_sha256": "2b0d89c3725e89ffbcb970cdf818defe41cb6c0d8cad2466148f5a7ba0c9ef6a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T003",
+  "ts_utc": "2026-10-21T11:29:49.951195Z"
+}

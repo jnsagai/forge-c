@@ -1,0 +1,20 @@
+{
+  "command": [
+    "scripts/lrtx_compat_check.sh"
+  ],
+  "duration_s": 16.159,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "731e84fc9f468465dc67e954316e13334fe1534e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T004/20261021T112910.log",
+  "log_sha256": "6bf063a41578a07e2b9a93bf1b496d8b1b46a68ea0ffa93eff072a3f19fd7c45",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T004",
+  "ts_utc": "2026-10-21T11:29:10.218680Z"
+}
