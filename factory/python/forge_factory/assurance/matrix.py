@@ -1,6 +1,6 @@
 """EASA-T071 — FR -> task -> acceptance test -> evidence matrix, from evidence records ONLY.
 
-The authored tasks.md keeps its unchecked boxes (validate_spec.py counts them by design), so status lives here:
+Status lives here, never in the tasks.md boxes (scripts/mark_task.py checks a box only with PASS evidence):
 PASS needs evidence/v0.4/runs/<task>/latest.json with status PASS, exit 0, and a git_head that is an ancestor of
 the current HEAD (evidence for code that is not on this branch does not count) and a log whose sha256 matches the
 record. BLOCKED/NOT_APPLICABLE/PARTIAL come only from the blocker register `evidence/easa/blockers.json` with a
@@ -106,8 +106,8 @@ def markdown(rep: dict) -> str:
     c, f = rep["task_counts"], rep["fr_counts"]
     lines = ["# Feature 006 (EASA) status — generated from evidence records", "",
              f"Generated {rep['generated_at']} at `{rep['git_head'][:12]}`. Task status comes only from "
-             "`evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; the authored `tasks.md` boxes stay "
-             "unchecked by design.", "",
+             "`evidence/v0.4/runs/EASA-T*/latest.json` and the blocker register; `tasks.md` boxes are not read "
+             "(a box is checked only by scripts/mark_task.py with PASS evidence).", "",
              "Tasks: " + ", ".join(f"{k} {v}" for k, v in sorted(c.items())) + ".",
              "FRs: " + ", ".join(f"{k} {v}" for k, v in f.items()) + ".", "",
              "| Task | P | Status | ATs | Evidence / reason |", "|---|---|---|---|---|"]

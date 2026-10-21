@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3",
+    "scripts/task_checks.py",
+    "kpi-tasks"
+  ],
+  "duration_s": 0.077,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2a7dae9944ff056f3ebdb00687025755fb33e946",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/002-KPI-EXEC/20261021T035214.log",
+  "log_sha256": "1e3ae667d13fcb2dbec8b5c8fb5d32b9c067a3064336a423375cb608f87efc99",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "002-KPI-EXEC",
+  "ts_utc": "2026-10-21T03:52:14.832916Z"
+}

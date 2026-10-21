@@ -1520,8 +1520,8 @@
       ]
     }
   ],
-  "generated_at": "2026-10-19T08:39:58.519526Z",
-  "git_head": "5053d0e54d42e73f173e969c6201ee58ae0f16de",
+  "generated_at": "2026-10-21T04:08:24.752201Z",
+  "git_head": "0dc5e7d0cc770e3891ba8e8b4babc71ba0ffc87b",
   "schema": "forge-c/easa-matrix/0.1",
   "statement": "Bounded engineering evidence; no ISO 26262 / Automotive SPICE conformance claim.",
   "task_counts": {

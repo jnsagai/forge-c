@@ -1,6 +1,6 @@
 # Feature 005 (AFO) status - generated from evidence records
 
-Generated 2026-10-19T10:46:31.708084Z. status from executed evidence and the blocker register only; tasks.md boxes stay unchecked.
+Generated 2026-10-21T04:08:24.155577Z. status from executed evidence and the blocker register only; tasks.md boxes are not read.
 
 Tasks: BLOCKED 6, PARTIAL 3, PASS 66.
 FRs: COVERED 59, OPEN 1, PARTIAL 12.

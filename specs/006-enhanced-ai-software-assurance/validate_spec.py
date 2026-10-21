@@ -4,6 +4,21 @@ from pathlib import Path
 import csv, json, re, sys
 
 ROOT = Path(__file__).resolve().parent
+REPO = ROOT.parents[1]
+
+def evidence_ok(line: str) -> bool:
+    """A checked task cites evidence records that exist and PASSED (scripts/mark_task.py writes them)."""
+    refs = re.findall(r'`(evidence/v0\.4/runs/[^`]+/latest\.json)`', line)
+    if '✅ Evidence:' not in line or not refs:
+        return False
+    for ref in refs:
+        try:
+            rec = json.loads((REPO/ref).read_text())
+        except (OSError, ValueError):
+            return False
+        if rec.get('status') != 'PASS' or rec.get('exit_code') != 0:
+            return False
+    return True
 
 def main() -> int:
     try:
@@ -40,7 +55,11 @@ def main() -> int:
     assert len(set(x['id'] for x in req))==72
     assert set(x['id'] for x in req)==set(x['requirement_id'] for x in trace)
     tasks=(ROOT/'tasks.md').read_text(); tests=(ROOT/'acceptance-tests.md').read_text()
-    tid=set(re.findall(r'^- \[ \] \*\*(EASA-T\d{3})',tasks,re.M))
+    # Unchecked by default; a box is checked only with PASS evidence (owner 2026-10-21).
+    tid=set()
+    for line,box,t in re.findall(r'^(- \[([ xX])\] \*\*(EASA-T\d{3}).*)$',tasks,re.M):
+        assert box==' ' or evidence_ok(line), f'{t} checked without PASS evidence'
+        tid.add(t)
     aid=set(re.findall(r'^- \*\*(EASA-AT-\d{3})',tests,re.M))
     assert len(tid)>=70 and len(aid)>=80, (len(tid),len(aid))
     for x in trace:

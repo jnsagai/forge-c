@@ -20,4 +20,4 @@ Work item format: `TASK-ID [Owner role] (Depends on) Description -> acceptance`.
 - [ ] `T-016` [Safety] Review tool confidence and any missing qualification/coverage evidence -> decision register
 - [X] `T-017` [Process] Export trace graph, work products and raw evidence -> audit package with gaps reported ✅ Evidence: `evidence/v0.4/runs/001-T-017/latest.json` (sealed package WO-0002B-STM32N6-RCC-HAL-r154, checked read-only by forge_factory.backlog001)
 - [X] `T-018` [Release] Independent review and controlled sign-off -> authenticated release record ✅ Evidence: `evidence/v0.4/runs/001-T-018/latest.json` (owner sign-off 2026-10-19, outcome REVIEWED_NOT_RELEASABLE: the HAL r154 package is BLOCKED on the ASIL B safety evidence; no release was made. Reviewer independent of the agents, not of the owner's authorization)
-- [ ] `T-019` [Reuse] Port to watchdog/GPIO/other driver -> reuse demonstration, no HSI assumptions leaked
+- [X] `T-019` [Reuse] Port to watchdog/GPIO/other driver -> reuse demonstration, no HSI assumptions leaked ✅ Evidence: `evidence/v0.4/runs/001-T-019/latest.json`, `evidence/v0.4/runs/001-T-019-tests/latest.json`

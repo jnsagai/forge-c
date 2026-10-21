@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python3",
+    "scripts/task_checks.py",
+    "pr-merged",
+    "13"
+  ],
+  "duration_s": 2.603,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2a7dae9944ff056f3ebdb00687025755fb33e946",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/BF-T040/20261021T035215.log",
+  "log_sha256": "da2b95412eaa409c5e4863d83e7420ed6371d2e6201c436de52d4a90e650a318",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "BF-T040",
+  "ts_utc": "2026-10-21T03:52:15.015461Z"
+}
