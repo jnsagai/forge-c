@@ -120,3 +120,12 @@ repairs (`swe1-packets/`), at about 10 minutes for the first visit.
   - explicitly excluded registers are a hard rule.
 - **Same candidate:** structured SWE.4 and SWE.5 (LL), tested with scripted answers on the real tools, Renode and the
   unchanged gates.
+
+## lrtx5 — factory 8e58c0b, 2026-10-21 13:43 UTC: refused by Fabro before launch
+
+Fabro refused the generated workflow ("grammar error ... code: Char"). The structured-node swap replaced only the
+first line of the SWE.4/SWE.5 agent prompts, whose unit-test code examples span several lines (the CAPA-051
+pattern); the rest of the old statement was left in the graph. No agent ran and no model call was made.
+`fabro validate` reproduces the refusal on the saved graph and accepts the fixed one (90 nodes, 138 edges). Fixed in
+c888bdb (pd-7cc602f15599ef85ae35). Tests now check the statement shape and run `fabro validate` on every
+profile-graph variant.
