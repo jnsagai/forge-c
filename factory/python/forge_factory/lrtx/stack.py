@@ -2,6 +2,7 @@
 profile's loopback ports, all inside one user+network namespace with no external interface (no sudo needed).
 
     python -m forge_factory.lrtx.stack init|start|status|stop
+    python -m forge_factory.lrtx.stack expose-api     # opt-in: the profile Fabro API on the host's 127.0.0.1 (monitor)
     python -m forge_factory.lrtx.stack env            # shell exports of the isolated environment
     python -m forge_factory.lrtx.stack exec -- CMD     # run CMD inside the namespace with that environment
 
@@ -260,6 +261,11 @@ def stop(s: dict) -> dict:
         if _alive(pr["pid"], marker):
             os.kill(pr["pid"], signal.SIGTERM)
             stopped.append(name)
+    for name, pr in (rec.get("api_bridge") or {}).items():
+        if isinstance(pr, dict) and _alive(pr["pid"], "socat"):
+            os.kill(pr["pid"], signal.SIGTERM)
+            stopped.append(f"api-bridge-{name}")
+    rec.pop("api_bridge", None)
     holder = _holder(s)
     if holder is not None:  # `sleep infinity` may inherit an ignored SIGTERM from the launching shell
         os.kill(holder, signal.SIGKILL)
@@ -269,6 +275,54 @@ def stop(s: dict) -> dict:
         rec["processes"] = {}
         f.write_text(pretty_json(rec))
     return {"stopped": stopped}
+
+
+def bridge_argv(s: dict) -> tuple[list[str], list[str], Path]:
+    """Inbound-only relay of the profile's Fabro API to the host's loopback, for a read-only monitor: socat inside the
+    namespace accepts on a 0600 unix socket in the profile root and connects to Fabro there; socat on the host listens
+    on 127.0.0.1 only. Nothing inside the namespace gains a route out (the network check stays DENIED_VERIFIED)."""
+    sock = s["root"] / "run/fabro-api.sock"
+    port = s["ports"]["fabro"]
+    inner = ["socat", f"UNIX-LISTEN:{sock},fork,mode=600,unlink-early", f"TCP:127.0.0.1:{port}"]
+    outer = ["socat", f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork", f"UNIX-CONNECT:{sock}"]
+    return inner, outer, sock
+
+
+def _host_port_free(port: int) -> bool:
+    import socket
+
+    with socket.socket() as so:
+        return so.connect_ex(("127.0.0.1", port)) != 0
+
+
+def expose_api(s: dict) -> dict:
+    holder = _holder(s)
+    if holder is None:
+        raise RuntimeError("local stack is not running (start it first)")
+    if shutil.which("socat") is None:
+        raise SystemExit("socat required for expose-api")
+    f = s["root"] / "run/services.json"
+    rec = json.loads(f.read_text()) if f.is_file() else {}
+    br = rec.get("api_bridge") or {}
+    if br and all(_alive(br[k]["pid"], "socat") for k in ("inner", "outer")):
+        return {"api_bridge": "already running", **{k: br[k]["pid"] for k in ("inner", "outer")}}
+    inner, outer, sock = bridge_argv(s)
+    port = s["ports"]["fabro"]
+    if not _host_port_free(port):
+        raise SystemExit(f"HOST_PORT_IN_USE:127.0.0.1:{port} (never shared with another server)")
+    log = s["root"] / "logs/api-bridge.log"
+    pi = _in_ns(holder, inner, envmap(s), log, s["root"])
+    deadline = time.monotonic() + 10
+    while not sock.exists() and time.monotonic() < deadline:
+        time.sleep(0.2)
+    with log.open("ab") as fh:
+        po = subprocess.Popen(outer, stdout=fh, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                              start_new_session=True, env={"PATH": SYSTEM_PATH})
+    rec["api_bridge"] = {"inner": {"pid": pi.pid, "argv": inner}, "outer": {"pid": po.pid, "argv": outer},
+                         "started_at": utc_now()}
+    f.write_text(pretty_json(rec))
+    ok = _wait(f"http://127.0.0.1:{port}/health", 15)
+    return {"api_bridge": "UP" if ok else "NOT_HEALTHY", "url": f"http://127.0.0.1:{port}/api/v1"}
 
 
 def status(s: dict) -> dict:
@@ -294,7 +348,7 @@ def exec_in(s: dict, argv: list[str]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec"])
+    ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec", "expose-api"])
     ap.add_argument("--profile", default=os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
     ap.add_argument("rest", nargs=argparse.REMAINDER)
     a = ap.parse_args(argv)
@@ -309,7 +363,7 @@ def main(argv: list[str] | None = None) -> int:
         return exec_in(s, rest)
     if shutil.which("unshare") is None or shutil.which("nsenter") is None:
         raise SystemExit("util-linux unshare/nsenter required")
-    out = {"init": init, "start": start, "stop": stop, "status": status}[a.cmd](s)
+    out = {"init": init, "start": start, "stop": stop, "status": status, "expose-api": expose_api}[a.cmd](s)
     print(json.dumps(out, default=str))
     return 0
 

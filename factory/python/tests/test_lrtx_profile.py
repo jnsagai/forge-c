@@ -138,3 +138,14 @@ def test_stack_environment_inherits_nothing_from_the_existing_deployment(tmp_pat
     assert env["PYTHONPATH"].endswith("factory/python") and env["HOME"] == str(tmp_path / "r/home")
     assert all(str(tmp_path / "r") in env[k] for k in PROF["deployment"]["writable_env"])
     assert env["FORGE_FABRO_URL"].endswith(":32390/api/v1") and env["FORGE_OLLAMA_URL"].endswith(":11445")
+
+
+def test_api_bridge_is_inbound_only_on_host_loopback(tmp_path):
+    """Owner request 2026-10-21: show profile runs in the Fabro monitor without giving the namespace a route out."""
+    s = {**stack.settings(), "root": tmp_path}
+    inner, outer, sock = stack.bridge_argv(s)
+    port = s["ports"]["fabro"]
+    assert inner[0] == outer[0] == "socat" and sock == tmp_path / "run/fabro-api.sock"
+    assert inner[1].startswith(f"UNIX-LISTEN:{sock},") and "mode=600" in inner[1]
+    assert inner[2] == f"TCP:127.0.0.1:{port}"
+    assert outer[1] == f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork" and outer[2] == f"UNIX-CONNECT:{sock}"
