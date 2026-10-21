@@ -551,7 +551,17 @@ def tagged_tests(files: list[Path], ws: Path) -> list[dict]:
         rel = p.relative_to(ws).as_posix()
         for m in re.finditer(r"/\*\*(.*?)\*/", text, re.S):
             body = m.group(1)
-            t = re.search(r"[@\\]test\s+([A-Z]{2,4}-\d{3})", body)
+            ts = list(re.finditer(r"[@\\]test\s+([A-Z]{2,4}-\d{3})", body))
+            if len(ts) > 1:
+                # CAPA-067 (rc3): one block listing several '@test UT-nnn @verifies ...' lines is valid Doxygen; each
+                # @test takes the @verifies that follows it up to the next @test (only the first was read before)
+                for i, t in enumerate(ts):
+                    seg = body[t.end():ts[i + 1].start() if i + 1 < len(ts) else len(body)]
+                    v = re.search(r"[@\\]verifies\s+([^\n@]*)", seg)
+                    out.append({"test": t.group(1), "file": rel, "file_level": False,
+                                "verifies": re.findall(r"[A-Z][A-Z_]*[A-Z]-[A-Z0-9-]+|SWC_[A-Z]+", v.group(1)) if v else []})
+                continue
+            t = ts[0] if ts else None
             v = re.search(r"[@\\]verifies\s+([^\n@]*)", body)
             fileblk = re.search(r"[@\\]file\b", body)
             if t or (fileblk and v):
