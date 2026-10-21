@@ -143,13 +143,17 @@ def structured_authors(dot: str, structured: dict) -> str:
     import re
 
     def swap(dot: str, node: str, label: str, cmd: str, timeout_s: int) -> str:
-        rx = re.compile(rf'^  {node} \[label=.*$', re.M)
-        m0 = rx.search(dot)
-        if not m0:
+        """Replace the WHOLE node statement: agent prompts can span several lines (code examples, CAPA-051), so the
+        statement is found with the quote-aware parser the ACP conversion uses, not a single-line pattern."""
+        from ..acp import statements
+
+        hit = next(((st, en) for st, en, _i, name, attrs in statements(dot) if name == node and "label=" in attrs),
+                   None)
+        if hit is None:
             raise ValueError(f"STRUCTURED_NODE_MISSING:{node}")
         new = (f'  {node} [shape=parallelogram, label="{label}", max_visits={MAX_VISITS}, timeout="{timeout_s}s", '
                f'script="{_q(cmd)}"]')
-        return dot[:m0.start()] + new + dot[m0.end():]
+        return dot[:hit[0]] + new + dot[hit[1]:]
 
     def pipe(dot: str, gate_node: str, src_node: str, label: str, reply: str, phase: str, step: str) -> str:
         rx = re.compile(rf'^  {gate_node} \[shape=parallelogram, label="{re.escape(label)}", '

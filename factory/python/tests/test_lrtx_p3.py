@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import io
 import json
+import os
+import re
 import sys
+from pathlib import Path
 
 import pytest
 from forge_factory.inspection.engine import Store
@@ -257,3 +260,43 @@ def test_source_labels_around_provided_paths_are_accepted():
     assert review.validate_verdict(doc, paths) == []
     assert review.validate_verdict({**doc, "evidence_checked": ["source/other.md"]}, paths) == [
         "evidence_checked names source/other.md, which is not a provided source"]
+
+
+def test_profile_graph_is_well_formed_dot_for_every_layer_and_peripheral():
+    """lrtx5 (2026-10-21): Fabro refused the graph - the node swap replaced only the first line of an agent prompt
+    that spans several lines (SWE.4/SWE.5 code examples), leaving the rest of the old statement in the graph."""
+    from forge_factory import acp
+    from forge_factory.workflow.builder import build
+
+    full = {"phases": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"], "inspect_phases": ["SWE.1", "SWE.2", "SWE.3",
+                                                                                         "SWE.4", "SWE.5"],
+            "reinspect": True, "model": "m"}
+    for periph in ("iwdg", None):
+        g, nodes = build("WO-X", layer="LL", trace=True, peripheral=periph, structured=full)
+        names = [n for _s, _e, _i, n, _a in acp.statements(g)]
+        assert len(names) == len(set(names))  # every node statement exactly once
+        body = g.split("\n", 1)[1].rsplit("}", 1)[0]
+        for line in body.splitlines():  # outside statements, only edges and node statements remain
+            t = line.strip()
+            assert not t or "->" in t or re.match(r"^\w+ \[", t) or t.startswith(("graph [", "start [", "exit [")), t
+        for n in ("swe4_test_author", "swe5_target_author", "swe3_ll_author"):
+            assert 'prompt="' not in next(a for _s, _e, _i, nm, a in acp.statements(g) if nm == n)
+
+
+@pytest.mark.skipif(not Path(os.environ.get("FORGE_FABRO_BIN", str(Path.home() / ".fabro/bin/fabro"))).is_file(),
+                    reason="Fabro not installed")
+@pytest.mark.parametrize("layer,periph", [("LL", "iwdg"), ("LL", None), ("HAL", "iwdg")])
+def test_fabro_itself_accepts_every_profile_graph(tmp_path, layer, periph):
+    import subprocess
+
+    from forge_factory.workflow.builder import build
+
+    st = {"phases": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] if layer == "LL" else [],
+          "inspect_phases": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] if layer == "LL" else [],
+          "reinspect": True, "model": "m"}
+    g, _ = build("WO-X", layer=layer, trace=True, peripheral=periph, structured=st, isolation=layer == "HAL")
+    (tmp_path / "workflow.fabro").write_text(g)
+    fab = os.environ.get("FORGE_FABRO_BIN", str(Path.home() / ".fabro/bin/fabro"))
+    out = subprocess.run([fab, "validate", str(tmp_path / "workflow.fabro")], capture_output=True, text=True,
+                         env={**os.environ, "HOME": str(tmp_path), "FABRO_NO_UPGRADE_CHECK": "1"}, timeout=120)
+    assert "Validation: OK" in out.stdout + out.stderr, (out.stdout + out.stderr)[-800:]
