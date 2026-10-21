@@ -53,3 +53,25 @@ exhausted. The CRE promotion sandbox then failed to compile its reproducers (dec
 REJECTED, RESOLVED_FAILURE_REAPPEARED with build failures). The same candidate line was ELIGIBLE after the local
 model was unloaded (pd-b6853328caf1e2190ecf). Local inference and factory verification compete for host memory on
 this 32 GB machine; scheduling must keep them apart.
+
+## lrtx2 — first structured SWE.1/SWE.2 run, factory eedfb5f, 2026-10-21 12:44–12:55 UTC
+
+`WO-0009A-STM32N6-IWDG-LL-lrtx2`, same profile and model. SWE.1 author = structured tasks (ADR-0014).
+Result: **BLOCKED at SWE.1** after 11 minutes (STUCK: identical rejection twice).
+
+- **Tasks:** all six SWE.1 tasks became VALID with local repairs (`swe1-packets/`). Prompts were 2,221–3,884 tokens,
+  against a median of 14,585 in lrtx1. The register tasks KR, SR_2 and cross-cutting were valid on the first answer;
+  PR needed 2 repairs, RLR 1 and SR_1 1. That is 10 model calls and about 7 minutes of model time.
+- **Why the visit failed:** the cross-task consistency check failed. Three register tasks each repeated the startup
+  invariant ("While no LL function has been called after reset ...") that belongs to the cross-cutting task. The
+  visit therefore assembled nothing and replied FAILED.
+- **Why it became STUCK:** the presence gate rejected first (missing outputs), so the visit's own findings never
+  reached the gate log. The next visit had no findings, reused every checkpoint (11 s, no model call) and failed
+  identically; the route gate stopped the phase as STUCK.
+- **Factory defects found and fixed** in candidate bce3fe8 (pd-d781f1137dd1bb01c34d):
+  - register tasks may not carry cross-cutting requirements (instruction plus a deterministic rule);
+  - consistency findings are repaired in the task that must change, within the visit;
+  - a FAILED visit's issues carry into the next visit;
+  - findings are routed by the task they name.
+- **Graph wiring:** the structured graph ran as designed (author -> time-box check -> gate -> route -> direct
+  re-inspection check -> author).

@@ -1,0 +1,155 @@
+{
+  "code_nodes": null,
+  "default": "qwen3-coder:30b",
+  "local_only": true,
+  "local_profile": {
+    "admission": {
+      "max_inflight": 1,
+      "max_queue": 8,
+      "max_wait_s": 1800
+    },
+    "config": "config/factory/profiles/local-rtx-v1.yaml",
+    "config_sha256": "e52bf114b2cbff85c0a1d87ffb50a5b715bbb261b1a2e687ee1579434934b614",
+    "enforcement": {
+      "acp": "REJECTED_BEFORE_LAUNCH",
+      "basis": "checked by forge_factory.lrtx.profile.select at launch; a declared provider name alone is not enforcement",
+      "endpoints": "LOOPBACK_VERIFIED",
+      "fabro_providers": [
+        "ollama"
+      ],
+      "isolation": "VERIFIED",
+      "network": {
+        "detail": "OSError: [Errno 101] Network is unreachable",
+        "interfaces": [
+          "lo"
+        ],
+        "netns": "net:[4026533535]",
+        "probe": "1.1.1.1:443",
+        "status": "DENIED_VERIFIED"
+      }
+    },
+    "id": "local-rtx-v1",
+    "local_only": true,
+    "models": [
+      {
+        "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+        "expected_digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+        "model": "qwen3-coder:30b",
+        "quantization": "Q4_K_M",
+        "role_qualification": "NOT_QUALIFIED",
+        "size": 18556700761,
+        "status": "MATCH"
+      }
+    ],
+    "provider": "ollama",
+    "qualification": "NOT_QUALIFIED (feature 010 acceptance pending)",
+    "roots": {
+      "FORGE_ARCHIVE_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/archives",
+      "FORGE_DATA_ROOT": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx",
+      "FORGE_FABRO_CONFIG": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/fabro/settings.toml",
+      "FORGE_FABRO_HOME": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/fabro/home",
+      "FORGE_FABRO_STORAGE": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/fabro/storage",
+      "FORGE_STATE_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state",
+      "FORGE_VENV": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/venv",
+      "PIP_CACHE_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/cache/pip",
+      "UV_CACHE_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/cache/uv"
+    },
+    "runtime": {
+      "admission": {
+        "max_inflight": 1,
+        "max_queue": 8,
+        "max_wait_s": 1800
+      },
+      "health": {
+        "fabro": true,
+        "gateway": true,
+        "ollama": true
+      },
+      "holder_pid": 3714154,
+      "netns": "net:[4026533535]",
+      "ollama_env": {
+        "OLLAMA_CONTEXT_LENGTH": "24576",
+        "OLLAMA_FLASH_ATTENTION": "1",
+        "OLLAMA_HOST": "127.0.0.1:11445",
+        "OLLAMA_KV_CACHE_TYPE": "q8_0",
+        "OLLAMA_MAX_LOADED_MODELS": "1",
+        "OLLAMA_MODELS": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/ollama-models",
+        "OLLAMA_NOPRUNE": "1",
+        "OLLAMA_NUM_PARALLEL": "1"
+      },
+      "ports": {
+        "fabro": 32390,
+        "gateway": 11446,
+        "ollama": 11445
+      },
+      "processes": {
+        "fabro": {
+          "argv": [
+            "/home/jefferson/.fabro/bin/fabro",
+            "server",
+            "start",
+            "--foreground",
+            "--no-web",
+            "--no-upgrade-check",
+            "--config",
+            "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/fabro/settings.toml",
+            "--storage-dir",
+            "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/fabro/storage"
+          ],
+          "health": "http://127.0.0.1:32390/health",
+          "pid": 3715165
+        },
+        "gateway": {
+          "argv": [
+            "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/venv/bin/python",
+            "-m",
+            "forge_factory.llm_gateway",
+            "--port",
+            "11446",
+            "--upstream",
+            "http://127.0.0.1:11445",
+            "--meter",
+            "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/llm-gateway/usage.jsonl"
+          ],
+          "health": "http://127.0.0.1:11446/health",
+          "pid": 3715083
+        },
+        "ollama": {
+          "argv": [
+            "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/ollama-0.34.0/bin/ollama",
+            "serve"
+          ],
+          "health": "http://127.0.0.1:11445/api/version",
+          "pid": 3714196
+        }
+      },
+      "profile": "local-rtx-v1",
+      "profile_sha256": "e52bf114b2cbff85c0a1d87ffb50a5b715bbb261b1a2e687ee1579434934b614",
+      "root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx",
+      "schema": "forge-c/lrtx-services/1",
+      "shared_readonly": {
+        "inputs": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inputs",
+        "ollama-0.34.0": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-0.34.0",
+        "ollama-models": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-models",
+        "standards": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/standards",
+        "toolchains": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains"
+      },
+      "started_at": "2026-10-21T11:22:53.639775Z",
+      "status": "RECORDED",
+      "updated_at": "2026-10-21T12:44:34.352890Z"
+    },
+    "status": "EXPERIMENTAL - not qualified (feature 010, ADR-0013); selecting it is an explicit owner/operator action",
+    "timeout_scale": 4,
+    "version": 1
+  },
+  "nodes": [],
+  "note": "local Ollama via gateway",
+  "provider": "ollama",
+  "sampling": {
+    "reproducibility": "stochastic: repeated runs of the same revision may differ",
+    "seed": "NOT_SUPPORTED (Fabro run config has no seed)",
+    "temperature": "PROVIDER_DEFAULT (not set by the factory)"
+  },
+  "timeout_scale": 4.0,
+  "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
+}

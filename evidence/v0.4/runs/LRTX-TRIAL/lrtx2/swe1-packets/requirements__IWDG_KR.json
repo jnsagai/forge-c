@@ -1,0 +1,110 @@
+{
+  "at": "2026-10-21T12:46:49.889831Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2758,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8084
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f35e3915e8d73e01a7e22e919a596502c8bbf741a774afb534d46d1963ea1797",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 800,
+        "prompt_tokens": 2221,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 3021
+      },
+      "wall_ms": 118515.2
+    }
+  ],
+  "base_hash": "f35e3915e8d73e01a7e22e919a596502c8bbf741a774afb534d46d1963ea1797",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "START_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xCCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_start",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0xCCCC to IWDG_KR.KEY when starting the watchdog.",
+        "verification": "The test passes when the value 0xCCCC is written to IWDG_KR.KEY and the register array reflects this value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "REFRESH_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xAAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_refresh",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0xAAAA to IWDG_KR.KEY when refreshing the watchdog counter.",
+        "verification": "The test passes when the value 0xAAAA is written to IWDG_KR.KEY and the register array reflects this value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x5555"
+          }
+        ],
+        "key": "iwdg_kr_key_enable_write_access",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0x5555 to IWDG_KR.KEY when enabling write access to IWDG_PR and IWDG_RLR.",
+        "verification": "The test passes when the value 0x5555 is written to IWDG_KR.KEY and the register array reflects this value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000"
+          }
+        ],
+        "key": "iwdg_kr_key_disable_write_access",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write a key value different from 0x5555 to IWDG_KR.KEY when disabling write access to IWDG_PR and IWDG_RLR.",
+        "verification": "The test passes when any value other than 0x5555 is written to IWDG_KR.KEY and the register array reflects this value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2989,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "The test passes when no writes occur to any IWDG register before any LL function is invoked after reset.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

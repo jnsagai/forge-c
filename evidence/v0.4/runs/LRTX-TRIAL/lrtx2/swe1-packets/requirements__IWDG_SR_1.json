@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-21T12:50:17.803804Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3992,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11785
+      },
+      "errors": [
+        "[iwdg_sr_ewif_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_ewif_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+        "[iwdg_sr_onf_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_onf_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+        "[iwdg_sr_ewu_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_ewu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "0c2ae77bc310ceff4de1f4b3b9119e4cea1a3bf9f9d390f776f15cb83879d900",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 677,
+        "prompt_tokens": 2998,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3675
+      },
+      "wall_ms": 37932.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4856,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14378
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "8136bd85797e3fb12280705fe7f3cefd26c8ea65a7e79096fdea41200ea2e92c",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 598,
+        "prompt_tokens": 3846,
+        "prompt_tokens_details": {
+          "cached_tokens": 2593
+        },
+        "total_tokens": 4444
+      },
+      "wall_ms": 30286.0
+    }
+  ],
+  "base_hash": "0c2ae77bc310ceff4de1f4b3b9119e4cea1a3bf9f9d390f776f15cb83879d900",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U if IWDG_SR.EWIF is set, or 0U if IWDG_SR.EWIF is reset.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET/4U].b.EWIF is read and returns 1U when IWDG_SR.EWIF is set, or 0U when IWDG_SR.EWIF is reset.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U if IWDG_SR.ONF is set, or 0U if IWDG_SR.ONF is reset.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET/4U].b.ONF is read and returns 1U when IWDG_SR.ONF is set, or 0U when IWDG_SR.ONF is reset.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U if IWDG_SR.EWU is set, or 0U if IWDG_SR.EWU is reset.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET/4U].b.EWU is read and returns 1U when IWDG_SR.EWU is set, or 0U when IWDG_SR.EWU is reset.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

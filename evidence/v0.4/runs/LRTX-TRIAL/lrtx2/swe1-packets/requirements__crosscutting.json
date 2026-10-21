@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-21T12:54:54.476645Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4342,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12836
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b45ce13d0dde73a736495e659ec8b123382617301fc1d098defbec7116cc6c5a",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 115,
+        "prompt_tokens": 3884,
+        "prompt_tokens_details": {
+          "cached_tokens": 1934
+        },
+        "total_tokens": 3999
+      },
+      "wall_ms": 10576.7
+    }
+  ],
+  "base_hash": "da8d819c0533b19a318109b9a757e74d1c6cb835d96e75d4b1f644ad88fef263",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no IWDG register is written after reset",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}
