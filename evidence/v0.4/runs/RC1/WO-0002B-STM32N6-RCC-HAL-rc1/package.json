@@ -1,0 +1,13 @@
+{
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-0002B-STM32N6-RCC-HAL-rc1/forge-c-WO-0002B-STM32N6-RCC-HAL-rc1-review.zip",
+  "archive_ref": "archive:sha256:7234fe5af8b6827a44406b78944bcc7aed4f4bac336589cdbf5302453b7fca8b",
+  "archive_sha256": "7234fe5af8b6827a44406b78944bcc7aed4f4bac336589cdbf5302453b7fca8b",
+  "finalized_at": "2026-10-20T17:40:56.245520Z",
+  "gap_count": 0,
+  "gaps": [],
+  "package_status": "READY_FOR_OFFLINE_REVIEW",
+  "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+  "quality_run_status": "COMPLETED",
+  "run_id": "WO-0002B-STM32N6-RCC-HAL-rc1",
+  "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+}

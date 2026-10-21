@@ -634,7 +634,8 @@ def trace_step(kind: str) -> list[str]:
                 "writes workproducts/SWE.3/traceability/matrix_2 and matrix_3.",
         "ut": "OWNER TRACE RULES: directly above each test function put '/** @test UT-00n @verifies USPEC-...-.. */' "
               "with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
-              "specifications.md) it verifies. Every USPEC item must be verified by a passing test (UT:* issues).",
+              "specifications.md) it verifies. @verifies lists ONLY USPEC ids - never SWR-, SWU- or IF- ids (the gate "
+              "rejects them as UNKNOWN_SPEC_REF). Every USPEC item must be verified by a passing test (UT:* issues).",
         "tt": "OWNER TRACE RULES: start each target test file with '/** @file <file name> @verifies IF-01 IF-02 */' "
               "naming the architecture interfaces (IF ids of workproducts/SWE.2/architecture_static.puml) it exercises.",
         "it": "OWNER TRACE RULES: directly above each integration test function put '/** @test IT-00n @verifies IF-01 "

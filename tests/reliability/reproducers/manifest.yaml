@@ -761,3 +761,14 @@ reproducers:
     operations: [sim/rcc_model, SWE.6/run_robot]
     root_cause: "The 8 KB RCC model added for the ST pilot (feature 008 follow-up) returned the target register on a read of a set/clear register, an assumption marked NOT_VERIFIED. RM0486 marks those fields write-only ('w', e.g. RCC_CSR p.647), so they read 0; with the old behaviour, a factory-style SWE.6 full-register preservation check saw RCC_CSR change whenever RCC_CR was written, and the author escalated DEF-003 (FACTORY) - the regression campaign rc1 package for 0008a stayed BLOCKED."
     remedy: "A read of a set/clear register returns 0 (write-only per RM0486); writes still set/clear their target register. The NOT_VERIFIED assumption is replaced by the RM access type."
+  - id: RPR-070
+    script: rpr070_verifies_rule_not_explicit.py
+    sha256: 1b7d34cd9cbc37f7fa4cf2b72954be696f47845b2f2cb9d50119f102fc7960bb
+    symptom_signature: "the unit-test trace rule does not exclude SWR/SWU ids from @verifies"
+    observed_in: h004, h005, rc1
+    baseline_revision: 2a7dae9944ff056f3ebdb00687025755fb33e946
+    fix_revision: 0293a4f890c5f654579ee6c3f61d26d8dcf8c584
+    error_codes: ["UT:UNKNOWN_SPEC_REF", "REWORK_BUDGET_EXHAUSTED"]
+    operations: [SWE.4/author, swtrace/check_ut]
+    root_cause: "The owner trace rule for unit tests showed '@verifies USPEC-...-..' but did not say that SWR-, SWU- or IF- ids are invalid there; every IWDG HAL v2 SWE.4 author (h004, h005, rc1) first listed SWR/SWU ids, and the UT:UNKNOWN_SPEC_REF rejection cost one of the three rework cycles. In rc1 a later format slip then exhausted the budget and the work order BLOCKED at SWE.4."
+    remedy: "The rule says '@verifies lists ONLY USPEC ids - never SWR-, SWU- or IF- ids (the gate rejects them as UNKNOWN_SPEC_REF)', and the finding for a non-USPEC id adds '(@verifies takes USPEC ids only)'."

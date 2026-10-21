@@ -638,7 +638,9 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
                           f"'{t['test']}-<suffix>')")
             for v in t["verifies"]:
                 if v not in specs:
-                    f4.append(f"UT:UNKNOWN_SPEC_REF:{t['test']}:{v}")
+                    # CAPA-066 (h004/h005/rc1): authors put SWR/SWU ids in @verifies; name the rule in the finding
+                    f4.append(f"UT:UNKNOWN_SPEC_REF:{t['test']}:{v}"
+                              + ("" if v.startswith("USPEC-") else " (@verifies takes USPEC ids only)"))
                 rows4.append({"test": t["test"], "file": t["file"], "uspec": v, "result": res.get(t["test"], "NOT_RUN"),
                               "status": "VERIFIED" if res.get(t["test"]) == "PASS" and v in specs else "UNVERIFIED"})
         ok = {r["uspec"] for r in rows4 if r["status"] == "VERIFIED"}
