@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-21T15:26:14.883969Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4543,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12318
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 603,
+        "prompt_tokens": 3116,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3719
+      },
+      "wall_ms": 37752.3
+    }
+  ],
+  "base_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2991,
+        "statement": "When the IWDG LL driver reads the IWDG_SR.EWIF field, the IWDG LL driver shall return 1U if the EWIF bit is set in IWDG_SR register, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.EWIF bit is set and the function returns 1U, or when the IWDG_SR.EWIF bit is clear and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2991,
+        "statement": "When the IWDG LL driver reads the IWDG_SR.ONF field, the IWDG LL driver shall return 1U if the ONF bit is set in IWDG_SR register, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.ONF bit is set and the function returns 1U, or when the IWDG_SR.ONF bit is clear and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2991,
+        "statement": "When the IWDG LL driver reads the IWDG_SR.EWU field, the IWDG LL driver shall return 1U if the EWU bit is set in IWDG_SR register, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.EWU bit is set and the function returns 1U, or when the IWDG_SR.EWU bit is clear and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

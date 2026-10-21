@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T15:31:25.776462Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6629,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18055
+      },
+      "errors": [
+        "finding says SWR-016 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge",
+        "finding says SWR-017 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge",
+        "finding says SWR-018 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "fa445bb52bbf5e2cf1a002c091424206650424e590c93302b90da1217a1df2aa",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 265,
+        "prompt_tokens": 6060,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6325
+      },
+      "wall_ms": 28027.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7290,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19873
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "88634a7f1e4b6d8777146cac4960c6686c28a7c4a9b4387253d44ae0dfaa98df",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 97,
+        "prompt_tokens": 6494,
+        "prompt_tokens_details": {
+          "cached_tokens": 5934
+        },
+        "total_tokens": 6591
+      },
+      "wall_ms": 6321.3
+    }
+  ],
+  "base_hash": "fa445bb52bbf5e2cf1a002c091424206650424e590c93302b90da1217a1df2aa",
+  "doc": {
+    "evidence_checked": [
+      "source safety/software_safety_requirements.md",
+      "source traceability/requirements_to_tests.csv",
+      "source traceability/upstream_gaps.md",
+      "source workproducts/SWE.1/register_effects.json",
+      "source workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:f7a5f9f093080c4d:SWE1-04"
+}

@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-21T15:30:16.369955Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6633,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18067
+      },
+      "errors": [
+        "finding 'Requirement SWR-001 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-001 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-002 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-002 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-003 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-003 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-004 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-004 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-005 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-005 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-006 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-006 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-007 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-007 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-008 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-008 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-009 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-009 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-010 is not objectively verifiable because the upstream HSI contr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-010 is not objectively verifiable because the upstream HSI contr...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ce128a84799f3299a1d259e0723e9afdf7e1aa2cc3b1d07d7c270b97ef4d5299",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 584,
+        "prompt_tokens": 6054,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6638
+      },
+      "wall_ms": 42568.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 9023,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 24638
+      },
+      "errors": [
+        "finding 'Requirement SWR-007 is not feasible because the requirement states that the valu...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-016 is not consistent because it conflicts with the upstream bud...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-017 is not consistent because it conflicts with the upstream bud...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-018 is not consistent because it conflicts with the upstream bud...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "f976dbaefcf2b7943d0d72512f2bc1b5bf3db80583b92ec272fe8eaa4ef404c2",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 362,
+        "prompt_tokens": 7464,
+        "prompt_tokens_details": {
+          "cached_tokens": 5928
+        },
+        "total_tokens": 7826
+      },
+      "wall_ms": 19506.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7750,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21138
+      },
+      "errors": [
+        "finding 'Requirement SWR-007 is not feasible because the requirement states that the valu...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "f7ac353ccaca95dd18f0a3d462f867d33606ba62d59f2cc10dab50a7955ed045",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 236,
+        "prompt_tokens": 6715,
+        "prompt_tokens_details": {
+          "cached_tokens": 5977
+        },
+        "total_tokens": 6951
+      },
+      "wall_ms": 12195.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7166,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19533
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "d34ca7915f268892136c57ce154187a03b397f9869abcec56c0924bad44da08d",
+      "n": 3,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 183,
+        "prompt_tokens": 6379,
+        "prompt_tokens_details": {
+          "cached_tokens": 6100
+        },
+        "total_tokens": 6562
+      },
+      "wall_ms": 8975.0
+    }
+  ],
+  "base_hash": "ce128a84799f3299a1d259e0723e9afdf7e1aa2cc3b1d07d7c270b97ef4d5299",
+  "doc": {
+    "evidence_checked": [
+      "source:safety/software_safety_requirements.md",
+      "source:traceability/requirements_to_tests.csv",
+      "source:traceability/upstream_gaps.md",
+      "source:workproducts/SWE.1/register_effects.json",
+      "source:workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-014 is not atomic because it combines multiple behaviors (not writing registers before function calls, and ensuring no unintended side effects) into a single statement without clear separation of concerns.",
+      "Requirement SWR-015 is not objectively verifiable because there is no allocated software safety requirement to confirm that write operations modify only the intended bits without altering other fields."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:f7a5f9f093080c4d:SWE1-02"
+}

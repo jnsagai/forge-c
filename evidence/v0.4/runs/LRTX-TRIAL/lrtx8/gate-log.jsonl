@@ -1,0 +1,12 @@
+{"baseline_id": "BL-SWE.1-001", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-21T15:28:18.427735Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T15:32:36.606487Z"}
+{"gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T15:32:37.071344Z"}
+{"phase": "SWE.1", "reason": "BL-SWE.1-001 valid and not inspected: inspect again without authorship", "result": "INSPECT", "step": "reinspect_direct", "ts": "2026-10-21T15:32:37.367249Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T15:33:36.393820Z"}
+{"gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T15:33:36.942263Z"}
+{"phase": "SWE.1", "reason": "BL-SWE.1-001 valid and not inspected: inspect again without authorship", "result": "INSPECT", "step": "reinspect_direct", "ts": "2026-10-21T15:33:37.316006Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T15:34:30.125682Z"}
+{"gate": {"decision": "BLOCKED", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "progress_extension": {"cycle": 1, "of": 2, "progress": false, "why": "fewer than two failed cycles"}, "reason": "rework budget exhausted (3 failed cycles)"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T15:34:30.611448Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.1", "result": "NONE", "step": "upstream", "ts": "2026-10-21T15:34:30.930724Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.2", "result": "NONE", "step": "upstream", "ts": "2026-10-21T15:34:31.266138Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.3", "result": "NONE", "step": "upstream", "ts": "2026-10-21T15:34:31.605274Z"}

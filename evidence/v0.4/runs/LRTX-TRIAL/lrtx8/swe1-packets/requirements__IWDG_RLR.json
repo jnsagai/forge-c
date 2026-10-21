@@ -1,0 +1,142 @@
+{
+  "at": "2026-10-21T15:25:37.122190Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3168,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8537
+      },
+      "errors": [
+        "[rlr_write_value] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_enable_write_access] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_enable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [rlr_enable_write_access] from this task",
+        "[rlr_disable_write_access] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_disable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [rlr_disable_write_access] from this task",
+        "[rlr_refresh_counter] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_refresh_counter] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [rlr_refresh_counter] from this task",
+        "[rlr_start_watchdog] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_start_watchdog] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [rlr_start_watchdog] from this task",
+        "[rlr_no_write_before_reset] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [rlr_no_write_before_reset] from this task",
+        "[rlr_reload_value_not_less_than_2] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_check_rvu_flag_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_check_rvu_flag_read] acts on IWDG_SR.RVU, which the IWDG_SR task covers: remove requirement [rlr_check_rvu_flag_read] from this task",
+        "[rlr_check_onf_flag_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_check_onf_flag_read] acts on IWDG_SR.ONF, which the IWDG_SR task covers: remove requirement [rlr_check_onf_flag_read] from this task",
+        "[rlr_check_pvu_flag_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[rlr_check_pvu_flag_read] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [rlr_check_pvu_flag_read] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 1913,
+        "prompt_tokens": 2302,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 4215
+      },
+      "wall_ms": 98255.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6026,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 16397
+      },
+      "errors": [
+        "[rlr_check_rvu_flag_read] acts on IWDG_SR.RVU, which the IWDG_SR task covers: remove requirement [rlr_check_rvu_flag_read] from this task",
+        "[rlr_check_onf_flag_read] acts on IWDG_SR.ONF, which the IWDG_SR task covers: remove requirement [rlr_check_onf_flag_read] from this task",
+        "[rlr_check_pvu_flag_read] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [rlr_check_pvu_flag_read] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "d45ab5cfa45530fe2510009ad73a125177a7e55d01f6b68bb6b2773e8e397101",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 937,
+        "prompt_tokens": 4725,
+        "prompt_tokens_details": {
+          "cached_tokens": 1897
+        },
+        "total_tokens": 5662
+      },
+      "wall_ms": 54866.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4453,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12070
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f293e64ae432ded93b895417170eecb7410cb96791c32bc4f7ff0239d12c45d4",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 379,
+        "prompt_tokens": 3399,
+        "prompt_tokens_details": {
+          "cached_tokens": 1947
+        },
+        "total_tokens": 3778
+      },
+      "wall_ms": 22609.6
+    }
+  ],
+  "base_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "RLR_WRITE_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "rlr_write_value",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the caller-supplied reload value to IWDG_RLR.RL, which is within the 12-bit range.",
+        "verification": "The host unit test passes when the function writes the expected reload value to the IWDG_RLR register and the value is correctly represented in the ll_iwdg_regs array at index IWDG_RLR_OFFSET / 4U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "RLR_RELOAD_VALUE_NOT_LESS_THAN_2",
+            "field": "RL",
+            "op": "no_write",
+            "register": "IWDG_RLR",
+            "value": ""
+          }
+        ],
+        "key": "rlr_reload_value_not_less_than_2",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall ensure that the value written to IWDG_RLR.RL is not less than 2.",
+        "verification": "The host unit test passes when the API function fails or asserts an error if the caller supplies a reload value less than 2 during a write operation to IWDG_RLR.RL.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

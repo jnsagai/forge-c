@@ -181,3 +181,26 @@ Run summary:
   - a refused record is a FAILED reply with its reason.
 - **Rework budget:** the owner offered to raise it (2026-10-21). It is unchanged: LRTX-FR-014 keeps the phase rework
   criteria, and the cycles lrtx7 lost were factory defects that a larger budget would have hidden.
+
+## lrtx8 — factory d259a36, 2026-10-21 15:20–15:34 UTC: SWE.1 frozen, all cycles lost to unrecorded inspections
+
+Run summary:
+- `verify.json` PASS; package BLOCKED (49 gaps).
+- 43 calls in 14.5 minutes, 7.5 Wh GPU energy at 100 % sample coverage.
+- The probed json_schema mode was used (T012).
+
+- **Author:** the structured SWE.1 author was frozen by the unchanged gate on its first visit (12 calls) for the
+  second run in a row. The IWDG_SR status flags are now specified as reads (return 1U/0U); none is written.
+- **Inspection:** all three visits ended FAILED and recorded no verdict, so the route gate counted three failed cycles
+  and BLOCKED.
+  - The Qwen inspector kept the findings that the evidence refutes through every repair: the recorded NOT_PROVIDED
+    HSI gap, the owner's PENDING allocation, and a denied startup rule.
+  - Each such item stayed invalid, and the visit was incomplete.
+  - One refutation was wrong: a safe-state/failure-handling finding that acknowledged SWR-014 matched a loose startup
+    pattern.
+- **Fixed in the next candidates:**
+  - an item whose only remaining errors are refutations is recorded as given, with all its findings
+    (LRTX-FR-015);
+  - the refutations are recorded beside it as contested;
+  - the startup rule now matches only a finding that denies startup behaviour within one clause, without naming the
+    startup requirement.
