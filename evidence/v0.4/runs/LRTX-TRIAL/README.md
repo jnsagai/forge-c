@@ -96,3 +96,27 @@ Result: **BLOCKED at SWE.1** (STUCK after two visits, 12 minutes).
   and the unchanged SWE.3 gate with scripted answers.
 - **Rejected attempt:** decision pd-eca007977bf687460693 (REJECTED, PROTECTED_PATH_CHANGE) was an operator error.
   The first candidate commit included this evidence directory; it was recommitted without evidence before promotion.
+
+## lrtx4 — factory 4393ca0, 2026-10-21 13:15–13:37 UTC: SWE.1 frozen three times, blocked at inspection
+
+Result: **BLOCKED at SWE.1** after 5 failed cycles (22 minutes). The structured SWE.1 author was **frozen by the
+unchanged deterministic gate three times** (BL-SWE.1-001..003). Each task was valid after at most one or two local
+repairs (`swe1-packets/`), at about 10 minutes for the first visit.
+
+- **Requirements quality (`software_requirements.md`):** structurally valid, semantically weak.
+  - SWR-001 conflates starting the watchdog with refreshing it (0xAAAA).
+  - SWR-007/009/010 cover IWDG_SR.EWIF/EWU/WVU, which the scope excludes (early wake-up interrupt, window option).
+- **The structured Qwen inspection (INS-SWE.1-001/002):** failed SWE1-01..06, mostly with false findings:
+  - it judged the owner's recorded PENDING allocation as a failure;
+  - it claimed missing verification criteria that the document has;
+  - it did not name the real defects above.
+- **Then a factory defect blocked the run:** the inspector's answers echoed the packet's `SOURCE <path>` labels, and my
+  validator rejected them three times per item. No inspection was recorded; the direct re-inspection path (LRTX-T018)
+  worked, but the cycles ran out.
+- **Fixed** in deaf6d3 (pd-118fefed910713a2dcfc):
+  - source labels are accepted;
+  - inspector findings refuted by the evidence or by the owner's decision go back to the inspector;
+  - SWE.1 tasks receive RM field descriptions and out-of-scope hints;
+  - explicitly excluded registers are a hard rule.
+- **Same candidate:** structured SWE.4 and SWE.5 (LL), tested with scripted answers on the real tools, Renode and the
+  unchanged gates.

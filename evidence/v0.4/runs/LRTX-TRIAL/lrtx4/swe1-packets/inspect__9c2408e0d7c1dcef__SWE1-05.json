@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-21T13:31:52.676895Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5963,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17698
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "c183d2b74dc82ef7ccfac894706b5f24208ab48841e720bb7029d715cc5c5b8e",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 135,
+        "prompt_tokens": 5915,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6050
+      },
+      "wall_ms": 25495.5
+    }
+  ],
+  "base_hash": "c183d2b74dc82ef7ccfac894706b5f24208ab48841e720bb7029d715cc5c5b8e",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-001: No software safety requirement is allocated yet, making it impossible to determine if the requirement is objectively verifiable. The safety allocation is PENDING owner allocation review."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:9c2408e0d7c1dcef:SWE1-05"
+}

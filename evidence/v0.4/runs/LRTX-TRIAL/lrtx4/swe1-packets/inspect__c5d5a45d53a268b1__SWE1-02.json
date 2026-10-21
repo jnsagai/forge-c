@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-21T13:37:00.069926Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6260,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18589
+      },
+      "errors": [
+        "evidence_checked names source workproducts/SWE.1/register_effects.json, which is not a provided source",
+        "evidence_checked names source workproducts/SWE.1/software_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "0595177da1f98a9657b7eb8163796c111912c8b6a2380a90397f27f5be702b60",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 6104,
+        "prompt_tokens_details": {
+          "cached_tokens": 5821
+        },
+        "total_tokens": 6202
+      },
+      "wall_ms": 5727.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6216,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18457
+      },
+      "errors": [
+        "evidence_checked names source safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source traceability/upstream_gaps.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "f21f92e04e3a8d27989e60851e17dd90b0dd2d05f05d6aa42ede2ff67d42b6ff",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 104,
+        "prompt_tokens": 6079,
+        "prompt_tokens_details": {
+          "cached_tokens": 5821
+        },
+        "total_tokens": 6183
+      },
+      "wall_ms": 5710.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6257,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18579
+      },
+      "errors": [
+        "evidence_checked names source workproducts/SWE.1/software_requirements.md, which is not a provided source",
+        "evidence_checked names source workproducts/SWE.1/register_effects.json, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "06eb758805cc4539e7e4577d91ccbad57cad5a923a85fb80c9f16229ea76a4aa",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 6100,
+        "prompt_tokens_details": {
+          "cached_tokens": 5873
+        },
+        "total_tokens": 6198
+      },
+      "wall_ms": 5191.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6216,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18457
+      },
+      "errors": [
+        "evidence_checked names source safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source traceability/upstream_gaps.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "713c07cde8522bc04a724503f80537e9c99844eb9916c4e24620d64bda62a50b",
+      "n": 3,
+      "usage": {
+        "completion_tokens": 104,
+        "prompt_tokens": 6079,
+        "prompt_tokens_details": {
+          "cached_tokens": 5873
+        },
+        "total_tokens": 6183
+      },
+      "wall_ms": 5558.2
+    }
+  ],
+  "base_hash": "f27d8c5c711f954d4383566a1d2a01f026308fdf816d733e7b322984e5e3919d",
+  "doc": {
+    "evidence_checked": [
+      "source safety/software_safety_requirements.md",
+      "source traceability/requirements_to_tests.csv",
+      "source traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-002 is not objectively verifiable because the software safety allocation is pending review and no software safety requirement is allocated yet."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "evidence_checked names source safety/software_safety_requirements.md, which is not a provided source",
+    "evidence_checked names source traceability/requirements_to_tests.csv, which is not a provided source",
+    "evidence_checked names source traceability/upstream_gaps.md, which is not a provided source"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:c5d5a45d53a268b1:SWE1-02"
+}

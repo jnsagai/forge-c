@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-21T13:35:56.365557Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5963,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17698
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "33378bade5fde0a9b0bf165e9421ec47cc16dd17ed1c1abaa2038bbbd19ae3c7",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 121,
+        "prompt_tokens": 5915,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6036
+      },
+      "wall_ms": 22112.3
+    }
+  ],
+  "base_hash": "33378bade5fde0a9b0bf165e9421ec47cc16dd17ed1c1abaa2038bbbd19ae3c7",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-002: The safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirement SWR-002 is objectively verifiable. This creates a coverage gap in the upstream-to-SWE.1 trace."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c5d5a45d53a268b1:SWE1-05"
+}

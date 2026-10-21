@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-21T13:31:03.617656Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5964,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17702
+      },
+      "errors": [
+        "evidence_checked names source/safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source/traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source/traceability/upstream_gaps.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "cb2d88d4f8446cab82b609b4a8321680896dbf7e4fe9726618be753c56610924",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 135,
+        "prompt_tokens": 5911,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6046
+      },
+      "wall_ms": 24015.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6301,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18711
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "80a2aa373ce89778f4397d5c3a1f7cd33fa51fde40af1a21a1ff3460ee6bf170",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 100,
+        "prompt_tokens": 6136,
+        "prompt_tokens_details": {
+          "cached_tokens": 5793
+        },
+        "total_tokens": 6236
+      },
+      "wall_ms": 5934.8
+    }
+  ],
+  "base_hash": "cb2d88d4f8446cab82b609b4a8321680896dbf7e4fe9726618be753c56610924",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:9c2408e0d7c1dcef:SWE1-03"
+}
