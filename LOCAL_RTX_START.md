@@ -37,6 +37,8 @@ python -m forge_factory.lrtx.stack exec -- python -m forge_factory.workorder --e
     --wo WO-...-lrtx1 --profile local-rtx-v1 --model qwen3-coder:30b
 python -m forge_factory.lrtx.stack expose-api   # optional, after start: the profile Fabro API on the host's
                                                 # 127.0.0.1:32390 (socat relay, inbound only) for the Fabro monitor
+python -m forge_factory.lrtx.stack exec -- python -m forge_factory.lrtx.structured probe --model qwen3-coder:30b
+                                                # structured-output capability record (T012), per model digest
 python -m forge_factory.lrtx.stack stop         # also stops the relay
 ```
 

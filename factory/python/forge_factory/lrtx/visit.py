@@ -40,7 +40,7 @@ def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, 
         st["continuations"] = st.get("continuations", 0) + 1
     sp.parent.mkdir(parents=True, exist_ok=True)
     sp.write_text(pretty_json(st))
-    budget = {"calls": st["calls"], "max_calls": max_calls, "schema_mode": "json_schema", "state": str(sp),
+    budget = {"calls": st["calls"], "max_calls": max_calls, "state": str(sp),
               "deadline": time.monotonic() + time_budget_s if time_budget_s else None}
     return budget, st["findings"]
 
@@ -100,10 +100,13 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
                                            "attempts": attempts, "at": utc_now(), "reused": False}))
             raise Continue(task)
         budget["calls"] += 1
-        r = S.call(p, schema_mode=budget.get("schema_mode", "json_schema"))
+        if "schema_mode" not in budget:  # LRTX-T012: the probed mode of the served model, recorded once per visit
+            budget["schema_mode"], budget["schema_mode_basis"] = S.schema_mode_for(p["model"])
+        r = S.call(p, schema_mode=budget["schema_mode"])
         errs = r["errors"] or check(r["doc"])
         attempts.append({"n": n, "input_hash": p["input_hash"], "accounting": p["accounting"], "usage": r["usage"],
-                         "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20]})
+                         "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20],
+                         "schema_mode": budget["schema_mode"], "schema_mode_basis": budget.get("schema_mode_basis")})
         budget.setdefault("log", []).append({"task": task, **attempts[-1]})
         _save_calls(budget)
         # one line per model call: Fabro's stall watchdog ends a command node that shows no activity for 1800 s

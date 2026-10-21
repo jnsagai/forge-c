@@ -102,4 +102,9 @@ the real tools and the unchanged gates:
   checks) print a digit-free per-phase counter, because Fabro stops a run after three identical failure signatures and
   normalises digits (ADR-0005 #5; run lrtx6 ended this way).
 
+- **Structured-output mode (LRTX-T012):** `python -m forge_factory.lrtx.structured probe --model M` measures whether
+  the served model honours a JSON schema or plain JSON mode. The record is stored under the profile state and bound to
+  the model digest. Visits use the probed mode and log it per call. An unprobed or stale record keeps the JSON-schema
+  request. Unconstrained output is never selected; answers are always validated against the full schema.
+
 HAL work orders keep the agent nodes; structured HAL tasks are not implemented.

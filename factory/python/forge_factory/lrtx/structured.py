@@ -219,7 +219,7 @@ PROBE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["a
 def probe_capabilities(model: str, url: str | None = None) -> dict:
     """LRTX-T012: does this backend+model honour a JSON schema, plain JSON mode, or neither? Measured, recorded."""
     out = {"model": model, "probed_at": utc_now()}
-    for mode in ("json_schema", "json_object", "none"):
+    for mode in MODES:
         p = packet(phase="PROBE", task="capability", role="swe1-author", with_skill=False, model=model,
                    instructions="Is 7 a prime number? Also list the first three positive even integers.",
                    sources=[], criteria=[], output_schema=PROBE_SCHEMA, output_reserve=256)
@@ -227,8 +227,49 @@ def probe_capabilities(model: str, url: str | None = None) -> dict:
         out[mode] = {"valid": r["doc"] is not None and not r["errors"], "errors": r["errors"][:3],
                      "wall_ms": r["wall_ms"], "prompt_tokens": (r["usage"] or {}).get("prompt_tokens"),
                      "estimated_prompt_tokens": p["accounting"]["estimated_prompt_tokens"]}
-    out["selected_mode"] = next((m for m in ("json_schema", "json_object", "none") if out[m]["valid"]), "none")
+    out["selected_mode"] = next((m for m in MODES if out[m]["valid"]), "none")
     return out
+
+
+MODES = ("json_schema", "json_object", "none")
+
+
+def capability_path(model: str) -> Path:
+    from ..common import state_dir
+
+    return state_dir() / "lrtx/capabilities" / (model.replace("/", "_").replace(":", "__") + ".json")
+
+
+def record_capabilities(model: str, digest: str | None, url: str | None = None) -> dict:
+    """Probe and persist, bound to the served model digest (a different digest invalidates the record)."""
+    out = {"schema": "forge-c/lrtx-capabilities/1", "digest": digest, **probe_capabilities(model, url)}
+    p = capability_path(model)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(out, indent=1, sort_keys=True) + "\n")
+    return out
+
+
+def schema_mode_for(model: str, digest: str | None = None) -> tuple[str, str]:
+    """(mode, basis): the probed structured-output mode of this model, else json_schema as the unprobed default. A
+    record whose digest differs from the served one is ignored. 'none' is never selected silently: a model that
+    honours neither constraint keeps json_schema, and validation rejects its answers (no weaker contract)."""
+    p = capability_path(model)
+    rec = json.loads(p.read_text()) if p.is_file() else None
+    if digest is None:  # the profile's pinned digest; the work order already refused a served model that differs
+        from . import profile as lp
+
+        try:
+            digest = lp.load(os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))["models"]["allowed"][model]["digest"]
+        except (KeyError, OSError, ValueError):
+            digest = None
+    if rec is None:
+        return "json_schema", "UNPROBED (default)"
+    if digest and rec.get("digest") and rec["digest"] != digest:
+        return "json_schema", f"PROBE_STALE (digest {str(rec['digest'])[:12]} != {digest[:12]})"
+    mode = rec.get("selected_mode")
+    if mode not in MODES[:2]:
+        return "json_schema", f"PROBED: no constrained mode honoured ({rec.get('probed_at')})"
+    return mode, f"PROBED {rec.get('probed_at')}"
 
 
 def record(ws: Path, rel: str, data: dict) -> Path:
@@ -236,3 +277,28 @@ def record(ws: Path, rel: str, data: dict) -> Path:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(data, indent=1, sort_keys=True) + "\n")
     return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    """python -m forge_factory.lrtx.structured probe --model M   (inside the profile namespace; LRTX-T012)"""
+    import argparse
+
+    from . import profile as lp
+
+    ap = argparse.ArgumentParser(description=main.__doc__)
+    ap.add_argument("cmd", choices=["probe"])
+    ap.add_argument("--model", required=True)
+    ap.add_argument("--profile", default=os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
+    a = ap.parse_args(argv)
+    prof = lp.load(a.profile)
+    ident = lp.model_identity(prof, a.model, os.environ.get("FORGE_OLLAMA_URL", "http://127.0.0.1:11445"))
+    if ident["status"] != "MATCH":
+        raise SystemExit(f"MODEL_IDENTITY_{ident['status']}:{a.model}")
+    out = record_capabilities(a.model, ident["digest"])
+    print(json.dumps({k: out[k] for k in ("model", "digest", "selected_mode")} |
+                     {m: out[m]["valid"] for m in MODES}))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
