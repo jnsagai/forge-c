@@ -1,10 +1,17 @@
 # Feature 010 tasks
 
-Status (2026-10-21): P0 and P1 delivered; structured SWE.1-SWE.6 (LL) authors and inspectors implemented and tested
-with scripted models; T010 and T012 recorded. Local trials lrtx1-lrtx7 are BLOCKED at SWE.1 (T016 open). lrtx7 froze
-SWE.1 on its first visit; the inspector defects it showed are fixed. Still pending: seeded-defect evaluation (T021),
-model comparison (T023), the campaign (T024) and the offline review package (T025). A checked task requires its own evidence. A
-written specification or passing static check is not a completed local model trial.
+Status (2026-10-21, end of day):
+- **Delivered:** P0-P3 and the structured SWE.1-SWE.6 (LL) authors and inspectors, tested with scripted models against
+  the real tools.
+- **Local trials (T016):** lrtx1-lrtx10 (ASIL B) and the QM experiment lrtxq1/lrtxq2 are BLOCKED at SWE.1 by the local
+  Qwen inspector (NOT_QUALIFIED). From lrtx7 on, the author froze SWE.1 on its first visit. A SWE.2 author trial on a
+  frozen READY SWE.1 baseline froze 1/3.
+- **Measurements:**
+  - T021: seeded defects - the local inspector caught 1/7 on target and falsely rejected 2/2 clean holdouts.
+  - T023: qwen3:8b passed 0/3 against 3/3 for qwen3-coder:30b. Owner decision: coder-only authoring.
+- **On owner hold:** the 30-case campaign (T024), pending the owner's inspector decision.
+- **Rule:** a checked task requires its own evidence. A written specification or passing static check is not a completed
+  local model trial.
 
 ## P0 — preservation
 
