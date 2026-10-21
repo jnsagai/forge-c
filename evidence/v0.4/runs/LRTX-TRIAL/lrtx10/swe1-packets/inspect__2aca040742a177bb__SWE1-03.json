@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T17:22:07.939522Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6617,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18021
+      },
+      "errors": [
+        "evidence_checked names software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "48f3f0558f4d3633d52716ac65f4bc713b5e3c1ab523745566b0d06733bf6db4",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 142,
+        "prompt_tokens": 5828,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5970
+      },
+      "wall_ms": 21272.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6930,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18882
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f396d0026eeb86f80febaede5f0234d1c77238675b3474083dbab0e0613d4e3a",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 117,
+        "prompt_tokens": 6015,
+        "prompt_tokens_details": {
+          "cached_tokens": 5702
+        },
+        "total_tokens": 6132
+      },
+      "wall_ms": 5735.7
+    }
+  ],
+  "base_hash": "48f3f0558f4d3633d52716ac65f4bc713b5e3c1ab523745566b0d06733bf6db4",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "No specification of failure handling found in the software safety requirements or related traceability documents (workproducts/SWE.1/software_requirements.md).",
+      "No specification of safe states found in software safety requirements or related traceability documents (workproducts/SWE.1/software_requirements.md)."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:2aca040742a177bb:SWE1-03"
+}

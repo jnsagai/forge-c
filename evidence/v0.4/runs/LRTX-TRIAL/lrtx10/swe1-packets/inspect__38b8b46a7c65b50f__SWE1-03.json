@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-21T16:59:25.046286Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6501,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17702
+      },
+      "errors": [
+        "finding says reset/startup behaviour is not specified, but SWR-013 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item",
+        "finding 'No specification of failure handling, reset/startup behavior or safe states foun...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "20816e493d7f64cf56b087d3ec56ed9ee18ea2f248bd1086b3a2ce49293c3afa",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 151,
+        "prompt_tokens": 5767,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5918
+      },
+      "wall_ms": 243869.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6986,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19036
+      },
+      "errors": [
+        "finding 'No specification of failure handling found in software safety requirements or re...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "da1a38c4eaecfb6fa5373f6a479734621fb3b3cafa77702f114508d593ade0f3",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 161,
+        "prompt_tokens": 6063,
+        "prompt_tokens_details": {
+          "cached_tokens": 5641
+        },
+        "total_tokens": 6224
+      },
+      "wall_ms": 43004.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6928,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18878
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "29c168f7e4ad441054e1b271dd7aacc161bd6aaa518c87ba90a30575fb46efac",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 126,
+        "prompt_tokens": 6012,
+        "prompt_tokens_details": {
+          "cached_tokens": 5689
+        },
+        "total_tokens": 6138
+      },
+      "wall_ms": 31787.6
+    }
+  ],
+  "base_hash": "20816e493d7f64cf56b087d3ec56ed9ee18ea2f248bd1086b3a2ce49293c3afa",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "No specification of failure handling found in software safety requirements or related traceability documents.",
+      "No specification of safe states found in software safety requirements or related traceability documents."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:38b8b46a7c65b50f:SWE1-03"
+}

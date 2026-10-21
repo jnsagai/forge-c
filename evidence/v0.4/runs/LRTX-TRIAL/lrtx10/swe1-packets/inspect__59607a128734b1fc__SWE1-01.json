@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-21T16:30:37.018645Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6310,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17178
+      },
+      "errors": [
+        "finding 'HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md records SWR-00...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Software safety allocation is PENDING owner allocation review as stated in the m...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "9a1396c33448f335489398d0b0efa43c889c73f0a69ae24581b544b4ac45553d",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 174,
+        "prompt_tokens": 5659,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 5833
+      },
+      "wall_ms": 27265.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6842,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18641
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated yet, as stated in the manifest and...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "9ba19cd6c76db3c4e0166e5e428efb8cccdf7b0180f0f4490fdb3ca8cef64417",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 130,
+        "prompt_tokens": 5993,
+        "prompt_tokens_details": {
+          "cached_tokens": 5533
+        },
+        "total_tokens": 6123
+      },
+      "wall_ms": 8757.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6650,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18112
+      },
+      "errors": [
+        "finding 'The safety allocation is marked as PENDING owner allocation review in the manife...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1cfb8660c787907049d58edbc2a8236e5b60ff35829d84f7d9c6aeb2bec5893d",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 147,
+        "prompt_tokens": 5875,
+        "prompt_tokens_details": {
+          "cached_tokens": 5576
+        },
+        "total_tokens": 6022
+      },
+      "wall_ms": 7605.9
+    }
+  ],
+  "base_hash": "9a1396c33448f335489398d0b0efa43c889c73f0a69ae24581b544b4ac45553d",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md. This indicates that no software safety requirements have been allocated yet, which prevents satisfying the 'baselined and traceable' criterion for software safety requirements."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'The safety allocation is marked as PENDING owner allocation review in the manife...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:59607a128734b1fc:SWE1-01"
+}

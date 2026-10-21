@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-21T16:35:17.318563Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6306,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17166
+      },
+      "errors": [
+        "finding 'SWE1-05: Upstream safety allocation is PENDING owner allocation review and no so...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ce8336a1ac1492c434974ba1d0083d548e88cfd98bf96e15f54228c7b34d9e69",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 119,
+        "prompt_tokens": 5659,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5778
+      },
+      "wall_ms": 71138.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6628,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18053
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "67fc5738569c3bd7b9acbce6dcac740dc3875c3dc7a40e0b72fde27ce2bdb2cf",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 73,
+        "prompt_tokens": 5870,
+        "prompt_tokens_details": {
+          "cached_tokens": 5533
+        },
+        "total_tokens": 5943
+      },
+      "wall_ms": 9809.6
+    }
+  ],
+  "base_hash": "ce8336a1ac1492c434974ba1d0083d548e88cfd98bf96e15f54228c7b34d9e69",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "source/safety/software_safety_requirements.md",
+      "source/workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:59607a128734b1fc:SWE1-05"
+}

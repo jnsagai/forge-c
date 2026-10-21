@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-21T17:23:37.704627Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6612,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18007
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "326645fda1f44af628efa15b024eea58e7181b0c279edbc2d448dd74e7a825ca",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 152,
+        "prompt_tokens": 5820,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5972
+      },
+      "wall_ms": 21655.0
+    }
+  ],
+  "base_hash": "326645fda1f44af628efa15b024eea58e7181b0c279edbc2d448dd74e7a825ca",
+  "doc": {
+    "evidence_checked": [
+      "source safety/software_safety_requirements.md",
+      "source traceability/requirements_to_tests.csv",
+      "source traceability/upstream_gaps.md",
+      "source workproducts/SWE.1/register_effects.json",
+      "source workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software safety requirements document contains open points indicating that requirement SWR-001 references a hardware register interface without an approved safety allocation, making its feasibility unclear."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:2aca040742a177bb:SWE1-06"
+}

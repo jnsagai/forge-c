@@ -227,3 +227,31 @@ Run summary:
   - Consistency also catches the same write (same field and value) in other words.
 - **Inspector packets:** each structured SWE.1 item now carries the owner-scope note, which the agent inspector reads
   once for all items. Before, only SWE1-01 had it, while SWE1-05 judged the same gaps.
+
+## lrtx10 — factory 1d1fc8a, 2026-10-21 16:22–17:23 UTC: author stable, blocked by the inspector
+
+Run summary:
+- `verify.json` PASS; package BLOCKED (52 gaps).
+- 63 calls in 61 minutes, 19.9 Wh GPU energy at 100 % sample coverage.
+- Median prompt: 5,832 tokens.
+
+- **Author:** frozen on the first visit for the fourth run in a row (12 calls). Each rework visit took 2 calls. No
+  author gate rejection.
+- **Inspection:**
+  - INS-SWE.1-001..003 were all recorded; no cycle was lost to the factory.
+  - The second inspection used its time box once (CONTINUE) and took 36 minutes.
+- **Inspector findings (model quality, not a factory defect):** after a refutation, the Qwen inspector kept the
+  finding and reworded it.
+  - "PENDING owner allocation review" became "without an approved safety allocation" or "lacks an approved safety
+    allocation". It then carried the same objection under SWE1-02, -05 and -06.
+  - SWE1-03 kept reporting missing safe states and failure handling.
+  - SWE1-04 was resolved in cycle 3.
+  - More wording rules would only chase the model's phrasing. The structured inspector stays NOT_QUALIFIED, as the
+    profile records, and no further refutation patterns are added.
+- **Shared route gate defect (outside feature 010; reported to the owner, not changed here per LRTX-FR-019):**
+  - The cycle-3 route computed the owner's progress extension (`rework-policy.yaml`, 2026-10-18) with
+    `progress: true` (SWE1-04 resolved, 5 -> 5 findings).
+  - It still returned BLOCKED, because `Store.gate` already decides BLOCKED once `failed_inspections` reaches the
+    checklist maximum.
+  - So the extension only ever applies to author-gate cycles; every extended cycle in earlier evidence had
+    `failed_inspections: 0`. It affects the Codex/Claude line in the same way.

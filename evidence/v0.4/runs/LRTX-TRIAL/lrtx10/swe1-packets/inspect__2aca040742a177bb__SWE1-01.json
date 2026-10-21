@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-21T17:20:35.821814Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6620,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18029
+      },
+      "errors": [
+        "finding 'SWE1-01: Safety allocation is marked as PENDING owner allocation review in the m...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "c3917414f505ea26113f21e54b5491e49bbe8aaf232fd7a0e3006ef7e24dcea9",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 145,
+        "prompt_tokens": 5832,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 5977
+      },
+      "wall_ms": 61459.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6991,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19050
+      },
+      "errors": [
+        "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "5a0049507df5ecbaac6d45ad06f3018d1f841b025b513edc59ca8a08656fb28f",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 143,
+        "prompt_tokens": 6069,
+        "prompt_tokens_details": {
+          "cached_tokens": 5706
+        },
+        "total_tokens": 6212
+      },
+      "wall_ms": 13181.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7000,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19075
+      },
+      "errors": [
+        "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "88cebef8d2cfeb283144e70dbc47357f74050cf0f4bc7af929e1ac0729c8f369",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 148,
+        "prompt_tokens": 6072,
+        "prompt_tokens_details": {
+          "cached_tokens": 5756
+        },
+        "total_tokens": 6220
+      },
+      "wall_ms": 8938.2
+    }
+  ],
+  "base_hash": "c3917414f505ea26113f21e54b5491e49bbe8aaf232fd7a0e3006ef7e24dcea9",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md, indicating no software safety requirements have been allocated yet, which prevents satisfying the requirement for traceability of allocated software safety requirements."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:2aca040742a177bb:SWE1-01"
+}

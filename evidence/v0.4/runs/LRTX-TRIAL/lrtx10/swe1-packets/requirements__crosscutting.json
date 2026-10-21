@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-21T17:19:09.845677Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3096,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8339
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "dbd115a7e90c46bc600eb63fae1299964fae8d45f435ab1f0497217613097f05",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 215,
+        "prompt_tokens": 2303,
+        "prompt_tokens_details": {
+          "cached_tokens": 1622
+        },
+        "total_tokens": 2518
+      },
+      "wall_ms": 32787.0
+    }
+  ],
+  "base_hash": "6af02e50ae4e75807e9c5a8bc687774cbad4fe546e1e5dff8af494aaba9e9869",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md. This indicates that no software safety requirements have been allocated yet, which prevents satisfying the requirement for failure handling.",
+      "SWE1-03: No specification of failure handling found in the software safety requirements or related traceability documents. No specification of safe states found in software safety requirements or related traceability documents."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "iwdg_reset_startup_behavior",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test; passes when no writes to any IWDG register occur before first LL function call",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

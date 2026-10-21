@@ -1,0 +1,40 @@
+{
+ "at": "2026-10-21T17:23:38.683467Z",
+ "baseline_id": "BL-SWE.1-003",
+ "contested_findings": {
+  "SWE1-01": [
+   "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ]
+ },
+ "items": [
+  "SWE1-01",
+  "SWE1-02",
+  "SWE1-03",
+  "SWE1-04",
+  "SWE1-05",
+  "SWE1-06"
+ ],
+ "result": {
+  "artifact_refs": [
+   "inspection/SWE.1/INS-SWE.1-003.json"
+  ],
+  "issues": [
+   "SWE1-01:major",
+   "SWE1-02:major",
+   "SWE1-03:major",
+   "SWE1-05:major",
+   "SWE1-06:major"
+  ],
+  "metrics": {
+   "stale": false
+  },
+  "provenance": {
+   "input_sha256": "3524dfcbba5996afc14318eb0097f3b251b1ffcc19eead3a83a672c36bf4785b",
+   "invocation_id": "inv-933c9b33de2e4c01",
+   "tool": "forge-inspection",
+   "version": "0.4.0"
+  },
+  "status": "FAIL",
+  "summary": "INS-SWE.1-003 FAIL (5 findings)"
+ }
+}

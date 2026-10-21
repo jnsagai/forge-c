@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-21T17:18:37.010976Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4238,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11479
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b64196e488151c5e9981e09ab659cb6e3ee81f55d42e0d5306588396e2bef6f3",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 845,
+        "prompt_tokens": 3232,
+        "prompt_tokens_details": {
+          "cached_tokens": 1922
+        },
+        "total_tokens": 4077
+      },
+      "wall_ms": 77017.4
+    }
+  ],
+  "base_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "Requirement SWR-001 [iwdg_kr_key_start] references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear.",
+      "The software requirements document contains open points indicating that requirement SWR-001 [iwdg_kr_key_start] references a hardware register interface without an approved safety allocation."
+    ],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xCCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_start",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to start the watchdog, the IWDG LL driver shall write the key value 0xCCCC to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array ll_iwdg_regs[0] contains 0xCCCC at offset IWDG_KR_OFFSET after the function call.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xAAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_refresh",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to refresh the watchdog counter, the IWDG LL driver shall write the key value 0xAAAA to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array ll_iwdg_regs[0] contains 0xAAAA at offset IWDG_KR_OFFSET after the function call.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x5555"
+          }
+        ],
+        "key": "iwdg_kr_key_enable_write_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to enable write access to IWDG_PR and IWDG_RLR registers, the IWDG LL driver shall write the key value 0x5555 to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array ll_iwdg_regs[0] contains 0x5555 at offset IWDG_KR_OFFSET after the function call.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000"
+          }
+        ],
+        "key": "iwdg_kr_key_disable_write_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to disable write access to IWDG_PR and IWDG_RLR registers, the IWDG LL driver shall write a key value different from 0x5555 to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array ll_iwdg_regs[0] does not contain 0x5555 at offset IWDG_KR_OFFSET after the function call.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-21T16:31:43.402885Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6309,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17174
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "1714afb0d39a182f7e82151ad87af3540bf29b23dfbbc40950bf937b2c56d7a6",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 535,
+        "prompt_tokens": 5653,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6188
+      },
+      "wall_ms": 66355.0
+    }
+  ],
+  "base_hash": "1714afb0d39a182f7e82151ad87af3540bf29b23dfbbc40950bf937b2c56d7a6",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "workproducts/SWE.1/register_effects.json"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not atomic and consistent as it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-002 is not atomic and consistent as it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-003 is not atomic and consistent as it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-004 is not atomic and consistent as it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-005 is not atomic and consistent as it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-006 is not atomic and consistent as it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-007 is not atomic and consistent as it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-008 is not atomic and consistent as it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-009 is not atomic and consistent as it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear.",
+      "Requirement SWR-010 is not atomic and consistent as it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:59607a128734b1fc:SWE1-02"
+}

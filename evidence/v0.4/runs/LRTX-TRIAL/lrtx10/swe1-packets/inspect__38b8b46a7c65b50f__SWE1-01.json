@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-21T17:06:14.895557Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6873,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18725
+      },
+      "errors": [
+        "finding 'SWE1-01: The HSI contract RM0486 Rev 4 ch.59 IWDG register interface + memory ma...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "12c5e7e7c72551375f056b847836dcb66afd9e3753088b93cf840859f340d2f6",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 150,
+        "prompt_tokens": 6008,
+        "prompt_tokens_details": {
+          "cached_tokens": 5675
+        },
+        "total_tokens": 6158
+      },
+      "wall_ms": 41532.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6858,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18685
+      },
+      "errors": [
+        "finding 'SWE1-01: The software safety allocation is marked as PENDING owner allocation re...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "8e725cc243bf0a11bcd9cde464095e44e6fe3e8032964c499276c96e069b6140",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 125,
+        "prompt_tokens": 6038,
+        "prompt_tokens_details": {
+          "cached_tokens": 5675
+        },
+        "total_tokens": 6163
+      },
+      "wall_ms": 44938.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6844,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18647
+      },
+      "errors": [
+        "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e5325f75f67d33a8a975f11146e133e2b21c965b01010109a9e4da6b34dcd596",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 124,
+        "prompt_tokens": 5987,
+        "prompt_tokens_details": {
+          "cached_tokens": 5696
+        },
+        "total_tokens": 6111
+      },
+      "wall_ms": 41545.0
+    }
+  ],
+  "base_hash": "5dc172df34c068bbc295348e487dca1ea6c73121afb05c15ee4e0e561ea3864d",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/upstream_gaps.md",
+      "source/workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md. No software safety requirements have been allocated yet, which prevents satisfying the requirement for failure handling."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'SWE1-01: The safety allocation is marked as PENDING owner allocation review in t...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:38b8b46a7c65b50f:SWE1-01"
+}

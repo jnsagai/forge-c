@@ -1,0 +1,117 @@
+{
+  "at": "2026-10-21T16:28:22.464871Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4543,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12318
+      },
+      "errors": [
+        "[iwdg_sr_ewif_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_onf_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_ewu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[swr_001] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [swr_001] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 654,
+        "prompt_tokens": 3116,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3770
+      },
+      "wall_ms": 35075.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5519,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15002
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "55327410ee85c77b2fb4db4baffbec77f4f6c13cf15c74075923aab1d02ceb05",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 537,
+        "prompt_tokens": 3966,
+        "prompt_tokens_details": {
+          "cached_tokens": 2711
+        },
+        "total_tokens": 4503
+      },
+      "wall_ms": 27239.1
+    }
+  ],
+  "base_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWIF field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.EWIF is set in the register array, or returns 0U when IWDG_SR.EWIF is cleared.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.ONF field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.ONF is set in the register array, or returns 0U when IWDG_SR.ONF is cleared.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWU field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.EWU is set in the register array, or returns 0U when IWDG_SR.EWU is cleared.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

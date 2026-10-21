@@ -1,0 +1,14 @@
+{"baseline_id": "BL-SWE.1-001", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-21T16:29:52.678167Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "REWORK", "failed_inspections": 1, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "INS-SWE.1-001"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T16:36:46.315867Z"}
+{"gate": {"decision": "REWORK", "failed_inspections": 1, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "INS-SWE.1-001"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T16:36:46.743921Z"}
+{"phase": "SWE.1", "reason": "the baseline was inspected: findings go to the author", "result": "AUTHOR", "step": "reinspect_direct", "ts": "2026-10-21T16:36:47.027379Z"}
+{"baseline_id": "BL-SWE.1-002", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-21T16:41:52.406568Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "REWORK", "failed_inspections": 2, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "INS-SWE.1-002"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T17:17:18.629256Z"}
+{"gate": {"decision": "REWORK", "failed_inspections": 2, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "INS-SWE.1-002"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T17:17:19.125467Z"}
+{"phase": "SWE.1", "reason": "the baseline was inspected: findings go to the author", "result": "AUTHOR", "step": "reinspect_direct", "ts": "2026-10-21T17:17:19.398344Z"}
+{"baseline_id": "BL-SWE.1-003", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-21T17:19:11.663076Z"}
+{"agent_ok": false, "agent_status": "FAILED", "gate": {"decision": "BLOCKED", "failed_inspections": 3, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "INS-SWE.1-003"}, "phase": "SWE.1", "step": "inspect", "ts": "2026-10-21T17:23:39.438468Z"}
+{"gate": {"decision": "BLOCKED", "failed_inspections": 3, "max_rework_cycles": 3, "phase": "SWE.1", "progress_extension": {"cycle": 1, "of": 2, "progress": true, "resolved": ["SWE1-04@SWR-014"], "why": "1 item(s) resolved, 5 -> 5 findings"}, "reason": "INS-SWE.1-003"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-21T17:23:39.863206Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.1", "result": "NONE", "step": "upstream", "ts": "2026-10-21T17:23:40.146664Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.2", "result": "NONE", "step": "upstream", "ts": "2026-10-21T17:23:40.493725Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.3", "result": "NONE", "step": "upstream", "ts": "2026-10-21T17:23:40.836998Z"}

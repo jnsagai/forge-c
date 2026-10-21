@@ -1,0 +1,111 @@
+{
+  "calls": {
+    "basis": "admission gateway meter",
+    "count": 63,
+    "decode_ms": 1167016.1,
+    "decode_tokens_per_s_median": 19.79,
+    "first_delta_ms": 2375365.8,
+    "load_ms": 70816.7,
+    "model_loads": 1,
+    "output_tokens": 15903,
+    "prefill_ms": 2375365.8,
+    "prefill_tokens_per_s_median": 391.1,
+    "prompt_tokens": {
+      "max": 6331,
+      "median": 5832,
+      "p95": 6269,
+      "sum": 324553
+    },
+    "queue_wait_ms": {
+      "max": 0.9,
+      "sum": 7.7
+    },
+    "refused_or_cancelled": 0,
+    "split_unobservable": 0
+  },
+  "energy": {
+    "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+    "coverage": 1.0,
+    "gpu_board_j": 71647.7,
+    "gpu_board_wh": 19.902,
+    "wall": "UNKNOWN (no wall-power meter on this host)"
+  },
+  "fabro_run_id": "01M5FMBC2NTFT3ZZGN57Q9BD9H",
+  "generated_at": "2026-10-21T17:25:32.628453Z",
+  "resources": {
+    "gpu_vram_fraction_median": 0.34,
+    "gpu_vram_fraction_min": 0.34,
+    "host_mem_available_mib_min": 9805,
+    "host_swap_used_mib_max": 16383,
+    "samples": 362
+  },
+  "schema": "forge-c/lrtx-run-metrics/1",
+  "stages": {
+    "basis": "Fabro stage records",
+    "by_node": {
+      "exit": {
+        "inference_ms": 0,
+        "tool_ms": 0,
+        "visits": 1,
+        "wall_ms": 0
+      },
+      "finalize": {
+        "inference_ms": 0,
+        "tool_ms": 1270,
+        "visits": 1,
+        "wall_ms": 1470
+      },
+      "start": {
+        "inference_ms": 0,
+        "tool_ms": 0,
+        "visits": 1,
+        "wall_ms": 160
+      },
+      "swe1_author": {
+        "inference_ms": 0,
+        "tool_ms": 836614,
+        "visits": 3,
+        "wall_ms": 837308
+      },
+      "swe1_author_gate": {
+        "inference_ms": 0,
+        "tool_ms": 5436,
+        "visits": 3,
+        "wall_ms": 6079
+      },
+      "swe1_inspector": {
+        "inference_ms": 0,
+        "tool_ms": 2012608,
+        "visits": 3,
+        "wall_ms": 2013313
+      },
+      "swe1_inspector_cont": {
+        "inference_ms": 0,
+        "tool_ms": 80,
+        "visits": 1,
+        "wall_ms": 483
+      },
+      "swe1_inspector_more": {
+        "inference_ms": 0,
+        "tool_ms": 791050,
+        "visits": 1,
+        "wall_ms": 791278
+      },
+      "swe1_route": {
+        "inference_ms": 0,
+        "tool_ms": 236,
+        "visits": 2,
+        "wall_ms": 571
+      }
+    },
+    "count": 16,
+    "inference_ms": 0,
+    "tool_ms": 3647294,
+    "wall_ms": 3650662
+  },
+  "window": {
+    "from": "2026-10-21T16:22:45.567411Z",
+    "to": "2026-10-21T17:23:42.358534Z",
+    "wall_s": 3657.8
+  }
+}

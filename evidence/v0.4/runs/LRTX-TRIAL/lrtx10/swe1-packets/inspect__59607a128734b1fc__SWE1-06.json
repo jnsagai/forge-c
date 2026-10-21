@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T16:36:44.467842Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6302,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17156
+      },
+      "errors": [
+        "finding 'SWE1-06: Verification criteria and unresolved ambiguities are not fully document...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7da157b48c30c0ff4b64534af2d874bbec626a5fb27cce219f723b09d693c17b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 149,
+        "prompt_tokens": 5647,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5796
+      },
+      "wall_ms": 73890.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6684,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18205
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "68bfe4c25d2501beaa06bb79656dce03aee8877a5620a1fe5f4b8a8a09f85ee8",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 100,
+        "prompt_tokens": 5885,
+        "prompt_tokens_details": {
+          "cached_tokens": 5521
+        },
+        "total_tokens": 5985
+      },
+      "wall_ms": 13205.4
+    }
+  ],
+  "base_hash": "7da157b48c30c0ff4b64534af2d874bbec626a5fb27cce219f723b09d693c17b",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "source/workproducts/SWE.1/register_effects.json",
+      "source/workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:59607a128734b1fc:SWE1-06"
+}

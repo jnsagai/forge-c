@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T17:21:40.902602Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6618,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18025
+      },
+      "errors": [
+        "finding 'Requirement SWR-001 is not feasible as the safety allocation is PENDING owner al...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e8dcbd60f8e1125d75be820f1a1cbdf40f8868df56ccfc75e05fd0c15a28f460",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 145,
+        "prompt_tokens": 5826,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5971
+      },
+      "wall_ms": 57512.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6995,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19061
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "7821422130c58f4a2398656b9265182834ca63ce3074eb578ff0f5374f89bb0b",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 154,
+        "prompt_tokens": 6062,
+        "prompt_tokens_details": {
+          "cached_tokens": 5700
+        },
+        "total_tokens": 6216
+      },
+      "wall_ms": 7418.6
+    }
+  ],
+  "base_hash": "e8dcbd60f8e1125d75be820f1a1cbdf40f8868df56ccfc75e05fd0c15a28f460",
+  "doc": {
+    "evidence_checked": [
+      "SOURCE safety/software_safety_requirements.md",
+      "SOURCE traceability/requirements_to_tests.csv",
+      "SOURCE traceability/upstream_gaps.md",
+      "SOURCE workproducts/SWE.1/register_effects.json",
+      "SOURCE workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not objectively verifiable because the source document RM0486 p.2989 references a hardware register interface without an approved safety allocation, making it unclear if the requirement can be satisfied with respect to safety constraints."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:2aca040742a177bb:SWE1-02"
+}
