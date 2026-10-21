@@ -405,3 +405,11 @@ def test_gap_refutation_needs_an_upstream_input(ws1):  # noqa: F811
     crit = "SWR-001: the verification criterion is not provided for the unlock key requirement."
     assert any("NOT_PROVIDED" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-02", [budget]))
     assert not any("NOT_PROVIDED" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-06", [crit]))
+
+
+def test_every_swe1_item_gets_the_owner_scope_note_like_the_agent_inspector(ws1):  # noqa: F811
+    from forge_factory.workflow import prompts
+
+    assert prompts.OWNER_SCOPE_NOTE in prompts.inspector_prompt("SWE.1")
+    for item in ("SWE1-01", "SWE1-03", "SWE1-05", "SWE1-06"):
+        assert prompts.OWNER_SCOPE_NOTE in review._notes(ws1, "SWE.1", item)

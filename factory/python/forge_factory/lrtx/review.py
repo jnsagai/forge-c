@@ -31,8 +31,8 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..workflow import prompts
 
     out = []
-    if phase == "SWE.1" and item == "SWE1-01":
-        out.append(prompts.OWNER_SCOPE_NOTE)
+    if phase == "SWE.1":  # the agent inspector reads it once for all items (prompts.inspector_prompt); lrtx9: the
+        out.append(prompts.OWNER_SCOPE_NOTE)  # SWE1-05 packets lacked it and failed the recorded gaps
     if phase in ("SWE.2", "SWE.3"):  # the work order's peripheral (feature 009), as the builder sets it for agents
         prof = profile(ws)
         saved = prompts.PERIPHERAL["profile"]
