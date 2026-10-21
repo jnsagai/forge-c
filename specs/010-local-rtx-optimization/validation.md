@@ -63,4 +63,6 @@ behavior is retained. Do not rewrite historical fingerprints to hide changes or 
 | Existing deployment preserved (T025, host check part) | PASS | `LRTX-T025-HOSTCHECK` (checkout, configs, 208 archives, services, network denial, dry-run rollback) |
 | Promotion (CRE), later candidates | ELIGIBLE | pd-5bfcdeab..., pd-118fefed..., pd-7cc602f1..., pd-82e141b7..., pd-4d89b29d..., pd-0d218f28..., pd-2213d82c..., pd-e853a842... |
 | Local model quality (structured SWE.1 on qwen3-coder:30b) | BLOCKED (lrtx1-lrtx7) | `LRTX-TRIAL/README.md`; lrtx7 froze SWE.1 on its first visit, then factory inspection defects blocked it (fixed) |
-| 30-case campaign, model routing, seeded defects | NOT_RUN | T021, T023, T024 |
+| Model routing per task (T023) | PASS (measured; no routing proposed) | `LRTX-T023` (qwen3:8b 0/3 SWE.1 visits pass, cross-cutting task never valid; qwen3-coder:30b 3/3 frozen; derived mixed routing 575 s vs 541 s for 30B alone) |
+| Local model quality, lrtx8-lrtx10 | BLOCKED by the structured Qwen inspector | `LRTX-TRIAL/README.md`; the author froze SWE.1 on the first visit in lrtx7-lrtx10; the inspector rewords refuted findings (NOT_QUALIFIED) |
+| 30-case campaign, seeded defects | NOT_RUN | T021, T024 |

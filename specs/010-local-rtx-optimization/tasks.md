@@ -42,7 +42,7 @@ written specification or passing static check is not a completed local model tri
 ## P4/P5 — full process and qualification
 
 - [X] LRTX-T022 Extend existing SWE.3-SWE.6 scaffolds and tasks without weakening complete phase gates or deriving test oracles from generated code. ✅ Evidence: `evidence/v0.4/runs/LRTX-T022/latest.json` (LL work orders, scripted models against the real tools, Renode, Robot and the unchanged gates; HAL keeps the agent nodes; no local-model run has reached SWE.3 yet)
-- [ ] LRTX-T023 Compare smaller models per task with 30B, including switching and retry costs; preserve inspector qualification as a separate decision.
+- [X] LRTX-T023 Compare smaller models per task with 30B, including switching and retry costs; preserve inspector qualification as a separate decision. ✅ Evidence: `evidence/v0.4/runs/LRTX-T023/latest.json` (qwen3:8b vs qwen3-coder:30b on structured SWE.1, 3 interleaved repeats; 8b 0/3, 30b 3/3; no routing proposed; inspector qualification untouched)
 - [ ] LRTX-T024 Execute the frozen 30-case local-only campaign and publish full provenance, quality/detection results, duration, tokens, resource use and uncertainty.
 - [ ] LRTX-T025 Verify the existing deployment remains usable and complete host rollback/isolation evidence; package results for offline review. No automatic promotion.
 

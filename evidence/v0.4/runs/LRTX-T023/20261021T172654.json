@@ -1,0 +1,32 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.modelcmp",
+    "--workspace",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/start-lrtx10",
+    "--model",
+    "qwen3:8b",
+    "--model",
+    "qwen3-coder:30b",
+    "--repeat",
+    "3",
+    "--out",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report.json"
+  ],
+  "duration_s": 1800.055,
+  "exit_code": 124,
+  "git_dirty": true,
+  "git_head": "c660da0fc336d1f26dc7ab942f2108f007ef544c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T023/20261021T172654.log",
+  "log_sha256": "c7219995ab2181f44a853866cef8cbfee0e1ba3d25596cf5ab338ed3afd73da2",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "LRTX-T023",
+  "ts_utc": "2026-10-21T17:26:54.167580Z"
+}
