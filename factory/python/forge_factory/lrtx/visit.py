@@ -104,6 +104,12 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             budget["schema_mode"], budget["schema_mode_basis"] = S.schema_mode_for(p["model"])
         r = S.call(p, schema_mode=budget["schema_mode"])
         errs = r["errors"] or check(r["doc"])
+        if not errs and start is not None and findings and r["doc"] == start:
+            # lrtxq1 (2026-10-21): an unchanged answer to the findings re-froze the inspected baseline and spent two
+            # rework cycles in seconds; the answer must address them or record why one does not apply
+            errs = ["LRTX_FINDING_NOT_ADDRESSED: the answer is identical to the one these findings rejected - change "
+                    "the requirements so they address the findings, or, if a finding does not apply, state why in "
+                    "open_points (it is rendered into the requirements document for the inspector)"]
         attempts.append({"n": n, "input_hash": p["input_hash"], "accounting": p["accounting"], "usage": r["usage"],
                          "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20],
                          "schema_mode": budget["schema_mode"], "schema_mode_basis": budget.get("schema_mode_basis")})
