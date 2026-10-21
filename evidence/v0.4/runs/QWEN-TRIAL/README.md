@@ -32,9 +32,41 @@ Quality, as far as reached: Qwen's SWE.1 author output passed the deterministic 
 Codex runs of the same work order (13 SWRs vs 16 in i003 and rc1), and SWR-004 keeps the ambiguous "any other key
 value, e.g., 0x0000" wording from the prompt. No inspector verdict exists for it, so its inspection quality is NOT_MEASURED.
 
+## GPU runs (owner "put down carla" + "run again the qwen runs using GPU", 2026-10-21 03:37 - 06:51 UTC)
+
+The owner stopped the CARLA simulator; qwen3-coder:30b then had 6.5 of its 19.2 GB in VRAM (34 %). Six runs, factory
+0c1942a (PR #30 head), every agent node on qwen3-coder:30b, --timeout-scale 4, one at a time (Fabro
+max_concurrent_runs = 1). Evidence: gpu/<run>/{gate-log.jsonl,package.json,model-profile.json}.
+
+| Run | Wall | SWE.1 | SWE.2 | Package |
+|---|---|---|---|---|
+| IWDG-LL-g1 | 38 min | PASS: gates after 2 reworks, Qwen inspection PASS | BLOCKED after 4 attempts | BLOCKED, 43 gaps |
+| IWDG-LL-g2 | 31 min | PASS: gates after 1 rework, inspection PASS | BLOCKED after 3 attempts | BLOCKED, 43 gaps |
+| IWDG-LL-g3 | 30 min | PASS: gates after 1 rework, inspection PASS | BLOCKED after 5 attempts (2 progress extensions) | BLOCKED, 43 gaps |
+| RCC-LL-g1 | 55 min | BLOCKED after 3 attempts | not reached | BLOCKED, 49 gaps |
+| RCC-LL-g2 | 18 min | BLOCKED after 3 attempts | not reached | BLOCKED, 49 gaps |
+| RCC-LL-g3 | 14 min | BLOCKED: identical deterministic rejection twice (STUCK) | not reached | BLOCKED, 49 gaps |
+
+Throughput over the six runs (local gateway meter): 613 calls, median 6.5 s, p95 73 s, 9.27 M input / 157 k output
+tokens, 14.0 output tokens/s (q4 with the GPU shared: 0.71). No stage timeout and no stall watchdog fired.
+
+Repeated rejections (deterministic gates, not model variance):
+- IWDG SWE.2, every run: SWR-010..SWR-013 (reset invariant and the three resource budgets) never allocated to a
+  software component; the LL software component missing or an extra IWDG component; interfaces without an ID;
+  diagram syntax errors; g2 also api_calls.json cases without a call (CONTRACT_CASE_WITHOUT_CALL).
+- RCC SWE.1, every run: register_effects.json incomplete (CONTRACT_SWR_NOT_COVERED: SWR-003/005/006...), missing
+  entirely once, or naming fields its requirement does not name (CONTRACT_FIELD_NOT_IN_SWR); a reset requirement
+  mapped to a host test (STARTUP_INVARIANT_ON_HOST_TEST); one QM claim in the ASIL B scope (SAFETY_SCOPE).
+- One Qwen SWE.1 inspector ended with a non-JSON reply (agent_status FAILED) after writing a PASS inspection record;
+  the gate decides from the record.
+
+The same work orders on Codex Sol 6.1 authors + Claude Opus 5.5 inspectors reached READY_FOR_OFFLINE_REVIEW with 0
+gaps in the rc1 campaign (WO-0009A-STM32N6-IWDG-LL-rc1, WO-0002A-STM32N6-RCC-LL-rc1).
+
 ## Conclusion (agent recommendation, not an owner decision)
 
-The factory cannot run exclusively on local qwen3-coder:30b on this host: NOT_RUN beyond SWE.1, so SWE.2-SWE.6,
-packaging and inspector quality are NOT_MEASURED. The limit is throughput: 11k-24k-token prompts processed mostly
-on the CPU. A further local trial needs a model that fits in VRAM, or a larger GPU, plus a configurable Fabro stall
-watchdog. Until then: authors Codex Sol 6.1, inspectors Claude Opus 5.5.
+With the GPU free, speed is no longer the limit (14 output tokens/s, 14-55 min per run, no timeouts). The limit is
+output quality: 0 of 6 runs passed SWE.2 (IWDG 3/3 passed SWE.1 and stopped at SWE.2; RCC 0/3 passed SWE.1), so
+SWE.3-SWE.6, packaging and Qwen as SWE.2+ inspector are NOT_MEASURED. The factory cannot run exclusively on local
+qwen3-coder:30b. Keep authors on Codex Sol 6.1 and inspectors on Claude Opus 5.5. The deterministic gates rejected
+every incomplete work product, with no false READY.
