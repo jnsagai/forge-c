@@ -1,0 +1,24 @@
+# Traceability matrix 1: swr to architecture
+
+Generated deterministically by forge_factory.inspection.swtrace from the work products and executed results; not authored by an agent.
+
+| swr | swc | status |
+|---|---|---|
+| SWR-001 | SWC_LL | ALLOCATED |
+| SWR-002 | SWC_LL | ALLOCATED |
+| SWR-003 | SWC_LL | ALLOCATED |
+| SWR-004 | SWC_LL | ALLOCATED |
+| SWR-005 | SWC_LL | ALLOCATED |
+| SWR-006 | SWC_LL | ALLOCATED |
+| SWR-007 | SWC_LL | ALLOCATED |
+| SWR-008 | SWC_LL | ALLOCATED |
+| SWR-009 | SWC_LL | ALLOCATED |
+| SWR-010 | SWC_LL | ALLOCATED |
+| SWR-011 | SWC_LL | ALLOCATED |
+| SWR-012 | SWC_LL | ALLOCATED |
+| SWR-013 | SWC_LL | ALLOCATED |
+| SWR-014 | SWC_LL | ALLOCATED |
+| SWR-015 | SWC_LL | ALLOCATED |
+| SWR-016 | SWC_LL | ALLOCATED |
+
+Uncovered items: none

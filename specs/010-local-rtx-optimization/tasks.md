@@ -29,7 +29,7 @@ written specification or passing static check is not a completed local model tri
 - [X] LRTX-T013 Implement requirement-group, register-effect and verification-mapping tasks with a complete source coverage inventory. ✅ Evidence: `evidence/v0.4/runs/LRTX-T013/latest.json`
 - [X] LRTX-T014 Implement allocation/interface tasks including resource and reset invariants, stable IDs and existing final artifact formats. ✅ Evidence: `evidence/v0.4/runs/LRTX-T014/latest.json`
 - [X] LRTX-T015 Render repetitive tables/diagrams deterministically; retain semantic author decisions and complete phase-level consistency gates. ✅ Evidence: `evidence/v0.4/runs/LRTX-T015/latest.json`
-- [ ] LRTX-T016 Replay observed RCC/IWDG rejections and perform fresh local SWE.1/SWE.2 trials; distinguish fixed factory defects from model quality.
+- [X] LRTX-T016 Replay observed RCC/IWDG rejections and perform fresh local SWE.1/SWE.2 trials; distinguish fixed factory defects from model quality. ✅ Evidence: `evidence/v0.4/runs/LRTX-T016-REPLAY/latest.json`, `evidence/v0.4/runs/LRTX-T016-SWE2/latest.json` (replay: 14 codes triaged; fresh SWE.1 work orders lrtx1-lrtx10 and QM lrtxq1/lrtxq2 in `LRTX-TRIAL/README.md`, each defect classified as factory (fixed by CRE) or model quality; the local inspector, NOT_QUALIFIED, blocks every run at SWE.1; SWE.2 author on a frozen READY SWE.1 baseline 1/3 frozen after the actionable-finding fix)
 
 ## P3 — localized repair and inspection
 

@@ -1,0 +1,13 @@
+@startuml
+title IWDG LL component architecture (WO-0009A-STM32N6-IWDG-LL-rc1)
+actor Caller
+component "IWDG_LL\nstm32n6xx_ll_iwdg" <<SWC>> as SWC_LL
+rectangle "IWDG register block (0x56004800)" as REGS
+
+Caller --> SWC_LL : IF-01 LL API (9 functions)
+SWC_LL --> REGS : IF-02 volatile register-array access
+
+note right of SWC_LL
+Allocated: SWR-001, SWR-002, SWR-003, SWR-004, SWR-005, SWR-006, SWR-007, SWR-008, SWR-009, SWR-010, SWR-011, SWR-012, SWR-013, SWR-014, SWR-015, SWR-016
+end note
+@enduml

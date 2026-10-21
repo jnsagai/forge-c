@@ -1,0 +1,328 @@
+{
+  "at": "2026-10-21T21:42:03.748983Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2744,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7372
+      },
+      "errors": [
+        "SWR-015 is not allocated",
+        "SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)",
+        "case START: LL_IWDG_Enable takes 0 argument(s), the call passes 1",
+        "case REFRESH: LL_IWDG_ReloadCounter takes 0 argument(s), the call passes 1",
+        "case ENABLE_WRITE_ACCESS: LL_IWDG_EnableWriteAccess takes 0 argument(s), the call passes 1",
+        "case DISABLE_WRITE_ACCESS: LL_IWDG_DisableWriteAccess takes 0 argument(s), the call passes 1"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "b2173f3bcfc97036b2b58e0083f070e4d61570c1337415c3b7d2bf549188b9b4",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 1732,
+        "prompt_tokens": 2237,
+        "prompt_tokens_details": {
+          "cached_tokens": 2236
+        },
+        "total_tokens": 3969
+      },
+      "wall_ms": 70560.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4856,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 13178
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "9c183d7282e560fc4d79431126e75c84d408c2dd7f6adcb8083c6e52d3dd0446",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 1814,
+        "prompt_tokens": 4265,
+        "prompt_tokens_details": {
+          "cached_tokens": 1777
+        },
+        "total_tokens": 6079
+      },
+      "wall_ms": 89157.7
+    }
+  ],
+  "base_hash": "b2173f3bcfc97036b2b58e0083f070e4d61570c1337415c3b7d2bf549188b9b4",
+  "doc": {
+    "allocation": [
+      {
+        "functions": [
+          "LL_IWDG_Enable"
+        ],
+        "responsibility": "Start the watchdog timer",
+        "swr": "SWR-001"
+      },
+      {
+        "functions": [
+          "LL_IWDG_ReloadCounter"
+        ],
+        "responsibility": "Refresh the watchdog timer",
+        "swr": "SWR-002"
+      },
+      {
+        "functions": [
+          "LL_IWDG_EnableWriteAccess"
+        ],
+        "responsibility": "Enable write access to configuration registers",
+        "swr": "SWR-003"
+      },
+      {
+        "functions": [
+          "LL_IWDG_DisableWriteAccess"
+        ],
+        "responsibility": "Disable write access to configuration registers",
+        "swr": "SWR-004"
+      },
+      {
+        "functions": [
+          "LL_IWDG_SetPrescaler"
+        ],
+        "responsibility": "Set the prescaler value for the watchdog timer",
+        "swr": "SWR-005"
+      },
+      {
+        "functions": [
+          "LL_IWDG_SetReloadCounter"
+        ],
+        "responsibility": "Set the reload value for the watchdog timer",
+        "swr": "SWR-006"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsActiveFlag_PVU"
+        ],
+        "responsibility": "Check if prescaler value is updated",
+        "swr": "SWR-007"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsActiveFlag_PVU"
+        ],
+        "responsibility": "Check if prescaler value is updated",
+        "swr": "SWR-008"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsActiveFlag_RVU"
+        ],
+        "responsibility": "Check if reload value is updated",
+        "swr": "SWR-009"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsActiveFlag_RVU"
+        ],
+        "responsibility": "Check if reload value is updated",
+        "swr": "SWR-010"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsEnabled"
+        ],
+        "responsibility": "Check if watchdog timer is active",
+        "swr": "SWR-011"
+      },
+      {
+        "functions": [
+          "LL_IWDG_IsEnabled"
+        ],
+        "responsibility": "Check if watchdog timer is active",
+        "swr": "SWR-012"
+      },
+      {
+        "functions": [
+          "LL_IWDG_Enable",
+          "LL_IWDG_ReloadCounter",
+          "LL_IWDG_EnableWriteAccess",
+          "LL_IWDG_DisableWriteAccess",
+          "LL_IWDG_SetPrescaler",
+          "LL_IWDG_SetReloadCounter",
+          "LL_IWDG_IsActiveFlag_PVU",
+          "LL_IWDG_IsActiveFlag_RVU",
+          "LL_IWDG_IsEnabled"
+        ],
+        "responsibility": "IWDG LL driver uses 0 bytes of static RAM for driver-owned state",
+        "swr": "SWR-015"
+      }
+    ],
+    "calls": [
+      {
+        "args": [],
+        "case": "START",
+        "function": "LL_IWDG_Enable"
+      },
+      {
+        "args": [],
+        "case": "REFRESH",
+        "function": "LL_IWDG_ReloadCounter"
+      },
+      {
+        "args": [],
+        "case": "ENABLE_WRITE_ACCESS",
+        "function": "LL_IWDG_EnableWriteAccess"
+      },
+      {
+        "args": [],
+        "case": "DISABLE_WRITE_ACCESS",
+        "function": "LL_IWDG_DisableWriteAccess"
+      },
+      {
+        "args": [
+          "5U"
+        ],
+        "case": "SET_PRESCALER",
+        "function": "LL_IWDG_SetPrescaler"
+      },
+      {
+        "args": [
+          "2748U"
+        ],
+        "case": "SET_RELOAD",
+        "function": "LL_IWDG_SetReloadCounter"
+      },
+      {
+        "args": [],
+        "case": "QUERY_PVU_SET",
+        "function": "LL_IWDG_IsActiveFlag_PVU"
+      },
+      {
+        "args": [],
+        "case": "QUERY_PVU_CLEAR",
+        "function": "LL_IWDG_IsActiveFlag_PVU"
+      },
+      {
+        "args": [],
+        "case": "QUERY_RVU_SET",
+        "function": "LL_IWDG_IsActiveFlag_RVU"
+      },
+      {
+        "args": [],
+        "case": "QUERY_RVU_CLEAR",
+        "function": "LL_IWDG_IsActiveFlag_RVU"
+      },
+      {
+        "args": [],
+        "case": "QUERY_ONF_SET",
+        "function": "LL_IWDG_IsEnabled"
+      },
+      {
+        "args": [],
+        "case": "QUERY_ONF_CLEAR",
+        "function": "LL_IWDG_IsEnabled"
+      }
+    ],
+    "functions": [
+      {
+        "fields": [
+          "IWDG_KR.KEY"
+        ],
+        "name": "LL_IWDG_Enable",
+        "operation": "Write 0x0000CCCC to IWDG_KR.KEY",
+        "params": [],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_KR.KEY"
+        ],
+        "name": "LL_IWDG_ReloadCounter",
+        "operation": "Write 0x0000AAAA to IWDG_KR.KEY",
+        "params": [],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_KR.KEY"
+        ],
+        "name": "LL_IWDG_EnableWriteAccess",
+        "operation": "Write 0x00005555 to IWDG_KR.KEY",
+        "params": [],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_KR.KEY"
+        ],
+        "name": "LL_IWDG_DisableWriteAccess",
+        "operation": "Write 0x00000000 to IWDG_KR.KEY",
+        "params": [],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_PR.PR"
+        ],
+        "name": "LL_IWDG_SetPrescaler",
+        "operation": "Write prescaler value to IWDG_PR.PR",
+        "params": [
+          {
+            "name": "prescaler",
+            "type": "uint32_t"
+          }
+        ],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_RLR.RL"
+        ],
+        "name": "LL_IWDG_SetReloadCounter",
+        "operation": "Write counter value to IWDG_RLR.RL",
+        "params": [
+          {
+            "name": "counter",
+            "type": "uint32_t"
+          }
+        ],
+        "returns": "void"
+      },
+      {
+        "fields": [
+          "IWDG_SR.PVU"
+        ],
+        "name": "LL_IWDG_IsActiveFlag_PVU",
+        "operation": "Return 1U if IWDG_SR.PVU is set, otherwise 0U",
+        "params": [],
+        "returns": "uint32_t"
+      },
+      {
+        "fields": [
+          "IWDG_SR.RVU"
+        ],
+        "name": "LL_IWDG_IsActiveFlag_RVU",
+        "operation": "Return 1U if IWDG_SR.RVU is set, otherwise 0U",
+        "params": [],
+        "returns": "uint32_t"
+      },
+      {
+        "fields": [
+          "IWDG_SR.ONF"
+        ],
+        "name": "LL_IWDG_IsEnabled",
+        "operation": "Return 1U if IWDG_SR.ONF is set, otherwise 0U",
+        "params": [],
+        "returns": "uint32_t"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "interfaces"
+}

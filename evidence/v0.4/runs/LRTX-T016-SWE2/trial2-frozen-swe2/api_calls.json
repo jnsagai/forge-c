@@ -1,0 +1,57 @@
+{
+  "schema": "forge-c/api-calls/1",
+  "calls": {
+    "START": {
+      "function": "LL_IWDG_Enable",
+      "args": []
+    },
+    "REFRESH": {
+      "function": "LL_IWDG_ReloadCounter",
+      "args": []
+    },
+    "ENABLE_WRITE_ACCESS": {
+      "function": "LL_IWDG_EnableWriteAccess",
+      "args": []
+    },
+    "DISABLE_WRITE_ACCESS": {
+      "function": "LL_IWDG_DisableWriteAccess",
+      "args": []
+    },
+    "SET_PRESCALER": {
+      "function": "LL_IWDG_SetPrescaler",
+      "args": [
+        "5U"
+      ]
+    },
+    "SET_RELOAD": {
+      "function": "LL_IWDG_SetReloadCounter",
+      "args": [
+        "2748U"
+      ]
+    },
+    "QUERY_PVU_SET": {
+      "function": "LL_IWDG_IsActiveFlag_PVU",
+      "args": []
+    },
+    "QUERY_PVU_CLEAR": {
+      "function": "LL_IWDG_IsActiveFlag_PVU",
+      "args": []
+    },
+    "QUERY_RVU_SET": {
+      "function": "LL_IWDG_IsActiveFlag_RVU",
+      "args": []
+    },
+    "QUERY_RVU_CLEAR": {
+      "function": "LL_IWDG_IsActiveFlag_RVU",
+      "args": []
+    },
+    "QUERY_ONF_SET": {
+      "function": "LL_IWDG_IsEnabled",
+      "args": []
+    },
+    "QUERY_ONF_CLEAR": {
+      "function": "LL_IWDG_IsEnabled",
+      "args": []
+    }
+  }
+}
