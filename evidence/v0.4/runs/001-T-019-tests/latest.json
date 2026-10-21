@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_peripheral_iwdg.py",
+    "factory/python/tests/test_peripheral_prompts.py"
+  ],
+  "duration_s": 4.187,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2a7dae9944ff056f3ebdb00687025755fb33e946",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/001-T-019-tests/20261021T035210.log",
+  "log_sha256": "496de802b29126c86aebfe050c1e181dac8efbe3393ac2d794f116cc8cda272a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "001-T-019-tests",
+  "ts_utc": "2026-10-21T03:52:10.518397Z"
+}

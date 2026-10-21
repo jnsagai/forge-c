@@ -94,4 +94,4 @@ Use Spec Kit skill commands installed for Claude (`/speckit-plan`, `/speckit-tas
 
 ## v0.5 extension
 
-- [ ] Execute feature `003-manufacturing-kpis` tasks **KPI-T001–KPI-T020** per its dependency matrix after the relevant 002 instrumentation milestones. Do not label v0.4 M6 complete solely because KPI specs exist.
+- [X] Execute feature `003-manufacturing-kpis` tasks **KPI-T001–KPI-T020** per its dependency matrix after the relevant 002 instrumentation milestones. Do not label v0.4 M6 complete solely because KPI specs exist. ✅ Evidence: `evidence/v0.4/runs/002-KPI-EXEC/latest.json`

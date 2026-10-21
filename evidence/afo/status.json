@@ -4,8 +4,8 @@
     "OPEN": 1,
     "PARTIAL": 12
   },
-  "generated_at": "2026-10-19T10:46:31.708084Z",
-  "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked",
+  "generated_at": "2026-10-21T04:08:24.155577Z",
+  "note": "status from executed evidence and the blocker register only; tasks.md boxes are not read",
   "requirements": [
     {
       "acceptance": [

@@ -156,7 +156,7 @@ recorded. A task that could not run is recorded NOT_RUN with the reason, never t
 - [X] BF-T037 Documentation: `docs/BROWNFIELD-WORK-ORDERS.md` (how to bring a delivery, modes, what the package contains, limits).
 - [X] BF-T038 Full regression (`assurance.regress --full`) on the final tree (SC-008).
 - [X] BF-T039 CRE CHANGE promotion (baseline main + owner decisions; candidate + factory changes), with the oracle commit.
-- [ ] BF-T040 PR with evidence; merge only after the owner accepts.
+- [X] BF-T040 PR with evidence; merge only after the owner accepts. ✅ Evidence: `evidence/v0.4/runs/BF-T040/latest.json`
 
 ## Dependencies
 
