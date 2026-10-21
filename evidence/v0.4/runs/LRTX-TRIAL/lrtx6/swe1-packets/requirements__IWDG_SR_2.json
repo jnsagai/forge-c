@@ -1,0 +1,176 @@
+{
+  "at": "2026-10-21T14:19:13.023073Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5060,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14988
+      },
+      "errors": [
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.PVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.RVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.WVU"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e39d2770c5a84309bb08b68657cc0d68cdeb3a94e0976bd4388916a12d3661af",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 746,
+        "prompt_tokens": 3951,
+        "prompt_tokens_details": {
+          "cached_tokens": 2726
+        },
+        "total_tokens": 4697
+      },
+      "wall_ms": 67051.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5060,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14988
+      },
+      "errors": [
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.PVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.RVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.WVU"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e39d2770c5a84309bb08b68657cc0d68cdeb3a94e0976bd4388916a12d3661af",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 746,
+        "prompt_tokens": 3951,
+        "prompt_tokens_details": {
+          "cached_tokens": 2726
+        },
+        "total_tokens": 4697
+      },
+      "wall_ms": 63652.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5060,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14988
+      },
+      "errors": [
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.PVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.RVU",
+        "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.WVU"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e39d2770c5a84309bb08b68657cc0d68cdeb3a94e0976bd4388916a12d3661af",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 746,
+        "prompt_tokens": 3951,
+        "prompt_tokens_details": {
+          "cached_tokens": 3950
+        },
+        "total_tokens": 4697
+      },
+      "wall_ms": 39576.1
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_WVU_STATUS",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.WVU field to determine if a window value update is ongoing, while the watchdog is active.",
+        "verification": "The host unit test passes when the function returns 1U if IWDG_SR.WVU is set, else 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RVU_STATUS",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.RVU field to determine if a reload value update is ongoing, while the watchdog is active.",
+        "verification": "The host unit test passes when the function returns 1U if IWDG_SR.RVU is set, else 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_PVU_STATUS",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.PVU field to determine if a prescaler value update is ongoing, while the watchdog is active.",
+        "verification": "The host unit test passes when the function returns 1U if IWDG_SR.PVU is set, else 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "RESET_STATE",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          },
+          {
+            "case": "RESET_STATE",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          },
+          {
+            "case": "RESET_STATE",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "swr_001",
+        "source_page": 2991,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "The target robot test passes when it is verified that no IWDG register write occurs after reset until an LL function is invoked.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [
+    "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.PVU",
+    "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.RVU",
+    "[swr_001] effect RESET_STATE: the statement must name IWDG_SR.WVU"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "requirements:IWDG_SR_2"
+}

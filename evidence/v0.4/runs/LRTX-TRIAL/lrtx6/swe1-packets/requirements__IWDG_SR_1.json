@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-21T13:55:23.704091Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4170,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12318
+      },
+      "errors": [
+        "[iwdg_sr_ewif_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_onf_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_ewu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_pvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_pvu_read] acts on IWDG_SR.PVU, which another task of this register covers: remove requirement [iwdg_sr_pvu_read] from this task",
+        "[iwdg_sr_rvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_rvu_read] acts on IWDG_SR.RVU, which another task of this register covers: remove requirement [iwdg_sr_rvu_read] from this task",
+        "[iwdg_sr_wvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_wvu_read] acts on IWDG_SR.WVU, which another task of this register covers: remove requirement [iwdg_sr_wvu_read] from this task",
+        "[swr_000] names no field of this task: reset/startup and all-function rules belong to the cross-cutting task - remove this requirement here"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 1185,
+        "prompt_tokens": 3116,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 4301
+      },
+      "wall_ms": 67725.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5866,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 17408
+      },
+      "errors": [
+        "not_covered IWDG_SR.PVU is not a field of this task",
+        "not_covered IWDG_SR.RVU is not a field of this task",
+        "not_covered IWDG_SR.WVU is not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "281718f9ec33977cbad719c450cc1949225b96a485a76a043db6e2b2f0dc277b",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 633,
+        "prompt_tokens": 4749,
+        "prompt_tokens_details": {
+          "cached_tokens": 2711
+        },
+        "total_tokens": 5382
+      },
+      "wall_ms": 39322.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4906,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14527
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "ca44f24e368f12f7a90922237cbb579eaaf10766ef6c703a697ebd10905541ec",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 532,
+        "prompt_tokens": 3834,
+        "prompt_tokens_details": {
+          "cached_tokens": 2765
+        },
+        "total_tokens": 4366
+      },
+      "wall_ms": 29399.4
+    }
+  ],
+  "base_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_EWIF_READ",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWIF field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.EWIF is set in the register array, or returns 0U when it is reset.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_ONF_READ",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.ONF field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.ONF is set in the register array, or returns 0U when it is reset.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_EWU_READ",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWU field is set, else 0U.",
+        "verification": "The host unit test passes when the function returns 1U and IWDG_SR.EWU is set in the register array, or returns 0U when it is reset.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

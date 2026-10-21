@@ -129,3 +129,22 @@ pattern); the rest of the old statement was left in the graph. No agent ran and 
 `fabro validate` reproduces the refusal on the saved graph and accepts the fixed one (90 nodes, 138 edges). Fixed in
 c888bdb (pd-7cc602f15599ef85ae35). Tests now check the statement shape and run `fabro validate` on every
 profile-graph variant.
+
+## lrtx6 — factory 7b19177, 2026-10-21 13:47–14:21 UTC: ended by Fabro's failure-cycle breaker at SWE.1
+
+`verify.json` PASS (8/8 isolation and accounting checks); package BLOCKED (56 gaps); 34 model calls in three SWE.1
+visits; median prompt **3,951 tokens** (lrtx1 monolithic: 14,585); GPU board energy 14.4 Wh, sample coverage 100 %
+(`metrics.json`).
+
+- **Model quality:** none of the three visits assembled.
+  - The IWDG_SR task kept a reset-state requirement whose effects named PVU/RVU/WVU in all three visits.
+  - In visit 2, the cross-cutting task added status-flag queries (ONF/EWU/EWIF) that the IWDG_SR task covers.
+  - The route gate reported REWORK with measured progress, not STUCK.
+- **Factory defect:** Fabro ended the run (`fabro-termination.txt`) before the route gate's budget was exhausted.
+  - Cause: the direct re-inspection check exited 1 with the identical output "no baseline" on each cycle, and Fabro's
+    breaker stops at three identical signatures (ADR-0005 #5).
+  - The continuation check already printed a digit-free counter to avoid this; the re-inspection check did not.
+- **Fixed in the next candidate:**
+  - the re-inspection check prints a digit-free per-phase counter;
+  - reset/startup requirements must move to the cross-cutting task;
+  - the cross-cutting task may not carry requirements on registers that a register task covers.

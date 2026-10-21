@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-21T13:52:13.384522Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3049,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8955
+      },
+      "errors": [
+        "[iwdg_pr_write_access_enable] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access_enable] from this task",
+        "[iwdg_pr_write_access_disable] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access_disable] from this task",
+        "[iwdg_kr_start_watchdog] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_kr_start_watchdog] from this task",
+        "[iwdg_kr_refresh_counter] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_kr_refresh_counter] from this task",
+        "[iwdg_sr_pvu_query] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [iwdg_sr_pvu_query] from this task",
+        "[iwdg_sr_rvu_query] acts on IWDG_SR.RVU, which the IWDG_SR task covers: remove requirement [iwdg_sr_rvu_query] from this task",
+        "[iwdg_sr_onf_query] acts on IWDG_SR.ONF, which the IWDG_SR task covers: remove requirement [iwdg_sr_onf_query] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 1530,
+        "prompt_tokens": 2401,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3931
+      },
+      "wall_ms": 75924.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5069,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15017
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "01057b15edccfeffae493f934d5b3643a64eadb0bc7a95792b08d47b93ca0edb",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 208,
+        "prompt_tokens": 4268,
+        "prompt_tokens_details": {
+          "cached_tokens": 1996
+        },
+        "total_tokens": 4476
+      },
+      "wall_ms": 15871.8
+    }
+  ],
+  "base_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_PRESCALER_WRITE",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x4"
+          }
+        ],
+        "key": "iwdg_pr_prescaler_write",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the provided prescaler divider value to the IWDG_PR.PR field.",
+        "verification": "The host unit test passes when a function takes a preset prescaler value such as 0x00000004 and writes it to register ll_iwdg_regs[IWDG_PR_OFFSET/4U] directly, representing a divider / 64.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}
