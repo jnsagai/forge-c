@@ -1,0 +1,100 @@
+{
+  "CAPA-067": {
+    "history": [
+      {
+        "at": "2026-10-21T08:08:40.322400Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[\"CAPA-067\"]",
+        "from_state": null,
+        "reason": "rc3 IWDG HAL (WO-0009B-STM32N6-IWDG-HAL-rc3, main ffd3097) BLOCKED STUCK at SWE.4: UT:SPEC_NOT_VERIFIED for USPEC-HAL-01-02..08 twice, although test_iwdg.c tags them under @test UT-002..UT-006 and the unit run passed",
+        "seq": 530,
+        "to_state": "OPEN"
+      },
+      {
+        "at": "2026-10-21T08:08:40.347787Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[]",
+        "from_state": "OPEN",
+        "reason": "triage by AGENT (Claude Code)",
+        "seq": 531,
+        "to_state": "TRIAGED"
+      },
+      {
+        "at": "2026-10-21T08:08:40.431916Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[]",
+        "from_state": "TRIAGED",
+        "reason": "reproducer RPR-071 assigned",
+        "seq": 532,
+        "to_state": "REPRODUCER_PENDING"
+      },
+      {
+        "at": "2026-10-21T08:10:42.039622Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[\"reproducer-run:rr-0005e2ee4a7eb2ea0314\", \"reproducer-run:rr-55b3ffe1923ca710a443\"]",
+        "from_state": "REPRODUCER_PENDING",
+        "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+        "seq": 533,
+        "to_state": "CAUSE_VERIFIED"
+      },
+      {
+        "at": "2026-10-21T08:10:42.059914Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[\"git:ffd30972dc12..588c22113895\"]",
+        "from_state": "CAUSE_VERIFIED",
+        "reason": "fix 588c22113895 (patch 3615 bytes)",
+        "seq": 534,
+        "to_state": "FIX_CANDIDATE"
+      },
+      {
+        "at": "2026-10-21T08:10:42.099355Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[\"reproducer-run:rr-59c650abe3afdbfe81af\"]",
+        "from_state": "FIX_CANDIDATE",
+        "reason": "prevention test prevention:RPR-071 absent at 588c22113895",
+        "seq": 535,
+        "to_state": "PREVENTION_TESTED"
+      },
+      {
+        "at": "2026-10-21T08:10:42.115409Z",
+        "capa_id": "CAPA-067",
+        "evidence": "[]",
+        "from_state": "PREVENTION_TESTED",
+        "reason": "observation window opened",
+        "seq": 536,
+        "to_state": "EFFECTIVENESS_OBSERVING"
+      }
+    ],
+    "links": [
+      "ffd30972dc126c5036268b77c0af2fbc1cc1b910",
+      "588c221138950c1a3dc6bb485df3510c7155da34",
+      "pd-3ad3e1a4055b722aa3a1"
+    ],
+    "record": {
+      "affected_versions": [
+        "forge-c@<588c22113895"
+      ],
+      "candidate_patch_sha256": "c2e7b6ee30dda252d63782477e81e8a294ea76124a0fb6f8d0c78e005c227b98",
+      "capa_id": "CAPA-067",
+      "created_at": "2026-10-21T08:08:40.322400Z",
+      "event_ids": [],
+      "incident_ids": [
+        "CAPA-067"
+      ],
+      "lesson_ids": [],
+      "observation_window_end": null,
+      "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+      "prevention_test_id": "prevention:RPR-071",
+      "reproducer_id": "RPR-071",
+      "root_cause_evidence_refs": [
+        "reproducer-run:rr-0005e2ee4a7eb2ea0314",
+        "reproducer-run:rr-55b3ffe1923ca710a443"
+      ],
+      "root_cause_status": "VERIFIED",
+      "root_cause_summary": "the unit-test trace parser read only the first @test of a doc block",
+      "schema_version": "1.0",
+      "state": "EFFECTIVENESS_OBSERVING",
+      "updated_at": "2026-10-21T08:10:42.115409Z"
+    }
+  }
+}

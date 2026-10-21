@@ -772,3 +772,14 @@ reproducers:
     operations: [SWE.4/author, swtrace/check_ut]
     root_cause: "The owner trace rule for unit tests showed '@verifies USPEC-...-..' but did not say that SWR-, SWU- or IF- ids are invalid there; every IWDG HAL v2 SWE.4 author (h004, h005, rc1) first listed SWR/SWU ids, and the UT:UNKNOWN_SPEC_REF rejection cost one of the three rework cycles. In rc1 a later format slip then exhausted the budget and the work order BLOCKED at SWE.4."
     remedy: "The rule says '@verifies lists ONLY USPEC ids - never SWR-, SWU- or IF- ids (the gate rejects them as UNKNOWN_SPEC_REF)', and the finding for a non-USPEC id adds '(@verifies takes USPEC ids only)'."
+  - id: RPR-071
+    script: rpr071_multi_test_doc_block.py
+    sha256: c1a8039d3b7b788c9d8f1f3c7552844628a1f160a09916cca43fcaefe63fa9fb
+    symptom_signature: "only the first @test of a multi-test doc block is traced"
+    observed_in: rc3
+    baseline_revision: ffd30972dc126c5036268b77c0af2fbc1cc1b910
+    fix_revision: 588c221138950c1a3dc6bb485df3510c7155da34
+    error_codes: ["UT:SPEC_NOT_VERIFIED", "STUCK_IDENTICAL_REJECTION"]
+    operations: [SWE.4/author, swtrace/check_ut]
+    root_cause: "swtrace.tagged_tests took only the first @test and the first @verifies of each Doxygen block (re.search). The rc3 SWE.4 author documented six tests in one block above one test function - valid Doxygen - so UT-002..UT-006 and their USPEC references were silently dropped; the gate reported seven SPEC_NOT_VERIFIED findings for passing, tagged tests and the author could not resolve a finding that was not real."
+    remedy: "A block with several @test tags yields one test per tag, each with the @verifies text between it and the next @test; a block with one @test (in either order with @verifies) and @file blocks keep the previous reading. On a copy of the rc3 workspace the SWE.4 findings go from 7 to 0."
