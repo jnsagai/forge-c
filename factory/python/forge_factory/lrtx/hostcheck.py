@@ -132,11 +132,31 @@ def rollback_plan(prof: dict, snap: dict, worktrees: list[Path], monitor_config:
             "conflicts": conflicts, "steps": steps, "ok": not conflicts}
 
 
+PROFILE_FILE = "config/factory/profiles/local-rtx-v1.yaml"
+
+
+def profile_worktrees(repo: Path, snap: dict) -> list[Path]:
+    """Run worktrees of the profile: `forge-c-run-*` checkouts next to the repository that contain the profile file and
+    whose HEAD is not in the history of a deployment checkout (after a merge, a main-line run is not the profile's).
+    2026-10-21: selecting by the name `forge-c-run-lrtx*` missed the t016/t021/t023 measurement worktrees."""
+    deployed = [c["head"] for c in snap.get("checkouts") or []] + [
+        hostsnap._run("git", "rev-parse", "HEAD", cwd=Path(c["path"])) for c in snap.get("checkouts") or []]
+    out = []
+    for w in sorted(Path(repo).parent.glob("forge-c-run-*")):
+        if not (w / PROFILE_FILE).is_file():
+            continue
+        head = hostsnap._run("git", "rev-parse", "HEAD", cwd=w)
+        if not any(d and subprocess.run(["git", "merge-base", "--is-ancestor", head, d], cwd=w,
+                                        capture_output=True).returncode == 0 for d in set(deployed)):
+            out.append(w)
+    return out
+
+
 def check(snapshot: Path, repo: Path, stack_python: str | None = None) -> dict:
     snap = json.loads(snapshot.read_text())
     prof = lp.load(os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
     data_root = Path(snap["data_root"])
-    wts = sorted(Path(repo).parent.glob("forge-c-run-lrtx*"))
+    wts = profile_worktrees(repo, snap)
     mon = Path.home() / "fabro_dashboard/config.local.json"
     rec = {"schema": "forge-c/lrtx-hostcheck/1", "checked_at": utc_now(), "snapshot": str(snapshot),
            "snapshot_sha256": sha256_file(snapshot), "checkouts": checkouts(snap), "config_files": configs(snap),

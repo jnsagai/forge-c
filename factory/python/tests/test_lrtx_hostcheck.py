@@ -46,3 +46,32 @@ def test_rollback_plan_never_removes_a_deployment_root(tmp_path, monkeypatch):
     assert not bad["ok"] and bad["conflicts"]
     monkeypatch.setenv(prof["deployment"]["root_env"], str(tmp_path / "forge-c/state/x"))  # root inside state
     assert not hostcheck.rollback_plan(prof, snap, [], None)["ok"]
+
+
+def test_rollback_lists_every_profile_run_worktree_and_no_main_line_run(tmp_path):
+    import subprocess
+
+    def git(*a, cwd):
+        subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", *a], cwd=cwd, check=True,
+                       capture_output=True)
+
+    dep = tmp_path / "forge-c"
+    dep.mkdir()
+    git("init", "-q", cwd=dep)
+    (dep / "a.txt").write_text("a")
+    git("add", ".", cwd=dep)
+    git("commit", "-qm", "A", cwd=dep)
+    old = subprocess.run(["git", "rev-parse", "HEAD"], cwd=dep, capture_output=True, text=True).stdout.strip()
+    (dep / hostcheck.PROFILE_FILE).parent.mkdir(parents=True)
+    (dep / hostcheck.PROFILE_FILE).write_text("id: local-rtx-v1\n")
+    git("add", ".", cwd=dep)
+    git("commit", "-qm", "B (merged profile)", cwd=dep)
+    repos = tmp_path / "repos"
+    for name in ("forge-c-run-t023", "forge-c-run-rc1", "forge-c-run-main"):
+        git("clone", "-q", str(dep), str(repos / name), cwd=tmp_path)
+    git("checkout", "-q", old, cwd=repos / "forge-c-run-rc1")  # main-line run from before the profile
+    (repos / "forge-c-run-t023/x.txt").write_text("x")  # a profile measurement worktree on the feature line
+    git("add", ".", cwd=repos / "forge-c-run-t023")
+    git("commit", "-qm", "C", cwd=repos / "forge-c-run-t023")
+    snap = {"checkouts": [{"path": str(dep), "head": old}]}
+    assert hostcheck.profile_worktrees(repos / "forge-c-010", snap) == [repos / "forge-c-run-t023"]
