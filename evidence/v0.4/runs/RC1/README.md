@@ -19,3 +19,12 @@ Result: 5/7 READY on the first pass; 2 factory defects found and fixed (CAPA-065
 
 - WO-0008A-STM32N6-RCC-LL-rc1b (main 2a7dae9, CAPA-065 merged): **READY_FOR_OFFLINE_REVIEW, 0 gaps** - no factory
   defect escalated (3 TEST defects corrected by the authors). CAPA-065 effective. Campaign: 6/7 READY after one fix.
+
+## IWDG HAL reruns after PRs #29-#31 (main ffd3097, 2026-10-21; Codex Sol 6.1 authors, Claude Opus 5.5 inspectors, LL from i003)
+
+| Run | Result | Cause |
+|---|---|---|
+| WO-0009B-STM32N6-IWDG-HAL-rc2 | BLOCKED at SWE.1 (3 cycles, 11 min) | model variance: register effects missing on the first and third author attempts, and a major inspection finding (SWR-002 bundles start/unlock/refresh); no factory change touched SWE.1 |
+| WO-0009B-STM32N6-IWDG-HAL-rc3 | BLOCKED STUCK at SWE.4 (24 min) | SWE.1-SWE.3 PASS; no UT:UNKNOWN_SPEC_REF (CAPA-066 effective for its symptom); factory defect CAPA-067: only the first @test of a Doxygen block was traced, so seven USPECs tagged by passing tests were reported UT:SPEC_NOT_VERIFIED |
+
+On a copy of the rc3 workspace the CAPA-067 candidate reduces the SWE.4 findings from 7 to 0. Next: rc4 after CAPA-067 is merged.
