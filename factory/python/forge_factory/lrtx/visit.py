@@ -85,7 +85,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     start = prev["doc"] if (prev and findings and prev.get("doc") is not None) else None
     p = build(findings, start) if start is not None else base
     attempts, doc, errs = [], start, list(findings or [])
-    for n in range(max_repairs + 1):
+    limit = max_repairs + 1
+    n = -1
+    while n + 1 < limit:
+        n += 1
         if budget["calls"] >= budget["max_calls"]:
             errs = (errs or []) + ["VISIT_CALL_BUDGET_EXHAUSTED"]
             break
@@ -110,6 +113,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             doc = r["doc"]
         if not errs:
             break
+        # bounded extension (at most 2 extra repairs, inside the visit's shared budget) while the answer improves
+        if n + 1 == limit and limit < max_repairs + 3 and len(attempts) > 1 and \
+                len(attempts[-1]["errors"]) < len(attempts[-2]["errors"]):
+            limit += 1
         p = build(errs[:12], r["doc"]) if r["doc"] is not None and not r["errors"] else p
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
            "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False}
@@ -141,7 +148,7 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     for line in log.read_text().splitlines() if log.is_file() else []:
         d = json.loads(line)
         if d.get("phase") == phase and d.get("ts", "") > since and d.get("result") in ("REJECTED", "FAIL", "REWORK"):
-            out += [str(i) for i in d.get("issues") or []]
+            out += [str(i).removeprefix("LRTX_TASK_INVALID:") for i in d.get("issues") or []]
     ins = sorted((ws / "inspection" / phase).glob("INS-*.json")) if (ws / "inspection" / phase).is_dir() else []
     if ins:
         d = json.loads(ins[-1].read_text())

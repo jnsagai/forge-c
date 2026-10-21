@@ -178,3 +178,42 @@ def test_continuation_nodes_have_their_own_visit_limit():
     assert "  swe1_inspector_more -> swe1_inspector_cont" in g and "--time-budget 900 --resume" in g
     assert f'swe1_author [shape=parallelogram, label="SWE.1 structured author (local profile)", max_visits={MAX_VISITS},' \
         in g
+
+
+def test_failed_visits_show_their_progress_to_the_route_gate_only_for_profile_runs(ws, monkeypatch):  # noqa: F811
+    """lrtx3 (2026-10-21): two failed visits looked identical to the STUCK rule (the same presence rejection) although
+    their validated task issues differed. Profile runs add the runner's task issues to the rejection record."""
+    from forge_factory.inspection import gate
+
+    def rejected_issues():
+        log = [json.loads(x) for x in (ws / ".forge-run/gates/gate-log.jsonl").read_text().splitlines()]
+        return [d for d in log if d.get("step") == "author"][-1]["issues"]
+    swe1.reply(ws, "FAILED", ["requirements:IWDG_PR: [x] acts on IWDG_KR.KEY"])
+    monkeypatch.setattr(sys, "stdin", io.StringIO((ws / ".forge-run/lrtx/SWE.1/reply.json").read_text()))
+    gate.main(["--workspace", str(ws), "--phase", "SWE.1", "--step", "author"])
+    assert not any(i.startswith("LRTX_TASK_INVALID") for i in rejected_issues())  # no profile in this manifest
+    man = json.loads((ws / ".forge-run/manifest.json").read_text())
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({**man, "local_profile": {"id": "local-rtx-v1"}}))
+    for text in ("requirements:IWDG_PR: [x] acts on IWDG_KR.KEY", "requirements:IWDG_PR: [y] EARS_NO_SHALL"):
+        swe1.reply(ws, "FAILED", [text])
+        monkeypatch.setattr(sys, "stdin", io.StringIO((ws / ".forge-run/lrtx/SWE.1/reply.json").read_text()))
+        gate.main(["--workspace", str(ws), "--phase", "SWE.1", "--step", "author"])
+        assert f"LRTX_TASK_INVALID:{text}" in rejected_issues()
+    assert gate.stuck_signature(ws, "SWE.1") is None  # different task issues: progress, not STUCK
+    monkeypatch.setattr(sys, "stdin", io.StringIO((ws / ".forge-run/lrtx/SWE.1/reply.json").read_text()))
+    gate.main(["--workspace", str(ws), "--phase", "SWE.1", "--step", "author"])
+    assert gate.stuck_signature(ws, "SWE.1") is not None  # identical twice: STUCK as before
+
+
+def test_invalid_tasks_get_further_repair_rounds_within_the_visit(ws, monkeypatch):  # noqa: F811
+    calls = []
+    good = ANSWERS["requirements:IWDG_SR_2"]
+
+    def sr2(p):  # needs 5 answers: more than one task's repairs, fewer than the visit budget
+        n = len([c for c in calls if c["task"] == "requirements:IWDG_SR_2"])
+        if n >= 5:
+            return good
+        return {**good, "not_covered": [], "requirements": good["requirements"][: 1 + n % 2]}
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_SR_2": sr2}, calls))
+    rep = swe1.visit(ws, "m")
+    assert rep["status"] == "PASS", rep

@@ -15,13 +15,13 @@ import json
 import sys
 from pathlib import Path
 
-PHASES = {"SWE.1": "swe1", "SWE.2": "swe2"}
+PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3"}
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=["author", "inspect", "continue-check"])
-    ap.add_argument("--of", choices=["author", "inspect"], default="author", help="continue-check: which reply")
+    ap.add_argument("step", choices=["author", "code", "inspect", "continue-check"])
+    ap.add_argument("--of", choices=["author", "code", "inspect"], default="author", help="continue-check: which reply")
     ap.add_argument("--resume", action="store_true", help="continue the open visit after its time box")
     ap.add_argument("--time-budget", type=float, default=1200.0,
                     help="seconds of model work per node execution (Fabro ends a node silent for 1800 s)")
@@ -30,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default="")
     a = ap.parse_args(argv)
     ws = a.workspace.resolve()
-    if a.step == "author" and a.phase not in PHASES:
+    if a.step in ("author", "code") and a.phase not in PHASES or a.step == "code" and a.phase != "SWE.3":
         ap.error(f"no structured author for {a.phase}")
     from importlib import import_module
 
@@ -60,7 +60,12 @@ def main(argv: list[str] | None = None) -> int:
     stale = ws / ".forge-run/lrtx" / a.phase / "reply.json"
     stale.unlink(missing_ok=True)  # the gate must never read the reply of an earlier visit
     try:
-        rep = mod.visit(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+        if a.step == "code":  # SWE.3: unit code tasks (the LL author and fix author nodes)
+            rep = mod.visit_code(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+        elif a.phase == "SWE.3":  # SWE.3 design: rendered from the validated code tasks and the measured tools
+            rep = mod.visit_design(ws, a.model)
+        else:
+            rep = mod.visit(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
     except Exception as exc:  # noqa: BLE001 - recorded as the author's FAILED reply; the gate rejects it
         rep = mod.reply(ws, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
     print(json.dumps(rep))

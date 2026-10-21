@@ -207,6 +207,18 @@ def _value(v: str) -> int | None:
         return None
 
 
+def ears_hint(code: str, sysname: str) -> str:
+    """What to change, for each EARS finding of the deterministic checker (the agent prompt states the same rules)."""
+    m = re.match(r"EARS_NOT_ATOMIC_(\d+)_SHALL", code)
+    if m:
+        return f"the statement has {m.group(1)} 'shall': split it into {m.group(1)} requirements with one 'shall' each"
+    return {"EARS_NO_SHALL": "the statement needs exactly one 'shall'",
+            "EARS_PATTERN_NONCONFORMANT": f"start with The/When/While/Where/If..then and use 'the {sysname} shall'",
+            "EARS_MISSING_TERMINATOR": "end the statement with a period",
+            "EARS_UNKNOWN_SYSTEM_NAME": f"the subject must be exactly 'the {sysname}'"}.get(
+        code.split(":", 1)[0], "remove weak modal or vague wording (should/may/will/must/can, fast, as required)")
+
+
 def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict) -> list[str]:
     from ..assurance.register_contract import _needs_contract
     from ..inspection.ears import Requirement, check_statement
@@ -221,7 +233,10 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         keys.add(k)
         st = r["statement"]
         for f in check_statement(Requirement(k, st, 0), {sysname}).findings:
-            out.append(f"[{k}] {f.split(':', 1)[1] if ':' in f else f}")
+            code = f.split(":", 1)[1] if ":" in f else f
+            if code.startswith("EARS_SYSTEM_NAME_HINT"):
+                continue
+            out.append(f"[{k}] {code}: {ears_hint(code, sysname)}")
         if "pass" not in r["verification"].lower():
             out.append(f"[{k}] verification has no pass criterion ('passes when ...')")
         if STARTUP.match(st) and r["verified_by"] != "target_robot_test":
@@ -235,7 +250,8 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for e in r["effects"]:
             reg, fld, op = e["register"], e["field"], e["op"]
             if g is not None and (reg != g["register"] or fld not in g["fields"]):
-                out.append(f"[{k}] effect {e['case']} names {reg}.{fld}, not a field of this task")
+                owner = f"the {reg} task" if reg != g["register"] else "another task of this register"
+                out.append(f"[{k}] acts on {reg}.{fld}, which {owner} covers: remove requirement [{k}] from this task")
                 continue
             if reg not in idx or fld not in idx[reg]["fields"]:
                 out.append(f"[{k}] effect {e['case']} names {reg}.{fld}, not in the RM0486 register index")
@@ -502,6 +518,27 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
         return reply(ws, "CONTINUE", [f"time box used; the next node execution resumes at {c}"], budget)
 
 
+def _repair_rounds(ws: Path, model: str, results: list[tuple[dict, dict]], budget: dict, sysname: str, idx: dict,
+                   rounds: int = 2) -> list[tuple[dict, dict]]:
+    """lrtx3 (2026-10-21): a task still INVALID after its repairs gets further repair rounds in the SAME visit - while
+    the shared call budget lasts and the total number of findings keeps falling - instead of ending the visit."""
+    for _ in range(rounds):
+        bad = [(g, r) for g, r in results if r["status"] != "VALID" and r.get("doc") is not None]
+        before = sum(len(r["errors"]) for _g, r in bad)
+        if not bad or budget["calls"] >= budget["max_calls"]:
+            break
+        fixed = {}
+        for g, r in bad:
+            fixed[g["id"]] = run_task(ws, r["task"], lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
+                                      lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget,
+                                      [e for e in r["errors"] if e != "VISIT_CALL_BUDGET_EXHAUSTED"] or None)
+        results = [(g, fixed.get(g["id"], r)) for g, r in results]
+        after = sum(len(r["errors"]) for g, r in results if g["id"] in fixed and r["status"] != "VALID")
+        if after >= before:
+            break
+    return results
+
+
 def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> dict:
     from ..assurance.hardware import index
 
@@ -511,14 +548,14 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
         return reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
-    results, issues = [], []
+    results = []
     for g in groups(inv):
         task = f"requirements:{g['id']}"
         rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
                        lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget, routed.get(task))
         results.append((g, rec))
-        if rec["status"] != "VALID":
-            issues += [f"{task}: {e}" for e in rec["errors"][:5]]
+    results = _repair_rounds(ws, model, results, budget, sysname, idx)
+    issues = [f"{rec['task']}: {e}" for _g, rec in results if rec["status"] != "VALID" for e in rec["errors"][:5]]
     functional = [r for _g, rec in results if rec["doc"] for r in rec["doc"]["requirements"]]
     cross = run_task(ws, "requirements:crosscutting", lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
                      lambda d: validate_group(ws, d, None, sysname, idx), budget, routed.get("requirements:crosscutting"))

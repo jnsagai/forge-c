@@ -192,7 +192,7 @@ def test_profile_enables_structured_swe1_for_ll_only():
 
     local = {"id": "local-rtx-v1"}
     ll = local_profile_structured(local, {"layer": "LL"}, "m")
-    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2"] and ll["reinspect"] is True
+    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2", "SWE.3"] and ll["reinspect"] is True
     hal = local_profile_structured(local, {"layer": "HAL"}, "m")
     assert hal["phases"] == [] and hal["inspect_phases"] == [] and hal["reinspect"] is True
     assert local_profile_structured(None, {"layer": "LL"}, "m") is None
@@ -279,3 +279,27 @@ def test_a_failed_visit_carries_its_issues_into_the_next_visit(ws, monkeypatch):
     budget, findings = V.open_visit(ws, "SWE.1", False, list, 35, None)
     assert findings == ["requirements:IWDG_PR: [prescaler] the verification has no pass criterion"]
     assert list(swe1.route_findings(findings, None)) == ["requirements:IWDG_PR"]
+
+
+def test_repairs_get_a_bounded_extension_only_while_the_answer_improves(ws, monkeypatch):
+    """lrtx3 (2026-10-21): the PR task went 4 -> 3 -> 2 findings and was cut off after 2 repairs."""
+    calls = []
+    good = ANSWERS["requirements:IWDG_PR"]
+    extra = [_req(f"wa{i}", f"When write access is enabled, the {SYS} shall write 0x5555 to IWDG_KR.KEY.", 2989,
+                  [_eff(f"WA{i}", "IWDG_KR", "KEY", "write", "0x5555")]) for i in range(4)]
+
+    def pr(p):
+        n = len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) - 1
+        return {**good, "requirements": good["requirements"] + extra[:max(0, 3 - n)]}  # 3, 2, 1, 0 bad items
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_PR": pr}, calls))
+    assert swe1.visit(ws, "m")["status"] == "PASS"
+    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 4
+    calls.clear()
+
+    def stuck(p):
+        return {**good, "requirements": good["requirements"] + extra[:2]}
+    (ws / ".forge-run/lrtx/SWE.1/packets/requirements__IWDG_PR.json").unlink()
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_PR": stuck}, calls))
+    assert swe1.visit(ws, "m")["status"] == "FAILED"
+    # no improvement: no extension, and the in-visit repair round stops after one round (3 + 3 calls)
+    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 6

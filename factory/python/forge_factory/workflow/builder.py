@@ -183,6 +183,13 @@ def structured_authors(dot: str, structured: dict) -> str:
 
     for phase in structured.get("phases", []):
         n = phase[-1]
+        if phase == "SWE.3":  # code tasks in the LL author / fix author nodes, then the deterministic design author
+            code = f"{run} code --phase SWE.3 --workspace . --model {structured['model']} --time-budget {box}"
+            dot = swap(dot, "swe3_ll_author", "SWE.3 structured unit code (local profile)", code, t)
+            dot = swap(dot, "swe3_fix_author", "SWE.3 structured unit code: resume or rework (local profile)",
+                       code + " --resume", t)
+            nxt = "swe3_units" if "  swe3_fix_author -> swe3_units\n" in dot else "swe3_author"
+            dot = continuation(dot, "swe3_fix_author", nxt, "code", phase)
         dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
                    f"{run} author --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
