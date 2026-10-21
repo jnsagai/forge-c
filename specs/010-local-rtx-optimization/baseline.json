@@ -1,0 +1,112 @@
+{
+  "schema": "forge-c/source-preservation/1",
+  "recorded_on": "2026-10-21",
+  "purpose": "Source snapshot and evidence references; not a host backup or qualification of the optimized local runtime.",
+  "repository": "jnsagai/forge-c",
+  "source_commit": "86f1f40c030bc721e7e5125a572d69647c4ac041",
+  "source_tree": "aedbf050d1fee9a9fedf1544cfb7996877298dcf",
+  "preserved_ref": "refs/heads/baseline/codex-claude-2026-10-21",
+  "development_ref": "refs/heads/feat/010-local-rtx-optimization",
+  "source_provider_paths": [
+    "Codex authors via ACP (ADR-0011)",
+    "Claude inspectors and Release Manager via ACP (ADR-0012)",
+    "All other existing integrations and effective defaults remain in the preserved tree."
+  ],
+  "reference_evidence": {
+    "campaign": "evidence/v0.4/runs/RC1/README.md",
+    "latest_completed_run": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+    "package_status": "READY_FOR_OFFLINE_REVIEW",
+    "gap_count": 0,
+    "archive_sha256": "385a688647b3f72c3859ba08a66ef4e8d257a2124fc3afb84eab468325efb095",
+    "archive_bytes_verified_in_this_environment": false,
+    "interpretation": "Historical recorded evidence, not a new run or safety approval; campaign results span several revisions."
+  },
+  "representative_source_sha256": [
+    {
+      "path": "pyproject.toml",
+      "sha256": "98abf2f0acd65a78fbca678eb2734c7df697b91dd561dc75895eb874e88181a2"
+    },
+    {
+      "path": "requirements/forge-factory.lock",
+      "sha256": "7a4d178960bb71ac76ce8014b21bff5b7ae95352dcbc5288c8db2fd6fdaac8b7"
+    },
+    {
+      "path": "factory/python/forge_factory/workorder.py",
+      "sha256": "f4b0b4015c9189df83b51d85f1ef6cfffe50242e022c528211b960482edbe3c3"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/builder.py",
+      "sha256": "3119c0337f72431f61ffe758622485180e2fc792ad07c75349d380a0e3710d73"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/prompts.py",
+      "sha256": "60c3f2f75155d604e47f7418ba2eb2e797cf60680a0e2bc6d81b1b897af817f0"
+    },
+    {
+      "path": "factory/python/forge_factory/fabro/runconfig.py",
+      "sha256": "8094126109a98dcb827b1d377d26b74841ad082cf4d99fdf845f8eb1e36841df"
+    },
+    {
+      "path": "factory/python/forge_factory/llm_gateway.py",
+      "sha256": "5f1d52f76740449a57738c65f82adb32de50ae601de53b20513cbdc23f9f15ca"
+    },
+    {
+      "path": "config/factory/agents.yaml",
+      "sha256": "6ec6be0910c158bbb08391432e70800d0ba4e8e077a202766ef1d48d2e2419ef"
+    },
+    {
+      "path": "config/factory/token-policy.yaml",
+      "sha256": "219a6d02659d5188ad7355289c6a3279f4c8d64a1b3897f3c470a351cba601b6"
+    },
+    {
+      "path": "config/factory/rework-policy.yaml",
+      "sha256": "11080d9fea844b10750b811bf61d3e0c3bdcfcab2df25afee04e5bab23869fb5"
+    },
+    {
+      "path": "config/factory/reliability-policy.yaml",
+      "sha256": "c60c380aae67b2bf2a3e56e1fc19bc5a1c0385eeec79bd5621df420da3dc2a00"
+    },
+    {
+      "path": "config/factory/skills.lock.json",
+      "sha256": "ea666ab4671ec300222088654ce99debe4264fb6d5ce6c55c29fa1d3956269e3"
+    },
+    {
+      "path": "config/factory/model-suspensions.yaml",
+      "sha256": "bf5ef8c4cb647ebe2d2f60ca41120144dd26905a729de6ee66fc72f37d899f54"
+    },
+    {
+      "path": "scripts/forge-env.sh",
+      "sha256": "9d8fe5e2c3a567eba619f62fe8de4da6af46179f3039dc09b356bb51b93e2abb"
+    },
+    {
+      "path": "deploy/systemd/afo/forge-ollama.service.in",
+      "sha256": "5424b10fc2ce2a5cc601ac714c6d4ad8ec7bdf2941249987ea409349afae5688"
+    },
+    {
+      "path": "docs/adr/ADR-0011-codex-acp-under-factory-policy.md",
+      "sha256": "154c510f1cc2a93cce899637cdd6ba6819b753e09ec4e0ab2f590c08dfe52a75"
+    },
+    {
+      "path": "docs/adr/ADR-0012-claude-acp-non-author-nodes.md",
+      "sha256": "c3f1a6fb264955a3b87e38fe3cce242184fb6b66284cbe8d521f09ba6305bbb4"
+    },
+    {
+      "path": "evidence/v0.4/runs/RC1/README.md",
+      "sha256": "0ac2263417b295b5b36899bac1472f74291b48df4a2d2fea9534b004d17c8b25"
+    },
+    {
+      "path": "evidence/v0.4/runs/RC1/WO-0009B-STM32N6-IWDG-HAL-rc4/package.json",
+      "sha256": "a59510de6f3819320b7117c165e819660a04403c39b99c10fc1619de18415115"
+    }
+  ],
+  "runtime_optimization_status": "NOT_IMPLEMENTED",
+  "local_qualification_status": "NOT_RUN",
+  "host_snapshot_status": "NOT_RUN",
+  "host_snapshot_pending": [
+    "Actual deployed source SHA and uncommitted changes",
+    "Effective configuration and installed tool/adapter/model identities",
+    "External archives and hash verification",
+    "Separate runtime state, services, ports and rollback verification"
+  ],
+  "reference_protection": "Pinned commit identifies content. Branch protection and remote tag were not configured."
+}
