@@ -68,4 +68,4 @@ behavior is retained. Do not rewrite historical fingerprints to hide changes or 
 | Fresh local SWE.2 author trials (T016) | PASS (measured; 1/3 frozen) | `LRTX-T016-SWE2` (on a frozen READY rc1 SWE.1 baseline; trial 1 0/3, actionable-finding fix pd-5a91e536, trial 2 1/3 frozen by the unchanged SWE.2 author gate) |
 | Seeded defects on independent holdouts (T021) | PASS (measured; local inspector NOT_QUALIFIED) | `LRTX-T021` (2 READY rc1 LL holdouts, 9 seeded cases: 2 deterministic, 1 inspection on target, 4 off target, 2 missed; both clean holdouts falsely rejected; holdouts unchanged) |
 | Offline review package (T025) | PASS (OFFLINE_REVIEW_CANDIDATE, not a release) | `LRTX-T025` (bundle forge-c-feature-010-review-32b59c783c33.zip, sha256 850d7c92..., 393 files, byte-identical rebuild; outside the repository under the profile root) |
-| 30-case campaign | NOT_RUN (owner hold 2026-10-21) | T024 |
+| 30-case campaign | RUNNING (owner decision 2026-10-21: local Qwen inspector) | T024 |

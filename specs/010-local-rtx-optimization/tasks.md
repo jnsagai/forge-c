@@ -9,7 +9,8 @@ Status (2026-10-21, end of day):
 - **Measurements:**
   - T021: seeded defects - the local inspector caught 1/7 on target and falsely rejected 2/2 clean holdouts.
   - T023: qwen3:8b passed 0/3 against 3/3 for qwen3-coder:30b. Owner decision: coder-only authoring.
-- **On owner hold:** the 30-case campaign (T024), pending the owner's inspector decision.
+- **Inspector decision (owner, 2026-10-21):** "local qwen as inspector". The campaign (T024) therefore runs with the
+  structured qwen3-coder:30b inspector, which the profile still records as NOT_QUALIFIED.
 - **Rule:** a checked task requires its own evidence. A written specification or passing static check is not a completed
   local model trial.
 
