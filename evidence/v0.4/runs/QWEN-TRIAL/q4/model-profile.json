@@ -1,0 +1,15 @@
+{
+  "code_nodes": null,
+  "default": "qwen3-coder:30b",
+  "local_only": true,
+  "nodes": [],
+  "note": "local Ollama via gateway",
+  "provider": "ollama",
+  "sampling": {
+    "reproducibility": "stochastic: repeated runs of the same revision may differ",
+    "seed": "NOT_SUPPORTED (Fabro run config has no seed)",
+    "temperature": "PROVIDER_DEFAULT (not set by the factory)"
+  },
+  "timeout_scale": 4.0,
+  "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
+}
