@@ -280,3 +280,24 @@ Run summary:
   - The cross-cutting instructions only ask for the reset/startup behaviour and the coverage rules, so the task has
     no stated place for a failure-handling requirement.
   - A rework visit that leaves every answer unchanged should not count as a reworked baseline.
+
+## lrtxq2 — QM experiment, factory fa1e7fa, 2026-10-21 20:12–21:03 UTC: real rework, unstable inspector
+
+- **Work order:** the same QM example and scope as lrtxq1. The factory now includes pd-9a54ade5e46db037f847:
+  - an unchanged answer to rework findings is not accepted;
+  - the cross-cutting task owns the failure handling the scope states.
+- **Run summary:** `verify.json` PASS; package BLOCKED (51 gaps). 41 calls in 50 minutes, 16.2 Wh GPU energy at
+  100 % sample coverage.
+- **Author:**
+  - It froze on the first visit (12 calls) and reworked in 2 calls and 1 call.
+  - Every rework produced a new baseline (BL-SWE.1-002, -003), so no cycle was spent on an unchanged baseline. The
+    model changed its answer on its own; `LRTX_FINDING_NOT_ADDRESSED` never fired.
+  - It added SWR-015 (no waiting on status flags; the caller bounds polling) and an open point on SWE1-03.
+- **Inspection:**
+  - INS-001: 7/8 PASS, only SWE1-03 (safe states), as in lrtxq1.
+  - After the change, INS-002 and INS-003 failed 4 items (SWE1-02, -03, -04, -06) and called the unchanged budget
+    requirements unverifiable or not measurable. INS-001 had passed those requirements on the same evidence.
+  - The local inspector's verdicts change with the document's wording and between visits, the instability already
+    seen in lrtx7–lrtx10. It stays NOT_QUALIFIED.
+- **Gate:** the cycle-3 route computed the owner's progress extension with `progress: true` (3 items resolved) and
+  still returned BLOCKED. This is the shared route gate defect recorded under lrtx10.

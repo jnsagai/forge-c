@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-21T20:25:56.713873Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6667,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18160
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "1b40097d6bbac7f7b6545ff5427b21883820042fe12856ea810e7260dcdbdbf9",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 71,
+        "prompt_tokens": 6140,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6211
+      },
+      "wall_ms": 83316.1
+    }
+  ],
+  "base_hash": "1b40097d6bbac7f7b6545ff5427b21883820042fe12856ea810e7260dcdbdbf9",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:bb7b450394830fe0:SWE1-05"
+}

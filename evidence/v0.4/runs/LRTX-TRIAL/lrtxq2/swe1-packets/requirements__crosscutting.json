@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-21T20:59:59.536416Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3516,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 9494
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "a9ec866823ccabd6f916806f61e1f1ac3a415b78b80cff99987b8d166178ad85",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 405,
+        "prompt_tokens": 2614,
+        "prompt_tokens_details": {
+          "cached_tokens": 1707
+        },
+        "total_tokens": 3019
+      },
+      "wall_ms": 43852.3
+    }
+  ],
+  "base_hash": "3aada08241ef52949ff4d514aad362b81b988705231f326b55648fbbea26ff50",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "The software requirements do not explicitly document the complete failure handling strategy for all potential error states, as SWE1-03 requires. The current requirement SWR-002 addresses polling but does not enumerate all possible failure modes or responses.",
+      "Verification criteria and source page references are provided in the output, however explicit documentation of the resolution process for ambiguities related to the scope or expected behavior of the driver is not included in the requirements, as required by SWE1-06."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no IWDG register writes occur before first function call",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_002",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall handle failure conditions by not relying on status flags for synchronization; the caller bounds its polling.",
+        "verification": "target_robot_test passes when driver does not wait on status flags during polling",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_003",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall ensure that writes to registers modify only the named fields and do not affect other bits.",
+        "verification": "host_unit_test passes when register bit masking correctly limits write operations to specified fields",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,0 +1,126 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "00a3fbfb65fc866ebd10e155e61e28d57900a6f0a933a1d13481b47eec5d18dc",
+  "baseline_id": "BL-SWE.1-003",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "Requirement SWR-001 is not objectively verifiable: the requirement does not specify a testable condition or outcome that can be verified through inspection or testing. It only states an action (writin",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "The software safety requirements document states that no software safety requirements are allocated for QM development (QM development scope: no software safety requirements are allocated). This means",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "Flash/RAM/stack constraints are not explicitly documented in the software requirements for the IWDG LL driver. The requirements specify budget limits (4096 bytes flash, 64 bytes static RAM, 128 bytes ",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are documented - The software requirements document (software_requirements.md) provides verification criteria and source page references for e",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-003",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-001 is not objectively verifiable: the requirement does not specify a testable condition or outcome that can be verified through inspection or testing. It only states an action (writin"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/upstream_gaps.md",
+        "source/workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "The software safety requirements document states that no software safety requirements are allocated for QM development (QM development scope: no software safety requirements are allocated). This means"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Flash/RAM/stack constraints are not explicitly documented in the software requirements for the IWDG LL driver. The requirements specify budget limits (4096 bytes flash, 64 bytes static RAM, 128 bytes "
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are documented - The software requirements document (software_requirements.md) provides verification criteria and source page references for e"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T210345.418463Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T210346.092493Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T21:03:46.092918Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-21T21:03:23.965824Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6860,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18690
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "fcb3e1c6c9982a38ac19a2d84133528f636b7d18e0099c2faceb1490cd9f30be",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 61,
+        "prompt_tokens": 6239,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6300
+      },
+      "wall_ms": 22497.2
+    }
+  ],
+  "base_hash": "fcb3e1c6c9982a38ac19a2d84133528f636b7d18e0099c2faceb1490cd9f30be",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:00a3fbfb65fc866e:SWE1-05"
+}
