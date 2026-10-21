@@ -15,13 +15,14 @@ import json
 import sys
 from pathlib import Path
 
-PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3"}
+PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "SWE.5": "swe5"}
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=["author", "code", "inspect", "continue-check"])
-    ap.add_argument("--of", choices=["author", "code", "inspect"], default="author", help="continue-check: which reply")
+    ap.add_argument("step", choices=["author", "code", "tests", "inspect", "continue-check"])
+    ap.add_argument("--of", choices=["author", "code", "tests", "inspect"], default="author",
+                    help="continue-check: which reply")
     ap.add_argument("--resume", action="store_true", help="continue the open visit after its time box")
     ap.add_argument("--time-budget", type=float, default=1200.0,
                     help="seconds of model work per node execution (Fabro ends a node silent for 1800 s)")
@@ -30,7 +31,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default="")
     a = ap.parse_args(argv)
     ws = a.workspace.resolve()
-    if a.step in ("author", "code") and a.phase not in PHASES or a.step == "code" and a.phase != "SWE.3":
+    if a.step in ("author", "code", "tests") and a.phase not in PHASES or \
+            (a.step == "code" and a.phase != "SWE.3") or (a.step == "tests" and a.phase not in ("SWE.4", "SWE.5")):
         ap.error(f"no structured author for {a.phase}")
     from importlib import import_module
 
@@ -62,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if a.step == "code":  # SWE.3: unit code tasks (the LL author and fix author nodes)
             rep = mod.visit_code(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+        elif a.step == "tests":  # SWE.4/SWE.5: test tasks (the unit-test / target-test author node)
+            rep = mod.visit_tests(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
         elif a.phase == "SWE.3":  # SWE.3 design: rendered from the validated code tasks and the measured tools
             rep = mod.visit_design(ws, a.model)
         else:

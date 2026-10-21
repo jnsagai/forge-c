@@ -14,7 +14,7 @@ from pathlib import Path
 from ..common import utc_now
 
 SERVERS = {"forge-build-mcp": "build", "forge-analysis-mcp": "analysis", "forge-docs-mcp": "docs",
-           "forge-tests-mcp": "tests", "forge-sim-mcp": "sim"}
+           "forge-tests-mcp": "tests", "forge-sim-mcp": "sim", "forge-evidence-mcp": "evidence"}
 
 
 class ToolRefused(PermissionError):

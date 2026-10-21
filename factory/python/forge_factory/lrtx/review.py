@@ -10,6 +10,7 @@ Same-family models in separate contexts do not prove independence of model error
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from ..common import sha256_bytes, utc_now
@@ -78,14 +79,54 @@ def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], mo
                     output_reserve=2048)
 
 
-def validate_verdict(doc: dict, paths: set[str]) -> list[str]:
+PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)
+NO_VERIF_RX = re.compile(r"(?:no|without|missing|lacks?|not)\s+(?:explicit\s+)?(?:objective\s+)?verif|not "
+                         r"(?:explicitly )?(?:verified|verifiable|measurable)", re.I)
+
+
+def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list[str]:
+    """Findings refuted by facts the evidence states (LRTX-FR-015: false rejections are measured and corrected, never
+    waived): an owner's PENDING allocation decision judged as a failure, a missing verification criterion that the
+    document has, an SWR id that does not exist. The inspector re-judges; it may keep any finding these do not refute."""
+    ws = Path(ws)
     out = []
+    m = json.loads((ws / ".forge-run/manifest.json").read_text())
+    pending = "PENDING owner allocation review" in str(m["target"].get("safety_allocation", ""))
+    req = ws / "workproducts/SWE.1/software_requirements.md"
+    text = req.read_text() if req.is_file() else ""
+    verif = {s: v for s, v in re.findall(r"\*\*(SWR-\d{3})\*\*.*?\n\s*-\s*Source:.*?\n\s*-\s*Verification:\s*(.+)",
+                                         text)}
+    known = set(re.findall(r"\*\*(SWR-\d{3})\*\*", text))
+    for f in findings:
+        if pending and phase == "SWE.1" and PENDING_RX.search(f):
+            out.append(f"finding '{f[:80]}...' judges the owner's recorded PENDING allocation decision as a failure: "
+                       "per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the "
+                       "other evidence")
+        for s in re.findall(r"SWR-\d{3}", f):
+            if s not in known and known:
+                out.append(f"finding names {s}, which is not a requirement of the document")
+            elif s in verif and NO_VERIF_RX.search(f) and "pass" in verif[s].lower():
+                out.append(f"finding says {s} lacks verification, but the document gives: '{verif[s][:100]}' - re-judge")
+    return list(dict.fromkeys(out))
+
+
+def _norm_path(p: str) -> str:
+    """lrtx4 (2026-10-21): the model echoed the packet's 'SOURCE <path>' labels ('source safety/...',
+    'source/safety/...'); a label or anchor around a provided path is not a wrong source."""
+    p = re.sub(r"^(?:source|current artifact)[\s/:]+", "", p.strip().strip("`'\""), flags=re.I)
+    return p.split("#", 1)[0].strip().lstrip("./")
+
+
+def validate_verdict(doc: dict, paths: set[str], ws: Path | None = None, phase: str = "", item: str = "") -> list[str]:
+    out = []
+    if ws is not None and doc["verdict"] == "FAIL":
+        out += fact_conflicts(ws, phase, item, doc["findings"])
     if doc["verdict"] == "FAIL" and not doc["findings"]:
         out.append("a FAIL verdict needs at least one concrete finding")
     if doc["verdict"] == "PASS" and doc["findings"]:
         out.append("a PASS verdict carries no findings (use FAIL when a finding exists)")
     out += [f"evidence_checked names {p}, which is not a provided source" for p in doc["evidence_checked"]
-            if p not in paths]
+            if _norm_path(p) not in {_norm_path(x) for x in paths}]
     return out
 
 
@@ -123,7 +164,7 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
         rec = V.run_task(ws, phase, task, lambda fi, pr, it=it: item_packet(ws, phase, it, bl, srcs, model, fi, pr),
-                         lambda d: validate_verdict(d, paths), budget)
+                         lambda d, it=it: validate_verdict(d, paths, ws, phase, it["id"]), budget)
         if rec["status"] != "VALID":
             issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
             continue

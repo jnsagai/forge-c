@@ -217,3 +217,43 @@ def test_invalid_tasks_get_further_repair_rounds_within_the_visit(ws, monkeypatc
     monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_SR_2": sr2}, calls))
     rep = swe1.visit(ws, "m")
     assert rep["status"] == "PASS", rep
+
+
+def test_scope_hints_mark_fields_the_scope_excludes(ws):  # noqa: F811
+    inv = swe1.inventory(ws)
+    hints = {f: h for g in swe1.groups(inv) for f, h in swe1.scope_hints(ws, g).items()}
+    assert "out-of-scope term(s) window" in hints["WVU"] and "interrupt" in hints["EWU"]
+    assert hints["PVU"] == "named in the work-order scope"
+    assert swe1.out_of_scope_named(ws) >= {"IWDG_WINR", "IWDG_EWCR", "IWDG_ICR"}
+
+
+def test_inspector_findings_refuted_by_evidence_are_re_judged(ws1, monkeypatch):  # noqa: F811
+    """lrtx4 (2026-10-21): the Qwen inspector failed SWE1-01..06 on the owner's PENDING allocation decision and on
+    verification criteria that the document has. Such findings go back to the inspector; others are kept."""
+    pending = "Software safety requirements are not allocated yet; the safety allocation is PENDING owner review."
+    nover = "SWR-011 has no verification criterion and is not measurable."
+    real = "SWR-001 conflates starting the watchdog with refreshing it (0xAAAA is the refresh key)."
+    found = review.fact_conflicts(ws1, "SWE.1", "SWE1-02", [pending, nover, real])
+    assert len(found) == 2 and "PENDING allocation" in found[0] and "SWR-011 lacks verification" in found[1]
+    answers = iter([{"verdict": "FAIL", "findings": [pending], "evidence_checked": [swe1.REQS]},
+                    {"verdict": "FAIL", "findings": [real], "evidence_checked": [swe1.REQS]}])
+
+    def insp(p):
+        return next(answers) if p["task"].endswith("SWE1-02") else {"verdict": "PASS", "findings": [],
+                                                                    "evidence_checked": [swe1.REQS]}
+    monkeypatch.setattr(S, "call", _scripted(Answers({}, insp), []))
+    assert review.visit(ws1, "SWE.1", "m")["status"] == "REWORK"
+    ins = json.loads(sorted((ws1 / "inspection/SWE.1").glob("INS-*.json"))[-1].read_text())
+    assert ins["items"]["SWE1-02"]["findings"] == [real]  # the real defect is kept, the refuted one re-judged away
+
+
+def test_source_labels_around_provided_paths_are_accepted():
+    """lrtx4: 'source safety/...' and 'source/traceability/...' were rejected as unknown sources three times per item;
+    the inspection recorded nothing and the phase blocked."""
+    paths = {"safety/software_safety_requirements.md", ".forge-run/manifest.json#scope-target-budgets"}
+    doc = {"verdict": "PASS", "findings": [], "evidence_checked": [
+        "source safety/software_safety_requirements.md", "source/safety/software_safety_requirements.md",
+        "SOURCE .forge-run/manifest.json#scope-target-budgets", "`safety/software_safety_requirements.md`"]}
+    assert review.validate_verdict(doc, paths) == []
+    assert review.validate_verdict({**doc, "evidence_checked": ["source/other.md"]}, paths) == [
+        "evidence_checked names source/other.md, which is not a provided source"]

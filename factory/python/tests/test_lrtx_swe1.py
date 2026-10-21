@@ -192,7 +192,7 @@ def test_profile_enables_structured_swe1_for_ll_only():
 
     local = {"id": "local-rtx-v1"}
     ll = local_profile_structured(local, {"layer": "LL"}, "m")
-    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2", "SWE.3"] and ll["reinspect"] is True
+    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] and ll["reinspect"]
     hal = local_profile_structured(local, {"layer": "HAL"}, "m")
     assert hal["phases"] == [] and hal["inspect_phases"] == [] and hal["reinspect"] is True
     assert local_profile_structured(None, {"layer": "LL"}, "m") is None

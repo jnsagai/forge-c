@@ -96,8 +96,11 @@ def inventory(ws: Path) -> dict:
             continue
         pages = sorted({int(p) for p in re.findall(r"p\.(\d+)", text.split("\n", 1)[0])} |
                        {int(p) for p in re.findall(r'id="p-(\d+)"', text)} | ({s["page"]} if s["page"] else set()))
+        desc = {m.group(3): " ".join(m.group(4).split())[:120] for m in re.finditer(
+            r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[[^\]]*\])?\s*:\s*(.+)$", text, re.M)}
         regs.append({"section": num, "file": s["file"], "register": r["name"], "offset": r["offset"],
-                     "pages": pages, "fields": {k: {"msb": v["msb"], "lsb": v["lsb"], "access": v.get("access", [])}
+                     "pages": pages, "fields": {k: {"msb": v["msb"], "lsb": v["lsb"], "access": v.get("access", []),
+                                                    "description": desc.get(k, "")}
                                                 for k, v in r["fields"].items()}})
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
     return {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
@@ -145,11 +148,42 @@ def effect_rule(ws: Path) -> str:
     return base + (" " + " ".join(rule.split()) if rule else "")
 
 
+STOP = {"with", "from", "into", "only", "their", "this", "that", "work", "order", "api", "the", "and", "for"}
+
+
+def scope_hints(ws: Path, g: dict) -> dict[str, str]:
+    """Per field: whether the work-order scope names it, and which out-of-scope terms its RM description matches.
+    Hints for the author; only a field or register the out-of-scope text names explicitly is a hard rule."""
+    m = _manifest(ws)
+    out_txt = " ".join(x for x in m["scope"] if x.lower().startswith("out of scope")).lower()
+    in_txt = " ".join(x for x in m["scope"] if not x.lower().startswith("out of scope"))
+    words = {w for w in re.findall(r"[a-z]{4,}", out_txt.replace("-", " ")) if w not in STOP}
+    every = [v.get("description", "").lower() for r in inventory(ws)["registers"] for v in r["fields"].values()]
+    common = {w for w in words if sum(w in d for d in every) > max(1, len(every) // 2)}  # e.g. 'watchdog'
+    out = {}
+    for f, v in g["fields"].items():
+        named = bool(re.search(rf"\b{re.escape(f)}\b", in_txt))
+        hits = sorted(w for w in words - common if w in v.get("description", "").lower().replace("-", " "))
+        out[f] = ("named in the work-order scope" if named else "not named in the in-scope text") + (
+            f"; its description matches out-of-scope term(s) {', '.join(hits)}" if hits else "")
+    return out
+
+
+def out_of_scope_named(ws: Path) -> set[str]:
+    """Registers and REG.FIELD names the out-of-scope text names explicitly (a hard rule)."""
+    from ..layer import register_prefix
+
+    m = _manifest(ws)
+    out_txt = " ".join(x for x in m["scope"] if x.lower().startswith("out of scope"))
+    return set(re.findall(rf"\b{register_prefix(ws)}_[A-Z0-9]+(?:\.[A-Z0-9_]+)?\b", out_txt))
+
+
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
     m = _manifest(ws)
     sysname = system_name(ws)
-    fields = ", ".join(f"{g['register']}.{f} (bits {v['msb']}:{v['lsb']}, access {'/'.join(v['access']) or '?'})"
-                       for f, v in g["fields"].items())
+    hints = scope_hints(ws, g)
+    fields = "; ".join(f"{g['register']}.{f} (bits {v['msb']}:{v['lsb']}, access {'/'.join(v['access']) or '?'}, "
+                       f"RM: '{v.get('description', '')}'; {hints[f]})" for f, v in g["fields"].items())
     instr = (f"Write the software requirements of the {sysname} for register {g['register']} (RM0486 section "
              f"{g['section']}). Fields of this task: {fields}. Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules of this work order: {coverage_guidance(ws)} Apply them ONLY to the fields of this task; "
@@ -270,6 +304,10 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                                                           (g["register"] in st and f in st) for f in g["fields"]):
             out.append(f"[{k}] names no field of this task: reset/startup and all-function rules belong to the "
                        "cross-cutting task - remove this requirement here")
+        excl = out_of_scope_named(ws)
+        for nm in sorted(n for n in {f"{e['register']}.{e['field']}" for e in r["effects"]} |
+                         {e["register"] for e in r["effects"]} if n in excl):
+            out.append(f"[{k}] acts on {nm}, which the work-order scope lists as out of scope: list it in not_covered")
         if _needs_contract(st, pfx) and not r["effects"]:  # the gate's rule (CONTRACT_SWR_NOT_COVERED)
             out.append(f"[{k}] the statement names a field it sets or clears but has no effect entry")
     if g is not None:

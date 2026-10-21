@@ -190,6 +190,11 @@ def structured_authors(dot: str, structured: dict) -> str:
                        code + " --resume", t)
             nxt = "swe3_units" if "  swe3_fix_author -> swe3_units\n" in dot else "swe3_author"
             dot = continuation(dot, "swe3_fix_author", nxt, "code", phase)
+        if phase in ("SWE.4", "SWE.5"):  # test tasks in the test author node; the author node resumes them + report
+            node = {"SWE.4": "swe4_test_author", "SWE.5": "swe5_target_author"}[phase]
+            tests = f"{run} tests --phase {phase} --workspace . --model {structured['model']} --time-budget {box}"
+            dot = swap(dot, node, f"{phase} structured tests (local profile)", tests, t)
+            dot = continuation(dot, node, f"swe{n}_author", "tests", phase)
         dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
                    f"{run} author --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
