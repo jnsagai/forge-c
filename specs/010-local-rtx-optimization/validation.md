@@ -65,4 +65,5 @@ behavior is retained. Do not rewrite historical fingerprints to hide changes or 
 | Local model quality (structured SWE.1 on qwen3-coder:30b) | BLOCKED (lrtx1-lrtx7) | `LRTX-TRIAL/README.md`; lrtx7 froze SWE.1 on its first visit, then factory inspection defects blocked it (fixed) |
 | Model routing per task (T023) | PASS (measured; no routing proposed) | `LRTX-T023` (qwen3:8b 0/3 SWE.1 visits pass, cross-cutting task never valid; qwen3-coder:30b 3/3 frozen; derived mixed routing 575 s vs 541 s for 30B alone) |
 | Local model quality, lrtx8-lrtx10 | BLOCKED by the structured Qwen inspector | `LRTX-TRIAL/README.md`; the author froze SWE.1 on the first visit in lrtx7-lrtx10; the inspector rewords refuted findings (NOT_QUALIFIED) |
-| 30-case campaign, seeded defects | NOT_RUN | T021, T024 |
+| Seeded defects on independent holdouts (T021) | PASS (measured; local inspector NOT_QUALIFIED) | `LRTX-T021` (2 READY rc1 LL holdouts, 9 seeded cases: 2 deterministic, 1 inspection on target, 4 off target, 2 missed; both clean holdouts falsely rejected; holdouts unchanged) |
+| 30-case campaign | NOT_RUN (owner hold 2026-10-21) | T024 |

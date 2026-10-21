@@ -37,7 +37,7 @@ written specification or passing static check is not a completed local model tri
 - [X] LRTX-T018 Route missing inspection directly to inspection only when the current frozen baseline remains valid. ✅ Evidence: `evidence/v0.4/runs/LRTX-T018/latest.json`
 - [X] LRTX-T019 Split coherent inspection criteria with full primary evidence and independent contexts; aggregate only complete matching-baseline verdicts. ✅ Evidence: `evidence/v0.4/runs/LRTX-T019/latest.json`
 - [X] LRTX-T020 Prove shared phase accounting and existing stuck/rework limits across subtasks; no reset through task decomposition. ✅ Evidence: `evidence/v0.4/runs/LRTX-T020/latest.json`
-- [ ] LRTX-T021 Evaluate seeded semantic defects and cross-artifact contradictions with independent frozen holdouts.
+- [X] LRTX-T021 Evaluate seeded semantic defects and cross-artifact contradictions with independent frozen holdouts. ✅ Evidence: `evidence/v0.4/runs/LRTX-T021/latest.json` (2 READY rc1 LL holdouts, frozen catalogue lrtx-seeded-1: deterministic 2/2 in scope, inspection on target 1/7, both clean holdouts falsely rejected; local inspector stays NOT_QUALIFIED)
 
 ## P4/P5 — full process and qualification
 
