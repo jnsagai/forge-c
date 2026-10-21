@@ -353,3 +353,34 @@ def test_schema_validator_enforces_upper_bounds():
     assert S.validate({"a": ["x", "y"]}, s) == []
     errs = S.validate({"a": ["x", "y", "long"]}, s)
     assert "$.a: more than 2 items (merge related entries)" in errs and "$.a[2]: longer than 3 characters" in errs
+
+
+def test_cross_cutting_task_may_not_write_task_registers_and_must_keep_the_startup_rule(ws):
+    """lrtx9 (2026-10-21): a repaired cross-cutting answer rewrote the IWDG_KR key writes (with effects) and dropped
+    the startup invariant; both passed validation and the inspector rightly failed SWE1-03."""
+    from forge_factory.assurance.hardware import index
+
+    idx = index(ws / "inputs/sections/RM0486")
+    bad = {"requirements": [_req("kr_start", f"When the {SYS} is requested to start the watchdog, the {SYS} shall "
+                                 "write 0xCCCC to IWDG_KR.KEY.", 2989, [_eff("START", "IWDG_KR", "KEY", "write",
+                                                                             "0xCCCC")])],
+           "not_covered": [], "open_points": []}
+    found = swe1.validate_group(ws, bad, None, SYS, idx)
+    assert any(f.startswith("[kr_start] acts on IWDG_KR, which the IWDG_KR task covers") for f in found), found
+    assert any(f.startswith("the cross-cutting task must state the reset/startup behaviour") for f in found), found
+    assert swe1.validate_group(ws, ANSWERS["requirements:crosscutting"], None, SYS, idx) == []
+
+
+def test_consistency_finds_the_same_write_in_other_words():
+    def rec(task, *reqs):
+        return {"task": task, "doc": {"requirements": list(reqs)}}
+
+    a = _req("refresh", f"When LL_IWDG_ReloadCounter is called, the {SYS} shall write 0x0000AAAA to IWDG_KR.KEY.", 2989,
+             [_eff("REFRESH", "IWDG_KR", "KEY", "write", "0x0000AAAA")])
+    b = _req("refresh2", f"The {SYS} shall write the key value 0xAAAA to the IWDG_KR.KEY field when refreshing.", 2989,
+             [_eff("REFRESH_KEY", "IWDG_KR", "KEY", "write", "0xAAAA")])
+    found = swe1.consistency([({}, rec("requirements:IWDG_KR", a, b))], rec("requirements:crosscutting"))
+    assert found == [("requirements:IWDG_KR", "[refresh2] duplicates [refresh] of requirements:IWDG_KR: both write "
+                                              "0xAAAA to IWDG_KR.KEY - remove it here")]
+    found = swe1.consistency([({}, rec("requirements:IWDG_KR", a))], rec("requirements:crosscutting", b))
+    assert found and found[0][0] == "requirements:crosscutting"  # removed from the cross-cutting task

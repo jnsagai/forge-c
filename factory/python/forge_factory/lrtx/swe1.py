@@ -336,6 +336,17 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
     elif doc["not_covered"]:
         out.append("not_covered must be empty for the cross-cutting task")
     if g is None:  # lrtx6 (2026-10-21): the cross-cutting task wrote status-flag queries that a register task covers
+        tasked = {x.split(".")[0] for x in inventory(ws)["items"]}
+        for r in doc["requirements"]:
+            # lrtx9 (2026-10-21): it rewrote the IWDG_KR/PR/RLR writes with effects, duplicating the register tasks
+            for reg in sorted({e["register"] for e in r["effects"]} & tasked):
+                out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers - remove requirement "
+                           f"[{r['key']}] from the cross-cutting task")
+        if not any(STARTUP.match(r["statement"]) for r in doc["requirements"]):
+            # lrtx9: a repair dropped the startup invariant the packet asks for (SWE1-03 then failed for real)
+            out.append(f"the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has "
+                       f"been called after reset, the {sysname} shall not write any {pfx} register.' "
+                       "(verified_by target_robot_test)")
         for r in doc["requirements"]:
             regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
                            if f[0] in idx} - {e["register"] for e in r["effects"]})
@@ -489,7 +500,7 @@ def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[tuple[str
     """LRTX-FR-010 global check across tasks: duplicate statements, contradictory effects on one field. Returns
     (task, finding) so the finding is repaired where it belongs: a requirement duplicated in a register task and the
     cross-cutting task is removed from the register task; between two register tasks, from the later one."""
-    out, seen, ops = [], {}, {}
+    out, seen, ops, writes = [], {}, {}, {}
     for rec in [cross] + [rec for _g, rec in results]:  # the cross-cutting task owns shared requirements
         for r in rec["doc"]["requirements"]:
             norm = re.sub(r"\W+", " ", r["statement"].lower()).strip()
@@ -500,6 +511,19 @@ def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[tuple[str
                 seen[norm] = (rec["task"], r["key"])
             for e in r["effects"]:
                 ops.setdefault((e["case"], e["register"], e["field"]), []).append((rec["task"], e["op"]))
+                if e["op"] == "write" and _value(e["value"]) is not None:  # lrtx9: same write, other words
+                    w = (e["register"], e["field"], _value(e["value"]))
+                    if w in writes and writes[w][1] != r["key"]:
+                        first_task, first_key = writes[w]
+                        if first_task == cross["task"]:  # a field write belongs to its register task
+                            out.append((first_task, f"[{first_key}] duplicates [{r['key']}] of {rec['task']}: both "
+                                                    f"write {e['value']} to {e['register']}.{e['field']} - remove it "
+                                                    "here"))
+                        else:
+                            out.append((rec["task"], f"[{r['key']}] duplicates [{first_key}] of {first_task}: both "
+                                                     f"write {e['value']} to {e['register']}.{e['field']} - remove "
+                                                     "it here"))
+                    writes.setdefault(w, (rec["task"], r["key"]))
     for (c, reg, f), lst in ops.items():
         if {"set", "clear"} <= {o for _t, o in lst}:
             out.append((lst[-1][0], f"case {c} has contradictory ops set and clear on {reg}.{f}"))
