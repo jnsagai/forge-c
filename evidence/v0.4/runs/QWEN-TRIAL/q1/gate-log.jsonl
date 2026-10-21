@@ -1,0 +1,8 @@
+{"gate": {"decision": "REWORK", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_BASELINE"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-20T20:31:00.340680Z"}
+{"baseline_id": "BL-SWE.1-002", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-20T20:43:20.530488Z"}
+{"gate": {"decision": "REINSPECT", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-20T20:58:21.612498Z"}
+{"baseline_id": "BL-SWE.1-002", "phase": "SWE.1", "result": "FROZEN", "step": "author", "ts": "2026-10-20T21:23:24.472017Z"}
+{"gate": {"decision": "BLOCKED", "failed_inspections": 0, "max_rework_cycles": 3, "phase": "SWE.1", "progress_extension": {"cycle": 1, "of": 2, "progress": false, "why": "fewer than two failed cycles"}, "reason": "rework budget exhausted (3 failed cycles)"}, "phase": "SWE.1", "step": "route", "ts": "2026-10-20T21:38:26.077209Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.1", "result": "NONE", "step": "upstream", "ts": "2026-10-20T21:38:26.459406Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.2", "result": "NONE", "step": "upstream", "ts": "2026-10-20T21:38:26.795213Z"}
+{"defects": [], "loop_budget": 2, "loops_used": 0, "phase": "SWE.3", "result": "NONE", "step": "upstream", "ts": "2026-10-20T21:38:27.164001Z"}
