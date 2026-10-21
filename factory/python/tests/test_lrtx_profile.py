@@ -135,6 +135,6 @@ def test_select_refuses_unenforced_network_and_mismatched_model(monkeypatch, tmp
 
 def test_stack_environment_inherits_nothing_from_the_existing_deployment(tmp_path):
     env = _env(tmp_path / "r")
-    assert "PYTHONPATH" not in env and env["HOME"] == str(tmp_path / "r/home")
+    assert env["PYTHONPATH"].endswith("factory/python") and env["HOME"] == str(tmp_path / "r/home")
     assert all(str(tmp_path / "r") in env[k] for k in PROF["deployment"]["writable_env"])
     assert env["FORGE_FABRO_URL"].endswith(":32390/api/v1") and env["FORGE_OLLAMA_URL"].endswith(":11445")

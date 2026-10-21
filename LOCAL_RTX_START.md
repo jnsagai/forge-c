@@ -41,6 +41,15 @@ python -m forge_factory.lrtx.stack stop
 `--profile` refuses ACP, cloud providers, shared or symlinked runtime roots, non-profile ports, an unverified network
 denial and a model whose digest differs from the profile. The profile is NOT qualified; nothing here is a release.
 
+P2/P3 (ADR-0014): with the profile, LL work orders run the SWE.1 and SWE.2 authors and inspectors as structured tasks
+(`forge_factory.lrtx.runner`): SWE.1 is split per RM register (inventory of every key-section field), SWE.2 into an
+interface/allocation task and a design-rationale task, inspection into one task per checklist item on the frozen
+baseline. Tables, views, the trace CSV and the contract files are rendered deterministically; every answer is validated
+and repaired locally; checkpoints are reused while their inputs are unchanged; a valid never-inspected baseline goes
+back to the inspector without re-running authorship. The unchanged gates decide. SWE.3-SWE.6 and HAL work orders keep
+the agent nodes. `python -m forge_factory.lrtx.runmetrics --workspace <ws>` records stage, call, resource and energy
+measurements of a run; `python -m forge_factory.lrtx.replay` triages the recorded QWEN-TRIAL rejections.
+
 Do not use the production checkout, state database, Fabro storage, service units or archive directory for local
 experiments. Do not change the process, safety gates, inspection independence or promotion authority to obtain a
 successful local run. Both lines keep the same quality criteria and offline review semantics.

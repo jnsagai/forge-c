@@ -150,6 +150,11 @@ class Meter:
             f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources},
                                sort_keys=True) + "\n")
 
+    def record_sample(self, resources: dict) -> None:
+        """Feature 010 admission gateway: periodic resource sample (no request, no content)."""
+        with self.path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts_utc": utc_now(), "sample": resources}, sort_keys=True) + "\n")
+
     def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
                shape: dict | None = None, local: dict | None = None) -> None:
         rec = {"ts_utc": utc_now(), "model": model or "unknown",
@@ -185,12 +190,29 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                transport: httpx.AsyncBaseTransport | None = None, admission: Any = None) -> FastAPI:
     """`admission` (feature 010, lrtx.admission.Admission; from FORGE_GATEWAY_MAX_INFLIGHT when not given) turns on the
     single-request queue, cancellation and timing; without it the gateway behaves as before."""
-    app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None)
     if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
         from .lrtx import admission as lrtx_admission
 
         admission = lrtx_admission.from_env()
     adm = admission
+    sample_s = float(os.environ.get("FORGE_GATEWAY_SAMPLE_S", "0")) if adm is not None else 0.0
+    lifespan = None
+    if sample_s > 0:  # feature 010: periodic resource samples (GPU power for energy integration)
+        import asyncio
+        import contextlib
+
+        @contextlib.asynccontextmanager
+        async def lifespan(_app):
+            from .lrtx import admission as la
+
+            async def loop() -> None:
+                while True:
+                    meter.record_sample(await asyncio.to_thread(la.resources, upstream.removesuffix("/v1")))
+                    await asyncio.sleep(sample_s)
+            task = asyncio.get_running_loop().create_task(loop())
+            yield
+            task.cancel()
+    app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
     client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0),
                                transport=transport)
@@ -406,14 +428,15 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         end = time.monotonic()
         ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
         timing = {"total_ms": ms(t0, end), "first_delta_ms": ms(t0, first) if first else None, "delta_chunks": deltas,
-                  "prefill_ms": ms(t0, first) if first else "UNKNOWN (no generated delta)",
+                  "prefill_ms": ms(t0, first) if first and deltas > 1 else
+                  "UNKNOWN (answer arrived in one chunk: the first-delta time includes generation)",
                   "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
                   "basis": "gateway wall clock around the upstream stream; model preloaded separately"}
         out = int((usage or {}).get("completion_tokens") or 0)
         if first and deltas > 1 and last > first:
             timing["decode_tokens_per_s"] = round(out / (last - first), 2)
         inp = int((usage or {}).get("prompt_tokens") or 0)
-        if first and first > t0:
+        if first and first > t0 and deltas > 1:
             timing["prefill_tokens_per_s"] = round(inp / (first - t0), 1)
         return resp.status_code, lines, usage, stripped, shape, timing
 

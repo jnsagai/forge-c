@@ -41,6 +41,7 @@ def envmap(s: dict) -> dict[str, str]:
     r, p = s["root"], s["ports"]
     fabro_bin = os.environ.get("FORGE_FABRO_BIN") or str(Path.home() / ".fabro/bin/fabro")  # shared binary, read-only
     env = {"FORGE_LRTX_ROOT": str(r), "FORGE_LRTX_PROFILE": s["profile"]["id"], "FORGE_REPO_ROOT": str(REPO_ROOT),
+           "PYTHONPATH": str(REPO_ROOT / "factory/python"),  # the checkout this stack runs (work orders, gates)
            "FORGE_DATA_ROOT": str(r), "FORGE_VENV": str(r / "venv"), "FORGE_STATE_DIR": str(r / "state"),
            "FORGE_ARCHIVE_DIR": str(r / "archives"), "UV_CACHE_DIR": str(r / "cache/uv"),
            "PIP_CACHE_DIR": str(r / "cache/pip"), "FORGE_OLLAMA_URL": f"http://127.0.0.1:{p['ollama']}",
@@ -219,7 +220,8 @@ def start(s: dict) -> dict:
                   "OLLAMA_MODELS": str(r / "ollama-models"), "HOME": str(r / "ollama-home")}
     adm = prof["admission"]
     gw_env = {**env, "PYTHONPATH": str(REPO_ROOT / "factory/python"), "FORGE_GATEWAY_MAX_INFLIGHT": str(adm["max_inflight"]),
-              "FORGE_GATEWAY_MAX_QUEUE": str(adm["max_queue"]), "FORGE_GATEWAY_MAX_WAIT_S": str(adm["max_wait_s"])}
+              "FORGE_GATEWAY_MAX_QUEUE": str(adm["max_queue"]), "FORGE_GATEWAY_MAX_WAIT_S": str(adm["max_wait_s"]),
+              "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10))}
     specs = {
         "ollama": ([str(r / "ollama-0.34.0/bin/ollama"), "serve"], ollama_env, f"http://127.0.0.1:{p['ollama']}/api/version"),
         "gateway": ([env["FORGE_VENV"] + "/bin/python", "-m", "forge_factory.llm_gateway", "--port", str(p["gateway"]),
@@ -259,8 +261,8 @@ def stop(s: dict) -> dict:
             os.kill(pr["pid"], signal.SIGTERM)
             stopped.append(name)
     holder = _holder(s)
-    if holder is not None:
-        os.kill(holder, signal.SIGTERM)
+    if holder is not None:  # `sleep infinity` may inherit an ignored SIGTERM from the launching shell
+        os.kill(holder, signal.SIGKILL)
         stopped.append("netns-holder")
     if f.is_file():
         rec["stopped_at"] = utc_now()

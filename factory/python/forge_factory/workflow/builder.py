@@ -104,9 +104,11 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           sections: dict[str, str] | None = None, code_model: str | None = None,
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
-          delivery_style: str | None = None) -> tuple[str, dict]:
+          delivery_style: str | None = None, structured: dict | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
-    `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped)."""
+    `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
+    `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
+    run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures)."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
@@ -119,12 +121,75 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
 
     prompts.PERIPHERAL["profile"] = load_profile(peripheral) if peripheral else None  # feature 009
     dot, nodes = _build(work_order, phases, goal, sections)
+    if structured:
+        dot = structured_authors(dot, structured)
     if code_model:
         for n in CODE_NODES:
             if n in nodes:
                 dot = dot.replace(f"  {n} [label=", f'  {n} [{MODEL_ATTR}="{_q(code_model)}", label=', 1)
                 nodes[n] = {**nodes[n], "model": code_model}
     return dot, nodes
+
+
+def structured_authors(dot: str, structured: dict) -> str:
+    """Feature 010 (explicit local profile only; ADR-0014): replace agent nodes of the listed phases with the profile's
+    structured-task runner (a command node with the same id, edges, role binding and visit limit):
+      phases          the author node (`lrtx.runner author`)
+      inspect_phases  the inspector node (`lrtx.runner inspect`)
+      reinspect       after a failed cycle, a valid never-inspected baseline goes back to the inspector without
+                      re-running authorship (`lrtx.reinspect`, LRTX-T018); otherwise the existing route target.
+    Command nodes expose no response context, so the unchanged gates read the runner's persisted reply instead of
+    stdin_source. Without `structured` the graph is byte-identical (frozen compatibility fixtures)."""
+    import re
+
+    def swap(dot: str, node: str, label: str, cmd: str, timeout_s: int) -> str:
+        rx = re.compile(rf'^  {node} \[label=.*$', re.M)
+        m0 = rx.search(dot)
+        if not m0:
+            raise ValueError(f"STRUCTURED_NODE_MISSING:{node}")
+        new = (f'  {node} [shape=parallelogram, label="{label}", max_visits={MAX_VISITS}, timeout="{timeout_s}s", '
+               f'script="{_q(cmd)}"]')
+        return dot[:m0.start()] + new + dot[m0.end():]
+
+    def pipe(dot: str, gate_node: str, src_node: str, label: str, reply: str, phase: str, step: str) -> str:
+        rx = re.compile(rf'^  {gate_node} \[shape=parallelogram, label="{re.escape(label)}", '
+                        rf'stdin_source="context.response.{src_node}", script="(.*)"\]$', re.M)
+        m = rx.search(dot)
+        if not m:
+            raise ValueError(f"STRUCTURED_GATE_MISSING:{gate_node}")
+        cmd = f"cat {reply} | {gate_cmd(phase, step)}"
+        return dot[:m.start()] + f'  {gate_node} [shape=parallelogram, label="{label}", script="{_q(cmd)}"]' + \
+            dot[m.end():]
+
+    run = f"{_env()} {sys.executable} -m forge_factory.lrtx.runner"
+    t = structured.get("timeout_s", 3600)
+    for phase in structured.get("phases", []):
+        n = phase[-1]
+        dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
+                   f"{run} author --phase {phase} --workspace . --model {structured['model']}", t)
+        dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
+                   f".forge-run/lrtx/{phase}/reply.json", phase, "author")
+    for phase in structured.get("inspect_phases", []):
+        n = phase[-1]
+        dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
+                   f"{run} inspect --phase {phase} --workspace . --model {structured['model']}", t)
+        dot = pipe(dot, f"swe{n}_inspect_gate", f"swe{n}_inspector", f"{phase} inspection gate",
+                   f".forge-run/lrtx/{phase}/inspect-reply.json", phase, "inspect")
+    if structured.get("reinspect"):
+        for phase in PHASES:
+            n = phase[-1]
+            rt, ri, ins = f"swe{n}_route", f"swe{n}_reinspect", f"swe{n}_inspector"
+            m = re.search(rf'^  {rt} -> (\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
+            if not m:
+                raise ValueError(f"STRUCTURED_ROUTE_MISSING:{rt}")
+            target = m.group(1)
+            chk = f"{_env()} {sys.executable} -m forge_factory.lrtx.reinspect --phase {phase} --workspace ."
+            dot = dot[:m.start()] + "\n".join([
+                f'  {rt} -> {ri} [condition="outcome=succeeded"]',
+                f'  {ri} [shape=parallelogram, label="{phase} direct re-inspection check (valid, never-inspected '
+                f'baseline)", max_visits={MAX_VISITS}, script="{_q(chk)}"]',
+                f'  {ri} -> {ins} [condition="outcome=succeeded"]', f"  {ri} -> {target}"]) + dot[m.end():]
+    return dot
 
 
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,

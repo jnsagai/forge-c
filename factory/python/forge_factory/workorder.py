@@ -417,6 +417,21 @@ def suspension(provider: str, path: Path | None = None) -> dict | None:
     return None
 
 
+def local_profile_structured(local: dict | None, manifest: dict, model: str) -> dict | None:
+    """Feature 010: the structured-author phases the selected local profile defines for this layer (None without a
+    profile, which keeps the existing graph unchanged)."""
+    if not local:
+        return None
+    from .lrtx.profile import load
+
+    st = load(local["id"]).get("structured") or {}
+    layer = manifest.get("layer", "LL+HAL")
+    out = {"phases": (st.get("phases_by_layer") or {}).get(layer) or [],
+           "inspect_phases": (st.get("inspect_phases_by_layer") or {}).get(layer) or [],
+           "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600)}
+    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
@@ -476,7 +491,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
-                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"))
+                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
+                         structured=local_profile_structured(local, manifest, model))
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
 

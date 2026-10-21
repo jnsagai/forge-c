@@ -58,7 +58,7 @@ def services(data_root: str, uid: int | None = None) -> list[dict]:
                 continue
             cmd = (p / "cmdline").read_bytes().split(b"\0")
             text = " ".join(c.decode(errors="replace") for c in cmd if c)
-            forge = "forge_factory" in text or data_root in text
+            forge = ("forge_factory" in text or data_root in text) and "forge-c-lrtx" not in text
             if not forge or not any(m in text for m in SERVICE_MARKERS) or "lrtx.hostsnap" in text \
                     or text.startswith(("/bin/bash", "/bin/sh")):
                 continue

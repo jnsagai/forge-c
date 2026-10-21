@@ -122,3 +122,34 @@ def test_implausible_gpu_power_is_not_energy_data(monkeypatch):
     assert g["power_w"] is None and g["power_status"].startswith("UNKNOWN")
     R.stdout = "6696, 8188, 40, 54.2, 115.00, 60\n"
     assert la._nvidia()["power_w"] == 54.2
+
+
+def test_periodic_samples_feed_gpu_energy_with_stated_coverage(tmp_path, monkeypatch):
+    import time
+
+    monkeypatch.setattr(la, "resources", lambda url=None: {"gpu": {"status": "OK", "power_w": 50.0}, "host": {}})
+    monkeypatch.setenv("FORGE_GATEWAY_SAMPLE_S", "0.05")
+    meter = tmp_path / "u.jsonl"
+    with TestClient(gw.create_app("http://up", meter, transport=httpx.MockTransport(_upstream),
+                                  admission=la.Admission(1, 2, 10))):
+        time.sleep(0.4)
+    samples = [json.loads(x) for x in meter.read_text().splitlines() if '"sample"' in x]
+    assert len(samples) >= 3 and samples[0]["sample"]["gpu"]["power_w"] == 50.0
+
+
+def test_single_chunk_answer_has_no_prefill_figure(tmp_path, monkeypatch):
+    monkeypatch.setattr(la, "loaded", lambda url, m: True)
+    monkeypatch.setattr(la, "resources", lambda url=None: {})
+
+    def one_chunk(request):
+        line = {"choices": [{"delta": {"tool_calls": [{"index": 0, "function": {"name": "f", "arguments": "{}"}}]},
+                             "finish_reason": "tool_calls"}], "usage": {"prompt_tokens": 9, "completion_tokens": 40}}
+        return httpx.Response(200, text="data: " + json.dumps(line) + "\n\ndata: [DONE]\n\n",
+                              headers={"content-type": "text/event-stream"})
+    meter = tmp_path / "u.jsonl"
+    c = TestClient(gw.create_app("http://up", meter, transport=httpx.MockTransport(one_chunk),
+                                 admission=la.Admission(1, 2, 10)))
+    c.post("/v1/chat/completions", json={"model": "m", "stream": True, "messages": []})
+    loc = json.loads(meter.read_text().splitlines()[0])["local"]
+    assert loc["prefill_ms"].startswith("UNKNOWN") and isinstance(loc["first_delta_ms"], float)
+    assert "prefill_tokens_per_s" not in loc

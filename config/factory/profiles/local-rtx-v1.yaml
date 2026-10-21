@@ -25,10 +25,17 @@ runtime:  # existing Flash Attention + q8_0 KV settings retained (spec, initial 
     OLLAMA_CONTEXT_LENGTH: "24576"
     OLLAMA_NOPRUNE: "1"   # the shared model store is read-only for this profile
   timeout_scale: 4        # bounded safeguard measured in the QWEN-TRIAL GPU runs; recalibrate only from measurements
+structured:               # ADR-0014: phases whose author / inspector run as structured tasks (per layer); others keep agents
+  phases_by_layer: {LL: [SWE.1, SWE.2], HAL: [], LL+HAL: []}
+  inspect_phases_by_layer: {LL: [SWE.1, SWE.2], HAL: [], LL+HAL: []}
+  reinspect_direct: true  # LRTX-T018: a valid, never-inspected baseline returns to the inspector, not the author
+  timeout_s: 3600         # per visit, before timeout_scale
 admission:                # LRTX-FR-006: one inference request at a time, bounded and observable waiting
   max_inflight: 1
   max_queue: 8
   max_wait_s: 1800
+measurement:              # LRTX-FR-007: periodic GPU/host samples by the admission gateway (energy integration)
+  sample_s: 10
 deployment:
   root_env: FORGE_LRTX_ROOT
   default_root: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx
