@@ -291,8 +291,8 @@ def test_fabro_itself_accepts_every_profile_graph(tmp_path, layer, periph):
 
     from forge_factory.workflow.builder import build
 
-    st = {"phases": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] if layer == "LL" else [],
-          "inspect_phases": ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] if layer == "LL" else [],
+    six = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
+    st = {"phases": six if layer == "LL" else [], "inspect_phases": six if layer == "LL" else [],
           "reinspect": True, "model": "m"}
     g, _ = build("WO-X", layer=layer, trace=True, peripheral=periph, structured=st, isolation=layer == "HAL")
     (tmp_path / "workflow.fabro").write_text(g)
@@ -300,3 +300,12 @@ def test_fabro_itself_accepts_every_profile_graph(tmp_path, layer, periph):
     out = subprocess.run([fab, "validate", str(tmp_path / "workflow.fabro")], capture_output=True, text=True,
                          env={**os.environ, "HOME": str(tmp_path), "FABRO_NO_UPGRADE_CHECK": "1"}, timeout=120)
     assert "Validation: OK" in out.stdout + out.stderr, (out.stdout + out.stderr)[-800:]
+
+
+def test_direct_reinspection_output_differs_per_check_without_digits(ws1, capsys):  # noqa: F811
+    """lrtx6 (2026-10-21): Fabro's failure-cycle breaker ended the run on the third identical reinspect output."""
+    outs = []
+    for _ in range(3):
+        reinspect.main(["--phase", "SWE.1", "--workspace", str(ws1)])
+        outs.append(re.sub(r"\d+", "<n>", capsys.readouterr().out))
+    assert len(set(outs)) == 3, outs

@@ -266,6 +266,12 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] duplicate key")
         keys.add(k)
         st = r["statement"]
+        if g is not None and (STARTUP.match(st) or re.search(r"\bafter (?:a )?reset\b|\breset (?:value|state)\b", st,
+                                                             re.I)):
+            # lrtx6 (2026-10-21): a reset-state requirement with effects stayed in a register task over 3 repairs
+            out.append(f"[{k}] is a reset/startup requirement: those belong to the cross-cutting task - remove "
+                       f"requirement [{k}] from this task")
+            continue
         for f in check_statement(Requirement(k, st, 0), {sysname}).findings:
             code = f.split(":", 1)[1] if ":" in f else f
             if code.startswith("EARS_SYSTEM_NAME_HINT"):
@@ -323,6 +329,13 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                 if (x["field"].split(".")[-1]) not in g["fields"]]
     elif doc["not_covered"]:
         out.append("not_covered must be empty for the cross-cutting task")
+    if g is None:  # lrtx6 (2026-10-21): the cross-cutting task wrote status-flag queries that a register task covers
+        for r in doc["requirements"]:
+            regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
+                           if f[0] in idx} - {e["register"] for e in r["effects"]})
+            if regs and not STARTUP.match(r["statement"]) and not r["effects"]:
+                out.append(f"[{r['key']}] is a requirement on {', '.join(regs)}, which its register task covers - remove "
+                           f"requirement [{r['key']}] from the cross-cutting task")
     return out
 
 

@@ -192,7 +192,7 @@ def test_profile_enables_structured_swe1_for_ll_only():
 
     local = {"id": "local-rtx-v1"}
     ll = local_profile_structured(local, {"layer": "LL"}, "m")
-    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5"] and ll["reinspect"]
+    assert ll["phases"] == ll["inspect_phases"] == ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"] and ll["reinspect"]
     hal = local_profile_structured(local, {"layer": "HAL"}, "m")
     assert hal["phases"] == [] and hal["inspect_phases"] == [] and hal["reinspect"] is True
     assert local_profile_structured(None, {"layer": "LL"}, "m") is None
@@ -245,7 +245,7 @@ def test_register_task_may_not_carry_cross_cutting_requirements(ws, monkeypatch)
     monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_RLR": rlr}, calls))
     assert swe1.visit(ws, "m")["status"] == "PASS"
     second = [p for p in calls if p["task"] == "requirements:IWDG_RLR"][1]
-    assert any("names no field of this task" in f for f in second["findings"])
+    assert any("belong to the cross-cutting task" in f for f in second["findings"])
 
 
 def test_duplicates_are_repaired_where_they_belong_within_the_visit(ws, monkeypatch):
@@ -303,3 +303,29 @@ def test_repairs_get_a_bounded_extension_only_while_the_answer_improves(ws, monk
     assert swe1.visit(ws, "m")["status"] == "FAILED"
     # no improvement: no extension, and the in-visit repair round stops after one round (3 + 3 calls)
     assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 6
+
+
+def test_reset_state_requirements_are_moved_out_of_register_tasks(ws):
+    """lrtx6 (2026-10-21): SR_2 kept a reset-state requirement with effects over three repairs."""
+    from forge_factory.assurance.hardware import index
+
+    inv = swe1.inventory(ws)
+    g = [g for g in swe1.groups(inv) if g["id"] == "IWDG_SR_2"][0]
+    doc = json.loads(json.dumps(ANSWERS["requirements:IWDG_SR_2"]))
+    doc["requirements"].append(_req("reset_state", f"The {SYS} shall leave IWDG_SR.PVU at its reset value 0 after reset.",
+                                    2991, [_eff("RESET_STATE", "IWDG_SR", "PVU", "no_write")], by="target_robot_test"))
+    found = swe1.validate_group(ws, doc, g, SYS, index(ws / "inputs/sections/RM0486"))
+    assert found == ["[reset_state] is a reset/startup requirement: those belong to the cross-cutting task - remove "
+                     "requirement [reset_state] from this task"]
+
+
+def test_cross_cutting_task_may_not_carry_register_requirements(ws):
+    """lrtx6 (2026-10-21): the cross-cutting task wrote IWDG_SR flag queries that the IWDG_SR task covers."""
+    from forge_factory.assurance.hardware import index
+
+    doc = json.loads(json.dumps(ANSWERS["requirements:crosscutting"]))
+    doc["requirements"].append(_req("onf_read", f"When LL_IWDG_IsActive is called with IWDG_SR.ONF set, the {SYS} "
+                                    "shall return 1U.", 2991))
+    found = swe1.validate_group(ws, doc, None, SYS, index(ws / "inputs/sections/RM0486"))
+    assert "[onf_read] is a requirement on IWDG_SR, which its register task covers - remove requirement [onf_read] " \
+           "from the cross-cutting task" in found

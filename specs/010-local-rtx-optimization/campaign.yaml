@@ -1,0 +1,19 @@
+schema: forge-c/lrtx-campaign/1
+tag: c1
+# LRTX-T024: frozen before running. Any change is refused for an existing output directory (campaign.sha256).
+model: qwen3-coder:30b
+profile: local-rtx-v1
+target: ">= 27/30 READY_FOR_OFFLINE_REVIEW, remaining failures honestly packaged BLOCKED (spec acceptance 5, proposed)"
+stochastic: >-
+  Every case is repeated with identical inputs, factory revision and profile; differences between repeats come from
+  the model's sampling (no seed is set by the factory). The repeats are the stochastic cases; there is no other
+  variation.
+cases:
+  - {id: IWDG-LL, example: examples/0009a-iwdg-ll, repeat: 10}
+  - {id: RCC-LL, example: examples/0002a-arm_55_rcc_ll, repeat: 10}
+  # HAL work orders build on a verified LL work order (ADR-0009). The local root has none of its own, so they use a
+  # hash-verified read-only copy of the Codex/Claude rc1 LL work order; that dependency is part of the case.
+  - {id: IWDG-HAL, example: examples/0009b-iwdg-hal, repeat: 5, provided_from: WO-0009A-STM32N6-IWDG-LL-rc1,
+     import_from_deployment: true}
+  - {id: RCC-HAL, example: examples/0002b-arm_55_rcc_hal, repeat: 5, provided_from: WO-0002A-STM32N6-RCC-LL-rc1,
+     import_from_deployment: true}

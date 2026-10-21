@@ -15,7 +15,7 @@ import json
 import sys
 from pathlib import Path
 
-PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "SWE.5": "swe5"}
+PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "SWE.5": "swe5", "SWE.6": "swe6"}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     ws = a.workspace.resolve()
     if a.step in ("author", "code", "tests") and a.phase not in PHASES or \
-            (a.step == "code" and a.phase != "SWE.3") or (a.step == "tests" and a.phase not in ("SWE.4", "SWE.5")):
+            (a.step == "code" and a.phase != "SWE.3") or (a.step == "tests" and a.phase not in ("SWE.4", "SWE.5", "SWE.6")):
         ap.error(f"no structured author for {a.phase}")
     from importlib import import_module
 

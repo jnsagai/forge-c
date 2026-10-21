@@ -24,9 +24,10 @@ from ..common import REPO_ROOT, canonical_json, sha256_bytes, utc_now
 
 PACKET_SCHEMA = "forge-c/lrtx-packet/1"
 PROMPT_VERSION = "lrtx-prompts-1"
-# conservative serialized-size estimate (technical English, register tables, JSON): 1 token per 3 characters. The
-# backend's reported prompt_tokens are recorded next to it so the ratio is measured, never assumed.
-CHARS_PER_TOKEN = 3.0
+# conservative serialized-size estimate: measured 2.95-3.95 characters per qwen3-coder token over 39 packets of
+# local run lrtx4 (2026-10-21; inspection packets with register tables are the densest). 2.75 keeps the estimate
+# above the reported prompt_tokens, which are recorded next to it for every call.
+CHARS_PER_TOKEN = 2.75
 CONTEXT_TOKENS = int(os.environ.get("FORGE_LRTX_CONTEXT_TOKENS", "24576"))
 DEFAULT_OUTPUT_RESERVE = 4096
 

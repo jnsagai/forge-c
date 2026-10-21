@@ -52,7 +52,12 @@ def main(argv: list[str] | None = None) -> int:
 
     _state(a.workspace.resolve(), a.phase, {"step": "reinspect_direct", "result": "INSPECT" if ok
                                                              else "AUTHOR", "reason": why})
-    print(json.dumps({"reinspect_direct": ok, "reason": why}))
+    log = a.workspace.resolve() / ".forge-run/gates/gate-log.jsonl"
+    n = sum(1 for x in log.read_text().splitlines() if '"reinspect_direct"' in x and f'"{a.phase}"' in x)
+    # distinct, digit-free text per execution: Fabro's failure-cycle breaker hashes node|output (ADR-0005 #5) and
+    # ended run lrtx6 on the third identical "no baseline" exit (2026-10-21)
+    print(json.dumps({"reinspect_direct": ok, "reason": why,
+                      "check": "".join(chr(ord("a") + int(d)) for d in str(n))}))
     return 0 if ok else 1
 
 

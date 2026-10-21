@@ -57,3 +57,49 @@ available as `context.response.<node>` ("stdin_source ... was not found in workf
 
 Remove the phase from `structured.phases_by_layer` (or run without `--profile`). The agent author returns with the
 same node id and edges.
+
+## Addendum 2026-10-21: all six phases (LL), time boxes, inspection, accounting
+
+Implemented since the first version, each through a CRE CHANGE promotion, with tests on scripted answers against
+the real tools and the unchanged gates:
+
+- **SWE.3:**
+  - One code task per SWE.2 interface function (software unit). It is validated against the signature, the
+    generated defines and the register block, the trace tags of its own unit, and compilation in the generated
+    header.
+  - The units are assembled before the generator's marker, from a pristine copy of the generated header.
+  - Compile (both profiles), swe3_all and cppcheck run through the role-granted operations, journaled to
+    `evidence/tool-results.jsonl` exactly like agent calls (`lrtx/tools.py`).
+  - Unit specifications and the detailed design are rendered from the validated tasks and the measured tool
+    results.
+- **SWE.4–SWE.6:**
+  - Test tasks take their oracle from the requirements and the register contract and never see the implementation
+    (unit tests per UT id; Renode target and host integration programs; target scenarios per requirement group with
+    run_robot's observation rule).
+  - A failing test is triaged per ADR-0008: a corrected test is declared with report_defect kind TEST, a correct test
+    files a CODE defect upstream. Never silently bent.
+  - The reports are rendered from the tool results.
+- **Time boxes:** Fabro 0.362 ends a command node with no activity for 1800 s, and stdout does not count (two probes,
+  2026-10-21). A visit therefore stops before a model call that could cross `visit_time_s` (1200 s). A separate
+  continuation node with its own visit limit resumes the same visit (call budget and findings kept); the phase's
+  rework budget is never consumed by a time box.
+- **Inspection:**
+  - One task per required checklist item on the frozen baseline (no author context). Verdicts are bound to the
+    baseline hash and recorded through the unchanged `check_inspection` operation.
+  - Findings that the evidence or the owner's recorded decision refutes return to the inspector: a PENDING
+    allocation judged as a failure, a missing verification criterion that the document has, an unknown SWR. Other
+    findings are kept as written.
+  - A valid, never-inspected baseline goes back to the inspector without re-running authorship.
+- **Accounting:**
+  - A visit's model calls share the role's max_turns.
+  - In-visit repair rounds continue only while the number of findings falls.
+  - For profile runs only, a structured visit that failed before assembly adds its deterministic task issues to the
+    author rejection record (`LRTX_TASK_INVALID:`). STUCK and the progress rule then compare real progress; without
+    a profile the rejection record is unchanged (tests and frozen fixtures).
+- **Graph safety:** the node swap replaces whole statements (quote-aware parser), and every profile-graph variant is
+  checked with `fabro validate`.
+- **Failure-cycle breaker:** check nodes whose normal path is a non-zero exit (continuation and direct re-inspection
+  checks) print a digit-free per-phase counter, because Fabro stops a run after three identical failure signatures and
+  normalises digits (ADR-0005 #5; run lrtx6 ended this way).
+
+HAL work orders keep the agent nodes; structured HAL tasks are not implemented.
