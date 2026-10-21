@@ -1,0 +1,58 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 independent watchdog (IWDG) low-level (LL) driver",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 59 (IWDG) + memory map p.179"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.59 IWDG register interface + memory map p.179 (IWDG secure base 0x56004800)",
+  "safety_allocation": "QM: owner scope SC-IWDG-QM-2026-10-21 (local-profile experiment, ASPICE evidence only)"
+ },
+ "scope": [
+  "LL (header-only, static inline): read/write IWDG registers through the generated register-block array ll_iwdg_regs (extern; placed at the IWDG base by the linker, defined in RAM by host tests), indexed by the generated LL_IWDG_<REG>_OFFSET / 4U",
+  "Start the watchdog and refresh the counter by writing the documented keys to IWDG_KR; enable and disable write access to IWDG_PR, IWDG_RLR and IWDG_WINR with the documented keys",
+  "Set the prescaler (IWDG_PR.PR) and the reload value (IWDG_RLR.RL); query the update flags in IWDG_SR (PVU, RVU) and the watchdog enable status (ONF) (no waiting: the caller bounds its polling)",
+  "Out of scope: HAL API, window option (IWDG_WINR), early wake-up interrupt (IWDG_EWCR, IWDG_ICR), hardware watchdog option bytes, low-power freeze, debug freeze"
+ ],
+ "system_names": [
+  "IWDG LL driver",
+  "IWDG driver",
+  "STM32N6 IWDG LL driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0009-iwdg-st/inputs/RM0486-rev4-ch59-iwdg.md",
+   "role": "reference_manual_iwdg_chapter"
+  },
+  {
+   "path": "../0009-iwdg-st/inputs/RM0486-rev4-memory-map-excerpt-iwdg.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0009-iwdg-st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "LL",
+ "layer_note": "Feature 010 experiment (owner 2026-10-21): the 0009a IWDG LL work order under a QM scope, to measure the local profile on ASPICE-only evidence. Not part of the LRTX-T024 campaign and not comparable with the ASIL B IWDG line; peripheral profile config/factory/peripherals/iwdg.yaml",
+ "peripheral": "iwdg"
+}

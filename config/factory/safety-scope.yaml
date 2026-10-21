@@ -64,3 +64,31 @@ decisions:
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-20'
         decision: OD-2026-10-20-08  # v1.2 (HAL v2: FND-07/FND-08 closed); supersedes v1.1 (OD-2026-10-20-06, file kept)
+  # OD-2026-10-21-01: QM experiment of feature 010. The owner asked whether an ASPICE-only (QM) scope gives the local
+  # profile better chances and answered the proposal with "define the scope and go ahead". Entry drafted by Claude Code
+  # at that instruction for the owner's review. It applies ONLY to the separate example 0009q-iwdg-ll-qm; the ASIL B
+  # IWDG scope above, its examples and the LRTX-T024 campaign are unchanged (LRTX-FR-019).
+  - scope_id: SC-IWDG-QM-2026-10-21
+    examples: [0009q-iwdg-ll-qm]
+    target_asil: QM
+    product_asil_source: >-
+      approved:owner-decision-2026-10-21 by Jefferson Nascimento - QM development scope for the local-profile
+      experiment 0009q-iwdg-ll-qm (ASPICE evidence only, no ISO 26262 safety claims; owner instruction "define the scope
+      and go ahead", OD-2026-10-21-01)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-21'
+    hsi_hash: null
+    allocation_review_ref: null
+    na:
+      software_safety_analysis:
+        rationale: >-
+          QM development scope set by the owner for this experiment: no safety requirements are allocated to the IWDG
+          LL software, so no software safety analysis is performed. The work order makes no safety claim.
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-21'
+      tool_assurance_assessment:
+        rationale: >-
+          QM development scope set by the owner for this experiment: no ISO 26262 tool confidence is claimed for the
+          tools that produced or verified this work order, so no tool assurance assessment is performed.
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-21'
