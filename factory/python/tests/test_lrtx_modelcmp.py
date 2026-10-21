@@ -3,7 +3,8 @@ import json
 
 from forge_factory.lrtx import modelcmp
 from forge_factory.lrtx import structured as S
-from test_lrtx_swe1 import ANSWERS, pytestmark, ws  # noqa: F401 - shared fixture, skip marker and scripted answers
+from test_lrtx_swe1 import ANSWERS, _scripted, pytestmark, ws  # noqa: F401 - shared fixture, marker, scripted answers
+from test_lrtx_swe2 import DESIGN, IFACE, ws1  # noqa: F401 - SWE.1 frozen by the unchanged gate
 
 
 def _by_model(calls):
@@ -36,3 +37,29 @@ def test_attempts_never_write_the_start_workspace_and_compare_per_task(ws, monke
     est = modelcmp.mixed_estimate(by, "small", "large")
     assert est["basis"].startswith("DERIVED") and est["plan"]["requirements:IWDG_KR"] == "large"
     assert est["plan"]["requirements:IWDG_PR"] == "small" and est["switch_cost_ms"] == "UNKNOWN"
+
+
+def test_fresh_copy_removes_only_the_measured_phase(tmp_path):
+    src = tmp_path / "src"
+    for rel in ("workproducts/SWE.1/a.md", "workproducts/SWE.2/b.md", ".forge-run/lrtx/SWE.1/v.jsonl",
+                ".forge-run/lrtx/SWE.2/v.jsonl", "inspection/SWE.2/INS-SWE.2-001.json",
+                "configuration/baselines/SWE.2/BL-SWE.2-001.json"):
+        (src / rel).parent.mkdir(parents=True, exist_ok=True)
+        (src / rel).write_text("x")
+    (src / ".forge-run/gates").mkdir(parents=True)
+    (src / ".forge-run/gates/gate-log.jsonl").write_text('{"phase": "SWE.1"}\n{"phase": "SWE.2"}\n')
+    dst = modelcmp._fresh_copy(src, tmp_path / "dst", "SWE.2")
+    left = sorted(str(p.relative_to(dst)) for p in dst.rglob("*") if p.is_file())
+    assert left == [".forge-run/gates/gate-log.jsonl", ".forge-run/lrtx/SWE.1/v.jsonl", "workproducts/SWE.1/a.md"]
+    assert (dst / ".forge-run/gates/gate-log.jsonl").read_text() == '{"phase": "SWE.1"}\n'
+    assert (src / "workproducts/SWE.2/b.md").is_file()  # the start is never written
+
+
+def test_swe2_attempt_measures_the_author_on_a_frozen_swe1_baseline(ws1, monkeypatch, tmp_path):  # noqa: F811
+    before = sorted(str(p.relative_to(ws1)) for p in ws1.rglob("*"))
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted({"interfaces": IFACE, "design": DESIGN}, calls))
+    row = modelcmp.attempt(ws1, tmp_path / "cmp", "m", 1, tmp_path / "no-meter.jsonl", 35, "SWE.2")
+    assert row["phase"] == "SWE.2" and row["visit"] == "PASS" and str(row["gate"]).startswith("FROZEN"), row
+    assert sorted(row["tasks"]) == ["design", "interfaces"] and row["tasks"]["interfaces"]["first_call_valid"]
+    assert sorted(str(p.relative_to(ws1)) for p in ws1.rglob("*")) == before

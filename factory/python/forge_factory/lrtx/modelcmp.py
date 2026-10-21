@@ -1,11 +1,14 @@
-"""LRTX-T023 (LRTX-FR-016): compare a smaller model with the 30B model per structured SWE.1 task.
+"""LRTX-T023 (LRTX-FR-016): compare a smaller model with the 30B model per structured author task.
 
     python -m forge_factory.lrtx.modelcmp --workspace <frozen start ws> --model qwen3:8b --model qwen3-coder:30b \
-        --repeat 3 --out <report.json>
+        --repeat 3 --out <report.json> [--phase SWE.2]
+
+SWE.1 (default) or SWE.2. For SWE.2 the start workspace needs a frozen, inspected SWE.1 baseline, e.g. a copy of a
+READY work order; the SWE.2 author is then measured on its own, independently of any local SWE.1 inspection (T016).
 
 Runs inside the profile namespace. Each attempt:
-1. copies one frozen start workspace (inputs prepared, no SWE.1 work products) and never writes the original;
-2. runs the real structured SWE.1 visit with the role's call budget, i.e. the same tasks, validators, localized
+1. copies one frozen start workspace and removes the phase's authorship from the copy; the original is never written;
+2. runs the real structured visit of the phase with the role's call budget, i.e. the same tasks, validators, localized
    repair and consistency checks as a work order;
 3. freezes the result through the unchanged author gate.
 
@@ -30,18 +33,19 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 
 
-def _fresh_copy(src: Path, dst: Path) -> Path:
-    """Copy of the start workspace without earlier SWE.1 authorship (checkpoints, work products, gate records)."""
+def _fresh_copy(src: Path, dst: Path, phase: str = "SWE.1") -> Path:
+    """Copy of the start workspace without earlier authorship of `phase` (checkpoints, work products, gate records)."""
     if dst.exists():
         shutil.rmtree(dst)
     shutil.copytree(src, dst, symlinks=True, ignore=shutil.ignore_patterns("build"))
-    for rel in (".forge-run/lrtx", "workproducts/SWE.1", "inspection/SWE.1", "configuration/baselines/SWE.1"):
+    for rel in (f".forge-run/lrtx/{phase}", f".forge-run/lrtx/{phase}-inspect", f"workproducts/{phase}",
+                f"inspection/{phase}", f"configuration/baselines/{phase}"):
         p = dst / rel
         if p.is_dir():
             shutil.rmtree(p)
     log = dst / ".forge-run/gates/gate-log.jsonl"
     if log.is_file():
-        log.write_text("".join(x + "\n" for x in log.read_text().splitlines() if '"SWE.1"' not in x))
+        log.write_text("".join(x + "\n" for x in log.read_text().splitlines() if f'"{phase}"' not in x))
     return dst
 
 
@@ -56,18 +60,18 @@ def _loads(meter: Path, t0: str, t1: str) -> list[dict]:
     return rows
 
 
-def attempt(start: Path, scratch: Path, model: str, n: int, meter: Path, max_calls: int) -> dict:
-    from . import swe1
+def attempt(start: Path, scratch: Path, model: str, n: int, meter: Path, max_calls: int, phase: str = "SWE.1") -> dict:
+    from . import swe1, swe2
     from .seeded import _refreeze
 
-    ws = _fresh_copy(start, scratch / f"{model.replace(':', '_')}-{n:02d}" / "workspace")
+    ws = _fresh_copy(start, scratch / f"{model.replace(':', '_')}-{n:02d}" / "workspace", phase)
     t0, w0 = utc_now(), time.monotonic()
-    rep = swe1.visit(ws, model, max_calls=max_calls)
+    rep = {"SWE.1": swe1, "SWE.2": swe2}[phase].visit(ws, model, max_calls=max_calls)
     wall = round(time.monotonic() - w0, 1)
-    vs = ws / ".forge-run/lrtx/SWE.1/visits.jsonl"
+    vs = ws / f".forge-run/lrtx/{phase}/visits.jsonl"
     vrec = json.loads(vs.read_text().splitlines()[-1]) if vs.is_file() else {}
     tasks: dict[str, dict] = {}
-    for ck in sorted((ws / ".forge-run/lrtx/SWE.1").glob("packets/*.json")):
+    for ck in sorted((ws / f".forge-run/lrtx/{phase}").glob("packets/*.json")):
         c = json.loads(ck.read_text())
         att = c.get("attempts") or []
         tasks[c["task"]] = {"status": c["status"], "calls": len(att), "first_call_valid": bool(att) and not att[0]
@@ -75,8 +79,8 @@ def attempt(start: Path, scratch: Path, model: str, n: int, meter: Path, max_cal
                                                                  for a in att),
                             "output_tokens": sum((a.get("usage") or {}).get("completion_tokens") or 0 for a in att),
                             "call_wall_ms": round(sum(a.get("wall_ms") or 0 for a in att), 1)}
-    gate = _refreeze(ws, "SWE.1") if rep["status"] == "PASS" else {"result": "NOT_RUN (visit FAILED)"}
-    return {"model": model, "n": n, "visit": rep["status"], "issues": (rep.get("issues") or [])[:10],
+    gate = _refreeze(ws, phase) if rep["status"] == "PASS" else {"result": "NOT_RUN (visit FAILED)"}
+    return {"model": model, "n": n, "phase": phase, "visit": rep["status"], "issues": (rep.get("issues") or [])[:10],
             "calls": vrec.get("calls"), "wall_s": wall, "gate": gate.get("result"), "tasks": tasks,
             "model_loads": _loads(meter, t0, utc_now()), "workspace": str(ws)}
 
@@ -134,6 +138,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", action="append", required=True)
     ap.add_argument("--repeat", type=int, default=3)
     ap.add_argument("--max-calls", type=int, default=35)
+    ap.add_argument("--phase", choices=("SWE.1", "SWE.2"), default="SWE.1")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
     meter = Path(os.environ.get("FORGE_STATE_DIR", "")) / "llm-gateway/usage.jsonl"
@@ -141,10 +146,10 @@ def main(argv: list[str] | None = None) -> int:
     rows = []
     for n in range(1, a.repeat + 1):  # interleaved, so load/switch costs and thermal drift hit every model
         for m in a.model:
-            rows.append(attempt(a.workspace.resolve(), scratch, m, n, meter, a.max_calls))
+            rows.append(attempt(a.workspace.resolve(), scratch, m, n, meter, a.max_calls, a.phase))
             by = summarise(rows)
             rep = {"schema": "forge-c/lrtx-modelcmp/1", "generated_at": utc_now(), "start_workspace":
-                   str(a.workspace), "models": a.model, "repeat": a.repeat, "by_model": by,
+                   str(a.workspace), "phase": a.phase, "models": a.model, "repeat": a.repeat, "by_model": by,
                    "mixed_estimate": mixed_estimate(by, a.model[0], a.model[-1]) if len(a.model) > 1 else None,
                    "rows": rows, "note": "Authors only; inspector qualification is a separate decision. Pilot "
                                          "measurement on one work order, not a model qualification."}
