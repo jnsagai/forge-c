@@ -183,16 +183,24 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
-    verdicts, issues = {}, []
+    verdicts, issues, contested = {}, [], {}
     for it in items:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
         rec = V.run_task(ws, phase, task, lambda fi, pr, it=it: item_packet(ws, phase, it, bl, srcs, model, fi, pr),
                          lambda d, it=it: validate_verdict(d, paths, ws, phase, it["id"]), budget)
-        if rec["status"] != "VALID":
-            issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
-            continue
         d = rec["doc"]
+        if rec["status"] != "VALID":
+            # lrtx8 (2026-10-21): an inspector that keeps a finding the evidence refutes after its repairs. The verdict
+            # is recorded as given with ALL its findings (LRTX-FR-015: never waived); the refutations are recorded
+            # beside it as contested, measured false-rejection candidates. Any other defect leaves the item missing.
+            conf = fact_conflicts(ws, phase, it["id"], d["findings"]) if isinstance(d, dict) and \
+                isinstance(d.get("findings"), list) else []
+            if not (conf and set(rec["errors"]) <= set(conf) and not S.validate(d, VERDICT_SCHEMA)
+                    and not validate_verdict(d, paths)):
+                issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
+                continue
+            contested[it["id"]] = conf
         verdicts[it["id"]] = {"verdict": d["verdict"], "findings": [f[:200] for f in d["findings"]],
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
                                                 *d["evidence_checked"][:8]]}
@@ -208,9 +216,12 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
                       budget)
     S.record(ws, f"{phase}/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
-                                                     "result": res, "items": sorted(verdicts)})
+                                                     "result": res, "items": sorted(verdicts),
+                                                     "contested_findings": contested})
     status = "PASS" if res["status"] == "PASS" else "REWORK"
-    return _reply(ws, phase, status, list(res.get("issues") or []), budget, list(res.get("artifact_refs") or []))
+    notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
+    return _reply(ws, phase, status, list(res.get("issues") or []) + notes, budget,
+                  list(res.get("artifact_refs") or []))
 
 
 def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | None = None,

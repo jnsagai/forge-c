@@ -346,3 +346,37 @@ def test_every_schema_valid_verdict_fits_the_check_inspection_contract():
                  verdicts={"SWE1-01": {"verdict": "FAIL", "findings": ten["findings"],
                                        "evidence_refs": ["configuration/baselines/SWE.1/BL-SWE.1-001.json",
                                                          *["x"] * 8]}})
+
+
+def test_a_persisting_refuted_finding_is_recorded_with_all_findings_and_marked_contested(ws1, monkeypatch):  # noqa: F811
+    """lrtx8 (2026-10-21): the inspector kept the recorded-gap finding through every repair; the visit recorded no
+    inspection and lost a rework cycle. The verdict is now recorded as given (findings preserved, LRTX-FR-015) and
+    the refutation is recorded beside it."""
+    gap = "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md."
+
+    def insp(p):
+        if p["task"].endswith("SWE1-01"):
+            return {"verdict": "FAIL", "findings": [gap], "evidence_checked": [swe1.REQS]}
+        return {"verdict": "PASS", "findings": [], "evidence_checked": [swe1.REQS]}
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted(Answers({}, insp), calls))
+    rep = review.visit(ws1, "SWE.1", "m")
+    assert rep["status"] == "REWORK"
+    assert any(i.startswith("LRTX_INSPECTOR_FINDING_CONTESTED:SWE1-01:") for i in rep["issues"])
+    ins = json.loads(sorted((ws1 / "inspection/SWE.1").glob("INS-*.json"))[-1].read_text())
+    assert ins["items"]["SWE1-01"]["verdict"] == "FAIL" and ins["items"]["SWE1-01"]["findings"] == [gap]
+    rec = json.loads((ws1 / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert list(rec["contested_findings"]) == ["SWE1-01"]
+    assert sum(1 for p in calls if p["task"].endswith("SWE1-01")) == 3  # first answer + 2 repairs, then recorded
+
+
+def test_an_item_with_other_defects_is_still_never_recorded(ws1, monkeypatch):  # noqa: F811
+    gap = "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md."
+
+    def insp(p):
+        if p["task"].endswith("SWE1-01"):  # contested AND an evidence path that is not in the packet
+            return {"verdict": "FAIL", "findings": [gap], "evidence_checked": ["somewhere/else.md"]}
+        return {"verdict": "PASS", "findings": [], "evidence_checked": [swe1.REQS]}
+    monkeypatch.setattr(S, "call", _scripted(Answers({}, insp), []))
+    rep = review.visit(ws1, "SWE.1", "m")
+    assert rep["status"] == "FAILED" and not list((ws1 / "inspection/SWE.1").glob("INS-*.json"))
