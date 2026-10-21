@@ -28,3 +28,12 @@ Result: 5/7 READY on the first pass; 2 factory defects found and fixed (CAPA-065
 | WO-0009B-STM32N6-IWDG-HAL-rc3 | BLOCKED STUCK at SWE.4 (24 min) | SWE.1-SWE.3 PASS; no UT:UNKNOWN_SPEC_REF (CAPA-066 effective for its symptom); factory defect CAPA-067: only the first @test of a Doxygen block was traced, so seven USPECs tagged by passing tests were reported UT:SPEC_NOT_VERIFIED |
 
 On a copy of the rc3 workspace the CAPA-067 candidate reduces the SWE.4 findings from 7 to 0. Next: rc4 after CAPA-067 is merged.
+
+## IWDG HAL rc4 after CAPA-067 (main c595a7e, 2026-10-21 08:14-08:52 UTC)
+
+WO-0009B-STM32N6-IWDG-HAL-rc4: **READY_FOR_OFFLINE_REVIEW, 0 gaps**; SWE.1-SWE.6 inspections PASS (one rework each in
+SWE.1 - register effects - and SWE.3 - diagram syntax/Doxygen); SWE.4 frozen on the first attempt with no
+UT:UNKNOWN_SPEC_REF (CAPA-066) and no UT:SPEC_NOT_VERIFIED. Its test_iwdg.c again documents several tests in one
+Doxygen block (9 tests, 1 multi-test block), the input that blocked rc3 before CAPA-067. Archive hash in
+WO-0009B-STM32N6-IWDG-HAL-rc4/. With rc1b (0008a), the campaign's seven work orders now each have a READY run;
+the rc4 package is an offline review candidate only, not a safety approval or release.
