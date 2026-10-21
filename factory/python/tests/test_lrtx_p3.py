@@ -309,3 +309,25 @@ def test_direct_reinspection_output_differs_per_check_without_digits(ws1, capsys
         reinspect.main(["--phase", "SWE.1", "--workspace", str(ws1)])
         outs.append(re.sub(r"\d+", "<n>", capsys.readouterr().out))
     assert len(set(outs)) == 3, outs
+
+
+def test_recorded_gaps_later_phase_evidence_and_present_startup_rules_are_re_judged(ws1):  # noqa: F811
+    """lrtx7 (2026-10-21): the Qwen inspector failed SWE1-01/03/04/05/06 for the owner's recorded NOT_PROVIDED inputs,
+    for missing tests/measurements and for 'no reset behaviour' although the document has a startup rule; the Claude
+    inspector passed the same items of rc1. A real defect is not refuted."""
+    gaps = ws1 / "traceability/upstream_gaps.md"
+    assert "NOT_PROVIDED" in gaps.read_text()
+    false = ["HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md.",
+             "SWR-001: Verification criteria not documented - the requirement states a pass criterion but no test file "
+             "or test procedure is provided.",
+             "SWR-011 states the driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the "
+             "checked sources that this constraint is explicitly measured or verified."]
+    for f in false:
+        assert review.fact_conflicts(ws1, "SWE.1", "SWE1-05", [f]), f
+    text = (ws1 / swe1.REQS).read_text()
+    if re.search(r"\*\*SWR-\d{3}\*\*\s+While no .*after reset", text):
+        nostart = "The software requirements do not specify failure handling, reset/startup behavior or safe states."
+        assert "specifies it" in review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [nostart])[0]
+    real = "SWR-001 requires the driver to set IWDG_SR.WVU, which is a read-only hardware status flag."
+    assert review.fact_conflicts(ws1, "SWE.1", "SWE1-02", [real]) == []
+    assert review.fact_conflicts(ws1, "SWE.2", "SWE2-01", false[:1]) == []  # SWE.1 rules only

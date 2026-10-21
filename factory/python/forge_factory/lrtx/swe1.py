@@ -298,6 +298,12 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                 continue
             if f"{reg}.{fld}" not in st and not (reg in st and fld in st):
                 out.append(f"[{k}] effect {e['case']}: the statement must name {reg}.{fld}")
+            acc = set(idx[reg]["fields"][fld].get("access") or [])
+            if op in ("write", "set", "clear") and acc and acc <= {"r", "rc_r"}:
+                # lrtx7 (2026-10-21): "shall set IWDG_SR.WVU" - a hardware status flag software can only read
+                out.append(f"[{k}] effect {e['case']}: {reg}.{fld} is read-only in RM0486 (access "
+                           f"{'/'.join(sorted(acc))}); software cannot {op} it - specify what the driver reads or "
+                           f"returns, or remove requirement [{k}]")
             if op == "write":
                 width = idx[reg]["fields"][fld]["msb"] - idx[reg]["fields"][fld]["lsb"] + 1
                 v = _value(e["value"])

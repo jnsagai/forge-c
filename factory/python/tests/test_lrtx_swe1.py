@@ -329,3 +329,19 @@ def test_cross_cutting_task_may_not_carry_register_requirements(ws):
     found = swe1.validate_group(ws, doc, None, SYS, index(ws / "inputs/sections/RM0486"))
     assert "[onf_read] is a requirement on IWDG_SR, which its register task covers - remove requirement [onf_read] " \
            "from the cross-cutting task" in found
+
+
+def test_effects_may_not_write_read_only_fields(ws):
+    """lrtx7 (2026-10-21): the model wrote 'shall set the IWDG_SR.WVU bit'; RM0486 marks IWDG_SR read-only."""
+    from forge_factory.assurance.hardware import index
+
+    inv = swe1.inventory(ws)
+    g = next(x for x in swe1.groups(inv) if x["id"] == "IWDG_SR_2")
+    doc = json.loads(json.dumps(ANSWERS["requirements:IWDG_SR_2"]))
+    doc["requirements"].append(_req("wvu_set", f"When a window update starts, the {SYS} shall set IWDG_SR.WVU.", 2991,
+                                    [_eff("WVU", "IWDG_SR", "WVU", "set")]))
+    doc["not_covered"] = []
+    found = swe1.validate_group(ws, doc, g, SYS, index(ws / "inputs/sections/RM0486"))
+    assert any(f.startswith("[wvu_set] effect WVU: IWDG_SR.WVU is read-only in RM0486 (access r)") for f in found), found
+    ok = swe1.validate_group(ws, ANSWERS["requirements:IWDG_SR_2"], g, SYS, index(ws / "inputs/sections/RM0486"))
+    assert not any("read-only" in f for f in ok)
