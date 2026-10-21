@@ -61,7 +61,7 @@ behavior is retained. Do not rewrite historical fingerprints to hide changes or 
 | Structured-output capability probe (T012) | PASS | `LRTX-T012` (tests) and the live probe record of qwen3-coder:30b |
 | Structured SWE.3-SWE.6 for LL (T022) | PASS with scripted models | `LRTX-T022`; the real tools, Renode, Robot and the unchanged gates |
 | Existing deployment preserved (T025, host check part) | PASS | `LRTX-T025-HOSTCHECK` (checkout, configs, 208 archives, services, network denial, dry-run rollback) |
-| Promotion (CRE), later candidates | ELIGIBLE | pd-5bfcdeab..., pd-118fefed..., pd-7cc602f1..., pd-82e141b7..., pd-4d89b29d..., pd-0d218f28..., pd-2213d82c..., pd-e853a842..., pd-9a54ade5... |
+| Promotion (CRE), later candidates | ELIGIBLE | pd-5bfcdeab..., pd-118fefed..., pd-7cc602f1..., pd-82e141b7..., pd-4d89b29d..., pd-0d218f28..., pd-2213d82c..., pd-e853a842..., pd-9a54ade5..., pd-602dbedc... |
 | Local model quality (structured SWE.1 on qwen3-coder:30b) | BLOCKED (lrtx1-lrtx7) | `LRTX-TRIAL/README.md`; lrtx7 froze SWE.1 on its first visit, then factory inspection defects blocked it (fixed) |
 | Model routing per task (T023) | PASS (measured; no routing proposed) | `LRTX-T023` (qwen3:8b 0/3 SWE.1 visits pass, cross-cutting task never valid; qwen3-coder:30b 3/3 frozen; derived mixed routing 575 s vs 541 s for 30B alone) |
 | Local model quality, lrtx8-lrtx10 | BLOCKED by the structured Qwen inspector | `LRTX-TRIAL/README.md`; the author froze SWE.1 on the first visit in lrtx7-lrtx10; the inspector rewords refuted findings (NOT_QUALIFIED) |
