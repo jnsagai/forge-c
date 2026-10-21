@@ -37,7 +37,7 @@ def test_live_matrix_and_no_historical_evidence_change():
     before = baseline.evidence_digest()
     rows = {r["feature"]: r for r in baseline.capability_matrix()}
     assert baseline.evidence_digest() == before
-    assert rows["005"]["class"] == "SPEC_ONLY"           # AFO is specified, not implemented on this branch
+    assert rows["005"]["class"] == "PARTIAL"   # AFO merged (PR #6): 66 tasks checked with PASS evidence, 9 owner-gated open
     assert rows["002"]["class"] == "IMPLEMENTED" and rows["002"]["tasks_total"] == 51
     assert rows["006"]["tasks_total"] == 72
 

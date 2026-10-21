@@ -1,9 +1,10 @@
 """AFO-T005/T072 (AFO-FR-006/071, AT-066) - FR -> task -> acceptance -> evidence matrix for Feature 005.
 
 Task status comes ONLY from `evidence/v0.4/runs/AFO-T*/latest.json` (exit code and log hash checked) and from the
-blocker register `evidence/afo/blockers.json` (BLOCKED / PARTIAL / DEFERRED with a reason). The authored
-`tasks.md` boxes and the requirements' NOT_IMPLEMENTED design status stay unchanged by design (the spec validator
-requires that). A requirement is COVERED only when every task it plans is PASS.
+blocker register `evidence/afo/blockers.json` (BLOCKED / PARTIAL / DEFERRED with a reason), never from the
+`tasks.md` boxes (scripts/mark_task.py checks a box only with PASS evidence; the spec validator rejects any other
+check) or the requirements' NOT_IMPLEMENTED design status. A requirement is COVERED only when every task it plans
+is PASS.
 
   python -m forge_factory.afo.status      -> docs/afo/AFO-STATUS.md + evidence/afo/status.json
 """
@@ -60,7 +61,7 @@ def report() -> dict:
     count = lambda xs, k: {s: sum(1 for x in xs if x[k] == s) for s in sorted({x[k] for x in xs})}  # noqa: E731
     return {"schema": "forge-c/afo-status/0.1", "generated_at": utc_now(), "tasks": tasks, "requirements": frs,
             "task_counts": count(list(tasks.values()), "status"), "fr_counts": count(frs, "coverage"),
-            "note": "status from executed evidence and the blocker register only; tasks.md boxes stay unchecked"}
+            "note": "status from executed evidence and the blocker register only; tasks.md boxes are not read"}
 
 
 def markdown(rep: dict) -> str:

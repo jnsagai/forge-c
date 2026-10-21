@@ -21,6 +21,22 @@ except ImportError as exc:
 ROOT = Path(__file__).resolve().parent
 CONTRACTS = ROOT / "contracts"
 EXPECTED = {"requirements": 72, "tasks": 75, "tests": 66}
+REPO = ROOT.parents[1]
+
+
+def evidence_ok(line: str) -> bool:
+    """A ticked task cites evidence records that exist and PASSED (scripts/mark_task.py writes them)."""
+    refs = re.findall(r"`(evidence/v0\.4/runs/[^`]+/latest\.json)`", line)
+    if "✅ Evidence:" not in line or not refs:
+        return False
+    for ref in refs:
+        try:
+            rec = json.loads((REPO / ref).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return False
+        if rec.get("status") != "PASS" or rec.get("exit_code") != 0:
+            return False
+    return True
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -57,8 +73,13 @@ def main() -> int:
         if not rs or not ts or any(t not in task_ids for t in rs) or any(t not in test_ids for t in ts):
             errors.append(f"MISSING_TRACE:{r['requirement_id']}")
     for t in tasks:
-        if f"- [ ] **{t['task_id']} " not in tasks_md or t["implementation_status"] != "NOT_IMPLEMENTED":
-            errors.append(f"TASK_MARKED_DONE_OR_MISSING:{t['task_id']}")
+        # Unchecked by default; a box is checked only with PASS evidence (owner 2026-10-21). The CSV
+        # implementation_status stays the design-time value; run status comes from forge_factory.afo.status.
+        line = re.search(rf"^- \[([ xX])\] \*\*{re.escape(t['task_id'])} .*$", tasks_md, re.M)
+        if not line or t["implementation_status"] != "NOT_IMPLEMENTED":
+            errors.append(f"TASK_MISSING:{t['task_id']}")
+        elif line.group(1) != " " and not evidence_ok(line.group(0)):
+            errors.append(f"TASK_MARKED_DONE_WITHOUT_EVIDENCE:{t['task_id']}")
         if any(r not in requirement_ids for r in t["planned_requirement_refs"].split(";")):
             errors.append(f"TASK_BAD_REQUIREMENTS:{t['task_id']}")
         if any(a not in test_ids for a in t["planned_test_refs"].split(";")):
