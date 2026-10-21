@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-21T15:07:05.964334Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6721,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18309
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "c56205c5c125c00a5e7c53a1a66678f43529f5db32d0ee521262bf5d1c7131a9",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 858,
+        "prompt_tokens": 6136,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6994
+      },
+      "wall_ms": 120632.8
+    }
+  ],
+  "base_hash": "c56205c5c125c00a5e7c53a1a66678f43529f5db32d0ee521262bf5d1c7131a9",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-001: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-002: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-003: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-004: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-005: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-006: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-007: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-008: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-009: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-010: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-011: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-012: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-013: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-014: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-015: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-016: Missing upstream traceability; HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-017: Missing upstream traceability; work-order budget input is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-018: Missing upstream traceability; work-order budget input is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input.",
+      "SWR-019: Missing upstream traceability; work-order budget input is NOT_PROVIDED in the manifest and upstream_gaps.md lists this requirement as affected by a missing upstream input."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:e933142b534a9cd7:SWE1-05"
+}

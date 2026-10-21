@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-21T15:00:16.958913Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6996,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19064
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f834fe4cf4a8781c4aac6a27c207a912f969a3092d80ef914ec11e71de2b400c",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 221,
+        "prompt_tokens": 6324,
+        "prompt_tokens_details": {
+          "cached_tokens": 6026
+        },
+        "total_tokens": 6545
+      },
+      "wall_ms": 13072.3
+    }
+  ],
+  "base_hash": "aad538feaf456ba3be214259a3164d25c16c68051476a47b06e41547abe05ec1",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "source/workproducts/SWE.1/register_effects.json",
+      "source/workproducts/SWE.1/software_requirements.md",
+      "forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Upstream coverage gaps exist for SWR-001 through SWR-019: the HSI contract (RM0486 Rev 4 ch.59 IWDG register interface + memory map p.179) and safety allocation (ASIL B, SC-IWDG-2026-10-20) are NOT_PROVIDED, and budgets (flash_bytes: 4096; static_ram_bytes: 64; stack_bytes: 128) are also NOT_PROVIDED, as stated in upstream_gaps.md."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:b52d4fe593cff790:SWE1-05"
+}

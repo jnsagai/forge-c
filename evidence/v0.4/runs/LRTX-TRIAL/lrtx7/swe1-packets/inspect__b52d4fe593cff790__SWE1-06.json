@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-21T15:00:00.221016Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6680,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18195
+      },
+      "errors": [
+        "evidence_checked names software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "865c37912b2b32fa7dfa9b6381e16d3b20268ee9a47296a4d5a27539639fd94e",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 152,
+        "prompt_tokens": 6102,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6254
+      },
+      "wall_ms": 29774.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6982,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19027
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "0220fd5d95fc79135b996b40305beb400c7530c30da53340291a0f52481a3b38",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 139,
+        "prompt_tokens": 6299,
+        "prompt_tokens_details": {
+          "cached_tokens": 5984
+        },
+        "total_tokens": 6438
+      },
+      "wall_ms": 8803.4
+    }
+  ],
+  "base_hash": "865c37912b2b32fa7dfa9b6381e16d3b20268ee9a47296a4d5a27539639fd94e",
+  "doc": {
+    "evidence_checked": [
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-001: Verification criteria not documented - The requirement states 'Verification: The test passes when the IWDG_KR.KEY field is written with value 0xCCCC.' but no test file or test procedure is provided in the checked sources for this verification criterion."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:b52d4fe593cff790:SWE1-06"
+}

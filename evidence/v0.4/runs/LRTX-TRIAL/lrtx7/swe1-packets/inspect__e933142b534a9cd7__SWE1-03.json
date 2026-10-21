@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-21T15:04:03.990001Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6723,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18313
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated for the IWDG LL driver, despite th...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "2d03ed886aa8ca4000286e602c10275c257bffd88bbafcddf6ecb0b773a90888",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 111,
+        "prompt_tokens": 6132,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6243
+      },
+      "wall_ms": 43311.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7030,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19159
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "bab0b17f579f5bfe74bb359d397c8d3a746496df87511fe5f64a677c7734e151",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 6331,
+        "prompt_tokens_details": {
+          "cached_tokens": 6014
+        },
+        "total_tokens": 6462
+      },
+      "wall_ms": 9605.4
+    }
+  ],
+  "base_hash": "2d03ed886aa8ca4000286e602c10275c257bffd88bbafcddf6ecb0b773a90888",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "The software requirements do not specify failure handling, reset/startup behavior or safe states. The requirements only describe register-level operations and do not define how the system should behave under failure conditions, during reset, or what constitutes a safe state."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:e933142b534a9cd7:SWE1-03"
+}

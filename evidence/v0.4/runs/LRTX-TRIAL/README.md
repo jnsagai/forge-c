@@ -148,3 +148,36 @@ visits; median prompt **3,951 tokens** (lrtx1 monolithic: 14,585); GPU board ene
   - the re-inspection check prints a digit-free per-phase counter;
   - reset/startup requirements must move to the cross-cutting task;
   - the cross-cutting task may not carry requirements on registers that a register task covers.
+
+## lrtx7 — factory 5aaa229, 2026-10-21 14:44–15:07 UTC: SWE.1 frozen twice, blocked by inspection defects
+
+Run summary:
+- `verify.json` PASS (8/8 checks); package BLOCKED (52 gaps).
+- 39 model calls in 23.5 minutes, 10.0 Wh GPU energy at 100 % sample coverage (`metrics.json`).
+- Median prompt over all calls 6,114 tokens: the inspector packets carry the full frozen work products. The author
+  calls stayed between 2,084 and 4,043 prompt tokens (`visits.jsonl`).
+
+- **Author: the first local trial frozen on its first visit.** The structured SWE.1 author passed every task
+  validator and the unchanged author gate froze BL-SWE.1-001 after 13 calls (11 minutes), then BL-SWE.1-002 on the
+  rework visit after 3 calls.
+- **Real defect, missed:** SWR-012..014 say the driver "shall set" IWDG_SR.WVU/RVU/PVU. These are hardware status
+  flags that RM0486 marks read-only, and neither the task validator nor the Qwen inspector caught it.
+- **Inspection (`inspection/`, `inspections.jsonl`):**
+  - Visit 1 ended FAILED: the fact check returned SWE1-05 (the owner's PENDING allocation judged as a failure) until
+    the item's repair limit. The direct re-inspection (LRTX-T018) then recorded INS-SWE.1-001 with one more call.
+  - INS-SWE.1-001 failed SWE1-01/03/04/05/06, mostly with false findings:
+    - the recorded NOT_PROVIDED HSI and budget gaps judged as failures;
+    - test files and measurements demanded at SWE.1;
+    - "no reset/startup behaviour" although SWR-015 specifies it.
+  - The Claude inspector passed the same items on rc1 with the same recorded gaps.
+  - Visit 3 judged all six items, but `check_inspection` refused the record: one item had more than 10 findings, which
+    the operation's contract does not allow. The lost record was the third failed cycle, and the unchanged route gate
+    BLOCKED the phase.
+- **Fixed in the next candidates:**
+  - SWE.1 effects may not write, set or clear a read-only RM field;
+  - findings refuted by the recorded gaps, by later-phase evidence or by the document's startup rule go back to the
+    inspector (real defects are kept);
+  - the inspector task schema caps findings at 10, and the structured validator now enforces `maxItems`/`maxLength`;
+  - a refused record is a FAILED reply with its reason.
+- **Rework budget:** the owner offered to raise it (2026-10-21). It is unchanged: LRTX-FR-014 keeps the phase rework
+  criteria, and the cycles lrtx7 lost were factory defects that a larger budget would have hidden.

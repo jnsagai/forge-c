@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-21T15:05:05.317286Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6720,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18305
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "a8d053d66291ffedf9234146222b4f073c35cc59b4187f632ef7164320a51b4b",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 290,
+        "prompt_tokens": 6136,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6426
+      },
+      "wall_ms": 61312.5
+    }
+  ],
+  "base_hash": "a8d053d66291ffedf9234146222b4f073c35cc59b4187f632ef7164320a51b4b",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-017: The requirement states the driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the sources that verifies this constraint is explicit and measurable. The software_requirements.md mentions the budget but does not contain verifiable measurements or test results confirming compliance.",
+      "SWR-018: The requirement states the driver shall use at most 64 bytes of static RAM, but no evidence is provided in the sources that verifies this constraint is explicit and measurable. The software_requirements.md mentions the budget but does not contain verifiable measurements or test results confirming compliance.",
+      "SWR-019: The requirement states the driver shall use at most 128 bytes of stack for any public API call, but no evidence is provided in the sources that verifies this constraint is explicit and measurable. The software_requirements.md mentions the budget but does not contain verifiable measurements or test results confirming compliance."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:e933142b534a9cd7:SWE1-04"
+}

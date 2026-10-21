@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-21T15:01:58.946050Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3035,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8171
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2cc5c70827986880e8b93615f129b68e96fddcf41d9bbdb187d24543479b40ae",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 234,
+        "prompt_tokens": 2351,
+        "prompt_tokens_details": {
+          "cached_tokens": 1709
+        },
+        "total_tokens": 2585
+      },
+      "wall_ms": 13832.1
+    }
+  ],
+  "base_hash": "77638a746a030b8f7cc9dfbf1138f118ddb34cacafbc0d304e0381d9ac822532",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_005",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no IWDG register writes occur before any LL function call",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_006",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall ensure that a write operation affects only the named bits within a register.",
+        "verification": "host_unit_test passes when write operations modify only specified bits in target registers",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}
