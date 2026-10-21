@@ -24,8 +24,22 @@ Read in order:
 5. [Source baseline record](specs/010-local-rtx-optimization/baseline.json).
 
 Implement one tested increment at a time. Keep existing workflow selection and Codex/Claude ACP paths unchanged
-when the local optimization is not explicitly selected. The future profile selector described in the spec is
-not an available CLI option yet. Do not launch or install a new profile from this document alone.
+when the local optimization is not explicitly selected (`scripts/lrtx_compat_check.sh` compares the workflow graphs,
+ACP conversion, run configuration and model profile of 21 existing combinations with the frozen baseline fixtures).
+
+P1 (explicit profile, isolation, local endpoints, admission and measurement) is available for experiments only:
+
+```bash
+python -m forge_factory.lrtx.stack init     # isolated root $FORGE_LRTX_ROOT (default .../forge-c-lrtx), own venv
+python -m forge_factory.lrtx.stack start    # own Ollama :11445, admission gateway :11446, Fabro :32390 in a
+                                            # user+network namespace without external interfaces
+python -m forge_factory.lrtx.stack exec -- python -m forge_factory.workorder --example examples/0009a-iwdg-ll \
+    --wo WO-...-lrtx1 --profile local-rtx-v1 --model qwen3-coder:30b
+python -m forge_factory.lrtx.stack stop
+```
+
+`--profile` refuses ACP, cloud providers, shared or symlinked runtime roots, non-profile ports, an unverified network
+denial and a model whose digest differs from the profile. The profile is NOT qualified; nothing here is a release.
 
 Do not use the production checkout, state database, Fabro storage, service units or archive directory for local
 experiments. Do not change the process, safety gates, inspection independence or promotion authority to obtain a

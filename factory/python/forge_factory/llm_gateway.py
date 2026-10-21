@@ -144,8 +144,14 @@ class Meter:
             f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "refused": reason,
                                 "upstream_called": False}, sort_keys=True) + "\n")
 
+    def record_resources(self, model: str | None, resources: dict) -> None:
+        """Feature 010 admission gateway: resource observation after a request (no tokens, no content)."""
+        with self.path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources},
+                               sort_keys=True) + "\n")
+
     def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
-               shape: dict | None = None) -> None:
+               shape: dict | None = None, local: dict | None = None) -> None:
         rec = {"ts_utc": utc_now(), "model": model or "unknown",
                "tokens_input": (usage or {}).get("prompt_tokens"),
                "tokens_output": (usage or {}).get("completion_tokens"),
@@ -156,6 +162,8 @@ class Meter:
             rec.update({"content_chars": shape["content_chars"], "tool_calls": shape["tool_calls"],
                         "finish_reason": shape.get("finish_reason"), "attempt": shape.get("attempt", 0),
                         "dropped_output": dropped(usage, shape)})
+        if local is not None:  # feature 010 admission gateway only: queue/load/prefill/decode timing, resources
+            rec["local"] = local
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, sort_keys=True) + "\n")
 
@@ -174,14 +182,23 @@ def suspended(upstream: str, path: Path | None = None) -> dict | None:
 
 
 def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
-               transport: httpx.AsyncBaseTransport | None = None) -> FastAPI:
+               transport: httpx.AsyncBaseTransport | None = None, admission: Any = None) -> FastAPI:
+    """`admission` (feature 010, lrtx.admission.Admission; from FORGE_GATEWAY_MAX_INFLIGHT when not given) turns on the
+    single-request queue, cancellation and timing; without it the gateway behaves as before."""
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None)
+    if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
+        from .lrtx import admission as lrtx_admission
+
+        admission = lrtx_admission.from_env()
+    adm = admission
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
     client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0),
                                transport=transport)
 
     @app.get("/health")
     async def health() -> dict:
+        if adm is not None:
+            return {"status": "ok", "upstream": upstream, "admission": adm.snapshot()}
         return {"status": "ok", "upstream": upstream}
 
     def refused(model: str | None) -> JSONResponse | None:
@@ -217,6 +234,8 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         except ValueError:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
         body = sanitize_request(body)
+        if adm is not None:
+            return await admitted(request, body, headers)
         if body.get("stream"):
             body.setdefault("stream_options", {"include_usage": True})
 
@@ -281,6 +300,122 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if r.status_code != 200 or nshape is None or not dropped(usage, nshape):
                 break
         return JSONResponse(data, status_code=r.status_code)
+
+    async def admitted(request: Request, body: dict, headers: dict | None):
+        """Feature 010 (LRTX-FR-006/FR-007): one request at a time, bounded waiting, cancellation, separate timings.
+        Streaming responses stay fully buffered so an empty (dropped) answer is retried before anything reaches the
+        caller - partial tool calls are never forwarded and then replayed."""
+        import asyncio
+
+        from .lrtx import admission as la
+
+        model = body.get("model")
+        ticket = await adm.enter(request.is_disconnected)
+        if ticket.refused:
+            meter.refusal(model, f"ADMISSION_{ticket.refused.upper()}")
+            return JSONResponse({"error": {"message": f"forge gateway admission: {ticket.refused}",
+                                           "type": "admission_" + ticket.refused}},
+                                status_code=429 if ticket.refused == "queue_full" else 503)
+        try:
+            ollama = upstream.removesuffix("/v1")
+            was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
+            load = await asyncio.to_thread(la.preload, ollama, model) if was_loaded is False else None
+            before = await asyncio.to_thread(la.resources, ollama)
+            stream = bool(body.get("stream"))
+            if stream:
+                body.setdefault("stream_options", {"include_usage": True})
+            status, payload, usage = 0, None, None
+            for n in range(DROP_RETRIES + 1):
+                t0 = time.monotonic()
+                res, cancelled = await la.run_cancellable(_timed(body, headers, stream), request.is_disconnected)
+                if cancelled:
+                    adm.stats["cancelled_running"] += 1
+                    meter.refusal(model, "ADMISSION_CANCELLED_RUNNING")
+                    return Response(status_code=499)
+                status, payload, usage, stripped, shape, timing = res
+                local = {"queue_wait_ms": ticket.wait_ms, "queue_depth_at_arrival": ticket.depth_at_arrival,
+                         "model_loaded_before": was_loaded, "load": load if n == 0 else None, **timing,
+                         "resources_before": before if n == 0 else None}
+                meter.record(model, usage, stripped, (time.monotonic() - t0) * 1000, {**shape, "attempt": n}, local)
+                if status != 200 or not dropped(usage, shape):
+                    break
+            after = await asyncio.to_thread(la.resources, ollama)
+            meter.record_resources(model, after)
+        finally:
+            adm.leave(ticket)
+        if stream:
+            async def gen():
+                for line in payload:
+                    yield line
+            return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
+        return JSONResponse(payload, status_code=status) if isinstance(payload, dict | list) else \
+            Response(payload, status_code=status)
+
+    async def _timed(body: dict, headers: dict | None, stream: bool):
+        """One upstream attempt with wall-clock phases: time to first generated delta (prompt processing; the model is
+        already loaded) and generation (first to last delta). Tool calls that arrive in a single final chunk make the
+        split unobservable: decode_ms is then UNKNOWN."""
+        t0 = time.monotonic()
+        shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
+        if not stream:
+            r = await client.post("/v1/chat/completions", json=body, headers=headers)
+            total = (time.monotonic() - t0) * 1000
+            try:
+                data = r.json()
+            except ValueError:
+                return r.status_code, r.content, None, False, shape, {"total_ms": round(total, 1)}
+            data, stripped = strip_reasoning(data)
+            if isinstance(data, dict) and data.get("choices"):
+                ch = data["choices"][0]
+                msg = ch.get("message") or {}
+                shape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
+                         "finish_reason": ch.get("finish_reason")}
+            usage = data.get("usage") if isinstance(data, dict) else None
+            return r.status_code, data, usage, stripped, shape, {
+                "total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"}
+        resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body, headers=headers),
+                                 stream=True)
+        lines: list[str] = []
+        usage, stripped, first, last, deltas = None, False, None, None, 0
+        try:
+            async for line in resp.aiter_lines():
+                if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
+                    try:
+                        chunk = json.loads(line[6:])
+                    except ValueError:
+                        lines.append(line + "\n")
+                        continue
+                    chunk, r_ = strip_reasoning(chunk)
+                    stripped |= r_
+                    usage = chunk.get("usage") or usage
+                    for ch in chunk.get("choices") or []:
+                        delta = ch.get("delta") or {}
+                        if delta.get("content") or delta.get("tool_calls"):
+                            now = time.monotonic()
+                            first = first or now
+                            last = now
+                            deltas += 1
+                        shape["content_chars"] += len(delta.get("content") or "")
+                        shape["tool_calls"] += len(delta.get("tool_calls") or [])
+                        shape["finish_reason"] = ch.get("finish_reason") or shape["finish_reason"]
+                    lines.append("data: " + json.dumps(chunk, separators=(",", ":")) + "\n")
+                else:
+                    lines.append(line + "\n")
+        finally:
+            await resp.aclose()
+        end = time.monotonic()
+        ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
+        timing = {"total_ms": ms(t0, end), "first_delta_ms": ms(t0, first) if first else None, "delta_chunks": deltas,
+                  "prefill_ms": ms(t0, first) if first else "UNKNOWN (no generated delta)",
+                  "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
+                  "basis": "gateway wall clock around the upstream stream; model preloaded separately"}
+        out = int((usage or {}).get("completion_tokens") or 0)
+        if first and deltas > 1 and last > first:
+            timing["decode_tokens_per_s"] = round(out / (last - first), 2)
+        inp = int((usage or {}).get("prompt_tokens") or 0)
+        if first and first > t0:
+            timing["prefill_tokens_per_s"] = round(inp / (first - t0), 1)
+        return resp.status_code, lines, usage, stripped, shape, timing
 
     return app
 
