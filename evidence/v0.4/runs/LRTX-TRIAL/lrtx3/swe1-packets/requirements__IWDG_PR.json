@@ -1,0 +1,142 @@
+{
+  "at": "2026-10-21T13:09:57.390188Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3820,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11270
+      },
+      "errors": [
+        "[iwdg_pr_write_access] effect IWDG_PR_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+        "[iwdg_pr_disable_write_access] effect IWDG_PR_DISABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "fa18e91f435b1429f44c5c990fc279aa101ef5f78bc45122d73fb8b58c9f70f3",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 641,
+        "prompt_tokens": 3133,
+        "prompt_tokens_details": {
+          "cached_tokens": 2012
+        },
+        "total_tokens": 3774
+      },
+      "wall_ms": 34923.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3806,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11226
+      },
+      "errors": [
+        "[iwdg_pr_write_access] effect IWDG_PR_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+        "[iwdg_pr_disable_write_access] effect IWDG_PR_DISABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ce93cae1750a48ceefb3e9d6717cac125135ff325dc53b7ef03533157a9cbfe3",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 641,
+        "prompt_tokens": 3121,
+        "prompt_tokens_details": {
+          "cached_tokens": 2012
+        },
+        "total_tokens": 3762
+      },
+      "wall_ms": 32343.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3806,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11226
+      },
+      "errors": [
+        "[iwdg_pr_write_access] effect IWDG_PR_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+        "[iwdg_pr_disable_write_access] effect IWDG_PR_DISABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ce93cae1750a48ceefb3e9d6717cac125135ff325dc53b7ef03533157a9cbfe3",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 641,
+        "prompt_tokens": 3121,
+        "prompt_tokens_details": {
+          "cached_tokens": 3120
+        },
+        "total_tokens": 3762
+      },
+      "wall_ms": 27201.0
+    }
+  ],
+  "base_hash": "733010218d40a7f1b508ded85b34c86d8b0ca2f77c513ada22ae0ca976c29a18",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00005555"
+          }
+        ],
+        "key": "iwdg_pr_write_access",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall enable write access to the IWDG_PR register by writing the key value 0x00005555 to the IWDG_KR.KEY field while the IWDG is disabled.",
+        "verification": "The test passes when the function writes 0x00005555 to IWDG_KR.KEY and sets the IWDG_PR.PR field correctly, as verified by checking that the correct bits of ll_iwdg_regs[IWDG_KR_OFFSET/4U] are set.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_PRESCALER_SETTING",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x5"
+          }
+        ],
+        "key": "iwdg_pr_prescaler_setting",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall set the prescaler divider by writing a 4-bit value to IWDG_PR.PR field when write access is enabled.",
+        "verification": "Test passes when the function writes a representative prescaler value (e.g. 0x5) to IWDG_PR.PR and verifies that the correct bits are set in ll_iwdg_regs[IWDG_PR_OFFSET/4U].",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "iwdg_pr_disable_write_access",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall disable write access to the IWDG_PR register by writing any other key value (e.g., 0x00000000) to IWDG_KR.KEY after the prescaler has been set.",
+        "verification": "Test passes when function writes 0x00000000 to IWDG_KR.KEY and ensures that no further write operations to IWDG_PR.PR are permitted.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [
+    "[iwdg_pr_write_access] effect IWDG_PR_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+    "[iwdg_pr_disable_write_access] effect IWDG_PR_DISABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "requirements:IWDG_PR"
+}

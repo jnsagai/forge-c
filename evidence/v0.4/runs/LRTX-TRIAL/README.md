@@ -75,3 +75,24 @@ Result: **BLOCKED at SWE.1** after 11 minutes (STUCK: identical rejection twice)
   - findings are routed by the task they name.
 - **Graph wiring:** the structured graph ran as designed (author -> time-box check -> gate -> route -> direct
   re-inspection check -> author).
+
+## lrtx3 — structured SWE.1 with the lrtx2 fixes, factory bd644c9, 2026-10-21 12:59–13:11 UTC
+
+Result: **BLOCKED at SWE.1** (STUCK after two visits, 12 minutes).
+- The new rules repaired the startup invariant inside the register tasks and the cross-cutting task locally (KR,
+  cross-cutting).
+- Two tasks stayed INVALID after their 2 repairs in both visits, with falling finding counts:
+  - **IWDG_PR** went from 4 to 3 to 2 findings: it kept adding write-access requirements that act on IWDG_KR.KEY.
+  - **IWDG_SR_2** had requirements with 2-3 "shall" each; the bare EARS code told the model nothing.
+- **Why STUCK:** the route gate compares the author rejections, and a visit that fails before assembly always
+  produces the same presence rejection ("missing outputs"). The two visits therefore looked identical although their
+  validated task issues differed.
+- **Fixed** in e33a015 (pd-5bfcdeabbcc430990d29):
+  - in-visit repair rounds, plus a bounded extension while findings fall;
+  - actionable EARS and wrong-register findings;
+  - for profile runs only, the runner's task issues join the author rejection record as `LRTX_TASK_INVALID:` codes, so
+    STUCK compares real progress (the default and ACP lines are unchanged, as the frozen fixtures and tests show).
+- **Also in e33a015:** structured SWE.3 for LL (unit code tasks and rendered design), tested against the real tools
+  and the unchanged SWE.3 gate with scripted answers.
+- **Rejected attempt:** decision pd-eca007977bf687460693 (REJECTED, PROTECTED_PATH_CHANGE) was an operator error.
+  The first candidate commit included this evidence directory; it was recommitted without evidence before promotion.

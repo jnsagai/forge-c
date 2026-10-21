@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-21T13:02:44.446586Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2824,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8282
+      },
+      "errors": [
+        "[swr_001] names no field of this task: reset/startup and all-function rules belong to the cross-cutting task - remove this requirement here"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "85ed7f483be2dfa19222c7cd9b6700a4ef0fd38bc849c86f0a5267c98588c3f7",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 835,
+        "prompt_tokens": 2260,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 3095
+      },
+      "wall_ms": 115538.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3776,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11137
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "a826bf9eb4f7c0ebb40b14973567e51825e10f706e5b75cec2956d08e68afd69",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 740,
+        "prompt_tokens": 3160,
+        "prompt_tokens_details": {
+          "cached_tokens": 1855
+        },
+        "total_tokens": 3900
+      },
+      "wall_ms": 33079.4
+    }
+  ],
+  "base_hash": "85ed7f483be2dfa19222c7cd9b6700a4ef0fd38bc849c86f0a5267c98588c3f7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xAAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_write_refresh",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is instructed to refresh the watchdog counter, the IWDG LL driver shall write 0xAAAA to IWDG_KR.KEY.",
+        "verification": "The test passes when the value 0xAAAA is written to ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x5555"
+          }
+        ],
+        "key": "iwdg_kr_key_write_enable_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is instructed to enable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write 0x5555 to IWDG_KR.KEY.",
+        "verification": "The test passes when the value 0x5555 is written to ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xCCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_write_start",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is instructed to start the watchdog, the IWDG LL driver shall write 0xCCCC to IWDG_KR.KEY.",
+        "verification": "The test passes when the value 0xCCCC is written to ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000"
+          }
+        ],
+        "key": "iwdg_kr_key_write_disable_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is instructed to disable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write any value other than 0x5555 to IWDG_KR.KEY.",
+        "verification": "The test passes when a value different from 0x5555 is written to ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}
