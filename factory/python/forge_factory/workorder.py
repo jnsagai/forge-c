@@ -428,7 +428,8 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
     layer = manifest.get("layer", "LL+HAL")
     out = {"phases": (st.get("phases_by_layer") or {}).get(layer) or [],
            "inspect_phases": (st.get("inspect_phases_by_layer") or {}).get(layer) or [],
-           "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600)}
+           "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600),
+           "visit_time_s": st.get("visit_time_s", 1200)}
     return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None
 
 

@@ -366,8 +366,9 @@ def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None, 
     return V.reply(ws, PHASE, status, issues, budget, artifacts)
 
 
-def visit(ws: Path, model: str, max_calls: int | None = None) -> dict:
-    from ..assurance.hardware import index
+def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = False,
+          time_budget_s: float | None = None) -> dict:
+    """One author visit (or its continuation after a time box, `resume`)."""
     from ..layer import layer_of
     from ..registry.agents import load_agents
 
@@ -375,14 +376,22 @@ def visit(ws: Path, model: str, max_calls: int | None = None) -> dict:
     if layer_of(ws) != "LL":
         return reply(ws, "FAILED", ["LRTX_SWE2_LAYER_NOT_SUPPORTED_YET (structured SWE.2 covers LL work orders)"])
     role = {a.id: a for a in load_agents()[0]}["swe2-author"]
-    vlog = ws / ".forge-run/lrtx/SWE.2/visits.jsonl"
-    since = json.loads(vlog.read_text().splitlines()[-1])["at"] if vlog.is_file() and vlog.read_text().strip() else ""
-    findings = V.rework_findings(ws, PHASE, since) if since else []
+    since = V.last_finished(ws, PHASE)
+    budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
+                                    max_calls or role.max_turns, time_budget_s)
+    try:
+        return _visit(ws, model, budget, findings)
+    except V.Continue as c:
+        return reply(ws, "CONTINUE", [f"time box used; the next node execution resumes at {c}"], budget)
+
+
+def _visit(ws: Path, model: str, budget: dict, findings: list[str]) -> dict:
+    from ..assurance.hardware import index
+
     routed: dict[str, list[str]] = {}
     for f in findings:  # requirement/case/function findings belong to the interface task, the rest to the design
         key = "interfaces" if re.search(r"SWR-\d{3}|CONTRACT_|ALLOCAT|INTERFACE_NOT|PLACEHOLDER", f) else "design"
         routed.setdefault(key, []).append(f)
-    budget = {"calls": 0, "max_calls": max_calls or role.max_turns, "schema_mode": "json_schema"}
     idx = index(ws / "inputs/sections/RM0486")
     iface = V.run_task(ws, PHASE, "interfaces", lambda fi, pr: interfaces_packet(ws, model, fi, pr),
                        lambda d: validate_interfaces(ws, d, idx), budget, routed.get("interfaces"))

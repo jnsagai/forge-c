@@ -20,22 +20,38 @@ PHASES = {"SWE.1": "swe1", "SWE.2": "swe2"}
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=["author", "inspect"])
+    ap.add_argument("step", choices=["author", "inspect", "continue-check"])
+    ap.add_argument("--of", choices=["author", "inspect"], default="author", help="continue-check: which reply")
+    ap.add_argument("--resume", action="store_true", help="continue the open visit after its time box")
+    ap.add_argument("--time-budget", type=float, default=1200.0,
+                    help="seconds of model work per node execution (Fabro ends a node silent for 1800 s)")
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
     ap.add_argument("--workspace", type=Path, default=Path("."))
-    ap.add_argument("--model", required=True)
+    ap.add_argument("--model", default="")
     a = ap.parse_args(argv)
     ws = a.workspace.resolve()
     if a.step == "author" and a.phase not in PHASES:
         ap.error(f"no structured author for {a.phase}")
     from importlib import import_module
 
+    if a.step == "continue-check":  # exit 0 = the visit continues in the next node, 1 = the gate reads the reply
+        f = ws / ".forge-run/lrtx" / a.phase / ("reply.json" if a.of == "author" else "inspect-reply.json")
+        status = json.loads(f.read_text()).get("status") if f.is_file() else "MISSING"
+        log = ws / ".forge-run/lrtx" / a.phase / "continue-checks.log"
+        n = len(log.read_text().splitlines()) + 1 if log.is_file() else 1
+        with log.open("a") as fh:
+            fh.write(f"{status}\n")
+        # distinct, digit-free text per execution: Fabro's failure-cycle breaker hashes node|output (ADR-0005 #5)
+        print(f"continue check {''.join(chr(ord('a') + int(d)) for d in str(n))}: {status.lower()}")
+        return 0 if status == "CONTINUE" else 1
+    if not a.model:
+        ap.error("--model is required")
     if a.step == "inspect":
         from . import review as mod
 
         (ws / ".forge-run/lrtx" / a.phase / "inspect-reply.json").unlink(missing_ok=True)
         try:
-            rep = mod.visit(ws, a.phase, a.model)
+            rep = mod.visit(ws, a.phase, a.model, resume=a.resume, time_budget_s=a.time_budget)
         except Exception as exc:  # noqa: BLE001 - no inspection recorded; the inspect gate decides (fails)
             rep = mod._reply(ws, a.phase, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
         print(json.dumps(rep))
@@ -44,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
     stale = ws / ".forge-run/lrtx" / a.phase / "reply.json"
     stale.unlink(missing_ok=True)  # the gate must never read the reply of an earlier visit
     try:
-        rep = mod.visit(ws, a.model)
+        rep = mod.visit(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
     except Exception as exc:  # noqa: BLE001 - recorded as the author's FAILED reply; the gate rejects it
         rep = mod.reply(ws, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
     print(json.dumps(rep))

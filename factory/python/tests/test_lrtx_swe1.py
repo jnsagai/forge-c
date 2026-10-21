@@ -174,11 +174,16 @@ def test_structured_graph_replaces_only_the_selected_author_and_feeds_the_unchan
     g, n1 = build("WO-X", layer="LL", trace=True, peripheral="iwdg",
                   structured={"phases": ["SWE.1"], "model": "qwen3-coder:30b"})
     assert n0 == n1  # same nodes and role bindings
-    lines0, lines1 = base.splitlines(), g.splitlines()
-    changed = [b for a, b in zip(lines0, lines1, strict=True) if a != b]
-    assert [c.split(" [")[0].strip() for c in changed] == ["swe1_author", "swe1_author_gate"]
-    assert "forge_factory.lrtx.runner author --phase SWE.1" in changed[0] and 'prompt="' not in changed[0]
-    assert changed[1].count("cat .forge-run/lrtx/SWE.1/reply.json | ") == 1 and "stdin_source" not in changed[1]
+    removed = sorted(set(base.splitlines()) - set(g.splitlines()))
+    added = sorted(set(g.splitlines()) - set(base.splitlines()))
+    assert sorted(r.split(" [")[0].strip() for r in removed) == ["swe1_author", "swe1_author -> swe1_author_gate",
+                                                           "swe1_author_gate"]
+    assert {a.split(" [")[0].split(" ->")[0].strip() for a in added} == {
+        "swe1_author", "swe1_author_gate", "swe1_author_cont", "swe1_author_more"}
+    author = next(a for a in added if a.startswith("  swe1_author [shape"))
+    gate = next(a for a in added if a.startswith("  swe1_author_gate ["))
+    assert "forge_factory.lrtx.runner author --phase SWE.1" in author and 'prompt="' not in author
+    assert gate.count("cat .forge-run/lrtx/SWE.1/reply.json | ") == 1 and "stdin_source" not in gate
     assert "swe1_author" not in acp.native_agent_nodes(g) and "swe2_author" in acp.native_agent_nodes(g)
 
 

@@ -29,7 +29,8 @@ structured:               # ADR-0014: phases whose author / inspector run as str
   phases_by_layer: {LL: [SWE.1, SWE.2], HAL: [], LL+HAL: []}
   inspect_phases_by_layer: {LL: [SWE.1, SWE.2], HAL: [], LL+HAL: []}
   reinspect_direct: true  # LRTX-T018: a valid, never-inspected baseline returns to the inspector, not the author
-  timeout_s: 3600         # per visit, before timeout_scale
+  timeout_s: 3600         # node timeout, before timeout_scale
+  visit_time_s: 1200      # model work per node execution: Fabro ends a node silent for 1800 s (probes 2026-10-21)
 admission:                # LRTX-FR-006: one inference request at a time, bounded and observable waiting
   max_inflight: 1
   max_queue: 8

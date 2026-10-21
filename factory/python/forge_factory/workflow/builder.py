@@ -163,18 +163,38 @@ def structured_authors(dot: str, structured: dict) -> str:
 
     run = f"{_env()} {sys.executable} -m forge_factory.lrtx.runner"
     t = structured.get("timeout_s", 3600)
+    box = int(structured.get("visit_time_s", 1200))
+
+    def continuation(dot: str, node: str, gate_node: str, step: str, phase: str) -> str:
+        """node -> check -[CONTINUE]-> more -> check ...; check -[done]-> gate. The continuation node has its own
+        visit limit, so time boxes never consume the phase's authored visit/rework budget."""
+        chk, more = f"{node}_cont", f"{node}_more"
+        cmd = f"{run} {step} --phase {phase} --workspace . --model {structured['model']} --time-budget {box} --resume"
+        edge = f"  {node} -> {gate_node}\n"
+        if edge not in dot:
+            raise ValueError(f"STRUCTURED_EDGE_MISSING:{node}->{gate_node}")
+        return dot.replace(edge, "\n".join([
+            f'  {chk} [shape=parallelogram, label="{phase} {step} time-box check", max_visits={8 * MAX_VISITS}, '
+            f'script="{_q(f"{run} continue-check --phase {phase} --workspace . --of {step}")}"]',
+            f'  {more} [shape=parallelogram, label="{phase} structured {step} (continued)", '
+            f'max_visits={8 * MAX_VISITS}, timeout="{t}s", script="{_q(cmd)}"]',
+            f"  {node} -> {chk}", f'  {chk} -> {more} [condition="outcome=succeeded"]', f"  {chk} -> {gate_node}",
+            f"  {more} -> {chk}"]) + "\n", 1)
+
     for phase in structured.get("phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
-                   f"{run} author --phase {phase} --workspace . --model {structured['model']}", t)
+                   f"{run} author --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
                    f".forge-run/lrtx/{phase}/reply.json", phase, "author")
+        dot = continuation(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
     for phase in structured.get("inspect_phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
-                   f"{run} inspect --phase {phase} --workspace . --model {structured['model']}", t)
+                   f"{run} inspect --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_inspect_gate", f"swe{n}_inspector", f"{phase} inspection gate",
                    f".forge-run/lrtx/{phase}/inspect-reply.json", phase, "inspect")
+        dot = continuation(dot, f"swe{n}_inspector", f"swe{n}_inspect_gate", "inspect", phase)
     if structured.get("reinspect"):
         for phase in PHASES:
             n = phase[-1]

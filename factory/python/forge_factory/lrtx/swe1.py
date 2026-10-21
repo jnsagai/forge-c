@@ -469,8 +469,9 @@ def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None, 
 
 
 # ---- the author visit (one Fabro node execution) ----------------------------------------------------------------------
-def visit(ws: Path, model: str, max_calls: int | None = None) -> dict:
-    from ..assurance.hardware import index
+def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = False,
+          time_budget_s: float | None = None) -> dict:
+    """One author visit (or its continuation after a time box, `resume`)."""
     from ..layer import layer_of
     from ..registry.agents import load_agents
 
@@ -479,12 +480,20 @@ def visit(ws: Path, model: str, max_calls: int | None = None) -> dict:
         return reply(ws, "FAILED", ["LRTX_SWE1_LAYER_NOT_SUPPORTED_YET (structured SWE.1 covers LL work orders; HAL "
                                     "uses the agent author)"])
     role = {a.id: a for a in load_agents()[0]}["swe1-author"]
-    vlog = ws / ".forge-run/lrtx/SWE.1/visits.jsonl"
-    since = json.loads(vlog.read_text().splitlines()[-1])["at"] if vlog.is_file() and vlog.read_text().strip() else ""
+    since = V.last_finished(ws, "SWE.1")
     amap_p = ws / ".forge-run/lrtx/SWE.1/assembly.json"
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
-    routed = route_findings(rework_findings(ws, since), amap) if since else {}
-    budget = {"calls": 0, "max_calls": max_calls or role.max_turns, "schema_mode": "json_schema"}
+    budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: rework_findings(ws, since) if since else [],
+                                    max_calls or role.max_turns, time_budget_s)
+    try:
+        return _visit(ws, model, budget, route_findings(findings, amap) if findings else {})
+    except V.Continue as c:
+        return reply(ws, "CONTINUE", [f"time box used; the next node execution resumes at {c}"], budget)
+
+
+def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> dict:
+    from ..assurance.hardware import index
+
     inv = inventory(ws)
     S.record(ws, "SWE.1/inventory.json", inv)
     if inv["missing_sections"]:

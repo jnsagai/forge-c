@@ -89,11 +89,24 @@ def validate_verdict(doc: dict, paths: set[str]) -> list[str]:
     return out
 
 
-def visit(ws: Path, phase: str, model: str, max_calls: int | None = None) -> dict:
+def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume: bool = False,
+          time_budget_s: float | None = None) -> dict:
+    """One inspection (or its continuation after a time box). Verdicts already judged for this baseline are reused."""
+    from ..registry.agents import load_agents
+
+    role = f"swe{phase[-1]}-inspector"
+    budget, _f = V.open_visit(Path(ws), phase + "-inspect", resume, list,
+                              max_calls or {a.id: a for a in load_agents()[0]}[role].max_turns, time_budget_s)
+    try:
+        return _visit(Path(ws), phase, model, budget)
+    except V.Continue as c:
+        return _reply(Path(ws), phase, "CONTINUE", [f"time box used; resumes at {c}"], budget)
+
+
+def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     from ..inspection.engine import Store
     from ..mcp.sdk import ToolContext
     from ..mcp.servers import evidence as EV
-    from ..registry.agents import load_agents
 
     ws = Path(ws)
     role = f"swe{phase[-1]}-inspector"
@@ -104,8 +117,6 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None) -> dic
         return _reply(ws, phase, "FAILED", [str(exc)])
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
-    budget = {"calls": 0, "max_calls": max_calls or {a.id: a for a in load_agents()[0]}[role].max_turns,
-              "schema_mode": "json_schema"}
     paths = {s["path"] for s in srcs}
     verdicts, issues = {}, []
     for it in items:
@@ -138,6 +149,8 @@ def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | 
     doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:300] for i in issues[:20]],
            "next_action": "next" if status == "PASS" else "rework"}
     S.record(ws, f"{phase}/inspect-reply.json", doc)
+    if status != "CONTINUE":
+        V.close_visit(budget)
     p = Path(ws) / ".forge-run/lrtx" / phase / "inspections.jsonl"
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("a") as f:

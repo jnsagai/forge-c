@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from pathlib import Path
 
 from ..common import pretty_json, utc_now
@@ -13,6 +14,52 @@ from . import structured as S
 
 def _ckpt(ws: Path, phase: str, task: str) -> Path:
     return Path(ws) / ".forge-run/lrtx" / phase / "packets" / (task.replace(":", "__") + ".json")
+
+
+class Continue(Exception):  # noqa: N818 - control flow: the visit's time box is used up, resume in a new node
+    """Fabro 0.362 ends a command node with no activity for 1800 s (probes 2026-10-21; stdout does not count). A visit
+    therefore stops before a model call that could cross its time box and continues in the next node execution."""
+
+
+def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, time_budget_s: float | None) -> tuple[
+        dict, list[str]]:
+    """The visit's shared budget (LRTX-FR-014). A resumed node execution continues the same visit: same call count,
+    same rework findings; a new visit starts from the findings addressed to the phase since the last finished visit."""
+    sp = Path(ws) / ".forge-run/lrtx" / phase / "visit-state.json"
+    st = json.loads(sp.read_text()) if sp.is_file() else None
+    if not (resume and st and st.get("open")):
+        st = {"open": True, "started_at": utc_now(), "calls": 0, "findings": findings_fn(), "continuations": 0}
+    else:
+        st["continuations"] = st.get("continuations", 0) + 1
+    sp.parent.mkdir(parents=True, exist_ok=True)
+    sp.write_text(pretty_json(st))
+    budget = {"calls": st["calls"], "max_calls": max_calls, "schema_mode": "json_schema", "state": str(sp),
+              "deadline": time.monotonic() + time_budget_s if time_budget_s else None}
+    return budget, st["findings"]
+
+
+def _save_calls(budget: dict) -> None:
+    if budget.get("state"):
+        sp = Path(budget["state"])
+        st = json.loads(sp.read_text())
+        st["calls"] = budget["calls"]
+        sp.write_text(pretty_json(st))
+
+
+def close_visit(budget: dict | None) -> None:
+    if budget and budget.get("state") and Path(budget["state"]).is_file():
+        sp = Path(budget["state"])
+        st = json.loads(sp.read_text())
+        st.update(open=False, closed_at=utc_now(), calls=budget["calls"])
+        sp.write_text(pretty_json(st))
+
+
+def last_finished(ws: Path, phase: str, log: str = "visits.jsonl") -> str:
+    """Time of the last visit that ended (CONTINUE records are part of an open visit)."""
+    p = Path(ws) / ".forge-run/lrtx" / phase / log
+    done = [json.loads(x) for x in (p.read_text().splitlines() if p.is_file() else []) if x.strip()]
+    done = [d for d in done if d.get("status") != "CONTINUE"]
+    return done[-1]["at"] if done else ""
 
 
 def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findings: list[str] | None = None,
@@ -35,12 +82,20 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if budget["calls"] >= budget["max_calls"]:
             errs = (errs or []) + ["VISIT_CALL_BUDGET_EXHAUSTED"]
             break
+        if budget.get("deadline") and time.monotonic() > budget["deadline"]:
+            if attempts:  # keep the progress of this task: the next node execution repairs from here
+                ck.parent.mkdir(parents=True, exist_ok=True)
+                ck.write_text(pretty_json({"task": task, "status": "INVALID", "doc": doc if doc is not None else
+                                           start, "errors": errs, "base_hash": base["input_hash"],
+                                           "attempts": attempts, "at": utc_now(), "reused": False}))
+            raise Continue(task)
         budget["calls"] += 1
         r = S.call(p, schema_mode=budget.get("schema_mode", "json_schema"))
         errs = r["errors"] or check(r["doc"])
         attempts.append({"n": n, "input_hash": p["input_hash"], "accounting": p["accounting"], "usage": r["usage"],
                          "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20]})
         budget.setdefault("log", []).append({"task": task, **attempts[-1]})
+        _save_calls(budget)
         # one line per model call: Fabro's stall watchdog ends a command node that shows no activity for 1800 s
         print(json.dumps({"lrtx_progress": task, "attempt": n, "errors": len(errs), "wall_ms": r["wall_ms"]}),
               flush=True)
@@ -121,6 +176,8 @@ def reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | N
     doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:300] for i in issues[:20]],
            "next_action": "next" if status == "PASS" else "rework"}
     S.record(ws, f"{phase}/reply.json", doc)
+    if status != "CONTINUE":
+        close_visit(budget)
     calls = (budget or {}).get("log", [])
     visit_rec = {"at": utc_now(), "status": status, "calls": (budget or {}).get("calls", 0),
                  "max_calls": (budget or {}).get("max_calls"), "issues": doc["issues"][:10],

@@ -137,3 +137,44 @@ def test_inspection_packets_fit_and_carry_the_full_criterion(ws1, phase):  # noq
     p = review.item_packet(ws1, phase, item, bl, srcs, "m")
     assert p["accounting"]["fits"] and " ".join(item["criterion"].split()) in p["instructions"]
     assert all(s["path"] in bl["files"] or s["path"].startswith(".forge-run/manifest.json") for s in p["sources"])
+
+
+def test_time_box_continues_the_same_visit_with_its_shared_budget(ws, monkeypatch):  # noqa: F811
+    """Fabro ends a command node silent for 1800 s: a visit stops before a model call past its time box and the next
+    node execution resumes the SAME visit (call count and findings kept); finished tasks are not repeated."""
+    from forge_factory.lrtx import runner
+
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted(ANSWERS, calls))
+    clock = {"t": 0.0}
+    monkeypatch.setattr("forge_factory.lrtx.visit.time.monotonic", lambda: clock["t"])
+
+    def tick(p):  # every model call takes 500 s of the 1200 s box
+        clock["t"] += 500
+        return ANSWERS[p["task"]]
+    monkeypatch.setattr(S, "call", _scripted({k: tick for k in ANSWERS}, calls))
+    rep = swe1.visit(ws, "m", time_budget_s=1200)
+    assert rep["status"] == "CONTINUE" and len(calls) == 3
+    assert runner.main(["continue-check", "--phase", "SWE.1", "--workspace", str(ws)]) == 0
+    st = json.loads((ws / ".forge-run/lrtx/SWE.1/visit-state.json").read_text())
+    assert st["open"] and st["calls"] == 3
+    rep = swe1.visit(ws, "m", resume=True, time_budget_s=1200)
+    assert rep["status"] == "PASS" and len(calls) == 6  # the 3 remaining tasks, each called exactly once
+    st = json.loads((ws / ".forge-run/lrtx/SWE.1/visit-state.json").read_text())
+    assert not st["open"] and st["calls"] == 6 and st["continuations"] == 1
+    assert runner.main(["continue-check", "--phase", "SWE.1", "--workspace", str(ws)]) == 1
+    # a new visit after the finished one starts a fresh budget; the time-box records are not "finished visits"
+    assert swe1.visit(ws, "m")["status"] == "PASS"
+    assert json.loads((ws / ".forge-run/lrtx/SWE.1/visit-state.json").read_text())["calls"] == 0
+
+
+def test_continuation_nodes_have_their_own_visit_limit():
+    from forge_factory.workflow.builder import MAX_VISITS, build
+
+    g, _ = build("WO-X", layer="LL", trace=True, peripheral="iwdg",
+                 structured={"phases": ["SWE.1"], "inspect_phases": ["SWE.1"], "model": "m", "visit_time_s": 900})
+    assert "  swe1_author -> swe1_author_cont\n" in g and "  swe1_author -> swe1_author_gate\n" not in g
+    assert '  swe1_author_cont -> swe1_author_more [condition="outcome=succeeded"]' in g
+    assert "  swe1_inspector_more -> swe1_inspector_cont" in g and "--time-budget 900 --resume" in g
+    assert f'swe1_author [shape=parallelogram, label="SWE.1 structured author (local profile)", max_visits={MAX_VISITS},' \
+        in g
