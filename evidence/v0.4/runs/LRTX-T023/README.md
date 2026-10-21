@@ -47,3 +47,10 @@ Mixed routing saves nothing on this work order. The model switch costs more than
 - Inspector qualification is not part of this comparison and remains a separate decision (LRTX-FR-016). Both models
   stay NOT_QUALIFIED as inspectors.
 - This is pilot evidence on one work order and one phase (3 repeats per model), not a model qualification.
+
+## Owner decision (2026-10-21)
+
+The owner chose coder-only authoring ("ok, coder only"):
+- qwen3-coder:30b is the only author model of the profile.
+- qwen3:8b stays listed in the profile as measured, but is not used or routed to.
+- The inspector decision waits for the T021 seeded evaluation and the QM experiment (example 0009q-iwdg-ll-qm).
