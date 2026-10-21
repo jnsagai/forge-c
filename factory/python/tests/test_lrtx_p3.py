@@ -380,3 +380,18 @@ def test_an_item_with_other_defects_is_still_never_recorded(ws1, monkeypatch):  
     monkeypatch.setattr(S, "call", _scripted(Answers({}, insp), []))
     rep = review.visit(ws1, "SWE.1", "m")
     assert rep["status"] == "FAILED" and not list((ws1 / "inspection/SWE.1").glob("INS-*.json"))
+
+
+def test_startup_refutation_only_for_findings_that_deny_startup_behaviour(ws1):  # noqa: F811
+    """lrtx8 (2026-10-21): a legitimate safe-state finding that acknowledged the startup rule was refuted by a loose
+    pattern. Only a finding that denies reset/startup behaviour, without naming the startup requirement, is."""
+    text = (ws1 / swe1.REQS).read_text()
+    m = re.search(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", text)
+    assert m, "fixture requirements carry the startup rule"
+    deny = "The software requirements do not specify failure handling, reset/startup behavior or safe states."
+    ack = (f"The software requirements do not specify safe states. While {m.group(1)} addresses startup behavior by "
+           "ensuring no register writes occur, no requirement defines the behavior in a failure state.")
+    fail = "The software requirements do not specify failure handling upon detecting a failure condition."
+    assert any("specifies it" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [deny]))
+    assert review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [ack]) == []
+    assert review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [fail]) == []

@@ -89,7 +89,11 @@ GAP_RX = re.compile(r"NOT_PROVIDED|not provided|upstream (?:coverage )?gap", re.
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
-NO_STARTUP_RX = re.compile(r"(?:no|not|without|missing|lacks?|do(?:es)? not)\b.{0,60}\b(?:reset|start-?up)", re.I)
+# the negation must govern reset/startup within one clause ("do not specify failure handling, reset/startup ...",
+# "reset behaviour is not specified"); lrtx8: "do not specify safe states. While SWR-014 addresses startup" is not one
+NO_STARTUP_RX = re.compile(r"\b(?:no|not|without|missing|lacks?)\s+(?:[\w,]+\s+){0,4}?(?:reset|start-?up)\b|"
+                           r"\b(?:reset|start-?up)[/\w\s-]{0,30}?\b(?:is|are)\s+(?:not|missing|absent|unspecified)\b",
+                           re.I)
 
 
 def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list[str]:
@@ -119,7 +123,7 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
         if phase == "SWE.1" and LATER_RX.search(f):
             out.append(f"finding '{f[:80]}...' asks for tests or measurements: those are SWE.4-SWE.6 work products; at "
                        "SWE.1 judge the verification criterion and whether the constraint is measurable")
-        if phase == "SWE.1" and startup and NO_STARTUP_RX.search(f):
+        if phase == "SWE.1" and startup and startup.group(1) not in f and NO_STARTUP_RX.search(f):
             out.append(f"finding says reset/startup behaviour is not specified, but {startup.group(1)} specifies it: "
                        f"'{startup.group(2)[:100]}' - re-judge the remaining parts of the item")
         if pending and phase == "SWE.1" and PENDING_RX.search(f):
