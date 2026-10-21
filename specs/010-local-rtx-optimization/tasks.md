@@ -1,39 +1,41 @@
 # Feature 010 tasks
 
-Status: source separation delivered; optimization and host qualification pending. A checked task requires its
-own evidence. A written specification or passing static check is not a completed local model trial.
+Status (2026-10-21): P0 and P1 delivered; P2/P3 structured SWE.1/SWE.2 authors and inspectors implemented and tested
+with scripted models; fresh local-model trials (T016), measurement coverage of energy (T010), structured-output
+probe evidence (T012), seeded-defect evaluation (T021) and P4/P5 pending. A checked task requires its own evidence. A
+written specification or passing static check is not a completed local model trial.
 
 ## P0 — preservation
 
 - [x] LRTX-T001 Record the existing main SHA and existing RC1/rc4 evidence, preserving the limitations of that evidence. Reference: `baseline.json` and ADR-0013.
 - [x] LRTX-T002 Create `baseline/codex-claude-2026-10-21` and `feat/010-local-rtx-optimization` from `86f1f40c030bc721e7e5125a572d69647c4ac041`. Verify remote references before reporting completion.
-- [ ] LRTX-T003 Capture the actual working host revision, dirty changes, effective configuration and installed tool/model versions; preserve external archives and verify a read-only restore. NOT_RUN: owner host unavailable here.
-- [ ] LRTX-T004 Freeze executable compatibility fixtures for the existing workflow/provider combinations before editing shared runtime paths.
+- [X] LRTX-T003 Capture the actual working host revision, dirty changes, effective configuration and installed tool/model versions; preserve external archives and verify a read-only restore. Run on the owner host 2026-10-21; the backup stays outside the repository. ✅ Evidence: `evidence/v0.4/runs/LRTX-T003/latest.json`
+- [X] LRTX-T004 Freeze executable compatibility fixtures for the existing workflow/provider combinations before editing shared runtime paths. ✅ Evidence: `evidence/v0.4/runs/LRTX-T004/latest.json`
 
 ## P1 — isolated explicit profile and measurement
 
-- [ ] LRTX-T005 Implement versioned explicit local-profile selection; no-selection behavior unchanged; reject conflicting ACP/provider flags before launch.
-- [ ] LRTX-T006 Enforce separate resolved data/state/archive/config/storage roots and service/port identities, including inherited environment and symlink overlap tests.
-- [ ] LRTX-T007 Record effective profile, model digest/quantization, runtime configuration and enforcement status in run provenance without secrets.
-- [ ] LRTX-T008 Enforce local endpoints and absent cloud fallback; prove offline dependency availability and external-network denial on the host.
-- [ ] LRTX-T009 Add single-request admission with bounded waiting, cancellation and queue metrics while preserving safe empty-response retry behavior.
+- [X] LRTX-T005 Implement versioned explicit local-profile selection; no-selection behavior unchanged; reject conflicting ACP/provider flags before launch. ✅ Evidence: `evidence/v0.4/runs/LRTX-T005/latest.json`
+- [X] LRTX-T006 Enforce separate resolved data/state/archive/config/storage roots and service/port identities, including inherited environment and symlink overlap tests. ✅ Evidence: `evidence/v0.4/runs/LRTX-T006/latest.json`
+- [X] LRTX-T007 Record effective profile, model digest/quantization, runtime configuration and enforcement status in run provenance without secrets. ✅ Evidence: `evidence/v0.4/runs/LRTX-T007/latest.json`
+- [X] LRTX-T008 Enforce local endpoints and absent cloud fallback; prove offline dependency availability and external-network denial on the host. ✅ Evidence: `evidence/v0.4/runs/LRTX-T008/latest.json`
+- [X] LRTX-T009 Add single-request admission with bounded waiting, cancellation and queue metrics while preserving safe empty-response retry behavior. ✅ Evidence: `evidence/v0.4/runs/LRTX-T009/latest.json`
 - [ ] LRTX-T010 Separate queue/load/prefill/decode/tool measurements; capture GPU residency and memory pressure, label unsupported fields UNKNOWN.
 
 ## P2 — SWE.1/SWE.2 coherent tasks
 
-- [ ] LRTX-T011 Build versioned source-backed context packets and complete-prompt accounting; no silent truncation; retain output reserve.
+- [X] LRTX-T011 Build versioned source-backed context packets and complete-prompt accounting; no silent truncation; retain output reserve. ✅ Evidence: `evidence/v0.4/runs/LRTX-T011/latest.json`
 - [ ] LRTX-T012 Add typed intermediate contracts and runtime capability probes for structured responses.
-- [ ] LRTX-T013 Implement requirement-group, register-effect and verification-mapping tasks with a complete source coverage inventory.
-- [ ] LRTX-T014 Implement allocation/interface tasks including resource and reset invariants, stable IDs and existing final artifact formats.
-- [ ] LRTX-T015 Render repetitive tables/diagrams deterministically; retain semantic author decisions and complete phase-level consistency gates.
+- [X] LRTX-T013 Implement requirement-group, register-effect and verification-mapping tasks with a complete source coverage inventory. ✅ Evidence: `evidence/v0.4/runs/LRTX-T013/latest.json`
+- [X] LRTX-T014 Implement allocation/interface tasks including resource and reset invariants, stable IDs and existing final artifact formats. ✅ Evidence: `evidence/v0.4/runs/LRTX-T014/latest.json`
+- [X] LRTX-T015 Render repetitive tables/diagrams deterministically; retain semantic author decisions and complete phase-level consistency gates. ✅ Evidence: `evidence/v0.4/runs/LRTX-T015/latest.json`
 - [ ] LRTX-T016 Replay observed RCC/IWDG rejections and perform fresh local SWE.1/SWE.2 trials; distinguish fixed factory defects from model quality.
 
 ## P3 — localized repair and inspection
 
-- [ ] LRTX-T017 Add validated checkpoints and dependency invalidation; local repair preserves unaffected content.
-- [ ] LRTX-T018 Route missing inspection directly to inspection only when the current frozen baseline remains valid.
-- [ ] LRTX-T019 Split coherent inspection criteria with full primary evidence and independent contexts; aggregate only complete matching-baseline verdicts.
-- [ ] LRTX-T020 Prove shared phase accounting and existing stuck/rework limits across subtasks; no reset through task decomposition.
+- [X] LRTX-T017 Add validated checkpoints and dependency invalidation; local repair preserves unaffected content. ✅ Evidence: `evidence/v0.4/runs/LRTX-T017/latest.json`
+- [X] LRTX-T018 Route missing inspection directly to inspection only when the current frozen baseline remains valid. ✅ Evidence: `evidence/v0.4/runs/LRTX-T018/latest.json`
+- [X] LRTX-T019 Split coherent inspection criteria with full primary evidence and independent contexts; aggregate only complete matching-baseline verdicts. ✅ Evidence: `evidence/v0.4/runs/LRTX-T019/latest.json`
+- [X] LRTX-T020 Prove shared phase accounting and existing stuck/rework limits across subtasks; no reset through task decomposition. ✅ Evidence: `evidence/v0.4/runs/LRTX-T020/latest.json`
 - [ ] LRTX-T021 Evaluate seeded semantic defects and cross-artifact contradictions with independent frozen holdouts.
 
 ## P4/P5 — full process and qualification

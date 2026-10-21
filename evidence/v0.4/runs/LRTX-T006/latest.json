@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-rA",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_lrtx_profile.py",
+    "-k",
+    "isolated or overlapping or inherits"
+  ],
+  "duration_s": 0.469,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3eae58ddfde384a95e316d6c71105eb32bb09cb2",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T006/20261021T123517.log",
+  "log_sha256": "cbb956cc7c01490798fd1b83fe465d70c4b8f4140ac20771d74a830e4b780c9f",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T006",
+  "ts_utc": "2026-10-21T12:35:17.410522Z"
+}

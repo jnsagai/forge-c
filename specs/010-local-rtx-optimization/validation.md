@@ -45,3 +45,17 @@ PY
 Later runtime development can intentionally change source files in the experimental branch. At that point these
 fingerprints still identify the preserved reference; executable compatibility tests must establish that existing
 behavior is retained. Do not rewrite historical fingerprints to hide changes or mark pending tasks complete.
+
+## Implementation validation — 2026-10-21 (owner host, loop10)
+
+| Check | Result | Evidence |
+|---|---|---|
+| Host preservation (T003) | PASS | `evidence/v0.4/runs/LRTX-T003/` (deployment checkout 86f1f40 clean; 208 archives copied and verified; rc4 restore re-hashed 238/238) |
+| Compatibility of the existing line (T004) | PASS | `evidence/v0.4/runs/LRTX-T004/` (21 frozen workflow/provider fixtures, ACP/provider tests, v0.1, v0.3 packager, design check) |
+| Explicit profile, isolation, provenance, network denial (T005-T008) | PASS | `LRTX-T005..T008`; baseline run `LRTX-TRIAL/lrtx1` verified on 8 checks |
+| Admission, queue, cancellation (T009) | PASS | `LRTX-T009` (tests) and live queue/cancel probe |
+| Structured SWE.1/SWE.2 authors and inspectors (T011, T013-T015, T017-T020) | PASS with scripted models | `LRTX-T011..T020`; the unchanged gates freeze the assembled work products |
+| Replay triage of the QWEN-TRIAL rejections (T016, first part) | PASS (14 codes, none untriaged) | `LRTX-T016-REPLAY/replay.json` |
+| Promotion (CRE) | ELIGIBLE | pd-72f598aa1dc971b146cb (P0+P1), pd-b6853328caf1e2190ecf (P2+P3); pd-7f4521cc52c2676c4638 REJECTED by host memory exhaustion (local model loaded), not by the change |
+| Local model quality (structured SWE.1/SWE.2 on qwen3-coder:30b) | NOT_RUN | pending fresh trials |
+| 30-case campaign, energy, model routing | NOT_RUN | P4/P5 |

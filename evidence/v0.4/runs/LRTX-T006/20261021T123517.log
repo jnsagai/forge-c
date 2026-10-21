@@ -1,0 +1,9 @@
+...                                                                      [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_profile.py::test_isolated_root_passes
+PASSED factory/python/tests/test_lrtx_profile.py::test_overlapping_inherited_and_symlinked_roots_are_refused
+PASSED factory/python/tests/test_lrtx_profile.py::test_stack_environment_inherits_nothing_from_the_existing_deployment
+3 passed, 6 deselected in 0.15s
+
+--- stderr ---

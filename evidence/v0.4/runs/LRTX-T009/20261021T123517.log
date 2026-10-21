@@ -1,0 +1,21 @@
+...............                                                          [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_admission.py::test_one_at_a_time_with_observable_queue
+PASSED factory/python/tests/test_lrtx_admission.py::test_backpressure_timeout_and_cancel_while_waiting_release_nothing_twice
+PASSED factory/python/tests/test_lrtx_admission.py::test_running_request_is_cancelled_when_the_caller_disconnects
+PASSED factory/python/tests/test_lrtx_admission.py::test_admitted_gateway_meters_queue_load_prefill_decode_and_resources
+PASSED factory/python/tests/test_lrtx_admission.py::test_gateway_without_admission_keeps_its_meter_format
+PASSED factory/python/tests/test_lrtx_admission.py::test_implausible_gpu_power_is_not_energy_data
+PASSED factory/python/tests/test_lrtx_admission.py::test_periodic_samples_feed_gpu_energy_with_stated_coverage
+PASSED factory/python/tests/test_lrtx_admission.py::test_single_chunk_answer_has_no_prefill_figure
+PASSED factory/python/tests/test_llm_gateway.py::test_request_forces_no_reasoning_and_response_stripped
+PASSED factory/python/tests/test_llm_gateway.py::test_stream_deltas_stripped
+PASSED factory/python/tests/test_llm_gateway.py::test_dropped_output_flagged_without_logging_content
+PASSED factory/python/tests/test_llm_gateway.py::test_dropped_upstream_answer_retried_bounded_and_metered
+PASSED factory/python/tests/test_llm_gateway.py::test_paid_upstream_auth_forwarded_cache_metered_and_cost_capped
+PASSED factory/python/tests/test_llm_gateway.py::test_unknown_usage_labelled_unknown
+PASSED factory/python/tests/test_llm_gateway.py::test_tools_scoped_to_role_detected_from_skill_instruction
+15 passed in 1.22s
+
+--- stderr ---

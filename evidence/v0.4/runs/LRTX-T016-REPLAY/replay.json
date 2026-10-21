@@ -1,0 +1,195 @@
+{
+  "factory_defects": [],
+  "generated_at": "2026-10-21T12:34:55.959325Z",
+  "note": "Replay of recorded rejections against the new mechanisms; it is not a fresh model trial. Whether Qwen now produces passing work products is measured by fresh local runs (LRTX-T016 second part).",
+  "rows": [
+    {
+      "classification": "MODEL_CONTENT",
+      "code": "CONTRACT_FIELD_NOT_IN_SWR",
+      "evidence": "the effect names a field its requirement statement does not name (the contract rule is stated in the SWE.1 prompt)",
+      "mechanism": "per-task validation: an effect field must be named by its statement; local repair",
+      "occurrences": 14,
+      "phase": "SWE.1",
+      "runs": [
+        "RCC-LL-g3"
+      ],
+      "test": "test_lrtx_swe1.py::test_uncovered_field_is_repaired_locally_and_only_that_task_reruns"
+    },
+    {
+      "classification": "MODEL_OMISSION",
+      "code": "CONTRACT_MISSING",
+      "evidence": "register_effects.json not written in the agent session",
+      "mechanism": "deterministic assembly always writes the contract from validated effects",
+      "occurrences": 1,
+      "phase": "SWE.1",
+      "runs": [
+        "RCC-LL-g2"
+      ],
+      "test": "test_lrtx_swe1.py::test_visit_assembles_work_products_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_OMISSION",
+      "code": "CONTRACT_SWR_NOT_COVERED",
+      "evidence": "a requirement that sets/clears a field had no effect entry in a 20-30 requirement document",
+      "mechanism": "per-task validation (one register per task) + coverage inventory of every key-section field",
+      "occurrences": 33,
+      "phase": "SWE.1",
+      "runs": [
+        "IWDG-LL-g1",
+        "RCC-LL-g1",
+        "RCC-LL-g2",
+        "RCC-LL-g3"
+      ],
+      "test": "test_lrtx_swe1.py::test_uncovered_field_is_repaired_locally_and_only_that_task_reruns"
+    },
+    {
+      "classification": "MODEL_OMISSION",
+      "code": "MISSING_REQUIRED_OUTPUT",
+      "evidence": "required output file absent",
+      "mechanism": "deterministic assembly of every SWE.1 output",
+      "occurrences": 1,
+      "phase": "SWE.1",
+      "runs": [
+        "RCC-LL-g2"
+      ],
+      "test": "test_lrtx_swe1.py::test_visit_assembles_work_products_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_INSTRUCTION_FOLLOWING",
+      "code": "SAFETY_SCOPE",
+      "evidence": "the prompt prescribes the PENDING-allocation statement for an ASIL scope; the model wrote the QM statement",
+      "mechanism": "safety statement rendered from the manifest's allocation status",
+      "occurrences": 3,
+      "phase": "SWE.1",
+      "runs": [
+        "RCC-LL-g1",
+        "RCC-LL-g2"
+      ],
+      "test": "test_lrtx_swe1.py::test_visit_assembles_work_products_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_INSTRUCTION_FOLLOWING",
+      "code": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST",
+      "evidence": "the prompt maps 'While no ... after reset' requirements to the Robot suite",
+      "mechanism": "verified_by validated per requirement; requirements_to_tests.csv rendered from it",
+      "occurrences": 4,
+      "phase": "SWE.1",
+      "runs": [
+        "IWDG-LL-g1",
+        "IWDG-LL-g2",
+        "IWDG-LL-g3",
+        "RCC-LL-g1"
+      ],
+      "test": "test_lrtx_swe1.py::test_visit_assembles_work_products_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "ARCH:INTERFACE_WITHOUT_ID",
+      "evidence": "connections without IF-nn labels",
+      "mechanism": "static view rendered with IF-01/IF-02",
+      "occurrences": 5,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g1",
+        "IWDG-LL-g2",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "ARCH:LAYER_NOT_SEPARATE",
+      "evidence": "an extra IWDG <<SWC>> element (the register block is hardware)",
+      "mechanism": "register block rendered as a rectangle, never an SWC",
+      "occurrences": 1,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "ARCH:NO_INTERFACES",
+      "evidence": "no labelled connection in the static view",
+      "mechanism": "static view rendered",
+      "occurrences": 1,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g1"
+      ],
+      "test": "test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "ARCH:SWC_COUNT",
+      "evidence": "SWC_LL missing or not stereotyped",
+      "mechanism": "exactly one <<SWC>> SWC_LL rendered",
+      "occurrences": 4,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g1",
+        "IWDG-LL-g2",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes"
+    },
+    {
+      "classification": "MODEL_OMISSION",
+      "code": "ARCH:SWR_NOT_ALLOCATED",
+      "evidence": "budget/reset SWRs (component-level constraints) never allocated in the diagram note",
+      "mechanism": "'Allocated:' note rendered with every SWR; component-level SWRs allocated to the SWC, not to new functions",
+      "occurrences": 44,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g1",
+        "IWDG-LL-g2",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_component_level_requirement_needs_no_function_and_unallocated_swr_is_repaired"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "CONTRACT_CALL_WITHOUT_CASE",
+      "evidence": "api_calls keys not equal to the SWE.1 case ids",
+      "mechanism": "calls validated against the SWE.1 cases; api_calls.json rendered from them",
+      "occurrences": 18,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g2",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_wrong_write_argument_and_compliance_claim_are_findings"
+    },
+    {
+      "classification": "MODEL_OMISSION",
+      "code": "CONTRACT_CASE_WITHOUT_CALL",
+      "evidence": "SWE.1 cases without a call",
+      "mechanism": "every case must have a call of an allocated function",
+      "occurrences": 27,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g2",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_wrong_write_argument_and_compliance_claim_are_findings"
+    },
+    {
+      "classification": "MODEL_FORMAT",
+      "code": "VIEWS:SYNTAX",
+      "evidence": "PlantUML syntax errors",
+      "mechanism": "views rendered from validated data; PlantUML check before reply",
+      "occurrences": 2,
+      "phase": "SWE.2",
+      "runs": [
+        "IWDG-LL-g1",
+        "IWDG-LL-g3"
+      ],
+      "test": "test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes"
+    }
+  ],
+  "schema": "forge-c/lrtx-replay/1",
+  "source": "evidence/v0.4/runs/QWEN-TRIAL/gpu",
+  "status": "PASS",
+  "untriaged": []
+}

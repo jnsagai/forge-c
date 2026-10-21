@@ -1,0 +1,32 @@
+..                                                                       [100%]
+==================================== PASSES ====================================
+______________ test_decomposition_never_resets_the_rework_budget _______________
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+gate execution b
+{"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": ["MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/software_requirements.md", "MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.csv", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/software_requirements.reqif", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/register_effects.json", "CONTRACT_MISSING:workproducts/SWE.1/register_effects.json"]}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+gate execution d
+{"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": ["MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/software_requirements.md", "MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.csv", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/software_requirements.reqif", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.1/register_effects.json", "CONTRACT_MISSING:workproducts/SWE.1/register_effects.json"]}
+gate execution e
+________________ test_visit_call_budget_is_shared_across_tasks _________________
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_p3.py::test_decomposition_never_resets_the_rework_budget
+PASSED factory/python/tests/test_lrtx_swe1.py::test_visit_call_budget_is_shared_across_tasks
+2 passed, 17 deselected in 0.84s
+
+--- stderr ---

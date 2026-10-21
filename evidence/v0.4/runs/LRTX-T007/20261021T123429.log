@@ -1,0 +1,3 @@
+{"status": "PASS", "checks": {"profile_selected": true, "acp_rejected": true, "network_denied_observed": true, "model_digest_match": true, "roots_isolated": true, "fabro_providers_local": true, "admission_metrics": true, "package_sealed": true}, "package_status": "BLOCKED"}
+
+--- stderr ---

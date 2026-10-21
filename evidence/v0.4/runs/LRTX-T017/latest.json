@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-rA",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_lrtx_swe1.py",
+    "factory/python/tests/test_lrtx_p3.py",
+    "-k",
+    "reused or invalidate or repaired_locally"
+  ],
+  "duration_s": 3.355,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3eae58ddfde384a95e316d6c71105eb32bb09cb2",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T017/20261021T123532.log",
+  "log_sha256": "9353d4171a0710d2a546fd574e392a16875d5ac6aeba6c007bedfbe4a56dc758",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T017",
+  "ts_utc": "2026-10-21T12:35:32.700055Z"
+}
