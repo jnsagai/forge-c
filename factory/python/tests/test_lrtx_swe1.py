@@ -228,3 +228,54 @@ def test_structured_inspectors_and_direct_reinspection_rewire_only_the_profile_g
         target = "swe3_fix_author" if n == 3 else f"swe{n}_author"
         assert f"  swe{n}_reinspect -> {target}\n" in g and f'  swe{n}_route -> {target} [condition' in base
         assert f'  swe{n}_reinspect -> swe{n}_inspector [condition="outcome=succeeded"]' in g
+
+
+STARTUP = _req("startup_copy", f"While no LL function has been called after reset, the {SYS} shall not write any IWDG "
+               "register.", 2989, by="target_robot_test")
+
+
+def test_register_task_may_not_carry_cross_cutting_requirements(ws, monkeypatch):
+    """lrtx2 (2026-10-21): three register tasks each added the startup invariant; the visit failed on duplicates."""
+    calls = []
+    with_copy = json.loads(json.dumps(ANSWERS["requirements:IWDG_RLR"]))
+    with_copy["requirements"].append(STARTUP)
+
+    def rlr(p):
+        return ANSWERS["requirements:IWDG_RLR"] if p["findings"] else with_copy
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_RLR": rlr}, calls))
+    assert swe1.visit(ws, "m")["status"] == "PASS"
+    second = [p for p in calls if p["task"] == "requirements:IWDG_RLR"][1]
+    assert any("names no field of this task" in f for f in second["findings"])
+
+
+def test_duplicates_are_repaired_where_they_belong_within_the_visit(ws, monkeypatch):
+    """A duplicate that passes per-task validation (it names a field) is attributed to the later register task and
+    repaired in the same visit; the cross-cutting task keeps shared requirements."""
+    calls = []
+    dup = json.loads(json.dumps(ANSWERS["requirements:IWDG_SR_2"]))
+    dup["requirements"].append(ANSWERS["requirements:IWDG_SR_1"]["requirements"][0] | {"key": "onf_again"})
+    dup["not_covered"] = [{"field": "IWDG_SR.WVU", "reason": "window option out of scope"}]
+
+    def sr2(p):
+        return ANSWERS["requirements:IWDG_SR_2"] if p["findings"] else dup
+    pairs = swe1.consistency([({"id": "IWDG_SR_1"}, {"task": "requirements:IWDG_SR_1",
+                                                    "doc": ANSWERS["requirements:IWDG_SR_1"]}),
+                              ({"id": "IWDG_SR_2"}, {"task": "requirements:IWDG_SR_2", "doc": dup})],
+                             {"task": "requirements:crosscutting", "doc": ANSWERS["requirements:crosscutting"]})
+    assert [t for t, _f in pairs] == ["requirements:IWDG_SR_2"]
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_SR_2": sr2}, calls))
+    rep = swe1.visit(ws, "m")
+    assert rep["status"] == "PASS", rep
+    assert len([p for p in calls if p["task"] == "requirements:IWDG_SR_2"]) == 2
+
+
+def test_a_failed_visit_carries_its_issues_into_the_next_visit(ws, monkeypatch):
+    """lrtx2: the presence gate rejected first, so the visit's own findings never reached the gate log and the next
+    visit reused everything and failed identically (STUCK)."""
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted(ANSWERS, calls))
+    V = swe1.V
+    V.reply(ws, "SWE.1", "FAILED", ["requirements:IWDG_PR: [prescaler] the verification has no pass criterion"])
+    budget, findings = V.open_visit(ws, "SWE.1", False, list, 35, None)
+    assert findings == ["requirements:IWDG_PR: [prescaler] the verification has no pass criterion"]
+    assert list(swe1.route_findings(findings, None)) == ["requirements:IWDG_PR"]

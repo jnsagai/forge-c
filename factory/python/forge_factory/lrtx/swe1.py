@@ -153,7 +153,9 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
     instr = (f"Write the software requirements of the {sysname} for register {g['register']} (RM0486 section "
              f"{g['section']}). Fields of this task: {fields}. Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules of this work order: {coverage_guidance(ws)} Apply them ONLY to the fields of this task; "
-             "other registers are separate tasks. For every field of this task either write the requirements the scope "
+             "other registers are separate tasks, and reset/startup behaviour and rules for all functions belong to a "
+             "separate cross-cutting task - never write them here. Every requirement of this task names a field of this "
+             "task as REGISTER.FIELD. For every field of this task either write the requirements the scope "
              "demands for it or list it in not_covered with the scope reason. Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
@@ -248,6 +250,10 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                                f"{reg}.{fld} ({width} bits)")
             elif e["value"] not in ("", None):
                 out.append(f"[{k}] effect {e['case']}: value must be \"\" for op {op}")
+        if g is not None and not r["effects"] and not any(f"{g['register']}.{f}" in st or
+                                                          (g["register"] in st and f in st) for f in g["fields"]):
+            out.append(f"[{k}] names no field of this task: reset/startup and all-function rules belong to the "
+                       "cross-cutting task - remove this requirement here")
         if _needs_contract(st, pfx) and not r["effects"]:  # the gate's rule (CONTRACT_SWR_NOT_COVERED)
             out.append(f"[{k}] the statement names a field it sets or clears but has no effect entry")
     if g is not None:
@@ -406,19 +412,24 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
 
 
 # ---- consistency and self-checks ------------------------------------------------------------------------------------
-def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[str]:
-    """LRTX-FR-010 global check across tasks: duplicate statements, contradictory effects on one field."""
+def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[tuple[str, str]]:
+    """LRTX-FR-010 global check across tasks: duplicate statements, contradictory effects on one field. Returns
+    (task, finding) so the finding is repaired where it belongs: a requirement duplicated in a register task and the
+    cross-cutting task is removed from the register task; between two register tasks, from the later one."""
     out, seen, ops = [], {}, {}
-    for _g, rec in results + [(None, cross)]:
+    for rec in [cross] + [rec for _g, rec in results]:  # the cross-cutting task owns shared requirements
         for r in rec["doc"]["requirements"]:
             norm = re.sub(r"\W+", " ", r["statement"].lower()).strip()
             if norm in seen:
-                out.append(f"[{r['key']}] duplicates [{seen[norm]}] ({rec['task']})")
-            seen[norm] = r["key"]
+                first_task, first_key = seen[norm]
+                out.append((rec["task"], f"[{r['key']}] duplicates [{first_key}] of {first_task}: remove it here"))
+            else:
+                seen[norm] = (rec["task"], r["key"])
             for e in r["effects"]:
-                ops.setdefault((e["case"], e["register"], e["field"]), set()).add(e["op"])
-    out += [f"case {c} has contradictory ops {sorted(o)} on {r}.{f}" for (c, r, f), o in ops.items()
-            if {"set", "clear"} <= o]
+                ops.setdefault((e["case"], e["register"], e["field"]), []).append((rec["task"], e["op"]))
+    for (c, reg, f), lst in ops.items():
+        if {"set", "clear"} <= {o for _t, o in lst}:
+            out.append((lst[-1][0], f"case {c} has contradictory ops set and clear on {reg}.{f}"))
     return out
 
 
@@ -518,9 +529,26 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
                       "needs the upstream SSR task)")
     if issues:  # missing semantic content stays missing: nothing partial is assembled or frozen
         return reply(ws, "FAILED", issues, budget)
-    issues = consistency(results, cross)
-    if issues:
-        return reply(ws, "FAILED", issues, budget)
+    found = consistency(results, cross)
+    if found and budget["calls"] < budget["max_calls"]:  # repair the offending tasks in this visit, then re-check
+        per: dict[str, list[str]] = {}
+        for task, f in found:
+            per.setdefault(task, []).append(f)
+        for task, fs in per.items():
+            g = next((g for g, _r in results if f"requirements:{g['id']}" == task), None)
+            if g is not None:
+                rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
+                               lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget, fs)
+                results = [(gg, rec if gg is g else rr) for gg, rr in results]
+            else:
+                cross = run_task(ws, task, lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
+                                 lambda d: validate_group(ws, d, None, sysname, idx), budget, fs)
+        bad = [rec for _g, rec in results + [(None, cross)] if rec["status"] != "VALID"]
+        if bad:
+            return reply(ws, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:5]], budget)
+        found = consistency(results, cross)
+    if found:
+        return reply(ws, "FAILED", [f"{t}: {f}" for t, f in found], budget)
     amap = assemble(ws, inv, results, cross)
     checks = self_check(ws)
     if checks and budget["calls"] < budget["max_calls"]:  # one localized repair round on the gate's own findings

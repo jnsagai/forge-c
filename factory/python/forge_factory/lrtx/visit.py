@@ -28,7 +28,14 @@ def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, 
     sp = Path(ws) / ".forge-run/lrtx" / phase / "visit-state.json"
     st = json.loads(sp.read_text()) if sp.is_file() else None
     if not (resume and st and st.get("open")):
-        st = {"open": True, "started_at": utc_now(), "calls": 0, "findings": findings_fn(), "continuations": 0}
+        # a visit that ended FAILED before anything could be assembled leaves no gate finding of its own (the presence
+        # gate rejects first): its issues are carried into the next visit so that it repairs instead of repeating
+        log = Path(ws) / ".forge-run/lrtx" / phase / "visits.jsonl"
+        done = [json.loads(x) for x in (log.read_text().splitlines() if log.is_file() else []) if x.strip()]
+        done = [d for d in done if d.get("status") != "CONTINUE"]
+        carried = list(done[-1].get("issues") or []) if done and done[-1].get("status") == "FAILED" else []
+        st = {"open": True, "started_at": utc_now(), "calls": 0, "continuations": 0,
+              "findings": list(dict.fromkeys(findings_fn() + carried))}
     else:
         st["continuations"] = st.get("continuations", 0) + 1
     sp.parent.mkdir(parents=True, exist_ok=True)
@@ -155,7 +162,7 @@ def route_findings(findings: list[str], amap: dict | None, default: str) -> dict
     requirements it might concern is unknown, so it is attached to the cross-cutting task and reported."""
     out: dict[str, list[str]] = {}
     for f in findings:
-        tasks = set()
+        tasks = set(re.findall(r"\b(requirements:[A-Za-z0-9_]+)", f))  # a visit's own findings name their task
         for swr in re.findall(r"SWR-\d{3}", f):
             if amap and swr in amap["swr"]:
                 t = amap["swr"][swr]
