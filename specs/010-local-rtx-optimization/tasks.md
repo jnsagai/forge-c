@@ -1,8 +1,9 @@
 # Feature 010 tasks
 
-Status (2026-10-21): P0 and P1 delivered; P2/P3 structured SWE.1/SWE.2 authors and inspectors implemented and tested
-with scripted models; fresh local-model trials (T016), measurement coverage of energy (T010), structured-output
-probe evidence (T012), seeded-defect evaluation (T021) and P4/P5 pending. A checked task requires its own evidence. A
+Status (2026-10-21): P0 and P1 delivered; structured SWE.1-SWE.6 (LL) authors and inspectors implemented and tested
+with scripted models; T010 and T012 recorded. Local trials lrtx1-lrtx7 are BLOCKED at SWE.1 (T016 open). lrtx7 froze
+SWE.1 on its first visit; the inspector defects it showed are fixed. Still pending: seeded-defect evaluation (T021),
+model comparison (T023), the campaign (T024) and the offline review package (T025). A checked task requires its own evidence. A
 written specification or passing static check is not a completed local model trial.
 
 ## P0 — preservation
@@ -19,12 +20,12 @@ written specification or passing static check is not a completed local model tri
 - [X] LRTX-T007 Record effective profile, model digest/quantization, runtime configuration and enforcement status in run provenance without secrets. ✅ Evidence: `evidence/v0.4/runs/LRTX-T007/latest.json`
 - [X] LRTX-T008 Enforce local endpoints and absent cloud fallback; prove offline dependency availability and external-network denial on the host. ✅ Evidence: `evidence/v0.4/runs/LRTX-T008/latest.json`
 - [X] LRTX-T009 Add single-request admission with bounded waiting, cancellation and queue metrics while preserving safe empty-response retry behavior. ✅ Evidence: `evidence/v0.4/runs/LRTX-T009/latest.json`
-- [ ] LRTX-T010 Separate queue/load/prefill/decode/tool measurements; capture GPU residency and memory pressure, label unsupported fields UNKNOWN.
+- [X] LRTX-T010 Separate queue/load/prefill/decode/tool measurements; capture GPU residency and memory pressure, label unsupported fields UNKNOWN. ✅ Evidence: `evidence/v0.4/runs/LRTX-T010/latest.json` (tests); live records `LRTX-TRIAL/lrtx6|lrtx7/metrics.json` (GPU energy at 100 % sample coverage; wall energy UNKNOWN on this host)
 
 ## P2 — SWE.1/SWE.2 coherent tasks
 
 - [X] LRTX-T011 Build versioned source-backed context packets and complete-prompt accounting; no silent truncation; retain output reserve. ✅ Evidence: `evidence/v0.4/runs/LRTX-T011/latest.json`
-- [ ] LRTX-T012 Add typed intermediate contracts and runtime capability probes for structured responses.
+- [X] LRTX-T012 Add typed intermediate contracts and runtime capability probes for structured responses. ✅ Evidence: `evidence/v0.4/runs/LRTX-T012/latest.json` (tests); live probe `LRTX-T012/capabilities-qwen3-coder-30b.json` (json_schema honoured)
 - [X] LRTX-T013 Implement requirement-group, register-effect and verification-mapping tasks with a complete source coverage inventory. ✅ Evidence: `evidence/v0.4/runs/LRTX-T013/latest.json`
 - [X] LRTX-T014 Implement allocation/interface tasks including resource and reset invariants, stable IDs and existing final artifact formats. ✅ Evidence: `evidence/v0.4/runs/LRTX-T014/latest.json`
 - [X] LRTX-T015 Render repetitive tables/diagrams deterministically; retain semantic author decisions and complete phase-level consistency gates. ✅ Evidence: `evidence/v0.4/runs/LRTX-T015/latest.json`
@@ -40,7 +41,7 @@ written specification or passing static check is not a completed local model tri
 
 ## P4/P5 — full process and qualification
 
-- [ ] LRTX-T022 Extend existing SWE.3-SWE.6 scaffolds and tasks without weakening complete phase gates or deriving test oracles from generated code.
+- [X] LRTX-T022 Extend existing SWE.3-SWE.6 scaffolds and tasks without weakening complete phase gates or deriving test oracles from generated code. ✅ Evidence: `evidence/v0.4/runs/LRTX-T022/latest.json` (LL work orders, scripted models against the real tools, Renode, Robot and the unchanged gates; HAL keeps the agent nodes; no local-model run has reached SWE.3 yet)
 - [ ] LRTX-T023 Compare smaller models per task with 30B, including switching and retry costs; preserve inspector qualification as a separate decision.
 - [ ] LRTX-T024 Execute the frozen 30-case local-only campaign and publish full provenance, quality/detection results, duration, tokens, resource use and uncertainty.
 - [ ] LRTX-T025 Verify the existing deployment remains usable and complete host rollback/isolation evidence; package results for offline review. No automatic promotion.

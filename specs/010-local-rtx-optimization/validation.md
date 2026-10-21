@@ -57,5 +57,10 @@ behavior is retained. Do not rewrite historical fingerprints to hide changes or 
 | Structured SWE.1/SWE.2 authors and inspectors (T011, T013-T015, T017-T020) | PASS with scripted models | `LRTX-T011..T020`; the unchanged gates freeze the assembled work products |
 | Replay triage of the QWEN-TRIAL rejections (T016, first part) | PASS (14 codes, none untriaged) | `LRTX-T016-REPLAY/replay.json` |
 | Promotion (CRE) | ELIGIBLE | pd-72f598aa1dc971b146cb (P0+P1), pd-b6853328caf1e2190ecf (P2+P3); pd-7f4521cc52c2676c4638 REJECTED by host memory exhaustion (local model loaded), not by the change |
-| Local model quality (structured SWE.1/SWE.2 on qwen3-coder:30b) | NOT_RUN | pending fresh trials |
-| 30-case campaign, energy, model routing | NOT_RUN | P4/P5 |
+| Measurement split, residency, memory pressure, GPU energy (T010) | PASS | `LRTX-T010` (tests); `LRTX-TRIAL/lrtx6|lrtx7/metrics.json` (live) |
+| Structured-output capability probe (T012) | PASS | `LRTX-T012` (tests) and the live probe record of qwen3-coder:30b |
+| Structured SWE.3-SWE.6 for LL (T022) | PASS with scripted models | `LRTX-T022`; the real tools, Renode, Robot and the unchanged gates |
+| Existing deployment preserved (T025, host check part) | PASS | `LRTX-T025-HOSTCHECK` (checkout, configs, 208 archives, services, network denial, dry-run rollback) |
+| Promotion (CRE), later candidates | ELIGIBLE | pd-5bfcdeab..., pd-118fefed..., pd-7cc602f1..., pd-82e141b7..., pd-4d89b29d..., pd-0d218f28... |
+| Local model quality (structured SWE.1 on qwen3-coder:30b) | BLOCKED (lrtx1-lrtx7) | `LRTX-TRIAL/README.md`; lrtx7 froze SWE.1 on its first visit, then factory inspection defects blocked it (fixed) |
+| 30-case campaign, model routing, seeded defects | NOT_RUN | T021, T023, T024 |

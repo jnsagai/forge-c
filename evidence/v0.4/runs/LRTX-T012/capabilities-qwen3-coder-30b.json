@@ -1,0 +1,28 @@
+{
+ "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+ "json_object": {
+  "errors": [],
+  "estimated_prompt_tokens": 305,
+  "prompt_tokens": 177,
+  "valid": true,
+  "wall_ms": 1212.3
+ },
+ "json_schema": {
+  "errors": [],
+  "estimated_prompt_tokens": 305,
+  "prompt_tokens": 177,
+  "valid": true,
+  "wall_ms": 80046.9
+ },
+ "model": "qwen3-coder:30b",
+ "none": {
+  "errors": [],
+  "estimated_prompt_tokens": 305,
+  "prompt_tokens": 177,
+  "valid": true,
+  "wall_ms": 926.9
+ },
+ "probed_at": "2026-10-21T15:18:21.588213Z",
+ "schema": "forge-c/lrtx-capabilities/1",
+ "selected_mode": "json_schema"
+}

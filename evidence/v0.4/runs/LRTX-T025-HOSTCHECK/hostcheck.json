@@ -1,0 +1,102 @@
+{
+  "archives": {
+    "changed": [],
+    "missing": [],
+    "new_since_t003": [],
+    "ok": true,
+    "preserved": 208,
+    "profile_archives_in_deployment": []
+  },
+  "checked_at": "2026-10-21T15:26:31.804791Z",
+  "checkouts": [
+    {
+      "clean": true,
+      "head_at_t003": "86f1f40c030bc721e7e5125a572d69647c4ac041",
+      "head_now": "86f1f40c030bc721e7e5125a572d69647c4ac041",
+      "ok": true,
+      "path": "/home/jefferson/forge-c",
+      "status": "UNCHANGED"
+    }
+  ],
+  "config_files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro/settings.toml",
+      "sha256_now": "b14983cd1ba8b19fab9ce266e90def0a9f5637d2bddeee4355c28cc15690ca4d",
+      "unchanged": true
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro-cloud/settings.toml",
+      "sha256_now": "a42d847da3f4adb023512818ac0129219d717968c0b61964df2fb144751fac01",
+      "unchanged": true
+    },
+    {
+      "path": "/home/jefferson/.config/systemd/user/forge-supervisor.service",
+      "sha256_now": "cf0ede4c1c535731fa5881a05e6ca30a2ea495b105bf1a4744c1188fa2a21f6b",
+      "unchanged": true
+    }
+  ],
+  "deployment_state": {
+    "ok": true,
+    "profile_work_orders_in_deployment_state": []
+  },
+  "namespace_network": {
+    "detail": "OSError: [Errno 101] Network is unreachable",
+    "interfaces": [
+      "lo"
+    ],
+    "netns": "net:[4026533535]",
+    "ok": true,
+    "probe": "1.1.1.1:443",
+    "status": "DENIED_VERIFIED"
+  },
+  "rollback": {
+    "conflicts": [],
+    "deployment_roots": [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c",
+      "/home/jefferson/forge-c"
+    ],
+    "dry_run": true,
+    "ok": true,
+    "remove": [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx1",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx2",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx3",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx4",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx5",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx6",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx7",
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx8"
+    ],
+    "steps": [
+      "python -m forge_factory.lrtx.stack stop   # recorded PIDs only, incl. the API relay",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx1",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx2",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx3",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx4",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx5",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx6",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx7",
+      "git worktree remove /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-run-lrtx8",
+      "rm -rf /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx   # profile root (after review)",
+      "remove source 'forge-c-lrtx' from /home/jefferson/fabro_dashboard/config.local.json; restart fabro-monitor.service"
+    ]
+  },
+  "schema": "forge-c/lrtx-hostcheck/1",
+  "services": {
+    "fabro": {
+      "health_url": "http://127.0.0.1:32290/health",
+      "status": "OK"
+    },
+    "ok": true,
+    "ollama": {
+      "digests_unchanged": true,
+      "status": "OK",
+      "url": "http://127.0.0.1:11435",
+      "version": "0.34.0"
+    }
+  },
+  "snapshot": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/snapshot.json",
+  "snapshot_sha256": "eddecae1e2efa7181f061e5b91b201894565d104797baf964851b7cece5762e9",
+  "status": "PASS"
+}
