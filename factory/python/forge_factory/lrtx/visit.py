@@ -41,6 +41,9 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         attempts.append({"n": n, "input_hash": p["input_hash"], "accounting": p["accounting"], "usage": r["usage"],
                          "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20]})
         budget.setdefault("log", []).append({"task": task, **attempts[-1]})
+        # one line per model call: Fabro's stall watchdog ends a command node that shows no activity for 1800 s
+        print(json.dumps({"lrtx_progress": task, "attempt": n, "errors": len(errs), "wall_ms": r["wall_ms"]}),
+              flush=True)
         if r["doc"] is not None and not r["errors"]:
             doc = r["doc"]
         if not errs:
