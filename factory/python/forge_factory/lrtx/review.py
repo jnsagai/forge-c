@@ -85,7 +85,10 @@ PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no so
 NO_VERIF_RX = re.compile(r"(?:no|without|missing|lacks?|not)\s+(?:explicit\s+)?(?:objective\s+)?verif|not "
                          r"(?:explicitly )?(?:verified|verifiable|measurable)", re.I)
 
-GAP_RX = re.compile(r"NOT_PROVIDED|not provided|upstream (?:coverage )?gap", re.I)
+GAP_RX = re.compile(r"NOT_PROVIDED|not (?:been |yet )?provided|upstream (?:coverage )?gap", re.I)
+# ... and only about an upstream input (lrtx9: "depends on an upstream budget that has not been provided"); a missing
+# verification criterion or test is never an upstream gap
+UPSTREAM_RX = re.compile(r"\bHSI\b|\bbudget|\bupstream\b|interface contract|safety allocation", re.I)
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
@@ -116,7 +119,7 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
     for f in findings:
         # lrtx7 (2026-10-21): the Claude inspector passed SWE1-01..06 of rc1 with the same recorded gaps; the Qwen
         # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has
-        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f):
+        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f) and UPSTREAM_RX.search(f):
             out.append(f"finding '{f[:80]}...' judges an input the owner recorded as NOT_PROVIDED as a failure: the "
                        "document records the gap in traceability/upstream_gaps.md, which is what the factory requires "
                        "for missing upstream inputs - re-judge the item on the other evidence")

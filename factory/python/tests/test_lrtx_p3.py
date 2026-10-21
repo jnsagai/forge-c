@@ -395,3 +395,13 @@ def test_startup_refutation_only_for_findings_that_deny_startup_behaviour(ws1): 
     assert any("specifies it" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [deny]))
     assert review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [ack]) == []
     assert review.fact_conflicts(ws1, "SWE.1", "SWE1-03", [fail]) == []
+
+
+def test_gap_refutation_needs_an_upstream_input(ws1):  # noqa: F811
+    """lrtx9 (2026-10-21): 'depends on an upstream budget that has not been provided' is the recorded budget gap; a
+    verification criterion that is 'not provided' is not an upstream gap and must stay a finding."""
+    budget = ("SWR-011: Requirement is not feasible because it depends on an upstream budget that has not been "
+              "provided, violating the feasibility criterion.")
+    crit = "SWR-001: the verification criterion is not provided for the unlock key requirement."
+    assert any("NOT_PROVIDED" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-02", [budget]))
+    assert not any("NOT_PROVIDED" in c for c in review.fact_conflicts(ws1, "SWE.1", "SWE1-06", [crit]))
