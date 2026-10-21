@@ -51,7 +51,7 @@ Status (2026-10-21, end of day):
 - [X] LRTX-T022 Extend existing SWE.3-SWE.6 scaffolds and tasks without weakening complete phase gates or deriving test oracles from generated code. ✅ Evidence: `evidence/v0.4/runs/LRTX-T022/latest.json` (LL work orders, scripted models against the real tools, Renode, Robot and the unchanged gates; HAL keeps the agent nodes; no local-model run has reached SWE.3 yet)
 - [X] LRTX-T023 Compare smaller models per task with 30B, including switching and retry costs; preserve inspector qualification as a separate decision. ✅ Evidence: `evidence/v0.4/runs/LRTX-T023/latest.json` (qwen3:8b vs qwen3-coder:30b on structured SWE.1, 3 interleaved repeats; 8b 0/3, 30b 3/3; no routing proposed; inspector qualification untouched)
 - [ ] LRTX-T024 Execute the frozen 30-case local-only campaign and publish full provenance, quality/detection results, duration, tokens, resource use and uncertainty.
-- [ ] LRTX-T025 Verify the existing deployment remains usable and complete host rollback/isolation evidence; package results for offline review. No automatic promotion.
+- [X] LRTX-T025 Verify the existing deployment remains usable and complete host rollback/isolation evidence; package results for offline review. No automatic promotion. ✅ Evidence: `evidence/v0.4/runs/LRTX-T025-HOSTCHECK/latest.json`, `evidence/v0.4/runs/LRTX-T025/latest.json` (host check PASS with dry-run rollback of the profile root and 16 run worktrees; offline review bundle forge-c-feature-010-review-32b59c783c33.zip, sha256 850d7c92..., byte-identical rebuild; not a release, no automatic promotion)
 
 ## Initial validation record
 

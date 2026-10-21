@@ -1,0 +1,8 @@
+forge-c-feature-010-review-32b59c783c33.zip: OK
+No errors detected in compressed data of /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/archives/review-bundles/forge-c-feature-010-review-32b59c783c33.zip.
+manifest 32b59c783c33 393 files
+{"zip": "/tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/rebuild/forge-c-feature-010-review-32b59c783c33.zip", "sha256": "850d7c92666e8ad5b89784fa9d33ecf4d97a1315cea8b2bc590ebc35919855d5", "git_head": "32b59c783c331a48340d4975ff74d59f4f5c174e", "files": 393, "ticked": 23, "tasks": 25}
+rebuild byte-identical
+hostcheck PASS 2026-10-21T22:01:05.092339Z 17 rollback removals, dry run
+
+--- stderr ---
