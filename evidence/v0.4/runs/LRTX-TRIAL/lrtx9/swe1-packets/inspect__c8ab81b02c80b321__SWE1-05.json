@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-21T16:00:21.353817Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7499,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20447
+      },
+      "errors": [
+        "finding 'SWR-001: Upstream HSI contract (RM0486 Rev 4 ch.59 IWDG register interface + mem...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'SWR-021: Upstream budget for flash_bytes (4096) is NOT_PROVIDED, creating a gap ...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ec4a8eedc358b13f6512b956c209afee4c9e75648a1f46b9bdcee00af6b530d3",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 190,
+        "prompt_tokens": 7061,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7251
+      },
+      "wall_ms": 28125.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8022,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21887
+      },
+      "errors": [
+        "finding 'SWR-001: Software safety allocation PENDING owner allocation review, creating a ...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "fd570d21b7bac7f60c926abb0b97449a376c1306a6042d8d195fd828e05f50c1",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 127,
+        "prompt_tokens": 7445,
+        "prompt_tokens_details": {
+          "cached_tokens": 6935
+        },
+        "total_tokens": 7572
+      },
+      "wall_ms": 6308.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7825,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21345
+      },
+      "errors": [
+        "finding 'SWR-001: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "ce822e14219ab6164e6157a3279456445e7e22f074a4e58b66956353648e14d6",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 128,
+        "prompt_tokens": 7279,
+        "prompt_tokens_details": {
+          "cached_tokens": 6985
+        },
+        "total_tokens": 7407
+      },
+      "wall_ms": 6947.5
+    }
+  ],
+  "base_hash": "ec4a8eedc358b13f6512b956c209afee4c9e75648a1f46b9bdcee00af6b530d3",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-001: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'SWR-001: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:c8ab81b02c80b321:SWE1-05"
+}

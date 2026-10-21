@@ -1,0 +1,116 @@
+{
+  "at": "2026-10-21T15:52:20.408228Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4543,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12318
+      },
+      "errors": [
+        "[iwdg_sr_ewif_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_onf_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_ewu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 538,
+        "prompt_tokens": 3116,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3654
+      },
+      "wall_ms": 31051.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5326,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14473
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "5e10a1846e0c962d326c9d71a7e852f857c2cb36c7e82eba9a3edccbf3d0ffe8",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 520,
+        "prompt_tokens": 3811,
+        "prompt_tokens_details": {
+          "cached_tokens": 2711
+        },
+        "total_tokens": 4331
+      },
+      "wall_ms": 25895.8
+    }
+  ],
+  "base_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWIF field is set, else 0U.",
+        "verification": "The host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].b.EWIF is read and the returned value matches the expected bit state.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.ONF field is set, else 0U.",
+        "verification": "The host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].b.ONF is read and the returned value matches the expected bit state.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWU field is set, else 0U.",
+        "verification": "The host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].b.EWU is read and the returned value matches the expected bit state.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

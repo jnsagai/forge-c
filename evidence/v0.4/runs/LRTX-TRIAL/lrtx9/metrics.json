@@ -1,0 +1,99 @@
+{
+  "calls": {
+    "basis": "admission gateway meter",
+    "count": 61,
+    "decode_ms": 915388.5,
+    "decode_tokens_per_s_median": 23.74,
+    "first_delta_ms": 580590.2,
+    "load_ms": 59163.2,
+    "model_loads": 1,
+    "output_tokens": 21374,
+    "prefill_ms": 580590.2,
+    "prefill_tokens_per_s_median": 783.0,
+    "prompt_tokens": {
+      "max": 8043,
+      "median": 7156,
+      "p95": 7531,
+      "sum": 364944
+    },
+    "queue_wait_ms": {
+      "max": 0.3,
+      "sum": 6.800000000000001
+    },
+    "refused_or_cancelled": 0,
+    "split_unobservable": 0
+  },
+  "energy": {
+    "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+    "coverage": 1.0,
+    "gpu_board_j": 48452.0,
+    "gpu_board_wh": 13.459,
+    "wall": "UNKNOWN (no wall-power meter on this host)"
+  },
+  "fabro_run_id": "01M5FJACC80X2TFHTQ4W2KMNVQ",
+  "generated_at": "2026-10-21T16:19:50.599192Z",
+  "resources": {
+    "gpu_vram_fraction_median": 0.34,
+    "gpu_vram_fraction_min": 0.34,
+    "host_mem_available_mib_min": 13519,
+    "host_swap_used_mib_max": 16383,
+    "samples": 158
+  },
+  "schema": "forge-c/lrtx-run-metrics/1",
+  "stages": {
+    "basis": "Fabro stage records",
+    "by_node": {
+      "exit": {
+        "inference_ms": 0,
+        "tool_ms": 0,
+        "visits": 1,
+        "wall_ms": 0
+      },
+      "finalize": {
+        "inference_ms": 0,
+        "tool_ms": 1433,
+        "visits": 1,
+        "wall_ms": 1623
+      },
+      "start": {
+        "inference_ms": 0,
+        "tool_ms": 0,
+        "visits": 1,
+        "wall_ms": 172
+      },
+      "swe1_author": {
+        "inference_ms": 0,
+        "tool_ms": 776969,
+        "visits": 3,
+        "wall_ms": 777551
+      },
+      "swe1_author_gate": {
+        "inference_ms": 0,
+        "tool_ms": 2664,
+        "visits": 3,
+        "wall_ms": 3262
+      },
+      "swe1_inspector": {
+        "inference_ms": 0,
+        "tool_ms": 794934,
+        "visits": 3,
+        "wall_ms": 795444
+      },
+      "swe1_route": {
+        "inference_ms": 0,
+        "tool_ms": 246,
+        "visits": 2,
+        "wall_ms": 602
+      }
+    },
+    "count": 14,
+    "inference_ms": 0,
+    "tool_ms": 1576246,
+    "wall_ms": 1578654
+  },
+  "window": {
+    "from": "2026-10-21T15:47:15.966068Z",
+    "to": "2026-10-21T16:13:40.462656Z",
+    "wall_s": 1585.5
+  }
+}

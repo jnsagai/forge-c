@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T16:04:32.858029Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7549,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20584
+      },
+      "errors": [
+        "finding 'Requirement SWR-020 is not feasible as the upstream budget for flash_bytes is NO...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "08624936c55969ecaf869f91a5895b5cdd2097287407c6afd6a9a4f164830d6d",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 146,
+        "prompt_tokens": 7034,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7180
+      },
+      "wall_ms": 24508.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7921,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21608
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2e92f7323d2b69e2a3e6967271a88b91ad68638c1784e70bafddf9a678ee9278",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 160,
+        "prompt_tokens": 7280,
+        "prompt_tokens_details": {
+          "cached_tokens": 6908
+        },
+        "total_tokens": 7440
+      },
+      "wall_ms": 8082.2
+    }
+  ],
+  "base_hash": "08624936c55969ecaf869f91a5895b5cdd2097287407c6afd6a9a4f164830d6d",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-020 is not objectively verifiable because the verification criterion in software_requirements.md only states that the SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence, but does not explicitly define the testable verification criteria for the requirement."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:34f242dd6823ce13:SWE1-02"
+}

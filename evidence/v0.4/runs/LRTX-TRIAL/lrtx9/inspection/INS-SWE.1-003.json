@@ -1,0 +1,159 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "5f6d0095f4c596bb8d803ea3b2246273d782de45b635526ee34bdf8c3213cdf9",
+  "baseline_id": "BL-SWE.1-003",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "No software safety requirements are allocated, as indicated in safety/software_safety_requirements.md and .forge-run/manifest.json#scope-target-budgets; the safety allocation status is PENDING owner a",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.; Requirement S",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md).",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-021: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the software_requirements.md or register_effects.json to confirm tha",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability. Requirement SWR-001 through SWR-023 are affected.",
+      "id": "SWE1-05",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are not documented for SWR-001 through SWR-023 in software_requirements.md. The document only mentions the source and test verification, but d",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-003",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/upstream_gaps.md"
+      ],
+      "findings": [
+        "No software safety requirements are allocated, as indicated in safety/software_safety_requirements.md and .forge-run/manifest.json#scope-target-budgets; the safety allocation status is PENDING owner a"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "source safety/software_safety_requirements.md",
+        "source traceability/requirements_to_tests.csv",
+        "source traceability/upstream_gaps.md",
+        "source workproducts/SWE.1/register_effects.json",
+        "source workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-001 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-002 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-003 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-004 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-005 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-006 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-007 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-008 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-009 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+        "Requirement SWR-010 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md)."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-021: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the software_requirements.md or register_effects.json to confirm tha",
+        "SWR-022: The requirement specifies that the IWDG LL driver shall use at most 64 bytes of static RAM, but no evidence is provided in the software_requirements.md or register_effects.json to confirm tha",
+        "SWR-023: The requirement specifies that the IWDG LL driver shall use at most 128 bytes of stack for any public API call, but no evidence is provided in the software_requirements.md or register_effects"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "source safety/software_safety_requirements.md",
+        "source traceability/requirements_to_tests.csv",
+        "source traceability/upstream_gaps.md",
+        "source workproducts/SWE.1/register_effects.json",
+        "source workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability. Requirement SWR-001 through SWR-023 are affected."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are not documented for SWR-001 through SWR-023 in software_requirements.md. The document only mentions the source and test verification, but d"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T161334.756278Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T161335.971928Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T16:13:35.972977Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

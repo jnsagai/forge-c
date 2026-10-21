@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T16:05:04.013048Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7547,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20580
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated; the safety allocation status is P...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'The upstream HSI contract is NOT_PROVIDED, creating a gap in bidirectional upstr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "46955febded57314dcee31bb682e0ef261eed79679f26bfa4cab3426027ec141",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 155,
+        "prompt_tokens": 7036,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7191
+      },
+      "wall_ms": 26149.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8060,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21991
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "5314570a0bec5b7165fad47608888fc0b608cdeb3556df89eeb0a0b8d72b70e4",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 89,
+        "prompt_tokens": 7347,
+        "prompt_tokens_details": {
+          "cached_tokens": 6910
+        },
+        "total_tokens": 7436
+      },
+      "wall_ms": 5000.8
+    }
+  ],
+  "base_hash": "46955febded57314dcee31bb682e0ef261eed79679f26bfa4cab3426027ec141",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md)."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:34f242dd6823ce13:SWE1-03"
+}

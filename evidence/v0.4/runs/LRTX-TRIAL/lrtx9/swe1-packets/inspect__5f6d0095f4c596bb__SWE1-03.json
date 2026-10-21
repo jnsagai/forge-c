@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-21T16:10:41.048330Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7692,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20978
+      },
+      "errors": [
+        "finding says reset/startup behaviour is not specified, but SWR-020 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "087f7e0e82b326bcfbde0831406460cd8fc5899b410c335016d65476d17aba82",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 126,
+        "prompt_tokens": 7164,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7290
+      },
+      "wall_ms": 31524.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8011,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21856
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated; the safety allocation status is P...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "6f345f9b629cef51234d52d71195f5e84945c65c6f37318a3f7fa0b51de61dd0",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 137,
+        "prompt_tokens": 7376,
+        "prompt_tokens_details": {
+          "cached_tokens": 7038
+        },
+        "total_tokens": 7513
+      },
+      "wall_ms": 8864.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8051,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21966
+      },
+      "errors": [
+        "finding says reset/startup behaviour is not specified, but SWR-020 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "d96b5928f1fa3a4a0642a6b0dda3a55c7302a887810d7230f0a13e62f7735f2b",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 126,
+        "prompt_tokens": 7386,
+        "prompt_tokens_details": {
+          "cached_tokens": 7081
+        },
+        "total_tokens": 7512
+      },
+      "wall_ms": 7087.1
+    }
+  ],
+  "base_hash": "087f7e0e82b326bcfbde0831406460cd8fc5899b410c335016d65476d17aba82",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md)."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding says reset/startup behaviour is not specified, but SWR-020 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-03"
+}

@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-21T16:09:53.551628Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7693,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20982
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "3cb84947695c3b011112431ee80bf1d2b72b8124c979d0c807b2748b4db296b6",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 479,
+        "prompt_tokens": 7162,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7641
+      },
+      "wall_ms": 45053.6
+    }
+  ],
+  "base_hash": "3cb84947695c3b011112431ee80bf1d2b72b8124c979d0c807b2748b4db296b6",
+  "doc": {
+    "evidence_checked": [
+      "source safety/software_safety_requirements.md",
+      "source traceability/requirements_to_tests.csv",
+      "source traceability/upstream_gaps.md",
+      "source workproducts/SWE.1/register_effects.json",
+      "source workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-002 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-003 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-004 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-005 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-006 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-007 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-008 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-009 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned.",
+      "Requirement SWR-010 is not objectively verifiable as it lacks a clear, unambiguous test criterion in the software requirements document; only source and test verification are mentioned."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-02"
+}

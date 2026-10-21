@@ -204,3 +204,26 @@ Run summary:
   - the refutations are recorded beside it as contested;
   - the startup rule now matches only a finding that denies startup behaviour within one clause, without naming the
     startup requirement.
+
+## lrtx9 — factory b7aef39, 2026-10-21 15:43–16:13 UTC: three recorded inspection FAILs, no cycle lost to the factory
+
+Run summary:
+- `verify.json` PASS; package BLOCKED (53 gaps).
+- 61 calls in 26.4 minutes, 13.5 Wh GPU energy at 100 % sample coverage.
+
+- **Author:** frozen on the first visit for the third run in a row (15 calls). Then 2 calls in each rework visit.
+- **Inspection:** INS-SWE.1-001..003 were all recorded. The contested-verdict recording from lrtx8 worked: no visit
+  ended without a record.
+  - The refuted findings were preserved and marked contested (`inspection-record.json`).
+  - Cycle 2 made progress: SWE1-04 and SWE1-05 passed.
+  - In cycle 3 they failed again. SWE1-03 still said startup behaviour is missing while SWR-020 states it.
+  - The Qwen inspector is unstable between visits on the same evidence; the profile records it as NOT_QUALIFIED.
+- **Author defects the validation missed, now fixed:**
+  - A repaired cross-cutting answer rewrote the IWDG_KR key writes with effects, which duplicated the register task.
+    The duplicates had different wording, so they slipped past the identical-statement check.
+  - In cycle 2 that repair also dropped the startup invariant. SWE1-03 was then a true finding.
+  - The cross-cutting task may no longer act on a register that has its own task, and must keep the startup
+    invariant.
+  - Consistency also catches the same write (same field and value) in other words.
+- **Inspector packets:** each structured SWE.1 item now carries the owner-scope note, which the agent inspector reads
+  once for all items. Before, only SWE1-01 had it, while SWE1-05 judged the same gaps.

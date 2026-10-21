@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T15:58:05.763975Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7502,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20455
+      },
+      "errors": [
+        "finding 'SWR-001: Requirement is not objectively verifiable because the safety allocation...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "2b1900aa0363c42d0cb7791b5a0a5730a165fe5b331d8fc1bf43602617d71787",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 7055,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7186
+      },
+      "wall_ms": 24858.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7845,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21399
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e8b567fe0a79c2d2d50c1d1d0301718241d4df5e6b1db685ebe56596d8d43480",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 121,
+        "prompt_tokens": 7275,
+        "prompt_tokens_details": {
+          "cached_tokens": 6929
+        },
+        "total_tokens": 7396
+      },
+      "wall_ms": 6076.6
+    }
+  ],
+  "base_hash": "2b1900aa0363c42d0cb7791b5a0a5730a165fe5b331d8fc1bf43602617d71787",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-020: Requirement is not feasible because it depends on an upstream budget that has not been provided, violating the feasibility criterion."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c8ab81b02c80b321:SWE1-02"
+}
