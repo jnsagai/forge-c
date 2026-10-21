@@ -53,13 +53,22 @@ def files(repo: Path) -> list[str]:
 
 
 def tasks(repo: Path) -> list[dict]:
+    """Per task: the tick state and the status of every evidence record its tasks.md line cites (or, when it cites
+    none, the record named after the task). A tick without an evidence-run record says so and names what it cites."""
     out = []
     for line in (repo / FEATURE / "tasks.md").read_text().splitlines():
         m = re.match(r"- \[( |x|X)\] (LRTX-T\d{3})\b", line)
-        if m:
-            ev = repo / "evidence/v0.4/runs" / m.group(2) / "latest.json"
-            out.append({"task": m.group(2), "ticked": m.group(1) != " ",
-                        "evidence_status": json.loads(ev.read_text())["status"] if ev.is_file() else "NO_RECORD"})
+        if not m:
+            continue
+        refs = re.findall(r"`(evidence/v0\.4/runs/[^`]+/latest\.json)`", line) or \
+            [f"evidence/v0.4/runs/{m.group(2)}/latest.json"]
+        recs = {r: json.loads((repo / r).read_text())["status"] for r in refs if (repo / r).is_file()}
+        if recs:
+            st = "PASS" if all(v == "PASS" for v in recs.values()) and len(recs) == len(refs) else "NOT_PASS"
+        else:
+            cites = [c for c in re.findall(r"`([^`]+)`", line) if not c.startswith("evidence/v0.4/runs/")]
+            st = "NO_EVIDENCE_RUN" + (f" (cites {', '.join(cites)})" if cites else "")
+        out.append({"task": m.group(2), "ticked": m.group(1) != " ", "evidence_status": st, "evidence": recs})
     return out
 
 

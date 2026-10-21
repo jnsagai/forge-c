@@ -35,3 +35,24 @@ def test_bundle_is_byte_identical_for_the_same_revision(tmp_path, monkeypatch):
 def test_out_dir_inside_the_repository_is_refused():
     with pytest.raises(SystemExit, match="OUT_DIR_INSIDE_REPOSITORY"):
         RB.main(["--out-dir", str(REPO_ROOT / "build/x")])
+
+
+def test_task_states_follow_the_evidence_each_tick_cites(tmp_path):
+    import json
+
+    runs = tmp_path / "evidence/v0.4/runs"
+    for name, st in (("LRTX-T016-REPLAY", "PASS"), ("LRTX-T016-SWE2", "PASS"), ("LRTX-T021", "FAIL")):
+        (runs / name).mkdir(parents=True)
+        (runs / name / "latest.json").write_text(json.dumps({"status": st}))
+    (tmp_path / RB.FEATURE).mkdir(parents=True)
+    (tmp_path / RB.FEATURE / "tasks.md").write_text(
+        "- [x] LRTX-T001 Record the SHA. Reference: `baseline.json` and ADR-0013.\n"
+        "- [X] LRTX-T016 Trials. ✅ Evidence: `evidence/v0.4/runs/LRTX-T016-REPLAY/latest.json`, "
+        "`evidence/v0.4/runs/LRTX-T016-SWE2/latest.json`\n"
+        "- [X] LRTX-T021 Seeded. ✅ Evidence: `evidence/v0.4/runs/LRTX-T021/latest.json`\n"
+        "- [ ] LRTX-T024 Campaign.\n")
+    ts = {t["task"]: t for t in RB.tasks(tmp_path)}
+    assert ts["LRTX-T016"]["evidence_status"] == "PASS" and len(ts["LRTX-T016"]["evidence"]) == 2
+    assert ts["LRTX-T001"]["evidence_status"] == "NO_EVIDENCE_RUN (cites baseline.json)"
+    assert ts["LRTX-T021"]["evidence_status"] == "NOT_PASS"  # a cited record that did not pass is never PASS
+    assert not ts["LRTX-T024"]["ticked"] and ts["LRTX-T024"]["evidence_status"] == "NO_EVIDENCE_RUN"
