@@ -370,3 +370,29 @@ def test_cbmc_proves_each_register_effect_for_every_initial_value(iwdg, monkeypa
     ident = {t["tool"]: t for t in register_proof.identity()}
     assert ident["cbmc"]["status"] == "PRESENT" and len(ident["cbmc"]["sha256"]) == 64
     assert ident["kind2"]["applicability"].startswith("UNSUPPORTED")
+
+
+def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch, tmp_path):
+    """F011-T031/T032: under local-rtx-v2 each function a frozen requirement names is a key of the SWE.2 output
+    schema, so the measured IsActive -> IsEnabled rename cannot be produced; other workspaces keep the feature 010
+    schema unchanged."""
+    from forge_factory.lrtx import swe2
+
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    assert swe2.named_mode(iwdg)
+    names = swe2.named_functions(iwdg)
+    assert "LL_IWDG_IsActive" in names and all(n.startswith("LL_IWDG_") for n in names)
+    schema = swe2.interfaces_packet(iwdg, "qwen3-coder:30b")["output_schema"]
+    assert schema["properties"]["named_functions"]["required"] == names
+    detail = {"returns": "uint32_t", "params": [], "operation": "query the enable flag", "fields": ["IWDG_SR.ONF"]}
+    good = {"named_functions": {n: detail for n in names}, "other_functions": [], "allocation": [], "calls": []}
+    assert not [e for e in S.validate(good, schema) if "named_functions" in e]
+    renamed = json.loads(json.dumps(good).replace('"LL_IWDG_IsActive"', '"LL_IWDG_IsEnabled"'))
+    assert S.validate(renamed, schema)  # the renamed key is refused by the schema itself
+    flat = swe2.normalize_interfaces(iwdg, good)
+    assert [f["name"] for f in flat["functions"]] == names and "named_functions" not in flat
+    man = json.loads((iwdg / ".forge-run/manifest.json").read_text())
+    man.pop("local_profile", None)
+    (iwdg / ".forge-run/manifest.json").write_text(json.dumps(man))
+    assert not swe2.named_mode(iwdg) and swe2.interfaces_schema(iwdg) is swe2.INTERFACES_SCHEMA

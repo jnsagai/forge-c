@@ -52,6 +52,12 @@ INTERFACES_SCHEMA = {"type": "object", "additionalProperties": False, "required"
                              "type": "object", "additionalProperties": False, "required": ["case", "function", "args"],
                              "properties": {"case": {"type": "string"}, "function": {"type": "string"},
                                             "args": {"type": "array", "items": {"type": "string"}}}}}}}
+# F011 (local-rtx-v2, structured.swe2_named_functions): the frozen SWE.1 requirements fix the names of the functions
+# they name. Measured 2026-10-22 (F011-T032): qwen3-coder:30b kept LL_IWDG_IsActive for a requirement naming
+# LL_IWDG_IsEnabled through every repair with the exact finding. The name becomes a key of the output schema; the model
+# describes the function, it cannot rename it. Functions no requirement names stay free (other_functions).
+FN_DETAIL_SCHEMA = {**FN_SCHEMA, "required": [k for k in FN_SCHEMA["required"] if k != "name"],
+                    "properties": {k: v for k, v in FN_SCHEMA["properties"].items() if k != "name"}}
 TEXTS = ("components", "register_access", "timing_and_error_handling", "memory_and_stack",
          "concurrency_and_reentrancy", "safety_and_dependencies")
 DESIGN_SCHEMA = {"type": "object", "additionalProperties": False, "required": [*TEXTS, "decisions", "sequences"],
@@ -113,6 +119,47 @@ def _fn_rx(ws: Path) -> re.Pattern:
 
 
 # ---- packets -----------------------------------------------------------------------------------------------------------
+def named_mode(ws: Path) -> bool:
+    man = Path(ws) / ".forge-run/manifest.json"
+    prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+    if not prof_id:
+        return False
+    from .profile import load
+
+    return bool((load(prof_id).get("structured") or {}).get("swe2_named_functions"))
+
+
+def named_functions(ws: Path) -> list[str]:
+    """The functions the functional requirements name (register-name constants excluded), in first-mention order."""
+    reqs, cl, rx = requirements(ws), component_level(ws), _fn_rx(ws)
+    out: list[str] = []
+    for s, text in reqs.items():
+        if s in cl:
+            continue
+        out += [n for n in rx.findall(text) if n not in out and not n.endswith(("_OFFSET", "_MSK", "_POS"))]
+    return out
+
+
+def interfaces_schema(ws: Path) -> dict:
+    if not named_mode(ws):
+        return INTERFACES_SCHEMA
+    names = named_functions(ws)
+    props = {k: v for k, v in INTERFACES_SCHEMA["properties"].items() if k != "functions"}
+    return {"type": "object", "additionalProperties": False,
+            "required": ["named_functions", "other_functions", "allocation", "calls"],
+            "properties": {"named_functions": {"type": "object", "additionalProperties": False, "required": names,
+                                               "properties": {n: FN_DETAIL_SCHEMA for n in names}},
+                           "other_functions": {"type": "array", "items": FN_SCHEMA}, **props}}
+
+
+def normalize_interfaces(ws: Path, doc: dict) -> dict:
+    """The named-function answer in the feature 010 shape every check and renderer reads."""
+    if "named_functions" not in doc:
+        return doc
+    fns = [{"name": n, **v} for n, v in doc["named_functions"].items()] + list(doc.get("other_functions") or [])
+    return {"functions": fns, **{k: v for k, v in doc.items() if k not in ("named_functions", "other_functions")}}
+
+
 def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dict:
     reqs, cl = requirements(ws), component_level(ws)
     func = {k: v for k, v in reqs.items() if k not in cl}
@@ -133,10 +180,13 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
              "responsibility. calls: one entry per register-effect case: the function allocated to the case's "
              "requirement and its C arguments (decimal or hex integer constants with a U suffix; a write case passes "
              "exactly the case value). Every function a requirement statement names must exist with that exact name.")
+    if named_mode(ws):
+        instr += (" The functions the frozen requirements name are fixed: describe each under named_functions, keyed by "
+                  "that exact name; put any further function an operation needs under other_functions.")
     crit = ["every listed requirement is allocated", "every function is allocated to at least one requirement",
             "every case has one call of a function allocated to its requirement"]
     return S.packet(phase=PHASE, task="interfaces", role="swe2-author", instructions=instr, sources=[],
-                    artifacts=art, criteria=crit, output_schema=INTERFACES_SCHEMA, model=model, findings=findings,
+                    artifacts=art, criteria=crit, output_schema=interfaces_schema(ws), model=model, findings=findings,
                     previous=previous)
 
 
@@ -398,7 +448,9 @@ def _visit(ws: Path, model: str, budget: dict, findings: list[str]) -> dict:
         routed.setdefault(key, []).append(f)
     idx = index(ws / "inputs/sections/RM0486")
     iface = V.run_task(ws, PHASE, "interfaces", lambda fi, pr: interfaces_packet(ws, model, fi, pr),
-                       lambda d: validate_interfaces(ws, d, idx), budget, routed.get("interfaces"))
+                       lambda d: validate_interfaces(ws, normalize_interfaces(ws, d), idx), budget,
+                       routed.get("interfaces"))
+    iface = {**iface, "doc": normalize_interfaces(ws, iface["doc"]) if iface.get("doc") else iface.get("doc")}
     if iface["status"] != "VALID":
         return reply(ws, "FAILED", [f"interfaces: {e}" for e in iface["errors"][:10]], budget)
     design = V.run_task(ws, PHASE, "design", lambda fi, pr: design_packet(ws, model, iface["doc"], fi, pr),
@@ -412,7 +464,8 @@ def _visit(ws: Path, model: str, budget: dict, findings: list[str]) -> dict:
         iv = [c for c in checks if re.search(r"SWR|CONTRACT_|ALLOCAT|INTERFACE|PLACEHOLDER|UNKNOWN", c)]
         if iv:
             iface = V.run_task(ws, PHASE, "interfaces", lambda fi, pr: interfaces_packet(ws, model, fi, pr),
-                               lambda d: validate_interfaces(ws, d, idx), budget, iv)
+                               lambda d: validate_interfaces(ws, normalize_interfaces(ws, d), idx), budget, iv)
+            iface = {**iface, "doc": normalize_interfaces(ws, iface["doc"]) if iface.get("doc") else iface.get("doc")}
         rest = [c for c in checks if c not in iv]
         if rest and iface["status"] == "VALID":
             design = V.run_task(ws, PHASE, "design", lambda fi, pr: design_packet(ws, model, iface["doc"], fi, pr),
