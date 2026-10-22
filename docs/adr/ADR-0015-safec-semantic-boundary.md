@@ -66,7 +66,7 @@ These decisions were recorded by Claude Code. The authored decision above is unc
    model" and "glm4:9b's licence isn't OSI ok no problem". phi4:14b (MIT), mistral-small3.2:24b (Apache-2.0) and
    granite3.3:8b (Apache-2.0) were pulled on loop10 and pinned by digest in `local-rtx-v2` as NOT_QUALIFIED
    candidates (366db72). glm4:9b's licence is accepted for evaluation and use.
-4. **Finding, no decision yet: gpt-oss and the gateway's reasoning setting.** The local gateway forces
+4. **Finding: gpt-oss and the gateway's reasoning setting (decided, see 5).** The local gateway forces
    `reasoning_effort="none"` on every request and strips reasoning fields from responses (`llm_gateway.py`).
    gpt-oss:20b cannot switch its reasoning off: with `none` it returns empty content (measured, F011-T028C), so
    every inspection item failed to parse. FR-025 (spec 002) requires that AI trace storage exclude hidden reasoning;
@@ -75,3 +75,13 @@ These decisions were recorded by Claude Code. The authored decision above is unc
    stored) would meet FR-025 as written, but it changes the gateway's design and costs extra tokens. It is left to
    the owner; until then gpt-oss:20b is NOT_QUALIFIED (incompatible with the gateway setting) and was not evaluated
    further.
+5. **Per-model reasoning exception (decision).** Owner, 2026-10-22: "I agree with A per-model exception in the
+   gateway". A local profile may list models in `gateway.reasoning` with a fixed effort and extra output tokens.
+   - The stack passes the policy to the gateway.
+   - A listed model reasons at that effort, and the caller cannot raise it. Every other model stays at `none`.
+   - The gateway still strips every reasoning field from plain and streamed answers before they reach the caller or
+     the meter, so no hidden reasoning is stored (FR-025).
+   - local-rtx-v2 and local-rtx-v2-omniverse2 list gpt-oss:20b at `low`, plus 4096 tokens. local-rtx-v1 and the
+     default lines have no policy and are unchanged.
+   - Implemented in 82c5fe8 (`pd-704dec78b9e1f85b1f92`). Whether reasoning improves inspection is still to be
+     measured: the same holdouts, with reasoning on and off.

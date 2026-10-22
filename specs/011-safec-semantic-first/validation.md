@@ -212,3 +212,7 @@ sha256 `359bef94…`, reproduced in two clean target directories; `validate_inte
 **Second host:** `config/factory/profiles/local-rtx-v2-omniverse2.yaml` (6af8286, `pd-81790d8356ca886904e5`). It is
 local-rtx-v2 with the omniverse2 paths (data root /mnt/data/forge-c) and the cross-host engine build; a test fails if
 the two profiles drift apart in anything else. Not yet started there: the models are still being copied.
+**Per-model reasoning exception** (owner decision; ADR-0015 addendum 5): 82c5fe8, `pd-704dec78b9e1f85b1f92`. gpt-oss:20b
+may reason at `low` with extra output tokens; reasoning is still stripped before anything is stored. Not yet measured
+on the holdouts. Pre-existing and unrelated: test_kpi_003 t012/t020 fail the same way on a clean 209191a checkout
+(they read live factory state).
