@@ -267,13 +267,16 @@ def _real_pin() -> CL.EnginePin:
 def test_real_engine_handshake_and_unsupported_round_trip(tmp_path):
     pin = _real_pin()
     ident, issues = CL.handshake(pin, tmp_path / "id")
-    assert issues == [] and set(ident["operations"].values()) == {"UNSUPPORTED"}
+    assert issues == [] and set(ident["operations"].values()) <= {"SUPPORTED", "UNSUPPORTED"}
     for op in ("validate_intents", "derive_contracts", "derive_tests", "probe_capabilities"):
         doc, raw = request(pin, operation=op, request_id=f"REQ-{op}")
         out = CL.invoke(pin, doc, raw, tmp_path / op)
-        assert out.status == "UNSUPPORTED" and not out.admissible and out.issues == [], (op, out.issues)
-        assert out.result["findings"][0]["check_id"] == "OPERATION_SUPPORTED"
+        assert not out.admissible and out.issues == [], (op, out.issues)
         assert out.result["engine"] == pin.expected() and out.exit_code == 0
+        if ident["operations"][op] == "UNSUPPORTED":
+            assert out.status == "UNSUPPORTED" and out.result["findings"][0]["check_id"] == "OPERATION_SUPPORTED"
+        else:  # a supported operation without its domain document is an error, never a PASS
+            assert out.status == "ERROR" and out.result["findings"][0]["check_id"] == "DOMAIN_REQUIRED"
 
 
 @pytest.mark.skipif(not PIN, reason="FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine on this host")

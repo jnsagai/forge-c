@@ -25,7 +25,9 @@ DOCS = ("CLAUDE_FEATURE011_START.md", "docs/adr/ADR-0015-safec-semantic-boundary
         *(f"{FEATURE}/{n}.md" for n in ("spec", "plan", "research", "data-model", "acceptance-tests", "tasks",
                                         "validation", "quickstart")))
 SCHEMAS = {"request": f"{FEATURE}/contracts/bridge-request.schema.json",
-           "result": f"{FEATURE}/contracts/bridge-result.schema.json"}
+           "result": f"{FEATURE}/contracts/bridge-result.schema.json",
+           "domain": f"{FEATURE}/contracts/register-io-domain.schema.json",
+           "contract": f"{FEATURE}/contracts/register-io-contract.schema.json"}
 EXAMPLES = "factory/python/tests/fixtures/safec_bridge/examples.json"
 # where a bare file name in the documents is meant to live
 SEARCH = ("", f"{FEATURE}/", "docs/adr/", "evidence/v0.4/runs/", "factory/python/forge_factory/",

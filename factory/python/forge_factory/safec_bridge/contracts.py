@@ -11,7 +11,9 @@ Anything else is a `ContractError` with a machine-readable code and is never int
 canonical bytes (sorted keys, no whitespace, UTF-8), so the request digest is reproducible.
 
 The identity handshake (`<engine> identity`) is a separate, versioned message of this module (IDENTITY_SCHEMA). It
-names the engine and the protocol versions it speaks, and it carries no check result.
+names the engine and the protocol versions it speaks, and it carries no check result. An engine that implements
+register-io semantics also names the domain protocol (DOMAIN_SCHEMA): the domain document is passed as a file
+whose SHA-256 is the request's binding.source_manifest_sha256.
 """
 from __future__ import annotations
 
@@ -26,6 +28,8 @@ FEATURE = REPO_ROOT / "specs/011-safec-semantic-first/contracts"
 REQUEST_SCHEMA = "forge-c/safec-bridge-request/1"
 RESULT_SCHEMA = "forge-c/safec-bridge-result/1"
 IDENTITY_SCHEMA = "forge-c/safec-bridge-identity/1"
+DOMAIN_SCHEMA = "forge-c/register-io-domain/1"
+CONTRACT_SCHEMA = "forge-c/register-io-contract/1"
 STATUSES = ("PASS", "FAIL", "INCONCLUSIVE", "UNSUPPORTED", "STALE", "ERROR")
 PROFILES = ("register-io-0.1",)
 MAX_REQUEST_BYTES = 1024 * 1024
@@ -81,7 +85,8 @@ _validators: dict[str, object] = {}
 
 
 def schema(kind: str) -> dict:
-    name = {"request": "bridge-request.schema.json", "result": "bridge-result.schema.json"}[kind]
+    name = {"request": "bridge-request.schema.json", "result": "bridge-result.schema.json",
+            "domain": "register-io-domain.schema.json", "contract": "register-io-contract.schema.json"}[kind]
     return json.loads((FEATURE / name).read_text())
 
 
@@ -134,7 +139,8 @@ def parse_identity(raw: bytes) -> dict:
             and isinstance(eng["binary_sha256"], str) and SHA256.match(eng["binary_sha256"])
             and isinstance(eng["semantic_profiles"], list)):
         raise ContractError("IDENTITY_VALUES")
-    if doc["protocol"] != {"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA}:
+    if doc["protocol"] not in ({"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA},
+                               {"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA, "domain": DOMAIN_SCHEMA}):
         raise ContractError("PROTOCOL_MISMATCH", json.dumps(doc["protocol"])[:200])
     ops = doc["operations"]
     if not isinstance(ops, dict) or not all(isinstance(k, str) and v in ("SUPPORTED", "UNSUPPORTED")

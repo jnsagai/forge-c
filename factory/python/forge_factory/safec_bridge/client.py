@@ -178,13 +178,16 @@ def _revalidate(result: dict, request: dict, input_sha: str, pin: EnginePin, evd
 
 
 def invoke(pin: EnginePin, request: dict, raw: bytes, workdir: Path, lim: Limits | None = None,
-           cancel: threading.Event | None = None) -> Outcome:
-    """Run one already-built request (contracts.build_request) and return the normalized outcome."""
+           cancel: threading.Event | None = None, domain: bytes | None = None) -> Outcome:
+    """Run one already-built request (contracts.build_request) and return the normalized outcome. `domain` is the
+    exact bytes of the register-io domain document the request is bound to (binding.source_manifest_sha256)."""
     lim = lim or Limits()
     input_sha = C.sha256_bytes(raw)
     base = {"request_id": request.get("request_id"), "input_sha256": input_sha}
     if request.get("expected_engine") != pin.expected():
         return Outcome("STALE", refused=True, issues=["REQUEST_ENGINE_NOT_PIN"], **base)
+    if domain is not None and C.sha256_bytes(domain) != request["binding"]["source_manifest_sha256"]:
+        return Outcome("STALE", refused=True, issues=["DOMAIN_NOT_BOUND_TO_REQUEST"], **base)
     issues = verify_engine_file(pin)
     if issues:
         return Outcome("STALE" if issues[0].startswith("ENGINE_DIGEST") else "ERROR", refused=True, issues=issues,
@@ -195,8 +198,11 @@ def invoke(pin: EnginePin, request: dict, raw: bytes, workdir: Path, lim: Limits
         return Outcome("STALE", refused=True, issues=issues, **base)
     req_p, res_p, evdir = workdir / "request.json", workdir / "result.json", workdir / "evidence"
     req_p.write_bytes(raw)
-    run = _execute([str(pin.binary), "run", "--request", str(req_p), "--result", str(res_p), "--evidence-dir",
-                    str(evdir)], workdir, lim, cancel)
+    argv = [str(pin.binary), "run", "--request", str(req_p), "--result", str(res_p), "--evidence-dir", str(evdir)]
+    if domain is not None:
+        (workdir / "domain.json").write_bytes(domain)
+        argv += ["--domain", str(workdir / "domain.json")]
+    run = _execute(argv, workdir, lim, cancel)
     measured = {k: run[k] for k in ("wall_ms", "cpu_ms", "stdout_sha256", "stderr_sha256")}
     if run["stopped"]:
         return Outcome("ERROR", issues=[run["stopped"]], exit_code=run["exit_code"], measured=measured, **base)
