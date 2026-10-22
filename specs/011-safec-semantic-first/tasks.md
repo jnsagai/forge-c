@@ -1,6 +1,6 @@
 # Implementation tasks — Feature 011
 
-**Status (2026-10-22, M0 measured):** F011-T001, T002, T003 and T005 are checked with evidence. F011-T004 was measured but is NOT_PASS: SafeC on Linux passes 263 tests and fails 2 (baseline defects), and Kind 2/Z3 are absent. Every other task is pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
+**Status (2026-10-22, M0 and M1 measured):** M0 F011-T001, T002, T003 and T005 are checked; F011-T004 is measured but NOT_PASS (SafeC on Linux passes 263 tests and fails 2, baseline defects; Kind 2/Z3 absent). M1 F011-T006 to T011 are checked with evidence: the bridge protocol only, and every SafeC operation is UNSUPPORTED until M2. Every other task is pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
 
 **Sources:** `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/*.schema.json`, `acceptance-tests.md`; constitution and existing feature 010 baselines.
 
@@ -18,12 +18,12 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 
 ## M1 — SafeC bridge protocol (F011-AT-006..010)
 
-- [ ] **F011-T006 [US1]** In Forge-C implement `factory/python/forge_factory/safec_bridge/contracts.py` and `client.py` parsing the two frozen JSON schemas and rejecting unknown/oversized/stale/duplicate-key/UTF-8-invalid messages.
-- [ ] **F011-T007 [US1]** Implement strict, bounded subprocess invocation, cancellation and resource/result capture; no shell expansion; hash-verified SafeC binary and version handshake.
-- [ ] **F011-T008 [US1]** In SafeC private repo implement an explicit versioned bridge CLI command (or a thin separate binary reusing Rust libs) that understands proposed request/result envelopes; it MUST reject unimplemented operations as UNSUPPORTED, not nominal PASS.
-- [ ] **F011-T009 [US1]** Add request/result provenance, input snapshot/source/policy digest matching and evidence revalidation; do not accept reported PASS without validating the referenced artifact content and exact property set.
-- [ ] **F011-T010 [P] [US1]** Add Forge-C pytest contract/adversarial fixtures in `factory/python/tests/test_safec_bridge.py` (schema errors, stale, forged success, timeout, cancellation, tool identity, privacy). Add corresponding SafeC Rust tests.
-- [ ] **F011-T011 [US1]** Provide a narrow, policy-authorized MCP wrapper for any **AI agent** permitted to invoke the bridge; deterministic orchestration may call the CLI directly. Confirm Fabro command node integration does not weaken authorization.
+- [X] **F011-T006 [US1]** In Forge-C implement `factory/python/forge_factory/safec_bridge/contracts.py` and `client.py` parsing the two frozen JSON schemas and rejecting unknown/oversized/stale/duplicate-key/UTF-8-invalid messages. ✅ Evidence: `evidence/v0.4/runs/F011-T010/latest.json`
+- [X] **F011-T007 [US1]** Implement strict, bounded subprocess invocation, cancellation and resource/result capture; no shell expansion; hash-verified SafeC binary and version handshake. ✅ Evidence: `evidence/v0.4/runs/F011-T010/latest.json`, `evidence/v0.4/runs/F011-T008/latest.json`
+- [X] **F011-T008 [US1]** In SafeC private repo implement an explicit versioned bridge CLI command (or a thin separate binary reusing Rust libs) that understands proposed request/result envelopes; it MUST reject unimplemented operations as UNSUPPORTED, not nominal PASS. ✅ Evidence: `evidence/v0.4/runs/F011-T008/latest.json`
+- [X] **F011-T009 [US1]** Add request/result provenance, input snapshot/source/policy digest matching and evidence revalidation; do not accept reported PASS without validating the referenced artifact content and exact property set. ✅ Evidence: `evidence/v0.4/runs/F011-T010/latest.json`
+- [X] **F011-T010 [P] [US1]** Add Forge-C pytest contract/adversarial fixtures in `factory/python/tests/test_safec_bridge.py` (schema errors, stale, forged success, timeout, cancellation, tool identity, privacy). Add corresponding SafeC Rust tests. ✅ Evidence: `evidence/v0.4/runs/F011-T010/latest.json`
+- [X] **F011-T011 [US1]** Provide a narrow, policy-authorized MCP wrapper for any **AI agent** permitted to invoke the bridge; deterministic orchestration may call the CLI directly. Confirm Fabro command node integration does not weaken authorization. ✅ Evidence: `evidence/v0.4/runs/F011-T011/latest.json`
 
 **M1 exit:** F011-AT-006..010 PASS plus no ACP/default behavioral difference.
 

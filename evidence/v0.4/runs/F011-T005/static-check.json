@@ -41,11 +41,8 @@
       "status": "RESOLVED"
     },
     {
-      "not_yet_present": [
-        "client.py"
-      ],
       "ref": "client.py",
-      "status": "PROPOSED"
+      "status": "RESOLVED"
     },
     {
       "ref": "config/factory/profiles/local-rtx-v1.yaml",
@@ -136,6 +133,30 @@
       "status": "RESOLVED"
     },
     {
+      "ref": "evidence/v0.4/runs/F011-T008/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T008/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T010/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T010/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T011/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T011/latest.json",
+      "status": "RESOLVED"
+    },
+    {
       "ref": "evidence/v0.4/runs/LRTX-T024/README.md",
       "status": "RESOLVED"
     },
@@ -156,18 +177,12 @@
       "status": "RESOLVED"
     },
     {
-      "not_yet_present": [
-        "factory/python/forge_factory/safec_bridge/contracts.py"
-      ],
       "ref": "factory/python/forge_factory/safec_bridge/contracts.py",
-      "status": "PROPOSED"
+      "status": "RESOLVED"
     },
     {
-      "not_yet_present": [
-        "factory/python/tests/test_safec_bridge.py"
-      ],
       "ref": "factory/python/tests/test_safec_bridge.py",
-      "status": "PROPOSED"
+      "status": "RESOLVED"
     },
     {
       "ref": "feat/011-safec-semantic-first",
@@ -191,6 +206,14 @@
     },
     {
       "ref": "runner.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "safec_bridge/client.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "safec_bridge/contracts.py",
       "status": "RESOLVED"
     },
     {

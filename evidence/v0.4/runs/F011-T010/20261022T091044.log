@@ -1,0 +1,102 @@
+........................................ss...............                [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_safec_bridge.py::test_request_bytes_are_canonical_and_stable
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[duplicate-key]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[nan]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[invalid-utf8]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[not-object]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[truncated]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[empty]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[oversized]
+PASSED factory/python/tests/test_safec_bridge.py::test_result_semantics_beyond_the_schema
+PASSED factory/python/tests/test_safec_bridge.py::test_a_request_the_schema_refuses_is_never_built
+PASSED factory/python/tests/test_safec_bridge.py::test_honest_unsupported_round_trip_binds_every_identity
+PASSED factory/python/tests/test_safec_bridge.py::test_a_verified_pass_is_admissible_only_with_its_evidence_and_artifacts
+PASSED factory/python/tests/test_safec_bridge.py::test_wrong_binary_digest_refuses_without_executing
+PASSED factory/python/tests/test_safec_bridge.py::test_missing_engine_and_request_not_bound_to_the_pin_are_refused
+PASSED factory/python/tests/test_safec_bridge.py::test_handshake_mismatch_stops_before_the_run[identity_wrong_commit-ENGINE_SOURCE_COMMIT_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_handshake_mismatch_stops_before_the_run[identity_no_profile-PROFILE_NOT_OFFERED:register-io-0.1]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[forged_pass_exit1-ERROR-ENGINE_EXIT:1]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_request_id-ERROR-RESULT_REQUEST_ID_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_input_digest-STALE-RESULT_INPUT_DIGEST_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_engine-STALE-RESULT_ENGINE_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[missing_evidence-ERROR-EVIDENCE_MISSING]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[tampered_evidence-ERROR-EVIDENCE_DIGEST_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[evidence_disagrees-ERROR-EVIDENCE_STATUS_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[missing_artifact-ERROR-ARTIFACT_MISSING:C-001]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[artifact_digest_mismatch-ERROR-ARTIFACT_DIGEST_MISMATCH:C-001]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[contradictory_pass-ERROR-RESULT_CONTRADICTORY_PASS]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[no_result-ERROR-RESULT_MISSING]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[duplicate_keys-ERROR-RESULT_DUPLICATE_KEY]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[invalid_utf8-ERROR-RESULT_INVALID_UTF8]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[unknown_field-ERROR-RESULT_SCHEMA_VIOLATION]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[oversized-ERROR-RESULT_OVERSIZED]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[huge_stdout-UNSUPPORTED-None]
+PASSED factory/python/tests/test_safec_bridge.py::test_crash_is_an_error
+PASSED factory/python/tests/test_safec_bridge.py::test_timeout_kills_the_engine_and_everything_it_started
+PASSED factory/python/tests/test_safec_bridge.py::test_cancellation_stops_a_running_engine
+PASSED factory/python/tests/test_safec_bridge.py::test_engine_gets_an_empty_environment_and_its_streams_stay_out_of_the_record
+PASSED factory/python/tests/test_safec_bridge.py::test_only_pass_is_admissible_every_other_status_blocks
+PASSED factory/python/tests/test_safec_bridge.py::test_identical_requests_give_byte_identical_results_and_the_cache_binds_inputs
+PASSED factory/python/tests/test_safec_bridge.py::test_work_directory_is_never_reused
+PASSED factory/python/tests/test_safec_bridge.py::test_engine_file_must_be_executable
+PASSED factory/python/tests/test_safec_bridge.py::test_no_agent_role_can_reach_the_bridge
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_feature_documents_resolve_and_examples_behave_as_frozen
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_an_unplanned_missing_reference_fails
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_clean_change_passes_the_boundary_scan
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_copied_private_line_is_found_without_storing_it
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_credentials_are_found_in_tracked_and_untracked_changes
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_line_public_forge_c_already_had_is_not_a_private_copy
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_placeholders_are_not_credentials
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_shared_public_contracts_are_not_private_content
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-path]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[bearer]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-line]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[multiline]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_keeps_only_allowed_scalars
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_linux_probe_reports_counts_and_keeps_raw_logs_private
+SKIPPED [1] factory/python/tests/test_safec_bridge.py:266: FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine on this host
+SKIPPED [1] factory/python/tests/test_safec_bridge.py:279: FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine on this host
+55 passed, 2 skipped in 5.08s
+{"status": "PASS", "cases": 21, "diffs": []}
+PASS workflow-fixtures
+{"status": "PASS", "cases": 8, "diffs": []}
+PASS v1-profile-fixtures
+.....................................                                    [100%]
+PASS acp-and-provider-tests
+PASS v0.1-baseline
+PASS v0.3-packager
+PASS: 14 static design tests. This does NOT validate runtime integrations.
+PASS design-check
+
+--- stderr ---
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.011s
+
+OK
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.053s
+
+OK
+test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok
+test_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok
+test_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok
+test_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok
+test_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok
+test_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok
+test_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok
+test_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok
+test_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok
+test_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok
+test_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok
+test_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok
+test_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok
+test_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.099s
+
+OK

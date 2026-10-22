@@ -20,7 +20,7 @@
 | New schemas/Spec Kit content readable in GitHub | PASS (M0 local validator) | `F011-T005` (schemas 2020-12, 14 example messages, 41 references resolved, 3 planned files) |
 | Existing ACP/default/Feature 010 compatibility | PASS (M0, before any runtime change) | `F011-T003` (default/ACP fixture 86f1f40 + new local-rtx-v1 fixture 2f4b9cf, ACP/provider tests, v0.1, v0.3, design check) |
 | SafeC Linux build/probe and license inventory | MEASURED, NOT_PASS (M0) | `F011-T004` public summary: 263 passed / 2 failed (baseline defects, see M0); Kind 2 and Z3 absent; `F011-T002`: no licence file declared |
-| Python/Rust bridge conformance and adversarial tests | NOT_RUN | Per-task evidence for F011-AT-006..010 |
+| Python/Rust bridge conformance and adversarial tests | PASS (M1, protocol only; every SafeC operation UNSUPPORTED) | `F011-T010` (Forge-C), `F011-T008` (real pinned engine, network denied); SafeC crate tests in the SafeC ledger |
 | Register-io authoritative semantic fixtures | NOT_RUN | F011-AT-011..016 |
 | Local SWE.1 RCC/IWDG runs | NOT_RUN | F011-AT-017,025 |
 | Independent inspector qualified on holdouts | NOT_RUN | F011-AT-019..023,030 |
@@ -60,3 +60,23 @@ No runtime behaviour of the default, ACP or local-rtx-v1 lines changed. The mode
 | `pd-142ff583ea5a169fb3cb` | aa56e74: credential rule needs a varied secret (the b751b7c scan flagged the T005 pytest log's placeholder token); T005 re-recorded |
 
 **M0 exit:** the baseline is safe and source digests are recorded, with no production changes. Linux compatibility is observed: the Rust core builds and 263/265 tests pass. The temporal formal backend stays UNSUPPORTED (Kind 2/Z3 absent). T004 stays open on the two SafeC baseline failures.
+
+## M1 results — 2026-10-22 (bridge protocol; Forge-C 69c89ad, SafeC 6b3934b)
+
+| Task | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T006 | PASS | `evidence/v0.4/runs/F011-T010/` | `safec_bridge/contracts.py`. Refused before interpretation: oversize, invalid UTF-8, duplicate keys, non-finite numbers, non-objects, schema violations, duplicate finding/artifact ids, and a PASS carrying a major/critical finding. Requests are written as canonical bytes. |
+| F011-T007 | PASS | `evidence/v0.4/runs/F011-T010/`, `evidence/v0.4/runs/F011-T008/` | `safec_bridge/client.py`. The engine file digest is checked before anything executes. The handshake must name the pinned commit, its own digest, the profile and the frozen protocols. The run uses argv only, an empty environment (PATH/LANG/LC_ALL), its own session with a process-group kill on timeout or cancellation (a test shows the grandchild dies too), CPU/AS/FSIZE/NOFILE limits, and streams kept out of the record. |
+| F011-T008 | PASS | `evidence/v0.4/runs/F011-T008/` | The real pinned SafeC engine (commit 6b3934b, sha256 `cea1840f…`, reproducible build) ran **inside the local profile's network namespace**: external connect refused, errno 101 (F011-AT-003 for the bridge). Handshake matched; every operation was UNSUPPORTED; a wrong digest or commit was refused; identical requests gave byte-identical result and evidence. The first record (20261022T091119) is kept as FAIL: the SafeC cargo step inside the namespace printed nothing; those crate tests run outside the namespace and are recorded in the SafeC ledger (10/10). |
+| F011-T009 | PASS | `evidence/v0.4/runs/F011-T010/` | The result must echo the request id, the exact request digest and the pin. The evidence file must hash to `evidence_sha256` and restate request, input, engine, operation, status, findings and artifacts. Every artifact must exist with its digest. A non-zero exit is ERROR whatever the result says. `ResultCache` is keyed by pin plus exact request bytes and misses on any evidence change (F011-AT-010). |
+| F011-T010 | PASS | `evidence/v0.4/runs/F011-T010/` | 55 passed, 2 skipped (the real-engine tests, which run in F011-T008). Compatibility check PASS in the same record: default/ACP and local-rtx-v1 fixtures, ACP/provider tests, v0.1, v0.3, design check. SafeC side: 7 protocol + 3 CLI tests (SafeC ledger). |
+| F011-T011 | PASS (scope: no agent is granted the bridge) | `evidence/v0.4/runs/F011-T011/` | In M1 only deterministic orchestration calls the bridge, so no MCP wrapper exists. The test shows the MCP registry has no SafeC operation, and every production role is denied every way to reach it (MCP names, native shell, bare tool). Granting an AI role access later needs a narrow, owner-reviewed registry operation with explicit grants. |
+
+CRE decisions (CHANGE, all hard gates PASS, offline review only):
+
+| Decision | Covers |
+|---|---|
+| `pd-93721b130876540bbc00` | 69c89ad: the M1 client |
+| `pd-252d626238f0445c2ecc` | e23bc39: the boundary scan counts a private-source match only as a distinctive line or a block. The M1 tree had matched one standard idiom, `setrlimit(RLIMIT_CORE, (0, 0))`, that a SafeC script also contains; T005 was re-recorded. |
+
+**M1 exit:** F011-AT-006..010 PASS for the protocol, with no ACP/default/v1 behavioural difference (F011-T010 compatibility steps). No semantic capability is claimed: the engine evaluates nothing, so it cannot yet support any SWE.1 decision.

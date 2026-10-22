@@ -1,0 +1,23 @@
+{"status": "PASS", "references": {"RESOLVED": 66, "PROPOSED": 0, "MISSING": 0}, "missing": [], "examples": 14}
+{"status": "PASS", "files_scanned": 66, "lines_scanned": 5353, "private_checkout_compared": true, "findings": []}
+...............                                                          [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_feature_documents_resolve_and_examples_behave_as_frozen
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_an_unplanned_missing_reference_fails
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_clean_change_passes_the_boundary_scan
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_copied_private_line_is_found_without_storing_it
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_credentials_are_found_in_tracked_and_untracked_changes
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_line_public_forge_c_already_had_is_not_a_private_copy
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_placeholders_are_not_credentials
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_single_shared_idiom_is_not_a_copy_but_a_block_is
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_shared_public_contracts_are_not_private_content
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-path]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[bearer]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-line]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[multiline]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_keeps_only_allowed_scalars
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_linux_probe_reports_counts_and_keeps_raw_logs_private
+15 passed in 0.54s
+
+--- stderr ---
