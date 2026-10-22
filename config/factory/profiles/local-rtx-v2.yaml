@@ -22,6 +22,13 @@ models:
     glm4:9b: {digest: 5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44, quantization: Q4_0,
               license: glm-4-9b License (not OSI; productization licence review required),
               role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-22: "If no local model qualifies as inspector try another candidate model"; pulled on loop10
+    phi4:14b: {digest: ac896e5b8b34a1f4efa7b14d7520725140d5512484457fab45d2a4ea14c69dba, quantization: Q4_K_M,
+               license: MIT, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    mistral-small3.2:24b: {digest: 5a408ab55df5c1b5cf46533c368813b30bf9e4d8fc39263bf2a3338cfa3b895b, quantization: Q4_K_M,
+                           license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    granite3.3:8b: {digest: fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7, quantization: Q4_K_M,
+                    license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
 runtime:
   ollama:
     OLLAMA_NUM_PARALLEL: "1"

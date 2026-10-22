@@ -63,5 +63,5 @@ def test_v1_profile_file_is_byte_identical_to_the_frozen_fixture():
 
 def test_inspector_candidates_are_pinned_and_not_qualified():
     allowed = V2["models"]["allowed"]
-    for m in ("gpt-oss:20b", "glm4:9b"):
+    for m in ("gpt-oss:20b", "glm4:9b", "phi4:14b", "mistral-small3.2:24b", "granite3.3:8b"):
         assert len(allowed[m]["digest"]) == 64 and allowed[m]["role_qualification"].startswith("NOT_QUALIFIED")
