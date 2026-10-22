@@ -1,0 +1,21 @@
+{
+  "command": [
+    "sh",
+    "/tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/f011_engine_ns.sh"
+  ],
+  "duration_s": 7.552,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "74bfb67627d0838e5c11ea9e8ecfad2a90c35cde",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-M2-ENGINE/20261022T094245.log",
+  "log_sha256": "27d6128c34a8bcc9e631a10925a920019eab6ad9cc8ee8d209f0eaec64db64d1",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-M2-ENGINE",
+  "ts_utc": "2026-10-22T09:42:45.274251Z"
+}

@@ -21,7 +21,7 @@
 | Existing ACP/default/Feature 010 compatibility | PASS (M0, before any runtime change) | `F011-T003` (default/ACP fixture 86f1f40 + new local-rtx-v1 fixture 2f4b9cf, ACP/provider tests, v0.1, v0.3, design check) |
 | SafeC Linux build/probe and license inventory | MEASURED, NOT_PASS (M0) | `F011-T004` public summary: 263 passed / 2 failed (baseline defects, see M0); Kind 2 and Z3 absent; `F011-T002`: no licence file declared |
 | Python/Rust bridge conformance and adversarial tests | PASS (M1, protocol only; every SafeC operation UNSUPPORTED) | `F011-T010` (Forge-C), `F011-T008` (real pinned engine, network denied); SafeC crate tests in the SafeC ledger |
-| Register-io authoritative semantic fixtures | NOT_RUN | F011-AT-011..016 |
+| Register-io authoritative semantic fixtures | PASS except reset contradiction, which is not expressible in register-io-0.1 (M2) | `F011-M2-SAFEC`, `F011-M2-ENGINE`; F011-AT-011..015 covered, AT-016 without the startup invariant |
 | Local SWE.1 RCC/IWDG runs | NOT_RUN | F011-AT-017,025 |
 | Independent inspector qualified on holdouts | NOT_RUN | F011-AT-019..023,030 |
 | SWE.2 and SWE.3..SWE.6 integration | NOT_RUN | F011-AT-024,026..029 |
@@ -80,3 +80,20 @@ CRE decisions (CHANGE, all hard gates PASS, offline review only):
 | `pd-252d626238f0445c2ecc` | e23bc39: the boundary scan counts a private-source match only as a distinctive line or a block. The M1 tree had matched one standard idiom, `setrlimit(RLIMIT_CORE, (0, 0))`, that a SafeC script also contains; T005 was re-recorded. |
 
 **M1 exit:** F011-AT-006..010 PASS for the protocol, with no ACP/default/v1 behavioural difference (F011-T010 compatibility steps). No semantic capability is claimed: the engine evaluates nothing, so it cannot yet support any SWE.1 decision.
+
+## M2 results — 2026-10-22 (register-io-0.1; Forge-C 74bfb67, SafeC 9d543b2)
+
+| Task | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T012 | PASS | `evidence/v0.4/runs/F011-M2-SAFEC/`, `evidence/v0.4/runs/F011-M2-ENGINE/` | New profile register-io-0.1 in private SafeC (crate safec-register-io, own workspace and lock). It does not touch the sampled-latch CSRI: of the 3157 files tracked at 556dca8, only SafeC's `Cargo.toml` changed (workspace exclusion). Public-safe wire types published here: `contracts/register-io-domain.schema.json` and `contracts/register-io-contract.schema.json`. |
+| F011-T013 | PASS | same | `safec_bridge/domain.py` extracts the domain from the work order's key RM sections with the SWE.1 inventory's parser. It adds the reset bits the manual leaves undefined (`IWDG_SR` ONF), the documented values (bulleted `0x…`) and per-section file digests. Unknown stays visible: access `unknown`, defined mask 0 without a reset value, `errata.status NOT_PROVIDED`. SafeC re-validates every invariant. The domain is bound to a request by its SHA-256 (`source_manifest_sha256`); the client refuses a mismatch before execution. |
+| F011-T014 | PASS | same | Checked `u64` arithmetic in SafeC, re-derived independently in Forge-C. On real RM0486 facts, `RCC_AHB1ENR.ADC12EN` logical 1 gives mask and encoding `0x00000020`, read-modify-write, preserved `0xffffffdf`. Logical value `0x20` or `32` gives **RIO-MASK-AS-VALUE**, with the logical value 1 named as the repair. Width boundaries, overflow and invalid literals are refused. |
+| F011-T015 | PASS | same | RO, WO and RW are modelled. IWDG keys `0xAAAA`/`0x5555`/`0xCCCC` are whole-register writes, and each must cite its own value fact (inverted key gives RIO-KEY-FACT-MISMATCH). Fail checks: RO write, WO read, undocumented key, key written via `write_field`. UNSUPPORTED, never guessed: W1C/RC/mixed/unknown access, read-modify-write next to side-effect fields, and whole-register writes with other fields or undefined reserved reset. |
+| F011-T016 | **OPEN** | same (partial) | Covered: RCC ADC12EN, IWDG KEY/PR/RLR/SR, 0x20 mask-vs-value, inverted keys, RO writes, out-of-scope register, unknown field/register/fact, unmodelled access. Not covered: a **reset contradiction**, because the wire contract has no reset/startup intent. Reset and startup remain explicit Forge-C requirements (S013-FR-007). |
+| F011-T017 | **OPEN** | same (partial) | Covered: duplicate ids/effects, same-precondition conflicts, unknown preconditions, and a per-field coverage inventory in every contract. Not covered: missing owner decisions as source-linked findings, which belongs with the M3 SWE.1 assembly. |
+| F011-T018 | PASS | same | `safec_bridge/contract.py` accepts a contract only if all of these hold:<br>- strict parse and schema;<br>- canonical semantic digest;<br>- the pin, request binding and domain digest;<br>- exactly the requested intents;<br>- every number equal to Forge-C's own `reference_operation`. A disagreement is ENGINES_DISAGREE and blocks. |
+| F011-T019 | PASS | same | **SafeC:** register-io 15 and bridge 15 tests (goldens and mutants, e.g. ADC12EN moved to bit 6 changes the mask and the digest), clippy clean. Root workspace: 263 passed / 2 failed, exactly the M0 baseline failures (failure-name digest asserted); root lock unchanged.<br>**Forge-C:** 73/73 against the pinned engine `9d543b2` (sha256 `5955f793…`, reproducible) inside the network-denied namespace, synthetic and real-RM cases. Unsupported obligations recorded in every contract: errata not baselined, preconditions not verified, ordering/timing/locking not modelled. |
+
+CRE decision `pd-46287fcfe3205f989f47` (74bfb67, CHANGE, all hard gates PASS, offline review only).
+
+**M2 exit:** F011-AT-011..015 PASS. F011-AT-016 PASS without the startup invariant (not expressible). No existing gate was changed. Nothing here claims that Kind 2 or existing ACSL verify an RCC or IWDG driver.
