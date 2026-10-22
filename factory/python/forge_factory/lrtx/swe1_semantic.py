@@ -105,9 +105,14 @@ def _facts(domain: dict) -> dict[str, dict]:
 def group_schema(g: dict, ctx: Context) -> dict:
     fields = [f"{g['register']}.{f}" for f in g["fields"]]
     facts = sorted(k for k, v in ctx.facts.items() if v["register"] == g["register"] and v["field"] in g["fields"])
+    from .swe2 import _ident
+
+    fn = re.escape(_ident(ctx.ws)["fn"])
     intent = {"type": "object", "additionalProperties": False,
-              "required": ["key", "request", "field", "action", "source_fact_ids"],
+              "required": ["key", "function", "request", "field", "action", "source_fact_ids"],
               "properties": {"key": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,40}$"},
+                             # F011-T031: the LL API function the requirement names; SWE.2 must define exactly it
+                             "function": {"type": "string", "pattern": f"^{fn}[A-Z][A-Za-z0-9_]{{1,48}}$"},
                              "request": {"type": "string", "pattern": REQUEST_RX},
                              "field": {"type": "string", "enum": fields},
                              "action": {"type": "string", "enum": ACTIONS},
@@ -147,7 +152,10 @@ def group_packet(ws: Path, g: dict, model: str, ctx: Context, findings: list[str
              "and 1; the engine computes masks and bit positions. source_fact_ids cite the field fact or the "
              "documented value fact the intent relies on. request is the caller's request in lowercase words only "
              "(e.g. 'start the watchdog', 'query the reload update flag'), no numbers, no register names, no "
-             "should/may/must/can. key is a short snake_case name. For every field of this task either write the "
+             "should/may/must/can. function is the LL API function that implements the intent, named with the "
+             "driver's prefix (e.g. LL_IWDG_Enable, LL_IWDG_IsActiveFlag_PVU, LL_RCC_HSI_Enable); the later "
+             "architecture must define exactly this name. key is a short snake_case name. For every field of this "
+             "task either write the "
              "intents the scope demands or list it in not_covered with the scope reason. open_points lists "
              "ambiguities of the source (or nothing).")
     crit = ["every intent names a field of this task", "every field of the task has an intent or is in not_covered",
@@ -170,7 +178,7 @@ def to_intent(it: dict) -> dict:
 def render(it: dict, op: dict, ctx: Context, sysname: str) -> dict:
     """The requirement (feature 010 shape) of one accepted operation: every number comes from the operation."""
     reg, fld = op["register"], op["field"]
-    when = f"When the caller requests to {it['request']}"
+    when = f"When {it['function']} is called to {it['request']}"
     page = min(min(ctx.facts[f]["pages"]) for f in op["source_fact_ids"] if f in ctx.facts)
     case = re.sub(r"[^A-Z0-9_]", "_", it["key"].upper())[:47]
     if not re.match(r"^[A-Z]", case):

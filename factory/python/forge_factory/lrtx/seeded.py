@@ -165,8 +165,11 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     if rec["gate"]["result"] not in ("FROZEN", "FROZEN_BY_EVIDENCE", "FROZEN_BY_TOOL_EVIDENCE"):
         rec["detected_by"] = "deterministic gate" if case else "FALSE_REJECTION_BY_GATE"
         return rec
+    # F011 (2026-10-22): only an inspection recorded by THIS visit counts. The holdout carries the inspection records
+    # of its original run; reading one of those when the local inspector records nothing reported a stale PASS.
+    earlier = {q.name for q in (ws / "inspection" / phase).glob("INS-*.json")}
     rep = review.visit(ws, phase, model)
-    ins = sorted((ws / "inspection" / phase).glob("INS-*.json"))
+    ins = sorted(q for q in (ws / "inspection" / phase).glob("INS-*.json") if q.name not in earlier)
     rec_ins = json.loads(ins[-1].read_text()) if ins else None
     rec["inspection"] = {"reply": rep["status"], "verdict": (rec_ins or {}).get("verdict"),
                          "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get(
@@ -174,12 +177,14 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     text = " ".join(rec["inspection"]["findings"])
     on_target = bool(target) and (target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text))
                                   or bool(alt and alt in text))
-    if case is None:
+    if rec_ins is None:
+        rec["detected_by"] = f"NO_INSPECTION ({rep['status']})"
+    elif case is None:
         rec["detected_by"] = "FALSE_REJECTION_BY_INSPECTION" if rec["inspection"]["verdict"] == "FAIL" else "none"
     elif rec["inspection"]["verdict"] == "FAIL":
         rec["detected_by"] = "inspection (on target)" if on_target else "inspection (off target)"
     else:
-        rec["detected_by"] = "MISSED" if rec_ins else f"NO_INSPECTION ({rep['status']})"
+        rec["detected_by"] = "MISSED"
     return rec
 
 
@@ -209,7 +214,8 @@ def _summary(rows: list[dict], model: str) -> dict:
             "inspection_fail_off_target": sum(r["detected_by"] == "inspection (off target)" for r in seeded),
             "missed": sum(r["detected_by"] == "MISSED" for r in seeded), "seeded": len(seeded),
             "false_rejections": sum(r["detected_by"].startswith("FALSE_REJECTION") for r in base),
-            "baselines": len(base), "rows": rows,
+            "baselines": len(base),
+            "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base), "rows": rows,
             "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
 
 

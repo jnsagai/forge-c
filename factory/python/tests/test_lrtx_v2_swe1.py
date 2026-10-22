@@ -45,8 +45,14 @@ def iwdg(tmp_path, monkeypatch):
     return _ws(tmp_path, monkeypatch, "0009a-iwdg-ll", "WO-T-V2-IWDG", "iwdg")
 
 
+FN = {"start": "LL_IWDG_Enable", "refresh": "LL_IWDG_ReloadCounter", "unlock": "LL_IWDG_EnableWriteAccess",
+      "lock": "LL_IWDG_DisableWriteAccess", "prescaler": "LL_IWDG_SetPrescaler", "reload": "LL_IWDG_SetReloadCounter",
+      "onf": "LL_IWDG_IsActive", "pvu": "LL_IWDG_IsActiveFlag_PVU", "rvu": "LL_IWDG_IsActiveFlag_RVU"}
+
+
 def _i(key, request, field, action, facts, value=None):
-    d = {"key": key, "request": request, "field": field, "action": action, "source_fact_ids": facts}
+    d = {"key": key, "function": FN.get(key, "LL_IWDG_Other"), "request": request, "field": field, "action": action,
+         "source_fact_ids": facts}
     if value is not None:
         d["logical_value"] = value
     return d
@@ -102,10 +108,10 @@ def test_semantic_visit_renders_work_products_the_unchanged_gate_freezes(iwdg, m
     rep = SEM.visit(iwdg, "qwen3-coder:30b")
     assert rep["status"] == "PASS", rep
     md = (iwdg / swe1.REQS).read_text()
-    assert ("When the caller requests to start the watchdog, the IWDG LL driver shall write the key value 0xCCCC to "
-            "IWDG_KR.KEY.") in md
-    assert ("When the caller requests to set the counter reload value with a value from 0 to 4095, the IWDG LL driver "
-            "shall write that value to IWDG_RLR.RL.") in md
+    assert ("When LL_IWDG_Enable is called to start the watchdog, the IWDG LL driver shall write the key value 0xCCCC "
+            "to IWDG_KR.KEY.") in md
+    assert ("When LL_IWDG_SetReloadCounter is called to set the counter reload value with a value from 0 to 4095, the "
+            "IWDG LL driver shall write that value to IWDG_RLR.RL.") in md
     assert "passes when IWDG_KR equals 0x0000cccc" in md
     assert "SafeC register-io: ERRATA_NOT_BASELINED" in md
     assert ("While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register."
@@ -161,7 +167,8 @@ def test_scope_and_schema_keep_the_model_inside_its_task(iwdg):
     assert set(it["source_fact_ids"]["items"]["enum"]) == {"F-IWDG_KR-KEY", "F-IWDG_KR-KEY-V-AAAA",
                                                            "F-IWDG_KR-KEY-V-5555", "F-IWDG_KR-KEY-V-CCCC",
                                                            "F-IWDG_KR-KEY-V-0"}
-    assert S.validate({"intents": [{"key": "x1", "request": "start the watchdog", "field": "IWDG_PR.PR",
+    assert S.validate({"intents": [{"key": "x1", "function": "LL_IWDG_Enable", "request": "start the watchdog",
+                                    "field": "IWDG_PR.PR",
                                     "action": "set_field", "source_fact_ids": ["F-IWDG_KR-KEY"]}],
                        "not_covered": [], "open_points": []}, schema)
     errs = SEM.local_checks(iwdg, {"intents": [_i("w", "set the window", "IWDG_KR.KEY", "write_key_sequence",
@@ -179,3 +186,21 @@ def test_every_catalogue_rule_renders_ears_conformant(sysname):
     texts.append(SEM.STARTUP_RULE["statement"].format(sys=sysname, layer="LL", pfx=sysname.split()[0]))
     for t in texts:
         assert check_statement(Requirement("x", t, 0), {sysname}).findings == [], t
+
+
+def test_the_named_function_binds_swe2_to_the_exact_name(iwdg, monkeypatch):
+    """F011-T031: the rendered requirement names the LL function, so the unchanged SWE.2 rule forces that exact name
+    (the IsActive/IsEnabled drift of the feature 010 SWE.2 trial becomes an actionable finding)."""
+    from forge_factory.lrtx import swe2
+
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    reqs = swe2.requirements(iwdg)
+    named = {n for t in reqs.values() for n in swe2._fn_rx(iwdg).findall(t)}
+    assert {"LL_IWDG_Enable", "LL_IWDG_IsActive", "LL_IWDG_IsActiveFlag_PVU"} <= named
+    g = next(g for g in swe1.groups(swe1.inventory(iwdg)) if g["id"] == "IWDG_KR")
+    schema = SEM.group_schema(g, SEM.Context(iwdg))
+    bad = {"intents": [{"key": "x1", "function": "HAL_IWDG_Start", "request": "start the watchdog",
+                        "field": "IWDG_KR.KEY", "action": "write_key_sequence",
+                        "source_fact_ids": ["F-IWDG_KR-KEY-V-CCCC"]}], "not_covered": [], "open_points": []}
+    assert S.validate(bad, schema)  # the function prefix is enforced by the schema
