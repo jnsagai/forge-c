@@ -21,6 +21,10 @@ unchanged feature 010 code, and so are the gates that judge them.
 Before assembly, all intents are validated together. That catches duplicates and conflicts across groups, and the
 contract is materialized only if Forge-C's own derivation of every number agrees. An answer identical to one already
 rejected stops its task as STUCK instead of spending more calls (T023).
+
+F011-T034: when the pinned engine supports `derive_tests`, the frozen SWE.1 also carries the register-image test
+oracle of that contract (workproducts/SWE.1/register_oracle.json), accepted only when Forge-C re-derives every case.
+Later phases take expected register values from it, never from an implementation or a model.
 """
 from __future__ import annotations
 
@@ -33,6 +37,7 @@ from ..safec_bridge import client as CL
 from ..safec_bridge import contract as K
 from ..safec_bridge import contracts as C
 from ..safec_bridge import domain as D
+from ..safec_bridge import oracle as O
 from . import structured as S
 from . import swe1 as V1
 from . import visit as V
@@ -75,9 +80,10 @@ class Context:
         self.rejected: dict[str, set[str]] = {}
         self.calls = 0
 
-    def validate(self, intents: list[dict], tag: str) -> tuple[CL.Outcome, dict, Path]:
+    def validate(self, intents: list[dict], tag: str, operation: str = "validate_intents") -> \
+            tuple[CL.Outcome, dict, Path]:
         self.calls += 1
-        req, raw = C.build_request(request_id=f"{tag}-{self.calls}"[:128], operation="validate_intents",
+        req, raw = C.build_request(request_id=f"{tag}-{self.calls}"[:128], operation=operation,
                                    engine=self.pin.expected(), binding=self.binding, intents=intents)
         work = self.ws / ".forge-run/safec" / f"{utc_now().replace(':', '')}-{self.calls:04d}-{tag.replace(':', '_')}"
         work.parent.mkdir(parents=True, exist_ok=True)
@@ -457,6 +463,10 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     if found:
         return V1.reply(ws, "FAILED", [f"{t}: {f}" for t, f in found], budget)
     amap = V1.assemble(ws, inv, results, cross)
+    try:
+        oracle_file = record_oracle(ws, ctx, _joint(sem), vc, results, amap)
+    except (O.OracleRejected, K.ContractRejected) as exc:
+        return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_ORACLE_REJECTED: {i}" for i in exc.issues[:10]], budget)
     S.record(ws, "SWE.1/semantic.json", {"schema": "forge-c/lrtx-swe1-semantic/1", "at": utc_now(),
                                          "contract_semantic_digest": vc.semantic_digest,
                                          "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(),
@@ -464,4 +474,32 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     checks = V1.self_check(ws)
     if checks:
         return V1.reply(ws, "FAILED", checks[:20], budget)
-    return V1.reply(ws, "PASS", [], budget, artifacts=amap["files"])
+    return V1.reply(ws, "PASS", [], budget, artifacts=sorted(amap["files"] + ([oracle_file] if oracle_file else [])))
+
+
+# ---- F011-T034: the register-image test oracle of the frozen contract ------------------------------------------------
+ORACLE_FILE = "workproducts/SWE.1/register_oracle.json"
+
+
+def record_oracle(ws: Path, ctx: Context, intents: list[dict], vc: K.ValidatedContract, results: list, amap: dict) \
+        -> str | None:
+    """derive_tests on the same intents; the oracle is kept only if it is bound to the contract just validated and
+    Forge-C re-derives every case. An engine without derive_tests leaves SWE.1 as before (no oracle file)."""
+    out, req, work = ctx.validate(intents, "swe1-oracle", operation="derive_tests")
+    if out.status == "UNSUPPORTED":
+        S.record(ws, "SWE.1/oracle.json", {"status": "NOT_DERIVED", "reason": "engine does not support derive_tests"})
+        return None
+    again = K.materialize(out, req, ctx.domain_raw, work, ctx.pin)
+    if again.semantic_digest != vc.semantic_digest:
+        raise O.OracleRejected([f"ORACLE_CONTRACT_DRIFT: {again.semantic_digest} != {vc.semantic_digest}"])
+    doc = O.materialize(out, vc, ctx.domain_raw, work)
+    case_of = {f"{g['id']}:{r['key']}": r["effects"][0]["case"] for g, rec in results
+               for r in rec["doc"]["requirements"] if r.get("effects")}
+    missing = sorted(i for i, c in case_of.items() if c not in amap["case"])
+    if missing or sorted(case_of) != sorted(o["intent_id"] for o in vc.operations):
+        raise O.OracleRejected([f"ORACLE_CASE_MAP: unmapped {missing[:5]}"])
+    V1.write_scoped(ws, {ORACLE_FILE: json.dumps({
+        "schema": "forge-c/lrtx-register-oracle/1", "contract_semantic_digest": vc.semantic_digest,
+        "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(), "operations": list(vc.operations),
+        "case_of_intent": case_of, "oracle": doc}, indent=1, sort_keys=True) + "\n"})
+    return ORACLE_FILE

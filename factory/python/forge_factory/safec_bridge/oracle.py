@@ -36,13 +36,21 @@ def _h32(v: int) -> str:
     return f"0x{v:08x}"
 
 
-def images(register: dict) -> list[int]:
-    """Two initial images: all zeros, and all ones with the bits no field defines held at their reset value."""
+def images(register: dict, field_mask: int) -> list[int]:
+    """Initial images, duplicates dropped (first kept): all zeros; every defined bit set (bits no field defines at
+    their reset value); the operation's field alone; every defined bit except the field. The last two tell the
+    field from a neighbouring one, which the first two cannot when both bits hold the same value."""
     used = 0
     for f in register["fields"]:
         used |= ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
     reserved = ~used & 0xFFFFFFFF
-    return [0, (0xFFFFFFFF & ~reserved) | (int(register["reset_value"], 16) & reserved)]
+    keep = int(register["reset_value"], 16) & reserved
+    ones = (0xFFFFFFFF & ~reserved) | keep
+    out: list[int] = []
+    for v in (0, ones, field_mask | keep, ones & ~field_mask & 0xFFFFFFFF):
+        if v not in out:
+            out.append(v)
+    return out
 
 
 def reference_cases(domain: dict, operations: list[dict] | tuple[dict, ...]) -> list[dict]:
@@ -51,7 +59,7 @@ def reference_cases(domain: dict, operations: list[dict] | tuple[dict, ...]) -> 
     for op in operations:
         mask, preserved = int(op["field_mask"], 16), int(op["preserved_mask"], 16)
         enc = int(op["encoded_value"], 16) if op.get("encoded_value") else 0
-        for init in images(regs[op["register"]]):
+        for init in images(regs[op["register"]], mask):
             case = {"intent_id": op["intent_id"], "register": op["register"], "offset": op["offset"],
                     "initial": _h32(init)}
             if op["write_kind"] == "none":

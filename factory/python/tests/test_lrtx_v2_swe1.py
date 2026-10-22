@@ -246,3 +246,82 @@ def test_swe2_name_drift_from_the_frozen_requirement_is_rejected_with_its_target
     target = [f for f in out if "names LL_IWDG_IsActive, which is not a defined function" in f]
     assert target and all(re.match(r"SWR-\d{3} names", f) for f in target), out
     assert "define the function as LL_IWDG_IsActive" in target[0] and "allocate" in target[0]
+
+
+# ---- F011-T034: the frozen SWE.1 carries the SafeC register-image oracle; the EASA C oracle runs it ------------------
+
+def _ll_impl(rec: dict, block: str, mutate: dict | None = None) -> str:
+    """A header-only LL implementation generated from the contract operations (one function per intent), with
+    optional per-function replacement bodies (mutants)."""
+    key_fn = {i: FN[i.split(":", 1)[1]] for i in rec["case_of_intent"]}
+    lines = ["#include <stdint.h>"]
+    for op in rec["operations"]:
+        fn, w = key_fn[op["intent_id"]], int(op["offset"], 16) // 4
+        mask = op["field_mask"]
+        if op["write_kind"] == "none":
+            sig, body = f"static inline uint32_t {fn}(void)", f"return ({block}[{w}] & {mask}U) >> {op['lsb']}U;"
+        elif op["action"] == "write_field":
+            sig = f"static inline void {fn}(uint32_t v)"
+            body = f"{block}[{w}] = ({block}[{w}] & ~{mask}U) | ((v << {op['lsb']}U) & {mask}U);"
+        elif op["write_kind"] == "full_register_write":
+            sig, body = f"static inline void {fn}(void)", f"{block}[{w}] = {op['encoded_value']}U;"
+        else:
+            sig, body = f"static inline void {fn}(void)", f"{block}[{w}] = ({block}[{w}] & ~{mask}U) | {op['encoded_value']}U;"
+        if mutate and fn in mutate:
+            body = mutate[fn].format(b=block, w=w)
+        lines.append(f"{sig} {{ {body} }}")
+    return "\n".join(lines) + "\n"
+
+
+def test_frozen_swe1_carries_a_verified_oracle_and_the_c_oracle_catches_mutants_on_target(iwdg, monkeypatch, tmp_path):
+    """F011-AT-027/028: expected register images come from the contract only. A correct LL implementation passes
+    every case from both initial images; an inverted key, an absent write, a wrong read and a read that writes each
+    fail on their own case only. A tampered oracle blocks instead of being used."""
+    import shutil
+
+    from forge_factory.assurance import oracle_gen
+    from forge_factory.assurance import safec_oracle as SO
+    from forge_factory.layer import api_header, profile
+
+    if shutil.which("gcc") is None:
+        pytest.skip("gcc not available")
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    rep = SEM.visit(iwdg, "qwen3-coder:30b")
+    assert rep["status"] == "PASS", rep
+    rec, issues = SO.verified(iwdg)
+    assert issues == [] and rec["oracle"]["contract_semantic_digest"] == rec["contract_semantic_digest"]
+    eff = json.loads((iwdg / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
+    assert set(rec["case_of_intent"].values()) <= {e["case"] for e in eff}
+    calls = {}
+    for iid, case in rec["case_of_intent"].items():
+        op = next(o for o in rec["operations"] if o["intent_id"] == iid)
+        calls[case] = {"function": FN[iid.split(":", 1)[1]],
+                       "args": [f"{op['logical_value']}U"] if op["action"] == "write_field" else []}
+    (iwdg / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (iwdg / "workproducts/SWE.2/api_calls.json").write_text(json.dumps({"schema": "forge-c/api-calls/1",
+                                                                        "calls": calls}))
+    (iwdg / "workproducts/SWE.2/software_architecture.md").write_text("# SWE.2 (test stub)\n")
+    block, hdr = profile(iwdg)["ll"]["register_block"], api_header("LL", iwdg)
+
+    def run(mutate=None):
+        d = tmp_path / ("mut" if mutate else "ok")
+        (d / hdr).parent.mkdir(parents=True, exist_ok=True)
+        (d / hdr).write_text(_ll_impl(rec, block, mutate))
+        return oracle_gen.run(iwdg, [d], [], hdr)
+
+    good = run()
+    sc = [r for r in good["results"] if "@0x" in r[2]]
+    assert good["status"] == "PASS" and len(sc) == len(rec["oracle"]["cases"]), good.get("reason") or good["results"]
+    start, onf = rec["case_of_intent"]["IWDG_KR:start"], rec["case_of_intent"]["IWDG_SR_1:onf"]
+    for mutant, case in (({"LL_IWDG_Enable": "{b}[{w}] = 0x0000AAAAU;"}, start),           # inverted key
+                         ({"LL_IWDG_Enable": "(void)0;"}, start),                           # absent write
+                         ({"LL_IWDG_IsActive": "return ({b}[{w}] >> 1U) & 1U;"}, onf),     # wrong read
+                         ({"LL_IWDG_IsActive": "{b}[{w}] = 0U; return 0U;"}, onf)):         # a read that writes
+        r = run(mutant)
+        failed = {x[2].split("@")[0] for x in r["results"] if x[3] == "FAIL" and "@0x" in x[2]}
+        assert r["status"] == "FAIL" and failed == {case}, (mutant, failed)
+    raw = json.loads((iwdg / SO.FILE).read_text())
+    raw["oracle"]["cases"][0]["expected_after"] = "0x00000000"
+    (iwdg / SO.FILE).write_text(json.dumps(raw))
+    blocked = run()
+    assert blocked["status"] == "BLOCKED" and blocked["reason"].startswith("SAFEC_ORACLE_BLOCKED"), blocked

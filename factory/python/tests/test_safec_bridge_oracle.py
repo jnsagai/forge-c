@@ -64,13 +64,15 @@ def test_reference_cases_follow_the_register_rules(synthetic):  # noqa: F811
     by = {}
     for c in cases:
         by.setdefault(c["intent_id"], []).append(c)
-    assert all(len(v) == 2 for v in by.values())  # two initial images per operation
+    assert len(by["MODE-5"]) == 4  # zeros, all defined bits, the field alone, all but the field
     assert by["MODE-5"][0]["expected_after"] == "0x00000050"  # read-modify-write from all zeros
     ones = int(by["MODE-5"][1]["initial"], 16)
     assert by["MODE-5"][1]["expected_after"] == f"0x{(ones & ~0x70) | 0x50:08x}"  # other bits preserved
-    assert by["START"][0]["expected_after"] == by["START"][1]["expected_after"]  # whole-register write
+    assert by["MODE-5"][3]["initial"] == f"0x{ones & ~0x70:08x}"
+    assert len({c["expected_after"] for c in by["START"]}) == 1  # whole-register write, whatever the image
     assert not by["ON?"][0]["writes"] and by["ON?"][0]["expected_return"] == "0"
-    assert by["ON?"][1]["expected_after"] == by["ON?"][1]["initial"]
+    assert [c["expected_return"] for c in by["ON?"]][2:] == ["1", "0"]  # the field alone, then all but the field
+    assert all(c["expected_after"] == c["initial"] for c in by["ON?"])
 
 
 def test_oracle_verification_catches_tampering_binding_and_disagreement(synthetic):  # noqa: F811
@@ -82,9 +84,10 @@ def test_oracle_verification_catches_tampering_binding_and_disagreement(syntheti
     assert "ORACLE_CONTRACT_MISMATCH" in O.verify(good, replace(k, semantic_digest="b" * 64), raw)
     assert O.verify(good, k, raw + b" ") == ["ORACLE_DOMAIN_MISMATCH"]
     wrong = json.loads(json.dumps(good))
-    wrong["cases"][2]["expected_after"] = "0x00000010"  # a wrong expected value, correctly re-digested
+    n = next(i for i, c in enumerate(wrong["cases"]) if c["intent_id"] == "MODE-5")
+    wrong["cases"][n]["expected_after"] = "0x00000010"  # a wrong expected value, correctly re-digested
     issues = O.verify(_redigest(wrong), k, raw)
-    assert issues and all(i.startswith("ENGINES_DISAGREE:case 2 MODE-5:expected_after") for i in issues), issues
+    assert issues and all(i.startswith(f"ENGINES_DISAGREE:case {n} MODE-5:expected_after") for i in issues), issues
     short = json.loads(json.dumps(good))
     short["cases"].pop()
     assert O.verify(_redigest(short), k, raw)[0].startswith("ORACLE_CASE_COUNT")
@@ -116,7 +119,8 @@ def test_a_missing_or_vacuous_observation_is_never_a_pass(synthetic):  # noqa: F
     obs = _simulate(o)
     obs["MODE-5"] = obs["MODE-5"][:1]
     got = O.check(o, obs)
-    assert got == [{"intent_id": "MODE-5", "verdict": "INCONCLUSIVE", "check": "ORACLE-NO-OBSERVATION"}]
+    n = sum(c["intent_id"] == "MODE-5" for c in o["cases"])
+    assert got == [{"intent_id": "MODE-5", "verdict": "INCONCLUSIVE", "check": "ORACLE-NO-OBSERVATION"}] * (n - 1)
     vacuous = _simulate(o)
     for v in vacuous.values():  # a test that never sets up the specified initial image proves nothing
         for x in v:
@@ -143,7 +147,7 @@ def test_real_engine_oracle_is_bound_and_agrees_with_forge_c(synthetic, tmp_path
     assert out.status == "PASS" and out.admissible, out.issues
     vc = K.materialize(out, req, raw, tmp_path / "o", pin)
     o = O.materialize(out, vc, raw, tmp_path / "o")
-    assert o["contract_semantic_digest"] == vc.semantic_digest and len(o["cases"]) == 2 * len(INTENTS)
+    assert o["contract_semantic_digest"] == vc.semantic_digest and len(o["cases"]) >= 2 * len(INTENTS)
     assert O.check(o, _simulate(o)) == []
     bad = O.check(o, _simulate(o, {"START": lambda c: ("0x0000a1b3", None)}))
     assert {g["intent_id"] for g in bad} == {"START"}
@@ -175,5 +179,5 @@ def test_real_engine_oracle_on_real_rm_facts(tmp_path):
         vc = K.materialize(out, req, raw, tmp_path / name, pin)
         got[name] = O.materialize(out, vc, raw, tmp_path / name)["cases"]
     assert got["adc"][0]["expected_after"] == "0x00000020"  # set ADC12EN from all zeros: bit 5 only
-    assert int(got["adc"][1]["expected_after"], 16) & 0x20  # and from all ones it stays set, other bits kept
+    assert all(int(c["expected_after"], 16) & 0x20 for c in got["adc"])  # set from every image, other bits kept
     assert {c["expected_after"] for c in got["start"]} == {"0x0000cccc"}  # write-only key: whole-register write
