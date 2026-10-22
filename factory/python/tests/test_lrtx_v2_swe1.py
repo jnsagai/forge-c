@@ -16,7 +16,6 @@ from forge_factory.common import REPO_ROOT
 from forge_factory.lrtx import runner, swe1
 from forge_factory.lrtx import structured as S
 from forge_factory.lrtx import swe1_semantic as SEM
-from test_lrtx_swe1 import ANSWERS as V1_ANSWERS
 from test_lrtx_swe1 import _gate, _scripted
 
 V2 = yaml.safe_load((REPO_ROOT / "config/factory/profiles/local-rtx-v2.yaml").read_text())
@@ -60,8 +59,9 @@ SEM_ANSWERS = {
            "0xAAAA"),
         _i("unlock", "enable write access to the configuration registers", "IWDG_KR.KEY", "write_key_sequence",
            ["F-IWDG_KR-KEY-V-5555"], "0x5555"),
+        # as qwen3-coder:30b answered in the M3 trial (2026-10-22): the key from its cited fact, no logical_value
         _i("lock", "disable write access to the configuration registers", "IWDG_KR.KEY", "write_key_sequence",
-           ["F-IWDG_KR-KEY-V-0"], "0x0")], "not_covered": [], "open_points": []},
+           ["F-IWDG_KR-KEY-V-0"])], "not_covered": [], "open_points": []},
     "requirements:IWDG_PR": {"intents": [
         _i("prescaler", "set the prescaler divider", "IWDG_PR.PR", "write_field", ["F-IWDG_PR-PR"], "5")],
         "not_covered": [], "open_points": []},
@@ -76,7 +76,7 @@ SEM_ANSWERS = {
         _i("pvu", "query the prescaler update flag", "IWDG_SR.PVU", "read_field", ["F-IWDG_SR-PVU"]),
         _i("rvu", "query the reload update flag", "IWDG_SR.RVU", "read_field", ["F-IWDG_SR-RVU"])],
         "not_covered": [{"field": "IWDG_SR.WVU", "reason": "window option out of scope"}], "open_points": []},
-    "requirements:crosscutting": V1_ANSWERS["requirements:crosscutting"],
+    "requirements:crosscutting": {"rules": ["status_query_no_wait"], "open_points": ["none observed"]},
 }
 
 
@@ -84,10 +84,13 @@ def test_runner_dispatch_is_by_profile_only(iwdg, tmp_path):
     assert runner.author_module(iwdg, "author", "SWE.1") == "swe1_semantic"
     assert runner.author_module(iwdg, "author", "SWE.2") == "swe2"
     assert runner.author_module(iwdg, "inspect", "SWE.1") == "swe1"
+    assert runner.inspector_module(iwdg, "SWE.1") == "review_semantic"
+    assert runner.inspector_module(iwdg, "SWE.2") == "review"
     man = json.loads((iwdg / ".forge-run/manifest.json").read_text())
     man["local_profile"]["id"] = "local-rtx-v1"
     (iwdg / ".forge-run/manifest.json").write_text(json.dumps(man))
     assert runner.author_module(iwdg, "author", "SWE.1") == "swe1"
+    assert runner.inspector_module(iwdg, "SWE.1") == "review"
     (iwdg / ".forge-run/manifest.json").write_text(json.dumps({k: v for k, v in man.items() if k != "local_profile"}))
     assert runner.author_module(iwdg, "author", "SWE.1") == "swe1"
 
@@ -104,6 +107,9 @@ def test_semantic_visit_renders_work_products_the_unchanged_gate_freezes(iwdg, m
             "shall write that value to IWDG_RLR.RL.") in md
     assert "passes when IWDG_KR equals 0x0000cccc" in md
     assert "SafeC register-io: ERRATA_NOT_BASELINED" in md
+    assert ("While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register."
+            in md)
+    assert "When the caller queries a status flag, the IWDG LL driver shall return the value read" in md
     eff = {e["case"]: e for e in json.loads((iwdg / swe1.EFFECTS).read_text())["effects"]}
     assert (eff["START"]["op"], eff["START"]["value"]) == ("write", "0xCCCC")
     assert (eff["LOCK"]["op"], eff["LOCK"]["value"]) == ("write", "0x0")
@@ -114,6 +120,8 @@ def test_semantic_visit_renders_work_products_the_unchanged_gate_freezes(iwdg, m
     # the model answers were intents only: no packet asked for statements, masks or pages
     reg_calls = [p for p in calls if p["task"] != "requirements:crosscutting"]
     assert reg_calls and all("intents" in p["output_schema"]["properties"] for p in reg_calls)
+    cross = [p for p in calls if p["task"] == "requirements:crosscutting"]
+    assert cross and all(set(p["output_schema"]["properties"]) == {"rules", "open_points"} for p in cross)
     assert _gate(iwdg, monkeypatch) == 0  # frozen by the unchanged SWE.1 author gate
 
 

@@ -66,6 +66,8 @@ def reference_operation(domain: dict, intent: dict) -> dict:
         value, kind, encoded, preserved = None, "none", None, 0xFFFFFFFF
     else:
         value = {"set_field": 1, "clear_field": 0}.get(action, _literal(intent.get("logical_value")))
+        if value is None and action == "write_key_sequence":  # the key of the one value fact the intent cites
+            value = next(int(v["value"], 16) for v in f["values"] if v["fact_id"] in intent["source_fact_ids"])
         bits = value << f["lsb"]
         used = 0
         for x in reg["fields"]:

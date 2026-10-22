@@ -13,9 +13,10 @@ deterministically from the accepted operation:
 - the EARS statement, its verification and the register effect;
 - the source page of the cited fact.
 
-The cross-cutting task (reset/startup, failure handling, all-function rules), the consistency check, the assembly
-into the existing SWE.1 work products and the self-check are the unchanged feature 010 code. So are the gates that
-judge them.
+The cross-cutting requirements are a closed catalogue too: the reset/startup invariant is always rendered, and the
+model chooses the further rules the scope demands (status queries without waiting, writes changing only the named
+field). The consistency check, the assembly into the existing SWE.1 work products and the self-check are the
+unchanged feature 010 code, and so are the gates that judge them.
 
 Before assembly, all intents are validated together. That catches duplicates and conflicts across groups, and the
 contract is materialized only if Forge-C's own derivation of every number agrees. An answer identical to one already
@@ -139,8 +140,9 @@ def group_packet(ws: Path, g: dict, model: str, ctx: Context, findings: list[str
              "renders the requirement, its verification and its register effect from the validated intent. "
              "Actions: read_field (the driver reads and returns the field, e.g. a status flag query), set_field / "
              "clear_field (1-bit fields only), write_field (the field takes a logical value from the caller; give a "
-             "representative logical_value for the test, e.g. 5), write_key_sequence (write one documented value; "
-             "logical_value is that value and source_fact_ids MUST include its value fact). logical_value is always "
+             "representative logical_value for the test, e.g. 5), write_key_sequence (write one documented value: "
+             "cite exactly that value's fact in source_fact_ids; logical_value may be omitted, the engine takes the "
+             "key from the cited fact). logical_value is always "
              "the FIELD value, never a register mask or a shifted value: for a 1-bit field the only values are 0 "
              "and 1; the engine computes masks and bit positions. source_fact_ids cite the field fact or the "
              "documented value fact the intent relies on. request is the caller's request in lowercase words only "
@@ -210,6 +212,70 @@ def rendered(doc: dict, contract_ops: dict[str, dict], ctx: Context, sysname: st
     """A semantic answer as a feature 010 requirements document (the shape assemble/consistency read)."""
     return {"requirements": [render(it, contract_ops[it["key"]], ctx, sysname) for it in doc["intents"]],
             "not_covered": doc["not_covered"], "open_points": doc["open_points"]}
+
+
+# ---- the cross-cutting requirements: a closed catalogue, rendered -----------------------------------------------------
+# M3 trial 2026-10-22 (RCC-LL n=1): every register task was valid at the first call, but the free-text cross-cutting
+# task kept non-EARS statements ('it shall', 'The caller shall') through its repairs. Its content was right; only
+# the wording failed. The model now chooses rules from this catalogue; the factory renders statement and verification.
+CROSS_RULES = {
+    "status_query_no_wait": {
+        "when": "the work-order scope states that the caller bounds its polling (no waiting in the driver)",
+        "statement": "When the caller queries a status flag, the {sys} shall return the value read from the status "
+                     "register without waiting for the flag to change.",
+        "verification": "Host unit test holds each status flag at its inactive value in the register array and "
+                        "performs each status query once; passes when every query returns 0 after one read.",
+        "verified_by": "host_unit_test"},
+    "write_only_named_field": {
+        "when": "the coverage rules require that every write changes only the named bits",
+        "statement": "When the {sys} sets, clears or writes a register field, the {sys} shall change only the bits of "
+                     "that field.",
+        "verification": "Host unit test fills the register array with 0xFFFFFFFF and then 0x00000000 and performs each "
+                        "set, clear and write request; passes when only the bits of the named field change.",
+        "verified_by": "host_unit_test"},
+}
+STARTUP_RULE = {
+    "statement": "While no {layer} function has been called after reset, the {sys} shall not write any {pfx} register.",
+    "verification": "Target test reads every {pfx} register after reset before any driver function is called; passes "
+                    "when each register holds its RM0486 reset value.",
+    "verified_by": "target_robot_test"}
+CROSS_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["rules", "open_points"],
+                "properties": {"rules": {"type": "array", "uniqueItems": True,
+                                         "items": {"type": "string", "enum": sorted(CROSS_RULES)}},
+                               "open_points": {"type": "array", "items": {"type": "string"}}}}
+
+
+def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list[str] | None = None,
+                    previous: dict | None = None) -> dict:
+    m = V1._manifest(ws)
+    sysname = V1.system_name(ws)
+    listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
+    cat = "\n".join(f"- {k}: applies when {v['when']}; renders: \"{v['statement'].format(sys=sysname)}\""
+                     for k, v in sorted(CROSS_RULES.items()))
+    instr = (f"The register-level requirements of the {sysname} are rendered (CURRENT ARTIFACT below). The reset/"
+             "startup invariant is always added by the factory. Choose which further cross-cutting rules of this "
+             "catalogue the work-order scope and coverage rules demand (choose none that does not apply):\n" + cat +
+             "\nWork-order scope: " + " | ".join(m["scope"]) + f". Coverage rules: {V1.coverage_guidance(ws)} "
+             "Do not write requirement text: the factory renders each chosen rule. open_points lists ambiguities of "
+             "the source (or nothing).")
+    art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
+    return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
+                    sources=[], artifacts=[art], criteria=["only rules the scope or coverage rules demand"],
+                    output_schema=CROSS_SCHEMA, model=model, findings=findings, previous=previous)
+
+
+def crosscut_rendered(ws: Path, doc: dict, inv: dict, sysname: str) -> dict:
+    from ..layer import layer_of, register_prefix
+
+    pfx, layer = register_prefix(ws), layer_of(ws)
+    page = min(inv["registers"][0]["pages"]) if inv["registers"] else 1
+    reqs = [{"key": "startup_no_write", "source_page": page, "effects": [],
+             **{k: v.format(sys=sysname, layer=layer, pfx=pfx) for k, v in STARTUP_RULE.items()}}]
+    for k in doc["rules"]:
+        r = CROSS_RULES[k]
+        reqs.append({"key": k, "source_page": page, "effects": [], "statement": r["statement"].format(sys=sysname),
+                     "verification": r["verification"], "verified_by": r["verified_by"]})
+    return {"requirements": reqs, "not_covered": [], "open_points": doc["open_points"]}
 
 
 # ---- deterministic checks of one answer ------------------------------------------------------------------------------
@@ -304,6 +370,11 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
         return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_ENGINE_FAULT: {exc}"], budget)
 
 
+def _joint(sem: list[tuple[dict, dict]]) -> list[dict]:
+    """Every group's intents, each id qualified by its group (group:key)."""
+    return [{**to_intent(it), "intent_id": f"{g['id']}:{it['key']}"} for g, rec in sem for it in rec["doc"]["intents"]]
+
+
 def _run_group(ws, g, model, ctx, sysname, budget, findings):
     task = f"requirements:{g['id']}"
     try:
@@ -328,35 +399,47 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     issues = [f"{rec['task']}: {e}" for _g, rec in sem if rec["status"] != "VALID" for e in rec["errors"][:5]]
     if issues:
         return V1.reply(ws, "FAILED", issues, budget)
-    # all intents together: duplicates and conflicts across groups, and the contract with both engines agreeing
-    intents = [to_intent(it) for _g, rec in sem for it in rec["doc"]["intents"]]
-    task_of = {it["key"]: rec["task"] for _g, rec in sem for it in rec["doc"]["intents"]}
-    out, req, work = ctx.validate(intents, "swe1-all")
-    if out.status != "PASS" or not out.admissible:
+    # all intents together: duplicates and conflicts across groups, and the contract with both engines agreeing.
+    # Intent keys are unique within a group only (as requirement keys are per task): the joint id is group:key.
+    for _ in range(2):
+        out, req, work = ctx.validate(_joint(sem), "swe1-all")
+        if out.status == "PASS" and out.admissible:
+            break
         per: dict[str, list[str]] = {}
         for f in findings_text(out):
             m = re.match(r"^\[([^\]]+)\]", f)
-            for key in m.group(1).split(",") if m else []:
-                per.setdefault(task_of.get(key, "requirements:crosscutting"), []).append(f)
-        return V1.reply(ws, "FAILED", [f"{t}: {f}" for t, fs in per.items() for f in fs[:5]] or findings_text(out),
-                        budget)
+            for jid in m.group(1).split(",") if m else []:
+                gid, _, key = jid.partition(":")
+                per.setdefault(f"requirements:{gid}", []).append(f.replace(jid, key, 1) if key else f)
+        if not per or budget["calls"] >= budget["max_calls"]:
+            return V1.reply(ws, "FAILED", findings_text(out)[:20], budget)
+        # T023: localized repair of the groups the joint check names, then the joint check again
+        sem = [(g, _run_group(ws, g, model, ctx, sysname, budget, per[rec["task"]]) if rec["task"] in per else rec)
+               for g, rec in sem]
+        bad = [f"{rec['task']}: {e}" for _g, rec in sem if rec["status"] != "VALID" for e in rec["errors"][:5]]
+        if bad:
+            return V1.reply(ws, "FAILED", bad, budget)
+    else:
+        return V1.reply(ws, "FAILED", findings_text(out)[:20], budget)
     try:
         vc = K.materialize(out, req, ctx.domain_raw, work, ctx.pin)
     except K.ContractRejected as exc:
         return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_CONTRACT_REJECTED: {i}" for i in exc.issues[:10]], budget)
     ops = vc.by_intent()
-    results = [(g, {**rec, "doc": rendered(rec["doc"], ops, ctx, sysname)}) for g, rec in sem]
+    results = [(g, {**rec, "doc": rendered(rec["doc"], {it["key"]: ops[f"{g['id']}:{it['key']}"]
+                                                        for it in rec["doc"]["intents"]}, ctx, sysname)})
+               for g, rec in sem]
     if results:  # the contract's unresolved obligations become open points of the requirements document
         first = results[0][1]
         first["doc"] = {**first["doc"], "open_points": list(dict.fromkeys(
             first["doc"]["open_points"] + [f"SafeC register-io: {o}" for o in vc.unresolved_obligations]))}
     functional = [r for _g, rec in results for r in rec["doc"]["requirements"]]
-    cross = V1.run_task(ws, "requirements:crosscutting",
-                        lambda fi, pr: V1.crosscut_packet(ws, functional, model, fi, pr),
-                        lambda d: V1.validate_group(ws, d, None, sysname, idx), budget,
-                        routed.get("requirements:crosscutting"))
+    cross = V1.run_task(ws, "requirements:crosscutting", lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
+                        lambda d: V1.validate_group(ws, crosscut_rendered(ws, d, inv, sysname), None, sysname, idx),
+                        budget, routed.get("requirements:crosscutting"))
     if cross["status"] != "VALID":
         return V1.reply(ws, "FAILED", [f"requirements:crosscutting: {e}" for e in cross["errors"][:5]], budget)
+    cross = {**cross, "doc": crosscut_rendered(ws, cross["doc"], inv, sysname)}
     if V1.safety_text(ws) is None:
         return V1.reply(ws, "FAILED", ["LRTX_SWE1_ALLOCATED_SAFETY_REQUIREMENTS_NOT_SUPPORTED (an approved software "
                                        "safety allocation needs the upstream SSR task)"], budget)

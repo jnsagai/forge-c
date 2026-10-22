@@ -27,15 +27,16 @@ runtime:
 structured:               # SWE.1 register tasks are semantic (SafeC); every other phase as in local-rtx-v1
   phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
   inspect_phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
-  semantic_phases: [SWE.1]
+  semantic_phases: [SWE.1]          # semantic-first author (F011 M3)
+  semantic_inspect_phases: [SWE.1]  # typed claims + deterministic adjudication (F011 M4)
   reinspect_direct: true
   timeout_s: 3600
   visit_time_s: 1200
 safec:                    # ADR-0015: a pinned, hash-verified local engine; never a phase or release authority
   engine:
-    binary: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/c18dd2dc594a85b9dabb208d0c211b03c1eec7a3/safec-bridge
-    binary_sha256: 5f23606fdf655f9cf6ad655eb9e0d0154127f97bbb021766462c4beb1d3f758c
-    source_commit_sha: c18dd2dc594a85b9dabb208d0c211b03c1eec7a3
+    binary: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/813b4e820eb506cc6edb3768c7e642fdae367a37/safec-bridge
+    binary_sha256: ecd5cf1c881541ff4180fa119e615e3c10fd5109ab6d171e597797146796c702
+    source_commit_sha: 813b4e820eb506cc6edb3768c7e642fdae367a37
     semantic_profile: register-io-0.1
   timeout_s: 60
 admission:

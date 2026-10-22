@@ -137,9 +137,17 @@ def _refreeze(ws: Path, phase: str) -> dict:
     return {"rc": rc, "result": last.get("result"), "issues": (last.get("issues") or [])[:10]}
 
 
-def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path) -> dict:
-    from . import review
+def _omitted_field(ws: Path) -> str | None:
+    """REG.FIELD of the effect omit_requirement removes (read before the mutation; the catalogue is unchanged)."""
+    eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())
+    e = next((e for e in eff["effects"] if e.get("op") in ("write", "set", "clear")), None)
+    return f"{e['register']}.{e['field']}" if e else None
 
+
+def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspector: str = "structured") -> dict:
+    from importlib import import_module
+
+    review = import_module("forge_factory.lrtx." + {"structured": "review", "semantic": "review_semantic"}[inspector])
     name = case["id"] if case else "BASELINE"
     ws = scratch / name / "workspace"
     if ws.exists():
@@ -148,9 +156,12 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path) -> dic
     for p in (ws / ".forge-run/lrtx").glob("*"):  # no checkpoints from any earlier evaluation
         shutil.rmtree(p) if p.is_dir() else p.unlink()
     phase = case["phase"] if case else "SWE.1"
+    # F011 (2026-10-22): an inspector restricted to existing requirement ids names the uncovered FIELD of an omitted
+    # requirement, not its removed id; both count as on target (same rule for every inspector)
+    alt = _omitted_field(ws) if case and case["id"] == "S1-OMIT" else None
     target = case["apply"](ws) if case else None
     rec = {"case": name, "phase": phase, "class": case["class"] if case else "none", "target": target,
-           "gate": _refreeze(ws, phase)}
+           "target_field": alt, "inspector": inspector, "gate": _refreeze(ws, phase)}
     if rec["gate"]["result"] not in ("FROZEN", "FROZEN_BY_EVIDENCE", "FROZEN_BY_TOOL_EVIDENCE"):
         rec["detected_by"] = "deterministic gate" if case else "FALSE_REJECTION_BY_GATE"
         return rec
@@ -161,7 +172,8 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path) -> dic
                          "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get(
                              "findings") or []]}
     text = " ".join(rec["inspection"]["findings"])
-    on_target = bool(target) and (target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text)))
+    on_target = bool(target) and (target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text))
+                                  or bool(alt and alt in text))
     if case is None:
         rec["detected_by"] = "FALSE_REJECTION_BY_INSPECTION" if rec["inspection"]["verdict"] == "FAIL" else "none"
     elif rec["inspection"]["verdict"] == "FAIL":
@@ -171,13 +183,14 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path) -> dic
     return rec
 
 
-def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None) -> dict:
+def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None,
+        inspector: str = "structured") -> dict:
     rows = []
     with tempfile.TemporaryDirectory(prefix="lrtx-seeded-", dir=out.parent) as td:
         for h in holdouts:
             for case in [None] + [c for c in CATALOGUE if not cases or c["id"] in cases]:
                 try:
-                    r = evaluate(h, case, model, Path(td) / h.parent.name)
+                    r = evaluate(h, case, model, Path(td) / h.parent.name, inspector)
                 except ValueError as exc:  # a holdout without a site for this defect class
                     r = {"case": case["id"] if case else "BASELINE", "detected_by": f"NOT_APPLICABLE ({exc})"}
                 rows.append({"holdout": h.parent.name, **r})
@@ -189,7 +202,8 @@ def _summary(rows: list[dict], model: str) -> dict:
     seeded = [r for r in rows if r["case"] != "BASELINE" and not r["detected_by"].startswith("NOT_APPLICABLE")]
     base = [r for r in rows if r["case"] == "BASELINE"]
     return {"schema": "forge-c/lrtx-seeded/1", "catalogue": CATALOGUE_VERSION, "catalogue_sha256": catalogue_hash(),
-            "model": model, "generated_at": utc_now(),
+            "model": model, "inspector": rows[0].get("inspector", "structured") if rows else None,
+            "generated_at": utc_now(),
             "deterministic_detection": sum(r["detected_by"] == "deterministic gate" for r in seeded),
             "semantic_detection_on_target": sum(r["detected_by"] == "inspection (on target)" for r in seeded),
             "inspection_fail_off_target": sum(r["detected_by"] == "inspection (off target)" for r in seeded),
@@ -205,9 +219,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--case", action="append", default=None)
+    ap.add_argument("--inspector", choices=("structured", "semantic"), default="structured",
+                    help="semantic: F011 typed claims with deterministic adjudication (SWE.1; other phases structured)")
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case)
+    s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case, a.inspector)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}))
     return 0
 

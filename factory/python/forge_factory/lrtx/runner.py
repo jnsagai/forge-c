@@ -31,6 +31,19 @@ def author_module(ws: Path, step: str, phase: str) -> str:
     return PHASES[phase]
 
 
+def inspector_module(ws: Path, phase: str) -> str:
+    """Feature 011: a profile listing the phase in structured.semantic_inspect_phases (local-rtx-v2) inspects it with
+    typed claims and deterministic adjudication; every other work order keeps the feature 010 inspector."""
+    man = ws / ".forge-run/manifest.json"
+    prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+    if prof_id:
+        from .profile import load
+
+        if phase in ((load(prof_id).get("structured") or {}).get("semantic_inspect_phases") or []):
+            return "review_semantic"
+    return "review"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("step", choices=["author", "code", "tests", "inspect", "continue-check"])
@@ -62,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     if not a.model:
         ap.error("--model is required")
     if a.step == "inspect":
-        from . import review as mod
+        mod = import_module(f"forge_factory.lrtx.{inspector_module(ws, a.phase)}")
 
         (ws / ".forge-run/lrtx" / a.phase / "inspect-reply.json").unlink(missing_ok=True)
         try:
