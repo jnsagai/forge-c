@@ -783,3 +783,14 @@ reproducers:
     operations: [SWE.4/author, swtrace/check_ut]
     root_cause: "swtrace.tagged_tests took only the first @test and the first @verifies of each Doxygen block (re.search). The rc3 SWE.4 author documented six tests in one block above one test function - valid Doxygen - so UT-002..UT-006 and their USPEC references were silently dropped; the gate reported seven SPEC_NOT_VERIFIED findings for passing, tagged tests and the author could not resolve a finding that was not real."
     remedy: "A block with several @test tags yields one test per tag, each with the @verifies text between it and the next @test; a block with one @test (in either order with @verifies) and @file blocks keep the previous reading. On a copy of the rc3 workspace the SWE.4 findings go from 7 to 0."
+  - id: RPR-072
+    script: rpr072_route_extension_inspections.py
+    sha256: 058612e16d997b8b0314991f3ada87f0f54235baa7453b92102f8a0891818da3
+    symptom_signature: "progress extension granted for inspection cycles but the route still BLOCKS"
+    observed_in: "feature 010 local trials (LRTX-TRIAL lrtx8-lrtxq2); documented in specs/010 validation and F011-T037"
+    baseline_revision: 2f4b9cf44fd9cc56648fa26b6da6c2e29248338d
+    fix_revision: be97ec26a9b7fcfe61d85d0380aadf450e8e6256
+    error_codes: ["REWORK_BUDGET_EXHAUSTED"]
+    operations: [route_sweN, inspection/gate.step_route]
+    root_cause: "Store.gate already decides BLOCKED when failed inspections reach maximum_rework_cycles. step_route computed the progress extension (progress: true) after that decision and only cleared its own 'exhausted' flag, never the BLOCKED decision it had received, so a phase whose failed cycles were inspections was blocked although the owner's rule granted it one more cycle."
+    remedy: "When a progress extension is granted (cycles below the authored maximum + extra, measurable progress, not STUCK) and Store.gate decided BLOCKED, the route decision becomes REWORK for that cycle, with the extension in the reason; no progress, the cap or STUCK block as before."
