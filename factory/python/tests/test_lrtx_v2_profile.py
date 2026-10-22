@@ -65,3 +65,20 @@ def test_inspector_candidates_are_pinned_and_not_qualified():
     allowed = V2["models"]["allowed"]
     for m in ("gpt-oss:20b", "glm4:9b", "phi4:14b", "mistral-small3.2:24b", "granite3.3:8b"):
         assert len(allowed[m]["digest"]) == 64 and allowed[m]["role_qualification"].startswith("NOT_QUALIFIED")
+
+
+def test_the_omniverse2_profile_differs_from_v2_only_in_host_paths_and_the_engine_build():
+    """The second host's profile may not drift from local-rtx-v2: same structured settings, gates, ports, models and
+    engine source commit; only paths, the cross-host engine build, the host reference and its identity differ."""
+    from forge_factory.lrtx.profile import load
+
+    v2, om = load("local-rtx-v2"), load("local-rtx-v2-omniverse2")
+    host_keys = {"id", "description", "host_reference", "deployment", "existing_deployment", "safec", "_path", "_sha256"}
+    assert {k: v for k, v in v2.items() if k not in host_keys} == {k: v for k, v in om.items() if k not in host_keys}
+    assert {k: v for k, v in v2["deployment"].items() if k not in ("default_root", "shared_readonly")} == \
+        {k: v for k, v in om["deployment"].items() if k not in ("default_root", "shared_readonly")}
+    assert set(v2["deployment"]["shared_readonly"]) == set(om["deployment"]["shared_readonly"])
+    e2, eo = v2["safec"]["engine"], om["safec"]["engine"]
+    assert e2["source_commit_sha"].split()[0] == eo["source_commit_sha"].split()[0] and \
+        e2["semantic_profile"] == eo["semantic_profile"]
+    assert {k: v for k, v in v2["safec"].items() if k != "engine"} == {k: v for k, v in om["safec"].items() if k != "engine"}
