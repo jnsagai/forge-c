@@ -209,3 +209,6 @@ sha256 `359bef94…`, reproduced in two clean target directories; `validate_inte
 | Engine pin across hosts | PASS | SafeC f6d7089 (private) | b6ce0f7 built from a fixed source path (`git archive`, cargo home remapped, locked, offline) gives sha256 `2a54f4a3…` on both loop10 and the new 48 GB host. Built from different checkout paths it does not, because cargo metadata depends on the path dependencies' location. |
 
 **CRE decision:** `pd-2fd79d4a286aaeb309c7` (972f3d3, covering f185e42): ELIGIBLE_FOR_OFFLINE_REVIEW.
+**Second host:** `config/factory/profiles/local-rtx-v2-omniverse2.yaml` (6af8286, `pd-81790d8356ca886904e5`). It is
+local-rtx-v2 with the omniverse2 paths (data root /mnt/data/forge-c) and the cross-host engine build; a test fails if
+the two profiles drift apart in anything else. Not yet started there: the models are still being copied.
