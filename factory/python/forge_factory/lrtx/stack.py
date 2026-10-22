@@ -30,6 +30,10 @@ from . import profile as lp
 SYSTEM_PATH = "/usr/local/bin:/usr/bin:/bin"
 
 
+def gateway_reasoning(prof: dict) -> str:
+    """The profile's per-model reasoning exception for the gateway (owner decision 2026-10-22); '{}' when none."""
+    return json.dumps((prof.get("gateway") or {}).get("reasoning") or {}, sort_keys=True)
+
 def settings(profile_id: str = "local-rtx-v1") -> dict:
     prof = lp.load(profile_id)
     root = Path(os.environ.get(prof["deployment"]["root_env"]) or prof["deployment"]["default_root"])
@@ -222,7 +226,8 @@ def start(s: dict) -> dict:
     adm = prof["admission"]
     gw_env = {**env, "PYTHONPATH": str(REPO_ROOT / "factory/python"), "FORGE_GATEWAY_MAX_INFLIGHT": str(adm["max_inflight"]),
               "FORGE_GATEWAY_MAX_QUEUE": str(adm["max_queue"]), "FORGE_GATEWAY_MAX_WAIT_S": str(adm["max_wait_s"]),
-              "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10))}
+              "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10)),
+              "FORGE_GATEWAY_REASONING": gateway_reasoning(prof)}
     specs = {
         "ollama": ([str(r / "ollama-0.34.0/bin/ollama"), "serve"], ollama_env, f"http://127.0.0.1:{p['ollama']}/api/version"),
         "gateway": ([env["FORGE_VENV"] + "/bin/python", "-m", "forge_factory.llm_gateway", "--port", str(p["gateway"]),

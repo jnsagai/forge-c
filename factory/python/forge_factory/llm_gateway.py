@@ -1,9 +1,11 @@
 """Forge-C local LLM gateway (model-free, deterministic) between Fabro and local Ollama.
 
 Why: Fabro 0.362 persists provider `reasoning` output in its run events, and Qwen3 on Ollama
-thinks by default. FR-025 forbids requesting or storing hidden reasoning. This gateway:
+thinks by default. FR-025 forbids storing hidden reasoning. This gateway:
 
-* forces `reasoning_effort="none"` (Ollama => think=false) on every chat request;
+* sets `reasoning_effort="none"` (Ollama => think=false) on every chat request, except for the models a local profile
+  names in `gateway.reasoning` (owner decision 2026-10-22, ADR-0015 addendum): a model that cannot answer with
+  reasoning off (gpt-oss returns empty content) reasons at the profile's fixed effort, with extra output tokens for it;
 * strips any `reasoning`/`reasoning_content`/`thinking` fields from responses and stream deltas;
 * appends reported token usage (never estimated here) to a JSONL meter for T041;
 * re-sends the identical request (bounded, FORGE_GATEWAY_DROP_RETRIES) when the upstream returned an empty
@@ -71,10 +73,29 @@ def scope_tools(body: dict) -> dict:
     return {**body, "tools": kept}
 
 
+EFFORTS = ("low", "medium", "high")
+
+
+def reasoning_policy() -> dict[str, dict]:
+    """model -> {effort, extra_output_tokens} from FORGE_GATEWAY_REASONING (set by the local stack from its profile).
+    Unset or invalid: no exception, every model reasons 'none' (the behaviour before the owner decision)."""
+    try:
+        pol = json.loads(os.environ.get("FORGE_GATEWAY_REASONING") or "{}")
+    except ValueError:
+        return {}
+    return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} \
+        if isinstance(pol, dict) else {}
+
+
 def sanitize_request(body: dict) -> dict:
     body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
-    out["reasoning_effort"] = "none"
+    pol = reasoning_policy().get(out.get("model"))
+    out["reasoning_effort"] = pol["effort"] if pol else "none"
+    if pol and pol.get("extra_output_tokens"):  # the reasoning would otherwise use up the answer's reserve
+        for key in ("max_tokens", "max_completion_tokens"):
+            if isinstance(out.get(key), int):
+                out[key] += int(pol["extra_output_tokens"])
     msgs = []
     for m in out.get("messages") or []:
         if isinstance(m, dict):

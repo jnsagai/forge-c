@@ -54,6 +54,11 @@ safec:                    # ADR-0015: a pinned, hash-verified local engine; neve
     source_commit_sha: b6ce0f73f5267c8122c03b9df1117039507e91b6  # validate_intents as 813b4e8; adds derive_tests (F011 M5)
     semantic_profile: register-io-0.1
   timeout_s: 60
+gateway:
+  # owner 2026-10-22 ("I agree with A per-model exception in the gateway"): a model that cannot answer with reasoning
+  # off reasons at this fixed effort; the gateway still strips every reasoning field before anything is stored (FR-025)
+  reasoning:
+    gpt-oss:20b: {effort: low, extra_output_tokens: 4096}
 admission:
   max_inflight: 1
   max_queue: 8

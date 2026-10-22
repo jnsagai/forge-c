@@ -138,3 +138,39 @@ def test_tools_scoped_to_role_detected_from_skill_instruction():
     assert {"write_file", "mcp__forge_build_mcp__compile"} <= kept and "shell" not in kept
     body["messages"][0]["content"] = "no role here"
     assert len(gw.sanitize_request(body)["tools"]) == len(names)  # unknown role: unchanged, hook still enforces
+
+
+def test_a_profile_named_model_reasons_at_its_fixed_effort_and_its_reasoning_is_still_stripped(tmp_path, monkeypatch):
+    """Owner decision 2026-10-22 (ADR-0015 addendum): a model the profile names may reason at the profile's effort,
+    with extra output tokens for it; every other model stays at 'none'; no reasoning text reaches the caller or the
+    meter, in plain or streamed answers, for either."""
+    monkeypatch.setenv("FORGE_GATEWAY_REASONING", json.dumps({"gpt-oss:20b": {"effort": "low",
+                                                                             "extra_output_tokens": 4096}}))
+    c = client(tmp_path)
+    for stream in (False, True):
+        r = c.post("/v1/chat/completions", json={"model": "gpt-oss:20b", "stream": stream, "max_tokens": 1000,
+                                                 "reasoning_effort": "high", "messages": []})
+        assert r.status_code == 200 and "SECRET-THOUGHT" not in r.text
+        assert seen[-1]["reasoning_effort"] == "low" and seen[-1]["max_tokens"] == 5096  # caller's 'high' ignored
+    r = c.post("/v1/chat/completions", json={"model": "qwen3:8b", "max_tokens": 1000, "messages": []})
+    assert seen[-1]["reasoning_effort"] == "none" and seen[-1]["max_tokens"] == 1000
+    assert "SECRET-THOUGHT" not in (tmp_path / "usage.jsonl").read_text()
+
+
+def test_without_a_valid_policy_every_model_reasons_none(monkeypatch):
+    for env in (None, "not json", '{"gpt-oss:20b": {"effort": "max"}}', '["gpt-oss:20b"]'):
+        if env is None:
+            monkeypatch.delenv("FORGE_GATEWAY_REASONING", raising=False)
+        else:
+            monkeypatch.setenv("FORGE_GATEWAY_REASONING", env)
+        out = gw.sanitize_request({"model": "gpt-oss:20b", "max_tokens": 10, "messages": []})
+        assert out["reasoning_effort"] == "none" and out["max_tokens"] == 10, env
+
+
+def test_the_stack_passes_only_the_profile_policy():
+    from forge_factory.lrtx.profile import load
+    from forge_factory.lrtx.stack import gateway_reasoning
+
+    assert json.loads(gateway_reasoning(load("local-rtx-v2"))) == {"gpt-oss:20b": {"effort": "low",
+                                                                                   "extra_output_tokens": 4096}}
+    assert gateway_reasoning(load("local-rtx-v1")) == "{}"  # the v1 line is unchanged
