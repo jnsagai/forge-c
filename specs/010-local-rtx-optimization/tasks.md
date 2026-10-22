@@ -11,6 +11,9 @@ Status (2026-10-21, end of day):
   - T023: qwen3:8b passed 0/3 against 3/3 for qwen3-coder:30b. Owner decision: coder-only authoring.
 - **Inspector decision (owner, 2026-10-21):** "local qwen as inspector". The campaign (T024) therefore runs with the
   structured qwen3-coder:30b inspector, which the profile still records as NOT_QUALIFIED.
+- **Campaign c1 (T024):** stopped by the owner on 2026-10-22 ("stop now all the runs") after 13 of 30 cases. 0 READY;
+  all 13 BLOCKED at SWE.1 (IWDG-LL by the local inspector, RCC-LL by author STUCK). T024 stays unchecked; evidence
+  `evidence/v0.4/runs/LRTX-T024/README.md`.
 - **Rule:** a checked task requires its own evidence. A written specification or passing static check is not a completed
   local model trial.
 
