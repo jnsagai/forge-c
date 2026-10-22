@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-22T18:12:37.027969Z",
+  "note": "Identity only. A present tool is not a proof capability for a property until a proof of that property ran; no Windows/WSL evidence is reused.",
+  "schema": "forge-c/formal-tool-identity/1",
+  "tools": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/cbmc",
+      "sha256": "01ae2ae74a9dc5673631e42256f780393081650f4a22d6f4220566c0deb1643a",
+      "status": "PRESENT",
+      "tool": "cbmc",
+      "version": "6.11.0 (cbmc-6.11.0)"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/goto-cc",
+      "sha256": "8e58405a2a1c7ec56db52d955cdd0f54a5cca1be09dfdd4f754ea72d111b8215",
+      "status": "PRESENT",
+      "tool": "goto-cc",
+      "version": "gcc (goto-cc 6.11.0 (cbmc-6.11.0)) 11.4.0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/frama-c",
+      "sha256": "ba1b2f254d1cf26f4b07f1ebdd7b63b32cd84229edf477660dd1f8605f87aa38",
+      "status": "PRESENT",
+      "tool": "frama-c",
+      "version": "33.0 (Arsenic)"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/why3",
+      "sha256": "cc39c7bbe16833fd44cd161723a41f49554f9a2a674506e6fa40fecf6f899b0c",
+      "status": "PRESENT",
+      "tool": "why3",
+      "version": "Why3 platform, version 1.8.2"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/alt-ergo",
+      "sha256": "af66a14c27d7c431c166634f1c80a93501e5386e04922935bfd30c19455c4cd5",
+      "status": "PRESENT",
+      "tool": "alt-ergo",
+      "version": "2.4.3-free"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin/cvc5",
+      "sha256": "ee4c6787a95218a571080a599bdf579aca5b0f1e4f27687f70f46d4d12148974",
+      "status": "PRESENT",
+      "tool": "cvc5",
+      "version": "This is cvc5 version 1.2.1 [git tag 1.2.1 branch HEAD]"
+    },
+    {
+      "path": null,
+      "status": "ABSENT",
+      "tool": "z3"
+    },
+    {
+      "applicability": "UNSUPPORTED: Kind 2 checks Lustre models; the register-io obligations here are C functions",
+      "path": null,
+      "status": "ABSENT",
+      "tool": "kind2"
+    }
+  ]
+}

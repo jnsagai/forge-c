@@ -1,0 +1,4 @@
+[{"tool": "cbmc", "status": "PRESENT", "version": "6.11.0 (cbmc-6.11.0)"}, {"tool": "goto-cc", "status": "PRESENT", "version": "gcc (goto-cc 6.11.0 (cbmc-6.11.0)) 11.4.0"}, {"tool": "frama-c", "status": "PRESENT", "version": "33.0 (Arsenic)"}, {"tool": "why3", "status": "PRESENT", "version": "Why3 platform, version 1.8.2"}, {"tool": "alt-ergo", "status": "PRESENT", "version": "2.4.3-free"}, {"tool": "cvc5", "status": "PRESENT", "version": "This is cvc5 version 1.2.1 [git tag 1.2.1 branch HEAD]"}, {"tool": "z3", "status": "ABSENT", "version": null}, {"tool": "kind2", "status": "ABSENT", "version": null}]
+..                                                                       [100%]
+
+--- stderr ---

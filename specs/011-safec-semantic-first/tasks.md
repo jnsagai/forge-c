@@ -67,7 +67,7 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 - [ ] **F011-T032 [US4]** Run 3 fresh real SWE.2 author+inspector visits per RCC/IWDG pilot on frozen genuinely accepted SWE.1, with all existing design/inspection gates unchanged.
 - [ ] **F011-T033 [US5]** Extend SafeC C11/ACSL/test lowering only for the newly supported register-io semantic domain; preserve temporal Wheel profile, and treat unsupported proof properties conservatively.
 - [ ] **F011-T034 [US5]** Integrate independent requirement-derived oracles and mutations in SWE.3/4/5/6, including inverted key, absent write, vacuous test and false positive. Reuse existing Renode/Robot/gcc/cppcheck tool chain and role policy.
-- [ ] **F011-T035 [US5]** Probe bound/assumptions and exact Linux backend (Frama-C/CBMC/Kind 2 if applicable). Never treat old Windows/WSL evidence or bounded BMC as generalized proof.
+- [X] **F011-T035 [US5]** Probe bound/assumptions and exact Linux backend (Frama-C/CBMC/Kind 2 if applicable). Never treat old Windows/WSL evidence or bounded BMC as generalized proof. ✅ Evidence: `evidence/v0.4/runs/F011-T035/latest.json`
 - [ ] **F011-T036 [US5]** Execute separate progressive end-to-end runs (one phase at a time) and archive exact PASS/FAIL/BLOCKED/NOT_RUN metrics and artifacts. HAL profile may not be claimed local-structured until tested.
 
 ## M6 — Regression, evaluation, and offline handoff (F011-AT-031..034)

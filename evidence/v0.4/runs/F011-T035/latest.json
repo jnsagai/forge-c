@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "python -m forge_factory.assurance.register_proof --probe --out evidence/v0.4/runs/F011-T035/formal-tool-identity.json && python -m pytest -q -p no:cacheprovider -rs factory/python/tests/test_lrtx_v2_swe1.py -k 'cbmc or oracle'"
+  ],
+  "duration_s": 6.978,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "734a02ce78a27ce20fb3cac255a8f50594bee87e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T035/20261022T181236.log",
+  "log_sha256": "4a5e6dbbe3cb739275fc1cbeea040fd662e714606af696c740f5c288ca7988be",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T035",
+  "ts_utc": "2026-10-22T18:12:36.990347Z"
+}
