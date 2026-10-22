@@ -325,3 +325,48 @@ def test_frozen_swe1_carries_a_verified_oracle_and_the_c_oracle_catches_mutants_
     (iwdg / SO.FILE).write_text(json.dumps(raw))
     blocked = run()
     assert blocked["status"] == "BLOCKED" and blocked["reason"].startswith("SAFEC_ORACLE_BLOCKED"), blocked
+
+
+def test_cbmc_proves_each_register_effect_for_every_initial_value(iwdg, monkeypatch, tmp_path):
+    """F011-T035/AT-029: the contract operations become CBMC properties over ANY initial register value on the real
+    LL code. A mutant that is wrong only for one initial value passes the four-image C oracle and is FAILED here, on
+    its own operation; the correct implementation is PROVED for every operation within the stated model."""
+    from forge_factory.assurance import oracle_gen, register_proof
+    from forge_factory.assurance.formal import tool
+    from forge_factory.layer import api_header, profile
+
+    if tool("cbmc") is None:
+        pytest.skip("CBMC not installed on this host")
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    from forge_factory.assurance import safec_oracle as SO
+
+    rec, _ = SO.verified(iwdg)
+    calls = {}
+    for iid, case in rec["case_of_intent"].items():
+        op = next(o for o in rec["operations"] if o["intent_id"] == iid)
+        calls[case] = {"function": FN[iid.split(":", 1)[1]],
+                       "args": [f"{op['logical_value']}U"] if op["action"] == "write_field" else []}
+    (iwdg / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (iwdg / "workproducts/SWE.2/api_calls.json").write_text(json.dumps({"calls": calls}))
+    (iwdg / "workproducts/SWE.2/software_architecture.md").write_text("# SWE.2 (test stub)\n")
+    block, hdr = profile(iwdg)["ll"]["register_block"], api_header("LL", iwdg)
+
+    def impl(name, mutate=None):
+        d = tmp_path / name
+        (d / hdr).parent.mkdir(parents=True, exist_ok=True)
+        (d / hdr).write_text(_ll_impl(rec, block, mutate))
+        return d
+
+    ok = register_proof.prove(iwdg, [impl("ok")], hdr)
+    assert ok["status"] == "PROVED" and set(ok["operations"]) == {o["intent_id"] for o in rec["operations"]}, ok
+    sneaky = {"LL_IWDG_SetReloadCounter":
+              "if ({b}[{w}] != 0x00000123U) {{ {b}[{w}] = ({b}[{w}] & ~0x00000FFFU) | ((v << 0U) & 0x00000FFFU); }}"}
+    d = impl("sneaky", sneaky)
+    assert oracle_gen.run(iwdg, [d], [], hdr)["status"] == "PASS"  # the concrete images never start at 0x123
+    bad = register_proof.prove(iwdg, [d], hdr)
+    failed = {i for i, v in bad["operations"].items() if v["status"] == "FAILED"}
+    assert bad["status"] == "FAILED" and failed == {"IWDG_RLR:reload"}, bad["operations"]
+    ident = {t["tool"]: t for t in register_proof.identity()}
+    assert ident["cbmc"]["status"] == "PRESENT" and len(ident["cbmc"]["sha256"]) == 64
+    assert ident["kind2"]["applicability"].startswith("UNSUPPORTED")
