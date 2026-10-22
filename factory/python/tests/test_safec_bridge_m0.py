@@ -1,6 +1,7 @@
 """Feature 011 M0 (F011-T005, F011-AT-005): static checks of the authored package and the public/private boundary."""
 from __future__ import annotations
 
+import json
 import subprocess
 
 import pytest
@@ -115,3 +116,28 @@ def test_public_summary_keeps_only_allowed_scalars(tmp_path):
         "status": "FAIL", "tests_passed": 263, "linux": True, "tools": ["cbmc 6.11.0"]}
     with pytest.raises(P.LeakRefused, match="NOT_A_SCALAR:nested"):
         P.public_summary({"nested": {"a": 1}}, ("nested",))
+
+
+def test_linux_probe_reports_counts_and_keeps_raw_logs_private(tmp_path, monkeypatch):
+    """F011-T004: the probe parses cargo's own result lines, never passes on a failed test and writes only the
+    public summary outside the private directory."""
+    from forge_factory.safec_bridge import probe
+
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    cargo = bindir / "cargo"
+    cargo.write_text("#!/bin/sh\nif [ \"$1\" = --version ]; then echo 'cargo 9.9.9 (stub)'; exit 0; fi\n"
+                     "echo 'test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured'\n"
+                     "echo 'test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured'\nexit 101\n")
+    cargo.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bindir}:/usr/bin:/bin")
+    monkeypatch.setattr(probe, "FORMAL_BIN", tmp_path / "no-formal")
+    monkeypatch.setattr(probe, "TOOLS", ("kind2-not-installed",))
+    checkout = tmp_path / "safec"
+    checkout.mkdir()
+    _git(checkout, "init", "-q")
+    out = tmp_path / "private-out" / "run"
+    s = probe.probe(checkout, out)
+    assert (s["tests_passed"], s["tests_failed"], s["tests_ignored"], s["test_binaries"]) == (7, 1, 1, 2)
+    assert s["status"] == "FAIL" and s["cargo_exit"] == 101 and s["tools_missing"] == ["kind2-not-installed"]
+    assert (out / "cargo-test.log").is_file() and str(checkout) not in json.dumps(s)
