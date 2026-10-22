@@ -1,0 +1,298 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 9,
+      "gate_frozen": 0,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:RCC_AHB1ENR": {
+          "attempts": 3,
+          "call_wall_ms_median": 18940.2,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2689,
+          "valid": 3
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "attempts": 3,
+          "call_wall_ms_median": 14766.1,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2627,
+          "valid": 3
+        },
+        "requirements:RCC_CR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 43932.4,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 4282,
+          "valid": 3
+        },
+        "requirements:RCC_CR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 33101.6,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3981,
+          "valid": 3
+        },
+        "requirements:RCC_SR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 16731.6,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3399,
+          "valid": 3
+        },
+        "requirements:RCC_SR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 12995.9,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3239,
+          "valid": 3
+        },
+        "requirements:crosscutting": {
+          "attempts": 3,
+          "call_wall_ms_median": 10569.1,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 8696,
+          "valid": 0
+        }
+      },
+      "visit_pass": 0,
+      "wall_s_median": 148.2
+    }
+  },
+  "generated_at": "2026-10-22T12:08:14.914439Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 9,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [write_only_named_field] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the RCC LL driver shall'"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 24324.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 441,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 19451.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 345,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 52520.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1003,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 40695.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 22906.1,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 362,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 20017.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 291,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 11567.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 90,
+          "prompt_tokens": 8585,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 192.7,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024b/RCC-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 9,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [write_only_named_field] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the RCC LL driver shall'"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 18801.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 473,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 14017.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 348,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 43932.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 997,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 33101.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 14392.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 342,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 12014.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 291,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 10141.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 84,
+          "prompt_tokens": 8612,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 147.2,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024b/RCC-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 9,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [write_only_named_field] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the RCC LL driver shall'"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 18940.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 455,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 14766.1,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 344,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 40510.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1010,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 32933.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 16731.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 366,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 12995.9,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 295,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 10569.1,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 90,
+          "prompt_tokens": 8681,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 148.2,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024b/RCC-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/state/workorders/WO-F011-T024-RCC-START/workspace"
+}

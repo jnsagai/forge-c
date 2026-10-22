@@ -22,7 +22,7 @@
 | SafeC Linux build/probe and license inventory | MEASURED, NOT_PASS (M0) | `F011-T004` public summary: 263 passed / 2 failed (baseline defects, see M0); Kind 2 and Z3 absent; `F011-T002`: no licence file declared |
 | Python/Rust bridge conformance and adversarial tests | PASS (M1, protocol only; every SafeC operation UNSUPPORTED) | `F011-T010` (Forge-C), `F011-T008` (real pinned engine, network denied); SafeC crate tests in the SafeC ledger |
 | Register-io authoritative semantic fixtures | PASS except reset contradiction, which is not expressible in register-io-0.1 (M2) | `F011-M2-SAFEC`, `F011-M2-ENGINE`; F011-AT-011..015 covered, AT-016 without the startup invariant |
-| Local SWE.1 RCC/IWDG runs | NOT_RUN | F011-AT-017,025 |
+| Local SWE.1 RCC/IWDG runs | AUTHOR-ONLY PASS (M3): 6/6 frozen by the unchanged gate on 2847678; inspection NOT_RUN | `evidence/v0.4/runs/F011-T024/README.md` (F011-AT-017/018; AT-025 needs the inspector, M4) |
 | Independent inspector qualified on holdouts | NOT_RUN | F011-AT-019..023,030 |
 | SWE.2 and SWE.3..SWE.6 integration | NOT_RUN | F011-AT-024,026..029 |
 | Offline 30-case v2 campaign | NOT_RUN | F011-AT-032 |
@@ -97,3 +97,25 @@ CRE decisions (CHANGE, all hard gates PASS, offline review only):
 CRE decision `pd-46287fcfe3205f989f47` (74bfb67, CHANGE, all hard gates PASS, offline review only).
 
 **M2 exit:** F011-AT-011..015 PASS. F011-AT-016 PASS without the startup invariant (not expressible). No existing gate was changed. Nothing here claims that Kind 2 or existing ACSL verify an RCC or IWDG driver.
+
+## M3 results — 2026-10-22 (local-rtx-v2 semantic-first SWE.1; final Forge-C 2847678, SafeC 813b4e8)
+
+| Task | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T020 | PASS | `evidence/v0.4/runs/F011-M3-TESTS/` | `config/factory/profiles/local-rtx-v2.yaml`: explicit opt-in.<br>- Own root (the forge-c-lrtx-v2 directory on the data volume) and ports 11455/11456/32391. v1's ports are forbidden and v1's root counts as an existing deployment.<br>- Same refusals as v1: ACP, cloud, unlisted models. Only the measured qwen3-coder:30b is allowed.<br>- Pinned SafeC engine `813b4e8`, sha256 `ecd5cf1c…`.<br>- The workflow graph is identical to v1; the runner picks the semantic author and inspector from the profile.<br>- The real v2 stack runs in its own namespace. Work orders were prepared under `--profile local-rtx-v2` with every pre-launch check passing.<br>- v1 and default/ACP fixtures unchanged (same record). |
+| F011-T021 | PASS | `F011-M3-TESTS`, `F011-T024C-IWDG`, `F011-T024C-RCC` | Register packets ask only for intents. Fields and facts are enums of the task's own domain facts, plus a lowercase request phrase; no statement, mask, bit position or page. The role SKILL, mandatory context, call budget and checkpoint identity are those of feature 010. |
+| F011-T022 | PASS | same | EARS statement, verification, effect and source page are rendered from the operations SafeC accepted and Forge-C re-derived. Cross-cutting requirements come from a closed catalogue: the startup invariant always, plus status queries without waiting and writes changing only the named field. Contract obligations (errata not baselined) become open points. The existing assembly, consistency and self-check produce the existing SWE.1 work products. |
+| F011-T023 | PASS | same | An identical rejected answer stops its task as STUCK, tested. Joint-check findings go back to their groups for one localized repair round. Engine faults are infrastructure, not model answers. Every attempt is kept in the checkpoints and visit logs. |
+| F011-T024 | PASS (author-only) | `evidence/v0.4/runs/F011-T024/README.md`, `F011-T024C-IWDG`, `F011-T024C-RCC` | Batch 3, on 2847678:<br>- IWDG-LL 3/3 frozen, 6 calls per visit;<br>- RCC-LL 3/3 frozen, 7 calls per visit;<br>- every task valid at its first call;<br>- 40–190 s per visit;<br>- 1.33 Wh / 3.76 Wh GPU board energy per 3 visits.<br><br>**Batches 1 and 2 are kept as recorded failures, each a factory defect fixed before the next:**<br>- the SafeC panic (fixed in SafeC 813b4e8);<br>- the free-text cross-cutting task;<br>- group-key collision in the joint check;<br>- a non-EARS rendered rule. |
+
+**CRE decisions:**
+
+| Decision | Covers |
+|---|---|
+| `pd-e07c152808a83cc7bd40` | c9a9c38, M3 |
+| `pd-07085cc44d4423c2dc38` | **REJECTED**: the gate was run without `scripts/forge-env.sh`, so the reproducers could not import `robot` (environment error, kept as a record) |
+| `pd-00d2198687927710ccfa` | 7786d60, rerun in the proper environment: ELIGIBLE |
+| `pd-ddacbb83402a7b7a1af9` | 2847678 |
+
+**M3 exit:** the unchanged deterministic author gate accepts genuine tested results. The inspector and SWE.2 are not
+qualified by this.

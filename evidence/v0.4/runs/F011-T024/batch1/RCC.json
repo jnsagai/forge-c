@@ -1,0 +1,296 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 6,
+      "gate_frozen": 0,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:RCC_AHB1ENR": {
+          "attempts": 3,
+          "call_wall_ms_median": 19885.7,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2702,
+          "valid": 3
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "attempts": 3,
+          "call_wall_ms_median": 13417.2,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2600,
+          "valid": 3
+        },
+        "requirements:RCC_CR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 39011.4,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 4206,
+          "valid": 3
+        },
+        "requirements:RCC_CR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 31105.4,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3969,
+          "valid": 3
+        },
+        "requirements:RCC_SR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 13502.7,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3367,
+          "valid": 3
+        },
+        "requirements:RCC_SR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 11922.5,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3231,
+          "valid": 3
+        },
+        "requirements:crosscutting": {
+          "attempts": 1,
+          "call_wall_ms_median": 72664.7,
+          "calls_median": 4,
+          "first_call_valid": 0,
+          "tokens_median": 16069,
+          "valid": 0
+        }
+      },
+      "visit_pass": 0,
+      "wall_s_median": 126.7
+    }
+  },
+  "generated_at": "2026-10-22T10:13:55.354975Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 10,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [swr_003] EARS_UNKNOWN_SYSTEM_NAME: the subject must be exactly 'the RCC LL driver'",
+        "requirements:crosscutting: [swr_004] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the RCC LL driver shall'",
+        "requirements:crosscutting: [swr_005] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the RCC LL driver shall'"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 26241.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 486,
+          "prompt_tokens": 2222,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 23154.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 330,
+          "prompt_tokens": 2270,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 45049.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 939,
+          "prompt_tokens": 3267,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 38174.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3189,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 21513.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 342,
+          "prompt_tokens": 3025,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 19094.1,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 283,
+          "prompt_tokens": 2936,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 72664.7,
+          "calls": 4,
+          "first_call_valid": false,
+          "output_tokens": 1401,
+          "prompt_tokens": 14668,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 248.7,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/RCC-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 6,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:RCC_SR_1: [query_pll4_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll4_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll3_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll3_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll2_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll2_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll1_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll1_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_hse_ready] RIO-DUPLICATE-INTENT-ID: intent id query_hse_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_2: [query_hsi_ready] RIO-DUPLICATE-INTENT-ID: intent id query_hsi_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_2: [query_msi_ready] RIO-DUPLICATE-INTENT-ID: intent id query_msi_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_2: [query_lse_ready] RIO-DUPLICATE-INTENT-ID: intent id query_lse_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_2: [query_lsi_ready] RIO-DUPLICATE-INTENT-ID: intent id query_lsi_ready is used more than once Repair: give each intent its own id"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 18870.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 480,
+          "prompt_tokens": 2222,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 13417.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 334,
+          "prompt_tokens": 2270,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 36719.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 926,
+          "prompt_tokens": 3267,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 31105.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3189,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 13502.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 342,
+          "prompt_tokens": 3025,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 11922.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 295,
+          "prompt_tokens": 2936,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 126.3,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/RCC-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 6,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:RCC_SR_1: [query_pll4_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll4_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll3_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll3_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll2_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll2_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_pll1_ready] RIO-DUPLICATE-INTENT-ID: intent id query_pll1_ready is used more than once Repair: give each intent its own id",
+        "requirements:RCC_SR_1: [query_hse_ready] RIO-DUPLICATE-INTENT-ID: intent id query_hse_ready is used more than once Repair: give each intent its own id"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 19885.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 480,
+          "prompt_tokens": 2222,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 12683.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 322,
+          "prompt_tokens": 2270,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 39011.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 992,
+          "prompt_tokens": 3267,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 29041.9,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 732,
+          "prompt_tokens": 3189,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 13450.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 337,
+          "prompt_tokens": 3025,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 11824.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 299,
+          "prompt_tokens": 2936,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 126.7,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/RCC-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/state/workorders/WO-F011-T024-RCC-START/workspace"
+}

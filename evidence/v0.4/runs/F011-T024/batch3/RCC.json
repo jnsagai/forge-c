@@ -1,0 +1,292 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 7,
+      "gate_frozen": 3,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:RCC_AHB1ENR": {
+          "attempts": 3,
+          "call_wall_ms_median": 20610.4,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2718,
+          "valid": 3
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "attempts": 3,
+          "call_wall_ms_median": 14605.4,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2622,
+          "valid": 3
+        },
+        "requirements:RCC_CR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 39162.9,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 4213,
+          "valid": 3
+        },
+        "requirements:RCC_CR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 33725.9,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3981,
+          "valid": 3
+        },
+        "requirements:RCC_SR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 15741.2,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3394,
+          "valid": 3
+        },
+        "requirements:RCC_SR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 12546.1,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 3243,
+          "valid": 3
+        },
+        "requirements:crosscutting": {
+          "attempts": 3,
+          "call_wall_ms_median": 6724.5,
+          "calls_median": 1,
+          "first_call_valid": 3,
+          "tokens_median": 2820,
+          "valid": 3
+        }
+      },
+      "visit_pass": 3,
+      "wall_s_median": 143.0
+    }
+  },
+  "generated_at": "2026-10-22T12:23:50.592933Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 7,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 24938.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 503,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 18844.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 344,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 49881.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1003,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 41974.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 22326.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 347,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 19584.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 299,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 7930.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 30,
+          "prompt_tokens": 2841,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 187.2,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024c/RCC-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 7,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 20057.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 484,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 14605.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 340,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 39162.9,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 929,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 33252.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 776,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 15413.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 357,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 12343.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 295,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 6724.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 30,
+          "prompt_tokens": 2790,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 142.8,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024c/RCC-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 7,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:RCC_AHB1ENR": {
+          "call_wall_ms": 20610.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 473,
+          "prompt_tokens": 2234,
+          "status": "VALID"
+        },
+        "requirements:RCC_AHB1RSTR": {
+          "call_wall_ms": 14346.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 339,
+          "prompt_tokens": 2282,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_1": {
+          "call_wall_ms": 38966.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 934,
+          "prompt_tokens": 3279,
+          "status": "VALID"
+        },
+        "requirements:RCC_CR_2": {
+          "call_wall_ms": 33725.9,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 780,
+          "prompt_tokens": 3201,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_1": {
+          "call_wall_ms": 15741.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 362,
+          "prompt_tokens": 3037,
+          "status": "VALID"
+        },
+        "requirements:RCC_SR_2": {
+          "call_wall_ms": 12546.1,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 295,
+          "prompt_tokens": 2948,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 6005.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 30,
+          "prompt_tokens": 2790,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 143.0,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024c/RCC-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/state/workorders/WO-F011-T024-RCC-START/workspace"
+}

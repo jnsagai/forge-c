@@ -1,0 +1,24 @@
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 49881.8}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 41974.2}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 22326.6}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 19584.3}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 24938.0}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 18844.2}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 7930.6}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 39162.9}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 33252.4}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 15413.0}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 12343.0}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 20057.8}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 14605.4}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 6724.5}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 38966.4}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 33725.9}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 15741.2}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 12546.1}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 20610.4}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 14346.5}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 6005.0}
+{"qwen3-coder:30b": {"attempts": 3, "visit_pass": 3, "gate_frozen": 3, "wall_s_median": 143.0, "calls_median": 7, "load_ms_median": "UNKNOWN (no load observed)"}}
+
+--- stderr ---

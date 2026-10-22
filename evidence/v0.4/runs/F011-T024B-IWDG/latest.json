@@ -1,0 +1,32 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.modelcmp",
+    "--workspace",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/state/workorders/WO-F011-T024-IWDG-START/workspace",
+    "--model",
+    "qwen3-coder:30b",
+    "--repeat",
+    "3",
+    "--phase",
+    "SWE.1",
+    "--out",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024b/IWDG.json"
+  ],
+  "duration_s": 248.418,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "7786d6003e1babe6e6085f1bf434286006f813ec",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T024B-IWDG/20261022T115557.log",
+  "log_sha256": "d08ed0b2a9fd735f83271c3ef1dda0b004f1a429fd0bb9abf4e22854d0f1ecfe",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T024B-IWDG",
+  "ts_utc": "2026-10-22T11:55:57.237068Z"
+}

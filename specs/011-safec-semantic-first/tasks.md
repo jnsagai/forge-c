@@ -1,6 +1,6 @@
 # Implementation tasks — Feature 011
 
-**Status (2026-10-22, M0-M2 measured):** M0 F011-T001, T002, T003 and T005 are checked; F011-T004 is NOT_PASS (SafeC on Linux has 2 baseline test failures; Kind 2/Z3 absent). M1 F011-T006 to T011 are checked (protocol). M2 F011-T012 to T015, T018 and T019 are checked. F011-T016 and T017 stay open (see the M2 section of validation.md). M3 to M6 are pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
+**Status (2026-10-22, M0-M3 measured):** M0 F011-T001, T002, T003 and T005 are checked; F011-T004 is NOT_PASS (SafeC on Linux has 2 baseline test failures; Kind 2/Z3 absent). M1 F011-T006 to T011 are checked (protocol). M2 F011-T012 to T015, T018 and T019 are checked; F011-T016 and T017 stay open. M3 F011-T020 to T024 are checked: 6/6 real semantic SWE.1 author visits were frozen by the unchanged gate on the final revision, author-only. M4 tooling exists (F011-T025 to T028), but its tasks are open until it is measured. M5 and M6 are pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
 
 **Sources:** `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/*.schema.json`, `acceptance-tests.md`; constitution and existing feature 010 baselines.
 
@@ -42,11 +42,11 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 
 ## M3 — Semantic-first SWE.1 generation (F011-AT-017..018 and 025 author)
 
-- [ ] **F011-T020 [US2]** Introduce **new** `local-rtx-v2` profile/roots/ports/model allowlist, explicit opt-in, same local-only/network-denied gate and model admission as v1; block mixed ACP/cloud.
-- [ ] **F011-T021 [US2]** Convert structured SWE.1 register packets to emit bounded source-fact-linked `SemanticIntent` JSON (not mask/field encodings). Keep role SKILL hash, full mandatory context, call budget and checkpoint identity.
-- [ ] **F011-T022 [US2]** Render existing SWE.1 workproducts deterministically from verified contract + owner workorder: requirement numbering, EARS, register effects, verification map, trace and open points. Never generate missing source facts or missing safety approval.
-- [ ] **F011-T023 [US4]** Implement local delta-based repair and STUCK if identical rejected contract/intent repeats. Preserve all original rework counts and source hash invalidation; measure repairs and calls.
-- [ ] **F011-T024 [US2]** Run 3 real SWE.1 author-only frozen trials each on RCC-LL and IWDG-LL and preserve all first-visit, rework and failure evidence before touching inspector routing.
+- [X] **F011-T020 [US2]** Introduce **new** `local-rtx-v2` profile/roots/ports/model allowlist, explicit opt-in, same local-only/network-denied gate and model admission as v1; block mixed ACP/cloud. ✅ Evidence: `evidence/v0.4/runs/F011-M3-TESTS/latest.json`
+- [X] **F011-T021 [US2]** Convert structured SWE.1 register packets to emit bounded source-fact-linked `SemanticIntent` JSON (not mask/field encodings). Keep role SKILL hash, full mandatory context, call budget and checkpoint identity. ✅ Evidence: `evidence/v0.4/runs/F011-M3-TESTS/latest.json`, `evidence/v0.4/runs/F011-T024C-IWDG/latest.json`, `evidence/v0.4/runs/F011-T024C-RCC/latest.json`
+- [X] **F011-T022 [US2]** Render existing SWE.1 workproducts deterministically from verified contract + owner workorder: requirement numbering, EARS, register effects, verification map, trace and open points. Never generate missing source facts or missing safety approval. ✅ Evidence: `evidence/v0.4/runs/F011-M3-TESTS/latest.json`, `evidence/v0.4/runs/F011-T024C-IWDG/latest.json`, `evidence/v0.4/runs/F011-T024C-RCC/latest.json`
+- [X] **F011-T023 [US4]** Implement local delta-based repair and STUCK if identical rejected contract/intent repeats. Preserve all original rework counts and source hash invalidation; measure repairs and calls. ✅ Evidence: `evidence/v0.4/runs/F011-M3-TESTS/latest.json`, `evidence/v0.4/runs/F011-T024C-IWDG/latest.json`, `evidence/v0.4/runs/F011-T024C-RCC/latest.json`
+- [X] **F011-T024 [US2]** Run 3 real SWE.1 author-only frozen trials each on RCC-LL and IWDG-LL and preserve all first-visit, rework and failure evidence before touching inspector routing. ✅ Evidence: `evidence/v0.4/runs/F011-T024C-IWDG/latest.json`, `evidence/v0.4/runs/F011-T024C-RCC/latest.json`
 
 **M3 exit:** unchanged deterministic author gate accepts genuine tested results; no claim that the inspector or SWE.2 is qualified.
 
