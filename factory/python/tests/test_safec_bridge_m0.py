@@ -91,6 +91,20 @@ def test_placeholders_are_not_credentials():
     assert P.credentials("token = " + "k7Qz9Wm2" + "Xv4Rt8Ln") == ["ASSIGNED_SECRET"]
 
 
+def test_a_single_shared_idiom_is_not_a_copy_but_a_block_is(repos):
+    priv, pub, base = repos
+    idiom = "        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))"
+    second = "        resource.setrlimit(resource.RLIMIT_NOFILE, (256, 256))"
+    (priv / "runner.py").write_text(idiom + "\n" + second + "\n")
+    _git(priv, "add", ".")
+    _git(priv, "commit", "-qm", "idiom")
+    (pub / "a.py").write_text("x = 1\n" + idiom + "\ny = 2\n")
+    assert P.scan_public_tree(pub, base, priv)["status"] == "PASS"
+    (pub / "b.py").write_text(idiom + "\n" + second + "\n")
+    res = P.scan_public_tree(pub, base, priv)
+    assert [(f["path"], f["line"]) for f in res["findings"]] == [("b.py", 1), ("b.py", 2)]
+
+
 def test_shared_public_contracts_are_not_private_content(repos):
     priv, pub, base = repos
     d = pub / "specs/011-safec-semantic-first/contracts"

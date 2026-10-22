@@ -33,6 +33,8 @@ CREDENTIAL_PATTERNS = {  # group "s" is the secret part
 }
 MIN_SECRET_VARIETY = 8  # distinct characters in the secret part of a credential shape
 MIN_PRIVATE_LINE = 40  # shorter lines (braces, imports, common words) say nothing about origin
+DISTINCTIVE_LINE = 80  # one private line this long is a finding on its own
+BLOCK_LINES = 2  # otherwise consecutive private lines are
 SHARED_PUBLIC = ("specs/011-safec-semantic-first/contracts/",)  # Forge-C publishes these; SafeC may mirror them
 TEXT_SUFFIXES = {".rs", ".md", ".json", ".toml", ".yaml", ".yml", ".py", ".txt", ".sreq", ".lus", ".c", ".h", ".ps1",
                  ".sh", ".ebnf", ".ts", ".js"}
@@ -109,14 +111,27 @@ def public_fingerprints(repo: Path, rev: str) -> set[str]:
 
 
 def scan_lines(path: str, lines: list[tuple[int, str]], fingerprints: set[str] | None) -> list[dict]:
+    """Credentials anywhere; private source as a distinctive line (DISTINCTIVE_LINE+ characters) or as a block of
+    BLOCK_LINES+ consecutive private lines. A single short idiom shared by chance (e.g. a setrlimit call) is not a
+    copy; copied code comes in blocks."""
     findings = []
     shared = path.startswith(SHARED_PUBLIC)
+    hits = []
     for no, line in lines:
         for kind in credentials(line):
             findings.append({"path": path, "line": no, "kind": f"CREDENTIAL:{kind}"})
-        if fingerprints and not shared and len(_norm(line)) >= MIN_PRIVATE_LINE and _digest(line) in fingerprints:
-            findings.append({"path": path, "line": no, "kind": "PRIVATE_SOURCE_LINE"})
-    return findings
+        n = len(_norm(line))
+        if fingerprints and not shared and n >= MIN_PRIVATE_LINE and _digest(line) in fingerprints:
+            hits.append((no, n))
+    run: list[tuple[int, int]] = []
+    for hit in hits + [(None, 0)]:
+        if run and (hit[0] is None or hit[0] != run[-1][0] + 1):
+            if len(run) >= BLOCK_LINES or any(n >= DISTINCTIVE_LINE for _, n in run):
+                findings += [{"path": path, "line": no, "kind": "PRIVATE_SOURCE_LINE"} for no, _ in run]
+            run = []
+        if hit[0] is not None:
+            run.append(hit)
+    return sorted(findings, key=lambda f: (f["line"], f["kind"]))
 
 
 def added_lines(repo: Path, base: str) -> dict[str, list[tuple[int, str]]]:
