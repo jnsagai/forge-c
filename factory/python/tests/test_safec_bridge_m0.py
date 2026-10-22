@@ -1,0 +1,117 @@
+"""Feature 011 M0 (F011-T005, F011-AT-005): static checks of the authored package and the public/private boundary."""
+from __future__ import annotations
+
+import subprocess
+
+import pytest
+from forge_factory.safec_bridge import provenance as P
+from forge_factory.safec_bridge import static_check as SC
+
+PRIVATE_LINE = "pub fn derive_register_mask(field: &FieldDef, logical: u64) -> Result<u64, SemanticError> {"
+
+
+def _git(cwd, *args):
+    subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True)
+
+
+@pytest.fixture
+def repos(tmp_path):
+    """A private checkout with one tracked source line and a public repository with a base commit."""
+    priv, pub = tmp_path / "private", tmp_path / "public"
+    for r in (priv, pub):
+        r.mkdir()
+        _git(r, "init", "-q")
+        _git(r, "config", "user.email", "t@example.invalid")
+        _git(r, "config", "user.name", "t")
+    (priv / "lib.rs").write_text(PRIVATE_LINE + "\n    todo!()\n}\n")
+    _git(priv, "add", ".")
+    _git(priv, "commit", "-qm", "p")
+    (pub / "README.md").write_text("public\n")
+    _git(pub, "add", ".")
+    _git(pub, "commit", "-qm", "base")
+    base = subprocess.run(["git", "rev-parse", "HEAD"], cwd=pub, capture_output=True, text=True).stdout.strip()
+    return priv, pub, base
+
+
+def test_feature_documents_resolve_and_examples_behave_as_frozen():
+    res = SC.check()
+    assert res["status"] == "PASS", [r for r in res["references"] if r["status"] == "MISSING"]
+    assert {e["id"] for e in res["schemas"]["examples"] if e["expected_valid"]} == {
+        "request-valid-validate-intents", "result-valid-unsupported"}
+    assert all(e["as_expected"] for e in res["schemas"]["examples"])
+
+
+def test_an_unplanned_missing_reference_fails(tmp_path, monkeypatch):
+    planned = SC.proposed(SC.REPO_ROOT)
+    assert SC.resolve(SC.REPO_ROOT, "factory/python/forge_factory/safec_bridge/nothing_like_this.py",
+                      planned)["status"] == "MISSING"
+    assert SC.resolve(SC.REPO_ROOT, "config/factory/profiles/local-rtx-v1.yaml", planned)["status"] == "RESOLVED"
+    assert SC.resolve(SC.REPO_ROOT, "feat/011-safec-semantic-first", planned)["status"] == "RESOLVED"
+
+
+def test_a_clean_change_passes_the_boundary_scan(repos):
+    priv, pub, base = repos
+    (pub / "bridge.py").write_text("def client():\n    return 'public adapter code with nothing private in it'\n")
+    res = P.scan_public_tree(pub, base, priv)
+    assert res["status"] == "PASS" and res["private_checkout_compared"] and res["files_scanned"] == 1
+
+
+def test_a_copied_private_line_is_found_without_storing_it(repos):
+    priv, pub, base = repos
+    (pub / "notes.md").write_text("context\n    " + PRIVATE_LINE + "\n")
+    res = P.scan_public_tree(pub, base, priv)
+    assert res["status"] == "FAIL"
+    assert res["findings"] == [{"path": "notes.md", "line": 2, "kind": "PRIVATE_SOURCE_LINE"}]
+    assert "derive_register_mask" not in repr(res)
+
+
+def test_credentials_are_found_in_tracked_and_untracked_changes(repos):
+    priv, pub, base = repos
+    (pub / "README.md").write_text("public\ntoken = ghp_" + "A1" * 15 + "\n")
+    (pub / "new.txt").write_text("-----BEGIN " + "OPENSSH PRIVATE KEY-----\n")  # assembled: not a key in this file
+    kinds = {(f["path"], f["kind"]) for f in P.scan_public_tree(pub, base)["findings"]}
+    assert ("README.md", "CREDENTIAL:GITHUB_TOKEN") in kinds and ("new.txt", "CREDENTIAL:PRIVATE_KEY") in kinds
+
+
+def test_a_line_public_forge_c_already_had_is_not_a_private_copy(repos):
+    priv, pub, base = repos
+    (pub / "old.py").write_text(PRIVATE_LINE + "\n")
+    _git(pub, "add", ".")
+    _git(pub, "commit", "-qm", "public before")
+    base2 = subprocess.run(["git", "rev-parse", "HEAD"], cwd=pub, capture_output=True, text=True).stdout.strip()
+    (pub / "new.py").write_text(PRIVATE_LINE + "\n")
+    assert P.scan_public_tree(pub, base2, priv)["status"] == "PASS"
+    assert P.scan_public_tree(pub, base, priv)["status"] == "FAIL"
+
+
+def test_shared_public_contracts_are_not_private_content(repos):
+    priv, pub, base = repos
+    d = pub / "specs/011-safec-semantic-first/contracts"
+    d.mkdir(parents=True)
+    (d / "x.schema.json").write_text(PRIVATE_LINE + "\n")
+    assert P.scan_public_tree(pub, base, priv)["status"] == "PASS"
+
+
+@pytest.mark.parametrize("value, issue", [
+    ("see " + "/PRIV/crates/safec-core/src/lib.rs", "PRIVATE_PATH:note"),
+    ("Authorization: Bearer " + "x" * 30, "CREDENTIAL:note:BEARER"),
+    (PRIVATE_LINE, "PRIVATE_SOURCE_LINE:note"),
+    ("line one\nline two", "VALUE_TOO_LARGE_OR_MULTILINE:note"),
+])
+def test_public_summary_refuses_private_excerpts_and_secrets(tmp_path, value, issue, monkeypatch):
+    """F011-AT-005: the collector refuses (never truncates or masks) and returns nothing to persist."""
+    priv = tmp_path / "PRIV"
+    priv.mkdir()
+    fps = {P._digest(PRIVATE_LINE)}
+    rec = {"status": "PASS", "note": value.replace("/PRIV", str(priv))}
+    with pytest.raises(P.LeakRefused) as exc:
+        P.public_summary(rec, ("status", "note"), private_root=priv, fingerprints=fps)
+    assert issue in exc.value.issues
+
+
+def test_public_summary_keeps_only_allowed_scalars(tmp_path):
+    rec = {"status": "FAIL", "tests_passed": 263, "raw_log": "secret-ish", "linux": True, "tools": ["cbmc 6.11.0"]}
+    assert P.public_summary(rec, ("status", "tests_passed", "linux", "tools")) == {
+        "status": "FAIL", "tests_passed": 263, "linux": True, "tools": ["cbmc 6.11.0"]}
+    with pytest.raises(P.LeakRefused, match="NOT_A_SCALAR:nested"):
+        P.public_summary({"nested": {"a": 1}}, ("nested",))

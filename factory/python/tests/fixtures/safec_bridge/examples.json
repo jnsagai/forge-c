@@ -1,0 +1,450 @@
+{
+ "cases": [
+  {
+   "id": "request-valid-validate-intents",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": true
+  },
+  {
+   "id": "result-valid-unsupported",
+   "message": {
+    "engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "findings": [
+     {
+      "check_id": "OPERATION_SUPPORTED",
+      "finding_id": "FND-001",
+      "message": "operation not implemented by this engine",
+      "severity": "major",
+      "source_fact_ids": [],
+      "target_id": "I-001"
+     }
+    ],
+    "input_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "output_artifacts": [],
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-result/1",
+    "status": "UNSUPPORTED"
+   },
+   "schema": "result",
+   "valid": true
+  },
+  {
+   "id": "request-unknown-top-level-field",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "extra": 1,
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-model-supplied-mask",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "mask": "0x20",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-missing-binding",
+   "message": {
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-short-binary-digest",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "abc",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-unknown-profile",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "sampled-latch-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-empty-intents-for-validate",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": []
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-verify-candidate-without-candidate",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "verify_candidate",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "request-negative-logical-value",
+   "message": {
+    "binding": {
+     "policy_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "source_manifest_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "workorder_id": "WO-EX-RCC-LL",
+     "workorder_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected_engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inputs": {
+     "semantic_intents": [
+      {
+       "action": "set_field",
+       "field": "ADC12EN",
+       "intent_id": "I-001",
+       "logical_value": "-1",
+       "register": "RCC_AHB1ENR",
+       "source_fact_ids": [
+        "F-EX-RCC-AHB1ENR-ADC12EN"
+       ]
+      }
+     ]
+    },
+    "operation": "validate_intents",
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-request/1"
+   },
+   "schema": "request",
+   "valid": false
+  },
+  {
+   "id": "result-phase-status-ready",
+   "message": {
+    "engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "findings": [
+     {
+      "check_id": "OPERATION_SUPPORTED",
+      "finding_id": "FND-001",
+      "message": "operation not implemented by this engine",
+      "severity": "major",
+      "source_fact_ids": [],
+      "target_id": "I-001"
+     }
+    ],
+    "input_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "output_artifacts": [],
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-result/1",
+    "status": "READY"
+   },
+   "schema": "result",
+   "valid": false
+  },
+  {
+   "id": "result-missing-evidence-digest",
+   "message": {
+    "engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "findings": [
+     {
+      "check_id": "OPERATION_SUPPORTED",
+      "finding_id": "FND-001",
+      "message": "operation not implemented by this engine",
+      "severity": "major",
+      "source_fact_ids": [],
+      "target_id": "I-001"
+     }
+    ],
+    "input_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "output_artifacts": [],
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-result/1",
+    "status": "UNSUPPORTED"
+   },
+   "schema": "result",
+   "valid": false
+  },
+  {
+   "id": "result-finding-without-target",
+   "message": {
+    "engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "findings": [
+     {
+      "check_id": "OPERATION_SUPPORTED",
+      "finding_id": "FND-001",
+      "message": "operation not implemented by this engine",
+      "severity": "major",
+      "source_fact_ids": []
+     }
+    ],
+    "input_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "output_artifacts": [],
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-result/1",
+    "status": "UNSUPPORTED"
+   },
+   "schema": "result",
+   "valid": false
+  },
+  {
+   "id": "result-unknown-artifact-kind",
+   "message": {
+    "engine": {
+     "binary_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "semantic_profile": "register-io-0.1",
+     "source_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "evidence_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "findings": [
+     {
+      "check_id": "OPERATION_SUPPORTED",
+      "finding_id": "FND-001",
+      "message": "operation not implemented by this engine",
+      "severity": "major",
+      "source_fact_ids": [],
+      "target_id": "I-001"
+     }
+    ],
+    "input_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "output_artifacts": [
+     {
+      "artifact_id": "A",
+      "kind": "release_approval",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+     }
+    ],
+    "request_id": "REQ-EX-001",
+    "schema": "forge-c/safec-bridge-result/1",
+    "status": "UNSUPPORTED"
+   },
+   "schema": "result",
+   "valid": false
+  }
+ ],
+ "note": "Synthetic messages for the frozen wire schemas (F011-T005). Digests are placeholders, not real identities.",
+ "schema": "forge-c/f011-bridge-examples/1"
+}

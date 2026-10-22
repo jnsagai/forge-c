@@ -70,8 +70,14 @@ def services(data_root: str, uid: int | None = None) -> list[dict]:
     return sorted(out, key=lambda r: r["pid"])
 
 
-def git_root(path: str | Path) -> Path | None:
-    top = _run("git", "rev-parse", "--show-toplevel", cwd=Path(path)) if Path(path).is_dir() else ""
+def git_root(path: str | Path, nearest: bool = False) -> Path | None:
+    """The checkout containing `path`. With `nearest`, a path that does not exist yet is decided by its nearest
+    existing ancestor (F011 M0: a backup under a not-yet-created repository directory was accepted and written into
+    the checkout)."""
+    p = Path(path).absolute()
+    while nearest and not p.is_dir() and p != p.parent:
+        p = p.parent
+    top = _run("git", "rev-parse", "--show-toplevel", cwd=p) if p.is_dir() else ""
     return Path(top) if top else None
 
 
@@ -243,7 +249,7 @@ def snapshot(backup: Path, reference_wo: str = "WO-0009B-STM32N6-IWDG-HAL-rc4") 
     for root in (data_root, archive_dir, state):
         if not root.is_dir():
             raise FileNotFoundError(root)
-    if backup.resolve().is_relative_to(archive_dir.resolve()) or git_root(backup.parent) is not None:
+    if backup.resolve().is_relative_to(archive_dir.resolve()) or git_root(backup.parent, nearest=True) is not None:
         raise ValueError(f"BACKUP_INSIDE_DEPLOYMENT_OR_REPO:{backup}")
     backup.mkdir(parents=True, exist_ok=False)
     backup.chmod(0o700)

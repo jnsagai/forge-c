@@ -32,6 +32,12 @@ VARIANTS = {"default": {"model": "qwen3:8b", "provider": "ollama", "acp_authors"
             "acp_both": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": True,
                          "acp_inspectors": True}}
 WS = "/WORKSPACE"
+# F011-T003: the merged feature 010 profile (base 2f4b9cf), frozen so that local-rtx-v2 cannot change it
+V1 = {"profile": "local-rtx-v1", "model": "qwen3-coder:30b", "provider": "ollama"}
+V1_REFUSALS = {"acp_authors": {"acp_authors": "codex", "acp_inspectors": None},
+               "acp_inspectors": {"acp_authors": None, "acp_inspectors": "claude"},
+               "cloud_provider": {"provider": "deepseek", "model": "deepseek-flash"},
+               "unlisted_model": {"model": "llama3:70b"}}
 
 
 def _sections(example: Path, spec: dict, split_sections) -> dict[str, str]:
@@ -49,7 +55,7 @@ def _sections(example: Path, spec: dict, split_sections) -> dict[str, str]:
     return secmap
 
 
-def generate(src: Path) -> dict:
+def generate(src: Path, fixture_set: str = "acp") -> dict:
     src = src.resolve()
     sys.path.insert(0, str(src / "factory/python"))
     tmp = tempfile.mkdtemp(prefix="lrtx-compat-")
@@ -74,6 +80,8 @@ def generate(src: Path) -> dict:
             text = text.replace(a, b)
         return text
 
+    if fixture_set == "v1":
+        return _generate_v1(src, norm, build, binding_for, render_run_toml, fabro_mcp_config, mcp_preflight)
     out: dict[str, dict] = {}
     for ex_name, wo in CASES:
         example = src / "examples" / ex_name
@@ -111,6 +119,50 @@ def generate(src: Path) -> dict:
     return out
 
 
+def _generate_v1(src: Path, norm, build, binding_for, render_run_toml, fabro_mcp_config, mcp_preflight) -> dict:
+    """The graphs, nodes, run configuration and model profile `workorder --profile local-rtx-v1` builds for every
+    compatibility case, plus the combinations the profile refuses before launch. Host checks (isolation, network,
+    model digests) are not part of the fixture: they are environment, recorded per run by `profile.select`."""
+    from forge_factory import workorder
+    from forge_factory.lrtx import profile as lp
+    from forge_factory.workflow.builder import scale_timeouts
+
+    prof = lp.load(V1["profile"])
+    out: dict[str, dict] = {"profile": {"config_sha256": prof["_sha256"], "refusals": {
+        name: lp.selection_issues(prof, **{"model": V1["model"], "provider": V1["provider"], "code_model": None,
+                                           "acp_authors": None, "acp_inspectors": None, **kw})
+        for name, kw in V1_REFUSALS.items()}}}
+    for ex_name, wo in CASES:
+        example = src / "examples" / ex_name
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        delivery = spec.get("delivery") or {}
+        structured = workorder.local_profile_structured({"id": V1["profile"]}, {"layer": layer}, V1["model"])
+        try:
+            graph, nodes = build(wo, goal=f"{spec['driver']} (compat fixture)",
+                                 sections=_sections(example, spec, workorder.split_sections), chunk_lines=40,
+                                 layer=layer, trace=True, isolation=layer == "HAL",
+                                 brownfield=delivery.get("code_mode"), peripheral=spec.get("peripheral"),
+                                 delivery_style=(delivery.get("build") or {}).get("style"), structured=structured)
+        except ValueError as exc:  # a combination the profile refuses while building (frozen as observed)
+            out[f"{ex_name}/{V1['profile']}"] = {"structured": structured, "refused": str(exc)}
+            continue
+        graph = scale_timeouts(graph, float(prof["runtime"]["timeout_scale"]))
+        mprof = workorder.model_profile(V1["model"], V1["provider"], None, nodes)
+        roles = sorted({n["role"] for n in nodes.values()})
+        binding = binding_for(wo, WS, nodes)
+        toml = render_run_toml("workflow.fabro", f"{wo} {spec['driver']}", Path(WS) / ".forge-run/binding.json",
+                               fabro_mcp_config(mcp_preflight(roles, live=False)["servers"]), model=V1["model"],
+                               binding_id=binding.binding_id, provider=V1["provider"])
+        g = norm(graph)
+        out[f"{ex_name}/{V1['profile']}"] = {
+            "graph_sha256": hashlib.sha256(g.encode()).hexdigest(), "graph": g, "structured": structured,
+            "nodes": json.loads(norm(json.dumps(nodes, sort_keys=True))), "run_toml": norm(toml),
+            "binding": {"binding_id": binding.binding_id, "workspace": norm(binding.workspace)},
+            "model_profile": json.loads(norm(json.dumps(mprof, sort_keys=True)))}
+    return out
+
+
 def compare(expected: dict, actual: dict) -> list[str]:
     diffs = []
     for key in sorted(set(expected) | set(actual)):
@@ -140,8 +192,10 @@ def main(argv: list[str] | None = None) -> int:
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--out", type=Path)
     g.add_argument("--compare", type=Path)
+    ap.add_argument("--set", dest="fixture_set", choices=("acp", "v1"), default="acp",
+                    help="acp: default/Codex/Claude line (baseline 86f1f40); v1: local-rtx-v1 (base 2f4b9cf)")
     a = ap.parse_args(argv)
-    data = generate(a.src)
+    data = generate(a.src, a.fixture_set)
     if a.out:
         dump(data, a.out)
         print(json.dumps({"status": "WRITTEN", "cases": len(data), "out": str(a.out)}))
