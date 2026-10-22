@@ -30,12 +30,14 @@ models:
     granite3.3:8b: {digest: fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7, quantization: Q4_K_M,
                     license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
 runtime:
+  # host tuning for the 48 GB GPU (owner 2026-10-22: "lets use the most of the machine"): author and inspector both
+  # resident, full-precision KV cache, and a context that holds a 24 k packet plus 16 k of reasoning and the answer
   ollama:
     OLLAMA_NUM_PARALLEL: "1"
-    OLLAMA_MAX_LOADED_MODELS: "1"
+    OLLAMA_MAX_LOADED_MODELS: "2"
     OLLAMA_FLASH_ATTENTION: "1"
-    OLLAMA_KV_CACHE_TYPE: q8_0
-    OLLAMA_CONTEXT_LENGTH: "24576"
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: "65536"
     OLLAMA_NOPRUNE: "1"
   timeout_scale: 4
 structured:               # SWE.1 register tasks are semantic (SafeC); every other phase as in local-rtx-v1
@@ -58,7 +60,8 @@ gateway:
   # owner 2026-10-22 ("I agree with A per-model exception in the gateway"): a model that cannot answer with reasoning
   # off reasons at this fixed effort; the gateway still strips every reasoning field before anything is stored (FR-025)
   reasoning:
-    gpt-oss:20b: {effort: low, extra_output_tokens: 4096}
+    # owner 2026-10-22: "go to high directly, on omniverse I dont care about energy, time and resources"
+    gpt-oss:20b: {effort: high, extra_output_tokens: 16384}
 admission:
   max_inflight: 1
   max_queue: 8

@@ -73,7 +73,13 @@ def test_the_omniverse2_profile_differs_from_v2_only_in_host_paths_and_the_engin
     from forge_factory.lrtx.profile import load
 
     v2, om = load("local-rtx-v2"), load("local-rtx-v2-omniverse2")
-    host_keys = {"id", "description", "host_reference", "deployment", "existing_deployment", "safec", "_path", "_sha256"}
+    host_keys = {"id", "description", "host_reference", "deployment", "existing_deployment", "safec", "runtime", "gateway",
+                 "_path", "_sha256"}
+    # host tuning may differ (owner 2026-10-22, 48 GB host): Ollama runtime settings and each listed model's reasoning
+    # effort/allowance; the models allowed to reason, the timeout scale and every other key stay the same
+    assert set(v2["gateway"]["reasoning"]) == set(om["gateway"]["reasoning"])
+    assert set(v2["runtime"]["ollama"]) == set(om["runtime"]["ollama"])
+    assert {k: v for k, v in v2["runtime"].items() if k != "ollama"} == {k: v for k, v in om["runtime"].items() if k != "ollama"}
     assert {k: v for k, v in v2.items() if k not in host_keys} == {k: v for k, v in om.items() if k not in host_keys}
     assert {k: v for k, v in v2["deployment"].items() if k not in ("default_root", "shared_readonly")} == \
         {k: v for k, v in om["deployment"].items() if k not in ("default_root", "shared_readonly")}
