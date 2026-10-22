@@ -61,12 +61,16 @@ def _loads(meter: Path, t0: str, t1: str) -> list[dict]:
 
 
 def attempt(start: Path, scratch: Path, model: str, n: int, meter: Path, max_calls: int, phase: str = "SWE.1") -> dict:
-    from . import swe1, swe2
+    from importlib import import_module
+
+    from .runner import author_module
     from .seeded import _refreeze
 
     ws = _fresh_copy(start, scratch / f"{model.replace(':', '_')}-{n:02d}" / "workspace", phase)
     t0, w0 = utc_now(), time.monotonic()
-    rep = {"SWE.1": swe1, "SWE.2": swe2}[phase].visit(ws, model, max_calls=max_calls)
+    # the author the work order's profile selects (feature 011: semantic SWE.1 under local-rtx-v2)
+    mod = import_module(f"forge_factory.lrtx.{author_module(ws, 'author', phase)}")
+    rep = mod.visit(ws, model, max_calls=max_calls)
     wall = round(time.monotonic() - w0, 1)
     vs = ws / f".forge-run/lrtx/{phase}/visits.jsonl"
     vrec = json.loads(vs.read_text().splitlines()[-1]) if vs.is_file() else {}

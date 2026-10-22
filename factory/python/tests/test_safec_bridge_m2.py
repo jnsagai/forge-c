@@ -195,8 +195,10 @@ def _engine() -> CL.EnginePin:
 
 
 def _supports_validate(tmp: Path) -> bool:
+    """The pinned engine implements validate_intents for the domain version this checkout writes."""
     ident, issues = CL.handshake(_engine(), tmp / "id")
-    return not issues and ident["operations"].get("validate_intents") == "SUPPORTED"
+    return not issues and ident["operations"].get("validate_intents") == "SUPPORTED" and \
+        ident["protocol"].get("domain") == C.DOMAIN_SCHEMA
 
 
 def _run(tmp: Path, raw_domain: bytes, intents: list[dict], name: str):
@@ -215,7 +217,7 @@ needs_engine = pytest.mark.skipif(not PIN, reason="FORGE_SAFEC_ENGINE_PIN not se
 @needs_engine
 def test_real_engine_validates_synthetic_intents_and_both_engines_agree(synthetic, tmp_path):
     if not _supports_validate(tmp_path):
-        pytest.skip("pinned engine predates validate_intents")
+        pytest.skip("pinned engine predates validate_intents for this domain version")
     doc, raw = synthetic
     intents = [
         {"intent_id": "EN-ON", "source_fact_ids": ["F-TST_CR-EN"], "register": "TST_CR", "field": "EN",
@@ -253,7 +255,7 @@ def test_real_engine_validates_synthetic_intents_and_both_engines_agree(syntheti
 ], ids=["pass", "mask-as-value", "overflow", "inverted-key", "ro-write", "w1c-unsupported", "unknown-field"])
 def test_real_engine_statuses_and_checks(synthetic, tmp_path, intent, status, check):
     if not _supports_validate(tmp_path):
-        pytest.skip("pinned engine predates validate_intents")
+        pytest.skip("pinned engine predates validate_intents for this domain version")
     _, raw = synthetic
     out, _, _ = _run(tmp_path, raw, [{"intent_id": "I-1", **intent}], "case")
     assert out.status == status and out.issues == [], (out.status, out.issues)
@@ -265,7 +267,7 @@ def test_real_engine_statuses_and_checks(synthetic, tmp_path, intent, status, ch
 @pytest.mark.skipif(not (RM_IWDG.is_file() and RM_RCC.is_file()), reason="owner RM0486 inputs not in this checkout")
 def test_real_engine_on_real_rm_facts(tmp_path):
     if not _supports_validate(tmp_path):
-        pytest.skip("pinned engine predates validate_intents")
+        pytest.skip("pinned engine predates validate_intents for this domain version")
     _, rcc = _rm_domain(tmp_path, RM_RCC, "RCC", {"RCC_AHB1ENR"})
     out, req, pin = _run(tmp_path, rcc, [{"intent_id": "ADC-ON", "source_fact_ids": ["F-RCC_AHB1ENR-ADC12EN"],
                                           "register": "RCC_AHB1ENR", "field": "ADC12EN", "action": "set_field"}], "adc")

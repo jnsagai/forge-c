@@ -1,0 +1,67 @@
+schema: forge-c/local-profile/1
+id: local-rtx-v2
+version: 1
+status: EXPERIMENTAL - not qualified (feature 011, ADR-0015); selecting it is an explicit owner/operator action
+description: >-
+  Feature 011 semantic-first local execution: like local-rtx-v1 (RTX 4070 Laptop 8 GB, i9-14900HX, 32 GB RAM, same
+  SWE.1-SWE.6 gates, checklists, rework limits, inspection independence and offline packaging), but the SWE.1 register
+  requirements are finite source-linked intents validated by the pinned private SafeC engine (register-io-0.1) and
+  rendered deterministically; no model-supplied number becomes a register fact.
+host_reference: {gpu: RTX 4070 Laptop 8 GB, cpu: i9-14900HX, ram_gb: 32}
+local_only: true
+provider: ollama
+models:
+  default: qwen3-coder:30b
+  allowed:
+    qwen3-coder:30b: {digest: 06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca, quantization: Q4_K_M,
+                      role_qualification: NOT_QUALIFIED}
+runtime:
+  ollama:
+    OLLAMA_NUM_PARALLEL: "1"
+    OLLAMA_MAX_LOADED_MODELS: "1"
+    OLLAMA_FLASH_ATTENTION: "1"
+    OLLAMA_KV_CACHE_TYPE: q8_0
+    OLLAMA_CONTEXT_LENGTH: "24576"
+    OLLAMA_NOPRUNE: "1"
+  timeout_scale: 4
+structured:               # SWE.1 register tasks are semantic (SafeC); every other phase as in local-rtx-v1
+  phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  inspect_phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  semantic_phases: [SWE.1]
+  reinspect_direct: true
+  timeout_s: 3600
+  visit_time_s: 1200
+safec:                    # ADR-0015: a pinned, hash-verified local engine; never a phase or release authority
+  engine:
+    binary: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/c18dd2dc594a85b9dabb208d0c211b03c1eec7a3/safec-bridge
+    binary_sha256: 5f23606fdf655f9cf6ad655eb9e0d0154127f97bbb021766462c4beb1d3f758c
+    source_commit_sha: c18dd2dc594a85b9dabb208d0c211b03c1eec7a3
+    semantic_profile: register-io-0.1
+  timeout_s: 60
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 1800
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2
+  ports: {ollama: 11455, gateway: 11456, fabro: 32391}
+  # the existing deployment, other owner services and the local-rtx-v1 stack
+  forbidden_ports: [8765, 8787, 11434, 11435, 11436, 11437, 11445, 11446, 32290, 32291, 32390]
+  writable_env: [FORGE_DATA_ROOT, FORGE_STATE_DIR, FORGE_ARCHIVE_DIR, FORGE_FABRO_CONFIG, FORGE_FABRO_STORAGE,
+                 FORGE_FABRO_HOME, FORGE_VENV, UV_CACHE_DIR, PIP_CACHE_DIR]
+  shared_readonly:
+    toolchains: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains
+    standards: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/standards
+    inputs: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inputs
+    ollama-0.34.0: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-0.34.0
+    ollama-models: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-models
+existing_deployment:      # never written by this profile: the Codex/Claude line and the local-rtx-v1 root
+  roots:
+    - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c
+    - /home/jefferson/forge-c
+    - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx
+network:
+  required: namespace_denied
