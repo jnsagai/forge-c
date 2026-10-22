@@ -23,14 +23,15 @@ from pathlib import Path
 from ..common import REPO_ROOT, pretty_json
 
 # shapes of secrets, not their values; a match refuses the content
-CREDENTIAL_PATTERNS = {
-    "PRIVATE_KEY": re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
-    "GITHUB_TOKEN": re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr|github_pat)_[A-Za-z0-9_]{20,}"),
-    "API_KEY": re.compile(r"\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}"),
-    "AWS_KEY": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
-    "BEARER": re.compile(r"\b[Bb]earer\s+[A-Za-z0-9._~+/=-]{20,}"),
-    "ASSIGNED_SECRET": re.compile(r"(?i)\b(?:password|passwd|secret|token|api[_-]?key)\s*[:=]\s*['\"]?[^\s'\"]{12,}"),
+CREDENTIAL_PATTERNS = {  # group "s" is the secret part
+    "PRIVATE_KEY": re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----(?P<s>)"),
+    "GITHUB_TOKEN": re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr|github_pat)_(?P<s>[A-Za-z0-9_]{20,})"),
+    "API_KEY": re.compile(r"\bsk-(?:ant-)?(?P<s>[A-Za-z0-9_-]{20,})"),
+    "AWS_KEY": re.compile(r"\bAKIA(?P<s>[0-9A-Z]{16})\b"),
+    "BEARER": re.compile(r"\b[Bb]earer\s+(?P<s>[A-Za-z0-9._~+/=-]{20,})"),
+    "ASSIGNED_SECRET": re.compile(r"(?i)\b(?:password|passwd|secret|token|api[_-]?key)\s*[:=]\s*['\"]?(?P<s>[^\s'\"]{12,})"),
 }
+MIN_SECRET_VARIETY = 8  # distinct characters in the secret part of a credential shape
 MIN_PRIVATE_LINE = 40  # shorter lines (braces, imports, common words) say nothing about origin
 SHARED_PUBLIC = ("specs/011-safec-semantic-first/contracts/",)  # Forge-C publishes these; SafeC may mirror them
 TEXT_SUFFIXES = {".rs", ".md", ".json", ".toml", ".yaml", ".yml", ".py", ".txt", ".sreq", ".lus", ".c", ".h", ".ps1",
@@ -53,7 +54,19 @@ def _digest(line: str) -> str:
 
 
 def credentials(text: str) -> list[str]:
-    return [name for name, rx in CREDENTIAL_PATTERNS.items() if rx.search(text)]
+    """Credential shapes whose secret has real variety. A placeholder ('x' * 30, <redacted>, ${VAR}) is not a
+    secret; a key or token whose longest alphanumeric run has 8+ distinct characters is."""
+    out = []
+    for name, rx in CREDENTIAL_PATTERNS.items():
+        for m in rx.finditer(text):
+            secret = m.group("s")
+            runs = re.findall(r"[A-Za-z0-9]+", secret)
+            longest = max(runs, key=len) if runs else ""
+            if name == "PRIVATE_KEY" or (not secret.startswith(("<", "${", "$("))
+                                         and len(set(longest)) >= MIN_SECRET_VARIETY):
+                out.append(name)
+                break
+    return out
 
 
 def private_fingerprints(private_root: Path) -> set[str]:

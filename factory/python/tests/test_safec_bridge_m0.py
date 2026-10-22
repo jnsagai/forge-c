@@ -68,7 +68,7 @@ def test_a_copied_private_line_is_found_without_storing_it(repos):
 
 def test_credentials_are_found_in_tracked_and_untracked_changes(repos):
     priv, pub, base = repos
-    (pub / "README.md").write_text("public\ntoken = ghp_" + "A1" * 15 + "\n")
+    (pub / "README.md").write_text("public\ntoken = ghp_" + "k7Qz9" + "Wm2Xv4Rt8Ln3" + "Yp6Bs1Hd5Jf0" + "\n")
     (pub / "new.txt").write_text("-----BEGIN " + "OPENSSH PRIVATE KEY-----\n")  # assembled: not a key in this file
     kinds = {(f["path"], f["kind"]) for f in P.scan_public_tree(pub, base)["findings"]}
     assert ("README.md", "CREDENTIAL:GITHUB_TOKEN") in kinds and ("new.txt", "CREDENTIAL:PRIVATE_KEY") in kinds
@@ -85,6 +85,12 @@ def test_a_line_public_forge_c_already_had_is_not_a_private_copy(repos):
     assert P.scan_public_tree(pub, base, priv)["status"] == "FAIL"
 
 
+def test_placeholders_are_not_credentials():
+    assert P.credentials("Authorization: Bearer " + "x" * 30) == []
+    assert P.credentials("api_key = " + "<redacted-value>" * 2) == []
+    assert P.credentials("token = " + "k7Qz9Wm2" + "Xv4Rt8Ln") == ["ASSIGNED_SECRET"]
+
+
 def test_shared_public_contracts_are_not_private_content(repos):
     priv, pub, base = repos
     d = pub / "specs/011-safec-semantic-first/contracts"
@@ -95,10 +101,10 @@ def test_shared_public_contracts_are_not_private_content(repos):
 
 @pytest.mark.parametrize("value, issue", [
     ("see " + "/PRIV/crates/safec-core/src/lib.rs", "PRIVATE_PATH:note"),
-    ("Authorization: Bearer " + "x" * 30, "CREDENTIAL:note:BEARER"),
+    ("Authorization: Bearer " + "eyJhbGci" + "OiJIUzI1NiJ9" + "q8Wn3Kz", "CREDENTIAL:note:BEARER"),
     (PRIVATE_LINE, "PRIVATE_SOURCE_LINE:note"),
     ("line one\nline two", "VALUE_TOO_LARGE_OR_MULTILINE:note"),
-])
+], ids=["private-path", "bearer", "private-line", "multiline"])
 def test_public_summary_refuses_private_excerpts_and_secrets(tmp_path, value, issue, monkeypatch):
     """F011-AT-005: the collector refuses (never truncates or masks) and returns nothing to persist."""
     priv = tmp_path / "PRIV"
