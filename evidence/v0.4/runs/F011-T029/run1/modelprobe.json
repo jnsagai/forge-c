@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-10-22T12:29:04.306085Z",
+  "note": "Host measurement only; no role qualification (F011-T029 decides that).",
+  "ollama": "http://127.0.0.1:11455",
+  "rows": [
+    {
+      "cold_load_s": 62.02,
+      "context_length": 262144,
+      "decode_tok_s": 10.3,
+      "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+      "family": "qwen3moe",
+      "loaded_size_bytes": 20119863892,
+      "loaded_vram_bytes": 6842493172,
+      "model": "qwen3-coder:30b",
+      "output_tokens": 91,
+      "parameter_size": "30.5B",
+      "prefill_tok_s": 4.3,
+      "prompt_tokens": 57,
+      "quantization": "Q4_K_M",
+      "size_bytes": 18556700761,
+      "status": "MEASURED",
+      "total_s": 22.13
+    },
+    {
+      "cold_load_s": 22.8,
+      "context_length": 40960,
+      "decode_tok_s": 41.5,
+      "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "family": "qwen3",
+      "loaded_size_bytes": 7408577412,
+      "loaded_vram_bytes": 6834828083,
+      "model": "qwen3:8b",
+      "output_tokens": 256,
+      "parameter_size": "8.2B",
+      "prefill_tok_s": 7.5,
+      "prompt_tokens": 59,
+      "quantization": "Q4_K_M",
+      "size_bytes": 5225388164,
+      "status": "MEASURED",
+      "total_s": 14.1
+    },
+    {
+      "model": "gpt-oss:20b",
+      "note": "not in the local model store; downloading a model is an owner decision",
+      "status": "MISSING"
+    },
+    {
+      "model": "glm4:9b",
+      "note": "not in the local model store; downloading a model is an owner decision",
+      "status": "MISSING"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelprobe/1"
+}

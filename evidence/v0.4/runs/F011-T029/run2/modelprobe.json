@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-10-22T13:20:56.155930Z",
+  "note": "Host measurement only; no role qualification (F011-T029 decides that).",
+  "ollama": "http://127.0.0.1:11455",
+  "rows": [
+    {
+      "cold_load_s": 40.99,
+      "context_length": 131072,
+      "decode_tok_s": 23.2,
+      "digest": "f38aa0c53da5f8c49d08c43a99df24ff53167fe68e24664a7777288e7656fdfe",
+      "family": "gpt-oss",
+      "loaded_size_bytes": 14076496391,
+      "loaded_vram_bytes": 6503624866,
+      "model": "gpt-oss:20b",
+      "output_tokens": 244,
+      "parameter_size": "20.9B",
+      "prefill_tok_s": 8.1,
+      "prompt_tokens": 113,
+      "quantization": "MXFP4",
+      "size_bytes": 13793441566,
+      "status": "MEASURED",
+      "total_s": 24.57
+    },
+    {
+      "cold_load_s": 22.37,
+      "context_length": 131072,
+      "decode_tok_s": 44.8,
+      "digest": "5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44",
+      "family": "chatglm",
+      "loaded_size_bytes": 5769495837,
+      "loaded_vram_bytes": 5769495837,
+      "model": "glm4:9b",
+      "output_tokens": 89,
+      "parameter_size": "9.4B",
+      "prefill_tok_s": 9.5,
+      "prompt_tokens": 51,
+      "quantization": "Q4_0",
+      "size_bytes": 5455326235,
+      "status": "MEASURED",
+      "total_s": 7.37
+    },
+    {
+      "cold_load_s": 103.09,
+      "context_length": 262144,
+      "decode_tok_s": 6.7,
+      "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+      "family": "qwen3moe",
+      "loaded_size_bytes": 20119863892,
+      "loaded_vram_bytes": 6730295540,
+      "model": "qwen3-coder:30b",
+      "output_tokens": 91,
+      "parameter_size": "30.5B",
+      "prefill_tok_s": 2.9,
+      "prompt_tokens": 57,
+      "quantization": "Q4_K_M",
+      "size_bytes": 18556700761,
+      "status": "MEASURED",
+      "total_s": 33.25
+    }
+  ],
+  "schema": "forge-c/lrtx-modelprobe/1"
+}

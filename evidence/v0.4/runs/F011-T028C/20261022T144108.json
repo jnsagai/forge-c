@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "python -m forge_factory.lrtx.modelprobe --model phi4:14b --model mistral-small3.2:24b --model granite3.3:8b --out /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/m4c/modelprobe.json && python evidence/v0.4/runs/F011-T028C/f011_reasoning_check.py gpt-oss:20b glm4:9b phi4:14b mistral-small3.2:24b granite3.3:8b qwen3-coder:30b"
+  ],
+  "duration_s": 522.207,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "366db7274ab2a19cecc1118fcbecbb11aef0507c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T028C/20261022T144108.log",
+  "log_sha256": "8d78efd3adedf010daeab6805c317216fc7afac9e9e82cdd1e3f5efc9d899a46",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T028C",
+  "ts_utc": "2026-10-22T14:41:08.309220Z"
+}

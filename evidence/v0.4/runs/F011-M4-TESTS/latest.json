@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "factory/python/tests/test_lrtx_v2_review.py",
+    "factory/python/tests/test_lrtx_seeded.py",
+    "factory/python/tests/test_lrtx_v2_profile.py"
+  ],
+  "duration_s": 54.058,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "94c1c6cccb775ed89fef9247fb1b8f046a02d62a",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-M4-TESTS/20261022T173759.log",
+  "log_sha256": "79557e9bdfe5924e273ae34132190d5a9eae2421aa34f86ea98eba75a245e4f7",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-M4-TESTS",
+  "ts_utc": "2026-10-22T17:37:59.225272Z"
+}

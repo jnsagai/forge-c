@@ -1,0 +1,138 @@
+{
+  "baselines": 2,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 2,
+  "false_rejections": 1,
+  "generated_at": "2026-10-22T17:24:58.585806Z",
+  "inspection_fail_off_target": 1,
+  "inspector": "semantic",
+  "missed": 1,
+  "model": "granite3.3:8b",
+  "no_inspection": 1,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: failure_handling_missing [document]: SWE.1 criterion SWE1-03 requires failure handling to be specified, but the supplied safety requirements only mention that failure handling shall be done. No specif"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-04: other [HSI contract]: Upstream input status NOT_PROVIDED indicates that no approved HSI contract has been supplied. Remediation: Address the root cause, likely insufficient upstream input; record the ",
+          "SWE1-06: ambiguity_not_documented [document]: Approved target ASIL B (SC-IWDG-2026-10-20) context does not establish a software safety allocation. The manifest records upstream.status NOT_PROVIDED with draft-t"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "IWDG_KR.KEY"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 12,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "NO_INSPECTION (FAILED)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "FAILED",
+        "verdict": null
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 4,
+  "semantic_detection_on_target": 0
+}

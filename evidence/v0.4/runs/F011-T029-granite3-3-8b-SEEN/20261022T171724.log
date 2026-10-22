@@ -1,0 +1,39 @@
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 36753.4}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 7110.0}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 9632.7}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 12726.0}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 12544.0}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 12443.2}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 9785.2}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 7087.2}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 21618.1}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 16234.3}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02", "attempt": 0, "errors": 2, "wall_ms": 8519.5}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02", "attempt": 1, "errors": 0, "wall_ms": 4245.7}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 9246.3}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 19594.0}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 10038.5}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 25825.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 15612.0}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 11037.2}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 11188.8}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 9406.2}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04", "attempt": 0, "errors": 1, "wall_ms": 11180.8}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04", "attempt": 1, "errors": 1, "wall_ms": 6275.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04", "attempt": 2, "errors": 1, "wall_ms": 6239.6}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 10428.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 10948.0}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 22461.9}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01:reinspect", "attempt": 0, "errors": 2, "wall_ms": 10868.0}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01:reinspect", "attempt": 1, "errors": 2, "wall_ms": 12189.1}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01:reinspect", "attempt": 2, "errors": 2, "wall_ms": 10686.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 10735.1}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 0, "errors": 2, "wall_ms": 9288.6}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 1, "errors": 0, "wall_ms": 4478.4}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 9780.9}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 24619.6}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-05:reinspect", "attempt": 0, "errors": 0, "wall_ms": 5653.5}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 10658.2}
+{"schema": "forge-c/lrtx-seeded/1", "catalogue": "lrtx-seeded-1", "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070", "model": "granite3.3:8b", "inspector": "semantic", "generated_at": "2026-10-22T17:24:58.741770Z", "deterministic_detection": 2, "semantic_detection_on_target": 0, "inspection_fail_off_target": 1, "missed": 1, "seeded": 4, "false_rejections": 1, "baselines": 2, "no_inspection": 1, "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+
+--- stderr ---

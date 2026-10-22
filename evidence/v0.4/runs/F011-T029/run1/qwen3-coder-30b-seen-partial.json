@@ -1,0 +1,105 @@
+{
+  "baselines": 1,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 1,
+  "false_rejections": 1,
+  "generated_at": "2026-10-22T12:56:27.763480Z",
+  "inspection_fail_off_target": 1,
+  "inspector": "semantic",
+  "missed": 1,
+  "model": "qwen3-coder:30b",
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirement_not_verifiable [SWR-013]: SWR-013 cannot be objectively verified because it refers to a condition 'while no LL function has been called after reset' which is not testable in isolation. Ver",
+          "SWE1-03: failure_handling_missing [document]: The software safety requirements document indicates that the software safety allocation is PENDING owner allocation review and no software safety requirement is al",
+          "SWE1-04: budget_not_measurable [SWR-014]: SWR-014 states the driver shall occupy at most 4096 bytes of flash, but the manifest records upstream.status: NOT_PROVIDED for budgets, and the budget values are marke",
+          "SWE1-06: requirement_not_verifiable [Safety allocation]: The manifest records that the software safety allocation is PENDING owner allocation review. The safety allocation is not provided in the upstream input"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirement_not_verifiable [SWR-013]: SWR-013 states that no IWDG register shall be written when no LL function has been called after reset. This is difficult to verify because it depends on hardware ",
+          "SWE1-03: failure_handling_missing [document]: The safety allocation is pending owner review and no software safety requirements are allocated. The document does not specify failure handling, reset/startup beha",
+          "SWE1-04: budget_not_measurable [SWR-014]: SWR-014 states the driver shall occupy at most 4096 bytes of flash, but the manifest records upstream.status: NOT_PROVIDED for budgets and the budget values are placeh",
+          "SWE1-06: requirement_not_verifiable [Safety allocation]: The safety allocation is marked as PENDING owner allocation review and no software safety requirements are allocated yet. The baseline does not contain "
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "IWDG_KR.KEY"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 12,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S3-INVERT",
+      "class": "inverted behaviour",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.3",
+      "target": "0x0000CCCCU",
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 3,
+  "semantic_detection_on_target": 0
+}

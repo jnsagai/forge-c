@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "factory/python/tests/test_safec_bridge_oracle.py",
+    "factory/python/tests/test_safec_bridge_m2.py",
+    "factory/python/tests/test_lrtx_v2_swe1.py"
+  ],
+  "duration_s": 8.427,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "94c1c6cccb775ed89fef9247fb1b8f046a02d62a",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-M5-TESTS/20261022T173853.log",
+  "log_sha256": "7f3dcf2681aa6671a6b992fa1bff4e267445ce59cf65eeade4950211b7709ee9",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-M5-TESTS",
+  "ts_utc": "2026-10-22T17:38:53.342218Z"
+}

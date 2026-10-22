@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-10-22T14:44:01.755146Z",
+  "note": "Host measurement only; no role qualification (F011-T029 decides that).",
+  "ollama": "http://127.0.0.1:11455",
+  "rows": [
+    {
+      "cold_load_s": 22.54,
+      "context_length": 16384,
+      "decode_tok_s": 9.1,
+      "digest": "ac896e5b8b34a1f4efa7b14d7520725140d5512484457fab45d2a4ea14c69dba",
+      "family": "phi3",
+      "loaded_size_bytes": 11156450177,
+      "loaded_vram_bytes": 6780543302,
+      "model": "phi4:14b",
+      "output_tokens": 105,
+      "parameter_size": "14.7B",
+      "prefill_tok_s": 7.8,
+      "prompt_tokens": 56,
+      "quantization": "Q4_K_M",
+      "size_bytes": 9053116391,
+      "status": "MEASURED",
+      "total_s": 18.71
+    },
+    {
+      "cold_load_s": 76.25,
+      "context_length": 131072,
+      "decode_tok_s": 3.4,
+      "digest": "5a408ab55df5c1b5cf46533c368813b30bf9e4d8fc39263bf2a3338cfa3b895b",
+      "family": "mistral3",
+      "loaded_size_bytes": 17787831296,
+      "loaded_vram_bytes": 6077808639,
+      "model": "mistral-small3.2:24b",
+      "output_tokens": 112,
+      "parameter_size": "24.0B",
+      "prefill_tok_s": 229.1,
+      "prompt_tokens": 556,
+      "quantization": "Q4_K_M",
+      "size_bytes": 15177384862,
+      "status": "MEASURED",
+      "total_s": 35.81
+    },
+    {
+      "cold_load_s": 16.13,
+      "context_length": 131072,
+      "decode_tok_s": 35.6,
+      "digest": "fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7",
+      "family": "granite",
+      "loaded_size_bytes": 7373315224,
+      "loaded_vram_bytes": 6788806082,
+      "model": "granite3.3:8b",
+      "output_tokens": 99,
+      "parameter_size": "8.2B",
+      "prefill_tok_s": 502.4,
+      "prompt_tokens": 93,
+      "quantization": "Q4_K_M",
+      "size_bytes": 4942891653,
+      "status": "MEASURED",
+      "total_s": 2.97
+    }
+  ],
+  "schema": "forge-c/lrtx-modelprobe/1"
+}

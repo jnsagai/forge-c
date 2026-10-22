@@ -1,0 +1,41 @@
+{
+  "baselines": 1,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 0,
+  "false_rejections": 1,
+  "generated_at": "2026-10-22T13:42:49.720251Z",
+  "inspection_fail_off_target": 0,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "qwen3-coder:30b",
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-013 (with SWR-001, SWR-002, SWR-003, SWR-004, SWR-005)]: SWR-013 contradicts SWR-001 through SWR-005, which define specific register writes in response to API calls. The",
+          "SWE1-03: failure_handling_missing [document]: The safety allocation is PENDING owner allocation review and no software safety requirements are allocated, which means there is no specification of failure handli"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 0,
+  "semantic_detection_on_target": 0
+}

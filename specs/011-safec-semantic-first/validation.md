@@ -120,7 +120,7 @@ CRE decision `pd-46287fcfe3205f989f47` (74bfb67, CHANGE, all hard gates PASS, of
 **M3 exit:** the unchanged deterministic author gate accepts genuine tested results. The inspector and SWE.2 are not
 qualified by this.
 
-## M4 results — 2026-10-22 (inspector qualification; IN PROGRESS, no inspector qualified so far)
+## M4 results — 2026-10-22 (inspector qualification: no local candidate qualifies)
 
 Runs 2 and 3 use the adjudication rules frozen at 4f9abde (`pd-d0e9a7512e632a2a0f41`); run 1 used the 7786d60 rules. Holdouts: seen = the two T021
 holdouts (WO-0009A IWDG-LL rc1, WO-0002A RCC-LL rc1; no longer blind); unseen = five READY work orders (WO-0002B,
@@ -135,7 +135,30 @@ detected on target. A candidate that fails it stays NOT_QUALIFIED; F011-T030 int
 | qwen3-coder:30b | run 1 (7786d60 rules, partial) | NOT_QUALIFIED | IWDG clean baseline: FALSE_REJECTION_BY_INSPECTION (a recorded REWORK inspection). S1-OMIT: off target. S1-QM: caught by the deterministic gate. The S3-INVERT "MISSED" row predates the harness fix below and is **not counted** (it may come from the stale record). |
 | qwen3-coder:30b | run 2 (4f9abde rules) | NOT_QUALIFIED | IWDG clean baseline again a false rejection (a recorded REWORK inspection). Claims left standing after adjudication: SWE1-02 requirements_inconsistent and requirement_infeasible on SWR-013; SWE1-03 failure_handling_missing and safe_state_missing. Stopped after this row: the rule already excludes it. |
 | gpt-oss:20b | run 2 | VOID, then NOT_QUALIFIED (incompatible with the gateway setting) | Every item came back empty ("NOT_JSON ... char 0"). Cause measured in F011-T028C: the gateway forces `reasoning_effort="none"`, and gpt-oss returns no content then. Owner decision pending (ADR-0015 addendum 4). The row reported "none" only because of the harness defect below; it is void. |
-| glm4:9b, phi4:14b, mistral-small3.2:24b, granite3.3:8b | run 3 (rules 4f9abde, harness b627861, run tree 366db72) | RUNNING | — |
+| glm4:9b | run 3 (rules 4f9abde, harness b627861, run tree 366db72) | NOT_QUALIFIED | Clean baselines: 3 false rejections, 1 no inspection, 3 passes of 7. Seeded: S1-OMIT off target on IWDG, missed on RCC. |
+| phi4:14b | run 3 | NOT_QUALIFIED | 6 false rejections and 1 no inspection of 7 (16 k context; RCC prompts are about 20 k). Seeded: both S1-OMIT off target. |
+| mistral-small3.2:24b | run 3 (partial) | NOT_QUALIFIED | IWDG-LL clean baseline falsely rejected; stopped at that row (3.4 tok/s with CPU offload: 6.1 of 17.8 GB in VRAM). |
+| granite3.3:8b | run 3 | NOT_QUALIFIED | 3 false rejections and 4 no inspections of 7. Seeded: S1-OMIT off target on IWDG, missed on RCC. |
+
+**Finding for the owner: is the IWDG-LL rc1 baseline clean for SWE1-03?** Every local family evaluated on it
+(qwen3-coder:30b, glm4:9b, phi4:14b, mistral-small3.2:24b, granite3.3:8b) fails SWE1-03 with `failure_handling_missing` or `safe_state_missing`. The
+criterion reads "Failure handling, reset/startup behavior and safe states are specified." The baseline has a startup
+requirement (SWR-013), but no failure-handling or safe-state requirement; its scope statement allocates waiting,
+timeouts and error codes to the separate HAL work order. The original cloud inspection passed SWE1-03; that verdict is
+the only reason the baseline counts as clean, and its reasoning is not recorded. The frozen adjudication rules do not
+treat a documented scope allocation as a refutation, and they are **not** changed after seeing these results: a rule
+tuned on seen holdouts would bias the qualification. Whether a scope allocation to another work order satisfies
+SWE1-03 for an LL register-access driver is an owner decision. Until then these rows count as false rejections
+under the rule above.
+
+**Measured on this host (F011-T028, T028B, T028C):** model digests, quantization, context, cold load, VRAM and decode
+rate are recorded per candidate in the probe reports. Only about 6–7 GB of each model was resident in VRAM; larger
+models ran partly on the CPU (mistral-small3.2:24b decoded at 3.4 tok/s). Every candidate except gpt-oss:20b answers a
+schema-constrained request with reasoning off. Evidence: `evidence/v0.4/runs/F011-T029/README.md`, `F011-M4-TESTS`.
+
+**Next (F011-T030 stays open):** the owner provided a host with a 48 GB GPU (omniverse2), where 30–70B candidates fit
+entirely in VRAM. The same frozen rules, harness and holdouts are to be rerun there. If none qualifies, the line stays
+NOT_QUALIFIED and no live end-to-end run is made.
 
 **Harness defect found and fixed (b627861, `pd-47c70ee683c05937a4f0`).** The seeded harness read the last
 inspection record of the holdout's own original run when the local inspector recorded nothing, and reported that old
@@ -159,3 +182,17 @@ the run 2 qwen row it overlapped is a false rejection either way.
 script: the fixtures are unchanged, the ACP/provider tests pass on the fix and the main baseline, and the route
 regressions pass. The reproducer shows the symptom on main and not on the fix. The single excluded test, the hostsnap
 backup refusal, fails on main as well and is fixed on this branch by ac7ec8d.
+
+## M5 results — 2026-10-22 (SWE.2 binding and register-image oracle; Forge-C 9f2d657 + 94c1c6c, SafeC b6ce0f7)
+
+| Task | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T031 | PASS | `F011-M5-TESTS` | The semantic SWE.1 names the LL function in every requirement ("When LL_IWDG_Enable is called to ..."); the function is an intent field whose prefix the schema enforces. An interface built from the frozen requirements passes the unchanged SWE.2 check. Renaming LL_IWDG_IsActive to LL_IWDG_IsEnabled is rejected, naming the requirement, the exact name to define and the allocation (F011-AT-024). |
+| F011-T034 | PARTIAL (Forge-C side, LL, SWE.4) | `F011-M5-TESTS` | SafeC `derive_tests` returns a register-image oracle bound to the contract digest. Forge-C accepts it only if every case equals its own derivation (`safec_bridge/oracle.py`, schema register-io-oracle in the feature contracts). The frozen semantic SWE.1 records it as the SWE.1 work product register_oracle.json.<br>The EASA C oracle (SWE.4 verifier) checks each case on the real register array: the whole register word, every other word unchanged and the query return value. Before use, the domain is rebuilt and every operation and case re-derived; any difference blocks.<br>End-to-end test on a real LL generated from the contract: it passes every case. Inverted key, absent write, wrong-bit read and a read that writes each fail only on their own case. A tampered oracle blocks.<br>**Open:** SWE.5/SWE.6 (Renode/Robot) use, the vacuous-test and false-positive classes in the SWE.4 test review, and HAL. |
+
+**Defect found by the mutants:** with two initial images (all zeros, all defined bits), a read of a neighbouring bit
+passed, because both bits hold the same value in both images. Fixed in SafeC b6ce0f7 and in the Forge-C
+derivation: four images, the field alone and all but the field added, duplicates dropped. Engine pin b6ce0f7,
+sha256 `359bef94…`, reproduced in two clean target directories; `validate_intents` is unchanged since 813b4e8.
+
+**CRE decisions:** `pd-806bcd9cd305ee417638` (94c1c6c, covering 9f2d657): ELIGIBLE_FOR_OFFLINE_REVIEW.

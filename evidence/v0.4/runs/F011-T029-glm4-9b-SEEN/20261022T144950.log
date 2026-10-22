@@ -1,0 +1,46 @@
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 30074.4}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01:reinspect", "attempt": 0, "errors": 2, "wall_ms": 6361.4}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01:reinspect", "attempt": 1, "errors": 0, "wall_ms": 6331.6}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 4956.9}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 10480.5}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 10438.3}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04:reinspect", "attempt": 0, "errors": 6, "wall_ms": 10796.6}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04:reinspect", "attempt": 1, "errors": 2, "wall_ms": 2414.4}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04:reinspect", "attempt": 2, "errors": 0, "wall_ms": 5657.8}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 4688.8}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 5273.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 9290.1}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 2315.1}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 7427.9}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02:reinspect", "attempt": 0, "errors": 3, "wall_ms": 6157.4}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02:reinspect", "attempt": 1, "errors": 2, "wall_ms": 1966.0}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02:reinspect", "attempt": 2, "errors": 3, "wall_ms": 2641.0}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 7047.5}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 18037.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 8599.0}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 8439.2}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-06:reinspect", "attempt": 0, "errors": 0, "wall_ms": 12537.0}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01", "attempt": 0, "errors": 5, "wall_ms": 9610.2}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01", "attempt": 1, "errors": 1, "wall_ms": 6147.8}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01", "attempt": 2, "errors": 0, "wall_ms": 3045.7}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-02", "attempt": 0, "errors": 1, "wall_ms": 5861.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-02", "attempt": 1, "errors": 0, "wall_ms": 2806.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-03", "attempt": 0, "errors": 1, "wall_ms": 5382.9}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-03", "attempt": 1, "errors": 0, "wall_ms": 2327.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 5560.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 5535.1}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 9565.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-06:reinspect", "attempt": 0, "errors": 0, "wall_ms": 1951.5}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 5324.4}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 16040.8}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-02:reinspect", "attempt": 0, "errors": 0, "wall_ms": 28009.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 0, "errors": 2, "wall_ms": 10206.9}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 1, "errors": 1, "wall_ms": 2854.1}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 2, "errors": 0, "wall_ms": 2635.3}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-04", "attempt": 0, "errors": 2, "wall_ms": 6252.8}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-04", "attempt": 1, "errors": 0, "wall_ms": 2861.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 5573.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 5012.4}
+{"schema": "forge-c/lrtx-seeded/1", "catalogue": "lrtx-seeded-1", "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070", "model": "glm4:9b", "inspector": "semantic", "generated_at": "2026-10-22T14:55:24.570928Z", "deterministic_detection": 2, "semantic_detection_on_target": 0, "inspection_fail_off_target": 1, "missed": 1, "seeded": 4, "false_rejections": 1, "baselines": 2, "no_inspection": 0, "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+
+--- stderr ---

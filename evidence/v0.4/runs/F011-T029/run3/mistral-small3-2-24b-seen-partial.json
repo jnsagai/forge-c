@@ -1,0 +1,44 @@
+{
+  "baselines": 1,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 0,
+  "false_rejections": 1,
+  "generated_at": "2026-10-22T17:05:16.634243Z",
+  "inspection_fail_off_target": 0,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "mistral-small3.2:24b",
+  "no_inspection": 0,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-01: other [Budgets]: Upstream input status NOT_PROVIDED for budgets. Remediation: Provide approved budgets.",
+          "SWE1-02: requirement_infeasible [SWR-006]: SWR-006 specifies writing a 12-bit value to IWDG_RLR.RL, but the maximum value allowed by the target (STM32N657X0) is 4095 (0xFFF), which is 12 bits. However, the req",
+          "SWE1-03: safe_state_missing [Safety allocation]: Software safety allocation is PENDING owner allocation review; no software safety requirement is allocated yet. Remediation: Allocate software safety requiremen",
+          "SWE1-04: budget_missing [SWR-014 (with SWR-014, SWR-015, SWR-016)]: Flash/RAM/stack/CPU/timing constraints are not fully explicit; flash_bytes: 4096 is pending approved upstream budgets. Remediation: Provide a"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 0,
+  "semantic_detection_on_target": 0
+}
