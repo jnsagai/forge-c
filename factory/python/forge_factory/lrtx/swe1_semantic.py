@@ -228,8 +228,10 @@ CROSS_RULES = {
         "verified_by": "host_unit_test"},
     "write_only_named_field": {
         "when": "the coverage rules require that every write changes only the named bits",
-        "statement": "When the {sys} sets, clears or writes a register field, the {sys} shall change only the bits of "
-                     "that field.",
+        # trial batch 2 (2026-10-22): 'When the {sys} sets, clears or writes ..., the {sys} shall ...' is not EARS-
+        # conformant for the unchanged checker (the trigger's comma); the ubiquitous form is
+        "statement": "The {sys} shall change only the bits of the named field when it sets, clears or writes a "
+                     "register field.",
         "verification": "Host unit test fills the register array with 0xFFFFFFFF and then 0x00000000 and performs each "
                         "set, clear and write request; passes when only the bits of the named field change.",
         "verified_by": "host_unit_test"},

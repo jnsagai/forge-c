@@ -76,7 +76,8 @@ SEM_ANSWERS = {
         _i("pvu", "query the prescaler update flag", "IWDG_SR.PVU", "read_field", ["F-IWDG_SR-PVU"]),
         _i("rvu", "query the reload update flag", "IWDG_SR.RVU", "read_field", ["F-IWDG_SR-RVU"])],
         "not_covered": [{"field": "IWDG_SR.WVU", "reason": "window option out of scope"}], "open_points": []},
-    "requirements:crosscutting": {"rules": ["status_query_no_wait"], "open_points": ["none observed"]},
+    "requirements:crosscutting": {"rules": ["status_query_no_wait", "write_only_named_field"],
+                                  "open_points": ["none observed"]},
 }
 
 
@@ -167,3 +168,14 @@ def test_scope_and_schema_keep_the_model_inside_its_task(iwdg):
                                                   ["F-IWDG_KR-KEY-V-5555"], "0x5555")], "not_covered": [
         {"field": "IWDG_KR.KEY", "reason": "x"}], "open_points": []}, g)
     assert any("also listed in not_covered" in e for e in errs)
+
+
+@pytest.mark.parametrize("sysname", ["IWDG LL driver", "RCC LL driver"])
+def test_every_catalogue_rule_renders_ears_conformant(sysname):
+    """Trial batch 2: a rendered rule the model cannot repair must pass the unchanged EARS checker by construction."""
+    from forge_factory.inspection.ears import Requirement, check_statement
+
+    texts = [r["statement"].format(sys=sysname) for r in SEM.CROSS_RULES.values()]
+    texts.append(SEM.STARTUP_RULE["statement"].format(sys=sysname, layer="LL", pfx=sysname.split()[0]))
+    for t in texts:
+        assert check_statement(Requirement("x", t, 0), {sysname}).findings == [], t
