@@ -137,7 +137,7 @@ def test_linux_probe_reports_counts_and_keeps_raw_logs_private(tmp_path, monkeyp
     checkout.mkdir()
     _git(checkout, "init", "-q")
     out = tmp_path / "private-out" / "run"
-    s = probe.probe(checkout, out)
+    s = probe.probe(checkout, out, tmp_path / "cargo-home")
     assert (s["tests_passed"], s["tests_failed"], s["tests_ignored"], s["test_binaries"]) == (7, 1, 1, 2)
     assert s["status"] == "FAIL" and s["cargo_exit"] == 101 and s["tools_missing"] == ["kind2-not-installed"]
     assert (out / "cargo-test.log").is_file() and str(checkout) not in json.dumps(s)

@@ -1,10 +1,12 @@
 """F011-T004: Linux probe of the private SafeC checkout on this host, reported through the public boundary.
 
-    python -m forge_factory.safec_bridge.probe --checkout <safec> --private-out <dir outside Forge-C> [--out <json>]
+    python -m forge_factory.safec_bridge.probe --checkout <safec> --cargo-home <its crate cache> \
+        --private-out <dir outside Forge-C> [--out <json>]
 
 Runs, in the private checkout:
-- the pinned toolchain's `cargo test --workspace --locked --offline --no-fail-fast`, with its own CARGO_HOME and
-  target directory next to the private output;
+- the pinned toolchain's `cargo test --workspace --locked --offline --no-fail-fast`, with the SafeC checkout's own
+  crate cache (`--cargo-home`, fetched beforehand; the shared ~/.cargo is not used) and a target directory next to the
+  private output;
 - version and digest queries of the formal backends SafeC records (Kind 2, Z3, Frama-C, Why3, Alt-Ergo, CBMC).
 
 Raw logs stay in `--private-out`. The repository receives only `provenance.public_summary` of counts, versions,
@@ -49,9 +51,9 @@ def tools() -> tuple[list[str], list[str], list[str]]:
     return present, missing, versions
 
 
-def probe(checkout: Path, private_out: Path) -> dict:
+def probe(checkout: Path, private_out: Path, cargo_home: Path) -> dict:
     private_out.mkdir(parents=True, exist_ok=True)
-    env = {**os.environ, "CARGO_HOME": str(private_out.parent / "cargo-home"),
+    env = {**os.environ, "CARGO_HOME": str(cargo_home),
            "CARGO_TARGET_DIR": str(private_out.parent / "target-probe")}
     cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo")
     tc = _run([cargo, "--version"], checkout, env).stdout.strip()
@@ -79,11 +81,12 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--checkout", type=Path, required=True)
     ap.add_argument("--private-out", type=Path, required=True)
+    ap.add_argument("--cargo-home", type=Path, required=True)
     ap.add_argument("--out", type=Path)
     a = ap.parse_args(argv)
     if a.private_out.resolve().is_relative_to(REPO_ROOT.resolve()):
         raise SystemExit("PRIVATE_OUT_INSIDE_PUBLIC_REPOSITORY")
-    s = probe(a.checkout.resolve(), a.private_out.resolve())
+    s = probe(a.checkout.resolve(), a.private_out.resolve(), a.cargo_home.resolve())
     if a.out:
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(pretty_json(s))
