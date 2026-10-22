@@ -35,3 +35,43 @@
 - No backward-compatible workflow change without fixture comparison; protected policy changes need explicit owner and CRE review.
 - Owner-facing metric is cost/quality per accepted package including failures, not a cheap individual token.
 - Cross-reference: `specs/011-safec-semantic-first/{spec,plan,acceptance-tests,tasks}.md` and `specs/010-local-rtx-optimization/validation.md`.
+
+## Addendum 2026-10-22 — owner decisions during implementation
+
+These decisions were recorded by Claude Code. The authored decision above is unchanged.
+
+1. **Adjudicated pass (decision 6, F011-FR-017/018).** Owner, 2026-10-22: "I accept ADJUDICATED_PASS rule". In
+   `local-rtx-v2` the SWE.1 inspector returns typed claims, and fixed rules adjudicate them on the frozen baseline
+   (`lrtx/review_semantic.py`). The rules decide whether the baseline:
+   - states a pass criterion;
+   - has exactly one 'shall';
+   - has a startup requirement;
+   - records the owner's upstream gap;
+   - has the requirement in the trace tables;
+   - has the budget requirements.
+
+   A FAIL whose claims are all REFUTED gets one selective reinspection with the refutations. If its claims are
+   still all refuted, the item is recorded as `ADJUDICATED_PASS`; the original verdict, every claim and every
+   refutation are kept in the inspection record and the reply.
+
+   Limits:
+   - A claim the rules cannot decide (a judgement) stands and fails the item.
+   - A genuinely missing mandatory ASIL input is never refuted.
+   - The unchanged `check_inspection` operation and inspect gate judge the recorded verdicts.
+   - The rule applies only to `local-rtx-v2`. The default, ACP and `local-rtx-v1` lines keep their inspectors.
+2. **New local model families.** Owner, 2026-10-22: "you can download, but do it on loop10". Candidate inspector
+   models are pulled only through the standalone loop10 Ollama, into the shared model store on the data volume.
+   The v1/v2 stacks see that store read-only. A pulled model is NOT_QUALIFIED until F011-T029 measures it.
+3. **Further candidates.** Owner, 2026-10-22: "If no local model qualifies as inspector try another candidate
+   model" and "glm4:9b's licence isn't OSI ok no problem". phi4:14b (MIT), mistral-small3.2:24b (Apache-2.0) and
+   granite3.3:8b (Apache-2.0) were pulled on loop10 and pinned by digest in `local-rtx-v2` as NOT_QUALIFIED
+   candidates (366db72). glm4:9b's licence is accepted for evaluation and use.
+4. **Finding, no decision yet: gpt-oss and the gateway's reasoning setting.** The local gateway forces
+   `reasoning_effort="none"` on every request and strips reasoning fields from responses (`llm_gateway.py`).
+   gpt-oss:20b cannot switch its reasoning off: with `none` it returns empty content (measured, F011-T028C), so
+   every inspection item failed to parse. FR-025 (spec 002) requires that AI trace storage exclude hidden reasoning;
+   it does not forbid a model from reasoning. The gateway docstring states the stricter "forbids requesting". A
+   per-model exception (send `low` to models that cannot disable reasoning, keep stripping before anything is
+   stored) would meet FR-025 as written, but it changes the gateway's design and costs extra tokens. It is left to
+   the owner; until then gpt-oss:20b is NOT_QUALIFIED (incompatible with the gateway setting) and was not evaluated
+   further.

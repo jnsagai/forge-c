@@ -119,3 +119,43 @@ CRE decision `pd-46287fcfe3205f989f47` (74bfb67, CHANGE, all hard gates PASS, of
 
 **M3 exit:** the unchanged deterministic author gate accepts genuine tested results. The inspector and SWE.2 are not
 qualified by this.
+
+## M4 results — 2026-10-22 (inspector qualification; IN PROGRESS, no inspector qualified so far)
+
+Runs 2 and 3 use the adjudication rules frozen at 4f9abde (`pd-d0e9a7512e632a2a0f41`); run 1 used the 7786d60 rules. Holdouts: seen = the two T021
+holdouts (WO-0009A IWDG-LL rc1, WO-0002A RCC-LL rc1; no longer blind); unseen = five READY work orders (WO-0002B,
+WO-0008A, WO-0008B, WO-0008C, WO-0009B). The holdout trees are hashed before and after each run. Reports are kept in
+the m4, m4b and m4c directories of the local-rtx-v2 root.
+
+**Qualification rule:** no false rejection on any clean holdout, seen or unseen, and the SWE.1 seeded defects
+detected on target. A candidate that fails it stays NOT_QUALIFIED; F011-T030 integrates nothing unqualified.
+
+| Candidate | Run | Result | Notes |
+|---|---|---|---|
+| qwen3-coder:30b | run 1 (7786d60 rules, partial) | NOT_QUALIFIED | IWDG clean baseline: FALSE_REJECTION_BY_INSPECTION (a recorded REWORK inspection). S1-OMIT: off target. S1-QM: caught by the deterministic gate. The S3-INVERT "MISSED" row predates the harness fix below and is **not counted** (it may come from the stale record). |
+| qwen3-coder:30b | run 2 (4f9abde rules) | NOT_QUALIFIED | IWDG clean baseline again a false rejection (a recorded REWORK inspection). Claims left standing after adjudication: SWE1-02 requirements_inconsistent and requirement_infeasible on SWR-013; SWE1-03 failure_handling_missing and safe_state_missing. Stopped after this row: the rule already excludes it. |
+| gpt-oss:20b | run 2 | VOID, then NOT_QUALIFIED (incompatible with the gateway setting) | Every item came back empty ("NOT_JSON ... char 0"). Cause measured in F011-T028C: the gateway forces `reasoning_effort="none"`, and gpt-oss returns no content then. Owner decision pending (ADR-0015 addendum 4). The row reported "none" only because of the harness defect below; it is void. |
+| glm4:9b, phi4:14b, mistral-small3.2:24b, granite3.3:8b | run 3 (rules 4f9abde, harness b627861, run tree 366db72) | RUNNING | — |
+
+**Harness defect found and fixed (b627861, `pd-47c70ee683c05937a4f0`).** The seeded harness read the last
+inspection record of the holdout's own original run when the local inspector recorded nothing, and reported that old
+PASS as "none" (no false rejection). Now only an inspection recorded by the evaluation's own visit counts; otherwise
+the row is NO_INSPECTION and counted as such. The qwen rows above are unaffected: each recorded its own inspection.
+
+**Process violation (recorded):** the PR #37 promotion gate (`pd-05f3c205ef973368b442`) was run while T029 run 2
+was active, against the rule that no local run is active during a promotion. The decision stands on its own gates;
+the run 2 qwen row it overlapped is a false rejection either way.
+
+**CRE decisions:**
+
+| Decision | Covers |
+|---|---|
+| `pd-d0e9a7512e632a2a0f41` | 4f9abde: adjudication rules aligned; gpt-oss:20b and glm4:9b allowlisted |
+| `pd-47c70ee683c05937a4f0` | b627861: T031 function naming; seeded harness counts only its own inspection |
+| `pd-b35c2e22680b5e6c616a` | 366db72: phi4:14b, mistral-small3.2:24b, granite3.3:8b allowlisted |
+
+**F011-T037 (checked):** the route-gate fix went through its own candidate and PR (#37, CAPA-068, RPR-072,
+`pd-05f3c205ef973368b442`). It was merged into main as 53d4dac with owner approval. Evidence `F011-T037` and its
+script: the fixtures are unchanged, the ACP/provider tests pass on the fix and the main baseline, and the route
+regressions pass. The reproducer shows the symptom on main and not on the fix. The single excluded test, the hostsnap
+backup refusal, fails on main as well and is fixed on this branch by ac7ec8d.

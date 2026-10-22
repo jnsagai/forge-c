@@ -1,6 +1,6 @@
 # Implementation tasks — Feature 011
 
-**Status (2026-10-22, M0-M3 measured):** M0 F011-T001, T002, T003 and T005 are checked; F011-T004 is NOT_PASS (SafeC on Linux has 2 baseline test failures; Kind 2/Z3 absent). M1 F011-T006 to T011 are checked (protocol). M2 F011-T012 to T015, T018 and T019 are checked; F011-T016 and T017 stay open. M3 F011-T020 to T024 are checked: 6/6 real semantic SWE.1 author visits were frozen by the unchanged gate on the final revision, author-only. M4 tooling exists (F011-T025 to T028), but its tasks are open until it is measured. M5 and M6 are pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
+**Status (2026-10-22, M0-M3 measured):** M0 F011-T001, T002, T003 and T005 are checked; F011-T004 is NOT_PASS (SafeC on Linux has 2 baseline test failures; Kind 2/Z3 absent). M1 F011-T006 to T011 are checked (protocol). M2 F011-T012 to T015, T018 and T019 are checked; F011-T016 and T017 stay open. M3 F011-T020 to T024 are checked: 6/6 real semantic SWE.1 author visits were frozen by the unchanged gate on the final revision, author-only. M4 tooling exists (F011-T025 to T028), but its tasks are open until it is measured; no inspector is qualified so far (validation.md, M4). F011-T037 is checked (route-gate fix merged via PR #37). M5 and M6 are pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
 
 **Sources:** `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/*.schema.json`, `acceptance-tests.md`; constitution and existing feature 010 baselines.
 
@@ -72,7 +72,7 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 
 ## M6 — Regression, evaluation, and offline handoff (F011-AT-031..034)
 
-- [ ] **F011-T037 [US1]** Independently fix the documented shared route-gate extension bug in its own candidate/PR under CRE protection; prove budgets/stuck and ACP/v1 regressions; do not absorb unrelated gate changes into 011.
+- [X] **F011-T037 [US1]** Independently fix the documented shared route-gate extension bug in its own candidate/PR under CRE protection; prove budgets/stuck and ACP/v1 regressions; do not absorb unrelated gate changes into 011. ✅ Evidence: `evidence/v0.4/runs/F011-T037/latest.json`
 - [ ] **F011-T038 [US4]** Freeze new unseen experiment cases, scripts, model digests, prompt hashes, comparable baseline and acceptance oracles **before** running any final campaign.
 - [ ] **F011-T039 [US4]** If all previous gates pass, run the 30-case local campaign (10 RCC-LL, 10 IWDG-LL, 5 each HAL), publish Wilson or other declared statistical uncertainty, false accepts/rejects and independently measured success cost.
 - [ ] **F011-T040 [US1]** Exercise v2-only shutdown and rollback (including interrupted semantic engine), preserve ACP/v1 services/archives, validate original read-only snapshot and protected paths.

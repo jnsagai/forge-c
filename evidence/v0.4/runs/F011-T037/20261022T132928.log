@@ -1,0 +1,15 @@
+fix_branch_head=f8dca5cd1f5879b2c57e5b896903abdd29dc5541 baseline=2f4b9cf44fd9cc56648fa26b6da6c2e29248338d
+{"status": "PASS", "cases": 21, "diffs": []}
+{"status": "PASS", "cases": 8, "diffs": []}
+== ACP/provider tests on /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route (without the known pre-existing test)
+.................................                                        [100%]
+== ACP/provider tests on /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-baseline-2f4b9cf (without the known pre-existing test)
+.................................                                        [100%]
+excluded on both trees: factory/python/tests/test_lrtx_compat.py::test_backup_inside_a_repository_is_refused - pre-existing on main (hostsnap accepts a backup under a not-yet-created build/ dir); fixed on the F011 branch by ac7ec8d with its own regression test
+== route regressions on the fix tree
+................s.........................................               [100%]
+SYMPTOM_ABSENT
+SYMPTOM_PRESENT:progress extension granted for inspection cycles but the route still BLOCKS
+baseline exit 1 (symptom expected)
+
+--- stderr ---
