@@ -37,6 +37,10 @@ def test_baseline_facts_come_from_the_frozen_work_products_only(frozen):
     assert f["traced"] and f["tested"]
 
 
+def _budget(f, kind):
+    return next(s for s, r in f["reqs"].items() if f"bytes of {kind}" in r["statement"])
+
+
 def test_refutations_confirmations_and_judgements(frozen):
     f = RS.baseline_facts(frozen)
     swr = sorted(f["reqs"])[0]
@@ -48,6 +52,9 @@ def test_refutations_confirmations_and_judgements(frozen):
         (_c("budget_missing", "document"), "REFUTED"),
         (_c("requirement_untraceable", swr), "REFUTED"),
         (_c("requirement_not_verifiable", "SWR-999"), "REFUTED"),    # not a requirement of the baseline
+        (_c("requirement_not_verifiable", "Safety allocation"), "REFUTED"),  # aimed at an input, not a requirement
+        (_c("budget_not_measurable", _budget(f, "flash")), "REFUTED"),  # '4096 bytes' is a bound with a unit
+        (_c("requirement_infeasible", _budget(f, "flash")), "REFUTED"),  # meeting a budget is measured later
         (_c("safe_state_missing", "document"), "STANDS"),            # a judgement: never decided by rules
         (_c("other", swr), "STANDS"),
     ]

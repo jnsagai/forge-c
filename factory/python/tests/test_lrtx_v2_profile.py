@@ -31,7 +31,8 @@ def test_v2_has_its_own_root_and_ports_and_never_touches_v1_or_the_deployment():
     ({"acp_inspectors": "claude"}, "PROFILE_REJECTS_ACP:claude"),
     ({"provider": "deepseek", "model": "deepseek-flash"}, "PROFILE_PROVIDER_NOT_LOCAL:deepseek"),
     ({"model": "qwen3:8b"}, "PROFILE_MODEL_NOT_ALLOWED:qwen3:8b"),  # not measured for v2: not allowed
-], ids=["acp-authors", "acp-inspectors", "cloud", "unlisted-model"])
+    ({"model": "llama3:70b"}, "PROFILE_MODEL_NOT_ALLOWED:llama3:70b"),
+], ids=["acp-authors", "acp-inspectors", "cloud", "unlisted-model", "unknown-model"])
 def test_v2_refuses_cloud_acp_and_unlisted_models_before_launch(kw, issue):
     args = {"model": "qwen3-coder:30b", "provider": "ollama", "code_model": None, "acp_authors": None,
             "acp_inspectors": None, **kw}
@@ -58,3 +59,9 @@ def test_v2_pins_an_exact_safec_engine():
 def test_v1_profile_file_is_byte_identical_to_the_frozen_fixture():
     data = compat.load(REPO_ROOT / "tests/compat/lrtx/local-rtx-v1-2f4b9cf.json.gz")
     assert data["profile"]["config_sha256"] == V1["_sha256"]
+
+
+def test_inspector_candidates_are_pinned_and_not_qualified():
+    allowed = V2["models"]["allowed"]
+    for m in ("gpt-oss:20b", "glm4:9b"):
+        assert len(allowed[m]["digest"]) == 64 and allowed[m]["role_qualification"].startswith("NOT_QUALIFIED")

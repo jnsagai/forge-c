@@ -15,6 +15,13 @@ models:
   allowed:
     qwen3-coder:30b: {digest: 06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca, quantization: Q4_K_M,
                       role_qualification: NOT_QUALIFIED}
+    # F011-T028 inspector candidates of other families (owner 2026-10-22: "you can download, but do it on loop10");
+    # pulled into the loop10 model store; NOT_QUALIFIED until F011-T029 measures them
+    gpt-oss:20b: {digest: f38aa0c53da5f8c49d08c43a99df24ff53167fe68e24664a7777288e7656fdfe, quantization: MXFP4,
+                  license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    glm4:9b: {digest: 5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44, quantization: Q4_0,
+              license: glm-4-9b License (not OSI; productization licence review required),
+              role_qualification: NOT_QUALIFIED (inspector candidate)}
 runtime:
   ollama:
     OLLAMA_NUM_PARALLEL: "1"

@@ -45,6 +45,8 @@ ASSERTIONS = {
 INPUTS = ["HSI contract", "Safety allocation", "Budgets"]
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
+BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz)\b", re.I)
+BUDGET = re.compile(r"\bat most \d+ bytes of (?:flash|static RAM|stack)\b|\buse 0 bytes of static RAM\b", re.I)
 REQ_LINE = re.compile(r"^- \*\*(SWR-\d{3})\*\*\s+(.+)$")
 
 
@@ -109,12 +111,26 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
         decision, why = "STANDS", "a judgement the deterministic rules do not decide"
         if t.startswith("SWR-") and r is None:
             decision, why = "REFUTED", f"{t} is not a requirement of the frozen baseline"
-        elif a == "requirement_not_verifiable" and r is not None:
-            if "passes when" in r["verification"].lower():
+        elif a.startswith("requirement") and r is None:
+            # policy: a requirement assertion is about a requirement; aimed at an input or the document it is mis-targeted
+            decision, why = "REFUTED", f"'{a}' concerns a requirement, but the claim names '{t}', which is not one"
+        elif a == "requirement_not_verifiable":
+            # the author gate's own rule (lrtx.swe1.validate_group): a verification states a pass criterion
+            if "pass" in r["verification"].lower():
                 decision, why = "REFUTED", f"{t} states its pass criterion: '{r['verification'][:120]}'"
             else:
                 decision, why = "CONFIRMED", f"{t} has no pass criterion in its verification"
-        elif a == "requirement_not_atomic" and r is not None:
+        elif a == "budget_not_measurable" and r is not None:
+            bound = BOUND.search(r["statement"])
+            decision, why = ("REFUTED", f"{t} states a numeric bound with its unit: '{bound.group(0)}'") if bound else \
+                ("CONFIRMED", f"{t} states no numeric bound with a unit")
+        elif a == "requirement_infeasible" and r is not None and BUDGET.search(r["statement"]):
+            # existing phase policy (feature 010 inspector notes): whether a constraint is MET is measured at
+            # SWE.3-SWE.6; at SWE.1 the owner's work-order budget is judged as explicit and measurable
+            decision, why = "REFUTED", (f"{t} is the owner's work-order budget (recorded in "
+                                        "traceability/upstream_gaps.md); meeting it is measured at SWE.3-SWE.6, not "
+                                        "judged at SWE.1")
+        elif a == "requirement_not_atomic":
             ears = [x for x in check_statement(Requirement(t, r["statement"], 0), names).findings
                     if "NOT_ATOMIC" in x or "NO_SHALL" in x]
             decision, why = ("CONFIRMED", "; ".join(ears)) if ears else \
@@ -139,7 +155,7 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
             if all(f["budgets"].values()) and f["gap_rows"].get("Budgets"):
                 decision, why = "REFUTED", ("flash, static RAM and stack limits are requirements and the budget status "
                                             "is recorded in traceability/upstream_gaps.md")
-        elif a == "requirement_untraceable" and r is not None:
+        elif a == "requirement_untraceable":
             if t in f["traced"] and t in f["tested"]:
                 decision, why = "REFUTED", (f"{t} is in both trace tables of traceability/upstream_gaps.md and in "
                                             "traceability/requirements_to_tests.csv")
