@@ -216,3 +216,11 @@ the two profiles drift apart in anything else. Not yet started there: the models
 may reason at `low` with extra output tokens; reasoning is still stripped before anything is stored. Not yet measured
 on the holdouts. Pre-existing and unrelated: test_kpi_003 t012/t020 fail the same way on a clean 209191a checkout
 (they read live factory state).
+**omniverse2 host tuning** (owner: "go to high directly, on omniverse I dont care about energy, time and resources,
+lets use the most of the machine"): b981617, `pd-411645d07a947efdd302`. On local-rtx-v2-omniverse2 only:
+- gpt-oss:20b reasons at `high` with 16384 extra output tokens;
+- two models stay resident;
+- the KV cache is f16;
+- the context is 65536 tokens.
+
+The laptop profile is unchanged.
