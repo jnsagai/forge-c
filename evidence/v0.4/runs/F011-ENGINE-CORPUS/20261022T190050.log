@@ -1,0 +1,4 @@
+[["empty", "ERROR"], ["not json", "ERROR"], ["array", "ERROR"], ["invalid utf-8", "ERROR"], ["deep nesting", "ERROR"], ["nan", "ERROR"], ["huge integer", "ERROR"], ["oversize", "ERROR"], ["duplicate key", "ERROR"], ["unknown field", "ERROR"], ["wrong schema", "ERROR"], ["unknown operation", "ERROR"], ["domain not bound", "STALE"], ["domain not json", "STALE"], ["no domain", "ERROR"], ["path traversal register", "FAIL"], ["20000 intents", "ERROR"]]
+..
+
+--- stderr ---

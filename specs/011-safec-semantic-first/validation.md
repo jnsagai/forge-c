@@ -198,3 +198,14 @@ derivation: four images, the field alone and all but the field added, duplicates
 sha256 `359bef94…`, reproduced in two clean target directories; `validate_intents` is unchanged since 813b4e8.
 
 **CRE decisions:** `pd-806bcd9cd305ee417638` (94c1c6c, covering 9f2d657) and `pd-92d2bb0be2853495a977` (b429112, T035): ELIGIBLE_FOR_OFFLINE_REVIEW.
+
+## M5 continued — 2026-10-22 (SWE.2 trials, engine corpus, cross-host pin; Forge-C f185e42 + 972f3d3)
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T032 | PARTIAL, NOT_PASS so far (open) | `evidence/v0.4/runs/F011-T032/` (script, partial report) | Real SWE.2 author (feature 010 structured author, qwen3-coder:30b) on the genuinely accepted rc1 SWE.1 baselines, then the inspector the runner selects. **IWDG-LL 2 of 2 attempts FAILED** at the interfaces task: the model kept LL_IWDG_IsActive for SWR-011/012, which name LL_IWDG_IsEnabled, through every repair with the exact finding (3 calls; 1331 s and 257 s). Nothing was frozen, so nothing was inspected. The owner then froze local runs on this host ("freeze any local run in my pc and wait to have omniverse ready"), so the 4 remaining attempts (IWDG-LL 3, RCC-LL 1–3) did not run. No evidence_run record: the run was stopped. |
+| SWE.2 named functions | Implemented, tested, **not yet measured** | `pd-2fd79d4a286aaeb309c7` | Under local-rtx-v2 (`structured.swe2_named_functions`), each function a frozen requirement names is a required key of the SWE.2 output schema. A rename such as IsActive to IsEnabled is refused by the schema itself. Other profiles keep the feature 010 schema unchanged (tested). T032 is to be rerun with it on the 48 GB host. |
+| SafeC engine corpus (S013-T015, Forge-C side) | PASS | `F011-ENGINE-CORPUS` | 17 hostile requests sent straight to the real pinned engine, past the client: each ends within 60 s without a panic and gives a schema-valid ERROR, STALE or FAIL, never PASS; a correctly bound control passes. The first version of the test was vacuous (the engine refuses an existing evidence directory, so every case failed for that one reason); the control exposed it. Recorded finding: control characters in request_id are schema-valid and echoed unchanged; Forge-C builds request ids from fixed tags only. |
+| Engine pin across hosts | PASS | SafeC f6d7089 (private) | b6ce0f7 built from a fixed source path (`git archive`, cargo home remapped, locked, offline) gives sha256 `2a54f4a3…` on both loop10 and the new 48 GB host. Built from different checkout paths it does not, because cargo metadata depends on the path dependencies' location. |
+
+**CRE decision:** `pd-2fd79d4a286aaeb309c7` (972f3d3, covering f185e42): ELIGIBLE_FOR_OFFLINE_REVIEW.
