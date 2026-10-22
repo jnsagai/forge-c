@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-21T16:29:32.411554Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4520,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12254
+      },
+      "errors": [
+        "[iwdg_sr_onf_read] acts on IWDG_SR.ONF, which another task of this register covers: remove requirement [iwdg_sr_onf_read] from this task",
+        "[iwdg_sr_reset_behavior] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_sr_reset_behavior] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 890,
+        "prompt_tokens": 3101,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 3991
+      },
+      "wall_ms": 45291.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5724,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15567
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "54cd11f69f0e8ed49412f544331e1d633ea2d9b567ba35a65499f69688dc7d0b",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 468,
+        "prompt_tokens": 4101,
+        "prompt_tokens_details": {
+          "cached_tokens": 2696
+        },
+        "total_tokens": 4569
+      },
+      "wall_ms": 24627.1
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "QUERY_WVU",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the WVU bit of register IWDG_SR when a query function is called.",
+        "verification": "The host unit test passes when the IWDG_SR.WVU bit is read correctly on every query call.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "QUERY_RVU",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the RVU bit of register IWDG_SR when a query function is called.",
+        "verification": "The host unit test passes when the IWDG_SR.RVU bit is read correctly on every query call.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "QUERY_PVU",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the PVU bit of register IWDG_SR when a query function is called.",
+        "verification": "The host unit test passes when the IWDG_SR.PVU bit is read correctly on every query call.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

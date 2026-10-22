@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-21T15:31:55.784072Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6630,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18059
+      },
+      "errors": [
+        "finding 'SWR-001: Upstream HSI contract input not provided, gap recorded in upstream_gaps...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'SWR-001: Upstream HSI contract input not provided, gap recorded in upstream_gaps...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "5daffa20c8cccf1070bac0c8cd7ac9154480a8a05d8337faaeae5c97e559194c",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 100,
+        "prompt_tokens": 6060,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6160
+      },
+      "wall_ms": 22568.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7037,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19177
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "142a3fc43160cdd9fc7873c946c8847c1370190e867e0b2c942b3fb75e621a88",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 142,
+        "prompt_tokens": 6329,
+        "prompt_tokens_details": {
+          "cached_tokens": 5934
+        },
+        "total_tokens": 6471
+      },
+      "wall_ms": 7434.8
+    }
+  ],
+  "base_hash": "5daffa20c8cccf1070bac0c8cd7ac9154480a8a05d8337faaeae5c97e559194c",
+  "doc": {
+    "evidence_checked": [
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "SWR-001: No bidirectional trace recorded from upstream HSI contract input; upstream_gaps.md lists SWR-001 through SWR-018 as affected by missing safety allocation and budget inputs, but no upstream traceability links are established in requirements_to_tests.csv or register_effects.json for these requirements."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:f7a5f9f093080c4d:SWE1-05"
+}

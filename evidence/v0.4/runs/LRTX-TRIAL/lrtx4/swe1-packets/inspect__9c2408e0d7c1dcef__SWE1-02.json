@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-21T13:32:34.310799Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6278,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18643
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "c03f8e6116b3db381b6a3fcaf80fc851f5ce03b58f9fe3de16384de8a5024e9e",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 121,
+        "prompt_tokens": 6109,
+        "prompt_tokens_details": {
+          "cached_tokens": 5821
+        },
+        "total_tokens": 6230
+      },
+      "wall_ms": 7195.1
+    }
+  ],
+  "base_hash": "42a862478abeab2a75b410face72993f60ba97f00e62fa259c866394c2168e2f",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not objectively verifiable because the software safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirement is safety-critical and thus objectively verifiable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:9c2408e0d7c1dcef:SWE1-02"
+}

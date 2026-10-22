@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-21T16:04:00.262569Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7695,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20986
+      },
+      "errors": [
+        "finding 'Software safety requirements are not allocated yet, as indicated by the safety_a...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "8bccfeb1671b52b3b6d86c4f63b374964f252d99da8a6beeb9788f799e27fd46",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 7139,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 7237
+      },
+      "wall_ms": 24351.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7994,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21810
+      },
+      "errors": [
+        "finding 'HSI contract is NOT_PROVIDED in the manifest and upstream_gaps.md, creating a ga...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "57d89e4ab72150a1e8b0f143ce290744a06dcffe91921c2dd6d20b6e2a1afa71",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 89,
+        "prompt_tokens": 7323,
+        "prompt_tokens_details": {
+          "cached_tokens": 7013
+        },
+        "total_tokens": 7412
+      },
+      "wall_ms": 4840.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7983,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21779
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated; the safety allocation status is P...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "f5ff6ef5d9ee556f0ee0224e5430235c6b8d954551516621906ba96d415da196",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 99,
+        "prompt_tokens": 7328,
+        "prompt_tokens_details": {
+          "cached_tokens": 7056
+        },
+        "total_tokens": 7427
+      },
+      "wall_ms": 5184.7
+    }
+  ],
+  "base_hash": "8bccfeb1671b52b3b6d86c4f63b374964f252d99da8a6beeb9788f799e27fd46",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "traceability/upstream_gaps.md"
+    ],
+    "findings": [
+      "No software safety requirements are allocated; the safety allocation status is PENDING owner alloc, which means that allocated software safety requirements are not baselined as required by the criterion."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'No software safety requirements are allocated; the safety allocation status is P...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:34f242dd6823ce13:SWE1-01"
+}

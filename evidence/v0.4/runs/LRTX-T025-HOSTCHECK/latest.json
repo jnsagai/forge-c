@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "python -m forge_factory.lrtx.hostcheck --snapshot /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/snapshot.json --stack-python /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python --out evidence/v0.4/runs/LRTX-T025-HOSTCHECK/hostcheck.json && python -m pytest -rA -p no:cacheprovider factory/python/tests/test_lrtx_hostcheck.py factory/python/tests/test_lrtx_compat.py"
+  ],
+  "duration_s": 4.966,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "bbfb68a8817e921618c19e220d9a02d86b09c2a1",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T025-HOSTCHECK/20261021T220104.log",
+  "log_sha256": "7054323dec0a7f1046663c78e7365d3395d1d8919ba898d7baf27a8f37118ecf",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T025-HOSTCHECK",
+  "ts_utc": "2026-10-21T22:01:04.882441Z"
+}

@@ -1,0 +1,152 @@
+{
+  "at": "2026-10-21T13:11:17.742195Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4745,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14045
+      },
+      "errors": [
+        "[iwdg_sr_wvu_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_rvu_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_pvu_read] EARS_NOT_ATOMIC_2_SHALL"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "81460518408c8e17cc555b095f1104ee55c6793ea0e5790ab18f75fa577eb2cc",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 561,
+        "prompt_tokens": 3707,
+        "prompt_tokens_details": {
+          "cached_tokens": 2661
+        },
+        "total_tokens": 4268
+      },
+      "wall_ms": 26816.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4721,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 13973
+      },
+      "errors": [
+        "[iwdg_sr_wvu_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_rvu_read] EARS_NOT_ATOMIC_2_SHALL",
+        "[iwdg_sr_pvu_read] EARS_NOT_ATOMIC_2_SHALL"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "77fc68857fa93e58d54af945b33e49dce7ef592571d9f21e911bdca2507a1db6",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 561,
+        "prompt_tokens": 3683,
+        "prompt_tokens_details": {
+          "cached_tokens": 2661
+        },
+        "total_tokens": 4244
+      },
+      "wall_ms": 26088.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4721,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 13973
+      },
+      "errors": [
+        "[iwdg_sr_wvu_read] EARS_NOT_ATOMIC_3_SHALL",
+        "[iwdg_sr_wvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+        "[iwdg_sr_rvu_read] EARS_NOT_ATOMIC_3_SHALL",
+        "[iwdg_sr_rvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+        "[iwdg_sr_pvu_read] EARS_NOT_ATOMIC_3_SHALL",
+        "[iwdg_sr_pvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "77fc68857fa93e58d54af945b33e49dce7ef592571d9f21e911bdca2507a1db6",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 636,
+        "prompt_tokens": 3683,
+        "prompt_tokens_details": {
+          "cached_tokens": 3682
+        },
+        "total_tokens": 4319
+      },
+      "wall_ms": 27431.5
+    }
+  ],
+  "base_hash": "801456f8d03bc5dbe74eb45c7e488e0570fdbd73bb4a4670265b8436a0d3690b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_WVU_READ",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2991,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register. The IWDG LL driver shall read the WVU bit of register IWDG_SR, and shall return 1U when it is set, else 0U.",
+        "verification": "A host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].wvu is read, and the returned value matches the bit's state in the register array.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_RVU_READ",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2991,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register. The IWDG LL driver shall read the RVU bit of register IWDG_SR, and shall return 1U when it is set, else 0U.",
+        "verification": "A host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].rvu is read, and the returned value matches the bit's state in the register array.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_PVU_READ",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2991,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register. The IWDG LL driver shall read the PVU bit of register IWDG_SR, and shall return 1U when it is set, else 0U.",
+        "verification": "A host unit test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U].pvu is read, and the returned value matches the bit's state in the register array.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [
+    "[iwdg_sr_wvu_read] EARS_NOT_ATOMIC_3_SHALL",
+    "[iwdg_sr_wvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+    "[iwdg_sr_rvu_read] EARS_NOT_ATOMIC_3_SHALL",
+    "[iwdg_sr_rvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test",
+    "[iwdg_sr_pvu_read] EARS_NOT_ATOMIC_3_SHALL",
+    "[iwdg_sr_pvu_read] a startup/reset invariant is verified by target_robot_test, not a host unit test"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "requirements:IWDG_SR_2"
+}

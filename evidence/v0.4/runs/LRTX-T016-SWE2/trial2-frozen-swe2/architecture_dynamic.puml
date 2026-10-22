@@ -1,0 +1,40 @@
+@startuml
+title Start sequence; Refresh sequence
+actor Caller
+participant stm32n6xx_ll_iwdg as LL
+participant "IWDG registers" as REGS
+== Start sequence ==
+Caller -> LL : LL_IWDG_EnableWriteAccess()
+LL -> REGS : IWDG_KR.KEY
+LL --> Caller : void
+note right : Enable write access to PR, RLR and WINR registers before setting values.
+Caller -> LL : LL_IWDG_SetPrescaler(prescaler)
+LL -> REGS : IWDG_PR.PR
+LL --> Caller : void
+note right : Set desired prescaler value in IWDG_PR.PR field.
+Caller -> LL : LL_IWDG_SetReloadCounter(counter)
+LL -> REGS : IWDG_RLR.RL
+LL --> Caller : void
+note right : Set the reload counter value in IWDG_RLR.RL field.
+loop caller-bounded, until PVU flag is set
+Caller -> LL : LL_IWDG_IsActiveFlag_PVU()
+LL -> REGS : IWDG_SR.PVU
+LL --> Caller : uint32_t
+end
+note right : Poll for prescaler update complete before enabling watchdog.
+loop caller-bounded, until RVU flag is set
+Caller -> LL : LL_IWDG_IsActiveFlag_RVU()
+LL -> REGS : IWDG_SR.RVU
+LL --> Caller : uint32_t
+end
+note right : Poll for reload update complete after setting the counter value.
+Caller -> LL : LL_IWDG_Enable()
+LL -> REGS : IWDG_KR.KEY
+LL --> Caller : void
+note right : Write enable key to start the IWDG.
+== Refresh sequence ==
+Caller -> LL : LL_IWDG_ReloadCounter()
+LL -> REGS : IWDG_KR.KEY
+LL --> Caller : void
+note right : Write refresh key to restart the watchdog countdown timer.
+@enduml

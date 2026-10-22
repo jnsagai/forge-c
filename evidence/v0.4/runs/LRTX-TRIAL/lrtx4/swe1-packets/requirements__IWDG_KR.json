@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-21T13:33:17.099617Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3912,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11546
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e3a587f4a01fdbfd32f8faab323cf2aec5094d41f4c7e1e22b5d58988918ddeb",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 827,
+        "prompt_tokens": 3274,
+        "prompt_tokens_details": {
+          "cached_tokens": 1894
+        },
+        "total_tokens": 4101
+      },
+      "wall_ms": 39381.1
+    }
+  ],
+  "base_hash": "85ed7f483be2dfa19222c7cd9b6700a4ef0fd38bc849c86f0a5267c98588c3f7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "The safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirement SWR-002 is objectively verifiable."
+    ],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000AAAA"
+          }
+        ],
+        "key": "swr_002",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is started, the IWDG LL driver shall write the key value 0x0000AAAA to IWDG_KR.KEY to refresh the watchdog counter.",
+        "verification": "The test passes when the register array element ll_iwdg_regs[IWDG_KR_OFFSET/4U] has the value 0x0000AAAA written to it.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00005555"
+          }
+        ],
+        "key": "swr_003",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver enables write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write the key value 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array element ll_iwdg_regs[IWDG_KR_OFFSET/4U] has the value 0x00005555 written to it.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "swr_004",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver disables write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write a key value different from 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array element ll_iwdg_regs[IWDG_KR_OFFSET/4U] has any value other than 0x00005555 written to it.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000CCCC"
+          }
+        ],
+        "key": "swr_005",
+        "source_page": 2989,
+        "statement": "When starting the watchdog, the IWDG LL driver shall write the key value 0x0000CCCC to IWDG_KR.KEY.",
+        "verification": "The test passes when the register array element ll_iwdg_regs[IWDG_KR_OFFSET/4U] has the value 0x0000CCCC written to it.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

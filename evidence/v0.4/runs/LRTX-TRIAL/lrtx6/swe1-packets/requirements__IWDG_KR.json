@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-21T13:50:41.522168Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2849,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8357
+      },
+      "errors": [
+        "[iwdg_kr_key_read_only] names no field of this task: reset/startup and all-function rules belong to the cross-cutting task - remove this requirement here"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 870,
+        "prompt_tokens": 2288,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 3158
+      },
+      "wall_ms": 157503.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3878,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11444
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "984ec3eaf106a0782c415ee14edaddf6044fa3eab59a46fb42f5324d269baa10",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 770,
+        "prompt_tokens": 3225,
+        "prompt_tokens_details": {
+          "cached_tokens": 1883
+        },
+        "total_tokens": 3995
+      },
+      "wall_ms": 41085.8
+    }
+  ],
+  "base_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xCCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_write_start",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is requested to start the watchdog, the IWDG LL driver shall write the value 0x0000CCCC to IWDG_KR.KEY.",
+        "verification": "The host unit test passes when the register array ll_iwdg_regs[0] is written with 0xCCCC after calling the start function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xAAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_write_refresh",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is requested to refresh the watchdog counter, the IWDG LL driver shall write the value 0x0000AAAA to IWDG_KR.KEY.",
+        "verification": "The host unit test passes when the register array ll_iwdg_regs[0] is written with 0xAAAA after calling the refresh function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x5555"
+          }
+        ],
+        "key": "iwdg_kr_key_write_enable_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is requested to enable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write the value 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The host unit test passes when the register array ll_iwdg_regs[0] is written with 0x5555 after calling the enable access function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "iwdg_kr_key_write_disable_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is requested to disable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write any value other than 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The host unit test passes when the register array ll_iwdg_regs[0] is written with 0x00000000 after calling the disable access function.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

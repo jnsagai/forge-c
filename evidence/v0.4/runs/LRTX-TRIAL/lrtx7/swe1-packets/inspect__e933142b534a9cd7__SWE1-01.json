@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-21T15:02:32.843905Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6870,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18719
+      },
+      "errors": [
+        "finding 'Safety allocation is PENDING owner allocation review, no software safety require...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "db2ea2695e78f8f01f8c1621030f79ab55b4d07d051f7a02764c7300f0ffcc30",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 94,
+        "prompt_tokens": 6235,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 6329
+      },
+      "wall_ms": 25515.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7166,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19532
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "c5d3cc2de835584d2dcdcc0251c484c949a7eabcf3c127772e03e516bd3a9add",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 86,
+        "prompt_tokens": 6414,
+        "prompt_tokens_details": {
+          "cached_tokens": 6117
+        },
+        "total_tokens": 6500
+      },
+      "wall_ms": 5494.4
+    }
+  ],
+  "base_hash": "db2ea2695e78f8f01f8c1621030f79ab55b4d07d051f7a02764c7300f0ffcc30",
+  "doc": {
+    "evidence_checked": [
+      "SOURCE traceability/upstream_gaps.md",
+      "SOURCE .forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md; criterion requires baselined and traceable HSI."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:e933142b534a9cd7:SWE1-01"
+}

@@ -1,0 +1,44 @@
+...                                                                      [100%]
+==================================== PASSES ====================================
+_________ test_swe2_renders_an_architecture_the_unchanged_gate_freezes _________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+_ test_component_level_requirement_needs_no_function_and_unallocated_swr_is_repaired _
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 3, "wall_ms": 1.0}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+_________ test_wrong_write_argument_and_compliance_claim_are_findings __________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_swe2.py::test_swe2_renders_an_architecture_the_unchanged_gate_freezes
+PASSED factory/python/tests/test_lrtx_swe2.py::test_component_level_requirement_needs_no_function_and_unallocated_swr_is_repaired
+PASSED factory/python/tests/test_lrtx_swe2.py::test_wrong_write_argument_and_compliance_claim_are_findings
+3 passed in 4.76s
+
+--- stderr ---

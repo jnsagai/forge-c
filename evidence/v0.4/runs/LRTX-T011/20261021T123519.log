@@ -1,0 +1,9 @@
+...                                                                      [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_swe1.py::test_inventory_covers_every_key_section_field
+PASSED factory/python/tests/test_lrtx_swe1.py::test_packet_refuses_instead_of_truncating
+PASSED factory/python/tests/test_lrtx_swe1.py::test_schema_validator_reports_paths
+3 passed, 8 deselected in 0.55s
+
+--- stderr ---

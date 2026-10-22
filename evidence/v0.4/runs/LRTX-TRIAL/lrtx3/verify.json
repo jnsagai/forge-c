@@ -1,0 +1,98 @@
+{
+ "checks": {
+  "acp_rejected": true,
+  "admission_metrics": true,
+  "fabro_providers_local": true,
+  "model_digest_match": true,
+  "network_denied_observed": true,
+  "package_sealed": true,
+  "profile_selected": true,
+  "roots_isolated": true
+ },
+ "metrics": {
+  "calls": {
+   "basis": "admission gateway meter",
+   "count": 19,
+   "decode_ms": 508191.2,
+   "decode_tokens_per_s_median": 23.78,
+   "first_delta_ms": 105012.9,
+   "load_ms": 56534.3,
+   "model_loads": 1,
+   "output_tokens": 12109,
+   "prefill_ms": 105012.9,
+   "prefill_tokens_per_s_median": 712.2,
+   "prompt_tokens": {
+    "max": 3818,
+    "median": 3160,
+    "p95": 3818,
+    "sum": 59711
+   },
+   "queue_wait_ms": {
+    "max": 0.4,
+    "sum": 2.4000000000000004
+   },
+   "refused_or_cancelled": 0,
+   "split_unobservable": 0
+  },
+  "energy": {
+   "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+   "coverage": 1.0,
+   "gpu_board_j": 18088.3,
+   "gpu_board_wh": 5.025,
+   "wall": "UNKNOWN (no wall-power meter on this host)"
+  },
+  "resources": {
+   "gpu_vram_fraction_median": 0.34,
+   "gpu_vram_fraction_min": 0.34,
+   "host_mem_available_mib_min": 16434,
+   "host_swap_used_mib_max": 13407,
+   "samples": 68
+  },
+  "stages": {
+   "basis": "Fabro stage records",
+   "by_node": {
+    "exit": {
+     "inference_ms": 0,
+     "tool_ms": 0,
+     "visits": 1,
+     "wall_ms": 0
+    },
+    "finalize": {
+     "inference_ms": 0,
+     "tool_ms": 1217,
+     "visits": 1,
+     "wall_ms": 1392
+    },
+    "start": {
+     "inference_ms": 0,
+     "tool_ms": 0,
+     "visits": 1,
+     "wall_ms": 162
+    },
+    "swe1_author": {
+     "inference_ms": 0,
+     "tool_ms": 674095,
+     "visits": 2,
+     "wall_ms": 674459
+    },
+    "swe1_route": {
+     "inference_ms": 0,
+     "tool_ms": 143,
+     "visits": 1,
+     "wall_ms": 354
+    }
+   },
+   "count": 6,
+   "inference_ms": 0,
+   "tool_ms": 675455,
+   "wall_ms": 676367
+  },
+  "window": {
+   "from": "2026-10-21T13:00:15.330414Z",
+   "to": "2026-10-21T13:11:34.757834Z",
+   "wall_s": 680.4
+  }
+ },
+ "package_status": "BLOCKED",
+ "status": "PASS"
+}

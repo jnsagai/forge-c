@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T15:56:57.086783Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3854,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10423
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2e0955b0cbcaa16b921b0f7ae0e336c122965dc33baf97590feaeedf09524866",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 339,
+        "prompt_tokens": 2878,
+        "prompt_tokens_details": {
+          "cached_tokens": 1897
+        },
+        "total_tokens": 3217
+      },
+      "wall_ms": 16697.8
+    }
+  ],
+  "base_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "RLR_NO_WRITE_BEFORE_ENABLE",
+            "field": "RL",
+            "op": "no_write",
+            "register": "IWDG_RLR",
+            "value": ""
+          }
+        ],
+        "key": "rlr_no_write_before_enable",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall not write to IWDG_RLR.RL before enabling write access to the register via IWDG_KR.KEY.",
+        "verification": "A target robot test passes when no write to IWDG_RLR.RL occurs after reset while no LL function has been called.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "RLR_READ_VALUE",
+            "field": "RL",
+            "op": "no_write",
+            "register": "IWDG_RLR",
+            "value": ""
+          }
+        ],
+        "key": "rlr_read_value",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall read the value of IWDG_RLR.RL for status query purposes.",
+        "verification": "A host unit test passes when reading IWDG_RLR.RL returns the expected reload value from ll_iwdg_regs[IWDG_RLR_OFFSET/4U].",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

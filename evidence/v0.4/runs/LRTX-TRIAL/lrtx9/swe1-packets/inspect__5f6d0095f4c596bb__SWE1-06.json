@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-21T16:13:34.670186Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7687,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20964
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "74c7bb2eb6154bcea28582d103c9a3240da64931cc2898137626ac350f47b26b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 154,
+        "prompt_tokens": 7156,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7310
+      },
+      "wall_ms": 62152.7
+    }
+  ],
+  "base_hash": "74c7bb2eb6154bcea28582d103c9a3240da64931cc2898137626ac350f47b26b",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "safety/software_safety_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-06: Verification criteria and unresolved ambiguities are not documented for SWR-001 through SWR-023 in software_requirements.md. The document only mentions the source and test verification, but does not explicitly state the verification criteria for each requirement."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-06"
+}

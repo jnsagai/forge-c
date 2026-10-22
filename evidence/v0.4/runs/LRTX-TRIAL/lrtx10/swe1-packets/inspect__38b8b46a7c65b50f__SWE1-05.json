@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-21T17:15:19.516013Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6499,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17698
+      },
+      "errors": [
+        "finding 'Safety allocation PENDING owner allocation review - no software safety requireme...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "4011aa218293a4e71bfd868bad83b4f8be2dd78215f07319d33d34d1a72d8f14",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 134,
+        "prompt_tokens": 5771,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5905
+      },
+      "wall_ms": 376189.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6841,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18639
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "44ad4ab9ba5ff300c21b93402fefd54830bc370703a4223c5ef6a7ec7d21a419",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 89,
+        "prompt_tokens": 5990,
+        "prompt_tokens_details": {
+          "cached_tokens": 5645
+        },
+        "total_tokens": 6079
+      },
+      "wall_ms": 42712.0
+    }
+  ],
+  "base_hash": "4011aa218293a4e71bfd868bad83b4f8be2dd78215f07319d33d34d1a72d8f14",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:38b8b46a7c65b50f:SWE1-05"
+}

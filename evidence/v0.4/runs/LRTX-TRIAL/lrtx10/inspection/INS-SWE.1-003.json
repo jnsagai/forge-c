@@ -1,0 +1,140 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "2aca040742a177bb7a45aa168c452d6c30f18d60d89995d044197658aedfb2d6",
+  "baseline_id": "BL-SWE.1-003",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md, indicating no software safety requirements have been allocated yet, which prevents sat",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 is not objectively verifiable because the source document RM0486 p.2989 references a hardware register interface without an approved safety allocation, making it unclear if the req",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "No specification of failure handling found in the software safety requirements or related traceability documents (workproducts/SWE.1/software_requirements.md).; No specification of safe states found i",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 lacks an approved safety allocation, making its feasibility unclear and creating a coverage gap.",
+      "id": "SWE1-05",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software safety requirements document contains open points indicating that requirement SWR-001 references a hard",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-003",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md, indicating no software safety requirements have been allocated yet, which prevents sat"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "SOURCE safety/software_safety_requirements.md",
+        "SOURCE traceability/requirements_to_tests.csv",
+        "SOURCE traceability/upstream_gaps.md",
+        "SOURCE workproducts/SWE.1/register_effects.json",
+        "SOURCE workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-001 is not objectively verifiable because the source document RM0486 p.2989 references a hardware register interface without an approved safety allocation, making it unclear if the req"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "No specification of failure handling found in the software safety requirements or related traceability documents (workproducts/SWE.1/software_requirements.md).",
+        "No specification of safe states found in software safety requirements or related traceability documents (workproducts/SWE.1/software_requirements.md)."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/requirements_to_tests.csv",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/requirements_to_tests.csv",
+        "workproducts/SWE.1/software_requirements.md"
+      ],
+      "findings": [
+        "Requirement SWR-001 lacks an approved safety allocation, making its feasibility unclear and creating a coverage gap."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-003.json",
+        "source safety/software_safety_requirements.md",
+        "source traceability/requirements_to_tests.csv",
+        "source traceability/upstream_gaps.md",
+        "source workproducts/SWE.1/register_effects.json",
+        "source workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software safety requirements document contains open points indicating that requirement SWR-001 references a hard"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T172337.813856Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T172338.605369Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T17:23:38.606348Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

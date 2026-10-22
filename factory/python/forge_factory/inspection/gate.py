@@ -89,6 +89,21 @@ def _unaddressed_defects(store: Store, phase: str) -> list[str]:
     return out
 
 
+def _structured_task_issues(store: Store, res) -> list[str]:
+    """Feature 010 (explicit local profile only): a structured author visit that failed before anything could be
+    assembled reports its deterministic task validation issues; they join the rejection record so that the STUCK
+    signature and the progress rule compare real progress instead of the same presence failure every time. Work
+    orders without a local profile never reach this (their rejection records are unchanged)."""
+    try:
+        if not json.loads((store.workspace / ".forge-run/manifest.json").read_text()).get("local_profile"):
+            return []
+    except (OSError, ValueError):
+        return []
+    if not (res.ok and res.status == "FAILED"):
+        return []
+    return [f"LRTX_TASK_INVALID:{str(i)[:200]}" for i in res.issues]
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
     prose_violation = None
@@ -136,6 +151,7 @@ def step_author(store: Store, phase: str, text: str) -> int:
     generated += workspace_scope_findings(store.workspace, phase)
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
+    missing += _structured_task_issues(store, res)
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
 
     missing += defects.verify_on_freeze(store.workspace, phase)

@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-21T15:33:35.504350Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7021,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19133
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "6b9c9ae9be39dd297958f2abcaf7a3ba4e7cedffde2aa8922318edd49ba08380",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 6319,
+        "prompt_tokens_details": {
+          "cached_tokens": 5952
+        },
+        "total_tokens": 6417
+      },
+      "wall_ms": 6277.5
+    }
+  ],
+  "base_hash": "96a1433bfc244cd8590eccd2b6c8f56a80daa81b09bbd788a6d712565d6c4382",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:f7a5f9f093080c4d:SWE1-06"
+}

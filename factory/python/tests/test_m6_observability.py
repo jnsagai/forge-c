@@ -178,6 +178,18 @@ def test_t041_token_metrics_sum_and_basis(env, client):
     assert (item["total_input"], item["total_output"], item["unknown_requests"], item["basis"]) == (150, 15, 1, "mixed")
 
 
+def test_t041_token_metrics_skip_resource_samples(env, client):
+    """Feature 010: the profile gateway also writes resource samples to its meter; they are not requests."""
+    c, t = client
+    meter = env / "state/llm-gateway/usage.jsonl"
+    meter.parent.mkdir(parents=True, exist_ok=True)
+    rows = [{"tokens_input": 100, "tokens_output": 10, "basis": "reported"},
+            {"ts_utc": "2026-10-21T14:00:00Z", "sample": {"gpu": {"power_w": 40.0}}}]
+    meter.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    item = c.get("/api/v1/tokens", headers={"Authorization": f"Bearer {t['auditor']}"}).json()["items"][-1]
+    assert (item["requests"], item["total_input"], item["basis"]) == (1, 100, "reported")
+
+
 @pytest.mark.skipif(os.environ.get("FORGE_BROWSER_LIVE") != "1" or not shutil.which("firefox"), reason="browser smoke off")
 def test_t038_browser_smoke_mobile_and_desktop():
     tok = json.loads((Path(os.environ["FORGE_STATE_DIR"]) / "dashboard/tokens.json").read_text())["auditor"]

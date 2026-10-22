@@ -1,0 +1,12 @@
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 7, "wall_ms": 147005.0}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 2, "wall_ms": 84600.0}
+{"lrtx_progress": "interfaces", "attempt": 2, "errors": 2, "wall_ms": 83610.9}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 7, "wall_ms": 71179.8}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 2, "wall_ms": 83403.0}
+{"lrtx_progress": "interfaces", "attempt": 2, "errors": 2, "wall_ms": 81646.9}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 7, "wall_ms": 66437.2}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 2, "wall_ms": 79103.4}
+{"lrtx_progress": "interfaces", "attempt": 2, "errors": 2, "wall_ms": 74952.6}
+{"qwen3-coder:30b": {"attempts": 3, "visit_pass": 0, "gate_frozen": 0, "wall_s_median": 236.3, "calls_median": 3, "load_ms_median": 52755.0}}
+
+--- stderr ---

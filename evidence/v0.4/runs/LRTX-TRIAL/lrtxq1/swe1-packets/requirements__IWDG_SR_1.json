@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-21T19:53:14.811069Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4543,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12318
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 505,
+        "prompt_tokens": 3116,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3621
+      },
+      "wall_ms": 38088.6
+    }
+  ],
+  "base_hash": "1779e44f84a6901ab02949bf164385dfdfaccd4f7a7fe859e6d77f56d3327b8b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewif",
+        "source_page": 2991,
+        "statement": "While the IWDG LL driver is active, the IWDG LL driver shall not write to the IWDG_SR.EWIF field.",
+        "verification": "The host unit test passes when the IWDG_SR.EWIF field is read as zero after reset and no function modifies this field.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_onf",
+        "source_page": 2991,
+        "statement": "While the IWDG LL driver is active, the IWDG LL driver shall return 1U if the IWDG_SR.ONF bit is set and 0U otherwise.",
+        "verification": "The host unit test passes when the IWDG_SR.ONF field is read correctly after enabling the watchdog via a call to the appropriate LL function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_ewu",
+        "source_page": 2991,
+        "statement": "While the IWDG LL driver is active, the IWDG LL driver shall not write to the IWDG_SR.EWU field.",
+        "verification": "The host unit test passes when the IWDG_SR.EWU field is read as zero after reset and no function modifies this field.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_1"
+}

@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-21T19:50:48.142347Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3102,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8357
+      },
+      "errors": [
+        "[iwdg_kr_key_startup_no_write] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_kr_key_startup_no_write] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 949,
+        "prompt_tokens": 2288,
+        "prompt_tokens_details": {
+          "cached_tokens": 13
+        },
+        "total_tokens": 3237
+      },
+      "wall_ms": 60368.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4249,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11511
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "92c20713896281a72e5a69ba67910e216a7ef1e49bba45acfad2b0e4e1787ff8",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 782,
+        "prompt_tokens": 3311,
+        "prompt_tokens_details": {
+          "cached_tokens": 1883
+        },
+        "total_tokens": 4093
+      },
+      "wall_ms": 39839.7
+    }
+  ],
+  "base_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xCCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_start",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to start the watchdog, the IWDG LL driver shall write 0x0000CCCC to IWDG_KR.KEY.",
+        "verification": "The test passes when ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY equals 0x0000CCCC after the call to the start function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0xAAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_refresh",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to refresh the watchdog counter, the IWDG LL driver shall write 0x0000AAAA to IWDG_KR.KEY.",
+        "verification": "The test passes when ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY equals 0x0000AAAA after the call to the refresh function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x5555"
+          }
+        ],
+        "key": "iwdg_kr_key_enable_write_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to enable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The test passes when ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY equals 0x00005555 after the call to the enable write access function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000"
+          }
+        ],
+        "key": "iwdg_kr_key_disable_write_access",
+        "source_page": 2989,
+        "statement": "When the IWDG LL driver is to disable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write any value except 0x00005555 to IWDG_KR.KEY.",
+        "verification": "The test passes when ll_iwdg_regs[IWDG_KR_OFFSET/4U].KEY is not equal to 0x00005555 after the call to the disable write access function.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

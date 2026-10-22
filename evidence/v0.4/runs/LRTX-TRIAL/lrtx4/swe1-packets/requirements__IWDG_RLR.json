@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-21T13:22:43.784320Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2887,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8469
+      },
+      "errors": [
+        "[iwdg_rlr_write] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_rlr_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e074675bbd84abe4584f7170f99e66a367b3f4e3ee726816bcb01437adcb72a3",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 328,
+        "prompt_tokens": 2286,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 2614
+      },
+      "wall_ms": 19753.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3376,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 9937
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b9b8525f0a50583d851f13289c4f10982b918f6a5bfef7204479cb9a985dde3c",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 318,
+        "prompt_tokens": 2725,
+        "prompt_tokens_details": {
+          "cached_tokens": 1881
+        },
+        "total_tokens": 3043
+      },
+      "wall_ms": 17621.2
+    }
+  ],
+  "base_hash": "e074675bbd84abe4584f7170f99e66a367b3f4e3ee726816bcb01437adcb72a3",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_RELOAD_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "iwdg_rlr_write",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the reload value to IWDG_RLR.RL when requested by the caller.",
+        "verification": "The host unit test passes when the IWDG_RLR register is written with the value provided by the api_calls argument.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RELOAD_VALUE",
+            "field": "RL",
+            "op": "no_write",
+            "register": "IWDG_RLR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_rlr_read",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall read the reload value from IWDG_RLR.RL to support status queries.",
+        "verification": "The host unit test passes when reading IWDG_RLR returns the expected reload value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

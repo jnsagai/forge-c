@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-21T16:54:06.350927Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6502,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17706
+      },
+      "errors": [
+        "finding 'Requirement SWR-001 is not feasible as the upstream HSI contract is NOT_PROVIDED...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Requirement SWR-001 is not feasible as the upstream HSI contract is NOT_PROVIDED...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "0e261256977549506c1def5b7f04d93f5d2a5a54c1d12467ba6a19f340db53e2",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 133,
+        "prompt_tokens": 5765,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5898
+      },
+      "wall_ms": 221180.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6970,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18992
+      },
+      "errors": [
+        "finding 'Requirement SWR-001 does not satisfy the criterion of being objectively verifiab...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "2b1746e6be437301f9e1aa93c5a139df762a1f852ecf681fa1595c18c750617f",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 126,
+        "prompt_tokens": 6063,
+        "prompt_tokens_details": {
+          "cached_tokens": 5639
+        },
+        "total_tokens": 6189
+      },
+      "wall_ms": 28141.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6859,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18688
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "5895f42d18ea5e780eebda42f0a50652fa65471c15bb94103a71460c5f1bef0b",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 650,
+        "prompt_tokens": 5986,
+        "prompt_tokens_details": {
+          "cached_tokens": 5689
+        },
+        "total_tokens": 6636
+      },
+      "wall_ms": 54536.5
+    }
+  ],
+  "base_hash": "0e261256977549506c1def5b7f04d93f5d2a5a54c1d12467ba6a19f340db53e2",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "workproducts/SWE.1/register_effects.json"
+    ],
+    "findings": [
+      "Requirement SWR-001 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-002 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-003 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-004 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-005 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-006 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-007 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-008 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-009 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope.",
+      "Requirement SWR-010 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unclear and preventing clear definition of the requirement's scope."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:38b8b46a7c65b50f:SWE1-02"
+}

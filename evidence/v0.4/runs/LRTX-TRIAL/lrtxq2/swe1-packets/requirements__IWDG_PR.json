@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-21T20:17:45.649530Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3320,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8955
+      },
+      "errors": [
+        "[iwdg_pr_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access] from this task",
+        "[iwdg_pr_prescaler_set] effect SET_PRESCALER: value '' must be a number that fits IWDG_PR.PR (4 bits)",
+        "[iwdg_pr_disable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_disable_write_access] from this task",
+        "[iwdg_pr_reset_startup] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_pr_reset_startup] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 719,
+        "prompt_tokens": 2401,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3120
+      },
+      "wall_ms": 36369.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4419,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11978
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "29bbb6bb0792f40321e372cbcd27048ef78e0a4e084c6f13e54067b34c692fbb",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 190,
+        "prompt_tokens": 3307,
+        "prompt_tokens_details": {
+          "cached_tokens": 1996
+        },
+        "total_tokens": 3497
+      },
+      "wall_ms": 11781.0
+    }
+  ],
+  "base_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "SET_PRESCALER",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "15"
+          }
+        ],
+        "key": "iwdg_pr_prescaler_set",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall set the prescaler divider in the IWDG_PR.PR field to a value within its 4-bit range.",
+        "verification": "The host unit test passes when the IWDG_PR.PR field is written with a representative value between 0 and 15, and a corresponding readback confirms the value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

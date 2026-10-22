@@ -1,0 +1,24 @@
+..                                                                       [100%]
+==================================== PASSES ====================================
+______ test_direct_reinspection_only_for_a_valid_never_inspected_baseline ______
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_p3.py::test_direct_reinspection_only_for_a_valid_never_inspected_baseline
+PASSED factory/python/tests/test_lrtx_swe1.py::test_structured_inspectors_and_direct_reinspection_rewire_only_the_profile_graph
+2 passed, 17 deselected in 1.41s
+
+--- stderr ---

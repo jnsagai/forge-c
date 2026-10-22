@@ -1,0 +1,47 @@
+{
+ "at": "2026-10-21T16:13:36.096907Z",
+ "baseline_id": "BL-SWE.1-003",
+ "contested_findings": {
+  "SWE1-01": [
+   "finding 'No software safety requirements are allocated, as indicated in safety/software_s...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "SWE1-03": [
+   "finding says reset/startup behaviour is not specified, but SWR-020 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item"
+  ],
+  "SWE1-05": [
+   "finding 'SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+  ]
+ },
+ "items": [
+  "SWE1-01",
+  "SWE1-02",
+  "SWE1-03",
+  "SWE1-04",
+  "SWE1-05",
+  "SWE1-06"
+ ],
+ "result": {
+  "artifact_refs": [
+   "inspection/SWE.1/INS-SWE.1-003.json"
+  ],
+  "issues": [
+   "SWE1-01:major",
+   "SWE1-02:major",
+   "SWE1-03:major",
+   "SWE1-04:major",
+   "SWE1-05:major",
+   "SWE1-06:major"
+  ],
+  "metrics": {
+   "stale": false
+  },
+  "provenance": {
+   "input_sha256": "020e1460acaa1210df823272c4ff4932c5b035fd9d15ec6602cbd24f0898cc99",
+   "invocation_id": "inv-89d10d2305e54e39",
+   "tool": "forge-inspection",
+   "version": "0.4.0"
+  },
+  "status": "FAIL",
+  "summary": "INS-SWE.1-003 FAIL (6 findings)"
+ }
+}

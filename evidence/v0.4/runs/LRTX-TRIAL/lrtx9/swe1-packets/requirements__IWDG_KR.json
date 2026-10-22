@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-21T16:07:31.142524Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4233,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11465
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2493cf83e9fabc37c1d9e63f41ea2897f0abe4bf1d7f9f8d6d323f7862a33e0b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 870,
+        "prompt_tokens": 3254,
+        "prompt_tokens_details": {
+          "cached_tokens": 1922
+        },
+        "total_tokens": 4124
+      },
+      "wall_ms": 43078.5
+    }
+  ],
+  "base_hash": "bb0037ade842add5442ed78e353f44a28cfde7146c46d6942241e103919c24a7",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability.",
+      "SWE1-06: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement."
+    ],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "REFRESH_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000AAAA"
+          }
+        ],
+        "key": "swr_001",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0x0000AAAA to the IWDG_KR.KEY field when refreshing the watchdog counter.",
+        "verification": "Host unit test passes when the register array at ll_iwdg_regs[IWDG_KR_OFFSET/4U] contains the value 0x0000AAAA after a call to the refresh function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00005555"
+          }
+        ],
+        "key": "swr_002",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0x00005555 to the IWDG_KR.KEY field when enabling write-accesses to IWDG_PR and IWDG_RLR registers.",
+        "verification": "Host unit test passes when the register array at ll_iwdg_regs[IWDG_KR_OFFSET/4U] contains the value 0x00005555 after a call to the enable write-access function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "START_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000CCCC"
+          }
+        ],
+        "key": "swr_003",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write the key value 0x0000CCCC to the IWDG_KR.KEY field when starting the watchdog.",
+        "verification": "Host unit test passes when the register array at ll_iwdg_regs[IWDG_KR_OFFSET/4U] contains the value 0x0000CCCC after a call to the start watchdog function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS_KEY_WRITE",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "swr_004",
+        "source_page": 2989,
+        "statement": "The IWDG LL driver shall write a value different from 0x5555 to the IWDG_KR.KEY field when disabling write-accesses to IWDG_PR and IWDG_RLR registers.",
+        "verification": "Host unit test passes when the register array at ll_iwdg_regs[IWDG_KR_OFFSET/4U] contains a value other than 0x00005555 after a call to disable write-access function.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_KR"
+}

@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-21T13:27:18.026043Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5797,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17200
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "17f4bb1684241dc9d4c184745f5b9a6023bd283582d18c62c1976bf902b04a01",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 132,
+        "prompt_tokens": 5826,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5958
+      },
+      "wall_ms": 24257.0
+    }
+  ],
+  "base_hash": "17f4bb1684241dc9d4c184745f5b9a6023bd283582d18c62c1976bf902b04a01",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-001: Safety allocation PENDING owner allocation review - no software safety requirement is allocated yet; this is an open gap, not a QM claim."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-05"
+}

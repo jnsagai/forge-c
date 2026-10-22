@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-21T13:22:06.397172Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3030,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8899
+      },
+      "errors": [
+        "[iwdg_pr_write_access_enable] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access_enable] from this task",
+        "[iwdg_pr_write_access_disable] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access_disable] from this task",
+        "[iwdg_pr_start_watchdog] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_start_watchdog] from this task",
+        "[iwdg_pr_refresh_counter] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_refresh_counter] from this task",
+        "[iwdg_pr_query_pvu_flag] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_pr_query_pvu_flag] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [iwdg_pr_query_pvu_flag] from this task",
+        "[iwdg_pr_query_rvu_flag] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_pr_query_rvu_flag] acts on IWDG_SR.RVU, which the IWDG_SR task covers: remove requirement [iwdg_pr_query_rvu_flag] from this task",
+        "[iwdg_pr_query_onf_flag] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_pr_query_onf_flag] acts on IWDG_SR.ONF, which the IWDG_SR task covers: remove requirement [iwdg_pr_query_onf_flag] from this task",
+        "[iwdg_pr_no_early_wake_interrupt] names no field of this task: reset/startup and all-function rules belong to the cross-cutting task - remove this requirement here"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "733010218d40a7f1b508ded85b34c86d8b0ca2f77c513ada22ae0ca976c29a18",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 1711,
+        "prompt_tokens": 2387,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 4098
+      },
+      "wall_ms": 79482.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5345,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15843
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "27fb6cfe3d07fb66fb341e99f381e1444c79c2d116296d2c9a5d812b39f9aac9",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 4607,
+        "prompt_tokens_details": {
+          "cached_tokens": 1982
+        },
+        "total_tokens": 4671
+      },
+      "wall_ms": 11834.0
+    }
+  ],
+  "base_hash": "733010218d40a7f1b508ded85b34c86d8b0ca2f77c513ada22ae0ca976c29a18",
+  "doc": {
+    "not_covered": [
+      {
+        "field": "IWDG_PR.PR",
+        "reason": "The scope does not define how the prescaler value is set, only that it shall be writeable."
+      }
+    ],
+    "open_points": [],
+    "requirements": []
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

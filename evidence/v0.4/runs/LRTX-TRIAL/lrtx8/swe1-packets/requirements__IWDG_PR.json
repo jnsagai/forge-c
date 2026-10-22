@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-21T15:22:41.354804Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3320,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8955
+      },
+      "errors": [
+        "[iwdg_pr_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_write_access] from this task",
+        "[iwdg_pr_set_prescaler] effect IWDG_PR_SET_PRESCALER: value '' must be a number that fits IWDG_PR.PR (4 bits)",
+        "[iwdg_pr_disable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_disable_write_access] from this task",
+        "[iwdg_pr_query_update_flag] EARS_NOT_ATOMIC_2_SHALL: the statement has 2 'shall': split it into 2 requirements with one 'shall' each",
+        "[iwdg_pr_query_update_flag] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [iwdg_pr_query_update_flag] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 813,
+        "prompt_tokens": 2401,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3214
+      },
+      "wall_ms": 45584.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4520,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12254
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e11cca10eac8e9319afa349504c5f0b5ea5ad03b3ee0371c6ea22dcb081f916a",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 204,
+        "prompt_tokens": 3450,
+        "prompt_tokens_details": {
+          "cached_tokens": 1996
+        },
+        "total_tokens": 3654
+      },
+      "wall_ms": 14561.2
+    }
+  ],
+  "base_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_SET_PRESCALER",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x0"
+          }
+        ],
+        "key": "iwdg_pr_set_prescaler",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall set IWDG_PR.PR to the requested prescaler value, which is within the 4-bit range 0x0 to 0xF.",
+        "verification": "The test passes when the function writes the caller-supplied prescaler value to IWDG_PR.PR, and the actual value read back from IWDG_PR.PR matches the requested value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

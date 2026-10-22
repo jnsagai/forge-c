@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-21T16:06:19.612162Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7546,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20576
+      },
+      "errors": [
+        "finding 'SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'SWE1-05: Safety allocation PENDING owner allocation review, creating a gap in bi...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "f5b020e74ddad29a0e8d370791b34e9914eef430d1b9a2f8d8b28095a12c7837",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 146,
+        "prompt_tokens": 7040,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7186
+      },
+      "wall_ms": 24321.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7995,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21812
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f954a65b28cbef95ad1bc5be3a26880e18dc65b7431768b27a6660e3450caa39",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 61,
+        "prompt_tokens": 7354,
+        "prompt_tokens_details": {
+          "cached_tokens": 6914
+        },
+        "total_tokens": 7415
+      },
+      "wall_ms": 3857.3
+    }
+  ],
+  "base_hash": "f5b020e74ddad29a0e8d370791b34e9914eef430d1b9a2f8d8b28095a12c7837",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:34f242dd6823ce13:SWE1-05"
+}

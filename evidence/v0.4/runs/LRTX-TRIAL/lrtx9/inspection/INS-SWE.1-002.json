@@ -1,0 +1,131 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "34f242dd6823ce13a9c08acf54ec12f5548bc3887d087aed505bb4ebf40e89f9",
+  "baseline_id": "BL-SWE.1-002",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "No software safety requirements are allocated; the safety allocation status is PENDING owner alloc, which means that allocated software safety requirements are not baselined as required by the criteri",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-020 is not objectively verifiable because the verification criterion in software_requirements.md only states that the SWE.6 Robot suite checks the target linker map, size-tool and stac",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md).",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are not documented for SWR-001 through SWR-022 in software_requirements.md. The document only mentions the source and test verification, but d",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-002",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "source/safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/upstream_gaps.md"
+      ],
+      "findings": [
+        "No software safety requirements are allocated; the safety allocation status is PENDING owner alloc, which means that allocated software safety requirements are not baselined as required by the criteri"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-020 is not objectively verifiable because the verification criterion in software_requirements.md only states that the SWE.6 Robot suite checks the target linker map, size-tool and stac"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "safety/software_safety_requirements.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Failure handling, reset/startup behavior and safe states are not specified in the software requirements document (software_requirements.md)."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "SOURCE safety/software_safety_requirements.md",
+        "SOURCE traceability/requirements_to_tests.csv",
+        "SOURCE traceability/upstream_gaps.md",
+        "SOURCE workproducts/SWE.1/register_effects.json",
+        "SOURCE workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are not documented for SWR-001 through SWR-022 in software_requirements.md. The document only mentions the source and test verification, but d"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T160645.241991Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T160645.996312Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T16:06:45.996734Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

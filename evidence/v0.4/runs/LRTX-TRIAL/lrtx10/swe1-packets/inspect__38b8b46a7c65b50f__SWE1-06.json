@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-21T17:17:15.400449Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6496,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17688
+      },
+      "errors": [
+        "finding says SWR-001 lacks verification, but the document gives: 'The test passes when the register array ll_iwdg_regs[0] contains 0xCCCC at offset IWDG_KR_OFFSET aft' - re-judge",
+        "finding says SWR-016 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge",
+        "finding says SWR-012 lacks verification, but the document gives: 'The host unit test passes when the IWDG_SR.PVU bit is read correctly on every query call.' - re-judge",
+        "finding says SWR-013 lacks verification, but the document gives: 'target_robot_test; passes when no writes to any IWDG register occur before first LL function call' - re-judge",
+        "finding 'SWE1-06: Unresolved ambiguities are not documented. The software requirements do...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "evidence_checked names software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names upstream_gaps.md, which is not a provided source",
+        "evidence_checked names register_effects.json, which is not a provided source",
+        "evidence_checked names software_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "5e7c25bbf2128cc22825950e6f4a9e1c03ac6e2a323efa8e7b382cffcfa00cd0",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 212,
+        "prompt_tokens": 5759,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5971
+      },
+      "wall_ms": 98435.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7373,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20100
+      },
+      "errors": [
+        "finding 'SWE1-06: Unresolved ambiguities are not documented. The software requirements do...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e196caeb29c677b25c067e5b51fa9032cd6cc5aa0cb4a6f4a8dab420e005a371",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 6331,
+        "prompt_tokens_details": {
+          "cached_tokens": 5633
+        },
+        "total_tokens": 6429
+      },
+      "wall_ms": 10943.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6803,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18534
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f1e25b5d7a12231ac5170e2af8c984f8e6a670607468c9fef7a2db4d149d8a60",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 99,
+        "prompt_tokens": 5948,
+        "prompt_tokens_details": {
+          "cached_tokens": 5683
+        },
+        "total_tokens": 6047
+      },
+      "wall_ms": 6431.0
+    }
+  ],
+  "base_hash": "5e7c25bbf2128cc22825950e6f4a9e1c03ac6e2a323efa8e7b382cffcfa00cd0",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-06: Verification criteria and unresolved ambiguities are not documented. The software requirements document contains open points indicating that requirement SWR-001 references a hardware register interface without an approved safety allocation, making its feasibility unclear."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:38b8b46a7c65b50f:SWE1-06"
+}

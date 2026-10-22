@@ -1,0 +1,79 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "bd644c9827b747e61db9bd8d57570bc37c506ab4",
+  "baseline_sha256": "61dea02a05ccb93cc08b277767f03eedafbf4072de2ade16855b1ccb60a089e0",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "cd735bdb390e096dd0490780c5aadc0e56d57287",
+  "candidate_sha256": "e6341d48d58b7107a8ff2834bc78910cf175e9506cabfa362322970411cc23ef",
+  "decision": "REJECTED",
+  "decision_id": "pd-eca007977bf687460693",
+  "evaluated_at": "2026-10-21T13:15:26.804179Z",
+  "evaluator_id": "cre-promotion-runner@cd735bdb390e",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:bd644c9827b7..cd735bdb390e"
+      ],
+      "name": "protected_files",
+      "reason_code": "PROTECTED_PATH_CHANGE",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:policy_integrity"
+      ],
+      "name": "policy_integrity",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "name": "prevention",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "protected paths changed: A:evidence/v0.4/runs/LRTX-TRIAL/lrtx3/gate-log.jsonl, A:evidence/v0.4/runs/LRTX-TRIAL/lrtx3/model-profile.json, A:evidence/v0.4/runs/LRTX-TRIAL/lrtx3/package.json, A:evidence/v0.4/runs/LRTX-TRIAL/lrtx3/swe1-packets/requirements__IWDG_KR.json, A:evidence/v0.4/runs/LRTX-TRIAL/lrtx3/swe1-packets/requirements__IWDG_PR.json",
+    "sandbox: 4625 protected paths read-only (OS) in the candidate/baseline worktrees"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

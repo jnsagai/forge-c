@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-rA",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_lrtx_p3.py",
+    "-k",
+    "inspection or failed_item"
+  ],
+  "duration_s": 5.262,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3eae58ddfde384a95e316d6c71105eb32bb09cb2",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T019/20261021T123537.log",
+  "log_sha256": "44a5a2f39de1c6ea4ece6f176e10b7dfbb2b25361678c3e312e241cb713889f8",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T019",
+  "ts_utc": "2026-10-21T12:35:37.959938Z"
+}

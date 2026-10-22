@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-21T20:59:10.973542Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6866,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18708
+      },
+      "errors": [
+        "evidence_checked names software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "0f7fcbb383cef0fb3e16c49d8de9faf8f4f2a07f58030157d3439e4dde574744",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 91,
+        "prompt_tokens": 6223,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6314
+      },
+      "wall_ms": 363709.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7071,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19271
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "3e301af4d1def0c417ff100a17eb93567ec34998b653387e1872a676607d4d40",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 136,
+        "prompt_tokens": 6360,
+        "prompt_tokens_details": {
+          "cached_tokens": 6097
+        },
+        "total_tokens": 6496
+      },
+      "wall_ms": 11715.2
+    }
+  ],
+  "base_hash": "0f7fcbb383cef0fb3e16c49d8de9faf8f4f2a07f58030157d3439e4dde574744",
+  "doc": {
+    "evidence_checked": [
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software_requirements.md file provides verification criteria for each requirement, but does not explicitly document any unresolved ambiguities that may exist in the requirements or their interpretation."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:017339f91569def0:SWE1-06"
+}

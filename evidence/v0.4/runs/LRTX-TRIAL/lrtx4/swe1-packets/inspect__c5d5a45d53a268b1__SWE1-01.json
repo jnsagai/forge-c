@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-21T13:34:00.706762Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6100,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18108
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "35743fdd3566fc872b902f84f75bd0327f29942bd5bc3f2602c963600b5a313d",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 103,
+        "prompt_tokens": 6014,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 6117
+      },
+      "wall_ms": 23026.9
+    }
+  ],
+  "base_hash": "35743fdd3566fc872b902f84f75bd0327f29942bd5bc3f2602c963600b5a313d",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. This makes it impossible to determine if HSI and allocated software safety requirements are baselined and traceable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c5d5a45d53a268b1:SWE1-01"
+}

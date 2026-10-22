@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-rA",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_lrtx_admission.py",
+    "factory/python/tests/test_llm_gateway.py"
+  ],
+  "duration_s": 1.579,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "3eae58ddfde384a95e316d6c71105eb32bb09cb2",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T009/20261021T123517.log",
+  "log_sha256": "97fc1ee93b0d0eb2c1d0667e226a20476ce2e103fe234bca7c6b19aff6e4c3aa",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T009",
+  "ts_utc": "2026-10-21T12:35:17.953123Z"
+}

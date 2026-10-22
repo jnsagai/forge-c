@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-21T15:34:01.242721Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7126,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19421
+      },
+      "errors": [
+        "finding 'The software safety allocation is recorded as PENDING owner allocation review in...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "28b86f7c84fc46ee2a651392884ac44fb196c81319682dcc4630023bd7652973",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 125,
+        "prompt_tokens": 6375,
+        "prompt_tokens_details": {
+          "cached_tokens": 6063
+        },
+        "total_tokens": 6500
+      },
+      "wall_ms": 8084.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7140,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19459
+      },
+      "errors": [
+        "finding 'The HSI contract is recorded as NOT_PROVIDED in the manifest and upstream_gaps.m...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "96d4bc6987608bb0496f6d6f9b75a16b6819fe3d5680f6de43af2c7d18734147",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 138,
+        "prompt_tokens": 6369,
+        "prompt_tokens_details": {
+          "cached_tokens": 6063
+        },
+        "total_tokens": 6507
+      },
+      "wall_ms": 8164.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7152,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19492
+      },
+      "errors": [
+        "finding 'The software safety allocation is recorded as PENDING owner allocation review in...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "c7ac81c11278edb6a360e71d1113385625185f93c2d69d235f46e8cb2874d523",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 125,
+        "prompt_tokens": 6396,
+        "prompt_tokens_details": {
+          "cached_tokens": 6077
+        },
+        "total_tokens": 6521
+      },
+      "wall_ms": 7084.1
+    }
+  ],
+  "base_hash": "048587e1abfc6132c0605d4b3cb440cffcdcf0fe53cf301ec6e7c26019533877",
+  "doc": {
+    "evidence_checked": [
+      ".forge-run/manifest.json#scope-target-budgets",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "The software safety allocation is recorded as PENDING owner allocation review in the manifest and upstream_gaps.md. No software safety requirements are allocated yet, which means the allocated software safety requirements cannot be traced back to a defined safety case, violating the criterion that HSI and allocated software safety requirements are baselined and traceable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'The software safety allocation is recorded as PENDING owner allocation review in...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:f7a5f9f093080c4d:SWE1-01"
+}

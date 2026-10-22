@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "set -e; Z=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/archives/review-bundles/forge-c-feature-010-review-32b59c783c33.zip; cd /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/archives/review-bundles && sha256sum -c forge-c-feature-010-review-32b59c783c33.zip.sha256 && unzip -tq $Z && cd - >/dev/null && unzip -p $Z MANIFEST.json | python -c 'import json,sys; m=json.load(sys.stdin); assert m[\"git_head\"]==\"32b59c783c331a48340d4975ff74d59f4f5c174e\" and m[\"status\"].startswith(\"OFFLINE_REVIEW_CANDIDATE\"), m; print(\"manifest\", m[\"git_head\"][:12], m[\"files\"], \"files\")' && python -m forge_factory.lrtx.review_bundle --out-dir /tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/rebuild && cmp $Z /tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/rebuild/forge-c-feature-010-review-32b59c783c33.zip && echo 'rebuild byte-identical' && python -c 'import json; h=json.load(open(\"evidence/v0.4/runs/LRTX-T025-HOSTCHECK/hostcheck.json\")); assert h[\"status\"]==\"PASS\" and not h[\"rollback\"][\"conflicts\"]; print(\"hostcheck\", h[\"status\"], h[\"checked_at\"], len(h[\"rollback\"][\"remove\"]), \"rollback removals, dry run\")'"
+  ],
+  "duration_s": 0.221,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "32b59c783c331a48340d4975ff74d59f4f5c174e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LRTX-T025/20261021T220920.log",
+  "log_sha256": "ba27fba7469f846a009fc9f4a29a051a2a200c240157f51e345338264b9784e3",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LRTX-T025",
+  "ts_utc": "2026-10-21T22:09:20.496778Z"
+}

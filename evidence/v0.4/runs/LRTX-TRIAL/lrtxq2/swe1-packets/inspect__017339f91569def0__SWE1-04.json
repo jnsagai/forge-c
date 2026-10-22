@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-21T20:47:29.040533Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6869,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18714
+      },
+      "errors": [
+        "evidence_checked names software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e3b33f67bac5b7fef9251cea436e22188c367206f4226627a9aeda143753e7e6",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 91,
+        "prompt_tokens": 6235,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6326
+      },
+      "wall_ms": 286296.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7073,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19277
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "53640ede624021c2bfe58a3f314c7f74670b0c63b9fe7862ebc62b1a6c275b21",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 128,
+        "prompt_tokens": 6372,
+        "prompt_tokens_details": {
+          "cached_tokens": 6109
+        },
+        "total_tokens": 6500
+      },
+      "wall_ms": 44192.5
+    }
+  ],
+  "base_hash": "e3b33f67bac5b7fef9251cea436e22188c367206f4226627a9aeda143753e7e6",
+  "doc": {
+    "evidence_checked": [
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-017: The requirement specifies a flash usage limit of 4096 bytes, but no explicit evidence is provided that this constraint is measurable and verified in the checked work products."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:017339f91569def0:SWE1-04"
+}

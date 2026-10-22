@@ -1,0 +1,1001 @@
+{
+  "blocked_or_failed_by_phase": {
+    "SWE.1": 13
+  },
+  "campaign": "c1",
+  "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+  "cases_planned": 30,
+  "cases_run": 13,
+  "generated_at": "2026-10-22T06:39:59.992415Z",
+  "note": "Pilot operational criterion, not a reliability proof or safety qualification.",
+  "per_accepted_work_order": {
+    "basis": "all attempts, including failed ones, divided by accepted packages",
+    "gpu_wh": "UNKNOWN (energy not measured for every attempt)",
+    "prompt_tokens": "NO_ACCEPTED_WORK_ORDER",
+    "wall_s": "NO_ACCEPTED_WORK_ORDER"
+  },
+  "ready": 0,
+  "ready_wilson_95": [
+    0.0,
+    0.228
+  ],
+  "rows": [
+    {
+      "at": "2026-10-21T22:40:58.632793Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "rework budget exhausted (3 failed cycles)"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 51,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 59,
+          "decode_ms": 821450.1,
+          "decode_tokens_per_s_median": 25.03,
+          "first_delta_ms": 608175.6,
+          "load_ms": 68919.4,
+          "model_loads": 1,
+          "output_tokens": 18898,
+          "prefill_ms": 608175.6,
+          "prefill_tokens_per_s_median": 509.3,
+          "prompt_tokens": {
+            "max": 6512,
+            "median": 5209,
+            "p95": 5786,
+            "sum": 269229
+          },
+          "queue_wait_ms": {
+            "max": 0.2,
+            "sum": 6.1000000000000005
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 41740.0,
+          "gpu_board_wh": 11.594,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-21T22:15:30.558351Z",
+          "to": "2026-10-21T22:40:57.177359Z",
+          "wall_s": 1527.6
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c101",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c101\", \"fabro_run_id\": \"01M5G8H8ZY3BTZKMV4NYJKWZKX\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c101/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 1537.9
+    },
+    {
+      "at": "2026-10-21T23:16:08.715987Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "INS-SWE.1-003"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 51,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 62,
+          "decode_ms": 1009481.3,
+          "decode_tokens_per_s_median": 19.295,
+          "first_delta_ms": 1052729.7,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 19744,
+          "prefill_ms": 1052729.7,
+          "prefill_tokens_per_s_median": 864.1500000000001,
+          "prompt_tokens": {
+            "max": 7698,
+            "median": 6510.5,
+            "p95": 7153,
+            "sum": 343110
+          },
+          "queue_wait_ms": {
+            "max": 0.3,
+            "sum": 6.6000000000000005
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 54085.6,
+          "gpu_board_wh": 15.024,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-21T22:41:08.205951Z",
+          "to": "2026-10-21T23:16:07.302476Z",
+          "wall_s": 2100.1
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c102",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c102\", \"fabro_run_id\": \"01M5GA06PJDMNMWBRXGHNXHMA6\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c102/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2109.8
+    },
+    {
+      "at": "2026-10-21T23:52:34.162290Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "INS-SWE.1-003"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 50,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 59,
+          "decode_ms": 995197.4,
+          "decode_tokens_per_s_median": 18.23,
+          "first_delta_ms": 1143160.7,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 17451,
+          "prefill_ms": 1143160.7,
+          "prefill_tokens_per_s_median": 344.7,
+          "prompt_tokens": {
+            "max": 8054,
+            "median": 6679,
+            "p95": 7717,
+            "sum": 339844
+          },
+          "queue_wait_ms": {
+            "max": 0.4,
+            "sum": 6.1000000000000005
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 52891.0,
+          "gpu_board_wh": 14.692,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-21T23:16:18.579470Z",
+          "to": "2026-10-21T23:52:33.111641Z",
+          "wall_s": 2175.5
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c103",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c103\", \"fabro_run_id\": \"01M5GC0KKNRKFM6DG361WFM7N9\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c103/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2185.2
+    },
+    {
+      "at": "2026-10-22T00:15:55.361021Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "rework budget exhausted (3 failed cycles)"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 51,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 36,
+          "decode_ms": 776280.9,
+          "decode_tokens_per_s_median": 18.27,
+          "first_delta_ms": 590552.5,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 14142,
+          "prefill_ms": 590552.5,
+          "prefill_tokens_per_s_median": 367.85,
+          "prompt_tokens": {
+            "max": 7847,
+            "median": 3258.5,
+            "p95": 7157,
+            "sum": 161469
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 3.5
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 32802.0,
+          "gpu_board_wh": 9.112,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-21T23:52:44.282554Z",
+          "to": "2026-10-22T00:15:54.102724Z",
+          "wall_s": 1390.8
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c104",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c104\", \"fabro_run_id\": \"01M5GE3A0B33VXTBZYAW6H5JQS\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c104/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 1400.8
+    },
+    {
+      "at": "2026-10-22T00:56:43.973152Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "INS-SWE.1-003"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 49,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 59,
+          "decode_ms": 1169236.0,
+          "decode_tokens_per_s_median": 18.74,
+          "first_delta_ms": 1232361.2,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 20940,
+          "prefill_ms": 1232361.2,
+          "prefill_tokens_per_s_median": 328.4,
+          "prompt_tokens": {
+            "max": 7985,
+            "median": 6515,
+            "p95": 7174,
+            "sum": 316024
+          },
+          "queue_wait_ms": {
+            "max": 0.2,
+            "sum": 5.9
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 58439.6,
+          "gpu_board_wh": 16.233,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T00:16:04.913645Z",
+          "to": "2026-10-22T00:56:42.669749Z",
+          "wall_s": 2438.8
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c105",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c105\", \"fabro_run_id\": \"01M5GFE1VED1K36Q4SYQ1W9EYX\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c105/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2448.2
+    },
+    {
+      "at": "2026-10-22T01:36:50.405417Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "rework budget exhausted (3 failed cycles)"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 52,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 56,
+          "decode_ms": 1409642.6,
+          "decode_tokens_per_s_median": 18.875,
+          "first_delta_ms": 951874.3,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 25315,
+          "prefill_ms": 951874.3,
+          "prefill_tokens_per_s_median": 342.55,
+          "prompt_tokens": {
+            "max": 7196,
+            "median": 5925.0,
+            "p95": 6519,
+            "sum": 263928
+          },
+          "queue_wait_ms": {
+            "max": 0.2,
+            "sum": 5.6000000000000005
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 57520.0,
+          "gpu_board_wh": 15.978,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T00:56:53.479241Z",
+          "to": "2026-10-22T01:36:49.523448Z",
+          "wall_s": 2397.0
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c106",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c106\", \"fabro_run_id\": \"01M5GHRS20M6QEWJKNMBARP6Z6\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c106/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2406.1
+    },
+    {
+      "at": "2026-10-22T02:13:31.099129Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "INS-SWE.1-003"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 49,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 54,
+          "decode_ms": 915547.2,
+          "decode_tokens_per_s_median": 18.21,
+          "first_delta_ms": 1240558.4,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 15289,
+          "prefill_ms": 1240558.4,
+          "prefill_tokens_per_s_median": 301.6,
+          "prompt_tokens": {
+            "max": 6535,
+            "median": 6011.0,
+            "p95": 6443,
+            "sum": 274214
+          },
+          "queue_wait_ms": {
+            "max": 0.3,
+            "sum": 5.2
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 49483.1,
+          "gpu_board_wh": 13.745,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T01:36:59.757001Z",
+          "to": "2026-10-22T02:13:29.843165Z",
+          "wall_s": 2191.1
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c107",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c107\", \"fabro_run_id\": \"01M5GM26Y09TFGYPA6GMYRV68T\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c107/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2200.4
+    },
+    {
+      "at": "2026-10-22T02:42:43.621745Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "rework budget exhausted (3 failed cycles)"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 50,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 47,
+          "decode_ms": 814964.7,
+          "decode_tokens_per_s_median": 19.15,
+          "first_delta_ms": 895361.5,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 14968,
+          "prefill_ms": 895361.5,
+          "prefill_tokens_per_s_median": 382.4,
+          "prompt_tokens": {
+            "max": 7115,
+            "median": 6330,
+            "p95": 6855,
+            "sum": 235064
+          },
+          "queue_wait_ms": {
+            "max": 0.2,
+            "sum": 4.9
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 41044.6,
+          "gpu_board_wh": 11.401,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T02:13:41.009872Z",
+          "to": "2026-10-22T02:42:42.562621Z",
+          "wall_s": 1742.6
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c108",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c108\", \"fabro_run_id\": \"01M5GP5CKFZT37VPV2GZEH8SXT\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c108/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 1752.3
+    },
+    {
+      "at": "2026-10-22T03:18:35.681330Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "rework budget exhausted (3 failed cycles)"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 52,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 54,
+          "decode_ms": 895405.5,
+          "decode_tokens_per_s_median": 17.73,
+          "first_delta_ms": 1207492.4,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 15675,
+          "prefill_ms": 1207492.4,
+          "prefill_tokens_per_s_median": 250.8,
+          "prompt_tokens": {
+            "max": 6618,
+            "median": 6020.0,
+            "p95": 6404,
+            "sum": 273829
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 5.300000000000001
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 47777.9,
+          "gpu_board_wh": 13.272,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T02:42:52.610106Z",
+          "to": "2026-10-22T03:18:34.687721Z",
+          "wall_s": 2143.1
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c109",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c109\", \"fabro_run_id\": \"01M5GQTV1FZE3X09TME75CA5CR\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c109/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2151.8
+    },
+    {
+      "at": "2026-10-22T04:12:42.236065Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "IWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "INS-SWE.1-003"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 52,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 60,
+          "decode_ms": 1256137.4,
+          "decode_tokens_per_s_median": 15.84,
+          "first_delta_ms": 1938427.0,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 19180,
+          "prefill_ms": 1938427.0,
+          "prefill_tokens_per_s_median": 209.60000000000002,
+          "prompt_tokens": {
+            "max": 8002,
+            "median": 6202.0,
+            "p95": 7260,
+            "sum": 314859
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 5.9
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 68800.0,
+          "gpu_board_wh": 19.111,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T03:18:44.447285Z",
+          "to": "2026-10-22T04:12:41.273254Z",
+          "wall_s": 3237.8
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "IWDG-LL-c110",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"IWDG-LL-c110\", \"fabro_run_id\": \"01M5GSWGJNWS8AS685JMGBEZS0\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/IWDG-LL-c110/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 3246.3
+    },
+    {
+      "at": "2026-10-22T04:54:14.572341Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "RCC-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.cs); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 56,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 28,
+          "decode_ms": 1900860.5,
+          "decode_tokens_per_s_median": 18.689999999999998,
+          "first_delta_ms": 562561.5,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 36736,
+          "prefill_ms": 562561.5,
+          "prefill_tokens_per_s_median": 206.65,
+          "prompt_tokens": {
+            "max": 6390,
+            "median": 3842.0,
+            "p95": 6168,
+            "sum": 107251
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 2.8000000000000003
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 61661.3,
+          "gpu_board_wh": 17.128,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T04:12:52.203314Z",
+          "to": "2026-10-22T04:54:13.830509Z",
+          "wall_s": 2482.6
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "RCC-LL-c101",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"RCC-LL-c101\", \"fabro_run_id\": \"01M5GWZM3ETRCN6HJBJ62C6TW9\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/RCC-LL-c101/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 2492.1
+    },
+    {
+      "at": "2026-10-22T05:46:53.618226Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "RCC-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.cs); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 56,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 35,
+          "decode_ms": 2520739.1,
+          "decode_tokens_per_s_median": 20.41,
+          "first_delta_ms": 604591.6,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 49041,
+          "prefill_ms": 604591.6,
+          "prefill_tokens_per_s_median": 423.5,
+          "prompt_tokens": {
+            "max": 6487,
+            "median": 4882,
+            "p95": 6210,
+            "sum": 149108
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 3.5
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 80232.2,
+          "gpu_board_wh": 22.287,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T04:54:24.497124Z",
+          "to": "2026-10-22T05:46:52.405591Z",
+          "wall_s": 3148.9
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "RCC-LL-c102",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"RCC-LL-c102\", \"fabro_run_id\": \"01M5GZBP1B3EPG6XN9CNEXER01\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/RCC-LL-c102/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 3158.8
+    },
+    {
+      "at": "2026-10-22T06:39:59.986257Z",
+      "campaign_sha256": "deb7f43d87a107eb759f6f5de9b219ccfa94ae1fe5792105270fae282ba23e6c",
+      "case": "RCC-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, LRTX_TASK_INVALID:requirements:crosscutting: [swr_015] EARS_U); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "4f0a2e8da55a7951c5ed202d10d8cf2aa86f4bb2",
+        "dirty": false
+      },
+      "gap_count": 56,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 31,
+          "decode_ms": 2643274.1,
+          "decode_tokens_per_s_median": 20.07,
+          "first_delta_ms": 510176.3,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 54119,
+          "prefill_ms": 510176.3,
+          "prefill_tokens_per_s_median": 291.1,
+          "prompt_tokens": {
+            "max": 6996,
+            "median": 4014,
+            "p95": 6906,
+            "sum": 142326
+          },
+          "queue_wait_ms": {
+            "max": 0.2,
+            "sum": 3.1
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 87880.9,
+          "gpu_board_wh": 24.411,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-22T05:47:03.719648Z",
+          "to": "2026-10-22T06:39:58.943650Z",
+          "wall_s": 3176.2
+        }
+      },
+      "package_status": "BLOCKED",
+      "provided": null,
+      "run": "RCC-LL-c103",
+      "started_exit": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\"work_order\": \"RCC-LL-c103\", \"fabro_run_id\": \"01M5H2C35PSSM9TSY3SDYTN7E7\", \"workspace\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/state/workorders/RCC-LL-c103/workspace\", \"intake\": null, \"status\": \"BLOCKED\"}\n",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 3186.0
+    }
+  ],
+  "schema": "forge-c/lrtx-campaign-summary/1",
+  "target": ">= 27/30 READY_FOR_OFFLINE_REVIEW, remaining failures honestly packaged BLOCKED (spec acceptance 5, proposed)"
+}

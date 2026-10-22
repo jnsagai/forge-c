@@ -1,0 +1,128 @@
+{
+ "generated_at": "2026-10-21T12:54:43.865820Z",
+ "items": [
+  "IWDG_KR.KEY",
+  "IWDG_PR.PR",
+  "IWDG_RLR.RL",
+  "IWDG_SR.EWIF",
+  "IWDG_SR.ONF",
+  "IWDG_SR.EWU",
+  "IWDG_SR.WVU",
+  "IWDG_SR.RVU",
+  "IWDG_SR.PVU"
+ ],
+ "missing_sections": [],
+ "registers": [
+  {
+   "fields": {
+    "KEY": {
+     "access": [
+      "w"
+     ],
+     "lsb": 0,
+     "msb": 15
+    }
+   },
+   "file": "inputs/sections/RM0486/59.7.1_IWDG_key_register_IWDG_KR.md",
+   "offset": 0,
+   "pages": [
+    2989
+   ],
+   "register": "IWDG_KR",
+   "section": "59.7.1"
+  },
+  {
+   "fields": {
+    "PR": {
+     "access": [
+      "rw"
+     ],
+     "lsb": 0,
+     "msb": 3
+    }
+   },
+   "file": "inputs/sections/RM0486/59.7.2_IWDG_prescaler_register_IWDG_PR.md",
+   "offset": 4,
+   "pages": [
+    2989,
+    2990
+   ],
+   "register": "IWDG_PR",
+   "section": "59.7.2"
+  },
+  {
+   "fields": {
+    "RL": {
+     "access": [
+      "rw"
+     ],
+     "lsb": 0,
+     "msb": 11
+    }
+   },
+   "file": "inputs/sections/RM0486/59.7.3_IWDG_reload_register_IWDG_RLR.md",
+   "offset": 8,
+   "pages": [
+    2990
+   ],
+   "register": "IWDG_RLR",
+   "section": "59.7.3"
+  },
+  {
+   "fields": {
+    "EWIF": {
+     "access": [
+      "r"
+     ],
+     "lsb": 15,
+     "msb": 15
+    },
+    "EWU": {
+     "access": [
+      "r"
+     ],
+     "lsb": 3,
+     "msb": 3
+    },
+    "ONF": {
+     "access": [
+      "r"
+     ],
+     "lsb": 8,
+     "msb": 8
+    },
+    "PVU": {
+     "access": [
+      "r"
+     ],
+     "lsb": 0,
+     "msb": 0
+    },
+    "RVU": {
+     "access": [
+      "r"
+     ],
+     "lsb": 1,
+     "msb": 1
+    },
+    "WVU": {
+     "access": [
+      "r"
+     ],
+     "lsb": 2,
+     "msb": 2
+    }
+   },
+   "file": "inputs/sections/RM0486/59.7.4_IWDG_status_register_IWDG_SR.md",
+   "offset": 12,
+   "pages": [
+    2990,
+    2991,
+    2992
+   ],
+   "register": "IWDG_SR",
+   "section": "59.7.4"
+  }
+ ],
+ "schema": "forge-c/lrtx-swe1-inventory/1"
+}

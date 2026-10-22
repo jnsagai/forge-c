@@ -1,0 +1,130 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "017339f91569def042eeecca351814cf805872c87c162ebe1610dcc4885ab029",
+  "baseline_id": "BL-SWE.1-002",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "Requirement SWR-017 states the driver shall occupy at most 4096 bytes of flash, which is an implementation constraint rather than an atomic, consistent, feasible and objectively verifiable requirement",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "Failure handling is not specified in the software requirements. While SWR-015 mentions handling failure conditions by not relying on status flags for synchronization, it does not detail a complete fai",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-017: The requirement specifies a flash usage limit of 4096 bytes, but no explicit evidence is provided that this constraint is measurable and verified in the checked work products.",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software_requirements.md file provides verification criteria for each requirement, but does not explicitly docum",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-002",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-017 states the driver shall occupy at most 4096 bytes of flash, which is an implementation constraint rather than an atomic, consistent, feasible and objectively verifiable requirement"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "workproducts/SWE.1/register_effects.json"
+      ],
+      "findings": [
+        "Failure handling is not specified in the software requirements. While SWR-015 mentions handling failure conditions by not relying on status flags for synchronization, it does not detail a complete fai",
+        "Safe states are not specified in the software requirements. The work-product does not define what constitutes a safe state for the IWDG LL driver nor how the system should transition to such states up"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-017: The requirement specifies a flash usage limit of 4096 bytes, but no explicit evidence is provided that this constraint is measurable and verified in the checked work products."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are not fully documented. The software_requirements.md file provides verification criteria for each requirement, but does not explicitly docum"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T205911.016964Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T205911.824812Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T20:59:11.825332Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

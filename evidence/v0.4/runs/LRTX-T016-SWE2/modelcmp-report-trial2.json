@@ -1,0 +1,127 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 3,
+      "gate_frozen": 1,
+      "load_ms_median": 96770.8,
+      "per_task": {
+        "design": {
+          "attempts": 1,
+          "call_wall_ms_median": 63919.3,
+          "calls_median": 1,
+          "first_call_valid": 1,
+          "tokens_median": 2908,
+          "valid": 1
+        },
+        "interfaces": {
+          "attempts": 3,
+          "call_wall_ms_median": 273674.4,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 15797,
+          "valid": 1
+        }
+      },
+      "visit_pass": 1,
+      "wall_s_median": 273.8
+    }
+  },
+  "generated_at": "2026-10-21T21:47:44.694801Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.2",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 96770.8,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.2",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 383605.9,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5190,
+          "prompt_tokens": 10607,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 384.2,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 63919.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1106,
+          "prompt_tokens": 1802,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 159718.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3546,
+          "prompt_tokens": 6502,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 224.8,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 273674.4,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5409,
+          "prompt_tokens": 10773,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 273.8,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/start-rc1-iwdg-ll"
+}

@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-21T15:56:40.368914Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3802,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10280
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "aa2925a75ac94e35d88635a51f09d2c1e7c3bab4d044b0d04784c742c3918a10",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 174,
+        "prompt_tokens": 2795,
+        "prompt_tokens_details": {
+          "cached_tokens": 1996
+        },
+        "total_tokens": 2969
+      },
+      "wall_ms": 9911.2
+    }
+  ],
+  "base_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_READ_VALUE",
+            "field": "PR",
+            "op": "no_write",
+            "register": "IWDG_PR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_pr_read_prescaler",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall read the value of IWDG_PR.PR to determine the current prescaler.",
+        "verification": "The test passes when reading from ll_iwdg_regs[IWDG_PR_OFFSET/4U] returns the expected predivider value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

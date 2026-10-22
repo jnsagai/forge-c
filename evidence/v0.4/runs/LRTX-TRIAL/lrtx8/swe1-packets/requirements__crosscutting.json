@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-21T15:28:16.198801Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2685,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7208
+      },
+      "errors": [
+        "[swr_001] verification has no pass criterion ('passes when ...')",
+        "[swr_002] verification has no pass criterion ('passes when ...')"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "9125145dcfd8821f4676632f6d5d55e42889cc676898beba81511373f85236f1",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 189,
+        "prompt_tokens": 2117,
+        "prompt_tokens_details": {
+          "cached_tokens": 247
+        },
+        "total_tokens": 2306
+      },
+      "wall_ms": 13415.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3020,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8129
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "668030e2d3033dfb4d4981462b5c19a23bb58828a35962cedd7d4a6b94e1b809",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 216,
+        "prompt_tokens": 2373,
+        "prompt_tokens_details": {
+          "cached_tokens": 1712
+        },
+        "total_tokens": 2589
+      },
+      "wall_ms": 12204.9
+    }
+  ],
+  "base_hash": "9125145dcfd8821f4676632f6d5d55e42889cc676898beba81511373f85236f1",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no writes to IWDG registers occur before any LL function call",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_002",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall ensure that a write operation to any register field modifies only the named bits, and does not alter other fields.",
+        "verification": "host_unit_test passes when write operations affect only intended bits in the target register",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

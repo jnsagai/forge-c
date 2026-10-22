@@ -1,0 +1,149 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "38b8b46a7c65b50f535300775e4ccd9e30553091452b616f514da4b56fdc3622",
+  "baseline_id": "BL-SWE.1-002",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md. No software safety requirements have been allocated yet, which prevents satisfying the",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unc",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "No specification of failure handling found in software safety requirements or related traceability documents.; No specification of safe states found in software safety requirements or related traceabi",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-014 states the IWDG LL driver shall occupy at most 4096 bytes of flash, but no explicit and measurable constraint is provided in the software requirements or related traceability docum",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: Verification criteria and unresolved ambiguities are not documented. The software requirements document contains open points indicating that requirement SWR-001 references a hardware register",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-002",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/upstream_gaps.md",
+        "source/workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-01: The safety allocation is marked as PENDING owner allocation review in the manifest and upstream_gaps.md. No software safety requirements have been allocated yet, which prevents satisfying the"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "workproducts/SWE.1/register_effects.json"
+      ],
+      "findings": [
+        "Requirement SWR-001 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-002 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-003 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-004 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2989) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-005 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-006 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2990) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-007 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-008 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-009 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unc",
+        "Requirement SWR-010 does not satisfy the criterion of being atomic because it references a hardware register interface (RM0486 p.2991) without an approved safety allocation, making its feasibility unc"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "No specification of failure handling found in software safety requirements or related traceability documents.",
+        "No specification of safe states found in software safety requirements or related traceability documents."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "workproducts/SWE.1/software_requirements.md"
+      ],
+      "findings": [
+        "Requirement SWR-014 states the IWDG LL driver shall occupy at most 4096 bytes of flash, but no explicit and measurable constraint is provided in the software requirements or related traceability docum",
+        "Requirement SWR-015 states the IWDG LL driver shall use at most 64 bytes of static RAM, but no explicit and measurable constraint is provided in the software requirements or related traceability docum",
+        "Requirement SWR-016 states the IWDG LL driver shall use at most 128 bytes of stack for any public API call, but no explicit and measurable constraint is provided in the software requirements or relate"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: Verification criteria and unresolved ambiguities are not documented. The software requirements document contains open points indicating that requirement SWR-001 references a hardware register"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T171715.509079Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T171717.264121Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T17:17:17.266152Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

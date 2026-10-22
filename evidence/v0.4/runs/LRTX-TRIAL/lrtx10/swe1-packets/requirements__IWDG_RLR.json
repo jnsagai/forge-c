@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-21T16:27:20.094061Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3168,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8537
+      },
+      "errors": [
+        "[rlr_no_write_before_key] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [rlr_no_write_before_key] from this task",
+        "field IWDG_RLR.RL is both covered and listed in not_covered"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 399,
+        "prompt_tokens": 2302,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 2701
+      },
+      "wall_ms": 23732.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3815,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10317
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "1afce72f0940973388e70ad96af7aa14461c1bc80b9276ed6fa84c234d7c5627",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 195,
+        "prompt_tokens": 2787,
+        "prompt_tokens_details": {
+          "cached_tokens": 1897
+        },
+        "total_tokens": 2982
+      },
+      "wall_ms": 11416.2
+    }
+  ],
+  "base_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "RLR_WRITE_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "rlr_write_value",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the requested reload value to the IWDG_RLR.RL field when a function sets the watchdog reload value.",
+        "verification": "A host unit test passes when the ll_iwdg_regs[IWDG_RLR_OFFSET/4U] register contains the written reload value after calling a function that sets the watchdog reload value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

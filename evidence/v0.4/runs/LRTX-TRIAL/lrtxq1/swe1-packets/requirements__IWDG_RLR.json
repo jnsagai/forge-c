@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-21T19:52:36.652520Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3168,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8537
+      },
+      "errors": [
+        "[iwdg_rlr_rl_write] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_rlr_rl_no_write] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_rlr_rl_no_write] from this task",
+        "field IWDG_RLR.RL is both covered and listed in not_covered"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 393,
+        "prompt_tokens": 2302,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 2695
+      },
+      "wall_ms": 39381.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3813,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10311
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "004601281f20d179983b21d381c0fa8ed6b80d03690f395cea15ceef13460582",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 217,
+        "prompt_tokens": 2827,
+        "prompt_tokens_details": {
+          "cached_tokens": 1897
+        },
+        "total_tokens": 3044
+      },
+      "wall_ms": 15170.0
+    }
+  ],
+  "base_hash": "adfa494466fac07d23c78c65930590b027b3867daea0992af5f414a5f619a48b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_RLR_RL_WRITE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "iwdg_rlr_rl_write",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write to IWDG_RLR.RL a value within the 12-bit range 0x000 to 0xFFF.",
+        "verification": "The host_unit_test passes when the register array ll_iwdg_regs is written with the value 0x123 at offset IWDG_RLR_OFFSET, and the readback from that location matches 0x123.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

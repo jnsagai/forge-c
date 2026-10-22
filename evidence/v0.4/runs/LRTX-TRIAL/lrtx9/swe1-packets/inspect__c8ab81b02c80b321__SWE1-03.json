@@ -1,0 +1,133 @@
+{
+  "at": "2026-10-21T15:58:55.676179Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7500,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20451
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated for ASIL B, violating the safety a...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "finding 'The software safety requirements document shows that the software safety allocat...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "826cc73e4a31c984f549af15750f89c45301163e25169ccabacac714d3bbd960",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 121,
+        "prompt_tokens": 7057,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7178
+      },
+      "wall_ms": 25163.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7960,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21714
+      },
+      "errors": [
+        "finding says reset/startup behaviour is not specified, but SWR-020 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item",
+        "finding 'The traceability matrix and upstream gaps indicate that no software safety requi...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'The traceability matrix and upstream gaps indicate that no software safety requi...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "b1cedcc606fdd2f51f20d85784b52c2f9e11faf3d0afe6095c3d8cde5775b1e3",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 162,
+        "prompt_tokens": 7321,
+        "prompt_tokens_details": {
+          "cached_tokens": 6931
+        },
+        "total_tokens": 7483
+      },
+      "wall_ms": 7930.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8131,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 22185
+      },
+      "errors": [
+        "finding 'The safety allocation is pending owner review and no software safety requirement...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "e428e4dbe25a14c94ee6c0a7deb2e718c4108d6b224cfe22101a5b7606812c1d",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 169,
+        "prompt_tokens": 7430,
+        "prompt_tokens_details": {
+          "cached_tokens": 6974
+        },
+        "total_tokens": 7599
+      },
+      "wall_ms": 8621.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7933,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21642
+      },
+      "errors": [
+        "finding 'The software safety requirements document indicates that no software safety requ...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1317ada091285bcc771fe82e0cc28261b53dbf237bdeb58e779d147e27ff96ec",
+      "n": 3,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 171,
+        "prompt_tokens": 7310,
+        "prompt_tokens_details": {
+          "cached_tokens": 6982
+        },
+        "total_tokens": 7481
+      },
+      "wall_ms": 8187.2
+    }
+  ],
+  "base_hash": "826cc73e4a31c984f549af15750f89c45301163e25169ccabacac714d3bbd960",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "source/workproducts/SWE.1/register_effects.json",
+      "source/workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "The software requirements do not specify failure handling or safe states. Although SWR-020 defines reset behavior (no register writes before function call), it does not address failure handling or safe states.",
+      "The software safety requirements document indicates that no software safety requirements are allocated yet, which implies that critical safety behaviors such as failure handling and safe state definitions are not specified in the current work product."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'The software safety requirements document indicates that no software safety requ...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:c8ab81b02c80b321:SWE1-03"
+}

@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-21T13:25:21.598540Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5934,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17610
+      },
+      "errors": [
+        "evidence_checked names SOURCE safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names SOURCE traceability/upstream_gaps.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "39d2a2ccceb5b033f4ef12f76f8d4270ef159804e0cbba59475dc4babcc005f9",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 99,
+        "prompt_tokens": 5925,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 6024
+      },
+      "wall_ms": 20457.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6191,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18381
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "6c7e9cc3b65b64b17c8e66df332a4e750ed2349eb0bd8a33c163d4cb71bb8ad3",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 78,
+        "prompt_tokens": 6091,
+        "prompt_tokens_details": {
+          "cached_tokens": 5807
+        },
+        "total_tokens": 6169
+      },
+      "wall_ms": 4557.1
+    }
+  ],
+  "base_hash": "39d2a2ccceb5b033f4ef12f76f8d4270ef159804e0cbba59475dc4babcc005f9",
+  "doc": {
+    "evidence_checked": [
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. This violates the requirement that allocated software safety requirements be baselined and traceable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-01"
+}

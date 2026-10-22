@@ -1,0 +1,98 @@
+.....s                                                                   [100%]
+==================================== PASSES ====================================
+_ test_structured_inspection_records_through_the_unchanged_operation_and_gate __
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"phase": "SWE.1", "decision": "PASS", "reason": "INS-SWE.1-001", "failed_inspections": 0, "max_rework_cycles": 3}
+________ test_failed_item_keeps_its_finding_and_reaches_the_author_task ________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+__________________ test_incomplete_inspection_records_nothing __________________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 2, "errors": 1, "wall_ms": 1.0}
+______ test_direct_reinspection_only_for_a_valid_never_inspected_baseline ______
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+_______ test_inspection_packets_fit_and_carry_the_full_criterion[SWE.1] ________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_p3.py::test_structured_inspection_records_through_the_unchanged_operation_and_gate
+PASSED factory/python/tests/test_lrtx_p3.py::test_failed_item_keeps_its_finding_and_reaches_the_author_task
+PASSED factory/python/tests/test_lrtx_p3.py::test_incomplete_inspection_records_nothing
+PASSED factory/python/tests/test_lrtx_p3.py::test_direct_reinspection_only_for_a_valid_never_inspected_baseline
+PASSED factory/python/tests/test_lrtx_p3.py::test_inspection_packets_fit_and_carry_the_full_criterion[SWE.1]
+SKIPPED [1] factory/python/tests/test_lrtx_p3.py:133: needs a frozen SWE.2 baseline
+5 passed, 1 skipped, 2 deselected in 4.84s
+
+--- stderr ---

@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-21T16:11:23.560223Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7689,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20970
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "985eae8b5df244cca005a4c0ec3cf79a8b3407a02e688aefad37f32d8724bdf2",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 236,
+        "prompt_tokens": 7168,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7404
+      },
+      "wall_ms": 42481.8
+    }
+  ],
+  "base_hash": "985eae8b5df244cca005a4c0ec3cf79a8b3407a02e688aefad37f32d8724bdf2",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "workproducts/SWE.1/register_effects.json",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-021: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the software_requirements.md or register_effects.json to confirm that this constraint is explicit and measurable.",
+      "SWR-022: The requirement specifies that the IWDG LL driver shall use at most 64 bytes of static RAM, but no evidence is provided in the software_requirements.md or register_effects.json to confirm that this constraint is explicit and measurable.",
+      "SWR-023: The requirement specifies that the IWDG LL driver shall use at most 128 bytes of stack for any public API call, but no evidence is provided in the software_requirements.md or register_effects.json to confirm that this constraint is explicit and measurable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-04"
+}

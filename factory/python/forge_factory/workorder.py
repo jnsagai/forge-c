@@ -417,11 +417,35 @@ def suspension(provider: str, path: Path | None = None) -> dict | None:
     return None
 
 
+def local_profile_structured(local: dict | None, manifest: dict, model: str) -> dict | None:
+    """Feature 010: the structured-author phases the selected local profile defines for this layer (None without a
+    profile, which keeps the existing graph unchanged)."""
+    if not local:
+        return None
+    from .lrtx.profile import load
+
+    st = load(local["id"]).get("structured") or {}
+    layer = manifest.get("layer", "LL+HAL")
+    out = {"phases": (st.get("phases_by_layer") or {}).get(layer) or [],
+           "inspect_phases": (st.get("inspect_phases_by_layer") or {}).get(layer) or [],
+           "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600),
+           "visit_time_s": st.get("visit_time_s", 1200)}
+    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None
+
+
 def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
         labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False,
-        timeout_scale: float = 1.0) -> dict:
+        timeout_scale: float = 1.0, profile: str | None = None) -> dict:
+    local = None
+    if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
+        from .lrtx import profile as local_profile
+
+        local = local_profile.select(profile, model=model, provider=provider, code_model=code_model,
+                                     acp_authors=acp_authors, acp_inspectors=acp_inspectors)
+        if timeout_scale == 1:
+            timeout_scale = float(local["timeout_scale"])
     if not 1 <= timeout_scale <= 10:  # checked before anything is prepared
         raise ValueError(f"TIMEOUT_SCALE_OUT_OF_RANGE:{timeout_scale} (1..10)")
     if acp_authors:  # owner decision 2026-10-18 (option 3): Codex authors behind the forge ACP proxy + policy gates
@@ -448,6 +472,9 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         raise ValueError("BROWNFIELD_RESUME_NOT_SUPPORTED: start a new brownfield work order (the delivered code must "
                          "enter after a SWE.1 frozen in the same work order)")
     ws, manifest = prepare(example, wo, provided_from)
+    if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
+        manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
         return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
     phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
@@ -465,7 +492,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
-                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"))
+                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
+                         structured=local_profile_structured(local, manifest, model))
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
 
@@ -475,6 +503,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     prof = model_profile(model, provider, code_model, nodes)
     if timeout_scale != 1:
         prof["timeout_scale"] = timeout_scale
+    if local:
+        prof["local_profile"] = local
     if acp_authors:
         from . import acp
         from .acp import codex_home
@@ -552,18 +582,26 @@ def main(argv: list[str] | None = None) -> int:
                     help="OD-2026-10-19-08: inspectors + Release Manager on Claude (owner account) via the same gates")
     ap.add_argument("--timeout-scale", type=float, default=1.0,
                     help="multiply every node timeout (1..10) for a slower model, e.g. local Qwen; recorded in the manifest")
+    ap.add_argument("--profile", default=None,
+                    help="feature 010: explicit local profile (e.g. local-rtx-v1); refuses ACP, cloud providers and "
+                         "runtime roots/endpoints shared with the existing deployment")
     ap.add_argument("--intake-only", action="store_true",
                     help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop")
     a = ap.parse_args(argv)
     from .brownfield.delivery import DeliveryBlocked
+    from .lrtx.profile import ProfileRefused
 
     try:
         res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
                   resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
-                  acp_inspectors=a.acp_inspectors, intake_only=a.intake_only, timeout_scale=a.timeout_scale)
+                  acp_inspectors=a.acp_inspectors, intake_only=a.intake_only, timeout_scale=a.timeout_scale,
+                  profile=a.profile)
     except DeliveryBlocked as exc:  # FR-003..FR-005: refused before any agent ran; the record is in the store
         print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake",
                           "issues": str(exc).split(";")}))
+        return 2
+    except ProfileRefused as exc:  # LRTX-FR-002: a refused local profile is reported, never silently changed
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "local_profile", "issues": exc.issues}))
         return 2
     print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace", "intake")}
                      | {"status": (res.get("package") or {}).get("package_status")}))

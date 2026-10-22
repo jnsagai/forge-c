@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-21T13:26:12.742466Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5798,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17204
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "210fedba37d6c057fdf06f29e1b7331e902f65bfb6966d987ddbb78f505611b6",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 96,
+        "prompt_tokens": 5822,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5918
+      },
+      "wall_ms": 21351.3
+    }
+  ],
+  "base_hash": "210fedba37d6c057fdf06f29e1b7331e902f65bfb6966d987ddbb78f505611b6",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated yet, as stated in safety/software_safety_requirements.md."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-03"
+}

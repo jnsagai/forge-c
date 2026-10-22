@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-21T21:02:04.330273Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6863,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18698
+      },
+      "errors": [
+        "evidence_checked names software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "385d4f83112a2583ce726fb82be7031a6b5daff173450fdd12697d29f9bad54e",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 91,
+        "prompt_tokens": 6233,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6324
+      },
+      "wall_ms": 22159.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7068,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19261
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "7f24b4cbc94c0002ddce5e87176fae41df6d28c4ed4f557efe81ba8037e5e75b",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 138,
+        "prompt_tokens": 6370,
+        "prompt_tokens_details": {
+          "cached_tokens": 6107
+        },
+        "total_tokens": 6508
+      },
+      "wall_ms": 6702.1
+    }
+  ],
+  "base_hash": "385d4f83112a2583ce726fb82be7031a6b5daff173450fdd12697d29f9bad54e",
+  "doc": {
+    "evidence_checked": [
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not objectively verifiable: the requirement does not specify a testable condition or outcome that can be verified through inspection or testing. It only states an action (writing a value) without defining how this action's success or failure can be measured."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:00a3fbfb65fc866e:SWE1-02"
+}

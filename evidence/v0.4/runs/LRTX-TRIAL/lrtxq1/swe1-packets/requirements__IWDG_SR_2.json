@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-21T19:55:12.169040Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5947,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 16179
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "608d8e76e97bc8027de379bff343debe1f4d0faa7e1e2743df02c3a6a8e14a5b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 122,
+        "prompt_tokens": 4273,
+        "prompt_tokens_details": {
+          "cached_tokens": 2726
+        },
+        "total_tokens": 4395
+      },
+      "wall_ms": 11544.4
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [
+      {
+        "field": "IWDG_SR.WVU",
+        "reason": "Field WVU is not covered by any scope requirements."
+      },
+      {
+        "field": "IWDG_SR.RVU",
+        "reason": "Field RVU is not covered by any scope requirements."
+      },
+      {
+        "field": "IWDG_SR.PVU",
+        "reason": "Field PVU is not covered by any scope requirements."
+      }
+    ],
+    "open_points": [],
+    "requirements": []
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

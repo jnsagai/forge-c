@@ -1,0 +1,114 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 3,
+      "gate_frozen": 0,
+      "load_ms_median": 52755.0,
+      "per_task": {
+        "interfaces": {
+          "attempts": 3,
+          "call_wall_ms_median": 236229.7,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 16511,
+          "valid": 0
+        }
+      },
+      "visit_pass": 0,
+      "wall_s_median": 236.3
+    }
+  },
+  "generated_at": "2026-10-21T21:25:16.358310Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.2",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 52755.0,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.2",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 315215.9,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5860,
+          "prompt_tokens": 10831,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 315.6,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 236229.7,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5752,
+          "prompt_tokens": 10759,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 236.3,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 220493.2,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5421,
+          "prompt_tokens": 10539,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 220.6,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t016-swe2/report-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/start-rc1-iwdg-ll"
+}

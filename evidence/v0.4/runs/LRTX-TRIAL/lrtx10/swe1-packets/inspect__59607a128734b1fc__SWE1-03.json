@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T16:32:29.846738Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6307,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17170
+      },
+      "errors": [
+        "finding says reset/startup behaviour is not specified, but SWR-013 specifies it: 'While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG regist' - re-judge the remaining parts of the item"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "6add13d419f9b485ccf0ec28d4727597f1d782d6f05f4fda8c4737e1a6bd1849",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 127,
+        "prompt_tokens": 5655,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5782
+      },
+      "wall_ms": 36197.4
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6631,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18060
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "9495768be9156250eed2e543350efb89238a4f9f240379219d23963129d3d2b2",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 119,
+        "prompt_tokens": 5868,
+        "prompt_tokens_details": {
+          "cached_tokens": 5529
+        },
+        "total_tokens": 5987
+      },
+      "wall_ms": 10124.4
+    }
+  ],
+  "base_hash": "6add13d419f9b485ccf0ec28d4727597f1d782d6f05f4fda8c4737e1a6bd1849",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "No specification of failure handling found in the software safety requirements or related traceability documents."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:59607a128734b1fc:SWE1-03"
+}

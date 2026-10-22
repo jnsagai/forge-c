@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-21T13:26:53.766316Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5796,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17196
+      },
+      "errors": [
+        "evidence_checked names source/safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source/traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source/traceability/upstream_gaps.md, which is not a provided source",
+        "evidence_checked names source/workproducts/SWE.1/register_effects.json, which is not a provided source",
+        "evidence_checked names source/workproducts/SWE.1/software_requirements.md, which is not a provided source",
+        "evidence_checked names source/.forge-run/manifest.json#scope-target-budgets, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "0c9c31a78547e25866793ddbe6ccaba45477e4353e5ee8656133e5136f9f28e5",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 162,
+        "prompt_tokens": 5826,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5988
+      },
+      "wall_ms": 26195.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6268,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18612
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "79c909ea3a0d17d7addcbb592908139c26acf212c45d2941acf3bab1fa469a10",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 272,
+        "prompt_tokens": 6146,
+        "prompt_tokens_details": {
+          "cached_tokens": 5708
+        },
+        "total_tokens": 6418
+      },
+      "wall_ms": 14825.8
+    }
+  ],
+  "base_hash": "0c9c31a78547e25866793ddbe6ccaba45477e4353e5ee8656133e5136f9f28e5",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-016: The requirement that the IWDG LL driver shall occupy at most 4096 bytes of flash is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no allocated safety requirements exist to validate this constraint.",
+      "SWR-017: The requirement that the IWDG LL driver shall use at most 64 bytes of static RAM is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no allocated safety requirements exist to validate this constraint.",
+      "SWR-018: The requirement that the IWDG LL driver shall use at most 128 bytes of stack for any public API call is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no allocated safety requirements exist to validate this constraint."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-04"
+}

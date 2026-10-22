@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-21T13:27:49.167357Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5794,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17190
+      },
+      "errors": [
+        "evidence_checked names source safety/software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "aa109286c7267a875028e65f6c5c43053563c01e36b9677c566807cbc6b3f35d",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 158,
+        "prompt_tokens": 5814,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5972
+      },
+      "wall_ms": 23772.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6067,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18011
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "51b843301ebb34764b404268c4f4e80b27733f460817d40c704668e14aaa19b9",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 143,
+        "prompt_tokens": 6019,
+        "prompt_tokens_details": {
+          "cached_tokens": 5696
+        },
+        "total_tokens": 6162
+      },
+      "wall_ms": 7363.7
+    }
+  ],
+  "base_hash": "aa109286c7267a875028e65f6c5c43053563c01e36b9677c566807cbc6b3f35d",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-06: No verification criteria documented for SWR-016 through SWR-018. The software requirements document contains verification criteria only for requirements SWR-001 through SWR-015, but not for SWR-016 through SWR-018 which have budget-based verification criteria."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-06"
+}

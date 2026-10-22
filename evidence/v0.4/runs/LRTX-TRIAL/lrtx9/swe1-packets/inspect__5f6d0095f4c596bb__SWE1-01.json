@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-21T16:09:08.491913Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7840,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21384
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated; the safety allocation status is P...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "6e40247abf38cc7f678c81977bd58b3a546555c555b9450df4d80fd6ef7545ce",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 102,
+        "prompt_tokens": 7267,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 7369
+      },
+      "wall_ms": 27883.3
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8138,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 22205
+      },
+      "errors": [
+        "finding 'HSI contract NOT_PROVIDED in the manifest, creating a gap in bidirectional upstr...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "fc8823fbb92566a535d3d2986fd5a95355ba464f80db108904e4ab081ff85d7a",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 101,
+        "prompt_tokens": 7454,
+        "prompt_tokens_details": {
+          "cached_tokens": 7141
+        },
+        "total_tokens": 7555
+      },
+      "wall_ms": 5694.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8141,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 22213
+      },
+      "errors": [
+        "finding 'No software safety requirements are allocated, as indicated in safety/software_s...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "de1ed54983c0236d62583134d9b26b4598624eb9bbc05677cae70692b060ebf1",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 7467,
+        "prompt_tokens_details": {
+          "cached_tokens": 7184
+        },
+        "total_tokens": 7587
+      },
+      "wall_ms": 6327.0
+    }
+  ],
+  "base_hash": "6e40247abf38cc7f678c81977bd58b3a546555c555b9450df4d80fd6ef7545ce",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "traceability/upstream_gaps.md"
+    ],
+    "findings": [
+      "No software safety requirements are allocated, as indicated in safety/software_safety_requirements.md and .forge-run/manifest.json#scope-target-budgets; the safety allocation status is PENDING owner allocation review, which means that allocated software safety requirements are not yet baselined and traceable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'No software safety requirements are allocated, as indicated in safety/software_s...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-01"
+}

@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-21T12:49:09.572634Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2821,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8271
+      },
+      "errors": [
+        "[iwdg_rlr_write_reload_value] EARS_PATTERN_NONCONFORMANT",
+        "[iwdg_rlr_read_reload_value] EARS_PATTERN_NONCONFORMANT"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "9acbe93a8be352a4752dc18e6e04c36c9e0e4a18a9b23a87b77854bcde1a0426",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 464,
+        "prompt_tokens": 2247,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 2711
+      },
+      "wall_ms": 24647.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3443,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10138
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "6eb72988f754f02d38a9eb5c4b84e68a1d7305942ce475c2f0c4502ccc177ebe",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 476,
+        "prompt_tokens": 2778,
+        "prompt_tokens_details": {
+          "cached_tokens": 1842
+        },
+        "total_tokens": 3254
+      },
+      "wall_ms": 22793.8
+    }
+  ],
+  "base_hash": "9acbe93a8be352a4752dc18e6e04c36c9e0e4a18a9b23a87b77854bcde1a0426",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_RELOAD_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "iwdg_rlr_write_reload_value",
+        "source_page": 2990,
+        "statement": "When the IWDG LL driver writes to IWDG_RLR.RL, the IWDG LL driver shall write a 12-bit value within the range 0x000 to 0xFFF to IWDG_RLR.RL.",
+        "verification": "The host unit test passes when writing a value to IWDG_RLR.RL results in that value being present in the register array at the corresponding offset.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RELOAD_VALUE",
+            "field": "RL",
+            "op": "no_write",
+            "register": "IWDG_RLR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_rlr_read_reload_value",
+        "source_page": 2990,
+        "statement": "When the IWDG LL driver reads from IWDG_RLR.RL, the IWDG LL driver shall return the current value of the watchdog reload register.",
+        "verification": "The host unit test passes when reading IWDG_RLR.RL returns a value consistent with previously written data.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "iwdg_rlr_reset_behavior",
+        "source_page": 2990,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "The target robot test passes when no writes to the IWDG registers occur during the startup phase before any LL function is invoked.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

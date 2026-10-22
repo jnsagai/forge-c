@@ -1,0 +1,183 @@
+{
+  "archive_failures": [],
+  "archives": {
+    "all_verified": true,
+    "archives": 208,
+    "copied_to": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/archives",
+    "not_copied": "archives/staging (unpacked build directories the zips were made from)",
+    "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives"
+  },
+  "backup_dir": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z",
+  "checkouts": [
+    {
+      "branch": "main",
+      "dirty_tracked": false,
+      "head": "86f1f40c030bc721e7e5125a572d69647c4ac041",
+      "ignored_owner_inputs": 3,
+      "path": "/home/jefferson/forge-c",
+      "status_porcelain": [],
+      "tracked_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "aedbf050d1fee9a9fedf1544cfb7996877298dcf",
+      "untracked": []
+    }
+  ],
+  "config_files": [
+    {
+      "bytes": 1795,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro/settings.toml",
+      "sha256": "b14983cd1ba8b19fab9ce266e90def0a9f5637d2bddeee4355c28cc15690ca4d"
+    },
+    {
+      "bytes": 853,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro-cloud/settings.toml",
+      "sha256": "a42d847da3f4adb023512818ac0129219d717968c0b61964df2fb144751fac01"
+    },
+    {
+      "bytes": 1746,
+      "path": "/home/jefferson/.config/systemd/user/forge-supervisor.service",
+      "sha256": "cf0ede4c1c535731fa5881a05e6ca30a2ea495b105bf1a4744c1188fa2a21f6b"
+    }
+  ],
+  "credential_homes": [
+    {
+      "contents_read": false,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/claude-home",
+      "present": true
+    },
+    {
+      "contents_read": false,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/codex-home",
+      "present": true
+    }
+  ],
+  "models": {
+    "models": [
+      {
+        "digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+        "family": "qwen3moe",
+        "name": "qwen3-coder:30b",
+        "parameter_size": "30.5B",
+        "quantization": "Q4_K_M",
+        "size": 18556700761
+      },
+      {
+        "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+        "family": "qwen3",
+        "name": "qwen3:8b",
+        "parameter_size": "8.2B",
+        "quantization": "Q4_K_M",
+        "size": 5225388164
+      }
+    ],
+    "status": "OK",
+    "url": "http://127.0.0.1:11435",
+    "version": "0.34.0"
+  },
+  "not_preserved": [
+    "Fabro run storage (live server databases; run results are in the archives and state stores)",
+    "model weights (23 GB, identified by digest; re-pullable)",
+    "credentials (login homes recorded as present only)"
+  ],
+  "recorded_at": "2026-10-21T11:29:53.687493Z",
+  "restore_check": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/archives/WO-0009B-STM32N6-IWDG-HAL-rc4/forge-c-WO-0009B-STM32N6-IWDG-HAL-rc4-review.zip",
+    "files_rehashed": 238,
+    "gap_count": 0,
+    "mismatches": [],
+    "package_status": "READY_FOR_OFFLINE_REVIEW",
+    "status": "PASS"
+  },
+  "schema": "forge-c/lrtx-host-snapshot/1",
+  "services": [
+    {
+      "cmd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-0.34.0/bin/ollama serve",
+      "cwd": "/home/jefferson/forge-c",
+      "pid": 71872
+    },
+    {
+      "cmd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m forge_factory.llm_gateway --port 11437 --upstream https://api.deepseek.com --me",
+      "cwd": "/home/jefferson/forge-c",
+      "pid": 249940
+    },
+    {
+      "cmd": "python -m forge_factory.dashboard.app --port 8765 --host 127.0.0.1 --host 100.87.10.79 --host 192.168.1.69",
+      "cwd": "/home/jefferson/forge-c/factory/python",
+      "pid": 1833696
+    },
+    {
+      "cmd": "/home/jefferson/.fabro/bin/fabro server start --foreground --no-web --no-upgrade-check --config /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fa",
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c",
+      "pid": 1835801
+    },
+    {
+      "cmd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m forge_factory.llm_gateway --port 11436",
+      "cwd": "/home/jefferson/forge-c",
+      "pid": 2096129
+    },
+    {
+      "cmd": "/home/jefferson/.fabro/bin/fabro server start --foreground --no-web --no-upgrade-check --config /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fa",
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro-cloud",
+      "pid": 2970129
+    },
+    {
+      "cmd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m forge_factory.supervisor.service",
+      "cwd": "/home/jefferson/forge-c",
+      "pid": 4154551
+    }
+  ],
+  "snapshot_sha256": "eddecae1e2efa7181f061e5b91b201894565d104797baf964851b7cece5762e9",
+  "state_stores": [
+    {
+      "copy": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/state/events/events.sqlite3",
+      "copy_sha256": "02a0aba336217f6197e29f1bf4656414d0541610d8167f3f2516a32fdb86ba0f",
+      "integrity_check": "ok",
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/events/events.sqlite3"
+    },
+    {
+      "copy": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/state/knowledge/lessons.sqlite3",
+      "copy_sha256": "39fe9b0a1f31fe36a63c16bdf94212eef343aa91bd00e1bf8cf1888b26c1a71d",
+      "integrity_check": "ok",
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/knowledge/lessons.sqlite3"
+    },
+    {
+      "copy": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/state/supervisor/incidents.sqlite3",
+      "copy_sha256": "92265d8cacee81c10f9f163f30df28285eeeb1c2851e8da000d79d66f88b1952",
+      "integrity_check": "ok",
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/supervisor/incidents.sqlite3"
+    }
+  ],
+  "tools": {
+    "claude_agent_acp": [
+      "0.85.1"
+    ],
+    "codex": [
+      "codex-0.162.1"
+    ],
+    "codex_acp": [
+      "codex-acp-0.16.0",
+      "codex-acp-2.1.1"
+    ],
+    "fabro": {
+      "path": "/home/jefferson/.fabro/bin/fabro",
+      "sha256": "e9d7b28207d2bb51f4764e7231f08bfe5a5ccc166d335f6bec786b3fed37581a",
+      "version": "fabro 0.362.0-nightly.0 (a192bce 2026-09-20)"
+    },
+    "git": "git version 2.34.1",
+    "llvm": [
+      "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029e0b2869e80abe31ddb175f7c35361f90)"
+    ],
+    "ollama": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-0.34.0/bin/ollama",
+      "sha256": "103220f734bf8b4f4dad26637720fd41400c5ad95d7b02eb7b9d8e16ad1c8f27"
+    },
+    "pip_freeze_sha256": "048bc0f5cad5270fd6efeb0d4f1dba8a23aa5d80a02b4f3ecc8dbe34523bf342",
+    "plantuml": [
+      "plantuml-asl-1.2026.8.jar"
+    ],
+    "podman": "podman version 3.4.4",
+    "python_venv": "Python 3.13.13",
+    "renode": [
+      "renode_1.17.0-portable"
+    ]
+  }
+}

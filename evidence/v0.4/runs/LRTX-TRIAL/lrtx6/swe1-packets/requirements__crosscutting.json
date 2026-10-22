@@ -1,0 +1,222 @@
+{
+  "at": "2026-10-21T14:21:40.115141Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4471,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 13223
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2a5623f2e4c553a258247139a037f1017cac440b52ab1be689a5c071dc97dfa5",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 1940,
+        "prompt_tokens": 3956,
+        "prompt_tokens_details": {
+          "cached_tokens": 2418
+        },
+        "total_tokens": 5896
+      },
+      "wall_ms": 147058.6
+    }
+  ],
+  "base_hash": "1b1320929f67968468b67a2426185a233e3b5ed5dd2977cc90e24e8b8a9a073f",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no IWDG register is written",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "START_WATCHDOG",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000CCCC"
+          }
+        ],
+        "key": "iwdg_kr_key_write_start",
+        "source_page": 2980,
+        "statement": "When the IWDG LL driver is requested to start the watchdog, the IWDG LL driver shall write the value 0x0000CCCC to IWDG_KR.KEY.",
+        "verification": "host_unit_test passes when IWDG_KR.KEY is written with 0x0000CCCC",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "REFRESH_COUNTER",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x0000AAAA"
+          }
+        ],
+        "key": "iwdg_kr_key_write_refresh",
+        "source_page": 2980,
+        "statement": "When the IWDG LL driver is requested to refresh the watchdog counter, the IWDG LL driver shall write the value 0x0000AAAA to IWDG_KR.KEY.",
+        "verification": "host_unit_test passes when IWDG_KR.KEY is written with 0x0000AAAA",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "ENABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00005555"
+          }
+        ],
+        "key": "iwdg_kr_key_write_enable_access",
+        "source_page": 2980,
+        "statement": "When the IWDG LL driver is requested to enable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write the value 0x00005555 to IWDG_KR.KEY.",
+        "verification": "host_unit_test passes when IWDG_KR.KEY is written with 0x00005555",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "DISABLE_WRITE_ACCESS",
+            "field": "KEY",
+            "op": "write",
+            "register": "IWDG_KR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "iwdg_kr_key_write_disable_access",
+        "source_page": 2980,
+        "statement": "When the IWDG LL driver is requested to disable write access to IWDG_PR and IWDG_RLR, the IWDG LL driver shall write any value other than 0x00005555 to IWDG_KR.KEY.",
+        "verification": "host_unit_test passes when IWDG_KR.KEY is written with a value other than 0x00005555",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "SET_PRESCALER",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x0000000A"
+          }
+        ],
+        "key": "iwdg_pr_prescaler_write",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall write the provided prescaler divider value to the IWDG_PR.PR field.",
+        "verification": "host_unit_test passes when IWDG_PR.PR is written with a 4-bit value",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "SET_RELOAD_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x00000A5F"
+          }
+        ],
+        "key": "rlr_write_value",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall write the reload value to IWDG_RLR.RL when a function sets the watchdog reload value.",
+        "verification": "host_unit_test passes when IWDG_RLR.RL is written with a 12-bit value",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_ONF",
+            "field": "ONF",
+            "op": "write",
+            "register": "IWDG_SR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_sr_onf_read",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.ONF field is set, else 0U.",
+        "verification": "host_unit_test passes when IWDG_SR.ONF is read and returns correct value",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWU",
+            "field": "EWU",
+            "op": "write",
+            "register": "IWDG_SR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_sr_ewu_read",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWU field is set, else 0U.",
+        "verification": "host_unit_test passes when IWDG_SR.EWU is read and returns correct value",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_EWIF",
+            "field": "EWIF",
+            "op": "write",
+            "register": "IWDG_SR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_sr_ewif_read",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall return 1U when the IWDG_SR.EWIF field is set, else 0U.",
+        "verification": "host_unit_test passes when IWDG_SR.EWIF is read and returns correct value",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_PVU",
+            "field": "PVU",
+            "op": "write",
+            "register": "IWDG_SR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.PVU field to determine if a prescaler value update is ongoing, while the watchdog is active.",
+        "verification": "host_unit_test passes when IWDG_SR.PVU is read",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RVU",
+            "field": "RVU",
+            "op": "write",
+            "register": "IWDG_SR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.RVU field to determine if a reload value update is ongoing, while the watchdog is active.",
+        "verification": "host_unit_test passes when IWDG_SR.RVU is read",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

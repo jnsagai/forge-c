@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-21T14:56:10.189823Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6833,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18615
+      },
+      "errors": [
+        "finding 'Safety allocation is PENDING owner allocation review, no software safety require...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1172b496332f24a3670c7518025b1dfe66f540f55e279b293505bb1140b00885",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 83,
+        "prompt_tokens": 6213,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 6296
+      },
+      "wall_ms": 44278.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7117,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19396
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "17ba7248a1ebc37f346e92aba8302556288a6c8d298ca0efea32d0e781af73a9",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 79,
+        "prompt_tokens": 6381,
+        "prompt_tokens_details": {
+          "cached_tokens": 6095
+        },
+        "total_tokens": 6460
+      },
+      "wall_ms": 10148.6
+    }
+  ],
+  "base_hash": "1172b496332f24a3670c7518025b1dfe66f540f55e279b293505bb1140b00885",
+  "doc": {
+    "evidence_checked": [
+      "source/traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:b52d4fe593cff790:SWE1-01"
+}

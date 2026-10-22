@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-21T13:29:58.798490Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6100,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18108
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "585d3409d39fbbba14ec22bc3044bc714457f8549df96b98b8aefe4f1f13093b",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 115,
+        "prompt_tokens": 6014,
+        "prompt_tokens_details": {
+          "cached_tokens": 14
+        },
+        "total_tokens": 6129
+      },
+      "wall_ms": 23017.5
+    }
+  ],
+  "base_hash": "585d3409d39fbbba14ec22bc3044bc714457f8549df96b98b8aefe4f1f13093b",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. As per SWE1-01 criterion, HSI and allocated software safety requirements must be baselined and traceable. Since no software safety requirements are allocated, the traceability of safety requirements cannot be established."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:9c2408e0d7c1dcef:SWE1-01"
+}

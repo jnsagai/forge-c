@@ -1,0 +1,14 @@
+........                                                                 [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_profile.py::test_absent_profile_changes_nothing_and_cli_flag_is_optional
+PASSED factory/python/tests/test_lrtx_profile.py::test_acp_cloud_and_unknown_models_are_refused_before_launch
+PASSED factory/python/tests/test_lrtx_profile.py::test_cli_reports_refusal_without_preparing
+PASSED factory/python/tests/test_lrtx_profile.py::test_overlapping_inherited_and_symlinked_roots_are_refused
+PASSED factory/python/tests/test_lrtx_profile.py::test_local_endpoints_pass_and_cloud_fallback_or_shared_ports_are_refused
+PASSED factory/python/tests/test_lrtx_compat.py::test_backup_inside_a_repository_is_refused
+PASSED factory/python/tests/test_lrtx_compat.py::test_fixture_covers_existing_workflow_and_provider_combinations
+PASSED factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures
+8 passed, 8 deselected in 3.48s
+
+--- stderr ---

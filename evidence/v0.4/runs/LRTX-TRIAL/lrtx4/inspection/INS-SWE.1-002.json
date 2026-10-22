@@ -1,0 +1,138 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "9c2408e0d7c1dcefd64e02269371838e2d289ed1b97144350a9ee25dfb9a03e2",
+  "baseline_id": "BL-SWE.1-002",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. As per SWE1-01 criterion, HSI and allocated software safety requirements must be baselined",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 is not objectively verifiable because the software safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated.",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-016: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but the safety allocation is pending review and no software safety requirement is allocated yet, ma",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-001: No software safety requirement is allocated yet, making it impossible to determine if the requirement is objectively verifiable. The safety allocation is PENDING owner allocation review.",
+      "id": "SWE1-05",
+      "severity": "major"
+    },
+    {
+      "detail": "The software safety allocation is pending review and no software safety requirement is allocated yet. This makes it impossible to determine if the verification criteria for SWR-001 are objectively ver",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-002",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. As per SWE1-01 criterion, HSI and allocated software safety requirements must be baselined"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json"
+      ],
+      "findings": [
+        "Requirement SWR-001 is not objectively verifiable because the software safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md"
+      ],
+      "findings": [
+        "SWR-016: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but the safety allocation is pending review and no software safety requirement is allocated yet, ma"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-001: No software safety requirement is allocated yet, making it impossible to determine if the requirement is objectively verifiable. The safety allocation is PENDING owner allocation review."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-002.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "The software safety allocation is pending review and no software safety requirement is allocated yet. This makes it impossible to determine if the verification criteria for SWR-001 are objectively ver"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T133234.347587Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T133235.292917Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T13:32:35.293596Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-21T14:58:40.986754Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6682,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18201
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "472d498b6056a3638338c01b0cdad0c23e89f232713631dba01510affc37850f",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 224,
+        "prompt_tokens": 6114,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6338
+      },
+      "wall_ms": 33616.4
+    }
+  ],
+  "base_hash": "472d498b6056a3638338c01b0cdad0c23e89f232713631dba01510affc37850f",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-017 states the driver shall occupy at most 4096 bytes of flash, but no evidence is provided in the checked sources that this constraint is explicitly measured or verified.",
+      "SWR-018 states the driver shall use at most 64 bytes of static RAM, but no evidence is provided in the checked sources that this constraint is explicitly measured or verified.",
+      "SWR-019 states the driver shall use at most 128 bytes of stack for any public API call, but no evidence is provided in the checked sources that this constraint is explicitly measured or verified."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:b52d4fe593cff790:SWE1-04"
+}

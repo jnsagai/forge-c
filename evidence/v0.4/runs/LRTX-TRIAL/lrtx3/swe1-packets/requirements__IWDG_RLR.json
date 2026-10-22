@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-21T13:04:38.816261Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2887,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8469
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e074675bbd84abe4584f7170f99e66a367b3f4e3ee726816bcb01437adcb72a3",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 195,
+        "prompt_tokens": 2286,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 2481
+      },
+      "wall_ms": 14044.4
+    }
+  ],
+  "base_hash": "e074675bbd84abe4584f7170f99e66a367b3f4e3ee726816bcb01437adcb72a3",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_RELOAD_VALUE",
+            "field": "RL",
+            "op": "write",
+            "register": "IWDG_RLR",
+            "value": "0x123"
+          }
+        ],
+        "key": "iwdg_rlr_write",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the reload value to the IWDG_RLR.RL field when a function sets the watchdog reload value.",
+        "verification": "The host unit test passes when the ll_iwdg_regs[IWDG_RLR_OFFSET/4U] register contains the written reload value after calling a function that sets the reload value.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_RLR"
+}

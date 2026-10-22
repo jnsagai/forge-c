@@ -1,0 +1,555 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 13,
+      "gate_frozen": 3,
+      "load_ms_median": 58139.9,
+      "per_task": {
+        "requirements:IWDG_KR": {
+          "attempts": 3,
+          "call_wall_ms_median": 157941.7,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 7080,
+          "valid": 3
+        },
+        "requirements:IWDG_PR": {
+          "attempts": 3,
+          "call_wall_ms_median": 55775.6,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 7011,
+          "valid": 3
+        },
+        "requirements:IWDG_RLR": {
+          "attempts": 3,
+          "call_wall_ms_median": 46462.0,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 6490,
+          "valid": 3
+        },
+        "requirements:IWDG_SR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 52417.4,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 8003,
+          "valid": 3
+        },
+        "requirements:IWDG_SR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 62748.7,
+          "calls_median": 2,
+          "first_call_valid": 1,
+          "tokens_median": 8445,
+          "valid": 3
+        },
+        "requirements:crosscutting": {
+          "attempts": 3,
+          "call_wall_ms_median": 165809.7,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 14247,
+          "valid": 3
+        }
+      },
+      "visit_pass": 3,
+      "wall_s_median": 483.9
+    },
+    "qwen3:8b": {
+      "attempts": 3,
+      "calls_median": 23,
+      "gate_frozen": 0,
+      "load_ms_median": 16005.849999999999,
+      "per_task": {
+        "requirements:IWDG_KR": {
+          "attempts": 3,
+          "call_wall_ms_median": 82006.2,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 9287,
+          "valid": 3
+        },
+        "requirements:IWDG_PR": {
+          "attempts": 3,
+          "call_wall_ms_median": 97776.1,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 13970,
+          "valid": 3
+        },
+        "requirements:IWDG_RLR": {
+          "attempts": 3,
+          "call_wall_ms_median": 50766.2,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 7690,
+          "valid": 3
+        },
+        "requirements:IWDG_SR_1": {
+          "attempts": 3,
+          "call_wall_ms_median": 54905.6,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 10226,
+          "valid": 3
+        },
+        "requirements:IWDG_SR_2": {
+          "attempts": 3,
+          "call_wall_ms_median": 65215.8,
+          "calls_median": 2,
+          "first_call_valid": 0,
+          "tokens_median": 11027,
+          "valid": 3
+        },
+        "requirements:crosscutting": {
+          "attempts": 3,
+          "call_wall_ms_median": 172750.6,
+          "calls_median": 3,
+          "first_call_valid": 0,
+          "tokens_median": 16905,
+          "valid": 0
+        }
+      },
+      "visit_pass": 0,
+      "wall_s_median": 763.9
+    }
+  },
+  "generated_at": "2026-10-21T19:00:21.161149Z",
+  "mixed_estimate": {
+    "basis": "DERIVED from per-task medians; not measured",
+    "call_wall_ms": 574619.5,
+    "large_only_call_wall_ms": 541155.1,
+    "plan": {
+      "requirements:IWDG_KR": "qwen3:8b",
+      "requirements:IWDG_PR": "qwen3:8b",
+      "requirements:IWDG_RLR": "qwen3:8b",
+      "requirements:IWDG_SR_1": "qwen3:8b",
+      "requirements:IWDG_SR_2": "qwen3:8b",
+      "requirements:crosscutting": "qwen3-coder:30b"
+    },
+    "switch_cost_ms": 58139.9,
+    "switches": 1
+  },
+  "models": [
+    "qwen3:8b",
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 26,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [swr_0001] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0002] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0003] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0003] effect IWDG_KR_WRITE: value 'any key other than 0x00005555' must be a number that fits IWDG_KR.KEY (16 bits)",
+        "requirements:crosscutting: [swr_0004] verification has no pass criterion ('passes when ...')"
+      ],
+      "model": "qwen3:8b",
+      "model_loads": [],
+      "n": 1,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 73014.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 2597,
+          "prompt_tokens": 6690,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 26373.5,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 885,
+          "prompt_tokens": 7233,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 24021.3,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 846,
+          "prompt_tokens": 5694,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 54905.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1902,
+          "prompt_tokens": 8324,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 44692.2,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1469,
+          "prompt_tokens": 9558,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 182962.7,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 6284,
+          "prompt_tokens": 10875,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 894.4,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3_8b-01/workspace"
+    },
+    {
+      "calls": 12,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 58139.9,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 141207.9,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1578,
+          "prompt_tokens": 5480,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 58818.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1232,
+          "prompt_tokens": 6011,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 30301.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 589,
+          "prompt_tokens": 5088,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 58892.8,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1223,
+          "prompt_tokens": 7101,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 26013.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 487,
+          "prompt_tokens": 3101,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 168055.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3867,
+          "prompt_tokens": 10616,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 483.9,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 16,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [swr_001] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_002] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_003] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_004] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_005] verification has no pass criterion ('passes when ...')"
+      ],
+      "model": "qwen3:8b",
+      "model_loads": [
+        {
+          "load_ms": 16836.3,
+          "model": "qwen3:8b"
+        }
+      ],
+      "n": 2,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 82006.2,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 2321,
+          "prompt_tokens": 6442,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 189495.9,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 6357,
+          "prompt_tokens": 13784,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 50766.2,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1781,
+          "prompt_tokens": 5909,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 132170.6,
+          "calls": 4,
+          "first_call_valid": false,
+          "output_tokens": 4462,
+          "prompt_tokens": 16996,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 65215.8,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 2228,
+          "prompt_tokens": 8445,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 171359.8,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5910,
+          "prompt_tokens": 10995,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 691.2,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3_8b-02/workspace"
+    },
+    {
+      "calls": 13,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 52346.6,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 2,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 157941.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1585,
+          "prompt_tokens": 5495,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 55775.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1192,
+          "prompt_tokens": 5819,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 46462.0,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 971,
+          "prompt_tokens": 5519,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 46914.2,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 974,
+          "prompt_tokens": 6806,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 63457.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1335,
+          "prompt_tokens": 7116,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 165809.7,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3789,
+          "prompt_tokens": 10458,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 537.0,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 23,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [swr_0001] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0002] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0003] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_0004] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [swr_001] verification has no pass criterion ('passes when ...')"
+      ],
+      "model": "qwen3:8b",
+      "model_loads": [
+        {
+          "load_ms": 15175.4,
+          "model": "qwen3:8b"
+        }
+      ],
+      "n": 3,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 157676.8,
+          "calls": 4,
+          "first_call_valid": false,
+          "output_tokens": 4986,
+          "prompt_tokens": 13966,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 97776.1,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3412,
+          "prompt_tokens": 10558,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 56847.4,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2031,
+          "prompt_tokens": 9198,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 54629.9,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1866,
+          "prompt_tokens": 8262,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 89991.1,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3060,
+          "prompt_tokens": 12163,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 172750.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5957,
+          "prompt_tokens": 10739,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 763.9,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3_8b-03/workspace"
+    },
+    {
+      "calls": 13,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 79000.0,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 3,
+      "tasks": {
+        "requirements:IWDG_KR": {
+          "call_wall_ms": 160315.8,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1520,
+          "prompt_tokens": 5612,
+          "status": "VALID"
+        },
+        "requirements:IWDG_PR": {
+          "call_wall_ms": 44067.8,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 878,
+          "prompt_tokens": 5636,
+          "status": "VALID"
+        },
+        "requirements:IWDG_RLR": {
+          "call_wall_ms": 57906.9,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1268,
+          "prompt_tokens": 5639,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_1": {
+          "call_wall_ms": 52417.4,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1070,
+          "prompt_tokens": 6933,
+          "status": "VALID"
+        },
+        "requirements:IWDG_SR_2": {
+          "call_wall_ms": 62748.7,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1332,
+          "prompt_tokens": 7113,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 35100.3,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 651,
+          "prompt_tokens": 6756,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 413.0,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/t023/report-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx/modelcmp/start-lrtx10"
+}

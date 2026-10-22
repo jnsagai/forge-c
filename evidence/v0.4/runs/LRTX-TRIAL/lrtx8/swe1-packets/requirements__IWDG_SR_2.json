@@ -1,0 +1,122 @@
+{
+  "at": "2026-10-21T15:27:50.569334Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4520,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12254
+      },
+      "errors": [
+        "[iwdg_sr_wvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_rvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_pvu_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_onf_read] EARS_PATTERN_NONCONFORMANT: start with The/When/While/Where/If..then and use 'the IWDG LL driver shall'",
+        "[iwdg_sr_onf_read] acts on IWDG_SR.ONF, which another task of this register covers: remove requirement [iwdg_sr_onf_read] from this task",
+        "[iwdg_sr_wvu_clear] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_sr_wvu_clear] from this task",
+        "[iwdg_sr_rvu_clear] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_sr_rvu_clear] from this task",
+        "[iwdg_sr_pvu_clear] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_sr_pvu_clear] from this task",
+        "[iwdg_sr_onf_clear] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_sr_onf_clear] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 1328,
+        "prompt_tokens": 3101,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 4429
+      },
+      "wall_ms": 65773.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6576,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 17910
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f09a55f2d5b5b51c37b32eb6ad01c3b0c96c4ae02cfebe6fb1f5281aa28d7cff",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 531,
+        "prompt_tokens": 4832,
+        "prompt_tokens_details": {
+          "cached_tokens": 2696
+        },
+        "total_tokens": 5363
+      },
+      "wall_ms": 29895.2
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_WVU_READ",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 0U when the IWDG_SR.WVU field is clear, or 1U when it is set.",
+        "verification": "The host unit test passes when the function returns 0U when WVU bit is clear in IWDG_SR and 1U when it is set.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_RVU_READ",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 0U when the IWDG_SR.RVU field is clear, or 1U when it is set.",
+        "verification": "The host unit test passes when the function returns 0U when RVU bit is clear in IWDG_SR and 1U when it is set.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_SR_PVU_READ",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 0U when the IWDG_SR.PVU field is clear, or 1U when it is set.",
+        "verification": "The host unit test passes when the function returns 0U when PVU bit is clear in IWDG_SR and 1U when it is set.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

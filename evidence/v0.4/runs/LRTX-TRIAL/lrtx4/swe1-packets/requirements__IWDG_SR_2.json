@@ -1,0 +1,110 @@
+{
+  "at": "2026-10-21T13:24:20.389550Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4057,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11980
+      },
+      "errors": [
+        "[swr_001] names no field of this task: reset/startup and all-function rules belong to the cross-cutting task - remove this requirement here"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "801456f8d03bc5dbe74eb45c7e488e0570fdbd73bb4a4670265b8436a0d3690b",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 636,
+        "prompt_tokens": 3036,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 3672
+      },
+      "wall_ms": 38688.0
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4820,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14268
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "00df415357ecee40ad343d5833c8f310a612ac076431f68249812f1558de8c40",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 525,
+        "prompt_tokens": 3737,
+        "prompt_tokens_details": {
+          "cached_tokens": 2631
+        },
+        "total_tokens": 4262
+      },
+      "wall_ms": 27628.9
+    }
+  ],
+  "base_hash": "801456f8d03bc5dbe74eb45c7e488e0570fdbd73bb4a4670265b8436a0d3690b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_WVU",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.WVU field and return 1U when set, else 0U.",
+        "verification": "A host unit test passes when the function reading IWDG_SR.WVU returns 1U when WVU bit is set in the register array, and 0U otherwise.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RVU",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.RVU field and return 1U when set, else 0U.",
+        "verification": "A host unit test passes when the function reading IWDG_SR.RVU returns 1U when RVU bit is set in the register array, and 0U otherwise.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_PVU",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.PVU field and return 1U when set, else 0U.",
+        "verification": "A host unit test passes when the function reading IWDG_SR.PVU returns 1U when PVU bit is set in the register array, and 0U otherwise.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

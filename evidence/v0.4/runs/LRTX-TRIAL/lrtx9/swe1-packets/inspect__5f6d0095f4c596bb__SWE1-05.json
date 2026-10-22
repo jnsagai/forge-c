@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-21T16:12:32.486550Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7690,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20974
+      },
+      "errors": [
+        "finding 'SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "dedbcebc56222b2ceef3a8455d6513affc37009d2e2c90e4cb9b3d29e0d93e54",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 149,
+        "prompt_tokens": 7168,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7317
+      },
+      "wall_ms": 47035.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8058,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21984
+      },
+      "errors": [
+        "finding 'SWE1-05: No software safety requirements are allocated; the safety allocation st...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1fe56184dca80919310595b4422bbe75cbd10ea54e713d9e258ed59c990cef4b",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 142,
+        "prompt_tokens": 7421,
+        "prompt_tokens_details": {
+          "cached_tokens": 7042
+        },
+        "total_tokens": 7563
+      },
+      "wall_ms": 12488.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8038,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 21930
+      },
+      "errors": [
+        "finding 'SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "16ac1390c98f27ef7ce98aa648bf7c0642457b1ba6c7bf00c6b1576a2998cf4d",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 149,
+        "prompt_tokens": 7400,
+        "prompt_tokens_details": {
+          "cached_tokens": 7092
+        },
+        "total_tokens": 7549
+      },
+      "wall_ms": 9376.8
+    }
+  ],
+  "base_hash": "dedbcebc56222b2ceef3a8455d6513affc37009d2e2c90e4cb9b3d29e0d93e54",
+  "doc": {
+    "evidence_checked": [
+      "source safety/software_safety_requirements.md",
+      "source traceability/requirements_to_tests.csv",
+      "source traceability/upstream_gaps.md",
+      "source workproducts/SWE.1/register_effects.json",
+      "source workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability. Requirement SWR-001 through SWR-023 are affected."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [
+    "finding 'SWE1-05: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional ups...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "inspect:5f6d0095f4c596bb:SWE1-05"
+}

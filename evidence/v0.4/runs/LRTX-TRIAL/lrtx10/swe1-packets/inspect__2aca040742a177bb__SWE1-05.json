@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-21T17:23:16.045778Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6615,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18017
+      },
+      "errors": [
+        "finding 'The software safety allocation is PENDING owner allocation review, creating a ga...' judges the owner's recorded PENDING allocation decision as a failure: per the note it is a gap recorded in traceability/upstream_gaps.md - re-judge the item on the other evidence",
+        "evidence_checked names source/software_safety_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1944a7802bc1b152e3cf1e9bbd208c336454f0c142670a435cfcac7ff60f629a",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 133,
+        "prompt_tokens": 5832,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5965
+      },
+      "wall_ms": 22321.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6997,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19068
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "fcc385d1aa7ad190172d89784dda2ea9c552ef94cd1d2eae7d46c61992a4b234",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 6069,
+        "prompt_tokens_details": {
+          "cached_tokens": 5706
+        },
+        "total_tokens": 6167
+      },
+      "wall_ms": 5746.5
+    }
+  ],
+  "base_hash": "1944a7802bc1b152e3cf1e9bbd208c336454f0c142670a435cfcac7ff60f629a",
+  "doc": {
+    "evidence_checked": [
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "traceability/requirements_to_tests.csv",
+      "workproducts/SWE.1/software_requirements.md"
+    ],
+    "findings": [
+      "Requirement SWR-001 lacks an approved safety allocation, making its feasibility unclear and creating a coverage gap."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:2aca040742a177bb:SWE1-05"
+}

@@ -250,6 +250,7 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         meter = state_dir() / "llm-gateway" / "usage.jsonl"
         if meter.is_file() and not run_id:
             rows = [json.loads(x) for x in meter.read_text().splitlines() if x.strip()]
+            rows = [x for x in rows if "sample" not in x]  # feature 010 resource samples are not requests
             items.append({"work_order": "llm-gateway-meter", "basis": "reported" if all(x["basis"] == "reported"
                                                                                         for x in rows) else "mixed",
                           "requests": len(rows), "total_input": sum(x["tokens_input"] or 0 for x in rows),

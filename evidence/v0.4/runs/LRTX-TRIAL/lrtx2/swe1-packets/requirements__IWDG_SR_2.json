@@ -1,0 +1,94 @@
+{
+  "at": "2026-10-21T12:50:53.091709Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3991,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11782
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "c39155e4bb331cf62f97362502e986e87440fae085282ee8ae0d9dfd3814e026",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 655,
+        "prompt_tokens": 2997,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 3652
+      },
+      "wall_ms": 35284.8
+    }
+  ],
+  "base_hash": "c39155e4bb331cf62f97362502e986e87440fae085282ee8ae0d9dfd3814e026",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "READ_WVU",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.WVU field and return 1U when set, else 0U.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U] bit 2 is set and function returns 1U, or when bit 2 is reset and function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_RVU",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.RVU field and return 1U when set, else 0U.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U] bit 1 is set and function returns 1U, or when bit 1 is reset and function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_PVU",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_read",
+        "source_page": 2991,
+        "statement": "The IWDG LL driver shall read the IWDG_SR.PVU field and return 1U when set, else 0U.",
+        "verification": "host_unit_test passes when ll_iwdg_regs[IWDG_SR_OFFSET / 4U] bit 0 is set and function returns 1U, or when bit 0 is reset and function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_001",
+        "source_page": 2990,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no IWDG register is written during initialization and before any call to an IWDG LL function.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

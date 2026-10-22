@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-21T13:25:51.389566Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5800,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17208
+      },
+      "errors": [
+        "evidence_checked names source/safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source/traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source/traceability/upstream_gaps.md, which is not a provided source",
+        "evidence_checked names source/workproducts/SWE.1/register_effects.json, which is not a provided source",
+        "evidence_checked names source/workproducts/SWE.1/software_requirements.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "d06a38401042b78cda3ada633267e9a6c63349a1e17c8fd59206d088061dea9d",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 144,
+        "prompt_tokens": 5820,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 5964
+      },
+      "wall_ms": 22492.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6221,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18472
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "47dbeacae4d21a6db68fe9e2f048daf0f333f7cbfbdec5e27e240d56da6ba600",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 137,
+        "prompt_tokens": 6098,
+        "prompt_tokens_details": {
+          "cached_tokens": 5702
+        },
+        "total_tokens": 6235
+      },
+      "wall_ms": 7295.4
+    }
+  ],
+  "base_hash": "d06a38401042b78cda3ada633267e9a6c63349a1e17c8fd59206d088061dea9d",
+  "doc": {
+    "evidence_checked": [
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "Requirement SWR-001 is not objectively verifiable because the safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirement meets safety objectives."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:414479c7b5c7d021:SWE1-02"
+}

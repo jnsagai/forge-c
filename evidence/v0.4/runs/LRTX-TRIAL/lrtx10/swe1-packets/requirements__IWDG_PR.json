@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-21T16:26:44.881420Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3320,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8955
+      },
+      "errors": [
+        "[iwdg_pr_enable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_enable_write_access] from this task",
+        "[iwdg_pr_disable_write_access] acts on IWDG_KR.KEY, which the IWDG_KR task covers: remove requirement [iwdg_pr_disable_write_access] from this task",
+        "[iwdg_pr_query_update_flag] EARS_NOT_ATOMIC_2_SHALL: the statement has 2 'shall': split it into 2 requirements with one 'shall' each",
+        "[iwdg_pr_query_update_flag] acts on IWDG_SR.PVU, which the IWDG_SR task covers: remove requirement [iwdg_pr_query_update_flag] from this task",
+        "[iwdg_pr_reset_startup_behavior] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_pr_reset_startup_behavior] from this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 873,
+        "prompt_tokens": 2401,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3274
+      },
+      "wall_ms": 41814.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4668,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12662
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b726fc980f58c671349a6d487e26e6c4cd132362f938c3bb56b213a9cddc30a2",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 193,
+        "prompt_tokens": 3516,
+        "prompt_tokens_details": {
+          "cached_tokens": 1996
+        },
+        "total_tokens": 3709
+      },
+      "wall_ms": 12535.6
+    }
+  ],
+  "base_hash": "7d5c68a93651e0707d4f9cf7971a03e6fcf71e1c3efee0e82b6bc58d9b38df08",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_WRITE_PRESCALER",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x00000005"
+          }
+        ],
+        "key": "iwdg_pr_write_prescaler",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the prescaler divider value to IWDG_PR.PR when requested by the caller.",
+        "verification": "A host unit test passes when the function writes the correct value to the IWDG_PR.PR field and the ll_iwdg_regs array is updated accordingly.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

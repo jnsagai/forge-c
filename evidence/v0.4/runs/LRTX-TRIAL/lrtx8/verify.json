@@ -1,0 +1,116 @@
+{
+ "checks": {
+  "acp_rejected": true,
+  "admission_metrics": true,
+  "fabro_providers_local": true,
+  "model_digest_match": true,
+  "network_denied_observed": true,
+  "package_sealed": true,
+  "profile_selected": true,
+  "roots_isolated": true
+ },
+ "metrics": {
+  "calls": {
+   "basis": "admission gateway meter",
+   "count": 43,
+   "decode_ms": 633126.2,
+   "decode_tokens_per_s_median": 22.71,
+   "first_delta_ms": 219048.9,
+   "load_ms": 0,
+   "model_loads": 0,
+   "output_tokens": 13842,
+   "prefill_ms": 219048.9,
+   "prefill_tokens_per_s_median": 3076.2,
+   "prompt_tokens": {
+    "max": 7464,
+    "median": 6289,
+    "p95": 6494,
+    "sum": 234095
+   },
+   "queue_wait_ms": {
+    "max": 0.2,
+    "sum": 5.0
+   },
+   "refused_or_cancelled": 0,
+   "split_unobservable": 0
+  },
+  "energy": {
+   "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+   "coverage": 1.0,
+   "gpu_board_j": 26876.4,
+   "gpu_board_wh": 7.466,
+   "wall": "UNKNOWN (no wall-power meter on this host)"
+  },
+  "resources": {
+   "gpu_vram_fraction_median": 0.34,
+   "gpu_vram_fraction_min": 0.34,
+   "host_mem_available_mib_min": 14912,
+   "host_swap_used_mib_max": 13356,
+   "samples": 87
+  },
+  "stages": {
+   "basis": "Fabro stage records",
+   "by_node": {
+    "exit": {
+     "inference_ms": 0,
+     "tool_ms": 0,
+     "visits": 1,
+     "wall_ms": 0
+    },
+    "finalize": {
+     "inference_ms": 0,
+     "tool_ms": 1565,
+     "visits": 1,
+     "wall_ms": 1785
+    },
+    "start": {
+     "inference_ms": 0,
+     "tool_ms": 0,
+     "visits": 1,
+     "wall_ms": 222
+    },
+    "swe1_author": {
+     "inference_ms": 0,
+     "tool_ms": 493982,
+     "visits": 1,
+     "wall_ms": 494196
+    },
+    "swe1_author_gate": {
+     "inference_ms": 0,
+     "tool_ms": 1280,
+     "visits": 1,
+     "wall_ms": 1505
+    },
+    "swe1_inspector": {
+     "inference_ms": 0,
+     "tool_ms": 366838,
+     "visits": 3,
+     "wall_ms": 367485
+    },
+    "swe1_reinspect": {
+     "inference_ms": 0,
+     "tool_ms": 266,
+     "visits": 2,
+     "wall_ms": 661
+    },
+    "swe1_route": {
+     "inference_ms": 0,
+     "tool_ms": 264,
+     "visits": 2,
+     "wall_ms": 658
+    }
+   },
+   "count": 12,
+   "inference_ms": 0,
+   "tool_ms": 864195,
+   "wall_ms": 866512
+  },
+  "window": {
+   "from": "2026-10-21T15:20:02.314596Z",
+   "to": "2026-10-21T15:34:33.448975Z",
+   "wall_s": 872.1
+  }
+ },
+ "package_status": "BLOCKED",
+ "status": "PASS"
+}

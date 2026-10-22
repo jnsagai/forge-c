@@ -17,7 +17,8 @@ for n in names:
         sys.exit(f"{tid} NOT MARKED — evidence {n} status {rec['status']}")
     refs.append(f"evidence/v0.4/runs/{n}/latest.json")
 text = tasks.read_text()
-pat = re.compile(rf"^- \[ \] ((?:\*\*|`){re.escape(tid)}\b.*)$", re.M)  # 002 '**T001**' and 001 '`T-006`' forms
+# 002 '**T001**', 001 '`T-006`' and 010 bare 'LRTX-T003' forms
+pat = re.compile(rf"^- \[ \] ((?:\*\*|`)?{re.escape(tid)}\b.*)$", re.M)
 m = pat.search(text)
 if not m:
     sys.exit(f"{tid} not found unchecked")

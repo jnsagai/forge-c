@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-21T21:43:07.684934Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2428,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 6503
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "5f7347beec37b351b0fe877614d25c12decdaf65b3158a1f5963e998ac2b1b24",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 1106,
+        "prompt_tokens": 1802,
+        "prompt_tokens_details": {
+          "cached_tokens": 249
+        },
+        "total_tokens": 2908
+      },
+      "wall_ms": 63919.3
+    }
+  ],
+  "base_hash": "5f7347beec37b351b0fe877614d25c12decdaf65b3158a1f5963e998ac2b1b24",
+  "doc": {
+    "components": "The software component SWC_LL owns the static inline LL driver functions providing direct access to IWDG hardware registers without maintaining any driver-owned state. The caller or integration layer is responsible for managing timeouts, polling logic, and coordinating access to the watchdog interface. Integration must place the register-block array ll_iwdg_regs at the base address 0x56004800 by the linker as per the generated memory map, ensuring volatile access semantics and proper alignment. The component does not own or manage any hardware configuration beyond direct register writes and status reads.",
+    "concurrency_and_reentrancy": "The LL driver is reentrant and suitable for use in both task-level and ISR contexts. However, read-modify-write operations (e.g., setting prescaler or reload) may not be atomic if the register access spans multiple memory locations or if interrupts are disabled during an operation, requiring callers to perform serialisation of access to prevent race conditions when multiple tasks or ISRs interact with these fields.",
+    "decisions": [
+      "The IWDG LL layer implements only header-only static inline functions to minimize code size and maximize performance in constrained embedded environments.",
+      "Keys are written as complete register writes to the IWDG_KR register because it is a write-only register that does not support read-modify-write operations.",
+      "All register updates for IWDG_PR, IWDG_RLR etc. use read-modify-write semantics except when they are fully write-only registers, which require whole-register writes.",
+      "No timing, waiting or error handling is implemented at LL level; polling loops must be bounded and handled by the caller to satisfy real-time requirements.",
+      "The driver assumes correct integration of clock enablement and reset state prior to invoking IWDG functions.",
+      "Caller-bound access control ensures that concurrent access is serialized outside of the driver to prevent conflicts during register updates."
+    ],
+    "memory_and_stack": "The Flash memory usage of the LL module is allocated within a limit of 4096 bytes, which includes code size for all static inline functions. Static RAM consumption remains within 64 bytes, and stack usage for function calls is bounded below 128 bytes, satisfying the requirements for a header-only driver suitable for resource-constrained microcontroller environments.",
+    "register_access": "All register access is performed via the extern volatile uint32_t array ll_iwdg_regs accessed through computed offsets divided by four. Keys are written to IWDG_KR as a whole register write only, since it is a write-only key register. Other registers such as IWDG_PR, IWDG_RLR are updated using read-modify-write operations preserving the intact bits unless they are fully write-only and thus require whole-register writes. Clock and reset dependencies for IWDG are handled through integration of the peripheral clock enablement and reset assertions, not by the LL component itself.",
+    "safety_and_dependencies": "The LL driver does not implement safety mechanisms such as error reporting or degradation handling. It assumes the integration handles proper ordering of register accesses, correct use of keys, and appropriate clock/reset assertions. The functionality provided is directly mapped to hardware behavior, without additional checks for operational integrity. Dependencies on the integration include correct peripheral base address placement, access key sequence correctness, and bounded polling loop implementation by caller.",
+    "sequences": [
+      {
+        "steps": [
+          {
+            "function": "LL_IWDG_EnableWriteAccess",
+            "note": "Enable write access to PR, RLR and WINR registers before setting values.",
+            "repeat_until": ""
+          },
+          {
+            "function": "LL_IWDG_SetPrescaler",
+            "note": "Set desired prescaler value in IWDG_PR.PR field.",
+            "repeat_until": ""
+          },
+          {
+            "function": "LL_IWDG_SetReloadCounter",
+            "note": "Set the reload counter value in IWDG_RLR.RL field.",
+            "repeat_until": ""
+          },
+          {
+            "function": "LL_IWDG_IsActiveFlag_PVU",
+            "note": "Poll for prescaler update complete before enabling watchdog.",
+            "repeat_until": "PVU flag is set"
+          },
+          {
+            "function": "LL_IWDG_IsActiveFlag_RVU",
+            "note": "Poll for reload update complete after setting the counter value.",
+            "repeat_until": "RVU flag is set"
+          },
+          {
+            "function": "LL_IWDG_Enable",
+            "note": "Write enable key to start the IWDG.",
+            "repeat_until": ""
+          }
+        ],
+        "title": "Start sequence"
+      },
+      {
+        "steps": [
+          {
+            "function": "LL_IWDG_ReloadCounter",
+            "note": "Write refresh key to restart the watchdog countdown timer.",
+            "repeat_until": ""
+          }
+        ],
+        "title": "Refresh sequence"
+      }
+    ],
+    "timing_and_error_handling": "No waiting or timeout handling at LL level is performed. The implementation does not return error codes or provide blocking behavior. All polling must be bounded to a specific loop in the caller's context. This allows for flexible integration with different application-level timing constraints and avoids unbounded delays, keeping the LL layer lightweight and suitable for low-latency contexts."
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "design"
+}

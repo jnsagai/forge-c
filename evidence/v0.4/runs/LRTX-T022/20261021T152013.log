@@ -1,0 +1,252 @@
+.........                                                                [100%]
+==================================== PASSES ====================================
+_____________________ test_units_follow_the_swe2_interface _____________________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+_ test_code_validation_catches_casts_wrong_signature_unknown_defines_and_traces _
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+_________ test_structured_code_and_design_pass_the_unchanged_swe3_gate _________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+_________ test_oracle_tests_pass_run_unit_and_the_unchanged_swe4_gate __________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "test:UT-001", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-002", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-003", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-004", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-005", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-006", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-007", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-008", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-009", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.4-001", "baseline_hash": "4beb6cf81c27e77f23520ace3b948e3afb27251aadf69ab35d49ebc2c320987c"}
+_______ test_a_correct_failing_test_files_a_code_defect_not_a_bent_test ________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "test:UT-001", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-002", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-003", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-004", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-005", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-006", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-007", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-008", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-009", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+____ test_structured_swe5_passes_renode_integration_and_the_unchanged_gate _____
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "test:UT-001", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-002", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-003", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-004", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-005", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-006", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-007", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-008", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-009", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.4-001", "baseline_hash": "4beb6cf81c27e77f23520ace3b948e3afb27251aadf69ab35d49ebc2c320987c"}
+{"lrtx_progress": "file:target", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "file:target_timeout", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "file:integration", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.5-001", "baseline_hash": "8d9a887934f0acd7bc85bbcd01a7923039a54bf78e94ed316b0942e1a5cfd28b"}
+_________________________ test_target_file_validation __________________________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+______ test_structured_swe6_passes_robot_on_renode_and_the_unchanged_gate ______
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "test:UT-001", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-002", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-003", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-004", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-005", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-006", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-007", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-008", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "test:UT-009", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.4-001", "baseline_hash": "4beb6cf81c27e77f23520ace3b948e3afb27251aadf69ab35d49ebc2c320987c"}
+{"lrtx_progress": "file:target", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "file:target_timeout", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "file:integration", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.5-001", "baseline_hash": "8d9a887934f0acd7bc85bbcd01a7923039a54bf78e94ed316b0942e1a5cfd28b"}
+{"lrtx_progress": "scenario:iwdg_kr", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "scenario:iwdg_pr", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "scenario:iwdg_rlr", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "scenario:iwdg_sr_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "scenario:iwdg_sr_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "scenario:startup", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.6-001", "baseline_hash": "572b41dcdedc76d9408db08b8233cdfca32bff0d7c9dbb96f6852bd8513be62b"}
+_ test_scenario_validation_needs_exactly_one_check_per_requirement_naming_its_field _
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.2-001", "baseline_hash": "62c844cbe6bc6959888865b5ec2edc1ab0d5e8754c69483b9edbcae3edcfa62b"}
+{"lrtx_progress": "code:SWU-LL-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-07", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-08", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "code:SWU-LL-09", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.3-001", "baseline_hash": "3f47ee26beb83d789de5fee18ce3b80d0be0523e429ec58ceb6e2a5d0539750b"}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_swe3.py::test_units_follow_the_swe2_interface
+PASSED factory/python/tests/test_lrtx_swe3.py::test_code_validation_catches_casts_wrong_signature_unknown_defines_and_traces
+PASSED factory/python/tests/test_lrtx_swe3.py::test_structured_code_and_design_pass_the_unchanged_swe3_gate
+PASSED factory/python/tests/test_lrtx_swe4.py::test_oracle_tests_pass_run_unit_and_the_unchanged_swe4_gate
+PASSED factory/python/tests/test_lrtx_swe4.py::test_a_correct_failing_test_files_a_code_defect_not_a_bent_test
+PASSED factory/python/tests/test_lrtx_swe5.py::test_structured_swe5_passes_renode_integration_and_the_unchanged_gate
+PASSED factory/python/tests/test_lrtx_swe5.py::test_target_file_validation
+PASSED factory/python/tests/test_lrtx_swe6.py::test_structured_swe6_passes_robot_on_renode_and_the_unchanged_gate
+PASSED factory/python/tests/test_lrtx_swe6.py::test_scenario_validation_needs_exactly_one_check_per_requirement_naming_its_field
+9 passed in 365.72s (0:06:05)
+
+--- stderr ---

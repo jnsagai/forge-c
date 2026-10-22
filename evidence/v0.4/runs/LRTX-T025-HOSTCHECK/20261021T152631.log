@@ -1,0 +1,17 @@
+{"status": "PASS", "checkouts": ["UNCHANGED"], "archives": {"preserved": 208, "missing": [], "changed": []}, "services_ok": true, "network": "DENIED_VERIFIED", "rollback_conflicts": []}
+..........                                                               [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_hostcheck.py::test_archives_missing_changed_and_profile_archives_are_detected
+PASSED factory/python/tests/test_lrtx_hostcheck.py::test_deployment_state_with_a_profile_work_order_fails
+PASSED factory/python/tests/test_lrtx_hostcheck.py::test_rollback_plan_never_removes_a_deployment_root
+PASSED factory/python/tests/test_lrtx_compat.py::test_secret_like_environment_names_are_redacted_and_others_dropped
+PASSED factory/python/tests/test_lrtx_compat.py::test_archive_copy_is_verified_and_restored
+PASSED factory/python/tests/test_lrtx_compat.py::test_member_hash_mismatch_fails_preservation
+PASSED factory/python/tests/test_lrtx_compat.py::test_backup_inside_a_repository_is_refused
+PASSED factory/python/tests/test_lrtx_compat.py::test_compare_reports_every_changed_field
+PASSED factory/python/tests/test_lrtx_compat.py::test_fixture_covers_existing_workflow_and_provider_combinations
+PASSED factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures
+10 passed in 7.00s
+
+--- stderr ---

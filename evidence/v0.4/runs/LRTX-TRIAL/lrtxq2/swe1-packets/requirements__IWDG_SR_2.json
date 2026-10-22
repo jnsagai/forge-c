@@ -1,0 +1,116 @@
+{
+  "at": "2026-10-21T20:20:51.402677Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4520,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12254
+      },
+      "errors": [
+        "[iwdg_sr_onf_query] acts on IWDG_SR.ONF, which another task of this register covers: remove requirement [iwdg_sr_onf_query] from this task",
+        "[iwdg_reset_start_behavior] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [iwdg_reset_start_behavior] from this task",
+        "field IWDG_SR.WVU is both covered and listed in not_covered"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 865,
+        "prompt_tokens": 3101,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 3966
+      },
+      "wall_ms": 42756.5
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5680,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15444
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "7bee1d3c0109ebad8b206952cf750ceae06eb145c40cefa542d7518f1c0d3c2c",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 547,
+        "prompt_tokens": 4094,
+        "prompt_tokens_details": {
+          "cached_tokens": 2696
+        },
+        "total_tokens": 4641
+      },
+      "wall_ms": 27718.3
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "PVU_QUERY",
+            "field": "PVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu_query",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 1U if the IWDG_SR.PVU field is set, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.PVU bit is set and the function returns 1U, or when the IWDG_SR.PVU bit is reset and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "RVU_QUERY",
+            "field": "RVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu_query",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 1U if the IWDG_SR.RVU field is set, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.RVU bit is set and the function returns 1U, or when the IWDG_SR.RVU bit is reset and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "WVU_QUERY",
+            "field": "WVU",
+            "op": "no_write",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu_query",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall return 1U if the IWDG_SR.WVU field is set, else 0U.",
+        "verification": "The host unit test passes when the IWDG_SR.WVU bit is set and the function returns 1U, or when the IWDG_SR.WVU bit is reset and the function returns 0U.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

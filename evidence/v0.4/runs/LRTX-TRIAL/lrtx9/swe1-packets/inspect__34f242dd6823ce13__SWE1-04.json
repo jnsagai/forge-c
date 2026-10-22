@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-21T16:05:51.392118Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7544,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 20572
+      },
+      "errors": [
+        "finding 'SWR-020 Flash usage constraint is not measurable because the upstream budget is ...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding says SWR-020 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge",
+        "finding 'SWR-021 Static RAM usage constraint is not measurable because the upstream budge...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding says SWR-021 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge",
+        "finding 'SWR-022 Stack usage constraint is not measurable because the upstream budget is ...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding says SWR-022 lacks verification, but the document gives: 'SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver ima' - re-judge"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "4a66796de87edd27ea8ed1b094c985e2c415cc1688eede0c2ca30c51f0afe24f",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 225,
+        "prompt_tokens": 7040,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 7265
+      },
+      "wall_ms": 29039.7
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8517,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 23248
+      },
+      "errors": [
+        "finding 'SWR-020 Flash usage constraint is not explicit because the requirement reference...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'SWR-021 Static RAM usage constraint is not explicit because the requirement refe...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'SWR-022 Stack usage constraint is not explicit because the requirement reference...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "3fd5586716cda64296171df11e5eca0522a60dacbfb9cf54426d7ef8520ea853",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 225,
+        "prompt_tokens": 7647,
+        "prompt_tokens_details": {
+          "cached_tokens": 6914
+        },
+        "total_tokens": 7872
+      },
+      "wall_ms": 12356.6
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 8307,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 22669
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "a76e389bb71e0975d274f2ba7ae93b4e7519c29140c003d14442a0846827b3ba",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "PROBED 2026-10-21T15:18:21.588213Z",
+      "usage": {
+        "completion_tokens": 98,
+        "prompt_tokens": 7502,
+        "prompt_tokens_details": {
+          "cached_tokens": 6968
+        },
+        "total_tokens": 7600
+      },
+      "wall_ms": 5951.1
+    }
+  ],
+  "base_hash": "4a66796de87edd27ea8ed1b094c985e2c415cc1688eede0c2ca30c51f0afe24f",
+  "doc": {
+    "evidence_checked": [
+      "source/safety/software_safety_requirements.md",
+      "source/traceability/requirements_to_tests.csv",
+      "source/traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:34f242dd6823ce13:SWE1-04"
+}

@@ -1,0 +1,162 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "c8ab81b02c80b32144c041f3f1a5711bb50fa6a4fa67c8628227002677433b67",
+  "baseline_id": "BL-SWE.1-001",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "No software safety requirements are allocated, as indicated in safety/software_safety_requirements.md and recorded in traceability/upstream_gaps.md; the safety allocation status is PENDING owner alloc",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-020: Requirement is not feasible because it depends on an upstream budget that has not been provided, violating the feasibility criterion.",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "The software requirements do not specify failure handling or safe states. Although SWR-020 defines reset behavior (no register writes before function call), it does not address failure handling or saf",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-021: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but the verification criterion in software_requirements.md only states that SWE.6 Robot suite check",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-001: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability.",
+      "id": "SWE1-05",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-001: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.; SWR-002: Verifi",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-001",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "source/safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "No software safety requirements are allocated, as indicated in safety/software_safety_requirements.md and recorded in traceability/upstream_gaps.md; the safety allocation status is PENDING owner alloc"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-020: Requirement is not feasible because it depends on an upstream budget that has not been provided, violating the feasibility criterion."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "source/workproducts/SWE.1/register_effects.json",
+        "source/workproducts/SWE.1/software_requirements.md"
+      ],
+      "findings": [
+        "The software requirements do not specify failure handling or safe states. Although SWR-020 defines reset behavior (no register writes before function call), it does not address failure handling or saf",
+        "The software safety requirements document indicates that no software safety requirements are allocated yet, which implies that critical safety behaviors such as failure handling and safe state definit"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-021: The requirement specifies that the IWDG LL driver shall occupy at most 4096 bytes of flash, but the verification criterion in software_requirements.md only states that SWE.6 Robot suite check",
+        "SWR-022: The requirement specifies that the IWDG LL driver shall use at most 64 bytes of static RAM, but the verification criterion in software_requirements.md only states that SWE.6 Robot suite check",
+        "SWR-023: The requirement specifies that the IWDG LL driver shall use at most 128 bytes of stack for any public API call, but the verification criterion in software_requirements.md only states that SWE"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-001: Upstream HSI contract NOT_PROVIDED, creating a gap in bidirectional upstream-to-SWE.1 traceability."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "source/safety/software_safety_requirements.md",
+        "source/traceability/requirements_to_tests.csv",
+        "source/traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-001: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-002: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-003: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-004: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-005: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-006: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-007: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-008: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-009: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement.",
+        "SWR-010: Verification criterion not documented in software_requirements.md; only the source and test verification are mentioned, no explicit verification criteria for the requirement."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T160144.814143Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T160145.554133Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T16:01:45.554681Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

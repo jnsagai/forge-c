@@ -1,0 +1,137 @@
+{
+  "at": "2026-10-21T14:54:32.839639Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4520,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 12254
+      },
+      "errors": [
+        "[swr_001] is a reset/startup requirement: those belong to the cross-cutting task - remove requirement [swr_001] from this task",
+        "not_covered IWDG_SR.EWIF is not a field of this task",
+        "not_covered IWDG_SR.EWU is not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 837,
+        "prompt_tokens": 3101,
+        "prompt_tokens_details": {
+          "cached_tokens": 252
+        },
+        "total_tokens": 3938
+      },
+      "wall_ms": 71901.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5642,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 15341
+      },
+      "errors": [
+        "not_covered IWDG_SR.EWIF is not a field of this task",
+        "not_covered IWDG_SR.EWU is not a field of this task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "1949601afc6aa300f6f55682e501a34ea277a6af8b1810b6357ebb8fab4cb9e6",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 556,
+        "prompt_tokens": 4043,
+        "prompt_tokens_details": {
+          "cached_tokens": 2696
+        },
+        "total_tokens": 4599
+      },
+      "wall_ms": 42436.2
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5266,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 14306
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b97de051f5ed7089cd4bedddf9e96e83653c007aa92e6a47666b9845c6a816e0",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 488,
+        "prompt_tokens": 3723,
+        "prompt_tokens_details": {
+          "cached_tokens": 3193
+        },
+        "total_tokens": 4211
+      },
+      "wall_ms": 31914.3
+    }
+  ],
+  "base_hash": "76c8dc75fce3953c73709b57d15336bafdb8552dbba0251f98f1a84cb8b6cb2b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WVU_SET",
+            "field": "WVU",
+            "op": "set",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_wvu",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall set the IWDG_SR.WVU bit when a window value update operation is initiated.",
+        "verification": "The test passes when the IWDG_SR.WVU bit is set after initiating a window value update operation through the IWDG_WINR register.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "RVU_SET",
+            "field": "RVU",
+            "op": "set",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_rvu",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall set the IWDG_SR.RVU bit when a reload value update operation is initiated.",
+        "verification": "The test passes when the IWDG_SR.RVU bit is set after initiating a reload value update operation through the IWDG_RLR register.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "PVU_SET",
+            "field": "PVU",
+            "op": "set",
+            "register": "IWDG_SR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_sr_pvu",
+        "source_page": 2994,
+        "statement": "The IWDG LL driver shall set the IWDG_SR.PVU bit when a prescaler value update operation is initiated.",
+        "verification": "The test passes when the IWDG_SR.PVU bit is set after initiating a prescaler value update operation through the IWDG_PR register.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_SR_2"
+}

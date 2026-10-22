@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-21T13:35:34.251364Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5962,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17694
+      },
+      "errors": [
+        "evidence_checked names source/safety/software_safety_requirements.md, which is not a provided source",
+        "evidence_checked names source/traceability/requirements_to_tests.csv, which is not a provided source",
+        "evidence_checked names source/traceability/upstream_gaps.md, which is not a provided source"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "238144178d6860bc2298d3a3678d84279581b543d70532191228e5862dd65c92",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 151,
+        "prompt_tokens": 5915,
+        "prompt_tokens_details": {
+          "cached_tokens": 248
+        },
+        "total_tokens": 6066
+      },
+      "wall_ms": 25703.8
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 6304,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18720
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "91f0d9c8f45a50a4107fca3d0121e3e063267242a121b60717b1ae40b2a043c8",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 221,
+        "prompt_tokens": 6156,
+        "prompt_tokens_details": {
+          "cached_tokens": 5797
+        },
+        "total_tokens": 6377
+      },
+      "wall_ms": 11891.5
+    }
+  ],
+  "base_hash": "238144178d6860bc2298d3a3678d84279581b543d70532191228e5862dd65c92",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/register_effects.json",
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets"
+    ],
+    "findings": [
+      "SWR-016: The requirement states that the IWDG LL driver shall occupy at most 4096 bytes of flash, but no verification evidence is provided in the source materials to confirm this constraint is explicit and measurable.",
+      "SWR-017: The requirement states that the IWDG LL driver shall use at most 64 bytes of static RAM, but no verification evidence is provided in the source materials to confirm this constraint is explicit and measurable.",
+      "SWR-018: The requirement states that the IWDG LL driver shall use at most 128 bytes of stack for any public API call, but no verification evidence is provided in the source materials to confirm this constraint is explicit and measurable."
+    ],
+    "verdict": "FAIL"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c5d5a45d53a268b1:SWE1-04"
+}

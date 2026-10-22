@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-21T13:33:35.477102Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2976,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8738
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "cbf9c6fd3d0e9fc68daa730ff84fb36a240d2c5949ac167d0ed254545abe2150",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 368,
+        "prompt_tokens": 2486,
+        "prompt_tokens_details": {
+          "cached_tokens": 1634
+        },
+        "total_tokens": 2854
+      },
+      "wall_ms": 18361.3
+    }
+  ],
+  "base_hash": "dfa968b1eb3c89884e127ca6c5036449a48b4cb1aa3914524d53941dab12c04e",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review.",
+      "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "swr_005",
+        "source_page": 2980,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register.",
+        "verification": "target_robot_test passes when no writes to IWDG registers occur before any LL function call",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_006",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall ensure that only the named bits are modified when writing to IWDG_PR.PR.",
+        "verification": "host_unit_test passes when writes to IWDG_PR.PR modify only the PR field",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "swr_007",
+        "source_page": 2980,
+        "statement": "The IWDG LL driver shall ensure that only the named bits are modified when writing to IWDG_RLR.RL.",
+        "verification": "host_unit_test passes when writes to IWDG_RLR.RL modify only the RL field",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

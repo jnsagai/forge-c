@@ -1,0 +1,61 @@
+schema: forge-c/local-profile/1
+id: local-rtx-v1
+version: 1
+status: EXPERIMENTAL - not qualified (feature 010, ADR-0013); selecting it is an explicit owner/operator action
+description: >-
+  Entirely local execution on the owner's RTX 4070 Laptop (8 GB VRAM), i9-14900HX, 32 GB RAM. Same SWE.1-SWE.6 gates,
+  checklists, rework limits, inspection independence and offline packaging as the Codex/Claude line.
+host_reference: {gpu: RTX 4070 Laptop 8 GB, cpu: i9-14900HX, ram_gb: 32}
+local_only: true
+provider: ollama
+models:
+  default: qwen3-coder:30b
+  # LRTX-FR-018: the measured comparison baseline; a model is used only when its local digest matches
+  allowed:
+    qwen3-coder:30b: {digest: 06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca, quantization: Q4_K_M,
+                      role_qualification: NOT_QUALIFIED}
+    qwen3:8b: {digest: 500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41, quantization: Q4_K_M,
+               role_qualification: NOT_QUALIFIED (candidate for narrow tasks only; not an inspector replacement)}
+runtime:  # existing Flash Attention + q8_0 KV settings retained (spec, initial configuration experiment)
+  ollama:
+    OLLAMA_NUM_PARALLEL: "1"
+    OLLAMA_MAX_LOADED_MODELS: "1"
+    OLLAMA_FLASH_ATTENTION: "1"
+    OLLAMA_KV_CACHE_TYPE: q8_0
+    OLLAMA_CONTEXT_LENGTH: "24576"
+    OLLAMA_NOPRUNE: "1"   # the shared model store is read-only for this profile
+  timeout_scale: 4        # bounded safeguard measured in the QWEN-TRIAL GPU runs; recalibrate only from measurements
+structured:               # ADR-0014: phases whose author / inspector run as structured tasks (per layer); others keep agents
+  phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  inspect_phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  reinspect_direct: true  # LRTX-T018: a valid, never-inspected baseline returns to the inspector, not the author
+  timeout_s: 3600         # node timeout, before timeout_scale
+  visit_time_s: 1200      # model work per node execution: Fabro ends a node silent for 1800 s (probes 2026-10-21)
+admission:                # LRTX-FR-006: one inference request at a time, bounded and observable waiting
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 1800
+measurement:              # LRTX-FR-007: periodic GPU/host samples by the admission gateway (energy integration)
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx
+  ports: {ollama: 11445, gateway: 11446, fabro: 32390}
+  # every port the existing deployment (and other owner services) listens on
+  forbidden_ports: [8765, 8787, 11434, 11435, 11436, 11437, 32290, 32291]
+  # writable runtime locations: each must resolve under the profile root and outside the existing deployment
+  writable_env: [FORGE_DATA_ROOT, FORGE_STATE_DIR, FORGE_ARCHIVE_DIR, FORGE_FABRO_CONFIG, FORGE_FABRO_STORAGE,
+                 FORGE_FABRO_HOME, FORGE_VENV, UV_CACHE_DIR, PIP_CACHE_DIR]
+  # immutable references shared read-only (symlinks inside the profile root to exactly these targets)
+  shared_readonly:
+    toolchains: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains
+    standards: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/standards
+    inputs: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inputs
+    ollama-0.34.0: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-0.34.0
+    ollama-models: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ollama-models
+existing_deployment:      # the preserved Codex/Claude line: never written by this profile
+  roots:
+    - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c
+    - /home/jefferson/forge-c
+network:
+  required: namespace_denied   # qualification runs inside a user+network namespace with loopback only

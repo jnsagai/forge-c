@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-21T12:48:22.121890Z",
+  "attempts": [
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2964,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8701
+      },
+      "errors": [
+        "[iwdg_pr_prescaler_write_protection] effect IWDG_PR_ENABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+        "[iwdg_pr_disable_write_access] effect IWDG_PR_DISABLE_WRITE_ACCESS names IWDG_KR.KEY, not a field of this task",
+        "[iwdg_pr_startup_no_write] effect IWDG_PR_STARTUP_NO_WRITE: the statement must name IWDG_PR.PR"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "eef7606ce82b8251f5ff7eb9646df86af40ff869cdf11ca42652eaa75ce3e957",
+      "n": 0,
+      "usage": {
+        "completion_tokens": 702,
+        "prompt_tokens": 2348,
+        "prompt_tokens_details": {
+          "cached_tokens": 250
+        },
+        "total_tokens": 3050
+      },
+      "wall_ms": 33355.1
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3900,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 11510
+      },
+      "errors": [
+        "[iwdg_pr_startup_no_write] effect IWDG_PR_STARTUP_NO_WRITE: the statement must name IWDG_PR.PR"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "c41cc70d2f2b13abd5c3b927873ae2878a0141fed504c2ff24c77c151d4f07f0",
+      "n": 1,
+      "usage": {
+        "completion_tokens": 582,
+        "prompt_tokens": 3177,
+        "prompt_tokens_details": {
+          "cached_tokens": 1943
+        },
+        "total_tokens": 3759
+      },
+      "wall_ms": 28841.9
+    },
+    {
+      "accounting": {
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3719,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 10966
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e424c46712d9ad4d5daa3491dc1cabac555bbd3698822e7f2901fd324f091592",
+      "n": 2,
+      "usage": {
+        "completion_tokens": 589,
+        "prompt_tokens": 2989,
+        "prompt_tokens_details": {
+          "cached_tokens": 2264
+        },
+        "total_tokens": 3578
+      },
+      "wall_ms": 30014.3
+    }
+  ],
+  "base_hash": "eef7606ce82b8251f5ff7eb9646df86af40ff869cdf11ca42652eaa75ce3e957",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_WRITE_PRESCALER",
+            "field": "PR",
+            "op": "write",
+            "register": "IWDG_PR",
+            "value": "0x00000001"
+          }
+        ],
+        "key": "iwdg_pr_write_prescaler",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall write the prescaler value to IWDG_PR.PR when requested by the caller.",
+        "verification": "A host unit test passes when writing a value to IWDG_PR.PR sets the correct bits in the register array and returns the expected value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "iwdg_pr_prescaler_write_protection",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall enable write access to IWDG_PR by writing 0x00005555 to IWDG_KR.KEY before modifying the prescaler value.",
+        "verification": "A host unit test passes when enabling write access sets the register array bits and verifies that subsequent writes to IWDG_PR.PR are accepted.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "iwdg_pr_disable_write_access",
+        "source_page": 2990,
+        "statement": "The IWDG LL driver shall disable write access to IWDG_PR by writing a value other than 0x00005555 to IWDG_KR.KEY.",
+        "verification": "A host unit test passes when disabling write access clears the necessary internal flags and prevents further writes to IWDG_PR.PR.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "IWDG_PR_STARTUP_NO_WRITE",
+            "field": "PR",
+            "op": "no_write",
+            "register": "IWDG_PR",
+            "value": ""
+          }
+        ],
+        "key": "iwdg_pr_startup_no_write",
+        "source_page": 2989,
+        "statement": "While no LL function has been called after reset, the IWDG LL driver shall not write any IWDG register, including IWDG_PR.PR.",
+        "verification": "A target robot test passes when it checks that registers remain unchanged after reset sequence and before any function is invoked.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:IWDG_PR"
+}

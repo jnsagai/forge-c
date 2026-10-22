@@ -1,0 +1,145 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "414479c7b5c7d0214ba53534255e5219ae2cb38304176bae0a9a91d6f14c5c91",
+  "baseline_id": "BL-SWE.1-001",
+  "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. This violates the requirement that allocated software safety requirements be baselined and",
+      "id": "SWE1-01",
+      "severity": "major"
+    },
+    {
+      "detail": "Requirement SWR-001 is not objectively verifiable because the safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirem",
+      "id": "SWE1-02",
+      "severity": "major"
+    },
+    {
+      "detail": "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated ",
+      "id": "SWE1-03",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-016: The requirement that the IWDG LL driver shall occupy at most 4096 bytes of flash is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no a",
+      "id": "SWE1-04",
+      "severity": "major"
+    },
+    {
+      "detail": "SWR-001: Safety allocation PENDING owner allocation review - no software safety requirement is allocated yet; this is an open gap, not a QM claim.",
+      "id": "SWE1-05",
+      "severity": "major"
+    },
+    {
+      "detail": "SWE1-06: No verification criteria documented for SWR-016 through SWR-018. The software requirements document contains verification criteria only for requirements SWR-001 through SWR-015, but not for S",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-001",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Software safety requirements are not allocated yet; the safety allocation is PENDING owner allocation review. This violates the requirement that allocated software safety requirements be baselined and"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "Requirement SWR-001 is not objectively verifiable because the safety allocation is pending review and no software safety requirement is allocated yet, making it impossible to determine if the requirem"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "workproducts/SWE.1/software_requirements.md"
+      ],
+      "findings": [
+        "No failure handling, reset/startup behavior or safe states are specified in the software safety requirements. The safety allocation is pending review and no software safety requirements are allocated "
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-016: The requirement that the IWDG LL driver shall occupy at most 4096 bytes of flash is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no a",
+        "SWR-017: The requirement that the IWDG LL driver shall use at most 64 bytes of static RAM is not explicitly verified or measurable in the provided sources, as the safety allocation is pending and no a",
+        "SWR-018: The requirement that the IWDG LL driver shall use at most 128 bytes of stack for any public API call is not explicitly verified or measurable in the provided sources, as the safety allocation"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWR-001: Safety allocation PENDING owner allocation review - no software safety requirement is allocated yet; this is an open gap, not a QM claim."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [
+        "SWE1-06: No verification criteria documented for SWR-016 through SWR-018. The software requirements document contains verification criteria only for requirements SWR-001 through SWR-015, but not for S"
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-21T132749.240111Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-21T132750.196563Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-21T13:27:50.197396Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

@@ -1,0 +1,64 @@
+# Feature 010 tasks
+
+Status (2026-10-21, end of day):
+- **Delivered:** P0-P3 and the structured SWE.1-SWE.6 (LL) authors and inspectors, tested with scripted models against
+  the real tools.
+- **Local trials (T016):** lrtx1-lrtx10 (ASIL B) and the QM experiment lrtxq1/lrtxq2 are BLOCKED at SWE.1 by the local
+  Qwen inspector (NOT_QUALIFIED). From lrtx7 on, the author froze SWE.1 on its first visit. A SWE.2 author trial on a
+  frozen READY SWE.1 baseline froze 1/3.
+- **Measurements:**
+  - T021: seeded defects - the local inspector caught 1/7 on target and falsely rejected 2/2 clean holdouts.
+  - T023: qwen3:8b passed 0/3 against 3/3 for qwen3-coder:30b. Owner decision: coder-only authoring.
+- **Inspector decision (owner, 2026-10-21):** "local qwen as inspector". The campaign (T024) therefore runs with the
+  structured qwen3-coder:30b inspector, which the profile still records as NOT_QUALIFIED.
+- **Campaign c1 (T024):** stopped by the owner on 2026-10-22 ("stop now all the runs") after 13 of 30 cases. 0 READY;
+  all 13 BLOCKED at SWE.1 (IWDG-LL by the local inspector, RCC-LL by author STUCK). T024 stays unchecked; evidence
+  `evidence/v0.4/runs/LRTX-T024/README.md`.
+- **Rule:** a checked task requires its own evidence. A written specification or passing static check is not a completed
+  local model trial.
+
+## P0 — preservation
+
+- [x] LRTX-T001 Record the existing main SHA and existing RC1/rc4 evidence, preserving the limitations of that evidence. Reference: `baseline.json` and ADR-0013.
+- [x] LRTX-T002 Create `baseline/codex-claude-2026-10-21` and `feat/010-local-rtx-optimization` from `86f1f40c030bc721e7e5125a572d69647c4ac041`. Verify remote references before reporting completion.
+- [X] LRTX-T003 Capture the actual working host revision, dirty changes, effective configuration and installed tool/model versions; preserve external archives and verify a read-only restore. Run on the owner host 2026-10-21; the backup stays outside the repository. ✅ Evidence: `evidence/v0.4/runs/LRTX-T003/latest.json`
+- [X] LRTX-T004 Freeze executable compatibility fixtures for the existing workflow/provider combinations before editing shared runtime paths. ✅ Evidence: `evidence/v0.4/runs/LRTX-T004/latest.json`
+
+## P1 — isolated explicit profile and measurement
+
+- [X] LRTX-T005 Implement versioned explicit local-profile selection; no-selection behavior unchanged; reject conflicting ACP/provider flags before launch. ✅ Evidence: `evidence/v0.4/runs/LRTX-T005/latest.json`
+- [X] LRTX-T006 Enforce separate resolved data/state/archive/config/storage roots and service/port identities, including inherited environment and symlink overlap tests. ✅ Evidence: `evidence/v0.4/runs/LRTX-T006/latest.json`
+- [X] LRTX-T007 Record effective profile, model digest/quantization, runtime configuration and enforcement status in run provenance without secrets. ✅ Evidence: `evidence/v0.4/runs/LRTX-T007/latest.json`
+- [X] LRTX-T008 Enforce local endpoints and absent cloud fallback; prove offline dependency availability and external-network denial on the host. ✅ Evidence: `evidence/v0.4/runs/LRTX-T008/latest.json`
+- [X] LRTX-T009 Add single-request admission with bounded waiting, cancellation and queue metrics while preserving safe empty-response retry behavior. ✅ Evidence: `evidence/v0.4/runs/LRTX-T009/latest.json`
+- [X] LRTX-T010 Separate queue/load/prefill/decode/tool measurements; capture GPU residency and memory pressure, label unsupported fields UNKNOWN. ✅ Evidence: `evidence/v0.4/runs/LRTX-T010/latest.json` (tests); live records `LRTX-TRIAL/lrtx6|lrtx7/metrics.json` (GPU energy at 100 % sample coverage; wall energy UNKNOWN on this host)
+
+## P2 — SWE.1/SWE.2 coherent tasks
+
+- [X] LRTX-T011 Build versioned source-backed context packets and complete-prompt accounting; no silent truncation; retain output reserve. ✅ Evidence: `evidence/v0.4/runs/LRTX-T011/latest.json`
+- [X] LRTX-T012 Add typed intermediate contracts and runtime capability probes for structured responses. ✅ Evidence: `evidence/v0.4/runs/LRTX-T012/latest.json` (tests); live probe `LRTX-T012/capabilities-qwen3-coder-30b.json` (json_schema honoured)
+- [X] LRTX-T013 Implement requirement-group, register-effect and verification-mapping tasks with a complete source coverage inventory. ✅ Evidence: `evidence/v0.4/runs/LRTX-T013/latest.json`
+- [X] LRTX-T014 Implement allocation/interface tasks including resource and reset invariants, stable IDs and existing final artifact formats. ✅ Evidence: `evidence/v0.4/runs/LRTX-T014/latest.json`
+- [X] LRTX-T015 Render repetitive tables/diagrams deterministically; retain semantic author decisions and complete phase-level consistency gates. ✅ Evidence: `evidence/v0.4/runs/LRTX-T015/latest.json`
+- [X] LRTX-T016 Replay observed RCC/IWDG rejections and perform fresh local SWE.1/SWE.2 trials; distinguish fixed factory defects from model quality. ✅ Evidence: `evidence/v0.4/runs/LRTX-T016-REPLAY/latest.json`, `evidence/v0.4/runs/LRTX-T016-SWE2/latest.json` (replay: 14 codes triaged; fresh SWE.1 work orders lrtx1-lrtx10 and QM lrtxq1/lrtxq2 in `LRTX-TRIAL/README.md`, each defect classified as factory (fixed by CRE) or model quality; the local inspector, NOT_QUALIFIED, blocks every run at SWE.1; SWE.2 author on a frozen READY SWE.1 baseline 1/3 frozen after the actionable-finding fix)
+
+## P3 — localized repair and inspection
+
+- [X] LRTX-T017 Add validated checkpoints and dependency invalidation; local repair preserves unaffected content. ✅ Evidence: `evidence/v0.4/runs/LRTX-T017/latest.json`
+- [X] LRTX-T018 Route missing inspection directly to inspection only when the current frozen baseline remains valid. ✅ Evidence: `evidence/v0.4/runs/LRTX-T018/latest.json`
+- [X] LRTX-T019 Split coherent inspection criteria with full primary evidence and independent contexts; aggregate only complete matching-baseline verdicts. ✅ Evidence: `evidence/v0.4/runs/LRTX-T019/latest.json`
+- [X] LRTX-T020 Prove shared phase accounting and existing stuck/rework limits across subtasks; no reset through task decomposition. ✅ Evidence: `evidence/v0.4/runs/LRTX-T020/latest.json`
+- [X] LRTX-T021 Evaluate seeded semantic defects and cross-artifact contradictions with independent frozen holdouts. ✅ Evidence: `evidence/v0.4/runs/LRTX-T021/latest.json` (2 READY rc1 LL holdouts, frozen catalogue lrtx-seeded-1: deterministic 2/2 in scope, inspection on target 1/7, both clean holdouts falsely rejected; local inspector stays NOT_QUALIFIED)
+
+## P4/P5 — full process and qualification
+
+- [X] LRTX-T022 Extend existing SWE.3-SWE.6 scaffolds and tasks without weakening complete phase gates or deriving test oracles from generated code. ✅ Evidence: `evidence/v0.4/runs/LRTX-T022/latest.json` (LL work orders, scripted models against the real tools, Renode, Robot and the unchanged gates; HAL keeps the agent nodes; no local-model run has reached SWE.3 yet)
+- [X] LRTX-T023 Compare smaller models per task with 30B, including switching and retry costs; preserve inspector qualification as a separate decision. ✅ Evidence: `evidence/v0.4/runs/LRTX-T023/latest.json` (qwen3:8b vs qwen3-coder:30b on structured SWE.1, 3 interleaved repeats; 8b 0/3, 30b 3/3; no routing proposed; inspector qualification untouched)
+- [ ] LRTX-T024 Execute the frozen 30-case local-only campaign and publish full provenance, quality/detection results, duration, tokens, resource use and uncertainty.
+- [X] LRTX-T025 Verify the existing deployment remains usable and complete host rollback/isolation evidence; package results for offline review. No automatic promotion. ✅ Evidence: `evidence/v0.4/runs/LRTX-T025-HOSTCHECK/latest.json`, `evidence/v0.4/runs/LRTX-T025/latest.json` (host check PASS with dry-run rollback of the profile root and 16 run worktrees; offline review bundle forge-c-feature-010-review-32b59c783c33.zip, sha256 850d7c92..., byte-identical rebuild; not a release, no automatic promotion)
+
+## Initial validation record
+
+See `validation.md`. Source/reference verification and static design validation are distinct from host runtime
+verification. Preserve NOT_RUN for model inference, deployed-service checks, archive restoration and all optimized
+workflow behavior until those actions actually occur.
