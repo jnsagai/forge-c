@@ -204,3 +204,45 @@ def test_the_named_function_binds_swe2_to_the_exact_name(iwdg, monkeypatch):
                         "field": "IWDG_KR.KEY", "action": "write_key_sequence",
                         "source_fact_ids": ["F-IWDG_KR-KEY-V-CCCC"]}], "not_covered": [], "open_points": []}
     assert S.validate(bad, schema)  # the function prefix is enforced by the schema
+
+
+def test_swe2_name_drift_from_the_frozen_requirement_is_rejected_with_its_target(iwdg, monkeypatch):
+    """F011-AT-024: a clean interface built from the frozen semantic requirements passes the unchanged SWE.2 check;
+    renaming the query the requirement names (IsActive -> IsEnabled) is rejected with the requirement, the exact
+    name to define and the allocation to fix."""
+    import re
+
+    from forge_factory.lrtx import swe2
+
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    reqs, cl = swe2.requirements(iwdg), swe2.component_level(iwdg)
+    func = {k: v for k, v in reqs.items() if k not in cl}
+    rx = swe2._fn_rx(iwdg)
+    named = {s: sorted(set(rx.findall(t)) - {n for n in rx.findall(t) if n.endswith(("_OFFSET", "_MSK", "_POS"))})
+             for s, t in func.items()}
+    eff = swe2.effects(iwdg)
+    fields = {}
+    for e in eff:
+        for n in named[e["swr"]]:
+            fields.setdefault(n, set()).add(f"{e['register']}.{e['field']}")
+    fns = sorted({n for v in named.values() for n in v})
+    params = {e["swr"] for e in eff if e["op"] == "write"}
+    doc = {"functions": [{"name": n, "returns": "uint32_t" if "Is" in n else "void",
+                          "params": [{"type": "uint32_t", "name": "value"}] if any(
+                              n in named[s] for s in params) and "Is" not in n and not swe2._ident(iwdg)["void"] else [],
+                          "operation": "op", "fields": sorted(fields.get(n, set()))} for n in fns],
+           "allocation": [{"swr": s, "functions": v, "responsibility": "r"} for s, v in named.items()],
+           "calls": [{"case": e["case"], "function": named[e["swr"]][0],
+                      "args": [str(e["value"]) + "U"] if e["op"] == "write" and not swe2._ident(iwdg)["void"]
+                      and "Is" not in named[e["swr"]][0] else []} for e in eff]}
+    from forge_factory.assurance.hardware import index
+
+    idx = index(iwdg / "inputs/sections/RM0486")
+    clean = [f for f in swe2.validate_interfaces(iwdg, doc, idx) if "argument" not in f]
+    assert not [f for f in clean if "names" in f or "not allocated" in f or "not defined" in f], clean
+    drift = json.loads(json.dumps(doc).replace('"LL_IWDG_IsActive"', '"LL_IWDG_IsEnabled"'))
+    out = swe2.validate_interfaces(iwdg, drift, idx)
+    target = [f for f in out if "names LL_IWDG_IsActive, which is not a defined function" in f]
+    assert target and all(re.match(r"SWR-\d{3} names", f) for f in target), out
+    assert "define the function as LL_IWDG_IsActive" in target[0] and "allocate" in target[0]

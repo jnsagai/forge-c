@@ -86,7 +86,8 @@ _validators: dict[str, object] = {}
 
 def schema(kind: str) -> dict:
     name = {"request": "bridge-request.schema.json", "result": "bridge-result.schema.json",
-            "domain": "register-io-domain.schema.json", "contract": "register-io-contract.schema.json"}[kind]
+            "domain": "register-io-domain.schema.json", "contract": "register-io-contract.schema.json",
+            "oracle": "register-io-oracle.schema.json"}[kind]
     return json.loads((FEATURE / name).read_text())
 
 

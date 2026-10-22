@@ -48,9 +48,9 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
   visit_time_s: 1200
 safec:                    # ADR-0015: a pinned, hash-verified local engine; never a phase or release authority
   engine:
-    binary: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/813b4e820eb506cc6edb3768c7e642fdae367a37/safec-bridge
-    binary_sha256: ecd5cf1c881541ff4180fa119e615e3c10fd5109ab6d171e597797146796c702
-    source_commit_sha: 813b4e820eb506cc6edb3768c7e642fdae367a37
+    binary: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/ef354fa105a97d4ca42af70cdaf8e4605af6cfec/safec-bridge
+    binary_sha256: e353b761431e5773e88627b17bb08c8feb3815a23096c828b5495c99ee442661
+    source_commit_sha: ef354fa105a97d4ca42af70cdaf8e4605af6cfec  # validate_intents as 813b4e8; adds derive_tests (F011 M5)
     semantic_profile: register-io-0.1
   timeout_s: 60
 admission:
