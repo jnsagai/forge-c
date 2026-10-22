@@ -1,6 +1,6 @@
 # Implementation tasks — Feature 011
 
-**Status:** ALL TASKS PENDING. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
+**Status (2026-10-22, M0 measured):** F011-T001, T002, T003 and T005 are checked with evidence. F011-T004 was measured but is NOT_PASS: SafeC on Linux passes 263 tests and fails 2 (baseline defects), and Kind 2/Z3 are absent. Every other task is pending. No checkbox is satisfied by authoring this plan. Claude Code is the implementation engineer; no cloud LLM may be a dependency of local factory execution.
 
 **Sources:** `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/*.schema.json`, `acceptance-tests.md`; constitution and existing feature 010 baselines.
 
@@ -8,11 +8,11 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 
 ## M0 — Establish reproducible, non-destructive base (F011-AT-001..005)
 
-- [ ] **F011-T001 [US1]** Audit Forge-C `main`/Feature 010 and pinned Claude/Codex baseline; record actual current Git state, host deployment/profiles and existing archive preservation in `specs/011-safec-semantic-first/validation.md` before editing runtime.
-- [ ] **F011-T002 [US1]** Create independent SafeC feature branch from observed private main, record actual SHA and confirm licensing/access. Do not add private contents to public Forge-C.
-- [ ] **F011-T003 [P] [US1]** Capture `scripts/lrtx_compat_check.sh` plus ACP/default and v1 frozen graph fixtures, all current safety policy hashes and representative live/package baselines; record stdout/stderr/versions.
+- [X] **F011-T001 [US1]** Audit Forge-C `main`/Feature 010 and pinned Claude/Codex baseline; record actual current Git state, host deployment/profiles and existing archive preservation in `specs/011-safec-semantic-first/validation.md` before editing runtime. ✅ Evidence: `evidence/v0.4/runs/F011-T001/latest.json`
+- [X] **F011-T002 [US1]** Create independent SafeC feature branch from observed private main, record actual SHA and confirm licensing/access. Do not add private contents to public Forge-C. ✅ Evidence: `evidence/v0.4/runs/F011-T002/latest.json`
+- [X] **F011-T003 [P] [US1]** Capture `scripts/lrtx_compat_check.sh` plus ACP/default and v1 frozen graph fixtures, all current safety policy hashes and representative live/package baselines; record stdout/stderr/versions. ✅ Evidence: `evidence/v0.4/runs/F011-T003/latest.json`
 - [ ] **F011-T004 [P] [US1]** On the owner Linux host, probe pinned SafeC Rust build/CLI and installed formal backends; validate real binary SHA, paths, memory/CPU constraints and current capability vs experimental/unavailable. Record BLOCKED if host/tool inaccessible.
-- [ ] **F011-T005 [US1]** Implement schema/spec/static validation fixture and public/private provenance leak checks. Validate all documentation references; no installed dependency or new CLI capability may be claimed from prose.
+- [X] **F011-T005 [US1]** Implement schema/spec/static validation fixture and public/private provenance leak checks. Validate all documentation references; no installed dependency or new CLI capability may be claimed from prose. ✅ Evidence: `evidence/v0.4/runs/F011-T005/latest.json`
 
 **M0 exit:** baseline safe, source digests recorded, no production changes and observable Linux compatibility. If SafeC Linux does not work, build the pure Rust parser bridge first; formal backend remains UNSUPPORTED.
 

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "python -m forge_factory.safec_bridge.static_check --out evidence/v0.4/runs/F011-T005/static-check.json && python -m forge_factory.safec_bridge.provenance scan --base 2f4b9cf44fd9cc56648fa26b6da6c2e29248338d --private /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/repos/safec-013 --out evidence/v0.4/runs/F011-T005/boundary-scan.json && python -m pytest -rA -p no:cacheprovider factory/python/tests/test_safec_bridge_m0.py"
+  ],
+  "duration_s": 2.299,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4d8fdcdc1a1b9f2268f59f844768b0fc31ebb4e5",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T005/20261022T084955.log",
+  "log_sha256": "91f1e6a77e627278dbba668f57fb3fef1d1942939a96d00817b1ce613a845e90",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T005",
+  "ts_utc": "2026-10-22T08:49:55.108845Z"
+}

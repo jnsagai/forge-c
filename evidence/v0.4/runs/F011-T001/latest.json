@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "set -e; echo forge-c_head=$(git rev-parse HEAD) branch=$(git rev-parse --abbrev-ref HEAD); git ls-remote origin refs/heads/main refs/heads/baseline/codex-claude-2026-10-21 refs/heads/feat/011-safec-semantic-first; git merge-base --is-ancestor 2f4b9cf44fd9cc56648fa26b6da6c2e29248338d HEAD && echo base_2f4b9cf_is_ancestor; git rev-parse baseline/codex-claude-2026-10-21 2>/dev/null || git rev-parse origin/baseline/codex-claude-2026-10-21; echo deployment_checkout=$(git -C /home/jefferson/forge-c rev-parse HEAD) deployment_dirty_entries=$(git -C /home/jefferson/forge-c status --porcelain | wc -l); python -m forge_factory.lrtx.hostcheck --snapshot /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z/snapshot.json --stack-python /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python --out evidence/v0.4/runs/F011-T001/hostcheck.json"
+  ],
+  "duration_s": 3.306,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "21d881a521fac43b9d53f9face64e6f56891a5a4",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T001/20261022T084545.log",
+  "log_sha256": "af2d1be415f73797c6f94a3bd5444183c4046883ba3e88efce1e86387dcdec8a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T001",
+  "ts_utc": "2026-10-22T08:45:45.040972Z"
+}

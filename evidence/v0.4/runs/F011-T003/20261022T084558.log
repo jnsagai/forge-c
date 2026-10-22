@@ -1,0 +1,82 @@
+{"status": "PASS", "cases": 21, "diffs": []}
+PASS workflow-fixtures
+{"status": "PASS", "cases": 8, "diffs": []}
+PASS v1-profile-fixtures
+.....................................                                    [100%]
+PASS acp-and-provider-tests
+PASS v0.1-baseline
+PASS v0.3-packager
+PASS: 14 static design tests. This does NOT validate runtime integrations.
+PASS design-check
+--- protected policy and configuration hashes ---
+fcf5cac5b2c51b6867579c43a3829ac621928a6977ba59cbf903203247160540  config/factory/afo-policy.yaml
+95eb3ad2d89d2530cb761e700a839e04a0699d5137a5ac35e60ceb646c569097  config/factory/agents.afo.yaml
+6ec6be0910c158bbb08391432e70800d0ba4e8e077a202766ef1d48d2e2419ef  config/factory/agents.yaml
+d336148952d61bbfb1a389688087aa32761dbb8c8fbde2ec7d40f30f5e704671  config/factory/assurance-policy.yaml
+eb2204761ce0278a67a93ebd798c986a0fb3ce1cb21e3e9f45266d4d5545d035  config/factory/controlroom.yaml
+dc0186feef36cb1c9bdd9ae0697ab3314912209b568e52dc5ad5204614044f3a  config/factory/dashboard-access.yaml
+882d5d06e8113451303e092363e0b321bbacad76217312ae5ea17ce47465a2c6  config/factory/kpi-policy.yaml
+57c31f603ec0198f6df1b5487304034676a1d7addd4f8b496938ba94ce8bf900  config/factory/mcp-registry.afo.yaml
+ad9a074ed471b265a64e2d5daf44f53f00768539ff54a6a3f7a0cf5d206b149a  config/factory/mcp-registry.v0.5-kpi.yaml
+2bc79ed8745469fbe492c87eadaee3da5db440c275344b7cf96094d25ad5b5c5  config/factory/mcp-registry.yaml
+bf5ef8c4cb647ebe2d2f60ca41120144dd26905a729de6ee66fc72f37d899f54  config/factory/model-suspensions.yaml
+c60c380aae67b2bf2a3e56e1fc19bc5a1c0385eeec79bd5621df420da3dc2a00  config/factory/reliability-policy.yaml
+11080d9fea844b10750b811bf61d3e0c3bdcfcab2df25afee04e5bab23869fb5  config/factory/rework-policy.yaml
+e944e4c4383bb7a7678c636085c0920b827743abede64727888b836f04c429d6  config/factory/safety-scope.yaml
+5dbd37cb7434f87590d1bd19cfc4e459f60e8cc0cbe03e0ea58b95b4fc76fcc2  config/factory/supervisor-policy.yaml
+219a6d02659d5188ad7355289c6a3279f4c8d64a1b3897f3c470a351cba601b6  config/factory/token-policy.yaml
+676221d008138cd8ed7390742d84ebc68a4f17140c71c9df82bd2194a5fe6b2c  config/factory/trace-policy.yaml
+c31d7abee714cab55ace07135ae4c1f276325f5b5b020fb5ce5019d10b0c8443  config/factory/verification-dispositions.yaml
+0659a43554036c4e359821299001077bb110e16647ffc551552fa706c2814636  config/factory/profiles/local-rtx-v1.yaml
+f8c54f663a0ee19e9800bfba0a8ce66eafca822d03e8c7f82a5b3c93146aeb57  factory/checklists/v0.4-brownfield/SWE.3.yaml
+b5f5f01e3b93579d4031223ceac2a4d8c3b552fc4175cbd9ee8e32122bcb537f  factory/checklists/v0.4/SWE.1.yaml
+aaec2e160baf56ec0bcf87432d6f613d7bf6bc94efb4b83df3bdf350c846963a  factory/checklists/v0.4/SWE.2.yaml
+6c8399e9acb82388b6644daf2207843b366b449f77beb36cc56fc3ac627fecc8  factory/checklists/v0.4/SWE.3.yaml
+8f0549f6ae75f61f3d4cb1561fafb017e4b645fb5de8baba3dd7e0a25c3a378b  factory/checklists/v0.4/SWE.4.yaml
+7297499063ada85fa900c086ef057edc26b8423fdfef8ecfc894c9f04e779a9f  factory/checklists/v0.4/SWE.5.yaml
+1b211a362b01da124cc7ce29672b41a8049704e61a7dc73339a562ca45ff5327  factory/checklists/v0.4/SWE.6.yaml
+c2fb3cf54a927b399f6b5d7f74d9142f55530b49b6611281b57e8eb321fa75c9  factory/release-manager/checklists/SWE.1.yaml
+3522b34a4574ab72d29061a8a3c4bb6cbedd3dfbcf7e59244f38ad36f01d6404  factory/release-manager/checklists/SWE.2.yaml
+58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af  factory/release-manager/checklists/SWE.3.yaml
+b6b0e53563c84415a5ca6e663c55ec8b1617ce402ad9da05dc0f64b29c8cd9e7  factory/release-manager/checklists/SWE.4.yaml
+87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba  factory/release-manager/checklists/SWE.5.yaml
+78f19b6e0df8efed7190d9d6a16397708d3874636843f6eac87c49be8b8c28bb  factory/release-manager/checklists/SWE.6.yaml
+9dc8953d1b52e6e5f126d31038e85d2412778146a2c8f9e1abef9de97c97094e  factory/release-manager/policies/release-package-policy.json
+c69fab88c6ec01509eda324cef4475254fe167cd4a601350e8e5c9da62094908  factory/release-manager/policies/release-package-policy-v0.4.json
+37dac9b31548bbd40dfebdbe40046ae75a19b5e7e4eec8f977b7ea8e2e02b98e  factory/release-manager/policies/release-package-policy-v0.5.json
+6a359d2a9ac08229f1be09104d60c6de7b4b92a6708516453e60df4a0854f2f8  factory/release-manager/schemas/quality-gates.schema.json
+471118625d700ae43a233e1c49fdb8cbef2d19dd2b507790402eea5d9f9178f1  factory/release-manager/schemas/release-manifest.schema.json
+--- versions ---
+Python 3.13.13
+git version 2.34.1
+
+--- stderr ---
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.016s
+
+OK
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.064s
+
+OK
+test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok
+test_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok
+test_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok
+test_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok
+test_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok
+test_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok
+test_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok
+test_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok
+test_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok
+test_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok
+test_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok
+test_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok
+test_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok
+test_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.117s
+
+OK

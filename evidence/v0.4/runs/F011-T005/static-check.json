@@ -1,0 +1,289 @@
+{
+  "references": [
+    {
+      "ref": ".specify/memory/constitution.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "CLAUDE.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "CLAUDE_FEATURE011_START.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "LRTX-T016-SWE2/README.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "LRTX-T021/README.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "LRTX-T023/README.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "LRTX-TRIAL/README.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "acceptance-tests.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "baseline/codex-claude-2026-10-21",
+      "status": "RESOLVED"
+    },
+    {
+      "not_yet_present": [
+        "client.py"
+      ],
+      "ref": "client.py",
+      "status": "PROPOSED"
+    },
+    {
+      "ref": "config/factory/profiles/local-rtx-v1.yaml",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "config/factory/safety-scope.yaml",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "contracts/*.schema.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "contracts/bridge-request.schema.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "contracts/bridge-result.schema.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "data-model.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "docs/adr/ADR-0013*",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "docs/adr/ADR-0013-preserve-codex-claude-local-rtx-line.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "docs/adr/ADR-0014-structured-local-author-tasks.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "docs/adr/ADR-0015-safec-semantic-boundary.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/LRTX-T024/README.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "factory/python/forge_factory/inspection/gate.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "factory/python/forge_factory/lrtx",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "factory/python/forge_factory/lrtx/swe1.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "factory/python/forge_factory/lrtx/{swe1,structured,runner,profile}.py",
+      "status": "RESOLVED"
+    },
+    {
+      "not_yet_present": [
+        "factory/python/forge_factory/safec_bridge/contracts.py"
+      ],
+      "ref": "factory/python/forge_factory/safec_bridge/contracts.py",
+      "status": "PROPOSED"
+    },
+    {
+      "not_yet_present": [
+        "factory/python/tests/test_safec_bridge.py"
+      ],
+      "ref": "factory/python/tests/test_safec_bridge.py",
+      "status": "PROPOSED"
+    },
+    {
+      "ref": "feat/011-safec-semantic-first",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "inspection/gate.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "lrtx/swe1.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "plan.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "research.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "runner.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "scripts/lrtx_compat_check.sh",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "spec.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "specs/010-local-rtx-optimization/validation.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "specs/011-safec-semantic-first/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "specs/011-safec-semantic-first/validation.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "specs/011-safec-semantic-first/{spec,plan,acceptance-tests,tasks}.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "specs/011-safec-semantic-first/{spec,plan,research,data-model,acceptance-tests,tasks,validation,quickstart}.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "structured.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "swe1.py",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "tasks.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "validation.md",
+      "status": "RESOLVED"
+    }
+  ],
+  "schema": "forge-c/f011-static-check/1",
+  "schemas": {
+    "examples": [
+      {
+        "as_expected": true,
+        "errors": 0,
+        "expected_valid": true,
+        "id": "request-valid-validate-intents"
+      },
+      {
+        "as_expected": true,
+        "errors": 0,
+        "expected_valid": true,
+        "id": "result-valid-unsupported"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-unknown-top-level-field"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-model-supplied-mask"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-missing-binding"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-short-binary-digest"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-unknown-profile"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-empty-intents-for-validate"
+      },
+      {
+        "as_expected": true,
+        "errors": 3,
+        "expected_valid": false,
+        "id": "request-verify-candidate-without-candidate"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "request-negative-logical-value"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "result-phase-status-ready"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "result-missing-evidence-digest"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "result-finding-without-target"
+      },
+      {
+        "as_expected": true,
+        "errors": 1,
+        "expected_valid": false,
+        "id": "result-unknown-artifact-kind"
+      }
+    ],
+    "request": {
+      "id": "urn:forge-c:feature-011:safec-bridge-request:1",
+      "path": "specs/011-safec-semantic-first/contracts/bridge-request.schema.json",
+      "status": "VALID_2020_12"
+    },
+    "result": {
+      "id": "urn:forge-c:feature-011:safec-bridge-result:1",
+      "path": "specs/011-safec-semantic-first/contracts/bridge-result.schema.json",
+      "status": "VALID_2020_12"
+    }
+  },
+  "status": "PASS"
+}

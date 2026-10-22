@@ -1,0 +1,11 @@
+forge-c_head=21d881a521fac43b9d53f9face64e6f56891a5a4 branch=f011-dev
+86f1f40c030bc721e7e5125a572d69647c4ac041	refs/heads/baseline/codex-claude-2026-10-21
+74e6e0d33120b30ea785ed828f25760c069b992f	refs/heads/feat/011-safec-semantic-first
+2f4b9cf44fd9cc56648fa26b6da6c2e29248338d	refs/heads/main
+base_2f4b9cf_is_ancestor
+baseline/codex-claude-2026-10-21
+86f1f40c030bc721e7e5125a572d69647c4ac041
+deployment_checkout=86f1f40c030bc721e7e5125a572d69647c4ac041 deployment_dirty_entries=0
+{"status": "PASS", "checkouts": ["UNCHANGED"], "archives": {"preserved": 208, "missing": [], "changed": []}, "services_ok": true, "network": "DENIED_VERIFIED", "rollback_conflicts": []}
+
+--- stderr ---

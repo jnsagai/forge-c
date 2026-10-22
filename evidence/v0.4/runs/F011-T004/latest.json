@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.safec_bridge.probe",
+    "--checkout",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/repos/safec-013",
+    "--cargo-home",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/cargo-home",
+    "--private-out",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/evidence/f011-t004-20261022b",
+    "--out",
+    "evidence/v0.4/runs/F011-T004/safec-linux-probe.json"
+  ],
+  "duration_s": 46.786,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "4d8fdcdc1a1b9f2268f59f844768b0fc31ebb4e5",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T004/20261022T084848.log",
+  "log_sha256": "c8b57f59b83c8c86deaf0d61ebe1fac1033915aa8ee0f682a3b819d38711a1f2",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "F011-T004",
+  "ts_utc": "2026-10-22T08:48:48.088856Z"
+}
