@@ -1,11 +1,11 @@
 {
   "base": "2f4b9cf44fd9cc56648fa26b6da6c2e29248338d",
-  "files_scanned": 36,
+  "files_scanned": 46,
   "findings": [],
-  "head": "4d8fdcdc1a1b9f2268f59f844768b0fc31ebb4e5",
-  "lines_scanned": 2902,
+  "head": "aa56e7460c642c7362146fb03881ccdd9fb61d96",
+  "lines_scanned": 3596,
   "private_checkout_compared": true,
-  "private_line_hashes": 29454,
+  "private_line_hashes": 30768,
   "schema": "forge-c/safec-public-boundary-scan/1",
   "status": "PASS"
 }

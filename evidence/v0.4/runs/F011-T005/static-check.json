@@ -5,6 +5,10 @@
       "status": "RESOLVED"
     },
     {
+      "ref": "/bin/sh",
+      "status": "RESOLVED"
+    },
+    {
       "ref": "CLAUDE.md",
       "status": "RESOLVED"
     },
@@ -81,6 +85,54 @@
     },
     {
       "ref": "docs/adr/ADR-0015-safec-semantic-boundary.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T001/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T001/hostcheck.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T001/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T002/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T002/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T003/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T003/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T004/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T005/",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T005/boundary-scan.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T005/latest.json",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "evidence/v0.4/runs/F011-T005/static-check.json",
       "status": "RESOLVED"
     },
     {
@@ -179,6 +231,10 @@
     },
     {
       "ref": "tasks.md",
+      "status": "RESOLVED"
+    },
+    {
+      "ref": "tests/compat/lrtx/local-rtx-v1-2f4b9cf.json.gz",
       "status": "RESOLVED"
     },
     {
