@@ -93,3 +93,31 @@ def test_stuck_rule_still_stops_early_and_missing_policy_fails_closed(tmp_path, 
     assert rc == 1 and g["reason"].startswith("STUCK") and "progress_extension" not in g
     monkeypatch.setattr(G, "EXTENSION_POLICY", "config/factory/does-not-exist.yaml")
     assert G.extra_cycles() == 0
+
+
+def _ins_n(ws, n, *ids):
+    _ins(ws, n, *[(i, f"{i} UT-00{k} finding") for k, i in enumerate(ids, 1)])
+
+
+def test_inspection_cycles_get_the_same_bounded_extension(tmp_path):
+    """CAPA-068 (RPR-072): with failed INSPECTIONS at the checklist maximum, Store.gate says BLOCKED; a progressing
+    phase gets REWORK for the extension cycle, never past budget + extra, and BLOCKED without progress."""
+    ws = _ws(tmp_path)
+    _ins(ws, 1, ("SWE4-02", "UT-007 expects the wrong value"), ("SWE4-06", "UT-006 bound"))
+    _ins(ws, 2, ("SWE4-02", "UT-007 expects the wrong value"), ("SWE4-06", "UT-006 bound"))
+    _ins(ws, 3, ("SWE4-06", "UT-006 bound"))  # UT-007 resolved
+    rc, g = _route(ws)
+    assert rc == 0 and g["decision"] == "REWORK" and g["progress_extension"]["cycle"] == 1
+    assert "progress extension 1/" in g["reason"]
+    _ins(ws, 4, ("SWE4-06", "UT-006 bound"))  # identical: no progress
+    rc, g = _route(ws)
+    assert rc == 1 and g["decision"] == "BLOCKED" and g["progress_extension"]["progress"] is False
+
+
+def test_inspection_extension_never_passes_the_cap(tmp_path):
+    ws = _ws(tmp_path)
+    findings = [("SWE4-02", f"UT-00{i} x") for i in range(1, 7)]
+    for n in range(1, 6):  # 5 failed inspections, each resolving one item: always progressing
+        _ins(ws, n, *findings[n - 1:])
+    rc, g = _route(ws)
+    assert rc == 1 and g["decision"] == "BLOCKED" and "progress_extension" not in g

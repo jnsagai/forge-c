@@ -374,6 +374,11 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] != "PASS" and exhausted:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
+    elif g["decision"] == "BLOCKED" and extension is not None and extension["progress"]:
+        # CAPA-068 (RPR-072): Store.gate blocks at the checklist maximum of failed INSPECTIONS; a granted progress
+        # extension (same bounded rule: cycles < budget + extra) is one more rework cycle, as for author rejections
+        g = {**g, "decision": "REWORK", "reason": f"{g['reason']} (progress extension {extension['cycle']}/"
+                                                  f"{extension['of']})"}
     if extension is not None:
         g = {**g, "progress_extension": extension}
     _state(store.workspace, phase, {"step": "route", "gate": g})
