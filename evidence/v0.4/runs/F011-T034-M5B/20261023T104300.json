@@ -1,0 +1,31 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "factory/python/tests/test_target_oracle.py",
+    "factory/python/tests/test_lrtx_v2_swe1.py",
+    "factory/python/tests/test_safec_bridge_oracle.py",
+    "factory/python/tests/test_easa_m5.py",
+    "factory/python/tests/test_peripheral_assurance.py"
+  ],
+  "duration_s": 346.213,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "e4dd9995a597e1be148111e1d56bcaa51fbed850",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T034-M5B/20261023T104300.log",
+  "log_sha256": "0271e4ba84e0781850de7f9f047d3fc97cb7a01f4f0446b289e509e206dae841",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T034-M5B",
+  "ts_utc": "2026-10-23T10:43:00.480149Z"
+}
