@@ -9,13 +9,14 @@ infrastructure context is in [`ONPREM-DEPLOYMENT.md`](ONPREM-DEPLOYMENT.md).
 
 ## 1. What runs where
 
-| Item | Choice |
-|---|---|
-| Assistant | Qwen Code CLI (Apache-2.0), a terminal coding agent |
-| Model | The existing vLLM server (Qwen3.6-35B-A3B), called **directly**, not through the Forge-C LLM gateway |
-| Rules file | [`QWEN.md`](../QWEN.md) at the repository root, read automatically by Qwen Code |
-| GPU share | At most 2 concurrent sessions, 131,072-token context each |
-| Code | A separate development worktree; production runs only tagged releases of `main` |
+| Item | Choice | Minimal (Capgemini setup) |
+|---|---|---|
+| Assistant | Qwen Code CLI (Apache-2.0), a terminal coding agent | Same, pinned version from the internal npm mirror or an offline package |
+| Model | The existing vLLM server (Qwen3.6-35B-A3B), called **directly**, not through the Forge-C LLM gateway | Same |
+| Rules file | [`QWEN.md`](../QWEN.md) at the repository root, read automatically by Qwen Code | Same |
+| GPU share | At most 2 concurrent sessions, 131,072-token context each | 1 session, 131,072-token context, own API key |
+| Code | A separate development worktree; production runs only tagged releases of `main` | Same; development and production work orders do not run at the same time on the minimal VM (4 vCPU, 16 GB) |
+| Extra VM resources | - | None beyond the minimal VM: Node.js and the assistant use about 1 GB of disk and a few hundred MB of RAM per session (not yet measured on the VM) |
 
 The assistant bypasses the Forge-C gateway on purpose. The gateway turns thinking off and narrows the tool list for
 factory agents, and both would hurt a coding assistant.
@@ -28,7 +29,9 @@ factory agents, and both would hurt a coding assistant.
 - [ ] An internal Git server in the controlled zone (the VM cannot reach github.com).
 - [ ] **Configurable service ports in Forge-C.** `scripts/forge_services.sh` currently hard-codes Ollama `:11435`,
       the gateway `:11436` and Fabro `:32290`. A development Fabro stack next to production needs these to come from
-      environment variables first. This is a small code change, to be made and tested before step 4.
+      environment variables first. This is a small code change, to be made and tested before step 4. (Status
+      2026-10-21: feature 010, PR #34, adds an isolated stack whose ports, roots and environment come from a versioned
+      profile and are refused if they overlap the existing deployment. `forge_services.sh` on `main` is unchanged.)
 
 ## 3. Install Qwen Code
 
