@@ -147,7 +147,41 @@ def handshake(pin: EnginePin, workdir: Path, lim: Limits | None = None) -> tuple
     return ident, issues
 
 
-def _revalidate(result: dict, request: dict, input_sha: str, pin: EnginePin, evdir: Path) -> list[str]:
+def seal_issues(evdir: Path, request_bytes: bytes | None) -> list[str]:
+    """S013-T014: an engine that seals its evidence writes a finalized safec-evidence payload under
+    `<evidence>/sealed` holding the request, evidence, artifacts and result bytes. When a seal is there it must be
+    finalized and hold exactly those bytes, each with the digest its manifest states. Engines before cf3b01b write
+    no seal; its absence is not an issue (the wire files are checked as before)."""
+    seal = evdir / "sealed"
+    if not seal.exists():
+        return []
+    if not (seal / "FINALIZED").is_file() or (seal / "INCOMPLETE").exists():
+        return ["SEAL_NOT_FINALIZED"]
+    payload = seal / "payload"
+    try:
+        manifest = json.loads((payload / "manifest.json").read_bytes())
+        files = {f["path"]: f for f in manifest["files"]}
+    except (OSError, ValueError, KeyError, TypeError):
+        return ["SEAL_MANIFEST_UNREADABLE"]
+    found = {p.relative_to(payload).as_posix(): p for p in payload.rglob("*") if p.is_file() and not p.is_symlink()}
+    found.pop("manifest.json", None)
+    issues = []
+    if sorted(found) != sorted(files):
+        issues.append("SEAL_INVENTORY_MISMATCH")
+    issues += [f"SEAL_DIGEST_MISMATCH:{k}" for k, p in found.items() if k in files and C.sha256_path(p) != files[k]["sha256"]]
+    expect = {"evidence.json": evdir / "evidence.json"}
+    expect |= {f"artifacts/{a.name}": a for a in (evdir / "artifacts").glob("*") if a.is_file()}
+    for k, p in expect.items():
+        if k not in found or C.sha256_path(found[k]) != C.sha256_path(p):
+            issues.append(f"SEAL_CONTENT_DIFFERS:{k}")
+    if request_bytes is not None and ("request.json" not in found or
+                                      C.sha256_path(found["request.json"]) != C.sha256_bytes(request_bytes)):
+        issues.append("SEAL_CONTENT_DIFFERS:request.json")
+    return issues
+
+
+def _revalidate(result: dict, request: dict, input_sha: str, pin: EnginePin, evdir: Path,
+                request_bytes: bytes | None = None) -> list[str]:
     issues = []
     if result["request_id"] != request["request_id"]:
         issues.append("RESULT_REQUEST_ID_MISMATCH")
@@ -174,7 +208,7 @@ def _revalidate(result: dict, request: dict, input_sha: str, pin: EnginePin, evd
             issues.append(f"ARTIFACT_MISSING:{art['artifact_id']}")
         elif C.sha256_path(p) != art["sha256"]:
             issues.append(f"ARTIFACT_DIGEST_MISMATCH:{art['artifact_id']}")
-    return issues
+    return issues + seal_issues(evdir, request_bytes)
 
 
 def invoke(pin: EnginePin, request: dict, raw: bytes, workdir: Path, lim: Limits | None = None,
@@ -217,7 +251,10 @@ def invoke(pin: EnginePin, request: dict, raw: bytes, workdir: Path, lim: Limits
     except C.ContractError as exc:
         return Outcome("ERROR", issues=issues + [f"RESULT_{exc.code}"], exit_code=run["exit_code"],
                        measured=measured, **base)
-    issues += _revalidate(result, request, input_sha, pin, evdir)
+    issues += _revalidate(result, request, input_sha, pin, evdir, raw)
+    sealed_result = evdir / "sealed/payload/result.json"
+    if sealed_result.is_file() and C.sha256_path(sealed_result) != C.sha256_path(res_p):
+        issues.append("SEAL_CONTENT_DIFFERS:result.json")
     status = result["status"]
     if any(i.startswith(("RESULT_INPUT", "RESULT_ENGINE")) for i in issues):
         status = "STALE"

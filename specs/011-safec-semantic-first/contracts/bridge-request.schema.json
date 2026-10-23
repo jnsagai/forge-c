@@ -137,8 +137,7 @@
                   "set_field",
                   "clear_field",
                   "write_field",
-                  "write_key_sequence"
-                ]
+                  "write_key_sequence", "check_reset"]
               },
               "logical_value": {
                 "type": "string",
