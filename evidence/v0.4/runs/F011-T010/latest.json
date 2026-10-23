@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "python -m pytest -rA -p no:cacheprovider factory/python/tests/test_safec_bridge.py factory/python/tests/test_safec_bridge_m0.py && bash scripts/lrtx_compat_check.sh"
+  ],
+  "duration_s": 23.655,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "69c89ad553652310b33bd809bebc8de60608f742",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T010/20261022T091044.log",
+  "log_sha256": "2f6775f215f73aaa5243ed4484669b762b58264a063e5d3838bf9257b2cf57b0",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T010",
+  "ts_utc": "2026-10-22T09:10:44.468577Z"
+}

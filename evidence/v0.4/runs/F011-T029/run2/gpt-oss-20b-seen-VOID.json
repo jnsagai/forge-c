@@ -1,0 +1,38 @@
+{
+  "baselines": 1,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 0,
+  "false_rejections": 0,
+  "generated_at": "2026-10-22T14:08:34.436256Z",
+  "inspection_fail_off_target": 0,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "gpt-oss:20b",
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "FAILED",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 0,
+  "semantic_detection_on_target": 0
+}

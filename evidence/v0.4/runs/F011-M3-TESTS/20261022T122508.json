@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "PYTHONPATH=factory/python:factory/python/tests python -m pytest -rA -p no:cacheprovider factory/python/tests/test_lrtx_v2_profile.py factory/python/tests/test_lrtx_v2_swe1.py factory/python/tests/test_lrtx_v2_review.py && python factory/python/forge_factory/lrtx/compat.py --src $PWD --set v1 --compare tests/compat/lrtx/local-rtx-v1-2f4b9cf.json.gz && python factory/python/forge_factory/lrtx/compat.py --src $PWD --compare tests/compat/lrtx/baseline-86f1f40.json.gz"
+  ],
+  "duration_s": 18.374,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "284767855cc56076b13926ef62781f9755abdd12",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-M3-TESTS/20261022T122508.log",
+  "log_sha256": "062a9fa7033b2d66a2032b915408fb71977432567d1942bd02581ffafb527c4a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-M3-TESTS",
+  "ts_utc": "2026-10-22T12:25:08.135069Z"
+}

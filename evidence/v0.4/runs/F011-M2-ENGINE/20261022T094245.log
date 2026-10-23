@@ -1,0 +1,92 @@
+external_connect_errno 101
+{
+ "binary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/9d543b29134ec07c2df3d2780fcfd2e508e22a61/safec-bridge",
+ "binary_sha256": "5955f7931e4f58a7e735d7429cc9267ba395903f01b85f30d450e35955dbdc8d",
+ "build": "SAFEC_SOURCE_COMMIT=9d543b29134ec07c2df3d2780fcfd2e508e22a61 cargo build --release --manifest-path crates/safec-bridge/Cargo.toml --locked --offline (cargo 1.98.1)",
+ "reproduced": "two clean target directories gave the same sha256 on host master, 2026-10-22",
+ "schema": "forge-c/safec-engine-pin/1",
+ "semantic_profile": "register-io-0.1",
+ "source_commit_sha": "9d543b29134ec07c2df3d2780fcfd2e508e22a61"
+}
+5955f7931e4f58a7e735d7429cc9267ba395903f01b85f30d450e35955dbdc8d  /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/9d543b29134ec07c2df3d2780fcfd2e508e22a61/safec-bridge
+{"engine":{"binary_sha256":"5955f7931e4f58a7e735d7429cc9267ba395903f01b85f30d450e35955dbdc8d","semantic_profiles":["register-io-0.1"],"source_commit_sha":"9d543b29134ec07c2df3d2780fcfd2e508e22a61"},"operations":{"derive_contracts":"UNSUPPORTED","derive_tests":"UNSUPPORTED","probe_capabilities":"UNSUPPORTED","validate_intents":"SUPPORTED","verify_candidate":"UNSUPPORTED"},"protocol":{"domain":"forge-c/register-io-domain/1","request":"forge-c/safec-bridge-request/1","result":"forge-c/safec-bridge-result/1"},"schema":"forge-c/safec-bridge-identity/1"}
+........................................................................ [ 98%]
+.                                                                        [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_synthetic_sections_become_a_schema_valid_source_bound_domain
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_a_field_without_access_in_the_diagram_is_unknown_not_guessed
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_rm_facts_adc12en_bit5_and_the_iwdg_keys
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_reference_arithmetic_matches_the_rm_rules
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_contract_verification_catches_tampering_and_engine_disagreement
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_client_refuses_a_domain_the_request_is_not_bound_to
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_validates_synthetic_intents_and_both_engines_agree
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[pass]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[mask-as-value]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[overflow]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[inverted-key]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[ro-write]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[w1c-unsupported]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_statuses_and_checks[unknown-field]
+PASSED factory/python/tests/test_safec_bridge_m2.py::test_real_engine_on_real_rm_facts
+PASSED factory/python/tests/test_safec_bridge.py::test_request_bytes_are_canonical_and_stable
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[duplicate-key]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[nan]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[invalid-utf8]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[not-object]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[truncated]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[empty]
+PASSED factory/python/tests/test_safec_bridge.py::test_hostile_bytes_are_refused_before_interpretation[oversized]
+PASSED factory/python/tests/test_safec_bridge.py::test_result_semantics_beyond_the_schema
+PASSED factory/python/tests/test_safec_bridge.py::test_a_request_the_schema_refuses_is_never_built
+PASSED factory/python/tests/test_safec_bridge.py::test_honest_unsupported_round_trip_binds_every_identity
+PASSED factory/python/tests/test_safec_bridge.py::test_a_verified_pass_is_admissible_only_with_its_evidence_and_artifacts
+PASSED factory/python/tests/test_safec_bridge.py::test_wrong_binary_digest_refuses_without_executing
+PASSED factory/python/tests/test_safec_bridge.py::test_missing_engine_and_request_not_bound_to_the_pin_are_refused
+PASSED factory/python/tests/test_safec_bridge.py::test_handshake_mismatch_stops_before_the_run[identity_wrong_commit-ENGINE_SOURCE_COMMIT_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_handshake_mismatch_stops_before_the_run[identity_no_profile-PROFILE_NOT_OFFERED:register-io-0.1]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[forged_pass_exit1-ERROR-ENGINE_EXIT:1]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_request_id-ERROR-RESULT_REQUEST_ID_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_input_digest-STALE-RESULT_INPUT_DIGEST_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[wrong_engine-STALE-RESULT_ENGINE_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[missing_evidence-ERROR-EVIDENCE_MISSING]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[tampered_evidence-ERROR-EVIDENCE_DIGEST_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[evidence_disagrees-ERROR-EVIDENCE_STATUS_MISMATCH]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[missing_artifact-ERROR-ARTIFACT_MISSING:C-001]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[artifact_digest_mismatch-ERROR-ARTIFACT_DIGEST_MISMATCH:C-001]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[contradictory_pass-ERROR-RESULT_CONTRADICTORY_PASS]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[no_result-ERROR-RESULT_MISSING]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[duplicate_keys-ERROR-RESULT_DUPLICATE_KEY]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[invalid_utf8-ERROR-RESULT_INVALID_UTF8]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[unknown_field-ERROR-RESULT_SCHEMA_VIOLATION]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[oversized-ERROR-RESULT_OVERSIZED]
+PASSED factory/python/tests/test_safec_bridge.py::test_no_broken_or_forged_engine_output_becomes_admissible[huge_stdout-UNSUPPORTED-None]
+PASSED factory/python/tests/test_safec_bridge.py::test_crash_is_an_error
+PASSED factory/python/tests/test_safec_bridge.py::test_timeout_kills_the_engine_and_everything_it_started
+PASSED factory/python/tests/test_safec_bridge.py::test_cancellation_stops_a_running_engine
+PASSED factory/python/tests/test_safec_bridge.py::test_engine_gets_an_empty_environment_and_its_streams_stay_out_of_the_record
+PASSED factory/python/tests/test_safec_bridge.py::test_only_pass_is_admissible_every_other_status_blocks
+PASSED factory/python/tests/test_safec_bridge.py::test_identical_requests_give_byte_identical_results_and_the_cache_binds_inputs
+PASSED factory/python/tests/test_safec_bridge.py::test_work_directory_is_never_reused
+PASSED factory/python/tests/test_safec_bridge.py::test_engine_file_must_be_executable
+PASSED factory/python/tests/test_safec_bridge.py::test_real_engine_handshake_and_unsupported_round_trip
+PASSED factory/python/tests/test_safec_bridge.py::test_real_engine_is_refused_under_a_wrong_pin_and_answers_identically_twice
+PASSED factory/python/tests/test_safec_bridge.py::test_no_agent_role_can_reach_the_bridge
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_feature_documents_resolve_and_examples_behave_as_frozen
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_an_unplanned_missing_reference_fails
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_clean_change_passes_the_boundary_scan
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_copied_private_line_is_found_without_storing_it
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_credentials_are_found_in_tracked_and_untracked_changes
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_line_public_forge_c_already_had_is_not_a_private_copy
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_placeholders_are_not_credentials
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_a_single_shared_idiom_is_not_a_copy_but_a_block_is
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_shared_public_contracts_are_not_private_content
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-path]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[bearer]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[private-line]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_refuses_private_excerpts_and_secrets[multiline]
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_public_summary_keeps_only_allowed_scalars
+PASSED factory/python/tests/test_safec_bridge_m0.py::test_linux_probe_reports_counts_and_keeps_raw_logs_private
+73 passed in 6.89s
+
+--- stderr ---

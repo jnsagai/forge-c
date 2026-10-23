@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "echo fix_branch_head=$(git -C /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route rev-parse HEAD); python factory/python/forge_factory/lrtx/compat.py --src /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route --compare tests/compat/lrtx/baseline-86f1f40.json.gz && python factory/python/forge_factory/lrtx/compat.py --src /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route --set v1 --compare tests/compat/lrtx/local-rtx-v1-2f4b9cf.json.gz && (cd /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route && bash scripts/lrtx_compat_check.sh) && (cd /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route && PYTHONPATH=factory/python python -m pytest -rA -p no:cacheprovider factory/python/tests/test_rework_progress_extension.py) && (cd /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-fix-route && PYTHONPATH=factory/python python tests/reliability/reproducers/rpr072_route_extension_inspections.py)"
+  ],
+  "duration_s": 30.04,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "4f9abde301048c386d2a1792e98afbe6fdb003cb",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T037/20261022T132816.log",
+  "log_sha256": "6f50a2380ec454f14258da206e00e82d5d41e4bf76e68165c1fa9ec1d9448bba",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "F011-T037",
+  "ts_utc": "2026-10-22T13:28:16.838120Z"
+}

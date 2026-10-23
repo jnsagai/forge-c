@@ -31,3 +31,15 @@ def test_seeded_cases_are_attributed_and_the_holdout_is_untouched(tmp_path, monk
     assert s["catalogue_sha256"] == seeded.catalogue_hash() and (tmp_path / "report.json").is_file()
     after = {p: sha256_file(p) for p in HOLDOUT.rglob("*") if p.is_file() and "build" not in p.parts}
     assert before == after
+
+
+def test_an_inspector_that_records_nothing_is_never_read_as_a_pass(tmp_path, monkeypatch):
+    """F011 M4: the holdout keeps its original (PASS) inspection record. An inspector whose every call returns no JSON
+    records nothing, so each row is NO_INSPECTION, never 'none' or MISSED from the stale record."""
+    monkeypatch.setattr(S, "call", lambda p, **_k: {"doc": None, "errors": ["NOT_JSON:Expecting value: line 1 column 1 "
+                                                                            "(char 0)"], "usage": None, "wall_ms": 1.0,
+                                                     "finish_reason": "stop"})
+    s = seeded.run([HOLDOUT], "m", tmp_path / "report.json", cases=["S3-INVERT"])
+    by = {r["case"]: r["detected_by"] for r in s["rows"]}
+    assert by["BASELINE"].startswith("NO_INSPECTION") and by["S3-INVERT"].startswith("NO_INSPECTION"), by
+    assert s["no_inspection"] == 2 and s["false_rejections"] == 0 and s["missed"] == 0

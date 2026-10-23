@@ -1,0 +1,30 @@
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 52520.6}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 40695.8}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 22906.1}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 20017.7}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 24324.7}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 19451.8}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 8103.2}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 1, "wall_ms": 2141.7}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 2, "errors": 1, "wall_ms": 1322.7}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 43932.4}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 33101.6}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 14392.6}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 12014.3}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 18801.6}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 14017.4}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 6858.5}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 1, "wall_ms": 2156.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 2, "errors": 1, "wall_ms": 1127.1}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 40510.6}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 32933.4}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 16731.6}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 12995.9}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 18940.2}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 14766.1}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 7188.1}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 1, "wall_ms": 2164.5}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 2, "errors": 1, "wall_ms": 1216.5}
+{"qwen3-coder:30b": {"attempts": 3, "visit_pass": 0, "gate_frozen": 0, "wall_s_median": 148.2, "calls_median": 9, "load_ms_median": "UNKNOWN (no load observed)"}}
+
+--- stderr ---

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.modelprobe",
+    "--model",
+    "qwen3-coder:30b",
+    "--model",
+    "qwen3:8b",
+    "--model",
+    "gpt-oss:20b",
+    "--model",
+    "glm4:9b",
+    "--out",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/m4/modelprobe.json"
+  ],
+  "duration_s": 121.877,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "ad771bfc9f752ddc0e54338784551b862fe76e36",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T028/20261022T122702.log",
+  "log_sha256": "7158e1cb6a6482a04194584795b626dee8cc786dae55fdf1a50a2b503826309d",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T028",
+  "ts_utc": "2026-10-22T12:27:02.569081Z"
+}

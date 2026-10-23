@@ -1,0 +1,23 @@
+--- network inside the profile namespace ---
+external_connect_errno 101
+--- pinned engine ---
+{
+ "binary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/6b3934ba53d449e4044d6c32572d5f654f0ec489/safec-bridge",
+ "binary_sha256": "cea1840fe30f5835f48a28cf06413c3ce253ec1a939e7e4b6c24866a872b9158",
+ "build": "SAFEC_SOURCE_COMMIT=6b3934ba53d449e4044d6c32572d5f654f0ec489 cargo build --release --manifest-path crates/safec-bridge/Cargo.toml --locked --offline (cargo 1.98.1)",
+ "reproduced": "two clean target directories gave the same sha256 on host master, 2026-10-22",
+ "schema": "forge-c/safec-engine-pin/1",
+ "semantic_profile": "register-io-0.1",
+ "source_commit_sha": "6b3934ba53d449e4044d6c32572d5f654f0ec489"
+}
+cea1840fe30f5835f48a28cf06413c3ce253ec1a939e7e4b6c24866a872b9158  /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/6b3934ba53d449e4044d6c32572d5f654f0ec489/safec-bridge
+{"engine":{"binary_sha256":"cea1840fe30f5835f48a28cf06413c3ce253ec1a939e7e4b6c24866a872b9158","semantic_profiles":["register-io-0.1"],"source_commit_sha":"6b3934ba53d449e4044d6c32572d5f654f0ec489"},"operations":{"derive_contracts":"UNSUPPORTED","derive_tests":"UNSUPPORTED","probe_capabilities":"UNSUPPORTED","validate_intents":"UNSUPPORTED","verify_candidate":"UNSUPPORTED"},"protocol":{"request":"forge-c/safec-bridge-request/1","result":"forge-c/safec-bridge-result/1"},"schema":"forge-c/safec-bridge-identity/1"}
+--- Forge-C client against the real engine (network denied) ---
+..                                                                       [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_safec_bridge.py::test_real_engine_handshake_and_unsupported_round_trip
+PASSED factory/python/tests/test_safec_bridge.py::test_real_engine_is_refused_under_a_wrong_pin_and_answers_identically_twice
+2 passed, 41 deselected in 0.47s
+
+--- stderr ---

@@ -1,0 +1,90 @@
+"""Feature 011 M3 (F011-T020): local-rtx-v2 is an explicit, isolated opt-in. It has its own root and ports, the same
+refusals as v1 (ACP, cloud, unlisted models) and the same workflow graph. The semantic SWE.1 author is chosen at run
+time from the work order's profile, so v1 and the default/ACP lines are untouched (their frozen fixtures still pass)."""
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+from forge_factory import workorder
+from forge_factory.common import REPO_ROOT, sha256_file
+from forge_factory.lrtx import compat
+from forge_factory.lrtx import profile as lp
+
+V1, V2 = lp.load("local-rtx-v1"), lp.load("local-rtx-v2")
+
+
+def test_v2_has_its_own_root_and_ports_and_never_touches_v1_or_the_deployment():
+    d1, d2 = V1["deployment"], V2["deployment"]
+    assert set(d2["ports"].values()).isdisjoint(d1["ports"].values())
+    assert set(d1["ports"].values()) <= set(d2["forbidden_ports"])
+    assert set(d1["forbidden_ports"]) <= set(d2["forbidden_ports"])
+    r1, r2 = Path(d1["default_root"]), Path(d2["default_root"])
+    assert r1 != r2 and not r2.is_relative_to(r1) and not r1.is_relative_to(r2)
+    assert str(r1) in V2["existing_deployment"]["roots"]
+    assert all(not r2.is_relative_to(Path(x)) for x in V2["existing_deployment"]["roots"])
+    assert V2["local_only"] and V2["network"]["required"] == "namespace_denied" and V2["provider"] == "ollama"
+
+
+@pytest.mark.parametrize("kw, issue", [
+    ({"acp_authors": "codex"}, "PROFILE_REJECTS_ACP:codex"),
+    ({"acp_inspectors": "claude"}, "PROFILE_REJECTS_ACP:claude"),
+    ({"provider": "deepseek", "model": "deepseek-flash"}, "PROFILE_PROVIDER_NOT_LOCAL:deepseek"),
+    ({"model": "qwen3:8b"}, "PROFILE_MODEL_NOT_ALLOWED:qwen3:8b"),  # not measured for v2: not allowed
+    ({"model": "llama3:70b"}, "PROFILE_MODEL_NOT_ALLOWED:llama3:70b"),
+], ids=["acp-authors", "acp-inspectors", "cloud", "unlisted-model", "unknown-model"])
+def test_v2_refuses_cloud_acp_and_unlisted_models_before_launch(kw, issue):
+    args = {"model": "qwen3-coder:30b", "provider": "ollama", "code_model": None, "acp_authors": None,
+            "acp_inspectors": None, **kw}
+    assert issue in lp.selection_issues(V2, **args)
+    assert lp.selection_issues(V2, model="qwen3-coder:30b", provider="ollama", code_model=None, acp_authors=None,
+                               acp_inspectors=None) == []
+
+
+def test_v2_builds_the_same_graph_as_v1_and_names_semantic_swe1():
+    s1 = workorder.local_profile_structured({"id": "local-rtx-v1"}, {"layer": "LL"}, "qwen3-coder:30b")
+    s2 = workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "qwen3-coder:30b")
+    assert s1 == s2  # the runner, not the graph, selects the semantic SWE.1 author
+    assert V2["structured"]["semantic_phases"] == ["SWE.1"] and "semantic_phases" not in V1["structured"]
+
+
+def test_v2_pins_an_exact_safec_engine():
+    e = V2["safec"]["engine"]
+    assert len(e["binary_sha256"]) == 64 and len(e["source_commit_sha"]) == 40
+    assert e["semantic_profile"] == "register-io-0.1"
+    if Path(e["binary"]).is_file():  # the private engine exists only on the owner's host
+        assert sha256_file(Path(e["binary"])) == e["binary_sha256"]
+
+
+def test_v1_profile_file_is_byte_identical_to_the_frozen_fixture():
+    data = compat.load(REPO_ROOT / "tests/compat/lrtx/local-rtx-v1-2f4b9cf.json.gz")
+    assert data["profile"]["config_sha256"] == V1["_sha256"]
+
+
+def test_inspector_candidates_are_pinned_and_not_qualified():
+    allowed = V2["models"]["allowed"]
+    for m in ("gpt-oss:20b", "glm4:9b", "phi4:14b", "mistral-small3.2:24b", "granite3.3:8b"):
+        assert len(allowed[m]["digest"]) == 64 and allowed[m]["role_qualification"].startswith("NOT_QUALIFIED")
+
+
+def test_the_omniverse2_profile_differs_from_v2_only_in_host_paths_and_the_engine_build():
+    """The second host's profile may not drift from local-rtx-v2: same structured settings, gates, ports, models and
+    engine source commit; only paths, the cross-host engine build, the host reference and its identity differ."""
+    from forge_factory.lrtx.profile import load
+
+    v2, om = load("local-rtx-v2"), load("local-rtx-v2-omniverse2")
+    host_keys = {"id", "description", "host_reference", "deployment", "existing_deployment", "safec", "runtime", "gateway",
+                 "_path", "_sha256"}
+    # host tuning may differ (owner 2026-10-22, 48 GB host): Ollama runtime settings and each listed model's reasoning
+    # effort/allowance; the models allowed to reason, the timeout scale and every other key stay the same
+    assert set(v2["gateway"]["reasoning"]) == set(om["gateway"]["reasoning"])
+    assert set(v2["runtime"]["ollama"]) == set(om["runtime"]["ollama"])
+    assert {k: v for k, v in v2["runtime"].items() if k != "ollama"} == {k: v for k, v in om["runtime"].items() if k != "ollama"}
+    assert {k: v for k, v in v2.items() if k not in host_keys} == {k: v for k, v in om.items() if k not in host_keys}
+    assert {k: v for k, v in v2["deployment"].items() if k not in ("default_root", "shared_readonly")} == \
+        {k: v for k, v in om["deployment"].items() if k not in ("default_root", "shared_readonly")}
+    assert set(v2["deployment"]["shared_readonly"]) == set(om["deployment"]["shared_readonly"])
+    e2, eo = v2["safec"]["engine"], om["safec"]["engine"]
+    assert e2["source_commit_sha"].split()[0] == eo["source_commit_sha"].split()[0] and \
+        e2["semantic_profile"] == eo["semantic_profile"]
+    assert {k: v for k, v in v2["safec"].items() if k != "engine"} == {k: v for k, v in om["safec"].items() if k != "engine"}

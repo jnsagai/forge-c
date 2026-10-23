@@ -1,0 +1,2 @@
+{"task": "F011-T024C-IWDG", "window_start": "2026-10-22T12:11:56.322669+00:00", "window_end": "2026-10-22T12:15:54.611669+00:00", "duration_s": 238.289, "samples": 23, "gpu_board_wh": 1.328}
+{"task": "F011-T024C-RCC", "window_start": "2026-10-22T12:15:54.993867+00:00", "window_end": "2026-10-22T12:23:50.746867+00:00", "duration_s": 475.753, "samples": 48, "gpu_board_wh": 3.76}

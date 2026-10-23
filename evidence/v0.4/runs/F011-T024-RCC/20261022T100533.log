@@ -1,0 +1,25 @@
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 45049.5}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 38174.4}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 21513.3}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 19094.1}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 26241.4}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 23154.3}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 6, "wall_ms": 18589.3}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 7, "wall_ms": 16937.7}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 2, "errors": 2, "wall_ms": 16913.6}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 3, "errors": 3, "wall_ms": 20224.1}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 36719.0}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 31105.4}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 13502.7}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 11922.5}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 18870.5}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 13417.2}
+{"lrtx_progress": "requirements:RCC_CR_1", "attempt": 0, "errors": 0, "wall_ms": 39011.4}
+{"lrtx_progress": "requirements:RCC_CR_2", "attempt": 0, "errors": 0, "wall_ms": 29041.9}
+{"lrtx_progress": "requirements:RCC_SR_1", "attempt": 0, "errors": 0, "wall_ms": 13450.5}
+{"lrtx_progress": "requirements:RCC_SR_2", "attempt": 0, "errors": 0, "wall_ms": 11824.2}
+{"lrtx_progress": "requirements:RCC_AHB1ENR", "attempt": 0, "errors": 0, "wall_ms": 19885.7}
+{"lrtx_progress": "requirements:RCC_AHB1RSTR", "attempt": 0, "errors": 0, "wall_ms": 12683.5}
+{"qwen3-coder:30b": {"attempts": 3, "visit_pass": 0, "gate_frozen": 0, "wall_s_median": 126.7, "calls_median": 6, "load_ms_median": "UNKNOWN (no load observed)"}}
+
+--- stderr ---

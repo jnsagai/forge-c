@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:feature-011:register-io-domain:2",
+  "title": "Register-io domain v2 (register-io-0.1): source-bound register facts Forge-C extracts and SafeC validates",
+  "description": "Facts only (register, field, bit span, access token, reset, documented values) with source section, pages and file digest; no manual prose beyond short labels. SafeC re-validates every invariant; the SHA-256 of the exact file bytes is the request's binding.source_manifest_sha256. A documented value names the source (and pages) that documents it: the register's own section (bulleted values) or a functional-description section that writes it to the register. Version 2 (2026-10-22): documented values carry source_id and pages; version 1 had neither and is not accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile",
+    "peripheral",
+    "register_width",
+    "sources",
+    "errata",
+    "registers",
+    "out_of_scope_registers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/register-io-domain/2"
+    },
+    "profile": {
+      "const": "register-io-0.1"
+    },
+    "peripheral": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{0,31}$"
+    },
+    "register_width": {
+      "const": 32
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "kind",
+          "document",
+          "file",
+          "file_sha256",
+          "authority",
+          "extractor",
+          "extractor_sha256"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "kind": {
+            "enum": [
+              "reference_manual",
+              "erratum",
+              "workorder"
+            ]
+          },
+          "document": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "file_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "authority": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "extractor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "extractor_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "errata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "source_ids"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PROVIDED",
+            "NOT_PROVIDED"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "registers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "register_id",
+          "offset",
+          "reset_value",
+          "reset_defined_mask",
+          "source_id",
+          "section",
+          "pages",
+          "fact_id",
+          "fields"
+        ],
+        "properties": {
+          "register_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+          },
+          "offset": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]+$"
+          },
+          "reset_value": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]+$"
+          },
+          "reset_defined_mask": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]+$"
+          },
+          "source_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "section": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)*$"
+          },
+          "pages": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "fact_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "fields": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "field_id",
+                "lsb",
+                "msb",
+                "access_tokens",
+                "fact_id",
+                "label",
+                "values"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+                },
+                "lsb": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 31
+                },
+                "msb": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 31
+                },
+                "access_tokens": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z_0-9]{1,16}$"
+                  }
+                },
+                "fact_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "values": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "value",
+                      "fact_id",
+                      "label",
+                      "source_id",
+                      "pages"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "pattern": "^0x[0-9a-f]+$"
+                      },
+                      "fact_id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 160
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,127}$"
+                      },
+                      "pages": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "out_of_scope_registers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+      }
+    }
+  }
+}

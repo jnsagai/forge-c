@@ -1,0 +1,3 @@
+[{"model": "qwen3-coder:30b", "status": "MEASURED", "cold_load_s": 62.02, "loaded_vram_bytes": 6842493172, "decode_tok_s": 10.3}, {"model": "qwen3:8b", "status": "MEASURED", "cold_load_s": 22.8, "loaded_vram_bytes": 6834828083, "decode_tok_s": 41.5}, {"model": "gpt-oss:20b", "status": "MISSING", "cold_load_s": null, "loaded_vram_bytes": null, "decode_tok_s": null}, {"model": "glm4:9b", "status": "MISSING", "cold_load_s": null, "loaded_vram_bytes": null, "decode_tok_s": null}]
+
+--- stderr ---

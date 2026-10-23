@@ -1,0 +1,7 @@
+.                                                                        [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_safec_bridge.py::test_no_agent_role_can_reach_the_bridge
+1 passed, 42 deselected in 0.21s
+
+--- stderr ---

@@ -1,0 +1,150 @@
+{
+  "baselines": 5,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 0,
+  "false_rejections": 5,
+  "generated_at": "2026-10-22T16:51:54.333302Z",
+  "inspection_fail_off_target": 0,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "phi4:14b",
+  "no_inspection": 0,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-01: other [SWR-010]: SWR-010 verification dependent on OD-2026-10-18-01 is limited to a documented reset value, lacking physical target confirmation. Remediation: Clarify and verify the HSI reset starting",
+          "SWE1-02: requirements_inconsistent [SWR-010]: SWR-010 must leave RCC_CR.HSION at reset value 1, which is inconsistent if no enable/disable requests are issued after reset. Remediation: Clarify or rectify to en",
+          "SWE1-03: failure_handling_missing [document (with SWR-001, SWR-002, SWR-003, SWR-007)]: While SWR-007 covers a timeout fallback to clear enable bits, it doesn't specify full failure handling for oscillators be",
+          "SWE1-04: other [document (with SWR-012, SWR-013, SWR-014)]: Document states budgets: flash_bytes 4096, static_ram_bytes 64, stack_bytes 128, but no specific constraint values are mentioned for CPU, timing, FLA",
+          "SWE1-05: upstream_gap_not_recorded [SWR-010 (with SWR-010)]: Upstream gap exists as the software safety allocation remains PENDING, impacting traceability of safety obligations related to SWR-010. Remediation:",
+          "SWE1-06: ambiguity_not_documented [SWR-010]: SWR-010 verification is limited by OD-2026-10-18-01 to checked reset value only due to lack of observation on silicon, leading to unresolved ambiguity in complete h"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-019 (with SWR-017, SWR-018)]: SWR-019: 'While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.' is inconsistent because SW",
+          "SWE1-03: failure_handling_missing [document (with SWR-017, SWR-018, SWR-019)]: No specification for failure handling, reset/startup behavior, and safe states in the requirement document. SWR-017, SWR-018, and ",
+          "SWE1-04: other [SWR-020 (with SWR-021, SWR-022)]: SWR-020 states that the flash constraint is explicit and measurable with a budget of 4096 bytes, but the evidence from workproducts/SWE.1/software_requirements",
+          "SWE1-06: ambiguity_not_documented [document (with SWR-001, SWR-002, SWR-004, SWR-005, SWR-007)]: The SWR document specifies verification methods, but the source of some verification criteria (e.g., 'Host regis"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-01: other [Budgets (with SWR-012, SWR-013, SWR-014)]: Owner resource limits like flash, static RAM, and stack are development targets and no per-API cycle limit is allocated or approved, as per traceabili",
+          "SWE1-02: requirement_infeasible [SWR-006]: RCC driver asserts then releases RCC_AHB1RSTR.GPDMA1RST and RCC_AHB1RSTR.ADC12RST, but feasibility depends on hardware response which is not documented. Remediation: ",
+          "SWE1-03: safe_state_missing [SWR-007]: SWR-007 specifies a fallback state for oscillator failures but clarifies it is a driver fallback state, not an allocated system safe state. Source: 'Software safety requi",
+          "SWE1-04: other [document (with SWR-005, SWR-006, SWR-008)]: For SWR-005, there is no explicit information on the time it takes for the clock enable bit to become clear after a disable request, which lacks meas",
+          "SWE1-05: upstream_gap_not_recorded [document (with SWR-010, SWR-011)]: The target silicon revision is UNSPECIFIED in the manifest, as noted under Open gaps in traceability/upstream_gaps.md, which indicates a l",
+          "SWE1-06: ambiguity_not_documented [Safety allocation (with SWR-007)]: Safety allocation status PENDING indicates unresolved safety requirements related to oscillator-off fallback in SWR-007, which is a driver "
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-01: hsi_not_baselined [HSI contract (with SWR-001, SWR-002, SWR-003, SWR-004, SWR-005)]: The HSI contract states the hardware/software interface requirements (owner-decided scope, ch.14 RCC register inter",
+          "SWE1-03: safe_state_missing [document]: No specific safe state is defined for failure handling, reset/startup behavior or safe states. Requirement SWR-018 covers no write to registers without a specific mentio",
+          "SWE1-04: other [SWR-019 (with SWR-020, SWR-021)]: Flash, RAM, and timing constraints specified in SWR-019, SWR-020, and SWR-021 require the Flash (4096 bytes), static RAM (64 bytes), and stack usage (128 bytes",
+          "SWE1-05: upstream_gap_not_recorded [document (with SWR-001, SWR-002, SWR-003, SWR-004, SWR-005)]: Upstream status is NOT_PROVIDED; no upstream-inputs.yaml, leading to gaps in traceability not explicitly captur",
+          "SWE1-06: ambiguity_not_documented [document (with SWR-017, SWR-018)]: Verification criteria for SWR-017 and SWR-018 are partially documented but lack clarity on verification preconditions, especially regarding"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [
+          "SWE1-01: other [SWR-007 (with SWR-002, SWR-003)]: The verification setup indicates SWR-007 is associated with invalid parameter behavior; while tests exist, allocation review status might imply incompleteness ",
+          "SWE1-02: requirement_infeasible [SWR-005]: SWR-005 demands a bound wait that covers the update time with the system time base and a strict maximum, which is not feasible given the possible variance in system t",
+          "SWE1-03: failure_handling_missing [SWR-006 (with SWR-001, SWR-004)]: The document does not specify a safe state when the IWDG_SR.PVU or IWDG_SR.RVU flags are still set at the timeout and the driver returns HAL",
+          "SWE1-05: upstream_gap_not_recorded [document]: The manifest's upstream status is NOT_PROVIDED with issues UPSTREAM_FILE_MISSING, indicating an expected documentation of upstream inputs is absent. Remediation: ",
+          "SWE1-06: ambiguity_not_documented [document (with SWR-002, SWR-003, SWR-007)]: The software requirements document mentions that RM0486 p.2990 discourages reload values below 2 and supports prescaler encodings "
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 0,
+  "semantic_detection_on_target": 0
+}

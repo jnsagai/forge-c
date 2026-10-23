@@ -1,0 +1,134 @@
+.......................                                                  [100%]
+==================================== PASSES ====================================
+_____ test_semantic_visit_renders_work_products_the_unchanged_gate_freezes _____
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+___________ test_mask_as_value_is_repaired_with_the_engines_finding ____________
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 1, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+__________ test_an_identical_rejected_answer_stops_the_task_as_stuck ___________
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+_________ test_baseline_facts_come_from_the_frozen_work_products_only __________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+________________ test_refutations_confirmations_and_judgements _________________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+____________ test_a_requirement_without_pass_criterion_is_confirmed ____________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+_____________________ test_claim_identity_ignores_wording ______________________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+____________ test_a_missing_mandatory_safety_input_is_never_refuted ____________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+__ test_a_clean_baseline_with_a_refuted_fail_is_adjudicated_pass_and_recorded __
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+______________ test_a_real_defect_claim_stands_and_the_item_fails ______________
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4bf5d1f9d1b131b1e2466729ec4d989ba04b9220afe9dd99e040eff4545b2ebf"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:4bf5d1f9d1b131b1:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+=========================== short test summary info ============================
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_has_its_own_root_and_ports_and_never_touches_v1_or_the_deployment
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_refuses_cloud_acp_and_unlisted_models_before_launch[acp-authors]
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_refuses_cloud_acp_and_unlisted_models_before_launch[acp-inspectors]
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_refuses_cloud_acp_and_unlisted_models_before_launch[cloud]
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_refuses_cloud_acp_and_unlisted_models_before_launch[unlisted-model]
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_builds_the_same_graph_as_v1_and_names_semantic_swe1
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v2_pins_an_exact_safec_engine
+PASSED factory/python/tests/test_lrtx_v2_profile.py::test_v1_profile_file_is_byte_identical_to_the_frozen_fixture
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_runner_dispatch_is_by_profile_only
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_semantic_visit_renders_work_products_the_unchanged_gate_freezes
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_mask_as_value_is_repaired_with_the_engines_finding
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_an_identical_rejected_answer_stops_the_task_as_stuck
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_scope_and_schema_keep_the_model_inside_its_task
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_every_catalogue_rule_renders_ears_conformant[IWDG LL driver]
+PASSED factory/python/tests/test_lrtx_v2_swe1.py::test_every_catalogue_rule_renders_ears_conformant[RCC LL driver]
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_baseline_facts_come_from_the_frozen_work_products_only
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_refutations_confirmations_and_judgements
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_a_requirement_without_pass_criterion_is_confirmed
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_claim_identity_ignores_wording
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_a_missing_mandatory_safety_input_is_never_refuted
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_a_clean_baseline_with_a_refuted_fail_is_adjudicated_pass_and_recorded
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_a_real_defect_claim_stands_and_the_item_fails
+PASSED factory/python/tests/test_lrtx_v2_review.py::test_a_pass_with_claims_or_a_fail_without_is_refused
+23 passed in 11.91s
+{"status": "PASS", "cases": 8, "diffs": []}
+{"status": "PASS", "cases": 21, "diffs": []}
+
+--- stderr ---

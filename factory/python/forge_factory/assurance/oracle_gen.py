@@ -10,6 +10,7 @@ author role oracle-builder, implementation not seen) is recorded and assessed by
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import subprocess
 import tempfile
@@ -277,6 +278,21 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"],
                               pr["hal"].get("time_base"))
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
+        from . import safec_oracle as SO
+
+        if SO.present(ws):  # F011-T034: full register images from the frozen SafeC oracle (LL work orders)
+            eff = {e.get("case"): e for e in json.loads((ws / RC.EFFECTS).read_text()).get("effects") or []}
+            sc, sc_notes = SO.cases(ws, eff, json.loads((ws / RC.CALLS).read_text()).get("calls") or {})
+            notes = notes + sc_notes
+            blocked = [n for n in sc_notes if n.startswith("SAFEC_ORACLE_BLOCKED")]
+            if blocked:
+                return {"status": "BLOCKED", "reason": blocked[0], "notes": notes}
+            if sc:
+                helper, tail = SO.source(sc, pr["ll"]["register_count"])
+                src = src.replace("int main(void)", helper + "\nint main(void)", 1).replace(
+                    "    return fails ? 1 : 0;", tail.format(first=len(cases) + 1) + "\n    return fails ? 1 : 0;", 1)
+                cases = cases + sc
+                contract_digests.append(hashlib.sha256((ws / SO.FILE).read_bytes()).hexdigest())
     else:
         from ..layer import profile, register_prefix
 

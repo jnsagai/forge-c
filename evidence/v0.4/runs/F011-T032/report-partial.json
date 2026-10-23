@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-22T18:43:59.272544Z",
+  "model": "qwen3-coder:30b",
+  "note": "Inspector NOT_QUALIFIED (F011-T029): verdicts are measurements only.",
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 76683.7,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 1330266.0,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5561,
+          "prompt_tokens": 10911,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 1330.9,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/t032/scratch/IWDG-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 256989.3,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5358,
+          "prompt_tokens": 10741,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 257.3,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/t032/scratch/IWDG-LL/qwen3-coder_30b-02/workspace"
+    }
+  ],
+  "schema": "forge-c/f011-t032/1"
+}

@@ -18,6 +18,32 @@ from pathlib import Path
 PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "SWE.5": "swe5", "SWE.6": "swe6"}
 
 
+def author_module(ws: Path, step: str, phase: str) -> str:
+    """Feature 011: a work order of a profile listing the phase in structured.semantic_phases (local-rtx-v2) uses the
+    semantic author for it; every other work order keeps the feature 010 module (unchanged graphs and behaviour)."""
+    man = ws / ".forge-run/manifest.json"
+    prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+    if step == "author" and phase == "SWE.1" and prof_id:
+        from .profile import load
+
+        if phase in ((load(prof_id).get("structured") or {}).get("semantic_phases") or []):
+            return "swe1_semantic"
+    return PHASES[phase]
+
+
+def inspector_module(ws: Path, phase: str) -> str:
+    """Feature 011: a profile listing the phase in structured.semantic_inspect_phases (local-rtx-v2) inspects it with
+    typed claims and deterministic adjudication; every other work order keeps the feature 010 inspector."""
+    man = ws / ".forge-run/manifest.json"
+    prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+    if prof_id:
+        from .profile import load
+
+        if phase in ((load(prof_id).get("structured") or {}).get("semantic_inspect_phases") or []):
+            return "review_semantic"
+    return "review"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("step", choices=["author", "code", "tests", "inspect", "continue-check"])
@@ -49,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     if not a.model:
         ap.error("--model is required")
     if a.step == "inspect":
-        from . import review as mod
+        mod = import_module(f"forge_factory.lrtx.{inspector_module(ws, a.phase)}")
 
         (ws / ".forge-run/lrtx" / a.phase / "inspect-reply.json").unlink(missing_ok=True)
         try:
@@ -58,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
             rep = mod._reply(ws, a.phase, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
         print(json.dumps(rep))
         return 0
-    mod = import_module(f"forge_factory.lrtx.{PHASES[a.phase]}")
+    mod = import_module(f"forge_factory.lrtx.{author_module(ws, a.step, a.phase)}")
     stale = ws / ".forge-run/lrtx" / a.phase / "reply.json"
     stale.unlink(missing_ok=True)  # the gate must never read the reply of an earlier visit
     try:

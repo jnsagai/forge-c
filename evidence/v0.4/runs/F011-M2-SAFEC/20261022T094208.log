@@ -1,0 +1,19 @@
+safec_head=9d543b29134ec07c2df3d2780fcfd2e508e22a61
+== crates/safec-register-io
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+== crates/safec-bridge
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+== root workspace (must fail exactly the two M0 baseline tests)
+root_cargo_lock_unchanged
+root_passed 263 root_failed 2 failure_names_sha256 c492a141160bee4803f430323813ce6181aaa46597c10e36e192ca75a429afba
+root failures are exactly the M0 baseline set
+
+--- stderr ---

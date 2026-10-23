@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "-s",
+    "factory/python/tests/test_safec_bridge_engine_corpus.py"
+  ],
+  "duration_s": 1.564,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "972f3d326be7797b6ccf0692bf047caca7eafc9e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-ENGINE-CORPUS/20261022T190050.log",
+  "log_sha256": "35ccb9f57d30f5714637f5fa8d6119e4a7f9ab84c8aaf176b1a5a2e4c5c0a9a2",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-ENGINE-CORPUS",
+  "ts_utc": "2026-10-22T19:00:50.321513Z"
+}

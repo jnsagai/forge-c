@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:feature-011:safec-bridge-request:1",
+  "title": "SafeC Forge bridge request — intended schema, not yet implemented",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "operation",
+    "expected_engine",
+    "binding",
+    "inputs"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/safec-bridge-request/1"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "validate_intents",
+        "derive_contracts",
+        "derive_tests",
+        "verify_candidate",
+        "probe_capabilities"
+      ]
+    },
+    "expected_engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_commit_sha",
+        "binary_sha256",
+        "semantic_profile"
+      ],
+      "properties": {
+        "source_commit_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "binary_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "semantic_profile": {
+          "type": "string",
+          "enum": [
+            "register-io-0.1"
+          ]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workorder_id",
+        "workorder_sha256",
+        "source_manifest_sha256",
+        "policy_sha256"
+      ],
+      "properties": {
+        "workorder_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "workorder_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_intents"
+      ],
+      "properties": {
+        "semantic_intents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "intent_id",
+              "source_fact_ids",
+              "register",
+              "field",
+              "action"
+            ],
+            "properties": {
+              "intent_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "source_fact_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "register": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "field": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "read_field",
+                  "set_field",
+                  "clear_field",
+                  "write_field",
+                  "write_key_sequence"
+                ]
+              },
+              "logical_value": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*|0x[0-9A-Fa-f]+)$"
+              },
+              "precondition_fact_ids": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              }
+            }
+          },
+          "uniqueItems": true
+        },
+        "verified_contract_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "candidate_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "candidate_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "validate_intents"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "inputs": {
+            "properties": {
+              "semantic_intents": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "verify_candidate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "inputs": {
+            "required": [
+              "verified_contract_sha256",
+              "candidate_sha256",
+              "candidate_manifest_sha256"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

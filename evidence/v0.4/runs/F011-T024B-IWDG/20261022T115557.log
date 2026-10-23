@@ -1,0 +1,24 @@
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 99986.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 9597.4}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 8718.9}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 13945.6}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 15261.7}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 5246.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 1826.5}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 12664.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 3747.8}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 3653.8}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 7138.9}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 8285.4}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 3372.4}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 1968.2}
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 15703.5}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 4172.6}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 3719.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 6270.4}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 8402.7}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 4006.7}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 1797.3}
+{"qwen3-coder:30b": {"attempts": 3, "visit_pass": 3, "gate_frozen": 3, "wall_s_median": 48.7, "calls_median": 7, "load_ms_median": 59042.4}}
+
+--- stderr ---

@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-rA",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_safec_bridge.py",
+    "-k",
+    "no_agent"
+  ],
+  "duration_s": 0.45,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "69c89ad553652310b33bd809bebc8de60608f742",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T011/20261022T091108.log",
+  "log_sha256": "449c442c58540d984ac0e53cd8d30e19bbac8ddf5d7fdb2e89bc7d4473a51905",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T011",
+  "ts_utc": "2026-10-22T09:11:08.184321Z"
+}

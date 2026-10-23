@@ -1,0 +1,44 @@
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 44857.0}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 66316.8}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 117234.1}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 76189.6}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 54013.4}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 54973.6}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 44967.6}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 44249.3}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 42973.7}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 147353.6}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 50528.7}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 100495.0}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 98476.8}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 26264.7}
+{"lrtx_progress": "inspect:7f70d7717c5369b5:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 130132.9}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 74301.0}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 99809.6}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 106789.6}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 63583.3}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 95910.6}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 135601.2}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 84243.7}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-05:reinspect", "attempt": 0, "errors": 3, "wall_ms": 64746.2}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-05:reinspect", "attempt": 1, "errors": 6, "wall_ms": 26736.7}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-05:reinspect", "attempt": 2, "errors": 0, "wall_ms": 56742.4}
+{"lrtx_progress": "inspect:d52ad545c5d090eb:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 65520.0}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 75072.0}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 94843.7}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-02:reinspect", "attempt": 0, "errors": 0, "wall_ms": 134381.5}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 58885.5}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 47958.6}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 69896.5}
+{"lrtx_progress": "inspect:e5dca9b30a07fd68:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 96939.9}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 92138.9}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 105385.3}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 120304.6}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 89089.7}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 26069.8}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 127511.4}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-05:reinspect", "attempt": 0, "errors": 0, "wall_ms": 86797.9}
+{"lrtx_progress": "inspect:bf577483e4375c2d:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 85184.7}
+{"schema": "forge-c/lrtx-seeded/1", "catalogue": "lrtx-seeded-1", "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070", "model": "phi4:14b", "inspector": "semantic", "generated_at": "2026-10-22T16:51:54.493816Z", "deterministic_detection": 0, "semantic_detection_on_target": 0, "inspection_fail_off_target": 0, "missed": 0, "seeded": 0, "false_rejections": 5, "baselines": 5, "no_inspection": 0, "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+
+--- stderr ---

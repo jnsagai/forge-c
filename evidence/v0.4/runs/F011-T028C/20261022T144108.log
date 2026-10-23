@@ -1,0 +1,22 @@
+[{"model": "phi4:14b", "status": "MEASURED", "cold_load_s": 22.54, "loaded_vram_bytes": 6780543302, "decode_tok_s": 9.1}, {"model": "mistral-small3.2:24b", "status": "MEASURED", "cold_load_s": 76.25, "loaded_vram_bytes": 6077808639, "decode_tok_s": 3.4}, {"model": "granite3.3:8b", "status": "MEASURED", "cold_load_s": 16.13, "loaded_vram_bytes": 6788806082, "decode_tok_s": 35.6}]
+{"model": "gpt-oss:20b", "reasoning_effort": "none", "content_chars": 0, "valid_json": false, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 11}
+{"model": "gpt-oss:20b", "reasoning_effort": "low", "content_chars": 30, "valid_json": true, "reasoning_chars": 25, "finish": "stop", "completion_tokens": 33}
+{"model": "gpt-oss:20b", "reasoning_effort": null, "content_chars": 30, "valid_json": true, "reasoning_chars": 218, "finish": "stop", "completion_tokens": 83}
+{"model": "glm4:9b", "reasoning_effort": "none", "content_chars": 39, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 23}
+{"model": "glm4:9b", "reasoning_effort": "low", "http": 400, "error": "{\"error\":{\"message\":\"\\\"glm4:9b\\\" does not support thinking\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}\n"}
+{"model": "glm4:9b", "reasoning_effort": null, "content_chars": 39, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 23}
+{"model": "phi4:14b", "reasoning_effort": "none", "content_chars": 135, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 48}
+{"model": "phi4:14b", "reasoning_effort": "low", "http": 400, "error": "{\"error\":{\"message\":\"\\\"phi4:14b\\\" does not support thinking\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}\n"}
+{"model": "phi4:14b", "reasoning_effort": null, "content_chars": 135, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 48}
+{"model": "mistral-small3.2:24b", "reasoning_effort": "none", "content_chars": 39, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 18}
+{"model": "mistral-small3.2:24b", "reasoning_effort": "low", "http": 400, "error": "{\"error\":{\"message\":\"\\\"mistral-small3.2:24b\\\" does not support thinking\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}\n"}
+{"model": "mistral-small3.2:24b", "reasoning_effort": null, "content_chars": 39, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 18}
+{"model": "granite3.3:8b", "reasoning_effort": "none", "content_chars": 35, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 19}
+{"model": "granite3.3:8b", "reasoning_effort": "low", "http": 400, "error": "{\"error\":{\"message\":\"\\\"granite3.3:8b\\\" does not support thinking\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}\n"}
+{"model": "granite3.3:8b", "reasoning_effort": null, "content_chars": 35, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 19}
+{"model": "qwen3-coder:30b", "reasoning_effort": "none", "content_chars": 35, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 14}
+{"model": "qwen3-coder:30b", "reasoning_effort": "low", "http": 400, "error": "{\"error\":{\"message\":\"\\\"qwen3-coder:30b\\\" does not support thinking\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}\n"}
+{"model": "qwen3-coder:30b", "reasoning_effort": null, "content_chars": 35, "valid_json": true, "reasoning_chars": 0, "finish": "stop", "completion_tokens": 14}
+{"answers_with_reasoning_off": {"gpt-oss:20b": false, "glm4:9b": true, "phi4:14b": true, "mistral-small3.2:24b": true, "granite3.3:8b": true, "qwen3-coder:30b": true}}
+
+--- stderr ---

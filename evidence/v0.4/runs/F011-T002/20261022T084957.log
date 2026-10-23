@@ -1,0 +1,8 @@
+safec_remote_main=556dca8df4d2fccd9cb59fd8fb0432aafdd05835
+safec_branch=feat/013-register-io-semantic-core head=597335c2af911cbae06333db7367ed6a2619dea0
+discovery_ref_is_ancestor
+{"license":null,"permissions":{"admin":true,"maintain":true,"pull":true,"push":true,"triage":true},"private":true,"visibility":"private"}
+license_files=0
+pr 1 draft=true head=feat/013-register-io-semantic-core
+
+--- stderr ---

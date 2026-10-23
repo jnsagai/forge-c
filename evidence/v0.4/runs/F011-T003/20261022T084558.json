@@ -1,0 +1,22 @@
+{
+  "command": [
+    "sh",
+    "-c",
+    "bash scripts/lrtx_compat_check.sh; rc=$?; echo '--- protected policy and configuration hashes ---'; sha256sum config/factory/*.yaml config/factory/profiles/*.yaml; find factory/checklists factory/release-manager -type f -name '*.yaml' -o -type f -name '*.json' | sort | xargs sha256sum; echo '--- versions ---'; python --version; git --version; exit $rc"
+  ],
+  "duration_s": 18.425,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "21d881a521fac43b9d53f9face64e6f56891a5a4",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T003/20261022T084558.log",
+  "log_sha256": "0511db4c3090e2b51a0bdd5ffeca3cca1f046871e2ea2923c9c5d232a1391b49",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T003",
+  "ts_utc": "2026-10-22T08:45:58.643303Z"
+}

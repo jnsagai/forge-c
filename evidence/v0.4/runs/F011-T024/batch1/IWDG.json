@@ -1,0 +1,75 @@
+{
+  "by_model": {
+    "qwen3-coder:30b": {
+      "attempts": 3,
+      "calls_median": 1,
+      "gate_frozen": 0,
+      "load_ms_median": 95836.4,
+      "per_task": {},
+      "visit_pass": 0,
+      "wall_s_median": 11.7
+    }
+  },
+  "generated_at": "2026-10-22T10:05:32.417712Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder:30b"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 3,
+  "rows": [
+    {
+      "calls": 1,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "LRTX_SEMANTIC_ENGINE_FAULT: SAFEC_ERROR: ENGINE_EXIT:101, RESULT_MISSING"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 95836.4,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {},
+      "visit": "FAILED",
+      "wall_s": 162.1,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/IWDG-workspaces/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 1,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "LRTX_SEMANTIC_ENGINE_FAULT: SAFEC_ERROR: ENGINE_EXIT:101, RESULT_MISSING"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {},
+      "visit": "FAILED",
+      "wall_s": 11.4,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/IWDG-workspaces/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 1,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "LRTX_SEMANTIC_ENGINE_FAULT: SAFEC_ERROR: ENGINE_EXIT:101, RESULT_MISSING"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.1",
+      "tasks": {},
+      "visit": "FAILED",
+      "wall_s": 11.7,
+      "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/trials/f011-t024/IWDG-workspaces/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2/state/workorders/WO-F011-T024-IWDG-START/workspace"
+}
