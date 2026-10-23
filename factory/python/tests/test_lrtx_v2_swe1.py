@@ -523,6 +523,20 @@ def test_target_oracle_on_the_iwdg_model_states_what_it_cannot_set(iwdg, monkeyp
     assert r["counts"]["NOT_SETTABLE"] == len(r["cases"]) > 0
     f = verifiers._target_oracle_findings(iwdg)
     assert f and all(x.startswith("LIMITATION:") for x in f), f[:3]
+    # SWE.6: on the real model nothing the oracle could observe contradicts Robot; every verified requirement
+    # without an independent target observation is a stated limitation
+    swrs = {c["swr"] for c in r["cases"]}
+    cross = verifiers.oracle_cross_check(iwdg, set(swrs))
+    assert cross and all(x.startswith("LIMITATION:") for x in cross), cross[:3]
+    # the classification itself, on a scripted target result: a Robot-verified requirement whose oracle case fails is
+    # a false-positive qualification test; a failing one Robot did not verify is a plain failure
+    a, b, c = sorted(swrs)[:3]
+    monkeypatch.setattr(target_oracle, "run", lambda *_a, **_k: {"status": "FAIL", "limits": [], "cases": [
+        {"swr": a, "case": "x@0", "status": "FAIL"}, {"swr": b, "case": "y@0", "status": "FAIL"},
+        {"swr": c, "case": "z@0", "status": "PASS"}]})
+    got = verifiers.oracle_cross_check(iwdg, {a, c})
+    assert got == [f"FALSE_POSITIVE_TEST:{a}:Robot verified, SafeC oracle fails on target",
+                   f"TARGET_ORACLE_FAIL:{b}"], got
 
 
 def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch, tmp_path):
