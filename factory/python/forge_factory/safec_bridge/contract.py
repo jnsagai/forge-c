@@ -87,6 +87,21 @@ def reference_operation(domain: dict, intent: dict) -> dict:
             "precondition_fact_ids": list(intent.get("precondition_fact_ids") or [])}
 
 
+def reference_reset_claim(domain: dict, intent: dict) -> dict | None:
+    """F011-T016: the claim the engine may accept for a check_reset intent, derived from the domain alone; None when
+    the source leaves the field's reset undefined or the claim contradicts it (the engine must then not accept)."""
+    reg = next(r for r in domain["registers"] if r["register_id"] == intent["register"])
+    f = next(x for x in reg["fields"] if x["field_id"] == intent["field"])
+    mask = ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
+    if int(reg["reset_defined_mask"], 16) & mask != mask:
+        return None
+    actual = (int(reg["reset_value"], 16) & mask) >> f["lsb"]
+    if _literal(intent.get("logical_value")) != actual:
+        return None
+    return {"intent_id": intent["intent_id"], "register": reg["register_id"], "field": f["field_id"],
+            "reset_value": str(actual), "source_fact_ids": list(intent["source_fact_ids"])}
+
+
 def verify(doc: dict, request: dict, domain_bytes: bytes, pin: EnginePin) -> list[str]:
     issues = [f"CONTRACT_SCHEMA:{e}" for e in C.schema_errors("contract", doc)]
     if issues:
@@ -100,12 +115,25 @@ def verify(doc: dict, request: dict, domain_bytes: bytes, pin: EnginePin) -> lis
         issues.append("CONTRACT_BINDING_MISMATCH")
     if doc["domain_sha256"] != C.sha256_bytes(domain_bytes):
         issues.append("CONTRACT_DOMAIN_MISMATCH")
-    intents = request["inputs"]["semantic_intents"]
+    claims_in = [i for i in request["inputs"]["semantic_intents"] if i["action"] == "check_reset"]
+    intents = [i for i in request["inputs"]["semantic_intents"] if i["action"] != "check_reset"]
+    domain = json.loads(domain_bytes)
+    claims = doc.get("reset_claims") or []
+    if [c["intent_id"] for c in claims] != [i["intent_id"] for i in claims_in]:
+        issues.append("CONTRACT_RESET_CLAIMS_MISMATCH")
+    else:
+        for it, got in zip(claims_in, claims):
+            try:
+                ref = reference_reset_claim(domain, it)
+            except (StopIteration, KeyError, ValueError) as exc:
+                issues.append(f"REFERENCE_UNAVAILABLE:{it['intent_id']}:{type(exc).__name__}")
+                continue
+            if ref != got:
+                issues.append(f"ENGINES_DISAGREE:{it['intent_id']}:reset_claim: safec={got!r} forge-c={ref!r}")
     ops = {o["intent_id"]: o for o in doc["operations"]}
     if sorted(ops) != sorted(i["intent_id"] for i in intents) or len(ops) != len(doc["operations"]):
         issues.append("CONTRACT_INTENTS_MISMATCH")
         return issues
-    domain = json.loads(domain_bytes)
     for it in intents:
         try:
             ref = reference_operation(domain, it)

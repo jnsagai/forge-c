@@ -236,6 +236,53 @@
     "semantic_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "reset_claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "description": "F011-T016: requirement claims of a field's reset value that the engine checked against the source (present only when there is one); not register operations.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "intent_id",
+          "register",
+          "field",
+          "reset_value",
+          "source_fact_ids"
+        ],
+        "properties": {
+          "intent_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "register": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reset_value": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,19})$"
+          },
+          "source_fact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        }
+      }
     }
   }
 }
