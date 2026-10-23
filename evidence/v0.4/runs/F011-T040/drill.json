@@ -1,0 +1,93 @@
+{
+  "finished_at": "2026-10-23T20:35:20.137640Z",
+  "profile": "local-rtx-v2-omniverse2",
+  "profile_sha256": "c2cc0357c5b4ed32df74bf041e247d335c510aec98d237c091d31f0b19c4390b",
+  "root": "/mnt/data/forge-c/lrtx-v2",
+  "schema": "forge-c/f011-t040-drill/1",
+  "started_at": "2026-10-23T20:34:05.097922Z",
+  "status": "PASS",
+  "steps": {
+    "fingerprint_after": {
+      "changed": [],
+      "ok": true
+    },
+    "fingerprint_before": {
+      "checkouts": {
+        "/home/omniverse2/forge-c-remote/repos/forge-c": {
+          "dirty": "",
+          "head": "50f9dc180e4917fd066d052c8dfee6da3cfecb75"
+        },
+        "/home/omniverse2/forge-c-remote/repos/safec": {
+          "dirty": "",
+          "head": "0b6b299c6bf916212f6257778ffa0b42e435b679"
+        }
+      },
+      "listeners": [
+        11435
+      ],
+      "ok": true,
+      "protected_files": 177837
+    },
+    "interrupted_engine": {
+      "after": {
+        "admissible": false,
+        "engine_findings": [
+          "DOMAIN_REQUIRED"
+        ],
+        "issues": [],
+        "status": "ERROR"
+      },
+      "interrupted": {
+        "admissible": false,
+        "exit_code": -9,
+        "issues": [
+          "CANCELLED"
+        ],
+        "sealed_finalized": false,
+        "status": "ERROR"
+      },
+      "ok": true
+    },
+    "no_promotion": {
+      "note": "the drill writes no CRE decision, deployment or release",
+      "ok": true
+    },
+    "restart": {
+      "health": {
+        "fabro": true,
+        "gateway": true,
+        "ollama": true
+      },
+      "ok": true
+    },
+    "restart_after_rollback": {
+      "health": {
+        "fabro": true,
+        "gateway": true,
+        "ollama": true
+      },
+      "ok": true
+    },
+    "rollback": {
+      "leftovers": [],
+      "moved_aside": true,
+      "ok": true,
+      "restored": true,
+      "start_refused": "RuntimeError: run `init` first"
+    },
+    "running_before": {
+      "ok": true,
+      "status": "UP"
+    },
+    "stop": {
+      "ok": true,
+      "status": "DOWN",
+      "stopped": [
+        "fabro",
+        "gateway",
+        "ollama",
+        "netns-holder"
+      ]
+    }
+  }
+}

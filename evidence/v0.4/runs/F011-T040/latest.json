@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/mnt/data/forge-c/venv/bin/python",
+    "-m",
+    "forge_factory.lrtx.drill",
+    "--profile",
+    "local-rtx-v2-omniverse2",
+    "--protect",
+    "/mnt/data/forge-c/state/workorders",
+    "--protect",
+    "/mnt/data/forge-c/safec/engines",
+    "--protect",
+    "/mnt/data/forge-c/fabro-0.362.0",
+    "--protect",
+    "/mnt/data/forge-c/ollama-0.34.0",
+    "--work",
+    "/mnt/data/forge-c/drill-t040-work",
+    "--out",
+    "evidence/v0.4/runs/F011-T040/drill.json"
+  ],
+  "duration_s": 75.188,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "50f9dc180e4917fd066d052c8dfee6da3cfecb75",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T040/20261023T203404.log",
+  "log_sha256": "b6615166f846dc817596d3e18bcec96a41b1abdbd58819f5deec6d31d126f956",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T040",
+  "ts_utc": "2026-10-23T20:34:04.983940Z"
+}

@@ -1,0 +1,3 @@
+{"status": "PASS", "fingerprint_before": true, "interrupted_engine": true, "running_before": true, "stop": true, "restart": true, "rollback": true, "restart_after_rollback": true, "fingerprint_after": true, "no_promotion": true}
+
+--- stderr ---
