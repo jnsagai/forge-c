@@ -1,0 +1,44 @@
+..............F................                                          [100%]
+=================================== FAILURES ===================================
+_ test_uncovered_fields_and_missing_owner_decisions_are_source_linked_findings _
+
+iwdg = PosixPath('/tmp/pytest-of-jefferson/pytest-1679/test_uncovered_fields_and_miss0/state/workorders/WO-T-V2-IWDG/workspace')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ba671de9c80>
+
+    def test_uncovered_fields_and_missing_owner_decisions_are_source_linked_findings(iwdg, monkeypatch):
+        """F011-T017: every in-scope field the frozen contract leaves without an intent, and every obligation SafeC
+        leaves unresolved, is preserved as a finding for the owner with its source fact, RM section and pages; the
+        author's reason is kept but never decides anything."""
+        from forge_factory.lrtx.swe1_semantic import DECISIONS_FILE
+    
+        monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+        rep = SEM.visit(iwdg, "qwen3-coder:30b")
+        assert rep["status"] == "PASS", rep
+        assert DECISIONS_FILE in rep["artifacts"]
+        doc = json.loads((iwdg / DECISIONS_FILE).read_text())
+        contract = json.loads(next((iwdg / ".forge-run/safec").glob("*/evidence/artifacts/validated_contract"))
+                              .read_text())
+        uncovered = {f"{c['register']}.{c['field']}" for c in contract["coverage"] if not c["intent_ids"]}
+        found = {f["subject"]: f for f in doc["findings"] if f["kind"] == "UNCOVERED_FIELD"}
+>       assert uncovered and set(found) == uncovered, (uncovered, set(found))
+E       AssertionError: ({'IWDG_PR.PR', 'IWDG_RLR.RL', 'IWDG_SR.EWIF', 'IWDG_SR.EWU', 'IWDG_SR.ONF', 'IWDG_SR.PVU', ...}, {'IWDG_SR.EWIF', 'IWDG_SR.EWU', 'IWDG_SR.WVU'})
+E       assert ({'IWDG_PR.PR', 'IWDG_RLR.RL', 'IWDG_SR.EWIF', 'IWDG_SR.EWU', 'IWDG_SR.ONF', 'IWDG_SR.PVU', ...} and {'IWDG_SR.EWI...'IWDG_SR.WVU'} == {'IWDG_PR.PR'..._SR.PVU', ...}
+E         
+E         Extra items in the right set:
+E         'IWDG_RLR.RL'
+E         'IWDG_SR.ONF'
+E         'IWDG_SR.RVU'
+E         'IWDG_SR.PVU'
+E         'IWDG_PR.PR'
+E         Use -v to get more diff)
+
+factory/python/tests/test_lrtx_v2_swe1.py:557: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+
+--- stderr ---
