@@ -1,0 +1,35 @@
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 8792.8}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 10296.3}
+{"lrtx_progress": "design", "attempt": 0, "errors": 2, "wall_ms": 5591.1}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 5849.1}
+{"lrtx_progress": "design", "attempt": 2, "errors": 1, "wall_ms": 6165.5}
+{"pilot": "IWDG-LL", "n": 1, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 5, "wall_s": 36.8, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 9102.1}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 10992.3}
+{"lrtx_progress": "design", "attempt": 0, "errors": 2, "wall_ms": 5337.7}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 5291.4}
+{"lrtx_progress": "design", "attempt": 2, "errors": 0, "wall_ms": 5411.6}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5805.1}
+{"pilot": "IWDG-LL", "n": 2, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 6, "wall_s": 42.1, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 9573.1}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 11252.9}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5993.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 6092.7}
+{"pilot": "IWDG-LL", "n": 3, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 4, "wall_s": 33.0, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 15290.3}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5397.1}
+{"lrtx_progress": "design", "attempt": 0, "errors": 1, "wall_ms": 5457.6}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 5547.7}
+{"lrtx_progress": "design", "attempt": 2, "errors": 0, "wall_ms": 5467.5}
+{"pilot": "RCC-LL", "n": 1, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 5, "wall_s": 37.4, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 13761.0}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5730.5}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 6661.3}
+{"pilot": "RCC-LL", "n": 2, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 3, "wall_s": 26.4, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 13825.8}
+{"lrtx_progress": "design", "attempt": 0, "errors": 2, "wall_ms": 4930.8}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 4916.9}
+{"lrtx_progress": "design", "attempt": 2, "errors": 1, "wall_ms": 4866.1}
+{"pilot": "RCC-LL", "n": 3, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 4, "wall_s": 28.6, "inspection": "NOT_RUN (not frozen)"}
+
+--- stderr ---
