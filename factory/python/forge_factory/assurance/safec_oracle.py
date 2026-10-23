@@ -6,10 +6,10 @@ The semantic SWE.1 (local-rtx-v2) records workproducts/SWE.1/register_oracle.jso
 - every oracle case is re-derived by `oracle.reference_cases` and the oracle digest and binding are checked.
 Any difference blocks (`SAFEC_ORACLE_BLOCKED:`), it is never skipped silently.
 
-Each case then becomes one C check on the real register array: the register starts at the case's initial image (all
-zeros, then all ones with undefined bits at their reset value), the SWE.2 call of the case's requirement runs, and the
-whole register word must equal the expected image, every other register word must be unchanged and a query must
-return the expected field value. Only LL work orders are checked this way: an LL call is one register effect, while a
+Each case then becomes one C check on the real register array: the register starts at the case's initial image, every
+other word at a non-zero background, the SWE.2 call of the case's requirement runs, and the whole register word must
+equal the expected image, every other register word must be unchanged and a query must return the expected field
+value. Only LL work orders are checked this way: an LL call is one register effect, while a
 HAL call may poll and sequence (the existing contract cases keep covering HAL).
 """
 from __future__ import annotations
@@ -88,13 +88,17 @@ def source(cases_: list[dict], count: int) -> tuple[str, str]:
     """(helper definitions placed before main, the call placed before main returns)."""
     from .register_contract import call_text
 
+    # every other register word starts from a non-zero background, so that a stray write (of 0 in particular, e.g.
+    # to a read-only register) changes a word the check compares (F011-T034: a zeroed file hid such writes)
     body = ["static int forge_others_same(const uint32_t *b, unsigned w)", "{", "    unsigned i;",
             f"    for (i = 0U; i < {count}U; i++) {{ if (i != w && regs[i] != b[i]) {{ return 0; }} }}",
-            "    return 1;", "}", "static void forge_safec_cases(int first)", "{", f"    uint32_t b[{count}];"]
+            "    return 1;", "}", "static void forge_background(void)", "{", "    unsigned i;",
+            f"    for (i = 0U; i < {count}U; i++) {{ regs[i] = 0xA5A50000U | i; }}", "}",
+            "static void forge_safec_cases(int first)", "{", f"    uint32_t b[{count}];"]
     for n, c in enumerate(cases_):
         call = call_text(c, "10U")
         body += [f"    /* {c['swr']} {c['case']}: SafeC register-image oracle (contract + RM facts only) */",
-                 "    memset((void *)regs, 0, sizeof regs);", f"    regs[{c['word']}U] = 0x{c['initial']:08X}U;",
+                 "    forge_background();", f"    regs[{c['word']}U] = 0x{c['initial']:08X}U;",
                  "    memcpy(b, (const void *)regs, sizeof b);",
                  f"    {{ uint32_t r = (uint32_t)({call});" if c["ret"] is not None else f"    {{ (void){call};",
                  f"      int ok = (regs[{c['word']}U] == 0x{c['after']:08X}U) && forge_others_same(b, {c['word']}U)"

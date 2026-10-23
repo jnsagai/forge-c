@@ -425,6 +425,106 @@ def test_wp_proves_each_register_effect_and_leaves_each_mutant_open_on_its_own_o
         assert bad["status"] == "NOT_PROVED" and open_ops == {target}, (what, bad["operations"])
 
 
+def test_contract_mutants_come_from_the_contract_and_the_safec_oracle_kills_each(iwdg, monkeypatch, tmp_path):
+    """F011-T034/AT-027: requirement-level faults (another documented key, a neighbouring field bit, an omitted
+    register write, a write to a read-only register) are derived from the verified contract, never from the code.
+    The SafeC register oracle kills every one of them on a correct LL; a unit test that does not observe register
+    effects lets them survive, and the SWE.4 mutation verifier reports survivors as findings."""
+    import shutil
+
+    from forge_factory.assurance import mutation, oracle_gen
+    from forge_factory.assurance import safec_oracle as SO
+    from forge_factory.layer import api_header, profile
+
+    if shutil.which("gcc") is None:
+        pytest.skip("gcc not available")
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    rec, _ = SO.verified(iwdg)
+    calls = {}
+    for iid, case in rec["case_of_intent"].items():
+        op = next(o for o in rec["operations"] if o["intent_id"] == iid)
+        calls[case] = {"function": FN[iid.split(":", 1)[1]],
+                       "args": [f"{op['logical_value']}U"] if op["action"] == "write_field" else []}
+    (iwdg / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (iwdg / "workproducts/SWE.2/api_calls.json").write_text(json.dumps({"calls": calls}))
+    (iwdg / "workproducts/SWE.2/software_architecture.md").write_text("# SWE.2 (test stub)\n")
+    pr = profile(iwdg)
+    block, count, hdr = pr["ll"]["register_block"], pr["ll"]["register_count"], api_header("LL", iwdg)
+    ops = mutation.register_ops(iwdg)
+    names = {o[0] for o in ops}
+    assert {"KEY_SWAP", "FIELD_BIT_SHIFT", "OMIT_WRITE"} <= names, names
+    good = _ll_impl(rec, block)
+    ms = mutation.mutants(good, "IWDG", ops)
+    ms = [m for m in ms if m["op"] in names]
+    assert len(ms) >= len(rec["operations"])
+    from forge_factory.assurance import register_proof
+    from forge_factory.assurance.formal import tool
+
+    killed_by, survived = {"oracle": 0, "cbmc": 0}, []
+    for n, m in enumerate(ms):
+        d = tmp_path / f"m{n}"
+        (d / hdr).parent.mkdir(parents=True, exist_ok=True)
+        (d / hdr).write_text(m["text"])
+        if oracle_gen.run(iwdg, [d], [], hdr)["status"] == "FAIL":
+            killed_by["oracle"] += 1
+        elif tool("cbmc") is not None and register_proof.prove(iwdg, [d], hdr)["status"] == "FAILED":
+            killed_by["cbmc"] += 1  # a fault visible only from an initial value no concrete image uses
+        else:
+            survived.append((m["op"], m["original"]))
+    print("CONTRACT_MUTANTS", len(ms), json.dumps(killed_by), sorted(names))
+    assert survived == [], survived
+    assert killed_by["oracle"] >= len(ms) - 2, killed_by  # measured: two clear-mask shifts need CBMC
+    # the campaign carries the contract operators; a test that only calls the functions observes nothing
+    sw = tmp_path / "sw"
+    (sw / "ll").mkdir(parents=True)
+    (sw / "ll" / Path(hdr).name).write_text(good)
+    weak = tmp_path / "test_weak.c"
+    body = "\n".join(f"    (void){FN[i.split(':', 1)[1]]}({'5U' if 'prescaler' in i else ('4095U' if 'reload' in i else '')});"
+                     for i in rec["case_of_intent"])
+    weak.write_text(f"#include <stdint.h>\nvolatile uint32_t {block}[{count}];\n#include \"{Path(hdr).name}\"\n"
+                    f"int main(void)\n{{\n{body}\n    return 0;\n}}\n")
+    c = mutation.run_campaign(sw, f"ll/{Path(hdr).name}", [weak], prefix="IWDG", ll_unit="none.c", extra_ops=ops)
+    assert "forge-mut-rio/1" in c["record"]["operator_set"] and c["schema_issues"] == []
+    contract_survivors = {m["op"] for m in c["mutants"] if m["outcome"] == "SURVIVED"} & names
+    assert {"KEY_SWAP", "OMIT_WRITE"} <= contract_survivors, c["mutants"]
+    assert mutation.validate_campaign(c["record"]) == []
+
+
+def test_target_oracle_on_the_iwdg_model_states_what_it_cannot_set(iwdg, monkeypatch, tmp_path):
+    """F011-T034 (SWE.5/SWE.6): the frozen oracle on the Renode IWDG model. The key register is write-only, the
+    configuration registers are write-protected until unlocked and the status flags are driven by the model, so no
+    case's initial image can be held: every case is NOT_SETTABLE, none is reported passed or failed, and the SWE.5
+    verifier turns that into stated limitations only."""
+    import shutil
+
+    from forge_factory.assurance import safec_oracle as SO
+    from forge_factory.assurance import target_oracle, verifiers
+    from forge_factory.layer import api_header, profile
+    from forge_factory.mcp.servers import sim
+
+    if sim.renode_bin() is None or shutil.which("arm-none-eabi-gcc") is None:
+        pytest.skip("Renode or the GNU Arm toolchain not installed")
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    rec, _ = SO.verified(iwdg)
+    calls = {}
+    for iid, case in rec["case_of_intent"].items():
+        op = next(o for o in rec["operations"] if o["intent_id"] == iid)
+        calls[case] = {"function": FN[iid.split(":", 1)[1]],
+                       "args": [f"{op['logical_value']}U"] if op["action"] == "write_field" else []}
+    (iwdg / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (iwdg / "workproducts/SWE.2/api_calls.json").write_text(json.dumps({"calls": calls}))
+    hdr = api_header("LL", iwdg)
+    (iwdg / "software/ll").mkdir(parents=True, exist_ok=True)
+    (iwdg / "software/ll" / Path(hdr).name).write_text(_ll_impl(rec, profile(iwdg)["ll"]["register_block"]))
+    r = target_oracle.run(iwdg, [iwdg / "software/ll"], Path(hdr).name)
+    assert r["status"] == "NOT_SUPPORTED" and r["counts"]["PASS"] == r["counts"]["FAIL"] == 0, r["counts"]
+    assert r["counts"]["NOT_SETTABLE"] == len(r["cases"]) > 0
+    f = verifiers._target_oracle_findings(iwdg)
+    assert f and all(x.startswith("LIMITATION:") for x in f), f[:3]
+
+
 def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch, tmp_path):
     """F011-T031/T032: under local-rtx-v2 each function a frozen requirement names is a key of the SWE.2 output
     schema, so the measured IsActive -> IsEnabled rename cannot be produced; other workspaces keep the feature 010
