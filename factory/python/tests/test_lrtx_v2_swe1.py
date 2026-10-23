@@ -539,6 +539,31 @@ def test_target_oracle_on_the_iwdg_model_states_what_it_cannot_set(iwdg, monkeyp
                    f"TARGET_ORACLE_FAIL:{b}"], got
 
 
+def test_uncovered_fields_and_missing_owner_decisions_are_source_linked_findings(iwdg, monkeypatch):
+    """F011-T017: every in-scope field the frozen contract leaves without an intent, and every obligation SafeC
+    leaves unresolved, is preserved as a finding for the owner with its source fact, RM section and pages; the
+    author's reason is kept but never decides anything."""
+    from forge_factory.lrtx.swe1_semantic import DECISIONS_FILE
+
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    rep = SEM.visit(iwdg, "qwen3-coder:30b")
+    assert rep["status"] == "PASS", rep
+    assert DECISIONS_FILE in rep["artifacts"]
+    doc = json.loads((iwdg / DECISIONS_FILE).read_text())
+    contract = json.loads(next((iwdg / ".forge-run/safec").glob("*/evidence/artifacts/validated_contract"))
+                          .read_text())
+    uncovered = {f"{c['register']}.{c['field']}" for c in contract["coverage"] if not c["intent_ids"]}
+    found = {f["subject"]: f for f in doc["findings"] if f["kind"] == "UNCOVERED_FIELD"}
+    assert uncovered and set(found) == uncovered, (uncovered, set(found))
+    for f in found.values():
+        assert f["source_linked"] and f["source_fact_ids"][0].startswith("F-") and f["pages"] and f["section"], f
+    ewif = found.get("IWDG_SR.EWIF")
+    assert ewif is None or ewif["author_reason"] == "early wake-up interrupt out of scope"
+    kinds = {f["kind"] for f in doc["findings"]}
+    assert "ERRATA_NOT_BASELINED" in kinds and doc["status"] == "OPEN"
+    assert doc["contract_semantic_digest"] == contract["semantic_digest"]
+
+
 def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch, tmp_path):
     """F011-T031/T032: under local-rtx-v2 each function a frozen requirement names is a key of the SWE.2 output
     schema, so the measured IsActive -> IsEnabled rename cannot be produced; other workspaces keep the feature 010
