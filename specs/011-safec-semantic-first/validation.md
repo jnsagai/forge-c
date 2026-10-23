@@ -224,3 +224,43 @@ lets use the most of the machine"): b981617, `pd-411645d07a947efdd302`. On local
 - the context is 65536 tokens.
 
 The laptop profile is unchanged.
+
+## M5 continued — 2026-10-23 (C11/ACSL obligations and Frama-C WP; Forge-C 2bcf31c, SafeC 7032f48)
+
+Owner, 2026-10-23: the laptop continues the tasks that need no model runs while the 48 GB host is prepared.
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T033 | PASS | `F011-T033` (22 tests, no skip), `F011-T035` | SafeC lowers each validated operation to ACSL obligations of one call, with a C11 reference body and an applicability class per tool measured on this host (S013-T018): WP decides FIELD_VALUE, WHOLE_WORD, RETURN_FIELD, FRAME and NO_WRITE; PRESERVED_BITS is INCONCLUSIVE for WP and left to CBMC (bit-precise, F011-T035); Kind 2 is NOT_APPLICABLE (not temporal). Key-sequence order, hardware side effects, reset/timing and concurrency are UNSUPPORTED and listed per operation. The bridge offers it as `derive_contracts` (artifact `formal_obligations`, schema `contracts/register-io-obligations.schema.json`). Forge-C re-derives every obligation, the applicability class and the not-lowered list independently (`safec_bridge/obligations.py`): a weakened obligation, an over-claimed tool or a hidden gap is ENGINES_DISAGREE and blocks. The semantic SWE.1 freezes the verified obligations (work product SWE.1 register_obligations.json); `assurance/register_wp.py` re-verifies them against the rebuilt domain and runs Frama-C WP on the real LL code through a wrapper per operation (the SWE.2 call, inlined). On the IWDG LL test implementation every operation is PROVED; an inverted key, an absent write, a wrong-bit read, a read that writes and a write to another register each leave their own operation, and only it, NOT_PROVED. A WP goal that is not proved is never reported as a refutation. The Wheel/temporal profile of SafeC is unchanged (S013-T018). |
+| Result schema | Additive change | `contracts/bridge-result.schema.json` | Artifact kind `formal_obligations` added (sha256 e323567a…, was abfad52f…). Results of earlier engines are unchanged and still valid; an older client refuses the new kind, so the change fails safe. SafeC's copy is byte-exact. |
+| Engine pin | 7032f48 | both local-rtx-v2 profiles | Cross-host build, sha256 `746490271ee091e3a49d4c0266f72fc6d1cb96e7628c0406b53aab5381a9957a`; `validate_intents` and `derive_tests` decide as b6ce0f7. On the 48 GB host it must be built with SafeC `scripts/build-pinned-engine.sh 7032f48 /mnt/data/forge-c/safec/engines` before the profile can start. |
+| Consumer/producer | PASS | SafeC validation S013-T015 | The Forge-C real-engine tests pass against SafeC 1866a92 (66) and 7032f48 (bridge, oracle and obligations suites, 128 related tests). |
+
+**CRE decision:** `pd-6b5fb4484e9525325f18` (candidate 2bcf31c, baseline aa9707f): ELIGIBLE_FOR_OFFLINE_REVIEW.
+**Provenance scan base:** after the merge of PR #36, the scan's base is the branch's merge base with main (aa9707f).
+From the old base 2f4b9cf it flagged the already published F011-T035 tool identities, because SafeC's private S013-T019
+probe record repeats the same host tool paths and digests; the lines are Forge-C's public evidence, not SafeC content.
+
+## M5 continued — 2026-10-23 (contract mutants and the oracle on target; Forge-C e4dd999)
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T034 | PARTIAL (SWE.4 and SWE.5 for LL; SWE.6 and HAL open) | `F011-T034-M5B` (43 tests, no skip), `F011-M5-TESTS` | **Contract mutants (AT-027):** register_ops in the assurance mutation module derives requirement-level faults from the verified SafeC contract, never from the code: KEY_SWAP (another documented key of the field), FIELD_BIT_SHIFT (the neighbouring bit), OMIT_WRITE (a register write removed), RO_WRITE (a write to a read-only register added). The SWE.4 mutation campaign carries them (operator set forge-mut-rio/1). On the IWDG LL test implementation: 23 contract mutants, 21 killed by the SafeC register oracle, the remaining 2 (a prescaler and a reload clear mask shifted by one bit, wrong only for initial values no concrete image uses) killed by the CBMC proof; 0 survive. **Vacuous test (AT-028):** a unit test that only calls the functions lets the KEY_SWAP and OMIT_WRITE mutants survive, so the campaign reports them as SURVIVOR findings. **Defect found and fixed:** the C oracle compared other register words starting from a zeroed file, so a stray write of 0 (to a read-only register) was invisible; every other word now starts from a non-zero background (`0xA5A50000 \| index`). **False positive:** the correct implementation passes every case (host oracle, CBMC, WP). **On target (SWE.5):** `assurance/target_oracle.py` runs each oracle case as a Cortex-M55 image on the Renode STM32N6 platform. It first proves the model holds the case's initial image (the image with the field flipped, then the image); otherwise the case is NOT_SETTABLE and never counted. RCC_AHB1ENR (real RM0486 facts): set/clear ADC12EN pass on every image; RCC_SR ready flags are NOT_SETTABLE (driven by the model); a wrong-bit mutant fails on its own cases only. IWDG: all 24 cases NOT_SETTABLE (write-only key register, write-protected configuration registers, model-driven status flags), reported as limitations, none as pass. The SWE.5 raw-outcome verifier includes it for LL work orders with a frozen SafeC oracle; other work orders are unchanged. **Open:** SWE.6 (Robot) use of the oracle, and HAL. |
+
+**CRE decision:** `pd-84002850487ede3163dc` (candidate e4dd999, baseline 319e0f3): ELIGIBLE_FOR_OFFLINE_REVIEW.
+
+## M5 continued — 2026-10-23 (SWE.6 cross-check; Forge-C 1880e0e) — F011-T034 complete for the semantic LL profile
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T034 | PASS (LL, semantic local-rtx-v2) | `F011-T034` (30 tests, no skip), `F011-T034-M5B`, `F011-T033`, `F011-T035` | Requirement-derived oracles and mutations at every phase, from the verified SafeC contract only: **SWE.3** bounded CBMC proofs (F011-T035) and Frama-C WP proofs (F011-T033) of each register effect; **SWE.4** the register-image oracle in the EASA C oracle and the contract-derived mutants (inverted/other key, absent write, neighbouring bit, read-only write: 23 on IWDG, 0 survive) plus the vacuous-test class (a test that observes no register lets them survive and is reported); **SWE.5** the oracle on the Renode target (unsettable cases stated, never passed); **SWE.6** every requirement the Robot suite verified is cross-checked against the oracle on target: Robot PASS with an oracle FAIL is FALSE_POSITIVE_TEST, a requirement with no independent target observation is a stated limitation. False positive in the other direction: the correct implementation passes everything. **Scope:** the register-image oracle models one register effect per call, so it applies to LL work orders with a frozen SafeC contract; HAL calls sequence and poll registers and keep the existing HAL register-contract cases; HAL is not claimed local-structured (F011-T036). |
+
+**CRE decision:** `pd-570bd020fd06d45aa2de` (candidate 1880e0e, baseline 2806492): ELIGIBLE_FOR_OFFLINE_REVIEW.
+
+## M2 follow-up — 2026-10-23 (F011-T017 complete; Forge-C d50e115)
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T017 | PASS | `F011-T017` (two failed runs kept: a wrong test path, then a test that read a single-group contract from another engine call; fixed and rerun), `F011-M2-ENGINE`, `F011-M2-SAFEC` | Cross-intent consistency and the per-field coverage inventory were done in M2. Now the semantic SWE.1 also writes the work product SWE.1 owner_decisions.json, bound to the frozen contract digest: every in-scope field without an intent (UNCOVERED_FIELD, with the author's reason kept but deciding nothing), every obligation SafeC leaves unresolved (ERRATA_NOT_BASELINED, PRECONDITION_NOT_VERIFIED) and every author open point, each with its source fact id, RM section and pages when one exists (`source_linked` says when none does). The factory decides none of them. On the IWDG test: the uncovered fields are exactly those of the contract's coverage inventory, each linked to its fact and pages; the missing errata is a finding. |
+
+**CRE decisions:** `pd-12b8a45f8e0a60d3311c` (84bab68, the implementation) and `pd-82ce6f9e313d9a52ffa9` (d50e115, the test fix): ELIGIBLE_FOR_OFFLINE_REVIEW.

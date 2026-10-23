@@ -37,6 +37,7 @@ from ..safec_bridge import client as CL
 from ..safec_bridge import contract as K
 from ..safec_bridge import contracts as C
 from ..safec_bridge import domain as D
+from ..safec_bridge import obligations as OB
 from ..safec_bridge import oracle as O
 from . import structured as S
 from . import swe1 as V1
@@ -467,6 +468,11 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
         oracle_file = record_oracle(ws, ctx, _joint(sem), vc, results, amap)
     except (O.OracleRejected, K.ContractRejected) as exc:
         return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_ORACLE_REJECTED: {i}" for i in exc.issues[:10]], budget)
+    decisions_file = record_owner_decisions(ws, ctx, vc, sem)
+    try:
+        obligations_file = record_obligations(ws, ctx, _joint(sem), vc)
+    except (OB.ObligationsRejected, K.ContractRejected) as exc:
+        return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_OBLIGATIONS_REJECTED: {i}" for i in exc.issues[:10]], budget)
     S.record(ws, "SWE.1/semantic.json", {"schema": "forge-c/lrtx-swe1-semantic/1", "at": utc_now(),
                                          "contract_semantic_digest": vc.semantic_digest,
                                          "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(),
@@ -474,7 +480,8 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     checks = V1.self_check(ws)
     if checks:
         return V1.reply(ws, "FAILED", checks[:20], budget)
-    return V1.reply(ws, "PASS", [], budget, artifacts=sorted(amap["files"] + ([oracle_file] if oracle_file else [])))
+    return V1.reply(ws, "PASS", [], budget, artifacts=sorted(amap["files"] + [f for f in (oracle_file, obligations_file,
+                                                                                         decisions_file) if f]))
 
 
 # ---- F011-T034: the register-image test oracle of the frozen contract ------------------------------------------------
@@ -503,3 +510,83 @@ def record_oracle(ws: Path, ctx: Context, intents: list[dict], vc: K.ValidatedCo
         "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(), "operations": list(vc.operations),
         "case_of_intent": case_of, "oracle": doc}, indent=1, sort_keys=True) + "\n"})
     return ORACLE_FILE
+
+
+# ---- F011-T033: the C11/ACSL obligations of the frozen contract --------------------------------------------------------
+OBLIGATIONS_FILE = "workproducts/SWE.1/register_obligations.json"
+
+
+def record_obligations(ws: Path, ctx: Context, intents: list[dict], vc: K.ValidatedContract) -> str | None:
+    """derive_contracts on the same intents; the obligations are kept only if they are bound to the contract just
+    validated and Forge-C re-derives every one (safec_bridge.obligations). An engine without derive_contracts
+    leaves SWE.1 as before (no obligations file)."""
+    out, req, work = ctx.validate(intents, "swe1-obligations", operation="derive_contracts")
+    if out.status == "UNSUPPORTED":
+        S.record(ws, "SWE.1/obligations.json", {"status": "NOT_DERIVED",
+                                                "reason": "engine does not support derive_contracts"})
+        return None
+    again = K.materialize(out, req, ctx.domain_raw, work, ctx.pin)
+    if again.semantic_digest != vc.semantic_digest:
+        raise OB.ObligationsRejected([f"OBLIGATIONS_CONTRACT_DRIFT: {again.semantic_digest} != {vc.semantic_digest}"])
+    doc = OB.materialize(out, vc, ctx.domain_raw, work)
+    V1.write_scoped(ws, {OBLIGATIONS_FILE: json.dumps({
+        "schema": "forge-c/lrtx-register-obligations/1", "contract_semantic_digest": vc.semantic_digest,
+        "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(), "obligations": doc},
+        indent=1, sort_keys=True) + "\n"})
+    return OBLIGATIONS_FILE
+
+
+# ---- F011-T017: uncovered fields and missing owner decisions as source-linked findings ---------------------------------
+DECISIONS_FILE = "workproducts/SWE.1/owner_decisions.json"
+
+
+def owner_decisions(ctx: Context, vc: K.ValidatedContract, sem: list) -> list[dict]:
+    """Every in-scope field the contract leaves without an intent, every obligation SafeC leaves unresolved and every
+    open point of the author becomes one finding for the owner, linked to its source facts (fact id, RM section and
+    pages) where one exists. Derived from the validated contract and the domain, never from model text alone."""
+    reasons = {}
+    for g, rec in sem:
+        for x in rec["doc"].get("not_covered") or []:
+            full = x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}"
+            reasons[full] = x.get("reason", "")
+    by_field = {(v["register"], v["field"]): (k, v) for k, v in ctx.facts.items() if "value" not in v}
+    out = []
+    for c in vc.coverage:
+        if c["intent_ids"]:
+            continue
+        fid, fact = by_field.get((c["register"], c["field"]), (None, {}))
+        full = f"{c['register']}.{c['field']}"
+        out.append({"id": f"OD-{len(out) + 1:03d}", "kind": "UNCOVERED_FIELD", "subject": full,
+                    "decision": "confirm that this field is outside the scope, or extend the scope",
+                    "author_reason": reasons.get(full) or None, "source_fact_ids": [fid] if fid else [],
+                    "section": fact.get("section"), "pages": fact.get("pages") or [],
+                    "source_linked": bool(fid)})
+    for u in vc.unresolved_obligations:
+        cited = sorted(set(re.findall(r"F-[A-Za-z0-9_.:-]+", u)) & set(ctx.facts))
+        kind = u.split(":", 1)[0]
+        out.append({"id": f"OD-{len(out) + 1:03d}", "kind": kind, "subject": u[:300],
+                    "decision": {"ERRATA_NOT_BASELINED": "provide the errata sheet, or accept that errata effects "
+                                                         "are not checked",
+                                 "PRECONDITION_NOT_VERIFIED": "confirm how the cited precondition is ensured"}.get(
+                                     kind, "decide how this obligation is discharged"),
+                    "author_reason": None, "source_fact_ids": cited,
+                    "section": ctx.facts[cited[0]]["section"] if cited else None,
+                    "pages": sorted({p for c in cited for p in ctx.facts[c]["pages"]}),
+                    "source_linked": bool(cited)})
+    for g, rec in sem:
+        for o in rec["doc"].get("open_points") or []:
+            if o.strip():
+                out.append({"id": f"OD-{len(out) + 1:03d}", "kind": "AUTHOR_OPEN_POINT", "subject": o.strip()[:300],
+                            "decision": "resolve the open point", "author_reason": None,
+                            "source_fact_ids": [], "section": None, "pages": [], "source_linked": False,
+                            "group": g["id"]})
+    return out
+
+
+def record_owner_decisions(ws: Path, ctx: Context, vc: K.ValidatedContract, sem: list) -> str:
+    items = owner_decisions(ctx, vc, sem)
+    V1.write_scoped(ws, {DECISIONS_FILE: json.dumps({
+        "schema": "forge-c/lrtx-owner-decisions/1", "contract_semantic_digest": vc.semantic_digest,
+        "domain_sha256": vc.domain_sha256, "status": "OPEN" if items else "NONE", "findings": items,
+        "note": "findings for the owner; none is decided by the factory"}, indent=1, sort_keys=True) + "\n"})
+    return DECISIONS_FILE

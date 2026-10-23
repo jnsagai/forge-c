@@ -152,7 +152,7 @@ def v_mutation(ws: Path) -> dict:
     used = set(re.findall(rf"\b({_api_rx(ws)}\w+)\s*\(", "\n".join(_code(ws).values()) + ut.read_text()))
     c = mutation.run_campaign(ws / "software", target, [ut], used_symbols=used,
                               extra_sources=[] if layer == "LL" else [], prefix=register_prefix(ws),
-                              ll_unit=Path(ll_tu(ws)).name)
+                              ll_unit=Path(ll_tu(ws)).name, extra_ops=mutation.register_ops(ws))
     surv = [f"SURVIVOR:{m['op']}@{m['line']}:{m['original'][:50]}" for m in c["mutants"] if m["outcome"] == "SURVIVED"]
     r = c["record"]
     return {"status": "FAIL" if surv else "PASS", "findings": surv,
@@ -197,7 +197,29 @@ def v_renode_raw(ws: Path) -> dict:
     res = [x for x in recs if x.get("op") == "run_renode"][-1]["result"]
     f = T.validate_renode(res, rr["raw"][0].read_text(errors="replace"))
     f += T.vacuous_checks({str(p): p.read_text(errors="replace") for p in ws.glob("software/tests/**/*.c")})
+    f += _target_oracle_findings(ws)
     return {"status": _ok(f), "findings": f}
+
+
+def _target_oracle_findings(ws: Path) -> list[str]:
+    """F011-T034 (SWE.5/SWE.6): the frozen SafeC register oracle on the Renode target, for work orders that carry one
+    (local-rtx-v2 LL); other work orders are unchanged. A case the model cannot hold is a stated limitation."""
+    from ..layer import api_header
+    from . import safec_oracle as SO
+    from . import target_oracle
+
+    if layer_of(ws) != "LL" or not SO.present(ws):
+        return []
+    hdr = Path(api_header("LL", ws)).name
+    r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], hdr)
+    if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
+        return [f"LIMITATION:TARGET_ORACLE_{r['status']}:{r.get('reason', '')}"[:200]]
+    if r["status"] == "BLOCKED":
+        return [f"TARGET_ORACLE_BLOCKED:{r.get('reason', '')}"[:200]]
+    out = [f"TARGET_ORACLE_{c['status']}:{c['swr']}:{c['case']}" for c in r["cases"]
+           if c["status"] in ("FAIL", "BUILD_FAILED", "NO_RESULT")]
+    out += [f"LIMITATION:TARGET_ORACLE_NOT_SETTABLE:{c['case']}" for c in r["cases"] if c["status"] == "NOT_SETTABLE"]
+    return out + [f"LIMITATION:TARGET_ORACLE:{x}" for x in r["limits"][:1]]
 
 
 def v_integration(ws: Path) -> dict:
@@ -230,7 +252,33 @@ def v_observation(ws: Path) -> dict:
               for i in b["failed_ids"]}
     o = T.requirement_observation(reqs, suite.read_text(), sc, swtrace.robot_results(rr["raw"]), failed)
     f = [f"UNVERIFIED:{k}:{v}" for k, v in o["requirements"].items() if not v.startswith("VERIFIED")]
+    f += oracle_cross_check(ws, {k for k, v in o["requirements"].items() if v.startswith("VERIFIED")})
     return {"status": _ok(f), "findings": f, "verified": o["verified"], "total": o["total"]}
+
+
+def oracle_cross_check(ws: Path, verified: set[str]) -> list[str]:
+    """F011-T034 (SWE.6): every requirement the Robot suite verified is checked against the independent SafeC
+    register oracle on the same Renode target. A requirement whose oracle case fails there while its Robot test
+    passed has a false-positive qualification test (FALSE_POSITIVE_TEST); a failing case of a requirement Robot did
+    not verify is still a failure. Cases the model cannot hold, and requirements with no oracle case, are stated
+    limitations. Work orders without a frozen SafeC oracle are unchanged."""
+    from ..layer import api_header
+    from . import safec_oracle as SO
+    from . import target_oracle
+
+    if layer_of(ws) != "LL" or not SO.present(ws):
+        return []
+    r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], Path(api_header("LL", ws)).name)
+    if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
+        return [f"LIMITATION:TARGET_ORACLE_{r['status']}:{r.get('reason', '')}"[:200]]
+    if r["status"] == "BLOCKED":
+        return [f"TARGET_ORACLE_BLOCKED:{r.get('reason', '')}"[:200]]
+    bad = sorted({c["swr"] for c in r["cases"] if c["status"] in ("FAIL", "BUILD_FAILED", "NO_RESULT")})
+    passed = {c["swr"] for c in r["cases"] if c["status"] == "PASS"}
+    out = [f"FALSE_POSITIVE_TEST:{s}:Robot verified, SafeC oracle fails on target" for s in bad if s in verified]
+    out += [f"TARGET_ORACLE_FAIL:{s}" for s in bad if s not in verified]
+    out += [f"LIMITATION:NO_INDEPENDENT_TARGET_OBSERVATION:{s}" for s in sorted(verified - passed - set(bad))]
+    return out
 
 
 def v_bounded_proof(ws: Path) -> dict:

@@ -4,7 +4,7 @@ version: 1
 status: EXPERIMENTAL - not qualified (feature 011, ADR-0015); selecting it is an explicit owner/operator action
 description: >-
   local-rtx-v2 on the owner's second host (omniverse2, 2026-10-22): the same semantic-first settings, gates, model
-  allowlist and SafeC engine source (b6ce0f7, the cross-host reproducible build), with this host's paths. Its larger
+  allowlist and SafeC engine source (7032f48, the cross-host reproducible build), with this host's paths. Its larger
   GPU fits 30-70B candidates in VRAM; nothing here qualifies a model. Kept equal to local-rtx-v2 except for host paths,
   the engine build and the host reference (tested).
 host_reference: {gpu: RTX 6000 Ada 48 GB, cpu: Core Ultra 9 285K, ram_gb: 125}
@@ -51,9 +51,9 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
   visit_time_s: 1200
 safec:                    # ADR-0015: a pinned, hash-verified local engine; never a phase or release authority
   engine:
-    binary: /mnt/data/forge-c/safec/engines/b6ce0f73f5267c8122c03b9df1117039507e91b6-xhost/safec-bridge
-    binary_sha256: 2a54f4a3b45ad5ec077f39028173fa33cc72c21e9f9a432ab856409ae144caf4
-    source_commit_sha: b6ce0f73f5267c8122c03b9df1117039507e91b6  # validate_intents as 813b4e8; adds derive_tests (F011 M5)
+    binary: /mnt/data/forge-c/safec/engines/7032f48fdf1907b26ce9eabc08e121014385dd4b-xhost/safec-bridge
+    binary_sha256: 746490271ee091e3a49d4c0266f72fc6d1cb96e7628c0406b53aab5381a9957a
+    source_commit_sha: 7032f48fdf1907b26ce9eabc08e121014385dd4b  # cross-host build; validate_intents and derive_tests as b6ce0f7; adds derive_contracts (F011-T033)
     semantic_profile: register-io-0.1
   timeout_s: 60
 gateway:

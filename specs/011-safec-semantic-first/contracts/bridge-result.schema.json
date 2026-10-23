@@ -162,6 +162,7 @@
               "source_trace",
               "test_oracle",
               "formal_analysis",
+              "formal_obligations",
               "candidate_verification",
               "tool_manifest"
             ]

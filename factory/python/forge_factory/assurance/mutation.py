@@ -44,9 +44,56 @@ def ops_for(prefix: str = "RCC") -> list[tuple]:
     return [(n, rx.replace("LL_RCC_", f"LL_{prefix}_"), rep) for n, rx, rep in OPS if n not in RCC_ONLY]
 
 
-def mutants(text: str, prefix: str = "RCC") -> list[dict]:
+REGISTER_OPERATOR_SET = "forge-mut-rio/1"  # F011-T034: operators derived from a verified SafeC register contract
+
+
+def register_ops(ws: Path) -> list[tuple]:
+    """F011-T034 (AT-027): requirement-level faults derived from the verified SafeC register contract of an LL work
+    order, as (name, regex, replacement) operators on the candidate code:
+    - KEY_SWAP: a written key literal replaced by another documented key of the same field (or the key xor 1);
+    - FIELD_BIT_SHIFT: a field mask literal moved by one bit (a neighbouring field);
+    - OMIT_WRITE: one register write statement removed;
+    - RO_WRITE: a write to a read-only register added after one register write statement.
+    Nothing is derived from the candidate code; an empty list when the work order has no verified contract."""
+    from ..layer import layer_of, register_block
+    from ..safec_bridge import domain as D
+    from . import safec_oracle as SO
+
+    if layer_of(ws) != "LL" or not SO.present(ws):
+        return []
+    rec, _issues = SO.verified(ws)
+    if rec is None:
+        return []
+    domain, _raw = D.build(ws)
+    regs = {r["register_id"]: r for r in domain["registers"]}
+    block = re.escape(register_block(ws))
+    lit = lambda v: rf"(?i)\b0x0*{v:X}U?\b"  # noqa: E731 - a literal in any width, with or without U
+    out, seen = [], set()
+    for op in rec["operations"]:
+        mask = int(op["field_mask"], 16)
+        if op["write_kind"] == "full_register_write" and op.get("encoded_value"):
+            key = int(op["encoded_value"], 16)
+            field = next(f for f in regs[op["register"]]["fields"] if f["field_id"] == op["field"])
+            others = sorted({int(v["value"], 16) << field["lsb"] for v in field.get("values") or []} - {key})
+            rule = ("KEY_SWAP", lit(key), f"0x{(others[0] if others else key ^ 1):08X}U")
+        else:
+            moved = (mask << 1) & 0xFFFFFFFF if mask < 0x80000000 else mask >> 1
+            rule = ("FIELD_BIT_SHIFT", lit(mask), f"0x{moved:08X}U")
+        if rule not in seen:
+            seen.add(rule)
+            out.append(rule)
+    write = rf"{block}\[[^\]\n]+\]\s*(?:=|\|=|&=)[^;\n]*;"
+    out.append(("OMIT_WRITE", write, "(void)0;"))
+    ro = sorted(int(str(r["offset"]), 0) // 4 for r in domain["registers"]
+                if r["fields"] and all(f["access_tokens"] == ["r"] for f in r["fields"]))
+    if ro:
+        out.append(("RO_WRITE", write, rf"\g<0> {register_block(ws)}[{ro[0]}U] = 0U;"))
+    return out
+
+
+def mutants(text: str, prefix: str = "RCC", extra: list[tuple] | None = None) -> list[dict]:
     out = []
-    for name, rx, rep in ops_for(prefix):
+    for name, rx, rep in ops_for(prefix) + list(extra or []):
         for m in re.finditer(rx, text, re.M):
             if name == "DEF_BIT_SHIFT":
                 new = m.group(1) + "0x0000000%xU" % ((int(m.group(2)) << 1) & 0xF or 1)
@@ -82,8 +129,9 @@ def equivalence_reason(text: str, mut: dict, used_symbols: set[str], referenced:
 
 def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_symbols: set[str] | None = None,
                  extra_sources: list[str] | None = None, timeout_s: int = 5, cc: str = "gcc", prefix: str = "RCC",
-                 ll_unit: str = "stm32n6xx_ll_rcc.c") -> dict:
-    """`prefix`/`ll_unit` (feature 009): the work order's register prefix and generated LL compile unit."""
+                 ll_unit: str = "stm32n6xx_ll_rcc.c", extra_ops: list[tuple] | None = None) -> dict:
+    """`prefix`/`ll_unit` (feature 009): the work order's register prefix and generated LL compile unit.
+    `extra_ops` (F011-T034): operators derived from a verified register contract (register_ops)."""
     """Mutate one file of a copied tree, rebuild every test program and run it. Never touches `sw_dir`."""
     src = (Path(sw_dir) / target_rel).read_text()
     code_hash = hashlib.sha256(src.encode()).hexdigest()
@@ -96,7 +144,7 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
     referenced = set(re.findall(r"\b[A-Za-z_]\w*\b", own_body + "\n".join(others)))
     results = []
     tool = subprocess.run([cc, "--version"], capture_output=True, text=True).stdout.splitlines()[0]
-    for mu in mutants(src, prefix):
+    for mu in mutants(src, prefix, extra_ops):
         eq = equivalence_reason(src, mu, used, referenced) if used_symbols is not None else None
         with tempfile.TemporaryDirectory() as td:
             t = Path(td) / "sw"
@@ -134,7 +182,9 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
         results.append({k: v for k, v in mu.items() if k != "text"} | {"outcome": outcome, "detail": detail})
     n = {k: sum(r["outcome"] == k for r in results) for k in ("KILLED", "SURVIVED", "INVALID", "EQUIVALENT")}
     rec = {"campaign_id": "MC-" + hashlib.sha256((code_hash + "".join(t.name for t in test_files)).encode()).hexdigest()[:12],
-           "code_hash": code_hash, "operator_set": [OPERATOR_SET_VERSION] + sorted({o[0] for o in ops_for(prefix)}),
+           "code_hash": code_hash,
+           "operator_set": [OPERATOR_SET_VERSION] + ([REGISTER_OPERATOR_SET] if extra_ops else [])
+           + sorted({o[0] for o in ops_for(prefix) + list(extra_ops or [])}),
            "eligible": n["KILLED"] + n["SURVIVED"], "killed": n["KILLED"], "survived": n["SURVIVED"],
            "equivalent": n["EQUIVALENT"], "invalid": n["INVALID"], "mutant_refs": [r["id"] for r in results],
            "tool_version": tool, "result": "MEASURED" if results else "UNKNOWN"}
