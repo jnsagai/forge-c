@@ -65,7 +65,7 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 
 - [X] **F011-T031 [US4]** Bind SWE.2 function/parameter/return names and allocation to exact accepted SWE.1 contracts; reject `LL_IWDG_IsActive`/`LL_IWDG_IsEnabled` drift and missing SWR allocation with actionable target. ✅ Evidence: `evidence/v0.4/runs/F011-M5-TESTS/latest.json`
 - [ ] **F011-T032 [US4]** Run 3 fresh real SWE.2 author+inspector visits per RCC/IWDG pilot on frozen genuinely accepted SWE.1, with all existing design/inspection gates unchanged.
-- [ ] **F011-T033 [US5]** Extend SafeC C11/ACSL/test lowering only for the newly supported register-io semantic domain; preserve temporal Wheel profile, and treat unsupported proof properties conservatively.
+- [X] **F011-T033 [US5]** Extend SafeC C11/ACSL/test lowering only for the newly supported register-io semantic domain; preserve temporal Wheel profile, and treat unsupported proof properties conservatively. ✅ Evidence: `evidence/v0.4/runs/F011-T033/latest.json`, `evidence/v0.4/runs/F011-T035/latest.json`
 - [ ] **F011-T034 [US5]** Integrate independent requirement-derived oracles and mutations in SWE.3/4/5/6, including inverted key, absent write, vacuous test and false positive. Reuse existing Renode/Robot/gcc/cppcheck tool chain and role policy.
 - [X] **F011-T035 [US5]** Probe bound/assumptions and exact Linux backend (Frama-C/CBMC/Kind 2 if applicable). Never treat old Windows/WSL evidence or bounded BMC as generalized proof. ✅ Evidence: `evidence/v0.4/runs/F011-T035/latest.json`
 - [ ] **F011-T036 [US5]** Execute separate progressive end-to-end runs (one phase at a time) and archive exact PASS/FAIL/BLOCKED/NOT_RUN metrics and artifacts. HAL profile may not be claimed local-structured until tested.

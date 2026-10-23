@@ -224,3 +224,19 @@ lets use the most of the machine"): b981617, `pd-411645d07a947efdd302`. On local
 - the context is 65536 tokens.
 
 The laptop profile is unchanged.
+
+## M5 continued — 2026-10-23 (C11/ACSL obligations and Frama-C WP; Forge-C 2bcf31c, SafeC 7032f48)
+
+Owner, 2026-10-23: the laptop continues the tasks that need no model runs while the 48 GB host is prepared.
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T033 | PASS | `F011-T033` (22 tests, no skip), `F011-T035` | SafeC lowers each validated operation to ACSL obligations of one call, with a C11 reference body and an applicability class per tool measured on this host (S013-T018): WP decides FIELD_VALUE, WHOLE_WORD, RETURN_FIELD, FRAME and NO_WRITE; PRESERVED_BITS is INCONCLUSIVE for WP and left to CBMC (bit-precise, F011-T035); Kind 2 is NOT_APPLICABLE (not temporal). Key-sequence order, hardware side effects, reset/timing and concurrency are UNSUPPORTED and listed per operation. The bridge offers it as `derive_contracts` (artifact `formal_obligations`, schema `contracts/register-io-obligations.schema.json`). Forge-C re-derives every obligation, the applicability class and the not-lowered list independently (`safec_bridge/obligations.py`): a weakened obligation, an over-claimed tool or a hidden gap is ENGINES_DISAGREE and blocks. The semantic SWE.1 freezes the verified obligations (work product SWE.1 register_obligations.json); `assurance/register_wp.py` re-verifies them against the rebuilt domain and runs Frama-C WP on the real LL code through a wrapper per operation (the SWE.2 call, inlined). On the IWDG LL test implementation every operation is PROVED; an inverted key, an absent write, a wrong-bit read, a read that writes and a write to another register each leave their own operation, and only it, NOT_PROVED. A WP goal that is not proved is never reported as a refutation. The Wheel/temporal profile of SafeC is unchanged (S013-T018). |
+| Result schema | Additive change | `contracts/bridge-result.schema.json` | Artifact kind `formal_obligations` added (sha256 e323567a…, was abfad52f…). Results of earlier engines are unchanged and still valid; an older client refuses the new kind, so the change fails safe. SafeC's copy is byte-exact. |
+| Engine pin | 7032f48 | both local-rtx-v2 profiles | Cross-host build, sha256 `746490271ee091e3a49d4c0266f72fc6d1cb96e7628c0406b53aab5381a9957a`; `validate_intents` and `derive_tests` decide as b6ce0f7. On the 48 GB host it must be built with SafeC `scripts/build-pinned-engine.sh 7032f48 /mnt/data/forge-c/safec/engines` before the profile can start. |
+| Consumer/producer | PASS | SafeC validation S013-T015 | The Forge-C real-engine tests pass against SafeC 1866a92 (66) and 7032f48 (bridge, oracle and obligations suites, 128 related tests). |
+
+**CRE decision:** `pd-6b5fb4484e9525325f18` (candidate 2bcf31c, baseline aa9707f): ELIGIBLE_FOR_OFFLINE_REVIEW.
+**Provenance scan base:** after the merge of PR #36, the scan's base is the branch's merge base with main (aa9707f).
+From the old base 2f4b9cf it flagged the already published F011-T035 tool identities, because SafeC's private S013-T019
+probe record repeats the same host tool paths and digests; the lines are Forge-C's public evidence, not SafeC content.
