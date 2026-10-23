@@ -1,0 +1,271 @@
+{
+  "at": "2026-10-23T20:23:46.210100Z",
+  "inspector": "gpt-oss:120b",
+  "local_profile": {
+    "config": "config/factory/profiles/local-rtx-v2-omniverse2.yaml",
+    "config_sha256": "c2cc0357c5b4ed32df74bf041e247d335c510aec98d237c091d31f0b19c4390b",
+    "id": "local-rtx-v2-omniverse2",
+    "status": "EXPERIMENTAL - not qualified (feature 011, ADR-0015); selecting it is an explicit owner/operator action",
+    "version": 1
+  },
+  "model": "qwen3-coder:30b",
+  "note": "Inspector NOT_QUALIFIED (F011-T029): verdicts are measurements only.",
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "FROZEN",
+      "inspection": {
+        "findings": [
+          "SWE2-02: Clock semantics are not defined in the SWE.2 artifacts (software_architecture.md, architecture_static.puml); Reset semantics are not defined in the SWE.2 artifacts (software_architecture.md, architect",
+          "SWE2-05: Missing allocation and justification for execution time budgets: no time budget defined in any source (software_architecture.md, .forge-run/manifest.json, software_requirements.md)"
+        ],
+        "model": "gpt-oss:120b",
+        "module": "review",
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 5068.4,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 936,
+          "prompt_tokens": 1925,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 19825.0,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3454,
+          "prompt_tokens": 9750,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 26.0,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/IWDG-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 5,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: no compliance/approval claim ('compliance'): state facts and open dependencies only"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 39026.4,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 16207.7,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2986,
+          "prompt_tokens": 7871,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 62460.5,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3844,
+          "prompt_tokens": 9937,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 78.7,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/IWDG-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "FROZEN",
+      "inspection": {
+        "findings": [
+          "SWE2-02: Clock semantics for the IWDG are not defined in the provided sources, leaving the requirement for clock enable/disable unspecified.",
+          "SWE2-05: No execution time budget allocated or justified for SWC_LL; missing in .forge-run/manifest.json and not addressed in software_architecture.md"
+        ],
+        "model": "gpt-oss:120b",
+        "module": "review",
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 13028.2,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 2383,
+          "prompt_tokens": 5057,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 21949.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3761,
+          "prompt_tokens": 9895,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 35.5,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/IWDG-LL/qwen3-coder_30b-03/workspace"
+    },
+    {
+      "calls": 2,
+      "gate": "FROZEN",
+      "inspection": {
+        "findings": [],
+        "model": "gpt-oss:120b",
+        "module": "review",
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 10722.8,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 4637.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 855,
+          "prompt_tokens": 2181,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 24584.5,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2610,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 29.7,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/RCC-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "FROZEN",
+      "inspection": {
+        "findings": [
+          "SWE2-04: Missing safety mechanisms definition: software_architecture.md section 'Safety mechanisms, degraded states and dependencies' states the driver provides no safety features.; Missing degraded state defi",
+          "SWE2-05: No explicit time budget allocation or justification is provided for component SWC_LL; the documentation only defines memory budgets (flash, static RAM, stack) but lacks a time budget allocation across"
+        ],
+        "model": "gpt-oss:120b",
+        "module": "review",
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 4779.1,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 16074.3,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2895,
+          "prompt_tokens": 8547,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 18471.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2605,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 35.1,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/RCC-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 2,
+      "gate": "FROZEN",
+      "inspection": {
+        "findings": [],
+        "model": "gpt-oss:120b",
+        "module": "review",
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "issues": [],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 4797.1,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 5467.6,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1008,
+          "prompt_tokens": 2181,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 18579.2,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2609,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 24.6,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032d-scratch/RCC-LL/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/f011-t032/1"
+}
