@@ -1,0 +1,105 @@
+{
+  "finished_at": "2026-10-23T23:39:17.481458Z",
+  "profile": "local-rtx-v2",
+  "profile_sha256": "6e02685398721765fdf2b0e6f38a379ea7986fba79b7c75aef450ab3da271702",
+  "root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx-v2",
+  "schema": "forge-c/f011-t040-drill/1",
+  "started_at": "2026-10-23T23:39:01.577470Z",
+  "status": "PASS",
+  "steps": {
+    "fingerprint_after": {
+      "changed": [],
+      "ok": true
+    },
+    "fingerprint_before": {
+      "checkouts": {
+        "/home/jefferson/forge-c": {
+          "dirty": "",
+          "head": "86f1f40c030bc721e7e5125a572d69647c4ac041"
+        },
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c": {
+          "dirty": "",
+          "head": ""
+        },
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-lrtx": {
+          "dirty": "",
+          "head": ""
+        }
+      },
+      "listeners": [
+        8765,
+        8787,
+        11434,
+        11435,
+        11436,
+        11437,
+        32290,
+        32291,
+        32390
+      ],
+      "ok": true,
+      "protected_files": 30560
+    },
+    "interrupted_engine": {
+      "after": {
+        "admissible": false,
+        "engine_findings": [
+          "DOMAIN_REQUIRED"
+        ],
+        "issues": [],
+        "status": "ERROR"
+      },
+      "interrupted": {
+        "admissible": false,
+        "exit_code": -9,
+        "issues": [
+          "CANCELLED"
+        ],
+        "sealed_finalized": false,
+        "status": "ERROR"
+      },
+      "ok": true
+    },
+    "no_promotion": {
+      "note": "the drill writes no CRE decision, deployment or release",
+      "ok": true
+    },
+    "restart": {
+      "health": {
+        "fabro": true,
+        "gateway": true,
+        "ollama": true
+      },
+      "ok": true
+    },
+    "restart_after_rollback": {
+      "health": {
+        "fabro": true,
+        "gateway": true,
+        "ollama": true
+      },
+      "ok": true
+    },
+    "rollback": {
+      "leftovers": [],
+      "moved_aside": true,
+      "ok": true,
+      "restored": true,
+      "start_refused": "RuntimeError: run `init` first"
+    },
+    "running_before": {
+      "ok": true,
+      "status": "UP"
+    },
+    "stop": {
+      "ok": true,
+      "status": "DOWN",
+      "stopped": [
+        "fabro",
+        "gateway",
+        "ollama",
+        "netns-holder"
+      ]
+    }
+  }
+}

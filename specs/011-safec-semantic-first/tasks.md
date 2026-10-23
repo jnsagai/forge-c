@@ -75,7 +75,7 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 - [X] **F011-T037 [US1]** Independently fix the documented shared route-gate extension bug in its own candidate/PR under CRE protection; prove budgets/stuck and ACP/v1 regressions; do not absorb unrelated gate changes into 011. ✅ Evidence: `evidence/v0.4/runs/F011-T037/latest.json`
 - [ ] **F011-T038 [US4]** Freeze new unseen experiment cases, scripts, model digests, prompt hashes, comparable baseline and acceptance oracles **before** running any final campaign.
 - [ ] **F011-T039 [US4]** If all previous gates pass, run the 30-case local campaign (10 RCC-LL, 10 IWDG-LL, 5 each HAL), publish Wilson or other declared statistical uncertainty, false accepts/rejects and independently measured success cost.
-- [ ] **F011-T040 [US1]** Exercise v2-only shutdown and rollback (including interrupted semantic engine), preserve ACP/v1 services/archives, validate original read-only snapshot and protected paths.
+- [X] **F011-T040 [US1]** Exercise v2-only shutdown and rollback (including interrupted semantic engine), preserve ACP/v1 services/archives, validate original read-only snapshot and protected paths. ✅ Evidence: `evidence/v0.4/runs/F011-T040/latest.json`
 - [ ] **F011-T041 [US5]** Create fully reproducible offline review package with independent evidence revalidation, exact hashes, unsupported obligations, incomplete ASIL evidence and no compliance claim; no auto-promotion.
 - [ ] **F011-T042 [US1]** Deliver separate cross-repo PRs, diff review, tests, exit codes and residual risk register; every unchecked task remains visibly open; do not merge to main without explicit owner approval.
 

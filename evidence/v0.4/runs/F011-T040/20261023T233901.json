@@ -1,0 +1,34 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.drill",
+    "--profile",
+    "local-rtx-v2",
+    "--protect",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives",
+    "--protect",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c-preservation/20261021T112949Z",
+    "--protect",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines",
+    "--work",
+    "/tmp/claude-1000/-home-jefferson-forge-c/1c0d4aec-d691-4be5-9acf-29be01f58966/scratchpad/drill-t040-loop10-2",
+    "--out",
+    "evidence/v0.4/runs/F011-T040/drill-loop10.json"
+  ],
+  "duration_s": 16.036,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "01c7b6c7449b411277504cf0afec18e3f4b20bce",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T040/20261023T233901.log",
+  "log_sha256": "b6615166f846dc817596d3e18bcec96a41b1abdbd58819f5deec6d31d126f956",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T040",
+  "ts_utc": "2026-10-23T23:39:01.467327Z"
+}
