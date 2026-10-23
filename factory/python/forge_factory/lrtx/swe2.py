@@ -119,14 +119,33 @@ def _fn_rx(ws: Path) -> re.Pattern:
 
 
 # ---- packets -----------------------------------------------------------------------------------------------------------
-def named_mode(ws: Path) -> bool:
+def _structured_flag(ws: Path, key: str) -> bool:
     man = Path(ws) / ".forge-run/manifest.json"
     prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
     if not prof_id:
         return False
     from .profile import load
 
-    return bool((load(prof_id).get("structured") or {}).get("swe2_named_functions"))
+    return bool((load(prof_id).get("structured") or {}).get(key))
+
+
+def named_mode(ws: Path) -> bool:
+    return _structured_flag(ws, "swe2_named_functions")
+
+
+def constrained_design(ws: Path) -> bool:
+    """F011-T032 (local-rtx-v2, structured.swe2_constrained_design): the design answer may name only the functions of
+    the accepted interface in its sequence steps, and the prompt no longer seeds the words the claim check refuses."""
+    return _structured_flag(ws, "swe2_constrained_design")
+
+
+def design_schema(ws: Path, iface: dict) -> dict:
+    if not constrained_design(ws):
+        return DESIGN_SCHEMA
+    schema = json.loads(json.dumps(DESIGN_SCHEMA))
+    step = schema["properties"]["sequences"]["items"]["properties"]["steps"]["items"]["properties"]
+    step["function"] = {"type": "string", "enum": [f["name"] for f in iface["functions"]]}
+    return schema
 
 
 def named_functions(ws: Path) -> list[str]:
@@ -212,10 +231,14 @@ def design_packet(ws: Path, model: str, iface: dict, findings=None, previous=Non
              f"architecture decisions in one line each. sequences: the dynamic view - {view}; each step calls one "
              "function of the interface; repeat_until is the condition of a caller-bounded loop around that step "
              "('' for no loop).")
+    if constrained_design(ws):  # measured (T032): models echo "compliance" from this instruction into their texts
+        instr = instr.replace("; never claim compliance)", "; state facts only, with no statement about conformity "
+                              "to a standard or about approval status)")
+        instr += " Each step's function is the bare function name exactly as listed, without a parameter list."
     art = [{"path": "lrtx:SWE.2/interfaces", "text": fns, "sha256": sha256_bytes(fns.encode())}]
     return S.packet(phase=PHASE, task="design", role="swe2-author", instructions=instr, sources=[], artifacts=art,
                     criteria=["no compliance or safety-approval claim", "sequence steps use interface functions only"],
-                    output_schema=DESIGN_SCHEMA, model=model, findings=findings, previous=previous)
+                    output_schema=design_schema(ws, iface), model=model, findings=findings, previous=previous)
 
 
 # ---- validation ---------------------------------------------------------------------------------------------------------

@@ -590,3 +590,33 @@ def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch,
     man.pop("local_profile", None)
     (iwdg / ".forge-run/manifest.json").write_text(json.dumps(man))
     assert not swe2.named_mode(iwdg) and swe2.interfaces_schema(iwdg) is swe2.INTERFACES_SCHEMA
+
+
+def test_v2_swe2_design_steps_name_only_interface_functions(iwdg):
+    """F011-T032 (measured on omniverse2: RCC-LL sequence steps written as 'LL_RCC_HSI_Enable(void)', texts echoing
+    'compliance' from the prompt): under local-rtx-v2 the design schema limits each step to the accepted interface
+    names and the prompt no longer seeds the refused word; the design checks are unchanged and other workspaces keep
+    the feature 010 schema and wording."""
+    from forge_factory.lrtx import swe2
+
+    fn = {"returns": "void", "params": [], "operation": "write the start key", "fields": ["IWDG_KR.KEY"]}
+    iface = {"functions": [{"name": "LL_IWDG_Enable", **fn},
+                           {"name": "LL_IWDG_IsActive", **{**fn, "returns": "uint32_t", "fields": ["IWDG_SR.ONF"]}}]}
+    pk = swe2.design_packet(iwdg, "qwen3-coder:30b", iface)
+    step = pk["output_schema"]["properties"]["sequences"]["items"]["properties"]["steps"]["items"]["properties"]
+    assert step["function"]["enum"] == ["LL_IWDG_Enable", "LL_IWDG_IsActive"]
+    text = "x" * 80
+    doc = {**{t: text for t in swe2.TEXTS}, "decisions": ["one decision line"],
+           "sequences": [{"title": "Start and poll", "steps": [{"function": "LL_IWDG_Enable", "repeat_until": "",
+                                                                "note": "n"}]}]}
+    assert not [e for e in S.validate(doc, pk["output_schema"]) if "function" in e]
+    with_sig = json.loads(json.dumps(doc).replace('"LL_IWDG_Enable"', '"LL_IWDG_Enable(void)"'))
+    assert S.validate(with_sig, pk["output_schema"])  # refused by the schema itself
+    assert "compliance" not in pk["instructions"] and "without a parameter list" in pk["instructions"]
+    # the unchanged check still refuses a non-interface step and a claim
+    assert any("is not an interface function" in e for e in swe2.validate_design(iwdg, with_sig, iface))
+    man = json.loads((iwdg / ".forge-run/manifest.json").read_text())
+    man.pop("local_profile", None)
+    (iwdg / ".forge-run/manifest.json").write_text(json.dumps(man))
+    v1 = swe2.design_packet(iwdg, "qwen3-coder:30b", iface)
+    assert v1["output_schema"] is swe2.DESIGN_SCHEMA and "never claim compliance" in v1["instructions"]

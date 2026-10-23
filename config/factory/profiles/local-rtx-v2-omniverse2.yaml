@@ -50,6 +50,7 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
   semantic_phases: [SWE.1]          # semantic-first author (F011 M3)
   semantic_inspect_phases: [SWE.1]  # typed claims + deterministic adjudication (F011 M4)
   swe2_named_functions: true        # SWE.2 names fixed by the frozen requirements (F011 T031/T032)
+  swe2_constrained_design: true     # SWE.2 sequence steps limited to interface names; claim-free wording (F011 T032)
   reinspect_direct: true
   timeout_s: 3600
   visit_time_s: 1200
