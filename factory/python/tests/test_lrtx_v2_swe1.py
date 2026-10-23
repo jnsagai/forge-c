@@ -372,6 +372,59 @@ def test_cbmc_proves_each_register_effect_for_every_initial_value(iwdg, monkeypa
     assert ident["kind2"]["applicability"].startswith("UNSUPPORTED")
 
 
+def test_wp_proves_each_register_effect_and_leaves_each_mutant_open_on_its_own_operation(iwdg, monkeypatch,
+                                                                                         tmp_path):
+    """F011-T033/AT-029: SafeC's C11/ACSL obligations, re-derived by Forge-C and frozen with SWE.1, are proved by
+    Frama-C WP on the real LL code for every operation. Each seeded mutant (inverted key, absent write, wrong-bit
+    read, a read that writes, a write to another register) leaves its own operation, and only it, NOT_PROVED.
+    Bit preservation is not claimed by WP; it stays with the CBMC proof."""
+    from forge_factory.assurance import register_wp
+    from forge_factory.assurance.formal import tool
+    from forge_factory.layer import api_header, profile
+
+    if tool("frama-c") is None:
+        pytest.skip("Frama-C not installed on this host")
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    rep = SEM.visit(iwdg, "qwen3-coder:30b")
+    assert rep["status"] == "PASS", rep
+    if not (iwdg / register_wp.OBLIGATIONS_FILE).is_file():
+        pytest.skip("pinned engine predates derive_contracts")
+    rec, issues = register_wp.verified(iwdg)
+    assert issues == [], issues
+    calls = {}
+    for iid, case in rec["case_of_intent"].items():
+        op = next(o for o in rec["operations"] if o["intent_id"] == iid)
+        calls[case] = {"function": FN[iid.split(":", 1)[1]],
+                       "args": [f"{op['logical_value']}U"] if op["action"] == "write_field" else []}
+    (iwdg / "workproducts/SWE.2").mkdir(parents=True, exist_ok=True)
+    (iwdg / "workproducts/SWE.2/api_calls.json").write_text(json.dumps({"calls": calls}))
+    block, hdr = profile(iwdg)["ll"]["register_block"], api_header("LL", iwdg)
+
+    def impl(name, mutate=None):
+        d = tmp_path / name
+        (d / hdr).parent.mkdir(parents=True, exist_ok=True)
+        (d / hdr).write_text(_ll_impl(rec, block, mutate))
+        return d
+
+    ok = register_wp.prove(iwdg, [impl("ok")], hdr)
+    assert ok["status"] == "PROVED" and set(ok["operations"]) == {o["intent_id"] for o in rec["operations"]}, ok
+    rmw = [i for i, v in ok["operations"].items() if "PRESERVED_BITS" in v["left_to_cbmc"]]
+    assert rmw and all("PRESERVED_BITS" not in v["obligations"] for v in ok["operations"].values())
+    assert {t["tool"] for t in ok["tools"]} == {"frama-c", "why3", "alt-ergo", "cvc5"}
+    mutants = {
+        "inverted key": ({"LL_IWDG_Enable": "{b}[{w}] = 0x0000CCCDU;"}, "IWDG_KR:start"),
+        "absent write": ({"LL_IWDG_ReloadCounter": "(void)0;"}, "IWDG_KR:refresh"),
+        "wrong-bit read": ({"LL_IWDG_IsActive": "return ({b}[{w}] & 0x00000002U) >> 1U;"}, "IWDG_SR_1:onf"),
+        "read that writes": ({"LL_IWDG_IsActiveFlag_RVU": "{b}[{w}] = 0U; return 0U;"}, "IWDG_SR_2:rvu"),
+        "other register": ({"LL_IWDG_SetPrescaler": "{b}[{w}] = ({b}[{w}] & ~0x0000000FU) | ((v << 0U) & 0x0000000FU); "
+                                                   "{b}[0] = 0U;"}, "IWDG_PR:prescaler"),
+    }
+    for what, (mutate, target) in mutants.items():
+        bad = register_wp.prove(iwdg, [impl(what.replace(" ", "_"), mutate)], hdr)
+        open_ops = {i for i, v in bad["operations"].items() if v["status"] != "PROVED"}
+        assert bad["status"] == "NOT_PROVED" and open_ops == {target}, (what, bad["operations"])
+
+
 def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch, tmp_path):
     """F011-T031/T032: under local-rtx-v2 each function a frozen requirement names is a key of the SWE.2 output
     schema, so the measured IsActive -> IsEnabled rename cannot be produced; other workspaces keep the feature 010

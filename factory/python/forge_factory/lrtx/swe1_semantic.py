@@ -37,6 +37,7 @@ from ..safec_bridge import client as CL
 from ..safec_bridge import contract as K
 from ..safec_bridge import contracts as C
 from ..safec_bridge import domain as D
+from ..safec_bridge import obligations as OB
 from ..safec_bridge import oracle as O
 from . import structured as S
 from . import swe1 as V1
@@ -467,6 +468,10 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
         oracle_file = record_oracle(ws, ctx, _joint(sem), vc, results, amap)
     except (O.OracleRejected, K.ContractRejected) as exc:
         return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_ORACLE_REJECTED: {i}" for i in exc.issues[:10]], budget)
+    try:
+        obligations_file = record_obligations(ws, ctx, _joint(sem), vc)
+    except (OB.ObligationsRejected, K.ContractRejected) as exc:
+        return V1.reply(ws, "FAILED", [f"LRTX_SEMANTIC_OBLIGATIONS_REJECTED: {i}" for i in exc.issues[:10]], budget)
     S.record(ws, "SWE.1/semantic.json", {"schema": "forge-c/lrtx-swe1-semantic/1", "at": utc_now(),
                                          "contract_semantic_digest": vc.semantic_digest,
                                          "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(),
@@ -474,7 +479,8 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     checks = V1.self_check(ws)
     if checks:
         return V1.reply(ws, "FAILED", checks[:20], budget)
-    return V1.reply(ws, "PASS", [], budget, artifacts=sorted(amap["files"] + ([oracle_file] if oracle_file else [])))
+    return V1.reply(ws, "PASS", [], budget, artifacts=sorted(amap["files"] + [f for f in (oracle_file, obligations_file)
+                                                                                if f]))
 
 
 # ---- F011-T034: the register-image test oracle of the frozen contract ------------------------------------------------
@@ -503,3 +509,27 @@ def record_oracle(ws: Path, ctx: Context, intents: list[dict], vc: K.ValidatedCo
         "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(), "operations": list(vc.operations),
         "case_of_intent": case_of, "oracle": doc}, indent=1, sort_keys=True) + "\n"})
     return ORACLE_FILE
+
+
+# ---- F011-T033: the C11/ACSL obligations of the frozen contract --------------------------------------------------------
+OBLIGATIONS_FILE = "workproducts/SWE.1/register_obligations.json"
+
+
+def record_obligations(ws: Path, ctx: Context, intents: list[dict], vc: K.ValidatedContract) -> str | None:
+    """derive_contracts on the same intents; the obligations are kept only if they are bound to the contract just
+    validated and Forge-C re-derives every one (safec_bridge.obligations). An engine without derive_contracts
+    leaves SWE.1 as before (no obligations file)."""
+    out, req, work = ctx.validate(intents, "swe1-obligations", operation="derive_contracts")
+    if out.status == "UNSUPPORTED":
+        S.record(ws, "SWE.1/obligations.json", {"status": "NOT_DERIVED",
+                                                "reason": "engine does not support derive_contracts"})
+        return None
+    again = K.materialize(out, req, ctx.domain_raw, work, ctx.pin)
+    if again.semantic_digest != vc.semantic_digest:
+        raise OB.ObligationsRejected([f"OBLIGATIONS_CONTRACT_DRIFT: {again.semantic_digest} != {vc.semantic_digest}"])
+    doc = OB.materialize(out, vc, ctx.domain_raw, work)
+    V1.write_scoped(ws, {OBLIGATIONS_FILE: json.dumps({
+        "schema": "forge-c/lrtx-register-obligations/1", "contract_semantic_digest": vc.semantic_digest,
+        "domain_sha256": vc.domain_sha256, "engine": ctx.pin.expected(), "obligations": doc},
+        indent=1, sort_keys=True) + "\n"})
+    return OBLIGATIONS_FILE
