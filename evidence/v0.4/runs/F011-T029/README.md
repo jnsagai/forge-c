@@ -18,6 +18,7 @@ nothing). Every run is kept, the void and partial ones included.
 | 3 | same | mistral-small3.2:24b | IWDG-LL: false rejection | — | partial (stopped at the disqualifying row; 3.4 tok/s with CPU offload), NOT_QUALIFIED |
 | 3 | same | granite3.3:8b | 3 / 4 / 0 of 7 | 0 (1 off target, 1 missed) | NOT_QUALIFIED |
 | 4 (omniverse2, 48 GB) | same rules, tree b2a1f92 | gpt-oss:120b (reasoning high) | IWDG-LL: false rejection (SWE1-03) | 0 (S1-OMIT off target) | partial, NOT_QUALIFIED |
+| 4 (omniverse2, 48 GB) | same | gpt-oss:20b (reasoning high) | 2 false rejections of 2 seen (SWE1-03 on both) | 1 of 2 on target (RCC-LL), 1 off target | NOT_QUALIFIED; UNSEEN not run (rule) |
 
 S1-QM (QM safety scope) is caught by the unchanged deterministic SWE.1 gate in every run.
 
@@ -44,3 +45,9 @@ Profile local-rtx-v2-omniverse2, gpt-oss:120b pinned by digest 714d8695… (CRE 
   RCC-LL rows (exit 124, report written up to the IWDG rows: `run4-omniverse2/gpt-oss-120b-seen.json`). The UNSEEN
   run was stopped after the disqualifying row (exit -15; record kept).
 - Every inspection item took 60–135 s with the model partly offloaded.
+- **gpt-oss:20b (reasoning high, now allowed by the gateway exception): NOT_QUALIFIED.** Both seen baselines were
+  rejected on SWE1-03 (failure handling; plus a SWE1-04 note on CPU/timing limits): 2 false rejections. S1-OMIT was
+  found on target in RCC-LL (SWR-017 references the removed SWR-001) and off target in IWDG-LL. The unseen run was not
+  started, by the rule. Holdout hashes after the runs equal those before (`run4-omniverse2/holdouts-after.sha256`).
+- Pattern across every family measured (qwen3-coder, glm4, phi4, mistral-small3.2, granite3.3, gpt-oss 20b and 120b):
+  the LL baselines are rejected on SWE1-03, which the owner ruled clean for these work orders.
