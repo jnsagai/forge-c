@@ -550,8 +550,10 @@ def test_uncovered_fields_and_missing_owner_decisions_are_source_linked_findings
     assert rep["status"] == "PASS", rep
     assert DECISIONS_FILE in rep["artifacts"]
     doc = json.loads((iwdg / DECISIONS_FILE).read_text())
-    contract = json.loads(next((iwdg / ".forge-run/safec").glob("*/evidence/artifacts/validated_contract"))
-                          .read_text())
+    # the frozen (joint) contract: the one the findings are bound to, among the contracts of every engine call
+    contract = next(c for c in (json.loads(p.read_text()) for p in
+                                (iwdg / ".forge-run/safec").glob("*/evidence/artifacts/validated_contract"))
+                    if c["semantic_digest"] == doc["contract_semantic_digest"])
     uncovered = {f"{c['register']}.{c['field']}" for c in contract["coverage"] if not c["intent_ids"]}
     found = {f["subject"]: f for f in doc["findings"] if f["kind"] == "UNCOVERED_FIELD"}
     assert uncovered and set(found) == uncovered, (uncovered, set(found))
