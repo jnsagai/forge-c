@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "factory/python/tests/test_safec_bridge_reset_seal.py",
+    "factory/python/tests/test_safec_bridge_m2.py",
+    "factory/python/tests/test_safec_bridge.py",
+    "factory/python/tests/test_lrtx_v2_profile.py"
+  ],
+  "duration_s": 8.908,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a9d571720d4cf220387b94ea99f6631613812364",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T016/20261023T122909.log",
+  "log_sha256": "7c669aa927ae6c8dea37efe5909de120d32f5ede7905db45884ca529fc5b71d9",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T016",
+  "ts_utc": "2026-10-23T12:29:09.810151Z"
+}

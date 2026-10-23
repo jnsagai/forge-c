@@ -264,3 +264,21 @@ probe record repeats the same host tool paths and digests; the lines are Forge-C
 | F011-T017 | PASS | `F011-T017` (two failed runs kept: a wrong test path, then a test that read a single-group contract from another engine call; fixed and rerun), `F011-M2-ENGINE`, `F011-M2-SAFEC` | Cross-intent consistency and the per-field coverage inventory were done in M2. Now the semantic SWE.1 also writes the work product SWE.1 owner_decisions.json, bound to the frozen contract digest: every in-scope field without an intent (UNCOVERED_FIELD, with the author's reason kept but deciding nothing), every obligation SafeC leaves unresolved (ERRATA_NOT_BASELINED, PRECONDITION_NOT_VERIFIED) and every author open point, each with its source fact id, RM section and pages when one exists (`source_linked` says when none does). The factory decides none of them. On the IWDG test: the uncovered fields are exactly those of the contract's coverage inventory, each linked to its fact and pages; the missing errata is a finding. |
 
 **CRE decisions:** `pd-12b8a45f8e0a60d3311c` (84bab68, the implementation) and `pd-82ce6f9e313d9a52ffa9` (d50e115, the test fix): ELIGIBLE_FOR_OFFLINE_REVIEW.
+
+## Owner decisions and follow-up — 2026-10-23 (Forge-C a9d5717, SafeC cf3b01b)
+
+Owner, 2026-10-23: "i approve all" (PR #38 merged as 7c643d5, SafeC PR #2 as b3b6412), then chose:
+- F011-T016: add a narrow reset intent;
+- S013-T014: seal bridge evidence (option 2);
+- F011-T004: fix the Linux watchdog;
+- SWE1-03: "Yes, it is clean".
+
+| Item | Result | Evidence | Notes |
+|---|---|---|---|
+| F011-T016 | PASS | `F011-T016`, `F011-M2-ENGINE`, `F011-M2-SAFEC` | New intent action `check_reset` (request schema, additive): a requirement's claim of a field's reset value. SafeC checks it against the register's reset value in the domain: a wrong claim is RIO-RESET-CONTRADICTION with both values and the repair, a field whose reset the source leaves undefined is RIO-RESET-UNDEFINED (UNSUPPORTED), a missing value is RIO-VALUE-REQUIRED. An accepted claim is no register operation (oracle, proofs and mutants unchanged) and is listed in the contract's `reset_claims` (contract schema, additive; absent when there is none, so earlier contracts are byte-identical). Forge-C re-derives each claim from the domain; a claim changed after the engine wrote it is ENGINES_DISAGREE. Tested on real RM0486 IWDG facts (IWDG_RLR.RL) through the real engine. The author model's schema does not offer `check_reset` yet; the other listed fixtures were done in M2. |
+| S013-T014 (Forge-C side) | PASS | `F011-T016` | Engine cf3b01b seals every result as a finalized `safec-evidence` payload (scope: no product acceptance) of the request, evidence, artifacts and result bytes. The client checks a seal when present: finalized, inventory and digests per its manifest, and the same bytes as the files it revalidated; a changed sealed file, an unfinalized seal or other request bytes are refused. An engine without a seal (earlier pins) is checked as before. |
+| F011-T004 | NOT_PASS (narrowed) | SafeC `validation.md` | The Linux watchdog defect is fixed in SafeC (512edd5: the transport's process group is killed). SafeC on Linux is now 264 passed / 1 failed; the failure left is the retained-guest-logs test, which needs the original Windows host's files. Kind 2 and Z3 are still absent. |
+| SWE1-03 (IWDG-LL rc1) | Owner: clean | — | The holdout stays clean; local rejections there are false rejections, as they were scored in M4. No M4 result changes. |
+| Engine pin | cf3b01b | both local-rtx-v2 profiles | sha256 `5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f` (cross-host build). |
+
+**CRE decision:** `pd-5f92f4b1b4c5972f348c` (candidate a9d5717, baseline 7c643d5): ELIGIBLE_FOR_OFFLINE_REVIEW.
