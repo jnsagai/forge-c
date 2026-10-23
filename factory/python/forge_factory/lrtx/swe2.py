@@ -160,9 +160,9 @@ def named_functions(ws: Path) -> list[str]:
 
 
 def interfaces_schema(ws: Path) -> dict:
-    if not named_mode(ws):
+    names = named_functions(ws) if named_mode(ws) else []
+    if not names:  # measured (T032, RCC-LL rc1): requirements naming no function left no place for any function
         return INTERFACES_SCHEMA
-    names = named_functions(ws)
     props = {k: v for k, v in INTERFACES_SCHEMA["properties"].items() if k != "functions"}
     return {"type": "object", "additionalProperties": False,
             "required": ["named_functions", "other_functions", "allocation", "calls"],
@@ -199,7 +199,7 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
              "responsibility. calls: one entry per register-effect case: the function allocated to the case's "
              "requirement and its C arguments (decimal or hex integer constants with a U suffix; a write case passes "
              "exactly the case value). Every function a requirement statement names must exist with that exact name.")
-    if named_mode(ws):
+    if named_mode(ws) and named_functions(ws):
         instr += (" The functions the frozen requirements name are fixed: describe each under named_functions, keyed by "
                   "that exact name; put any further function an operation needs under other_functions.")
     crit = ["every listed requirement is allocated", "every function is allocated to at least one requirement",

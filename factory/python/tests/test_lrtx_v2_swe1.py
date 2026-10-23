@@ -592,6 +592,19 @@ def test_v2_swe2_fixes_the_names_the_frozen_requirements_name(iwdg, monkeypatch,
     assert not swe2.named_mode(iwdg) and swe2.interfaces_schema(iwdg) is swe2.INTERFACES_SCHEMA
 
 
+def test_v2_swe2_without_named_functions_keeps_the_function_list(iwdg, monkeypatch):
+    """F011-T032 (measured on omniverse2, RCC-LL rc1): requirements that name no function gave an empty named_functions
+    object and no place for any function; with no named function the feature 010 schema and wording apply."""
+    from forge_factory.lrtx import swe2
+
+    monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))
+    assert SEM.visit(iwdg, "qwen3-coder:30b")["status"] == "PASS"
+    monkeypatch.setattr(swe2, "named_functions", lambda ws: [])
+    assert swe2.named_mode(iwdg)
+    pk = swe2.interfaces_packet(iwdg, "qwen3-coder:30b")
+    assert pk["output_schema"] is swe2.INTERFACES_SCHEMA and "named_functions" not in pk["instructions"]
+
+
 def test_v2_swe2_design_steps_name_only_interface_functions(iwdg):
     """F011-T032 (measured on omniverse2: RCC-LL sequence steps written as 'LL_RCC_HSI_Enable(void)', texts echoing
     'compliance' from the prompt): under local-rtx-v2 the design schema limits each step to the accepted interface
