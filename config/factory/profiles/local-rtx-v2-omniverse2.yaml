@@ -19,6 +19,10 @@ models:
     # pulled into the loop10 model store; NOT_QUALIFIED until F011-T029 measures them
     gpt-oss:20b: {digest: f38aa0c53da5f8c49d08c43a99df24ff53167fe68e24664a7777288e7656fdfe, quantization: MXFP4,
                   license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-22 inspector pick for the 48 GB host; imported on omniverse2 from the owner's drive 2026-10-23,
+    # every blob sha256-checked there; NOT_QUALIFIED until F011-T029 measures it
+    gpt-oss:120b: {digest: 714d86958b6e870a9320e78126ac1ce3477727a1cd9bf7194b8ace0d84c62fd8, quantization: MXFP4,
+                   license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
     glm4:9b: {digest: 5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44, quantization: Q4_0,
               license: glm-4-9b License (not OSI; productization licence review required),
               role_qualification: NOT_QUALIFIED (inspector candidate)}
@@ -62,6 +66,7 @@ gateway:
   reasoning:
     # owner 2026-10-22: "go to high directly, on omniverse I dont care about energy, time and resources"
     gpt-oss:20b: {effort: high, extra_output_tokens: 16384}
+    gpt-oss:120b: {effort: high, extra_output_tokens: 16384}
 admission:
   max_inflight: 1
   max_queue: 8
