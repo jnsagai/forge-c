@@ -1,0 +1,5 @@
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 99258.0}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 113288.9}
+{"lrtx_progress": "inspect:41fd96e8a5103169:SWE1-02", "attempt": 0, "errors": 1, "wall_ms": 105514.5}
+
+--- stderr ---

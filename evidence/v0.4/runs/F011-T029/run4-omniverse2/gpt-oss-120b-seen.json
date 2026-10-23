@@ -1,0 +1,81 @@
+{
+  "baselines": 1,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 1,
+  "false_rejections": 1,
+  "generated_at": "2026-10-23T18:42:35.002016Z",
+  "inspection_fail_off_target": 1,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "gpt-oss:120b",
+  "no_inspection": 0,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: failure_handling_missing [Safety allocation]: No failure handling requirements are defined; the safety allocation is pending and contains no allocated software safety requirements (see safety/software"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: failure_handling_missing [document]: No software requirement (SWR-002 to SWR-016) specifies any failure handling behavior, e.g., response on write errors or watchdog expiration; the documents only des",
+          "SWE1-04: other [document (with SWR-014, SWR-015, SWR-016)]: The software requirements define flash (SWR-014), RAM (SWR-015) and stack (SWR-016) limits, but there is no requirement specifying CPU execution time"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "IWDG_KR.KEY"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 12,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 2,
+  "semantic_detection_on_target": 0
+}
