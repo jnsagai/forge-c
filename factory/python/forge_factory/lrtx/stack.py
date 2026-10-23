@@ -275,6 +275,13 @@ def stop(s: dict) -> dict:
     if holder is not None:  # `sleep infinity` may inherit an ignored SIGTERM from the launching shell
         os.kill(holder, signal.SIGKILL)
         stopped.append("netns-holder")
+        # F011-T040 (drill on loop10): a start right after a stop found the killed holder still in /proc and tried to
+        # reuse its namespace; wait until it is gone (bounded) and forget it
+        for _ in range(100):
+            if not Path(f"/proc/{holder}").exists():
+                break
+            time.sleep(0.05)
+    (r / "run/holder.pid").unlink(missing_ok=True)
     if f.is_file():
         rec["stopped_at"] = utc_now()
         rec["processes"] = {}

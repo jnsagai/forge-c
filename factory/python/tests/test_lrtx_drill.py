@@ -118,3 +118,20 @@ def test_an_interrupted_engine_leaves_nothing_admissible_and_recovers(tmp_path):
     assert rec["ok"], rec
     assert rec["interrupted"]["issues"] == ["CANCELLED"] and not rec["interrupted"]["sealed_finalized"]
     assert rec["after"]["issues"] == []
+
+
+def test_stop_waits_for_the_namespace_holder_and_forgets_it(tmp_path):
+    """F011-T040 (measured on loop10): a start right after a stop reused the just-killed holder; stop now returns only
+    when the holder is gone and removes its pid file, so the next start creates a new namespace."""
+    import subprocess
+    from pathlib import Path
+
+    s = _settings(tmp_path)
+    (s["root"] / "run").mkdir()
+    pidf = s["root"] / "run/holder.pid"
+    subprocess.run(["bash", "-c", f"setsid sleep infinity >/dev/null 2>&1 < /dev/null & echo $! > {pidf}"], check=True)
+    pid = int(pidf.read_text())
+    assert stack._holder(s) == pid
+    assert "netns-holder" in stack.stop(s)["stopped"]
+    assert not pidf.exists() and stack._holder(s) is None
+    assert not Path(f"/proc/{pid}").exists() or b"sleep" not in Path(f"/proc/{pid}/cmdline").read_bytes()
