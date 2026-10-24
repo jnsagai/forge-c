@@ -1,0 +1,186 @@
+{
+ "schema": "forge-c/f011-t045-promotion-check/1",
+ "rule": "knowledge.inspection.promotion_issues (F011-AT-036)",
+ "trials": {
+  "m8": {
+   "label": "trial 1: lessons PROPOSED, no sampling, no coverage",
+   "model": "qwen3.6:35b-a3b",
+   "inspector_options": null,
+   "lessons": {
+    "dir": "config/factory/inspection-lessons",
+    "lessons": [
+     {
+      "id": "IL-001",
+      "sha256": "9a4d88990b8243e80db2ff17624bae742931cd5298844772f949e6650355916a",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-002",
+      "sha256": "1ad49b0df47c5952360a8d39d93826a82fc60eccd6b247e38a7165dfee6f781c",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-003",
+      "sha256": "9088b6bc5ec54d900f00563883956cb4121559370608a49d63004fa405a5705e",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-004",
+      "sha256": "9cac00290ce54e14df97a6df7ebed344d73b6a2ae28e236f116acc88baac93a7",
+      "state": "PROPOSED",
+      "version": 1
+     }
+    ],
+    "trial": true
+   },
+   "outcomes": {
+    "BASELINE|FALSE_REJECTION_BY_INSPECTION": 1,
+    "BASELINE|none": 6,
+    "S1-EFFECT|MISSED": 7,
+    "S1-GAPROW|MISSED": 5,
+    "S1-GAPROW|inspection (on target)": 2,
+    "S1-NOBUDGET|MISSED": 4,
+    "S1-NOBUDGET|inspection (off target)": 1,
+    "S1-NOBUDGET|inspection (on target)": 2,
+    "S1-NOSTART|MISSED": 2,
+    "S1-NOSTART|deterministic gate": 1,
+    "S1-NOSTART|inspection (off target)": 1,
+    "S1-NOSTART|inspection (on target)": 3,
+    "S1-OMIT|MISSED": 5,
+    "S1-OMIT|inspection (off target)": 1,
+    "S1-OMIT|inspection (on target)": 1,
+    "S1-QM|deterministic gate": 7
+   },
+   "promotion_issues": {
+    "IL-001": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009A-STM32N6-IWDG-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002B-STM32N6-RCC-HAL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-EFFECT:MISSED"
+    ],
+    "IL-002": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:S1-NOSTART:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-NOSTART:inspection (off target)",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-NOSTART:MISSED"
+    ],
+    "IL-003": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009A-STM32N6-IWDG-LL-rc1:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-GAPROW:MISSED"
+    ],
+    "IL-004": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002B-STM32N6-RCC-HAL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-NOBUDGET:inspection (off target)",
+     "FALSE_REJECTION_IN_SCOPE:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:BASELINE",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-NOBUDGET:MISSED"
+    ]
+   }
+  },
+  "m9": {
+   "label": "trial 2: lessons PROPOSED, T048 sampling seed 1, T049 coverage",
+   "model": "qwen3.6:35b-a3b",
+   "inspector_options": {
+    "coverage": true,
+    "profile": "local-rtx-v2-omniverse2",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0.6,
+     "top_p": 0.95
+    }
+   },
+   "lessons": {
+    "dir": "config/factory/inspection-lessons",
+    "lessons": [
+     {
+      "id": "IL-001",
+      "sha256": "9a4d88990b8243e80db2ff17624bae742931cd5298844772f949e6650355916a",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-002",
+      "sha256": "1ad49b0df47c5952360a8d39d93826a82fc60eccd6b247e38a7165dfee6f781c",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-003",
+      "sha256": "9088b6bc5ec54d900f00563883956cb4121559370608a49d63004fa405a5705e",
+      "state": "PROPOSED",
+      "version": 1
+     },
+     {
+      "id": "IL-004",
+      "sha256": "9cac00290ce54e14df97a6df7ebed344d73b6a2ae28e236f116acc88baac93a7",
+      "state": "PROPOSED",
+      "version": 1
+     }
+    ],
+    "trial": true
+   },
+   "outcomes": {
+    "BASELINE|FALSE_REJECTION_BY_INSPECTION": 1,
+    "BASELINE|none": 6,
+    "S1-EFFECT|MISSED": 6,
+    "S1-EFFECT|inspection (off target)": 1,
+    "S1-GAPROW|MISSED": 3,
+    "S1-GAPROW|NO_INSPECTION (FAILED)": 1,
+    "S1-GAPROW|inspection (on target)": 3,
+    "S1-NOBUDGET|MISSED": 5,
+    "S1-NOBUDGET|inspection (on target)": 2,
+    "S1-NOSTART|MISSED": 2,
+    "S1-NOSTART|NO_INSPECTION (FAILED)": 1,
+    "S1-NOSTART|deterministic gate": 1,
+    "S1-NOSTART|inspection (off target)": 1,
+    "S1-NOSTART|inspection (on target)": 2,
+    "S1-OMIT|MISSED": 4,
+    "S1-OMIT|NO_INSPECTION (FAILED)": 1,
+    "S1-OMIT|inspection (off target)": 1,
+    "S1-OMIT|inspection (on target)": 1,
+    "S1-QM|deterministic gate": 7
+   },
+   "promotion_issues": {
+    "IL-001": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009A-STM32N6-IWDG-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002B-STM32N6-RCC-HAL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:S1-EFFECT:inspection (off target)",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-EFFECT:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-EFFECT:MISSED"
+    ],
+    "IL-002": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-NOSTART:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:S1-NOSTART:inspection (off target)",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-NOSTART:NO_INSPECTION (FAILED)",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-NOSTART:MISSED"
+    ],
+    "IL-003": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009A-STM32N6-IWDG-LL-rc1:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-GAPROW:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-GAPROW:NO_INSPECTION (FAILED)",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-GAPROW:MISSED"
+    ],
+    "IL-004": [
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0002A-STM32N6-RCC-LL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008A-STM32N6-RCC-LL-rc1b:S1-NOBUDGET:MISSED",
+     "FALSE_REJECTION_IN_SCOPE:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:BASELINE",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008B-STM32N6-RCC-HAL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0008C-ST-RCC-LL-rc1:S1-NOBUDGET:MISSED",
+     "PAIRED_DEFECT_NOT_DETECTED:qwen3.6:35b-a3b:WO-0009B-STM32N6-IWDG-HAL-rc4:S1-NOBUDGET:MISSED"
+    ]
+   }
+  }
+ },
+ "decision": "no lesson promoted: every lesson has PAIRED_DEFECT_NOT_DETECTED in both trials; all stay PROPOSED"
+}
