@@ -1,0 +1,19 @@
+# F011-T045: written from the learning set (F011-T029 runs 3-6: SWE1-04 claims about processor time and timing)
+id: IL-004
+version: 1
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-04]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md, traceability/upstream_gaps.md]
+statement: >-
+  The resource budgets at SWE.1 are the flash, static RAM and stack limits the work-order owner provides, each stated
+  as a requirement with a byte bound, and the budget status is recorded in the upstream gaps table. A budget the owner
+  has not provided, such as processor time, is recorded there as an upstream gap rather than invented. A provided
+  budget without its requirement is a defect.
+source: {kind: contract, ref: "factory/python/forge_factory/lrtx/swe1.py#budget_requirements"}
+evidence_refs:
+  - evidence/v0.4/runs/F011-T029/run5-omniverse2/gpt-oss-120b-unseen.json
+  - evidence/v0.4/runs/F011-T029/README.md
+must_still_detect: [S1-NOBUDGET]

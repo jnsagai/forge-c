@@ -27,7 +27,7 @@ from pathlib import Path
 
 from ..common import pretty_json, sha256_bytes, utc_now
 
-CATALOGUE_VERSION = "lrtx-seeded-1"
+CATALOGUE_VERSION = "lrtx-seeded-2"  # -2 (F011-T045): the paired SWE.1 defects of the inspection lessons
 LESSON_SET: dict = {"value": None}  # F011-T044: the inspection lesson set of this run (--lessons), in every report
 
 
@@ -52,6 +52,68 @@ def safety_scope_qm(ws: Path) -> str:
         "# Software safety requirements\n\nQM development scope: no software safety requirements are allocated "
         "(work-order owner decision).\n")
     return "safety/software_safety_requirements.md"
+
+
+def _effects(ws: Path) -> tuple[Path, dict]:
+    p = ws / "workproducts/SWE.1/register_effects.json"
+    return p, json.loads(p.read_text())
+
+
+def contradict_effect(ws: Path) -> str:
+    """F011-T045 (paired with the register-effects lesson): the first set/clear entry of the effects contract gets the
+    opposite op, or the first written value changes; the requirement text is unchanged, so the two contradict."""
+    p, eff = _effects(ws)
+    for e in eff["effects"]:
+        if e.get("op") in ("set", "clear"):
+            e["op"] = "clear" if e["op"] == "set" else "set"
+        elif e.get("op") == "write" and isinstance(e.get("value"), int):
+            e["value"] ^= 1
+        elif e.get("op") == "write" and isinstance(e.get("value"), str) and e["value"].startswith("0x"):
+            e["value"] = hex(int(e["value"], 16) ^ 1)
+        else:
+            continue
+        p.write_text(json.dumps(eff, indent=2))
+        return e["swr"]
+    raise ValueError("NO_MUTATION_SITE:contradict_effect")
+
+
+def _drop_requirement(ws: Path, swr: str) -> None:
+    md = _req_md(ws).read_text()
+    _req_md(ws).write_text(re.sub(rf"^- \*\*{swr}\*\*.*\n(?:  - .*\n)*", "", md, count=1, flags=re.M))
+
+
+def omit_startup(ws: Path) -> str:
+    """F011-T045 (paired with the LL failure-handling lesson): the reset/startup requirement is removed."""
+    from .review_semantic import STARTUP
+
+    m = STARTUP.search(_req_md(ws).read_text())
+    if not m:
+        raise ValueError("NO_MUTATION_SITE:omit_startup")
+    _drop_requirement(ws, m.group(1))
+    return m.group(1)
+
+
+def unrecord_allocation_gap(ws: Path) -> str:
+    """F011-T045 (paired with the recorded-allocation lesson): the Safety allocation row of the upstream gaps goes."""
+    p = ws / "traceability/upstream_gaps.md"
+    lines = p.read_text().splitlines(keepends=True)
+    kept = [x for x in lines if not x.startswith("| Safety allocation |")]
+    if len(kept) == len(lines):
+        raise ValueError("NO_MUTATION_SITE:unrecord_allocation_gap")
+    p.write_text("".join(kept))
+    return "Safety allocation"
+
+
+def omit_budget(ws: Path) -> str:
+    """F011-T045 (paired with the budget lesson): the stack budget requirement is removed."""
+    from .review_semantic import BYTES, REQ_LINE
+
+    for line in _req_md(ws).read_text().splitlines():
+        m = REQ_LINE.match(line)
+        if m and re.search(r"\bstack\b", m.group(2), re.I) and BYTES.search(m.group(2)):
+            _drop_requirement(ws, m.group(1))
+            return m.group(1)
+    raise ValueError("NO_MUTATION_SITE:omit_budget")
 
 
 def _header(ws: Path) -> Path:
@@ -103,6 +165,13 @@ def vacuous_test(ws: Path) -> str:
 CATALOGUE = [
     {"id": "S1-OMIT", "phase": "SWE.1", "class": "omitted requirement", "apply": omit_requirement},
     {"id": "S1-QM", "phase": "SWE.1", "class": "safety-scope contradiction", "apply": safety_scope_qm},
+    {"id": "S1-EFFECT", "phase": "SWE.1", "class": "effects contract contradicts a requirement",
+     "apply": contradict_effect},
+    {"id": "S1-NOSTART", "phase": "SWE.1", "class": "missing reset/startup requirement", "apply": omit_startup,
+     "alt": "reset_startup_missing"},
+    {"id": "S1-GAPROW", "phase": "SWE.1", "class": "upstream gap not recorded", "apply": unrecord_allocation_gap},
+    {"id": "S1-NOBUDGET", "phase": "SWE.1", "class": "missing resource budget", "apply": omit_budget,
+     "alt": "budget_missing"},
     {"id": "S3-INVERT", "phase": "SWE.3", "class": "inverted behaviour", "apply": invert_behaviour},
     {"id": "S3-COMMENT", "phase": "SWE.3", "class": "commented-out code", "apply": comment_out_write},
     {"id": "S4-VACUOUS", "phase": "SWE.4", "class": "wrong test property", "apply": vacuous_test},
@@ -112,8 +181,8 @@ CATALOGUE = [
 def catalogue_hash() -> str:
     import inspect
 
-    return sha256_bytes("\n".join(f"{c['id']}|{c['phase']}|{c['class']}|{inspect.getsource(c['apply'])}"
-                                  for c in CATALOGUE).encode())
+    return sha256_bytes("\n".join(f"{c['id']}|{c['phase']}|{c['class']}|{c.get('alt', '')}|"
+                                  f"{inspect.getsource(c['apply'])}" for c in CATALOGUE).encode())
 
 
 def _refreeze(ws: Path, phase: str) -> dict:
@@ -159,7 +228,7 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     phase = case["phase"] if case else "SWE.1"
     # F011 (2026-10-22): an inspector restricted to existing requirement ids names the uncovered FIELD of an omitted
     # requirement, not its removed id; both count as on target (same rule for every inspector)
-    alt = _omitted_field(ws) if case and case["id"] == "S1-OMIT" else None
+    alt = _omitted_field(ws) if case and case["id"] == "S1-OMIT" else (case or {}).get("alt")
     target = case["apply"](ws) if case else None
     rec = {"case": name, "phase": phase, "class": case["class"] if case else "none", "target": target,
            "target_field": alt, "inspector": inspector, "gate": _refreeze(ws, phase)}
@@ -231,6 +300,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="semantic: F011 typed claims with deterministic adjudication (SWE.1; other phases structured)")
     ap.add_argument("--lessons", type=Path, default=None,
                     help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)")
+    ap.add_argument("--lessons-trial", action="store_true",
+                    help="F011-T045 promotion trial: PROPOSED lessons that pass every check are retrieved too")
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     if a.lessons:
@@ -238,7 +309,8 @@ def main(argv: list[str] | None = None) -> int:
         from . import review_semantic as RS
 
         RS.LESSONS["dir"] = a.lessons.resolve()
-        LESSON_SET["value"] = {"dir": str(a.lessons), "lessons": [
+        RS.LESSONS["include_proposed"] = a.lessons_trial
+        LESSON_SET["value"] = {"dir": str(a.lessons), "trial": a.lessons_trial, "lessons": [
             {"id": x.get("id"), "version": x.get("version"), "state": x["_state"], "sha256": x["_hash"]}
             for x in IL.load(a.lessons)]}
     s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case, a.inspector)

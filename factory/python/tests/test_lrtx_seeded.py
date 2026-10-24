@@ -3,6 +3,7 @@ work order) with a scripted inspector that never fails: deterministic catches ar
 else is reported as MISSED, and the holdout itself is never modified."""
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -43,3 +44,42 @@ def test_an_inspector_that_records_nothing_is_never_read_as_a_pass(tmp_path, mon
     by = {r["case"]: r["detected_by"] for r in s["rows"]}
     assert by["BASELINE"].startswith("NO_INSPECTION") and by["S3-INVERT"].startswith("NO_INSPECTION"), by
     assert s["no_inspection"] == 2 and s["false_rejections"] == 0 and s["missed"] == 0
+
+
+def test_the_paired_swe1_mutations_seed_one_named_defect_each(tmp_path):
+    """F011-T045: the lrtx-seeded-2 SWE.1 defects paired with the inspection lessons, each on a copy."""
+    import shutil
+
+    from forge_factory.lrtx import seeded as SD
+
+    ws = tmp_path / "w"
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "traceability").mkdir()
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "# Software requirements\n\n- **SWR-001** When X is called, the D shall set R.F.\n  - Verification: passes when F is 1.\n"
+        "- **SWR-002** While no LL function has been called after reset, the D shall not write any register.\n"
+        "  - Verification: passes when unchanged.\n"
+        "- **SWR-003** The D shall use at most 128 bytes of stack for any public API call.\n  - Verification: passes.\n")
+    (ws / "workproducts/SWE.1/register_effects.json").write_text(json.dumps({"effects": [
+        {"case": "A", "swr": "SWR-001", "register": "R", "field": "F", "op": "set"}]}))
+    (ws / "traceability/upstream_gaps.md").write_text("| Input | Status | SWR |\n| Safety allocation | PENDING | SWR-001 |\n")
+    base = ws.parent / "base"
+    shutil.copytree(ws, base)
+    cases = {c["id"]: c for c in SD.CATALOGUE}
+    assert SD.CATALOGUE_VERSION == "lrtx-seeded-2"
+    for cid, target, check in (
+            ("S1-EFFECT", "SWR-001", lambda w: json.loads((w / "workproducts/SWE.1/register_effects.json").read_text())
+             ["effects"][0]["op"] == "clear"),
+            ("S1-NOSTART", "SWR-002", lambda w: "SWR-002" not in (
+                w / "workproducts/SWE.1/software_requirements.md").read_text()),
+            ("S1-GAPROW", "Safety allocation", lambda w: "Safety allocation" not in (
+                w / "traceability/upstream_gaps.md").read_text()),
+            ("S1-NOBUDGET", "SWR-003", lambda w: "SWR-003" not in (
+                w / "workproducts/SWE.1/software_requirements.md").read_text())):
+        shutil.rmtree(ws)
+        shutil.copytree(base, ws)
+        assert cases[cid]["apply"](ws) == target and check(ws), cid
+    assert cases["S1-NOSTART"]["alt"] == "reset_startup_missing" and cases["S1-NOBUDGET"]["alt"] == "budget_missing"
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text("# Software requirements\n")
+    with pytest.raises(ValueError, match="NO_MUTATION_SITE:omit_startup"):
+        SD.omit_startup(ws)

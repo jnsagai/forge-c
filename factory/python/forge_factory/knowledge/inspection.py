@@ -120,12 +120,14 @@ def load(directory: Path | None = None) -> list[dict]:
 
 
 def select(phase: str, item: str, layer: str, present: set[str], directory: Path | None = None, k: int = 3,
-           token_budget: int = 600) -> list[dict]:
-    """The VALIDATED lessons for one inspection item, by id, within the budget (deterministic)."""
+           token_budget: int = 600, include_proposed: bool = False) -> list[dict]:
+    """The VALIDATED lessons for one inspection item, by id, within the budget (deterministic). A promotion trial
+    (`include_proposed`, recorded in its report) also takes PROPOSED lessons that pass every check."""
     out, used = [], 0
+    allowed = ("VALIDATED", "PROPOSED") if include_proposed else ("VALIDATED",)
     for les in load(directory):
         sc = les.get("scope") or {}
-        if les["_state"] != "VALIDATED" or sc.get("phase") != phase or item not in sc.get("items", []) or \
+        if les["_state"] not in allowed or sc.get("phase") != phase or item not in sc.get("items", []) or \
                 layer not in sc.get("layers", []) or not set(sc.get("requires") or []) <= present:
             continue
         ref = {"id": les["id"], "version": les["version"], "sha256": les["_hash"], "statement": les["statement"],
@@ -135,6 +137,32 @@ def select(phase: str, item: str, layer: str, present: set[str], directory: Path
             break
         out.append(ref)
         used += cost
+    return out
+
+
+DETECTED = ("deterministic gate", "inspection (on target)")
+
+
+def promotion_issues(lesson: dict, reports: list[dict]) -> list[str]:
+    """F011-AT-036: why the lesson may not be promoted on these trial reports (`forge-c/lrtx-seeded/1` with this
+    lesson in `inspection_lessons`): a clean baseline rejected on one of its items, or a paired defect not detected."""
+    out: list[str] = []
+    items = tuple(f"{i}:" for i in (lesson.get("scope") or {}).get("items", []))
+    used = [r for r in reports if any(x.get("id") == lesson.get("id") and x.get("sha256") == lesson_hash(lesson)
+                                      for x in (r.get("inspection_lessons") or {}).get("lessons") or [])]
+    if not used:
+        return ["NO_TRIAL_WITH_THIS_LESSON_VERSION"]
+    for r in used:
+        for row in r.get("rows") or []:
+            where = f"{r.get('model')}:{row.get('holdout')}:{row.get('case')}"
+            if row.get("case") == "BASELINE" and any(f.startswith(items) for f in
+                                                     (row.get("inspection") or {}).get("findings") or []):
+                out.append(f"FALSE_REJECTION_IN_SCOPE:{where}")
+            if row.get("case") in (lesson.get("must_still_detect") or []) and \
+                    not str(row.get("detected_by", "")).startswith("NOT_APPLICABLE") and row.get("detected_by") not in DETECTED:
+                out.append(f"PAIRED_DEFECT_NOT_DETECTED:{where}:{row.get('detected_by')}")
+    seen = {row.get("case") for r in used for row in r.get("rows") or []}
+    out += [f"PAIRED_DEFECT_NOT_RUN:{c}" for c in lesson.get("must_still_detect") or [] if c not in seen]
     return out
 
 

@@ -1,0 +1,19 @@
+# F011-T045: written from the learning set (F011-T029 runs 3-5: claims on the recorded PENDING safety allocation)
+id: IL-003
+version: 1
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-01, SWE1-03, SWE1-05, SWE1-06]
+  layers: [LL, HAL]
+  requires: [traceability/upstream_gaps.md]
+statement: >-
+  When the work-order owner has recorded the software safety allocation as pending in the upstream gaps table,
+  recording that gap is the specified handling at SWE.1: the requirements are neither approved safety requirements
+  nor defective for lacking allocated safety attributes or safe states. An upstream input that is missing from that
+  table is a defect.
+source: {kind: acceptance_test, ref: "specs/011-safec-semantic-first/acceptance-tests.md#F011-AT-020"}
+evidence_refs:
+  - evidence/v0.4/runs/F011-T029/run5-omniverse2/qwen3-6-35b-a3b-seen.json
+  - evidence/v0.4/runs/F011-T029/README.md
+must_still_detect: [S1-GAPROW]

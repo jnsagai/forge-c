@@ -95,3 +95,34 @@ def test_a_changed_statement_changes_the_hash():
 def test_the_repository_lessons_pass_their_checks():
     rows = IL.load()
     assert all(r["_state"] != "QUARANTINED" for r in rows), [(r.get("id"), r["_reasons"]) for r in rows]
+
+
+def test_a_promotion_trial_also_retrieves_proposed_lessons(tmp_path):
+    d = _write(tmp_path / "l", _lesson(1, state="PROPOSED", promotion={}))
+    present = {"workproducts/SWE.1/register_effects.json"}
+    assert IL.select("SWE.1", "SWE1-02", "LL", present, d) == []
+    assert [x["id"] for x in IL.select("SWE.1", "SWE1-02", "LL", present, d, include_proposed=True)] == ["IL-001"]
+
+
+def _report(les, rows):
+    return {"model": "m", "inspection_lessons": {"lessons": [{"id": les["id"], "sha256": IL.lesson_hash(les)}]},
+            "rows": rows}
+
+
+def test_promotion_needs_a_trial_with_no_false_rejection_in_scope_and_every_paired_defect_detected():
+    """F011-AT-036: a lesson that hides its paired defect, or leaves a false rejection in its scope, is refused."""
+    les = _lesson(1, state="PROPOSED", promotion={})
+    clean = {"holdout": "H", "case": "BASELINE", "detected_by": "none", "inspection": {"findings": []}}
+    caught = {"holdout": "H", "case": "S1-OMIT", "detected_by": "inspection (on target)"}
+    assert IL.promotion_issues(les, [_report(les, [clean, caught])]) == []
+    assert IL.promotion_issues(les, [_report(les, [clean, {**caught, "detected_by": "deterministic gate"}])]) == []
+    hidden = {**caught, "detected_by": "MISSED"}
+    assert IL.promotion_issues(les, [_report(les, [clean, hidden])]) == ["PAIRED_DEFECT_NOT_DETECTED:m:H:S1-OMIT:MISSED"]
+    rejected = {**clean, "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+                "inspection": {"findings": ["SWE1-02: requirements_inconsistent [SWR-006]: ..."]}}
+    assert IL.promotion_issues(les, [_report(les, [rejected, caught])]) == ["FALSE_REJECTION_IN_SCOPE:m:H:BASELINE"]
+    other = {**rejected, "inspection": {"findings": ["SWE1-04: other [document]: ..."]}}  # outside the lesson's items
+    assert IL.promotion_issues(les, [_report(les, [other, caught])]) == []
+    assert IL.promotion_issues(les, [_report(les, [clean])]) == ["PAIRED_DEFECT_NOT_RUN:S1-OMIT"]
+    changed = _lesson(1, state="PROPOSED", promotion={}, version=2)
+    assert IL.promotion_issues(changed, [_report(les, [clean, caught])]) == ["NO_TRIAL_WITH_THIS_LESSON_VERSION"]

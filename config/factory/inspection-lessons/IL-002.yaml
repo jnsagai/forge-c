@@ -1,0 +1,19 @@
+# F011-T045: written from the learning set (F011-T029 runs 1-5: every family rejected the clean LL baselines on SWE1-03)
+id: IL-002
+version: 1
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-03]
+  layers: [LL]
+  requires: [workproducts/SWE.1/software_requirements.md]
+statement: >-
+  A low-level layer work order specifies register access only: its functions never wait, and timeouts, parameter
+  checks and status codes are allocated to the separate HAL work order built on it. The absence of failure-response
+  requirements in such a baseline is that allocation, not a gap. A missing reset or startup requirement is still a
+  defect.
+source: {kind: adr, ref: docs/adr/ADR-0009-separate-ll-and-hal-work-orders.md}
+evidence_refs:
+  - evidence/v0.4/runs/F011-T029/run4-omniverse2/gpt-oss-120b-seen.json
+  - evidence/v0.4/runs/F011-T029/README.md
+must_still_detect: [S1-NOSTART]

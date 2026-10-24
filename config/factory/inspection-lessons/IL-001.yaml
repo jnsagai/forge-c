@@ -1,0 +1,19 @@
+# F011-T045: written from the learning set (F011-T029 run 6, gpt-oss:120b unseen: two false rejections)
+id: IL-001
+version: 1
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-02]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/register_effects.json]
+statement: >-
+  The register effects contract records the register state each tested case leaves after the call, not every
+  intermediate write: a reset that is asserted and then released is recorded as op clear, and a sequence of key writes
+  is recorded with its last key. An entry that matches the final state of its requirement is consistent with it; an
+  entry whose op or value contradicts that final state is an inconsistency.
+source: {kind: contract, ref: "factory/python/forge_factory/workflow/prompts.py#CONTRACT_SWE1_HAL"}
+evidence_refs:
+  - evidence/v0.4/runs/F011-T029/run6-omniverse2/gpt-oss-120b-unseen.json
+  - evidence/v0.4/runs/F011-T029/README.md
+must_still_detect: [S1-EFFECT]

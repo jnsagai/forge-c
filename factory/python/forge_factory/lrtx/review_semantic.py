@@ -43,7 +43,8 @@ ASSERTIONS = {
     "SWE1-06": ["requirement_not_verifiable", "ambiguity_not_documented", "other"],
 }
 INPUTS = ["HSI contract", "Safety allocation", "Budgets"]
-LESSONS = {"dir": None}  # F011-T044: set by the seeded harness (--lessons); otherwise the profile flag decides
+LESSONS = {"dir": None, "include_proposed": False}  # F011-T044: seeded harness (--lessons [--lessons-trial]);
+# otherwise the profile flag decides (VALIDATED lessons only)
 LESSON_SOURCE = "reference/inspection-lessons.md"
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
@@ -207,7 +208,8 @@ def item_lessons(ws: Path, item_id: str, srcs: list[dict]) -> list[dict]:
     from ..layer import layer_of
 
     d = lessons_dir(ws)
-    return IL.select("SWE.1", item_id, layer_of(ws), {s["path"] for s in srcs}, d) if d else []
+    return IL.select("SWE.1", item_id, layer_of(ws), {s["path"] for s in srcs}, d,
+                     include_proposed=bool(LESSONS["dir"] and LESSONS["include_proposed"])) if d else []
 
 
 def lesson_source(lessons: list[dict]) -> dict | None:
