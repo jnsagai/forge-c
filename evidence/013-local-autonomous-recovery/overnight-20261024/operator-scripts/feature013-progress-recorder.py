@@ -66,7 +66,7 @@ def snapshot():
  c.close()
  hb=read(STATE/'afo/conductor.heartbeat')
  ready=any(a.get('native_success_verified') for o in orders if o['request_id']=='q36c-local-selfheal' for a in o['attempts'])
- return dict(source_revision=PIN,policy_sha256=read(OPS/'activation.json').get('policy_sha256'),orders=orders,diagnosis_jobs=jobs,recovery_plans=plans,maintainer_proposals=proposals,conductor={'mode':hb.get('mode'),'ok':hb.get('ok'),'heartbeat_fresh':time.time()-hb.get('epoch',0)<90},next_driver={'selection':'STM32N6 GPIO LL','condition':'RCC all six native gates PASS and sealed READY archive verified','condition_met':ready,'submission':'BLOCKED_PENDING_PROFILE_AND_FROZEN_INPUTS' if ready else 'NOT_TRIGGERED'},exclusivity='Only the local Qwen mission and its supervision, verification, and Git recorder are authorized')
+ return dict(source_revision=PIN,policy_sha256=read(OPS/'activation.json').get('policy_sha256'),orders=orders,diagnosis_jobs=jobs,recovery_plans=plans,maintainer_proposals=proposals,conductor={'mode':hb.get('mode'),'ok':hb.get('ok'),'heartbeat_fresh':time.time()-hb.get('epoch',0)<90},next_driver={'selection':'STM32N6 GPIO LL','condition':'RCC all six native gates PASS and sealed READY archive verified','condition_met':ready,'submission':'BLOCKED_PENDING_PROFILE_AND_FROZEN_INPUTS' if ready else 'NOT_TRIGGERED'},inspector_download={k:v for k,v in read(Path('/mnt/data/forge-c/downloads/qwen3.8-27b-q8_0/status.json')).items() if k in ('state','model','manifest_sha256','total_bytes','inference_started')},exclusivity='Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials')
 def resources():
  mem={}
  for ln in Path('/proc/meminfo').read_text().splitlines():
@@ -84,7 +84,7 @@ for name in ('activation.json','adoption.json','host-preflight.json'):
  p=OPS/name
  if p.exists():(out/name).write_bytes(p.read_bytes())
 scripts=out/'operator-scripts';scripts.mkdir(exist_ok=True)
-for name in ('feature013-progress-recorder.py','feature013-remote-exec.py','feature013-adopt-history.py','feature013-install-conductor.py'):
+for name in ('feature013-progress-recorder.py','feature013-remote-exec.py','feature013-adopt-history.py','feature013-install-conductor.py','feature013-download-qwen38.py'):
  p=OPS/name
  if p.exists():(scripts/name).write_bytes(p.read_bytes())
 lastkey=None;lastcommit=0;lastpush=0

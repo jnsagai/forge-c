@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-24T20:44:43.249505+00:00",
+  "captured_utc": "2026-10-24T20:51:04.331252+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "PILOT",
@@ -18,7 +18,14 @@
       "state": "SUCCEEDED"
     }
   ],
-  "exclusivity": "Only the local Qwen mission and its supervision, verification, and Git recorder are authorized",
+  "exclusivity": "Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials",
+  "inspector_download": {
+    "inference_started": false,
+    "manifest_sha256": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+    "model": "qwen3.8:27b-q8_0",
+    "state": "DOWNLOADING",
+    "total_bytes": 29978242050
+  },
   "maintainer_proposals": [],
   "next_driver": {
     "condition": "RCC all six native gates PASS and sealed READY archive verified",
@@ -187,13 +194,13 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.8447265625,
-      0.4189453125,
-      0.46044921875
+      0.2822265625,
+      0.32421875,
+      0.3935546875
     ],
-    "gpu": "0, 25460, 49140, 30.03",
+    "gpu": "0, 25460, 49140, 26.56",
     "memory": {
-      "MemAvailable": "120913076 kB",
+      "MemAvailable": "120873904 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
