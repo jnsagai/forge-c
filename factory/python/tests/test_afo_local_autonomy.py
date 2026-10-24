@@ -171,6 +171,40 @@ def test_schema_length_feedback_survives_mcp_issue_limit_and_allows_corrected_pl
     assert json.loads((case.parent / "proposed-plan.json").read_text()) == plan
 
 
+@pytest.mark.parametrize("invalid", [None, "string_budget", "numeric_schema", "both_inputs"])
+def test_structured_plan_tool_exposes_and_enforces_the_existing_contract(local, monkeypatch, invalid):
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import afo
+
+    _, _, b, _, ws, case = local
+    app = sdk.build_server("forge-afo-mcp", afo.OPERATIONS)
+    wire = next(t.parameters for t in app._tool_manager.list_tools() if t.name == "submit_recovery_plan")
+    assert wire["properties"]["plan"]["anyOf"][0]["$ref"] == "#/$defs/RecoveryPlan"
+    schema = wire["$defs"]["RecoveryPlan"]
+    assert schema == afo.PLAN_SCHEMA
+    assert schema["required"] == afo.PLAN_SCHEMA["required"]
+    assert schema["properties"]["schema_version"]["const"] == "1.0"
+    assert schema["properties"]["material_difference_ref"]["maxLength"] == 200
+    assert schema["properties"]["budget_estimate"]["properties"]["tokens_max"]["type"] == "integer"
+    monkeypatch.delenv("FORGE_MCP_TRUST", raising=False)
+    monkeypatch.setenv("FORGE_AFO_CASE", str(case))
+    monkeypatch.setenv("FORGE_BINDING_ID", "typed-plan")
+    plan = recovery._base(b, "REWORK_LOCAL", "SWE.3", "REPAIR_SPEC_ID_OWNERSHIP")
+    if invalid == "string_budget":
+        plan["budget_estimate"]["tokens_max"] = "5000"
+    elif invalid == "numeric_schema":
+        plan["schema_version"] = 1.0
+    args = {"plan": plan}
+    if invalid == "both_inputs":
+        args["plan_json"] = json.dumps(plan)
+    tool = "mcp__forge_afo_mcp__submit_recovery_plan"
+    op = next(o for o in afo.OPERATIONS if o.name == "submit_recovery_plan")
+    sdk.issue_ticket("typed-plan", tool, args, "afo-recovery-planner", "agent", None, str(ws))
+    out = sdk.invoke("forge-afo-mcp", op, args)
+    assert out["status"] == ("PASS" if invalid is None else "BLOCKED")
+    assert (case.parent / "proposed-plan.json").exists() == (invalid is None)
+
+
 def test_crash_after_accept_is_adopted_by_nonce_without_repeat(local):
     s, o, _, eff, _, _ = local
     job = prepare(local)

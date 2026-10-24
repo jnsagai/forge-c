@@ -11,15 +11,18 @@ from __future__ import annotations
 import json
 import os
 import re
+from copy import deepcopy
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, RootModel
 
+from ...afo.contracts import CONTRACTS
 from ...common import sha256_file, state_dir
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
 from .afo_payload import payload
 
 MAX_BYTES = 2048
+PLAN_SCHEMA = json.loads((CONTRACTS / "recovery-plan.schema.json").read_text())
 
 
 def _case() -> tuple[dict, Path]:
@@ -38,8 +41,22 @@ class ReqIn(NoIn):
     requirement_id: str = Field(pattern=r"^SWR-\d{3}$")
 
 
+class RecoveryPlan(RootModel[dict]):
+    """Carry the authoritative nested contract through the MCP function's type annotation.
+
+    The shared SDK exposes field annotations, not Field metadata. A nested model preserves this
+    schema on the actual wire; the broker independently validates its uncoerced values below.
+    """
+
+    @classmethod
+    def __get_pydantic_json_schema__(cls, core_schema, handler):
+        return deepcopy(PLAN_SCHEMA)
+
+
 class PlanIn(ToolInput):
-    plan_json: str = Field(min_length=10, max_length=4000, description=(
+    plan: RecoveryPlan | None = None
+    plan_json: str | None = Field(default=None, min_length=10, max_length=4000, description=(
+        "Legacy encoded input; prefer the structured plan argument. "
         "Recovery-plan JSON object. material_difference_ref and rationale_code are each at most 200 characters; "
         "put longer rationale in notes (at most 500 characters). budget_estimate has exactly the nonnegative integer "
         "keys tokens_max, wall_seconds_max, turns_max. Use this case's exact order_id, attempt_id and "
@@ -73,11 +90,8 @@ def read_requirement_excerpt(ctx: ToolContext, a: ReqIn) -> dict:
 
 def read_budget_snapshot(ctx: ToolContext, a: NoIn) -> dict:
     case, _ = _case()
-    from ...afo.contracts import CONTRACTS
-
-    schema = json.loads((CONTRACTS / "recovery-plan.schema.json").read_text())
     return payload(ctx, {"budget": case["budget"], "allowed_strategies": case["allowed_strategies"],
-                         "required_plan_fields": schema["required"],
+                         "required_plan_fields": PLAN_SCHEMA["required"],
                          "budget_estimate_fields": ["tokens_max", "wall_seconds_max", "turns_max"]},
                    a.offset, summary="Remaining budget, allowed strategies and plan contract")
 
@@ -86,10 +100,17 @@ def submit_recovery_plan(ctx: ToolContext, a: PlanIn) -> dict:
     from ...afo import contracts
 
     case, path = _case()
-    try:
-        plan = json.loads(a.plan_json)
-    except ValueError as exc:
-        raise ToolDenied("PLAN_NOT_JSON", str(exc)[:80]) from exc
+    if (a.plan is None) == (a.plan_json is None):
+        raise ToolDenied("PLAN_INPUT_AMBIGUOUS_OR_MISSING", "supply exactly one plan object or legacy plan_json")
+    if a.plan is not None:
+        plan = a.plan.root
+        if len(json.dumps(plan)) > 4000:
+            raise ToolDenied("PLAN_TOO_LARGE", "structured plan exceeds the existing 4000-character bound")
+    else:
+        try:
+            plan = json.loads(a.plan_json)
+        except ValueError as exc:
+            raise ToolDenied("PLAN_NOT_JSON", str(exc)[:80]) from exc
     errs = contracts.errors("recovery-plan", plan)
     if errs:
         return result(ctx, "BLOCKED", "plan rejected by schema", [], errs[:5], {}, "forge-afo", input_obj={})
