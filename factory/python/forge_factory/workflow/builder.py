@@ -44,7 +44,11 @@ def _env() -> str:
     pp = REPO_ROOT / "factory" / "python"
     sd = state_dir()
     root = os.environ.get("FORGE_DATA_ROOT") or str(sd.parent)
-    return f"PYTHONPATH={pp} FORGE_STATE_DIR={shlex.quote(str(sd))} FORGE_DATA_ROOT={shlex.quote(root)}"
+    env = f"PYTHONPATH={pp} FORGE_STATE_DIR={shlex.quote(str(sd))} FORGE_DATA_ROOT={shlex.quote(root)}"
+    # F011-T036 (first Fabro run on local-rtx-v2-omniverse2): without the profile the local runner called the v1
+    # gateway port (CALL_FAILED: connection refused); set only inside a local stack, so other graphs are unchanged
+    prof = os.environ.get("FORGE_LRTX_PROFILE")
+    return env + (f" FORGE_LRTX_PROFILE={shlex.quote(prof)}" if prof else "")
 
 
 def gate_cmd(phase: str, step: str, check: str = "") -> str:

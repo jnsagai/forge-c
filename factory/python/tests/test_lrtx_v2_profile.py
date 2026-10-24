@@ -113,3 +113,16 @@ def test_a_delivered_code_work_order_keeps_only_swe1_and_swe2_structured_on_v2(e
     agents = acp.native_agent_nodes(g)
     assert "swe1_author" not in agents and "swe2_author" not in agents and "swe2_inspector" not in agents
     assert {"swe3_author", "swe3_inspector", "swe4_author", "swe6_inspector"} <= set(agents)
+
+
+def test_fabro_command_nodes_carry_the_local_profile_only_inside_a_local_stack(monkeypatch):
+    """F011-T036: the first Fabro run on local-rtx-v2-omniverse2 failed every SWE.1 call (connection refused): command
+    nodes get only the builder's explicit environment, and without FORGE_LRTX_PROFILE the runner used the v1 gateway
+    port. Inside a stack the profile is passed; elsewhere the node environment is unchanged."""
+    from forge_factory.workflow import builder
+
+    monkeypatch.delenv("FORGE_LRTX_PROFILE", raising=False)
+    plain = builder._env()
+    assert "FORGE_LRTX_PROFILE" not in plain
+    monkeypatch.setenv("FORGE_LRTX_PROFILE", "local-rtx-v2-omniverse2")
+    assert builder._env() == plain + " FORGE_LRTX_PROFILE=local-rtx-v2-omniverse2"
