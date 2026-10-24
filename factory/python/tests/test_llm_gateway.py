@@ -174,5 +174,6 @@ def test_the_stack_passes_only_the_profile_policy():
     low = {"effort": "low", "extra_output_tokens": 4096}
     assert json.loads(gateway_reasoning(load("local-rtx-v2"))) == {"gpt-oss:20b": low, "gpt-oss:120b": low}
     high = {"effort": "high", "extra_output_tokens": 16384}  # owner 2026-10-22, the 48 GB host
-    assert json.loads(gateway_reasoning(load("local-rtx-v2-omniverse2"))) == {"gpt-oss:20b": high, "gpt-oss:120b": high}
+    assert json.loads(gateway_reasoning(load("local-rtx-v2-omniverse2"))) == {"gpt-oss:20b": high, "gpt-oss:120b": high,
+                                                                              "qwen3.6:35b-a3b": high}
     assert gateway_reasoning(load("local-rtx-v1")) == "{}"  # the v1 line is unchanged

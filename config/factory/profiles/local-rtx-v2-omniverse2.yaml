@@ -72,6 +72,9 @@ gateway:
     # owner 2026-10-22: "go to high directly, on omniverse I dont care about energy, time and resources"
     gpt-oss:20b: {effort: high, extra_output_tokens: 16384}
     gpt-oss:120b: {effort: high, extra_output_tokens: 16384}
+    # owner 2026-10-24 ("Measure with thinking"): qwen3.6 answers with reasoning off but its claims were shallow
+    # (F011-T029 run 5: 1 false rejection of 2, S1-OMIT off target); measured again with thinking on this host only
+    qwen3.6:35b-a3b: {effort: high, extra_output_tokens: 16384}
 admission:
   max_inflight: 1
   max_queue: 8
