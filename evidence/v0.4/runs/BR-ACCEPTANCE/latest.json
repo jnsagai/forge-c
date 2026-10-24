@@ -1,0 +1,26 @@
+{
+  "schema": "forge-c/verification-evidence/1",
+  "task": "BR-T001..BR-T005",
+  "status": "PASS",
+  "basis": "pytest-generated JUnit XML; no model calls",
+  "command": ". scripts/forge-env.sh; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest factory/python/tests/test_brownfield_resume.py -q --junitxml=<acceptance.xml>",
+  "suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "44",
+    "time": "108.816",
+    "timestamp": "2026-10-24T19:02:35.070915+01:00",
+    "hostname": "master"
+  },
+  "artifact": "evidence/v0.4/runs/BR-ACCEPTANCE/acceptance.xml",
+  "artifact_sha256": "dcda19268068eca6aae28d411aeca7b10183b7f5a030798d0ee8a2608a9fc700",
+  "candidate_revision": "50968b1c373dfff514414d3c8fdafc37187e71a8",
+  "source_hashes": {
+    "factory/python/forge_factory/brownfield/resume.py": "804f73d6d6b444137070b2c07f474c519c8b2e42d4bfe3f7d74efba4f1714e7d",
+    "factory/python/tests/test_brownfield_resume.py": "fd4692c18b86b6d4d5247e86c87946bc19e61969da0b239af3ec686ea2a21334",
+    "factory/python/forge_factory/workorder.py": "755ed19492047ce1b2bf818ef3d2b5aab79a0ec7dda2d8cc781698be0895655b",
+    "factory/python/forge_factory/assurance/package.py": "016cec6acac0a5b1307eea96df31c386e808dfea7880bf12c61a5aa099c2ffbe"
+  }
+}

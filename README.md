@@ -87,6 +87,10 @@ Fabro reads its model provider settings from `$FORGE_FABRO_CONFIG`. See
 
 ## Reading the result
 
+Existing-code work orders can [resume from validated accepted phases](docs/VALIDATED-BROWNFIELD-RESUME.md)
+using `--resume-from <terminal-work-order>`. Resume preserves delivery provenance and shares finite attempt/time
+budgets across the lineage; incompatible or unversioned sources are refused.
+
 A finished work order leaves a write-once archive in `$FORGE_ARCHIVE_DIR`, with one of two statuses:
 
 - **`READY_FOR_OFFLINE_REVIEW`**: every gate passed. The package is ready for human review. This is still **not** an

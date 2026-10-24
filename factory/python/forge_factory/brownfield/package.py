@@ -92,6 +92,13 @@ def stage(ws: Path, stage_dir: Path) -> list[str]:
     out = stage_dir / "configuration"
     out.mkdir(parents=True, exist_ok=True)
     (out / "delivery.json").write_text(pretty_json(rec))
+    validation = ws / ".forge-run/resume/validation.json"
+    if m.get("resumed_from") and validation.is_file():
+        (out / "resume-validation.json").write_bytes(validation.read_bytes())
+        (out / "resume-lineage.json").write_text(pretty_json(m.get("resume_lineage") or {}))
+        source = ws / ".forge-run/resume/source-manifest.json"
+        if source.is_file():
+            (out / "resume-source-manifest.json").write_bytes(source.read_bytes())
     for name in ("intake.json", "scope.json", "injection.json", "conformance.json", "code_findings.json",
                  "change_report.json", "verification-package.json"):
         src = ws / DELIVERY_DIR / name
