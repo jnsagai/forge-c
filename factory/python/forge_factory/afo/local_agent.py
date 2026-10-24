@@ -76,6 +76,11 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
 
     if not enabled(role, eff) or not authorized(order, eff):
         raise QueueError("LOCAL_AGENT_NOT_AUTHORIZED", role)
+    if role == "afo-factory-maintainer":
+        from ..reliability import isolation
+
+        if not isolation.available():
+            raise QueueError("MAINTAINER_SANDBOX_UNAVAILABLE", "candidate code cannot run as the production account")
     man = json.loads((ws / ".forge-run/manifest.json").read_text())
     profile = (man.get("local_profile") or {}).get("id")
     model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")

@@ -83,6 +83,38 @@ one order. Preserve the original attempt count and deadline during a migration.
 Old brownfield sources without the versioned resume identity/ledger remain
 ineligible for validated resume. An approved factory revision change requires a
 new attempt with explicit provenance; no legacy force-resume override exists.
+For an enrolled older run, the frozen launch manifest may name
+`approved_factory_revision`. A fresh cross-revision attempt is admitted only when
+the currently valid owner-signed grant also binds that exact revision through
+`signed_runbook_ref: factory-revision:<sha>`. It carries the scoped diagnosis and
+source receipt, re-runs intake and every SWE phase, and copies no old phase
+evidence or code corrections. The launch-manifest hash is rechecked at dispatch.
+The enrolled order's remaining attempts and authorization expiry still apply.
+
+## CPU and RAM use
+
+`FORGE_CPU_JOBS=16` enables bounded parallel execution of independent frozen
+prevention reproducers during repair verification. The scheduler caps requested
+jobs at 16, leaves eight host CPU cores available, reserves 16 GiB of available
+memory and allows 4 GiB per worker. It also observes the current memory cgroup.
+The default remains one worker when no capacity is explicitly selected.
+
+Each case retains its original command, oracle, timeout, sandbox and private
+scratch directory. Source worktrees are prepared before parallel execution;
+results retain deterministic case order and exceptions cannot become PASS.
+Dependent phases, author/inspector ordering, numerical precision, model context
+and acceptance criteria are unchanged. More RAM is capacity for these isolated
+jobs; allocating otherwise idle memory does not speed GPU decoding.
+
+Hosts without subordinate-UID Podman may select
+`FORGE_CRE_ISOLATION=bubblewrap`. That backend uses role-specific namespace UIDs,
+private PID/network/device namespaces, read-only source/toolchain mounts and only
+the current writable scratch directory. Owner HOME/state/agent sockets and GPU
+devices are not exposed. Unlike Podman sub-UID isolation, the host UID mapping is
+the invoking account; its protection comes from scoped mounts and namespaces.
+Kernel confinement checks must pass on the deployment host. A Maintainer with no
+available sandbox waits for the dependency instead of executing candidate code
+as the production account.
 
 ## Authority and validation limits
 

@@ -407,3 +407,67 @@ def test_external_deployment_policy_still_requires_a_real_owner_signature(tmp_pa
     eff = policy.load()
     assert eff.requested_mode == "PILOT" and eff.mode == "OBSERVE_ONLY"
     assert "NOT_AUTHORIZED" in eff.issues[0]
+
+
+@pytest.mark.parametrize("approved", [True, False])
+def test_legacy_fresh_revalidation_requires_the_owner_approved_exact_revision(local, monkeypatch, approved):
+    from forge_factory import workorder
+    from forge_factory.afo import authz
+    from forge_factory.common import state_dir
+
+    s, o, b, eff, ws, _ = local
+    previous = state_dir() / "workorders/WO-legacy/workspace/.forge-run"
+    previous.mkdir(parents=True)
+    (previous / "manifest.json").write_text(json.dumps({"factory_revision": {"commit": "0" * 40}}))
+    eff.policy["authorization_ref"] = "OWNER-1"
+    auth = ws / "auth"
+    auth.mkdir()
+    (auth / "OWNER-1.json").write_text(json.dumps({"signed_runbook_ref": "factory-revision:" + ("1" if approved else "2") * 40}))
+    monkeypatch.setattr(authz, "AUTH_DIR", auth)
+    monkeypatch.setattr(authz, "find", lambda *a, **k: SimpleNamespace(allow=True))
+    monkeypatch.setattr(policy, "load", lambda: eff)
+    calls = []
+    monkeypatch.setattr(workorder, "run", lambda *a, **kw: calls.append(kw) or {"fabro_run_id": "NEW-RUN"})
+    man = {"example": "unused", "profile": "local-rtx-v2-omniverse2", "model": "qwen3.6:35b-a3b",
+           "resume_from": "WO-legacy", "approved_factory_revision": "1" * 40}
+    if approved:
+        runtime.launcher(man, "WO-new", {"afo_attempt": b["attempt_id"]})
+        assert calls[0]["resume"] is None and calls[0]["fresh_recovery_from"] == "WO-legacy"
+    else:
+        with pytest.raises(RuntimeError, match="NOT_OWNER_AUTHORIZED"):
+            runtime.launcher(man, "WO-new", {"afo_attempt": b["attempt_id"]})
+        assert not calls
+
+
+def test_fresh_recovery_never_reads_a_live_source_as_terminal(local, monkeypatch):
+    from forge_factory import workorder
+    from forge_factory.common import state_dir
+    from forge_factory.fabro import client as F
+
+    _, _, _, _, ws, _ = local
+    old = state_dir() / "workorders/WO-live/workspace/.forge-run"
+    old.mkdir(parents=True)
+    (old / "fabro_run_id").write_text("LIVE")
+    (old / "manifest.json").write_text(json.dumps({"work_order": "WO-live"}))
+    example = ws / "example"
+    example.mkdir()
+    (example / "workorder.json").write_text("{}")
+    monkeypatch.setattr(F, "client_for_workspace", lambda _: client("RUNNING"))
+    monkeypatch.setattr(workorder, "prepare", lambda *a, **k: pytest.fail("prepared from a live source"))
+    with pytest.raises(ValueError, match="SOURCE_NOT_TERMINAL"):
+        workorder.run(example, "WO-new", fresh_recovery_from="WO-live")
+
+
+def test_order_deadline_cancels_only_the_managed_parent_without_claiming_terminal(local, monkeypatch):
+    from forge_factory.afo import authority, dispatch
+
+    s, o, _, eff, _, _ = local
+    monkeypatch.setattr(authority, "decide", lambda *a, **k: SimpleNamespace(allow=True))
+    cancelled = []
+    c = client()
+    c.cancel = lambda rid: cancelled.append(rid) or 202
+    end = o["created_epoch"] + eff.get("budgets.max_order_wall_seconds")
+    assert dispatch.enforce_deadlines(s, eff, client=c, now=end - 1) == []
+    assert dispatch.enforce_deadlines(s, eff, client=c, now=end + 1)[0]["cancellation_requested"]
+    assert cancelled == ["RUN1"]
+    assert s.order(o["order_id"])["state"] == "RUNNING"  # authoritative Fabro reconciliation still decides

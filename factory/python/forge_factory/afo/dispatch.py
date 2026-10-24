@@ -13,7 +13,7 @@ import time
 import zipfile
 from pathlib import Path
 
-from ..common import REPO_ROOT, utc_now
+from ..common import REPO_ROOT, sha256_file, utc_now
 from .queue import QueueError, Store
 
 GRACE_S = 180          # a launch younger than this may still appear in Fabro's listing
@@ -64,7 +64,13 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         _set_cmd(store, cmd["command_id"], "IN_FLIGHT", count=True)
         store.attempt_transition(cmd["attempt_id"], "DISPATCH_PENDING", workspace_ref=f"workorder:{name}",
                                  evidence_refs=[f"nonce:{nonce}", f"dispatched_epoch:{now or time.time():.0f}"])
-        manifest = json.loads((REPO_ROOT / order["input_manifest_ref"]).read_text())
+        manifest_path = REPO_ROOT / order["input_manifest_ref"]
+        if sha256_file(manifest_path) != order["manifest_sha256"]:
+            _set_cmd(store, cmd["command_id"], "QUARANTINED")
+            store.transition(order["order_id"], "BLOCKED", "launch manifest changed after approval",
+                             terminal_reason="LAUNCH_MANIFEST_HASH_CHANGED")
+            continue
+        manifest = json.loads(manifest_path.read_text())
         payload = json.loads(cmd["payload"])
         if payload.get("resume_from"):  # recovery attempt: resume verified phases from the previous attempt
             manifest = {**manifest, **{k: payload[k] for k in ("resume_from", "resume_upto", "model_profile",
@@ -166,6 +172,36 @@ def reconcile_running(store: Store, view, recover=None) -> list[dict]:
             out.append({"order_id": order["order_id"], "action": "validating", "run": kind})
         else:
             out.append({"order_id": order["order_id"], "action": "still_active", "run": kind})
+    return out
+
+
+def enforce_deadlines(store: Store, eff, client=None, now: float | None = None) -> list[dict]:
+    """Bound adopted and ordinary work orders as well as diagnosis jobs; revocation never starts more work."""
+    from ..fabro.client import FabroClient, load_token
+    from . import authority
+    from .local_agent import request_for
+
+    now = time.time() if now is None else now
+    out = []
+    for order in store.orders(("RUNNING",)):
+        expired = now >= order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds", 0))
+        allowed = authority.decide("launch_workorder", request_for(order), afo=eff, log=False).allow
+        if not expired and allowed:
+            continue
+        attempt = store.attempts(order["order_id"])[-1]
+        rid = attempt["record"].get("fabro_run_id")
+        if not rid:
+            continue
+        try:
+            c = client or FabroClient(token=load_token(), timeout=5)
+            code = c.cancel(rid)
+        except Exception:  # noqa: BLE001 - unknown cancellation is recorded, never claimed as stopped
+            code = None
+        with store.tx() as db:
+            store._event(db, "order_cancel_requested", order["order_id"], attempt["attempt_id"],
+                         {"reason": "ORDER_WALL_BUDGET_EXHAUSTED" if expired else "AUTHORIZATION_REVOKED_OR_EXPIRED",
+                          "http_status": code, "cancellation_confirmed": False})
+        out.append({"order_id": order["order_id"], "cancellation_requested": code in (200, 202, 204)})
     return out
 
 

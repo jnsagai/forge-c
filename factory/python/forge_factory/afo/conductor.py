@@ -47,12 +47,19 @@ def cycle(n: int) -> tuple[str, bool, str]:
         from .queue import default_path
 
         if default_path().is_file():
-            local_agent.supervise(Store(), eff)
+            from . import dispatch
+
+            store = Store()
+            local_agent.supervise(store, eff)
+            dispatch.enforce_deadlines(store, eff)
         return eff.mode, True, ("; ".join(eff.issues))[:200]
     store = Store()
     from . import local_agent
 
     local_agent.supervise(store, eff)
+    from . import dispatch
+
+    dispatch.enforce_deadlines(store, eff)
     r = scheduler.cycle(store, f"conductor-{os.getpid()}", eff=eff)
     if eff.mode in ("PILOT", "ACTIVE"):  # M3: launch, reconcile, validate; OBSERVE_ONLY never touches Fabro
         from . import checkpoints, dispatch, runtime

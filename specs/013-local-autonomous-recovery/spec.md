@@ -35,6 +35,15 @@ preparation existed, but its agent and independent verifier required manual call
 - LA-007: Supply a reviewable local activation configuration while preserving
   signature, policy-floor and external source-deployment requirements. Do not
   activate or claim a live autonomous run without the actual owner authorization.
+- LA-008: Use spare host CPU/RAM for bounded independent verification jobs, retaining
+  every case, its oracle and deterministic result order. Leave capacity for Qwen;
+  do not change model accuracy, phase dependencies or quality thresholds.
+- LA-009: Provide tested namespace confinement on the remote host without Podman,
+  preserving credential/source/network protection before any candidate execution.
+
+The owner explicitly approved activation and the signing record later in this
+session. The existing SSH agent can sign via its public-key reference; no private
+key material is read. The current `q36-n2` run is preserved during enrollment.
 
 No safety, supervisor, release or reliability policy, frozen oracle, holdout or
 historical release evidence is changed. Verification is CPU-only; the owner's

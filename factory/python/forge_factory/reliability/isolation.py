@@ -21,6 +21,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import uuid
 from pathlib import Path
@@ -29,7 +30,7 @@ from ..common import REPO_ROOT, data_root
 
 ROLES = {"verifier": 2001, "repair": 2002, "maintainer": 2003}
 SHORT = Path.home() / ".forge-podman"  # podman limits runroot paths to 50 chars: short symlink -> loop10
-MODE_ENV = "FORGE_CRE_ISOLATION"  # podman (default when available) | none
+MODE_ENV = "FORGE_CRE_ISOLATION"  # auto: Podman, then scoped Bubblewrap | explicit podman/bubblewrap | none
 
 
 def base() -> Path:
@@ -41,9 +42,54 @@ def _podman() -> list[str]:
 
 
 def available() -> bool:
-    if os.environ.get(MODE_ENV, "podman") == "none" or not shutil.which("podman"):
-        return False
-    return True
+    return backend() != "none"
+
+
+def backend() -> str:
+    mode = os.environ.get(MODE_ENV, "auto")
+    if mode in ("auto", "podman") and shutil.which("podman"):
+        return "podman"
+    if mode in ("auto", "bubblewrap") and shutil.which("bwrap"):
+        return "bubblewrap"
+    return "none"
+
+
+def bubblewrap_argv(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writable: list[Path],
+                    readable: list[Path] = (), network: bool = False) -> list[str]:
+    """Scoped mount/PID/network/user namespaces; never mount owner HOME, state, credentials or GPU devices.
+
+    The namespace UID is role-specific. Unlike Podman sub-UIDs, its host mapping is the invoking account;
+    confinement comes from separate namespaces, read-only mounts and exposing only the current scratch.
+    """
+    uid = str(ROLES[role])
+    a = [shutil.which("bwrap") or "bwrap", "--unshare-all", "--uid", uid, "--gid", uid,
+         "--die-with-parent", "--new-session", "--cap-drop", "ALL", "--clearenv",
+         "--proc", "/proc", "--dev", "/dev", "--tmpfs", "/tmp"]
+    if network:
+        raise ValueError("BUBBLEWRAP_NETWORK_NOT_ALLOWED")
+    roots = {Path(p) for p in ("/usr", "/etc", "/lib", "/lib64", "/bin", "/sbin") if Path(p).exists()}
+    roots.add(Path(env.get("FORGE_REPO_ROOT") or REPO_ROOT))
+    roots.add(Path(sys.prefix))
+    roots.add(Path(sys.base_prefix))
+    dr = data_root()
+    for parent in (dr, dr.parent if dr.name.startswith("lrtx-") else dr):
+        for name in ("venv", "toolchains", "engines"):
+            p = parent / name
+            if p.is_dir():
+                roots.add(p)
+                roots.add(p.resolve())
+    roots.update(Path(p) for p in readable)
+    # Parents first; an explicitly writable scratch is overmounted only after all read-only inputs.
+    for p in sorted(roots, key=lambda x: (len(x.parts), str(x))):
+        a += ["--ro-bind", str(p), str(p)]
+    for p in writable:
+        a += ["--bind", str(p), str(p)]
+    keep = {k: v for k, v in env.items() if not k.endswith(("TOKEN", "KEY", "SECRET", "PASSWORD"))
+            and k not in ("SSH_AUTH_SOCK", "DBUS_SESSION_BUS_ADDRESS", "XDG_RUNTIME_DIR")}
+    keep["HOME"] = str(writable[0]) if writable else "/tmp"
+    for k, v in sorted(keep.items()):
+        a += ["--setenv", k, v]
+    return [*a, "--chdir", str(cwd), "--", *cmd]
 
 
 def setup() -> Path:
@@ -101,6 +147,8 @@ def read_only_mounts() -> list[str]:
 def argv(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writable: list[Path], ro_extra: list[Path] = (),
          network: bool = False) -> list[str]:
     """The podman command that runs `cmd` as the role's UID; paths keep their host names inside."""
+    if backend() == "bubblewrap":
+        return bubblewrap_argv(role, cmd, cwd=cwd, env=env, writable=writable, readable=ro_extra, network=network)
     uid = ROLES[role]
     a = [*_podman(), "run", "--rm", "--user", f"{uid}:{uid}", "--tmpfs", "/tmp:rw,size=2g,mode=1777",
          "--security-opt", "label=disable", "-w", str(cwd)]
@@ -127,19 +175,23 @@ def run(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writable: 
 
 def new_dir(prefix: str) -> Path:
     """Scratch/worktree root: on loop10 (visible to the sandbox) when isolating, else a normal temp dir."""
+    if backend() == "bubblewrap":
+        p = base() / "work" / f"{prefix}-{uuid.uuid4().hex[:12]}"
+        p.mkdir(parents=True, mode=0o700)
+        return p
     return work_dir(prefix) if available() else Path(tempfile.mkdtemp(prefix=f"{prefix}-"))
 
 
 def hand_over(role: str, d: Path) -> None:
     """After the owner has populated `d`, give it to the role's sub-UID (owner loses write access to it)."""
-    if available():
+    if backend() == "podman":
         uid = ROLES[role]
         subprocess.run([*_podman(), "unshare", "chown", "-R", f"{uid}:{uid}", str(d)], check=True,
                        capture_output=True, timeout=120)
 
 
 def discard(d: Path) -> None:
-    if available():
+    if backend() == "podman":
         remove(d)
     else:
         shutil.rmtree(d, ignore_errors=True)
@@ -155,4 +207,5 @@ def execute(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writab
 
 
 def level() -> str:
-    return "podman-rootless-subuid" if available() else "none (same OS user)"
+    return {"podman": "podman-rootless-subuid", "bubblewrap": "bubblewrap-userns-scoped-mounts",
+            "none": "none (same OS user)"}[backend()]
