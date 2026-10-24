@@ -1,5 +1,5 @@
 {
-  "status": "DEPLOYED_SERVICE_STARTING",
+  "status": "ACTIVE_PILOT_TERMINAL_ORDER",
   "source_revision": "36ed0fc70bd8765f0cc90a45b21bbf02924b0269",
   "policy_sha256": "480fc493a55ed1f912a067d9b4cd2d72920e2e13ca5342688d629beea807bdd5",
   "signature_present": true,
@@ -8,7 +8,7 @@
   "new_attempts_maximum": 1,
   "absolute_authorization_expiry": "2026-10-25T09:00:00Z",
   "legacy_source_resume": "Fresh cross-revision recovery only; no accepted phase evidence carried",
-  "live_run": "NOT_STARTED",
+  "live_run": "01M5QWC6CP1BJKGXKEXWG6HXHM",
   "cre_mode_changed": false,
   "scope": "Local diagnosis/rework and independently evaluated isolated source proposals; no automatic factory source promotion",
   "signing_method": "Existing SSH agent through owner public-key reference",
@@ -27,5 +27,13 @@
   "deployed_utc": "2026-10-24T21:16:54.477122+00:00",
   "order_id": "afo-dabbb015814e03ed",
   "progress_branch": "overnight/2026-10-24-qwen-omniverse2",
-  "independent_fix_decision": "pd-78232fccefedf68697fa"
+  "independent_fix_decision": "pd-78232fccefedf68697fa",
+  "observed_utc": "2026-10-24T21:17:57.983475+00:00",
+  "live_role": "afo-recovery-planner",
+  "live_job_state": "FAILED",
+  "order_state": "BLOCKED",
+  "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-30cab5cc7333e35719e58374",
+  "advertised_skills": [
+    "afo-recovery-planner"
+  ]
 }
