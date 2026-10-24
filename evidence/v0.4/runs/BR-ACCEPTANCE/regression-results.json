@@ -1,0 +1,118 @@
+{
+  "schema": "forge-c/verification-evidence/1",
+  "status": "BASELINE_FAILURES_REMAIN",
+  "reports": [
+    {
+      "report": "feature012-3fb73dc-regression.xml",
+      "description": "Broad regression began on 3fb73dc; two narrow source corrections landed while it ran. Not a final-head full-suite certification.",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "5",
+        "skipped": "28",
+        "tests": "1327",
+        "time": "2696.582",
+        "timestamp": "2026-10-24T18:44:10.735856+01:00",
+        "hostname": "master"
+      },
+      "sha256": "0ed7388efbf35c5700067aa0daa13a7ae6c18b5d5ed348ad70ad45930527e4d7",
+      "failures": [
+        {
+          "class": "factory.python.tests.test_cre_capa_051",
+          "test": "test_capa051_suspended_provider_refused_without_acp"
+        },
+        {
+          "class": "factory.python.tests.test_cre_d7_e2e",
+          "test": "test_latest_local_qwen_work_order_has_real_terminal_evidence"
+        },
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t012_observer_mcp_read_only_and_least_privilege"
+        },
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t020_pilot_reconciles_with_raw_evidence"
+        },
+        {
+          "class": "factory.python.tests.test_lrtx_profile",
+          "test": "test_cli_reports_refusal_without_preparing"
+        }
+      ]
+    },
+    {
+      "report": "feature012-final-failure-reruns.xml",
+      "description": "All five broad-suite failures rerun on corrected source 50968b1: two fixed, three unchanged host-state failures.",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "3",
+        "skipped": "0",
+        "tests": "5",
+        "time": "40.362",
+        "timestamp": "2026-10-24T19:21:27.426049+01:00",
+        "hostname": "master"
+      },
+      "sha256": "9e8c5f726fd54ba8c41fea5bae86ac70ad19443425ec4c5b90aa44587ba2a445",
+      "failures": [
+        {
+          "class": "factory.python.tests.test_cre_d7_e2e",
+          "test": "test_latest_local_qwen_work_order_has_real_terminal_evidence"
+        },
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t012_observer_mcp_read_only_and_least_privilege"
+        },
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t020_pilot_reconciles_with_raw_evidence"
+        }
+      ]
+    },
+    {
+      "report": "feature012-baseline-history.xml",
+      "description": "History-dependent failure on unchanged baseline 8713c7f.",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.642",
+        "timestamp": "2026-10-24T19:11:46.366789+01:00",
+        "hostname": "master"
+      },
+      "sha256": "423f40d484e7f8311cf44321861c39a850185c047792ebf335f2f1fd84c87161",
+      "failures": [
+        {
+          "class": "factory.python.tests.test_cre_d7_e2e",
+          "test": "test_latest_local_qwen_work_order_has_real_terminal_evidence"
+        }
+      ]
+    },
+    {
+      "report": "feature012-baseline-kpi.xml",
+      "description": "Two KPI failures on unchanged baseline 8713c7f.",
+      "suite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "2",
+        "time": "40.351",
+        "timestamp": "2026-10-24T19:21:27.425976+01:00",
+        "hostname": "master"
+      },
+      "sha256": "17dbd0dfde3be5aa9670cc5ede18929979952e1b1c0a877a8e1f9f3f184e77bc",
+      "failures": [
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t012_observer_mcp_read_only_and_least_privilege"
+        },
+        {
+          "class": "factory.python.tests.test_kpi_003",
+          "test": "test_kpi_t020_pilot_reconciles_with_raw_evidence"
+        }
+      ]
+    }
+  ]
+}

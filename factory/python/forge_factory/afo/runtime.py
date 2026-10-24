@@ -40,7 +40,10 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
     r = run(REPO_ROOT / manifest["example"], wo, detach=True, model=manifest.get("model", "deepseek-flash"),
             provider=manifest.get("provider", "deepseek"), provided_from=manifest.get("provided_from"),
             acp_authors=manifest.get("acp_authors"), resume=manifest.get("resume_from"),
-            resume_upto=manifest.get("resume_upto"), labels=labels)
+            acp_inspectors=manifest.get("acp_inspectors"), profile=manifest.get("profile"),
+            resume_upto=manifest.get("resume_upto"), labels=labels,
+            resume_max_attempts=manifest.get("resume_max_attempts"),
+            resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"))
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")
     rev = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
