@@ -426,8 +426,15 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
 
     st = load(local["id"]).get("structured") or {}
     layer = manifest.get("layer", "LL+HAL")
-    out = {"phases": (st.get("phases_by_layer") or {}).get(layer) or [],
-           "inspect_phases": (st.get("inspect_phases_by_layer") or {}).get(layer) or [],
+    phases = (st.get("phases_by_layer") or {}).get(layer) or []
+    inspect = (st.get("inspect_phases_by_layer") or {}).get(layer) or []
+    keep = st.get("brownfield_structured_phases")
+    if keep is not None and (manifest.get("delivery") or {}).get("code_mode"):
+        # F011-T036 (owner 2026-10-24, delivered-code run): the structured SWE.3-SWE.6 tasks render design and tests
+        # from the code tasks of a local code author, which a delivered-code work order has none of; phases outside
+        # the profile's list run as the existing agent nodes (as a HAL work order does). Without the key: unchanged.
+        phases, inspect = [x for x in phases if x in keep], [x for x in inspect if x in keep]
+    out = {"phases": phases, "inspect_phases": inspect,
            "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600),
            "visit_time_s": st.get("visit_time_s", 1200)}
     return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None

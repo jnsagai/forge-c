@@ -88,3 +88,28 @@ def test_the_omniverse2_profile_differs_from_v2_only_in_host_paths_and_the_engin
     assert e2["source_commit_sha"].split()[0] == eo["source_commit_sha"].split()[0] and \
         e2["semantic_profile"] == eo["semantic_profile"]
     assert {k: v for k, v in v2["safec"].items() if k != "engine"} == {k: v for k, v in om["safec"].items() if k != "engine"}
+
+
+@pytest.mark.parametrize("example", ["0008a-rcc-ll-delivered", "0008c-st-cube-rcc"])
+def test_a_delivered_code_work_order_keeps_only_swe1_and_swe2_structured_on_v2(example):
+    """F011-T036 (owner 2026-10-24): the structured SWE.3-SWE.6 tasks need code tasks of a local code author, which a
+    delivered-code work order has none of (the build refused with STRUCTURED_NODE_MISSING:swe3_ll_author). On v2 those
+    phases run as the existing agent nodes; SWE.1/SWE.2 stay structured; v1 and greenfield work orders are unchanged."""
+    import json
+
+    from forge_factory import acp
+    from forge_factory.workflow.builder import build
+
+    spec = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())
+    bf = {"layer": spec["layer"], "delivery": spec["delivery"]}
+    s2 = workorder.local_profile_structured({"id": "local-rtx-v2-omniverse2"}, bf, "qwen3.6:35b-a3b")
+    assert s2["phases"] == s2["inspect_phases"] == ["SWE.1", "SWE.2"]
+    assert workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "m")["phases"][2:] == [
+        "SWE.3", "SWE.4", "SWE.5", "SWE.6"]  # greenfield: unchanged
+    assert workorder.local_profile_structured({"id": "local-rtx-v1"}, bf, "m")["phases"][2:3] == ["SWE.3"]  # v1 too
+    g, _nodes = build("WO-X", layer=spec["layer"], trace=True, brownfield=spec["delivery"]["code_mode"],
+                      peripheral=spec.get("peripheral"), delivery_style=spec["delivery"]["build"]["style"],
+                      structured=s2)
+    agents = acp.native_agent_nodes(g)
+    assert "swe1_author" not in agents and "swe2_author" not in agents and "swe2_inspector" not in agents
+    assert {"swe3_author", "swe3_inspector", "swe4_author", "swe6_inspector"} <= set(agents)

@@ -62,6 +62,9 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
     qwen3.6:35b-a3b: {temperature: 0.6, top_p: 0.95}   # thinking mode: vendor guidance, greedy can loop
   inspector_coverage: true   # F011-T049: decomposed coverage questions per work-order scope item
   inspector_entries: true    # F011-T054: per-entry effects and budget questions
+  # F011-T036: a delivered-code (brownfield) work order keeps only these phases structured; the others run
+  # as the existing agent nodes (the structured SWE.3-SWE.6 tasks need code tasks of a local code author)
+  brownfield_structured_phases: [SWE.1, SWE.2]
   reinspect_direct: true
   timeout_s: 3600
   visit_time_s: 1200
