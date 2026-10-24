@@ -1,0 +1,188 @@
+{
+  "captured_utc": "2026-10-24T20:43:40.588652+00:00",
+  "conductor": {
+    "heartbeat_fresh": true,
+    "mode": "PILOT",
+    "ok": true
+  },
+  "diagnosis_jobs": [
+    {
+      "attempt_id": "afo-3f6e7e61ea3df31a-a5",
+      "job_id": "afo-agent-5933a084b301ad77123f2168",
+      "order_id": "afo-3f6e7e61ea3df31a",
+      "role": "afo-recovery-planner",
+      "state": "RUNNING"
+    }
+  ],
+  "exclusivity": "Only the local Qwen mission and its supervision, verification, and Git recorder are authorized",
+  "maintainer_proposals": [],
+  "next_driver": {
+    "condition": "RCC all six native gates PASS and sealed READY archive verified",
+    "condition_met": false,
+    "selection": "STM32N6 GPIO LL",
+    "submission": "NOT_TRIGGERED"
+  },
+  "orders": [
+    {
+      "attempts": [
+        {
+          "attempt_id": "afo-3f6e7e61ea3df31a-a1",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5Q6Y9GQ6AVR1FJ5K6S9F73C",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "da9f5fecc45768ac9fd385a170b859f38218a0225ae136f284bb75831a0ecc95",
+            "finalized_at": "2026-10-24T16:58:08.207071Z",
+            "gap_count": 44,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": null,
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 1,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36c"
+        },
+        {
+          "attempt_id": "afo-3f6e7e61ea3df31a-a2",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QDK92JNCJD9SSCHWBJS6ZT",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "0dee61720aeca1e6e0ca2e8fbe3ecea5596f17c588d01c76aad850fe6b42559a",
+            "finalized_at": "2026-10-24T18:13:14.827256Z",
+            "gap_count": 56,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 2,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36auto02"
+        },
+        {
+          "attempt_id": "afo-3f6e7e61ea3df31a-a3",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QHW4PRS3GQ38N8ND38WC2Y",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "29c4756ee3d5711e86695c105e63972fe67100a303fc44b218ecfd812e398b6b",
+            "finalized_at": "2026-10-24T18:43:40.949714Z",
+            "gap_count": 57,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 3,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36auto03"
+        },
+        {
+          "attempt_id": "afo-3f6e7e61ea3df31a-a4",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QNBH2BDY55PPBMF195H6WG",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "36c9586fa2e77a8ea17468db1f13f44e927f94b59e41c89376f49405698ef237",
+            "finalized_at": "2026-10-24T19:34:07.785757Z",
+            "gap_count": 51,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 4,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36-n1"
+        },
+        {
+          "attempt_id": "afo-3f6e7e61ea3df31a-a5",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QPG9HT2SZW0PY5ZQSNE78X",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "dc608a2cd20e715376205ee34f76612460485c2d8c6c6404c5c1062e585c327e",
+            "finalized_at": "2026-10-24T20:08:41.904251Z",
+            "gap_count": 50,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 5,
+          "state": "SUCCEEDED",
+          "terminal_package_status": null,
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36-n2"
+        }
+      ],
+      "authorization_id": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-20261024",
+      "order_id": "afo-3f6e7e61ea3df31a",
+      "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
+      "request_id": "q36c-local-selfheal",
+      "state": "RUNNING",
+      "terminal_reason": null
+    }
+  ],
+  "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
+  "recovery_plans": [],
+  "resources": {
+    "cpu_load_1_5_15": [
+      0.19189453125,
+      0.1640625,
+      0.384765625
+    ],
+    "gpu": "71, 25460, 49140, 202.72",
+    "memory": {
+      "MemAvailable": "120868300 kB",
+      "MemTotal": "131337704 kB"
+    },
+    "verification_workers_max": 16
+  },
+  "source_revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9"
+}

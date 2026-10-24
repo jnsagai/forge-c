@@ -1,0 +1,15 @@
+{
+  "status": "OWNER_APPROVED_SIGNED_PENDING_ACTIVATION",
+  "source_revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9",
+  "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
+  "signature_present": true,
+  "owner_private_key_accessed": false,
+  "previous_attempts": 5,
+  "new_attempts_maximum": 1,
+  "absolute_authorization_expiry": "2026-10-25T09:00:00Z",
+  "legacy_source_resume": "Fresh cross-revision recovery only; no accepted phase evidence carried",
+  "live_run": "NOT_STARTED",
+  "cre_mode_changed": false,
+  "scope": "Local diagnosis/rework and independently evaluated isolated source proposals; no automatic factory source promotion",
+  "signing_method": "Existing SSH agent through owner public-key reference"
+}

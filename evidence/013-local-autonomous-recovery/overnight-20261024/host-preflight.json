@@ -1,0 +1,59 @@
+{
+  "revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9",
+  "model_calls": 0,
+  "mount": {
+    "ok": true,
+    "issues": [],
+    "root": "/mnt/data/forge-c/lrtx-v2",
+    "filesystem": {
+      "target": "/mnt/data",
+      "source": "/dev/sda1",
+      "fstype": "ext4",
+      "uuid": "9bc4621a-9543-4562-b24a-5da4faf6a7f1"
+    },
+    "checked_at": "2026-10-24T20:33:45.871798Z"
+  },
+  "local_profile": {
+    "id": "local-rtx-v2-omniverse2",
+    "models": [
+      {
+        "model": "qwen3.6:35b-a3b",
+        "status": "MATCH",
+        "digest": "a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c",
+        "quantization": "Q4_K_M",
+        "size": 22621314381,
+        "expected_digest": "a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c",
+        "role_qualification": "NOT_QUALIFIED (inspector candidate)"
+      }
+    ],
+    "enforcement": {
+      "acp": "REJECTED_BEFORE_LAUNCH",
+      "fabro_providers": [
+        "ollama"
+      ],
+      "endpoints": "LOOPBACK_VERIFIED",
+      "isolation": "VERIFIED",
+      "network": {
+        "status": "DENIED_VERIFIED",
+        "probe": "1.1.1.1:443",
+        "detail": "OSError: [Errno 101] Network is unreachable",
+        "interfaces": [
+          "lo"
+        ],
+        "netns": "net:[4026533088]"
+      },
+      "basis": "checked by forge_factory.lrtx.profile.select at launch; a declared provider name alone is not enforcement"
+    }
+  },
+  "backend": "bubblewrap",
+  "cpu_workers": 16,
+  "confinement_exit": 0,
+  "confinement": {
+    "uid": 2003,
+    "source_write": false,
+    "owner_file_read": false,
+    "network": false,
+    "gpu": false,
+    "credential_env": false
+  }
+}

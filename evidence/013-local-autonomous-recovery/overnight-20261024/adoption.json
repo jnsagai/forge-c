@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "recorded_utc": "2026-10-24T20:41:31.740592Z",
+  "order_id": "afo-3f6e7e61ea3df31a",
+  "source_revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9",
+  "historical_attempts": [
+    {
+      "work_order": "WO-0008A-STM32N6-RCC-LL-q36c",
+      "run_id": "01M5Q6Y9GQ6AVR1FJ5K6S9F73C",
+      "native_status": "SUCCEEDED",
+      "package_status": "BLOCKED",
+      "gap_count": 44,
+      "manifest_sha256": "e12d06f5452879dc56af341af646a060119ceba92e59e14dee246782b2f74bf4",
+      "package_sha256": "4531c07a362a9d911b00d4c908899b21b6c251537e8e42ff6b654efe78acce92",
+      "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+      "original_created_utc": "2026-10-24T15:02:16.210253Z",
+      "original_finished_utc": "2026-10-24T16:58:08.207071Z"
+    },
+    {
+      "work_order": "WO-0008A-STM32N6-RCC-LL-q36auto02",
+      "run_id": "01M5QDK92JNCJD9SSCHWBJS6ZT",
+      "native_status": "SUCCEEDED",
+      "package_status": "BLOCKED",
+      "gap_count": 56,
+      "manifest_sha256": "00c8e43babc37d0f0fb089d680b7238d1f0faa3b166d5e0ad03310b408b59557",
+      "package_sha256": "dc75c0a2ab5e14b1b53ddc47982b837336e0d3e003ea6e35231c94d027de08e6",
+      "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+      "original_created_utc": "2026-10-24T16:58:35.536816Z",
+      "original_finished_utc": "2026-10-24T18:13:14.827256Z"
+    },
+    {
+      "work_order": "WO-0008A-STM32N6-RCC-LL-q36auto03",
+      "run_id": "01M5QHW4PRS3GQ38N8ND38WC2Y",
+      "native_status": "SUCCEEDED",
+      "package_status": "BLOCKED",
+      "gap_count": 57,
+      "manifest_sha256": "d56d16cb5cef5852864d9645f2dbf09e9072abb4d974ee64d3161bd7c0f9e3f6",
+      "package_sha256": "d43d124b2a4c994a37f9c45f3ee4cad300fe209f06819f83689a3a311cdf7b50",
+      "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+      "original_created_utc": "2026-10-24T18:13:19.394260Z",
+      "original_finished_utc": "2026-10-24T18:43:40.949714Z"
+    },
+    {
+      "work_order": "WO-0008A-STM32N6-RCC-LL-q36-n1",
+      "run_id": "01M5QNBH2BDY55PPBMF195H6WG",
+      "native_status": "SUCCEEDED",
+      "package_status": "BLOCKED",
+      "gap_count": 51,
+      "manifest_sha256": "e2626054b605807f8a5be6825128ea4929eb8d0f117fe6e1409253d824b5f3cf",
+      "package_sha256": "d0fe3c5a39fac998b3475458727c94312cdd9f33050875d09971ced5d4f36100",
+      "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+      "original_created_utc": "2026-10-24T19:14:10.494924Z",
+      "original_finished_utc": "2026-10-24T19:34:07.785757Z"
+    },
+    {
+      "work_order": "WO-0008A-STM32N6-RCC-LL-q36-n2",
+      "run_id": "01M5QPG9HT2SZW0PY5ZQSNE78X",
+      "native_status": "SUCCEEDED",
+      "package_status": "BLOCKED",
+      "gap_count": 50,
+      "manifest_sha256": "02accd4e031094d6e10c9662898640edcea5f2d4720f8894bef051acd50212d1",
+      "package_sha256": "0f7757743df8fd18cd94fbc6c1a988ffa1e45f6c5d285d9edfcaf622cbe912c2",
+      "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+      "original_created_utc": "2026-10-24T19:34:14.994550Z",
+      "original_finished_utc": "2026-10-24T20:08:41.904251Z"
+    }
+  ],
+  "new_model_calls": 0,
+  "new_launches": 0,
+  "max_total_attempts": 6,
+  "remaining_attempts": 1,
+  "owner_authorization": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-20261024",
+  "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9"
+}
