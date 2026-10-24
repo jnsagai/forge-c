@@ -119,6 +119,23 @@ def test_swe1_03_rules_keep_hal_failure_handling_and_missing_safety_inputs(froze
     assert [g["decision"] for g in got] == ["STANDS", "STANDS"]
 
 
+def test_a_budget_is_recognised_in_any_phrasing_with_a_byte_bound(frozen):
+    """F011-T029 run 5 (WO-0008C false rejection on SWE1-04): the static RAM budget written as '0 bytes of persistent
+    static RAM ... within the 64-byte static RAM budget' is a budget; a statement without a byte bound is not."""
+    md = frozen / "workproducts/SWE.1/software_requirements.md"
+    text = md.read_text()
+    f = RS.baseline_facts(frozen)
+    ram = _budget(f, "static RAM")
+    line = next(x for x in text.splitlines() if x.startswith(f"- **{ram}**"))
+    md.write_text(text.replace(line, f"- **{ram}** The IWDG LL driver shall use 0 bytes of persistent static RAM for "
+                                     "driver state, within the 64-byte static RAM budget."))
+    assert RS.baseline_facts(frozen)["budgets"]["static RAM"]
+    assert RS.adjudicate(frozen, "SWE1-04", [_c("budget_missing", "document")])[0]["decision"] == "REFUTED"
+    md.write_text(text.replace(line, f"- **{ram}** The IWDG LL driver shall keep its static RAM use small."))
+    assert not RS.baseline_facts(frozen)["budgets"]["static RAM"]
+    assert RS.adjudicate(frozen, "SWE1-04", [_c("budget_missing", "document")])[0]["decision"] == "STANDS"
+
+
 def _inspector(verdicts):
     """A scripted inspector: verdicts[item] is a list of answers, one per call of that item."""
     seen: dict[str, int] = {}

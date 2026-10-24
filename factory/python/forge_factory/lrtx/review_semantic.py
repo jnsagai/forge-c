@@ -47,6 +47,9 @@ _reply = R._reply  # the runner's error path writes the same compact inspect rep
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
 BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz)\b", re.I)
 BUDGET = re.compile(r"\bat most \d+ bytes of (?:flash|static RAM|stack)\b|\buse 0 bytes of static RAM\b", re.I)
+# measured (F011-T029 run 5, WO-0008C): the budget requirements say "use 0 bytes of persistent static RAM ... within
+# the 64-byte static RAM budget"; a budget is a requirement naming the resource with a byte bound, in any phrasing
+BYTES = re.compile(r"\b\d+(?:-| )bytes?\b", re.I)
 REQ_LINE = re.compile(r"^- \*\*(SWR-\d{3})\*\*\s+(.+)$")
 
 
@@ -72,8 +75,8 @@ def baseline_facts(ws: Path) -> dict:
     return {"reqs": reqs, "startup": [m.group(1) for m in STARTUP.finditer(md)],
             "gap_rows": {i: (m.group(1) if m else None) for i, m in gap_rows.items()},
             "traced": traced_up & traced_sw, "tested": set(re.findall(r"^(SWR-\d{3}),", csv, re.M)),
-            "budgets": {k: bool(re.search(rf"at most \d+ bytes of {k}", md, re.I)) for k in ("flash", "static RAM",
-                                                                                            "stack")}}
+            "budgets": {k: any(re.search(rf"\b{k}\b", r["statement"], re.I) and BYTES.search(r["statement"])
+                               for r in reqs.values()) for k in ("flash", "static RAM", "stack")}}
 
 
 def claim_schema(item: str, targets: list[str]) -> dict:
