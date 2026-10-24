@@ -16,7 +16,13 @@ from .authz import Authorizer, Binding, Decision
 
 
 def handle(ctx: dict, binding: Binding) -> Decision:
+    from ..brownfield.resume import ResumeRefused, remaining_seconds
     from .governor import count_tool_call, reset_node
+
+    try:
+        remaining_seconds(Path(binding.workspace))
+    except ResumeRefused as exc:
+        return Decision(False, "RESUME_BUDGET_REFUSED", str(exc))
 
     if ctx.get("event") == "stage_start":
         reset_node(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")))

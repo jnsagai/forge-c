@@ -156,7 +156,8 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
     return ods
 
 
-def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
+def prepare(example: Path, wo: str, provided_from: str | None = None,
+            resume_limits: dict | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
@@ -294,6 +295,11 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     (ws / "configuration").mkdir(exist_ok=True)
     (ws / "configuration/system_names.json").write_text(json.dumps(spec["system_names"]))
     (ws / "configuration/target_baseline.json").write_text(pretty_json(spec["target"]))
+    if intake:
+        from .brownfield.resume import initialize
+
+        initialize(ws, manifest, resume_limits)
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
     subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",
                     "forge: work order configuration"], cwd=ws, check=True)
@@ -309,7 +315,18 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
     (AFO-T040: a return to the owning upstream phase reruns that phase and everything after it). Returns the phases
     still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
+    from .brownfield.resume import ResumeRefused, resume, source_workspace
     from .inspection.engine import PHASE_PATHS, PHASES, Store
+
+    if manifest.get("delivery"):
+        remaining = resume(ws, manifest, source_wo, upto)
+        subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
+        subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit",
+                        "--allow-empty", "-qm", f"forge: validated brownfield resume from {source_wo}"], cwd=ws, check=True)
+        return remaining
+    source_manifest = source_workspace(source_wo) / ".forge-run/manifest.json"
+    if source_manifest.is_file() and json.loads(source_manifest.read_text()).get("delivery"):
+        raise ResumeRefused("RESUME_BROWNFIELD_TO_GREENFIELD_REFUSED")
 
     src = state_dir() / "workorders" / source_wo / "workspace"
     if not src.is_dir():
@@ -374,7 +391,10 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
     Fabro run labels (AFO-T026: afo_attempt/afo_nonce identify an AFO attempt for crash reconciliation)."""
     import os
 
+    from .brownfield.resume import remaining_seconds
     from .reliability.production import JournalRefused, enforcing, guarded
+
+    remaining_seconds(ws)
 
     prior = ws / ".forge-run/fabro_run_id"
 
@@ -444,7 +464,31 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
         labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False,
-        timeout_scale: float = 1.0, profile: str | None = None) -> dict:
+        timeout_scale: float = 1.0, profile: str | None = None,
+        resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None) -> dict:
+    from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
+
+    spec = json.loads((example / "workorder.json").read_text())
+    resume_limits = {"max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
+                     "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"]}
+    if resume_max_attempts is not None and resume_max_attempts < 1 or \
+            resume_max_wall_seconds is not None and resume_max_wall_seconds < 1:
+        raise ResumeRefused("RESUME_LIMITS_INVALID")
+    if resume and resume == wo:
+        raise ResumeRefused("RESUME_SOURCE_EQUALS_DESTINATION")
+    if resume_upto and not resume:
+        raise ResumeRefused("RESUME_UPTO_NEEDS_SOURCE")
+    if spec.get("delivery") and (state_dir() / "workorders" / wo).exists():
+        raise ResumeRefused("RESUME_DESTINATION_EXISTS: use a new work-order ID")
+    if resume and spec.get("delivery"):
+        _, source = check_source(resume, wo)
+        inherited = source["resume_identity"]["limits"]
+        if (resume_max_attempts is not None and resume_max_attempts != inherited["max_attempts"]) or \
+                (resume_max_wall_seconds is not None and resume_max_wall_seconds != inherited["max_wall_seconds"]):
+            raise ResumeRefused("RESUME_LIMIT_CHANGE_REFUSED")
+        resume_limits = inherited
+    if resume and intake_only:
+        raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
     local = None
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
@@ -475,10 +519,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     if suspended and not (acp_authors and acp_inspectors):  # OD-2026-10-20-03: no agent node on a suspended model
         raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes would run on the "
                            "suspended run model; use --acp-authors codex --acp-inspectors claude")
-    if resume and json.loads((example / "workorder.json").read_text()).get("delivery"):
-        raise ValueError("BROWNFIELD_RESUME_NOT_SUPPORTED: start a new brownfield work order (the delivered code must "
-                         "enter after a SWE.1 frozen in the same work order)")
-    ws, manifest = prepare(example, wo, provided_from)
+    ws, manifest = prepare(example, wo, provided_from, resume_limits=resume_limits) if spec.get("delivery") else \
+        prepare(example, wo, provided_from)
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
         manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
@@ -581,6 +623,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
     ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
     ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
+    ap.add_argument("--resume-upto", choices=[f"SWE.{i}" for i in range(1, 7)],
+                    help="restart at this phase or the first invalid phase, whichever is earlier")
+    ap.add_argument("--resume-max-attempts", type=int, help="brownfield lineage attempt limit (default 6; inherited on resume)")
+    ap.add_argument("--resume-max-wall-seconds", type=int,
+                    help="brownfield lineage elapsed-time limit (default 86400; inherited on resume)")
     ap.add_argument("--provided-from", default=None,
                     help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
     ap.add_argument("--acp-authors", choices=["codex"], default=None,
@@ -596,13 +643,18 @@ def main(argv: list[str] | None = None) -> int:
                     help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop")
     a = ap.parse_args(argv)
     from .brownfield.delivery import DeliveryBlocked
+    from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
 
     try:
         res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
                   resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
                   acp_inspectors=a.acp_inspectors, intake_only=a.intake_only, timeout_scale=a.timeout_scale,
-                  profile=a.profile)
+                  profile=a.profile, resume_upto=a.resume_upto, resume_max_attempts=a.resume_max_attempts,
+                  resume_max_wall_seconds=a.resume_max_wall_seconds)
+    except ResumeRefused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
+        return 2
     except DeliveryBlocked as exc:  # FR-003..FR-005: refused before any agent ran; the record is in the store
         print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake",
                           "issues": str(exc).split(";")}))

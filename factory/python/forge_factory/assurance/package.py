@@ -54,7 +54,19 @@ def attestation(ws: Path) -> dict:
            "model": None if over else model, "provider": None if over else prov}
     if p.get("acp_inspectors"):  # OD-2026-10-19-08: inspectors on Claude through the ACP proxy
         ins |= {"model": p["acp_inspectors"].get("model"), "provider": p["acp_inspectors"].get("provider")}
-    return independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
+    out = independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
+    manifest = ws / ".forge-run/manifest.json"
+    resumed = (json.loads(manifest.read_text()).get("resumed_from") or {}) if manifest.is_file() else {}
+    if resumed.get("stable_phases"):
+        inherited = ws / ".forge-run/resume/inherited-independence.json"
+        prior = json.loads(inherited.read_text()) if inherited.is_file() else {
+            "decision": "UNKNOWN", "shared_common_cause_refs": ["RESUME_SOURCE_INDEPENDENCE_NOT_RECORDED"]}
+        rank = {"SUPPORTED": 0, "PARTIAL": 1, "UNKNOWN": 2, "NOT_INDEPENDENT": 3}
+        out["decision"] = max((out["decision"], prior["decision"]), key=rank.__getitem__)
+        out["independent"] = out["decision"] == "SUPPORTED"
+        out["shared_common_cause_refs"] = sorted(set(out["shared_common_cause_refs"] +
+            [f"INHERITED:{r}" for r in prior["shared_common_cause_refs"]]))
+    return out
 
 
 def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:

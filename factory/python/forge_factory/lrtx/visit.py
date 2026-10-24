@@ -102,7 +102,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         budget["calls"] += 1
         if "schema_mode" not in budget:  # LRTX-T012: the probed mode of the served model, recorded once per visit
             budget["schema_mode"], budget["schema_mode_basis"] = S.schema_mode_for(p["model"])
-        r = S.call(p, schema_mode=budget["schema_mode"])
+        from ..brownfield.resume import remaining_seconds
+
+        remaining = remaining_seconds(ws)
+        r = S.call(p, schema_mode=budget["schema_mode"], **({"timeout": min(3600, remaining)} if remaining else {}))
         errs = r["errors"] or check(r["doc"])
         if not errs and start is not None and findings and r["doc"] == start:
             # lrtxq1 (2026-10-21): an unchanged answer to the findings re-froze the inspected baseline and spent two
