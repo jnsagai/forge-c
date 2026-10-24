@@ -1,5 +1,5 @@
 {
-  "status": "OWNER_APPROVED_SIGNED_PENDING_ACTIVATION",
+  "status": "ACTIVE_PILOT_OWNER_APPROVED",
   "source_revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9",
   "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
   "signature_present": true,
@@ -8,8 +8,14 @@
   "new_attempts_maximum": 1,
   "absolute_authorization_expiry": "2026-10-25T09:00:00Z",
   "legacy_source_resume": "Fresh cross-revision recovery only; no accepted phase evidence carried",
-  "live_run": "NOT_STARTED",
+  "live_run": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
   "cre_mode_changed": false,
   "scope": "Local diagnosis/rework and independently evaluated isolated source proposals; no automatic factory source promotion",
-  "signing_method": "Existing SSH agent through owner public-key reference"
+  "signing_method": "Existing SSH agent through owner public-key reference",
+  "activated_utc": "2026-10-24T20:44:42.443780+00:00",
+  "live_role": "afo-recovery-planner",
+  "conductor_service": "forge-conductor-local-omniverse2.service",
+  "recorder_service": "forge-qwen-mission-recorder.service",
+  "progress_branch": "overnight/2026-10-24-qwen-omniverse2",
+  "user_linger": true
 }

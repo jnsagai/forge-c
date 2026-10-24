@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-24T20:43:40.588652+00:00",
+  "captured_utc": "2026-10-24T20:44:43.249505+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "PILOT",
@@ -8,10 +8,14 @@
   "diagnosis_jobs": [
     {
       "attempt_id": "afo-3f6e7e61ea3df31a-a5",
+      "deadline_epoch": 1792878212.0619488,
       "job_id": "afo-agent-5933a084b301ad77123f2168",
       "order_id": "afo-3f6e7e61ea3df31a",
+      "reported_tokens": 15507,
+      "reserved_tokens": 16000,
       "role": "afo-recovery-planner",
-      "state": "RUNNING"
+      "run_id": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
+      "state": "SUCCEEDED"
     }
   ],
   "exclusivity": "Only the local Qwen mission and its supervision, verification, and Git recorder are authorized",
@@ -165,21 +169,31 @@
       "order_id": "afo-3f6e7e61ea3df31a",
       "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
       "request_id": "q36c-local-selfheal",
-      "state": "RUNNING",
-      "terminal_reason": null
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FileNotFoundError"
     }
   ],
   "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9",
-  "recovery_plans": [],
+  "recovery_plans": [
+    {
+      "attempt_id": "afo-3f6e7e61ea3df31a-a5",
+      "order_id": "afo-3f6e7e61ea3df31a",
+      "plan_id": "afo-plan-9f19b83b08301bdf",
+      "reasons": "[]",
+      "source": "RULE",
+      "status": "VALIDATED",
+      "strategy": "CLOSE_BLOCKED"
+    }
+  ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.19189453125,
-      0.1640625,
-      0.384765625
+      0.8447265625,
+      0.4189453125,
+      0.46044921875
     ],
-    "gpu": "71, 25460, 49140, 202.72",
+    "gpu": "0, 25460, 49140, 30.03",
     "memory": {
-      "MemAvailable": "120868300 kB",
+      "MemAvailable": "120913076 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
