@@ -131,6 +131,10 @@ def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
     if prof.is_file():
         (stage / "configuration").mkdir(parents=True, exist_ok=True)
         (stage / "configuration/model-profile.json").write_bytes(prof.read_bytes())
+    recovery = ws / ".forge-run/recovery-plan.json"
+    if recovery.is_file():
+        (stage / "configuration").mkdir(parents=True, exist_ok=True)
+        (stage / "configuration/recovery-plan.json").write_bytes(recovery.read_bytes())
     quality_p = stage / "quality/final-gates.json"
     quality = json.loads(quality_p.read_text()) if quality_p.is_file() else {}
     checks = quality.get("checks") or {}  # the packaged quality report records each phase gate as sweN_inspection

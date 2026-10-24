@@ -7,6 +7,7 @@ MCP servers for the roles used, and the blocking policy hook bound to the run bi
 from __future__ import annotations
 
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -47,7 +48,8 @@ def toml_str(s: str) -> str:
 
 
 def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers: dict[str, dict] | None = None,
-                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama") -> str:
+                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama",
+                    hook_env: dict[str, str] | None = None) -> str:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
@@ -66,6 +68,8 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
             lines.append(f"{k} = {toml_str(str(v))}")
     hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
            f"--binding {binding_path}"
+    if hook_env:
+        hook = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(hook_env.items())) + " " + hook
     lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
               "blocking = true", "sandbox = false", 'timeout = "20s"',
               "[[run.hooks]]", 'id = "forge-governor-stage-reset"', 'event = "stage_start"', f"script = {toml_str(hook)}",
@@ -74,14 +78,15 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
 
 
 def write_run(ws: Path, graph_text: str, goal: str, binding: Binding,
-              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama") -> Path:
+              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama",
+              hook_env: dict[str, str] | None = None) -> Path:
     run_dir = ws / ".forge-run"
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "workflow.fabro").write_text(graph_text, encoding="utf-8")
     bpath = run_dir / "binding.json"
     binding.dump(bpath)
     (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers, model=model,
-                                                           binding_id=binding.binding_id, provider=provider))
+                                                           binding_id=binding.binding_id, provider=provider, hook_env=hook_env))
     return run_dir / "workflow.toml"
 
 

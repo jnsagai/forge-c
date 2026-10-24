@@ -18,6 +18,16 @@ from pathlib import Path
 PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "SWE.5": "swe5", "SWE.6": "swe6"}
 
 
+def _call(ws: Path, fn, *args, **kwargs):
+    from .structured import RECOVERY_WORKSPACE
+
+    token = RECOVERY_WORKSPACE.set(ws)
+    try:
+        return fn(*args, **kwargs)
+    finally:
+        RECOVERY_WORKSPACE.reset(token)
+
+
 def author_module(ws: Path, step: str, phase: str) -> str:
     """Feature 011: a work order of a profile listing the phase in structured.semantic_phases (local-rtx-v2) uses the
     semantic author for it; every other work order keeps the feature 010 module (unchanged graphs and behaviour)."""
@@ -89,13 +99,13 @@ def main(argv: list[str] | None = None) -> int:
     stale.unlink(missing_ok=True)  # the gate must never read the reply of an earlier visit
     try:
         if a.step == "code":  # SWE.3: unit code tasks (the LL author and fix author nodes)
-            rep = mod.visit_code(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+            rep = _call(ws, mod.visit_code, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
         elif a.step == "tests":  # SWE.4/SWE.5: test tasks (the unit-test / target-test author node)
-            rep = mod.visit_tests(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+            rep = _call(ws, mod.visit_tests, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
         elif a.phase == "SWE.3":  # SWE.3 design: rendered from the validated code tasks and the measured tools
-            rep = mod.visit_design(ws, a.model)
+            rep = _call(ws, mod.visit_design, ws, a.model)
         else:
-            rep = mod.visit(ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+            rep = _call(ws, mod.visit, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
     except Exception as exc:  # noqa: BLE001 - recorded as the author's FAILED reply; the gate rejects it
         rep = mod.reply(ws, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
     print(json.dumps(rep))

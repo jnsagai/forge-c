@@ -99,8 +99,10 @@ class Authorizer:
     def __init__(self, binding: Binding, agents: list[AgentDefinition] | None = None):
         self.binding = binding
         self.workspace = Path(os.path.realpath(binding.workspace))
-        self.agents = {a.id: a for a in (agents or load_agents()[0])}
-        self.registry = load_registry()
+        afo = any(n.get("role") in ("afo-recovery-planner", "afo-factory-maintainer")
+                  for n in binding.nodes.values())
+        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo)[0])}
+        self.registry = load_registry(include_afo=afo)
         self.protected = list(ALWAYS_PROTECTED)
         # Supervisor protected paths (incl. workproducts/**, evidence/**) bind infrastructure-repair roles;
         # SWE authors legitimately produce new revisions of their own phase outputs (re-inspected on change).
@@ -192,6 +194,8 @@ class Authorizer:
             if role.phase and phase and role.phase != phase:
                 return Decision(False, "PHASE_MISMATCH", f"{role.phase}!={phase}", role_id, op)
             return Decision(True, "ALLOW_MCP", op, role_id, op)
+        if role_id.startswith("afo-") and tool in READ_TOOLS | WRITE_TOOLS:
+            return Decision(False, "AFO_NATIVE_FILESYSTEM_DENIED", tool, role_id)
         if tool in READ_TOOLS:
             hidden = self._hidden_from(role_id, phase)
             for raw in self._paths(tool, tin):

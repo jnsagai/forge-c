@@ -68,7 +68,7 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         payload = json.loads(cmd["payload"])
         if payload.get("resume_from"):  # recovery attempt: resume verified phases from the previous attempt
             manifest = {**manifest, **{k: payload[k] for k in ("resume_from", "resume_upto", "model_profile",
-                                                                "lesson_ids") if payload.get(k)}}
+                                                                "lesson_ids", "recovery_plan") if payload.get(k)}}
         try:
             receipt = launcher(manifest, name, labels)
         except Exception as exc:  # noqa: BLE001 - outcome unknown: reconciliation decides, never a blind retry

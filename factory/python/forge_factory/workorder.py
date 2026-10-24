@@ -465,7 +465,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
         labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False,
         timeout_scale: float = 1.0, profile: str | None = None,
-        resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None) -> dict:
+        resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None,
+        recovery_plan: dict | None = None) -> dict:
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
     local = None
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
@@ -534,6 +535,12 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         parts = [x.strip() for x in line.split(" | ")]
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
+    if recovery_plan is not None:
+        from .afo.recovery_context import install
+
+        if not resume:
+            raise ValueError("RECOVERY_PLAN_REQUIRES_SOURCE_ATTEMPT")
+        install(ws, manifest, recovery_plan)
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
@@ -542,7 +549,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
                          delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
-                         structured=local_profile_structured(local, manifest, model))
+                         structured=local_profile_structured(local, manifest, model), recovery_plan=recovery_plan)
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
 

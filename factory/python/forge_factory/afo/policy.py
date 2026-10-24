@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -85,7 +86,7 @@ def record(decision: dict) -> None:
 def load(path: Path | None = None, *, auth_base: Path | None = None, now=None, log: bool = False) -> Effective:
     from . import authz
 
-    p = Path(path or POLICY_PATH)
+    p = Path(path or os.environ.get("FORGE_AFO_POLICY") or POLICY_PATH)
     try:
         pol = load_yaml(p) if p.is_file() else None
     except Exception as exc:  # noqa: BLE001 - unreadable policy is a DISABLED factory, never an exception path

@@ -21,15 +21,30 @@ ALLOWED = ["REWORK_LOCAL", "RESTART_FROM_LAST_VALID_CHECKPOINT", "RETURN_TO_OWNI
 MAX_REPLY = 2000
 
 
+class Pending(Exception):
+    """A durable planner run is in progress; keep the order under recovery supervision."""
+
+
+class Failed(Exception):
+    """Diagnosis itself failed; preserve its reason instead of claiming no different strategy exists."""
+
+
 def case(bundle: dict, workspace: Path, budget: dict) -> Path:
     d = state_dir() / "afo/cases" / bundle["bundle_id"]
     d.mkdir(parents=True, exist_ok=True)
     req = Path(workspace) / "workproducts/SWE.1/software_requirements.md"
     p = d / "case.json"
-    p.write_text(json.dumps({"bundle": bundle, "workspace": str(workspace),
+    doc = {"bundle": bundle, "workspace": str(workspace),
                              "requirements_sha256": sha256_file(req) if req.is_file() else None,
-                             "budget": budget, "allowed_strategies": ALLOWED}, sort_keys=True))
-    p.chmod(0o400)
+                             "budget": budget, "allowed_strategies": ALLOWED}
+    if not p.exists():
+        with p.open("x") as f:
+            f.write(json.dumps(doc, sort_keys=True))
+        p.chmod(0o400)
+    else:
+        old = json.loads(p.read_text())
+        if any(old.get(k) != doc[k] for k in ("bundle", "workspace", "requirements_sha256")):
+            raise ValueError("FROZEN_RECOVERY_CASE_CHANGED")
     return p
 
 
@@ -43,7 +58,8 @@ def parse(reply: str, case_dir: Path) -> dict | None:
         out = json.loads(m.group(1))
     except ValueError:
         return None
-    ref = str(out.get("recovery_plan_ref", ""))
+    refs = [x for x in out.get("artifacts", []) if isinstance(x, str) and x.startswith("afo-plan:")]
+    ref = str(out.get("recovery_plan_ref") or (refs[0] if len(refs) == 1 else ""))
     if out.get("status") not in ("PASS", "BLOCKED") or not ref.startswith("afo-plan:"):
         return None
     p = Path(case_dir) / "proposed-plan.json"
@@ -63,10 +79,12 @@ def parse(reply: str, case_dir: Path) -> dict | None:
 def make(invoke):
     """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
     def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
-        p = case(bundle, workspace or Path("."), budget)
         try:
+            p = case(bundle, workspace or Path("."), budget)
             reply = invoke(p)
-        except Exception:  # noqa: BLE001 - a failed planner run proposes nothing
-            return None
+        except (Pending, Failed):
+            raise
+        except Exception as exc:  # noqa: BLE001 - an explicit failed diagnosis, never a fabricated plan
+            raise Failed(type(exc).__name__) from exc
         return parse(reply, p.parent)
     return planner

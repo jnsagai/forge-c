@@ -84,14 +84,15 @@ def handshake(server_id: str) -> dict:
         return {"server": server_id, "error": f"{type(exc).__name__}:{str(exc)[:120]}", "tools": []}
 
 
-def preflight(roles: list[str] | None = None, live: bool = True) -> dict:
-    reg = load_registry()
+def preflight(roles: list[str] | None = None, live: bool = True, *, include_afo: bool = False) -> dict:
+    reg = load_registry(include_afo=include_afo)
     cat = op_catalog(reg)
-    agents = {a.id: a for a in load_agents()[0]}
+    agents = {a.id: a for a in load_agents(include_afo=include_afo)[0]}
     roles = roles or sorted(agents)
     needed_ops = sorted({t for r in roles if r in agents for t in agents[r].allowed_tools})
     servers = sorted({k.split(".")[0] for k in needed_ops})
-    issues, hs = [], {}
+    issues = [f"MCP_ROLE_UNKNOWN:{r}" for r in roles if r not in agents]
+    hs = {}
     for k in needed_ops:
         e = cat.get(k)
         if e is None:

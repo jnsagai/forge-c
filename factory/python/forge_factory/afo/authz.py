@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -23,8 +24,8 @@ from pathlib import Path
 from ..common import REPO_ROOT, canonical_json
 
 NAMESPACE = "forge-afo-authorization"
-AUTH_DIR = REPO_ROOT / "config/factory/afo-authorizations"
-ALLOWED_SIGNERS = REPO_ROOT / "config/factory/afo-allowed-signers"
+AUTH_DIR = Path(os.environ.get("FORGE_AFO_AUTH_DIR") or REPO_ROOT / "config/factory/afo-authorizations")
+ALLOWED_SIGNERS = Path(os.environ.get("FORGE_AFO_ALLOWED_SIGNERS") or REPO_ROOT / "config/factory/afo-allowed-signers")
 REVOKED = AUTH_DIR / "revoked.txt"
 SCHEMA = REPO_ROOT / "specs/005-autonomous-factory-operations/contracts/authorization.schema.json"
 UNSIGNED_FIELDS = ("signature_ref", "revoked_utc")

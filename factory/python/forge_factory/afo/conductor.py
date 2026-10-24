@@ -43,8 +43,16 @@ def cycle(n: int) -> tuple[str, bool, str]:
 
     eff = load(log=(n % 60 == 0))  # record a policy decision every 60 cycles and at start
     if eff.mode == "DISABLED":
+        from . import local_agent
+        from .queue import default_path
+
+        if default_path().is_file():
+            local_agent.supervise(Store(), eff)
         return eff.mode, True, ("; ".join(eff.issues))[:200]
     store = Store()
+    from . import local_agent
+
+    local_agent.supervise(store, eff)
     r = scheduler.cycle(store, f"conductor-{os.getpid()}", eff=eff)
     if eff.mode in ("PILOT", "ACTIVE"):  # M3: launch, reconcile, validate; OBSERVE_ONLY never touches Fabro
         from . import checkpoints, dispatch, runtime
@@ -54,7 +62,8 @@ def cycle(n: int) -> tuple[str, bool, str]:
         from . import recovery
 
         dispatch.reconcile_running(store, runtime.fabro_view, recover=recovery.make_recover(
-            store, eff, f"conductor-{os.getpid()}", runtime.workspace_of))
+            store, eff, f"conductor-{os.getpid()}", runtime.workspace_of,
+            planner=local_agent.make_planner(store, eff)))
         for o in store.orders(("RUNNING", "VALIDATING")):
             att = store.attempts(o["order_id"])[-1]
             ws = runtime.workspace_of(att)
@@ -64,6 +73,7 @@ def cycle(n: int) -> tuple[str, bool, str]:
         from . import maintainer
 
         maintainer.open_cases(store, eff)  # AFO M5: no-op unless maintenance.enable_factory_maintainer
+        local_agent.sweep_maintenance(store, eff)
         from . import alerts, deadletter
 
         window = float(eff.get("notifications.dedupe_window_seconds", 900))

@@ -34,16 +34,26 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
     from ..workorder import run
 
     if manifest.get("model_profile"):  # a SWITCH_PREAPPROVED_MODEL_PROFILE recovery attempt
-        if manifest["model_profile"] not in PROFILES:
+        if manifest.get("profile"):
+            from ..lrtx.profile import load
+
+            prof = load(manifest["profile"])
+            selected = manifest["model_profile"]
+            if selected not in prof["models"]["allowed"]:
+                raise ValueError(f"LOCAL_MODEL_PROFILE_UNKNOWN:{selected}")
+            manifest = {**manifest, "model": selected, "provider": prof["provider"],
+                        "acp_authors": None, "acp_inspectors": None}
+        elif manifest["model_profile"] not in PROFILES:
             raise ValueError(f"MODEL_PROFILE_UNKNOWN:{manifest['model_profile']}")
-        manifest = {**manifest, **PROFILES[manifest["model_profile"]]}
+        else:
+            manifest = {**manifest, **PROFILES[manifest["model_profile"]]}
     r = run(REPO_ROOT / manifest["example"], wo, detach=True, model=manifest.get("model", "deepseek-flash"),
             provider=manifest.get("provider", "deepseek"), provided_from=manifest.get("provided_from"),
             acp_authors=manifest.get("acp_authors"), resume=manifest.get("resume_from"),
             acp_inspectors=manifest.get("acp_inspectors"), profile=manifest.get("profile"),
             resume_upto=manifest.get("resume_upto"), labels=labels,
             resume_max_attempts=manifest.get("resume_max_attempts"),
-            resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"))
+            resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"), recovery_plan=manifest.get("recovery_plan"))
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")
     rev = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
