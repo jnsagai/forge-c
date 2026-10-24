@@ -1,6 +1,6 @@
 # Feature 012 tasks
 
-Acceptance evidence: `evidence/v0.4/runs/BR-ACCEPTANCE/acceptance.xml` (43 checks,
+Acceptance evidence: `evidence/v0.4/runs/BR-ACCEPTANCE/acceptance.xml` (44 checks,
 zero failures/errors). Fixture Fabro receipts are mocked; these are deterministic
 engineering checks and not model qualification or a live deployment demonstration.
 
