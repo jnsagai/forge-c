@@ -1,7 +1,7 @@
 {
-  "captured_utc": "2026-10-24T21:06:40.910074+00:00",
+  "captured_utc": "2026-10-24T21:08:13.426378+00:00",
   "conductor": {
-    "heartbeat_fresh": false,
+    "heartbeat_fresh": true,
     "mode": "PILOT",
     "ok": true
   },
@@ -27,6 +27,17 @@
       "role": "afo-recovery-planner",
       "run_id": "01M5QVAH97WCR7E9W0VPTSMK8Q",
       "state": "FAILED"
+    },
+    {
+      "attempt_id": "afo-7c96f1e5c47b7bb2-a5",
+      "deadline_epoch": 1792879689.1823268,
+      "job_id": "afo-agent-246750dfc45a4f2cde1c280d",
+      "order_id": "afo-7c96f1e5c47b7bb2",
+      "reported_tokens": null,
+      "reserved_tokens": 16000,
+      "role": "afo-recovery-planner",
+      "run_id": "01M5QVW4QYPRC1JAX1Q413HEA8",
+      "state": "RUNNING"
     }
   ],
   "exclusivity": "Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials",
@@ -334,9 +345,154 @@
       "request_id": "q36c-local-selfheal-v2",
       "state": "BLOCKED",
       "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-eee6c441f81a6dc5f362e221"
+    },
+    {
+      "attempts": [
+        {
+          "attempt_id": "afo-7c96f1e5c47b7bb2-a1",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5Q6Y9GQ6AVR1FJ5K6S9F73C",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "da9f5fecc45768ac9fd385a170b859f38218a0225ae136f284bb75831a0ecc95",
+            "finalized_at": "2026-10-24T16:58:08.207071Z",
+            "gap_count": 44,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": null,
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 1,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36c"
+        },
+        {
+          "attempt_id": "afo-7c96f1e5c47b7bb2-a2",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QDK92JNCJD9SSCHWBJS6ZT",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "0dee61720aeca1e6e0ca2e8fbe3ecea5596f17c588d01c76aad850fe6b42559a",
+            "finalized_at": "2026-10-24T18:13:14.827256Z",
+            "gap_count": 56,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013-v3/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 2,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36auto02"
+        },
+        {
+          "attempt_id": "afo-7c96f1e5c47b7bb2-a3",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QHW4PRS3GQ38N8ND38WC2Y",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "29c4756ee3d5711e86695c105e63972fe67100a303fc44b218ecfd812e398b6b",
+            "finalized_at": "2026-10-24T18:43:40.949714Z",
+            "gap_count": 57,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013-v3/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 3,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36auto03"
+        },
+        {
+          "attempt_id": "afo-7c96f1e5c47b7bb2-a4",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QNBH2BDY55PPBMF195H6WG",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "36c9586fa2e77a8ea17468db1f13f44e927f94b59e41c89376f49405698ef237",
+            "finalized_at": "2026-10-24T19:34:07.785757Z",
+            "gap_count": 51,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013-v3/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 4,
+          "state": "SUCCEEDED",
+          "terminal_package_status": "BLOCKED",
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36-n1"
+        },
+        {
+          "attempt_id": "afo-7c96f1e5c47b7bb2-a5",
+          "exit_status": "succeeded",
+          "fabro_run_id": "01M5QPG9HT2SZW0PY5ZQSNE78X",
+          "factory_revision": "8713c7fae3df5bcf20139801d9dbfbfe82d213e8",
+          "gates": {
+            "SWE.1": "PASS",
+            "SWE.2": "PASS",
+            "SWE.3": "REWORK",
+            "SWE.4": "REWORK",
+            "SWE.5": "REWORK",
+            "SWE.6": "REWORK"
+          },
+          "native_success_verified": false,
+          "package": {
+            "archive_sha256": "dc608a2cd20e715376205ee34f76612460485c2d8c6c6404c5c1062e585c327e",
+            "finalized_at": "2026-10-24T20:08:41.904251Z",
+            "gap_count": 50,
+            "package_status": "BLOCKED"
+          },
+          "recovery_plan_id": "operator-import:feature013-v3/adoption.json",
+          "sealed_package_verdict": "BLOCKED",
+          "seq": 5,
+          "state": "SUCCEEDED",
+          "terminal_package_status": null,
+          "workspace_ref": "workorder:WO-0008A-STM32N6-RCC-LL-q36-n2"
+        }
+      ],
+      "authorization_id": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-V3-20261024",
+      "order_id": "afo-7c96f1e5c47b7bb2",
+      "policy_sha256": "9a35a887a5e7b9491679d69fa280da563bb6dd3dbfd74a77dbd888706dd3dacf",
+      "request_id": "q36c-local-selfheal-v3",
+      "state": "RUNNING",
+      "terminal_reason": null
     }
   ],
-  "policy_sha256": "a8aad9b3318056d195e8d3f0a1f89925e47743e079997e4afb9024f7e38aab29",
+  "policy_sha256": "9a35a887a5e7b9491679d69fa280da563bb6dd3dbfd74a77dbd888706dd3dacf",
   "recovery_plans": [
     {
       "attempt_id": "afo-3f6e7e61ea3df31a-a5",
@@ -350,16 +506,16 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.34912109375,
-      0.3349609375,
-      0.349609375
+      0.8515625,
+      0.50439453125,
+      0.408203125
     ],
-    "gpu": "0, 25460, 49140, 26.08",
+    "gpu": "0, 25460, 49140, 194.05",
     "memory": {
-      "MemAvailable": "120407504 kB",
+      "MemAvailable": "119774448 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
   },
-  "source_revision": "a477a6d8676f7dc1f75bfef7b04be6eda280d860"
+  "source_revision": "335a2e0b326f40fd819d11753d7217566c6e702f"
 }

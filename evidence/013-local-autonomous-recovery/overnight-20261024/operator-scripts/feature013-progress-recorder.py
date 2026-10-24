@@ -3,12 +3,12 @@
 import os,sys,json,time,hashlib,subprocess,sqlite3,signal
 from pathlib import Path
 from datetime import datetime,timezone
-REPO=Path('/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-a477a6d')
+REPO=Path('/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-335a2e0')
 STATE=Path('/mnt/data/forge-c/lrtx-v2/state')
-OPS=STATE/'operator-runs/feature013-v2'
+OPS=STATE/'operator-runs/feature013-v3'
 PROGRESS=Path('/home/omniverse2/forge-c-remote/repos/forge-c-overnight-review')
 BRANCH='overnight/2026-10-24-qwen-omniverse2'
-PIN='a477a6d8676f7dc1f75bfef7b04be6eda280d860'
+PIN='335a2e0b326f40fd819d11753d7217566c6e702f'
 os.environ.update(FORGE_REPO_ROOT=str(REPO),FORGE_STATE_DIR=str(STATE),FORGE_DATA_ROOT='/mnt/data/forge-c/lrtx-v2',FORGE_ARCHIVE_DIR='/mnt/data/forge-c/lrtx-v2/archives')
 sys.path.insert(0,str(REPO/'factory/python'))
 from forge_factory.afo.dispatch import package_verdict

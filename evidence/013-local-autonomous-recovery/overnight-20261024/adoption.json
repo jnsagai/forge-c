@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "recorded_utc": "2026-10-24T20:58:10.668836Z",
-  "order_id": "afo-2523e8cc245bf79b",
-  "source_revision": "a477a6d8676f7dc1f75bfef7b04be6eda280d860",
+  "recorded_utc": "2026-10-24T21:07:59.798873Z",
+  "order_id": "afo-7c96f1e5c47b7bb2",
+  "source_revision": "335a2e0b326f40fd819d11753d7217566c6e702f",
   "historical_attempts": [
     {
       "work_order": "WO-0008A-STM32N6-RCC-LL-q36c",
@@ -69,11 +69,11 @@
   "new_launches": 0,
   "max_total_attempts": 6,
   "remaining_attempts": 1,
-  "owner_authorization": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-V2-20261024",
-  "policy_sha256": "a8aad9b3318056d195e8d3f0a1f89925e47743e079997e4afb9024f7e38aab29",
-  "prior_order": "afo-3f6e7e61ea3df31a",
-  "prior_planner_run": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
-  "prior_planner_reserved_tokens": 16000,
-  "remaining_recovery_calls": 3,
-  "continuation_reason": "Qualified schema-feedback/output-integrity correction; original terminal record remains immutable"
+  "owner_authorization": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-V3-20261024",
+  "policy_sha256": "9a35a887a5e7b9491679d69fa280da563bb6dd3dbfd74a77dbd888706dd3dacf",
+  "prior_order": "afo-2523e8cc245bf79b",
+  "prior_planner_run": "01M5QVAH97WCR7E9W0VPTSMK8Q",
+  "prior_planner_reserved_tokens": 32000,
+  "remaining_recovery_calls": 2,
+  "continuation_reason": "Qualified authoritative structured MCP plan contract correction; original terminal record remains immutable"
 }
