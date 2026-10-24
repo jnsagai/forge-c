@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.642" timestamp="2026-10-24T19:11:46.366789+01:00" hostname="master"><testcase classname="factory.python.tests.test_cre_d7_e2e" name="test_latest_local_qwen_work_order_has_real_terminal_evidence" time="0.489"><failure message="assert (0 &gt; 0)">def test_latest_local_qwen_work_order_has_real_terminal_evidence():
+        wss = e2e.latest_local_attempts(1)
+        if not wss:
+            pytest.fail("BLOCKED: no local-model work order with a package on this host (real E2E not demonstrated)")
+        r = e2e.assess(wss[0])
+        assert r["model_profile"]["local_only"] is True and r["fabro_server"].startswith("http://127.0.0.1:32290")
+        assert r["package_status"] in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW", "READY")
+        assert r["archive_verification"] is not None and r["archive_verification"]["issues"] == []
+&gt;       assert r["cre_observations"] &gt; 0 and r["result"] == "PASS"
+E       assert (0 &gt; 0)
+
+factory/python/tests/test_cre_d7_e2e.py:15: AssertionError</failure></testcase></testsuite></testsuites>

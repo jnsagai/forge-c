@@ -52,3 +52,5 @@ Inherited independence findings remain in the assurance assessment even when the
 new attempt uses a different model pair.
 Supporting evidence from unaccepted phases is never an accepted checkpoint; only
 accepted-phase tool records are carried into the new authoritative tool ledger.
+Assurance observations are retained only for accepted phases and only from their
+latest inspections onward; validation records the hashes of both filtered ledgers.
