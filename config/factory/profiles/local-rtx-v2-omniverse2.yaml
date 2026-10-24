@@ -61,6 +61,7 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
     default: {temperature: 0.2, seed: 1}
     qwen3.6:35b-a3b: {temperature: 0.6, top_p: 0.95}   # thinking mode: vendor guidance, greedy can loop
   inspector_coverage: true   # F011-T049: decomposed coverage questions per work-order scope item
+  inspector_entries: true    # F011-T054: per-entry effects and budget questions
   reinspect_direct: true
   timeout_s: 3600
   visit_time_s: 1200

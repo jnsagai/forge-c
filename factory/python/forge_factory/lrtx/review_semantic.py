@@ -191,7 +191,7 @@ def _mandatory_safety_missing(m: dict) -> bool:
     return asil in ("A", "B", "C", "D") and bool(m.get("owner_safety_document_issues"))
 
 
-INSPECTOR = {"seed": None, "coverage": None}  # F011-T048/T049: seeded harness overrides (--seed, --coverage)
+INSPECTOR = {"seed": None, "coverage": None, "entries": None}  # F011-T048/T049/T054: seeded harness overrides
 FIELD = re.compile(r"^[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*$")
 NUMBER = re.compile(r"\b0x[0-9A-Fa-f]+\b|\b\d+\b")
 
@@ -210,7 +210,7 @@ def _profile_structured(ws: Path) -> tuple[str | None, dict]:
 
 
 def inspector_options(ws: Path, model: str) -> dict:
-    """F011-T048/T049: the sampling (temperature, top_p, seed) and the coverage switch of the local SWE.1 inspector:
+    """F011-T048/T049/T054: the sampling (temperature, top_p, seed), coverage and entry switches of the local inspector:
     the profile's per-model values over its default, then the harness overrides. None: model defaults (as before)."""
     pid, st = _profile_structured(ws)
     table = st.get("inspector_sampling") or {}
@@ -218,7 +218,8 @@ def inspector_options(ws: Path, model: str) -> dict:
     if INSPECTOR["seed"] is not None:
         sampling["seed"] = INSPECTOR["seed"]
     coverage = INSPECTOR["coverage"] if INSPECTOR["coverage"] is not None else bool(st.get("inspector_coverage"))
-    return {"profile": pid, "sampling": sampling or None, "coverage": coverage}
+    entries = INSPECTOR["entries"] if INSPECTOR["entries"] is not None else bool(st.get("inspector_entries"))
+    return {"profile": pid, "sampling": sampling or None, "coverage": coverage, "entries": entries}
 
 
 def scope_items(ws: Path) -> list[str]:
@@ -282,6 +283,126 @@ def coverage_claims(scope: str, doc: dict, facts: dict) -> list[dict]:
         c["identity"] = identity("SWE1-05", {**c, "target_id": f"{f}={v}"})
         c["decision"], c["evidence"] = ("REFUTED", f"{hit} states {f}" + (f" with {v}" if v else "")) if hit else \
             ("STANDS", "the requirements state no such register behaviour")
+        out.append(c)
+    return out
+
+
+# F011-T054: per-entry questions. Measured (F011-T045 trials m8/m9): an effects entry contradicting its requirement
+# was never found (0/14) and a removed budget requirement mostly missed (4/14) when judged inside a whole checklist item.
+OPPOSITE = {"set": "clear", "clear": "set"}
+WO_BUDGETS = {"flash_bytes": "flash", "static_ram_bytes": "static RAM", "stack_bytes": "stack"}
+
+
+def effect_entries(ws: Path, facts: dict) -> list[dict]:
+    """Each set/clear/write entry of the effects contract paired with the requirement it names (frozen baseline)."""
+    p = Path(ws) / "workproducts/SWE.1/register_effects.json"
+    out = []
+    for e in (json.loads(p.read_text()).get("effects") or []) if p.is_file() else []:
+        if e.get("op") not in ("set", "clear", "write") or e.get("swr") not in facts["reqs"] or \
+                not e.get("register") or not e.get("field"):
+            continue
+        args = [x for c in e.get("api_calls") or [] for x in c.get("args") or [] if isinstance(x, int)]
+        out.append({"entry": f"E{len(out) + 1:02d}", "case": str(e.get("case", "")), "swr": e["swr"],
+                    "field": f"{e['register']}.{e['field']}", "op": e["op"], "value": e.get("value"), "args": args,
+                    "statement": facts["reqs"][e["swr"]]["statement"]})
+    return out
+
+
+def budget_entries(ws: Path) -> list[dict]:
+    """The owner's work-order resource budgets (manifest `budgets`), one question row each."""
+    b = json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("budgets") or {}
+    return [{"entry": f"B{i + 1}", "resource": res, "bytes": b[k]}
+            for i, (k, res) in enumerate((k, r) for k, r in WO_BUDGETS.items() if isinstance(b.get(k), int))]
+
+
+def entries_schema(ids: list[str], swrs: list[str], kind: str) -> dict:
+    row = {"type": "object", "additionalProperties": False,
+           "required": ["entry", "agrees", "reason"] if kind == "effects" else ["entry", "covered_by", "reason"],
+           "properties": {"entry": {"type": "string", "enum": ids},
+                          "reason": {"type": "string", "minLength": 5, "maxLength": 200}}}
+    if kind == "effects":
+        row["properties"]["agrees"] = {"type": "boolean"}
+    else:
+        row["properties"]["covered_by"] = {"type": "array", "maxItems": 3,
+                                           "items": {"type": "string", "enum": swrs or ["none"]}}
+    return {"type": "object", "additionalProperties": False, "required": ["entries"],
+            "properties": {"entries": {"type": "array", "minItems": len(ids), "maxItems": len(ids), "items": row}}}
+
+
+def _effect_text(e: dict) -> str:
+    return f"{e['op']} {e['field']}" + (f" = {e['value']}" if e["op"] == "write" else "")
+
+
+def entries_packet(ws: Path, bl: dict, srcs: list[dict], kind: str, rows: list[dict], swrs: list[str], model: str,
+                   sampling, findings=None, previous=None) -> dict:
+    if kind == "effects":
+        lines = "\n".join(f"{e['entry']}: effect entry '{e['case']}' performs {_effect_text(e)}; it names {e['swr']}: "
+                          f"\"{e['statement']}\"" for e in rows)
+        instr = (f"Entry question on the frozen SWE.1 baseline {bl['baseline_id']}. Each line pairs one entry of "
+                 "workproducts/SWE.1/register_effects.json with the requirement it names:\n" + lines + "\n"
+                 "For each entry answer agrees=true when the requirement states exactly this operation (set or clear, "
+                 "or the written value) on this register field for this case, agrees=false when it states a "
+                 "different operation or value for the field or does not state the field. The reason quotes the words "
+                 "of the requirement that decide. Judge only from these lines and the SOURCES.")
+        crit = ["SWE1-02: requirements consistent with the register effects contract"]
+    else:
+        lines = "\n".join(f"{b['entry']}: the work order fixes a {b['resource']} budget of {b['bytes']} bytes"
+                          for b in rows)
+        instr = (f"Entry question on the frozen SWE.1 baseline {bl['baseline_id']}. The owner's work order fixes these "
+                 "resource budgets:\n" + lines + "\nFor each budget list in covered_by the requirements of the "
+                 "baseline that state this resource with this byte bound (empty when none does). A requirement about "
+                 "another resource does not cover it. Judge only from these lines and the SOURCES.")
+        crit = ["SWE1-04: every work-order budget is an explicit, measurable requirement"]
+    return S.packet(phase="SWE.1", task=f"inspect:{kind}", role="swe1-inspector", instructions=instr, sources=srcs,
+                    criteria=crit, output_schema=entries_schema([r["entry"] for r in rows], swrs, kind), model=model,
+                    findings=findings, previous=previous, output_reserve=2048, sampling=sampling)
+
+
+def validate_entries(doc: dict, ids: list[str]) -> list[str]:
+    got = [r["entry"] for r in doc["entries"]]
+    return [f"entry {i} answered {got.count(i)} times (answer each entry once)" for i in ids if got.count(i) != 1]
+
+
+def _states_effect(e: dict) -> bool:
+    """The requirement text itself states the entry's operation on its field (the claim is then refuted)."""
+    s, f = e["statement"], re.escape(e["field"])
+    if not re.search(rf"\b{f}\b", s):
+        return False
+    if e["op"] in OPPOSITE:
+        return bool(re.search(rf"\b{e['op']}\b[^.;]*\b{f}\b", s, re.I)) and \
+            not re.search(rf"\b{OPPOSITE[e['op']]}\b[^.;]*\b{f}\b", s, re.I)
+    v = e["value"]
+    want = _numbers(v) if isinstance(v, str) else ({v} if isinstance(v, int) else set())
+    if not want:
+        return False
+    return want <= _numbers(s) or (bool(re.search(r"\brequested value\b", s, re.I)) and want <= set(e["args"]))
+
+
+def entry_claims(kind: str, doc: dict, rows: list[dict], facts: dict) -> list[dict]:
+    """A disagreeing effects entry as an SWE1-02 claim on its requirement, an uncovered budget as an SWE1-04 claim on
+    the document; REFUTED only when the requirement text states that operation (budget: resource and bound)."""
+    by, out = {r["entry"]: r for r in rows}, []
+    for a in doc["entries"]:
+        r = by[a["entry"]]
+        if kind == "effects" and not a["agrees"]:
+            c = {"assertion": "requirements_inconsistent", "target_id": r["swr"], "related_ids": [],
+                 "detail": f"effects entry '{r['case']}' ({_effect_text(r)}) contradicts {r['swr']}: {a['reason']}"[:300],
+                 "remediation": f"align {r['swr']} and the effects entry '{r['case']}'"[:200]}
+            item, key, refuted = "SWE1-02", f"{r['swr']}:{r['case']}", _states_effect(r)
+            why = f"{r['swr']} states {_effect_text(r)}"
+        elif kind == "budgets" and not a["covered_by"]:
+            c = {"assertion": "budget_missing", "target_id": "document", "related_ids": [],
+                 "detail": f"the work-order {r['resource']} budget of {r['bytes']} bytes has no requirement: "
+                           f"{a['reason']}"[:300],
+                 "remediation": f"add a requirement bounding {r['resource']} to {r['bytes']} bytes"}
+            hit = next((s for s, q in sorted(facts["reqs"].items()) if re.search(rf"\b{r['resource']}\b",
+                        q["statement"], re.I) and r["bytes"] in _numbers(q["statement"])), None)
+            item, key, refuted, why = "SWE1-04", f"budget:{r['resource']}", bool(hit), f"{hit} states the bound"
+        else:
+            continue
+        c["identity"] = identity(item, {**c, "target_id": key})
+        c["decision"], c["evidence"] = ("REFUTED", why) if refuted else \
+            ("STANDS", "the requirement text does not state it")
         out.append(c)
     return out
 
@@ -360,6 +481,7 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
         return R.visit(ws, phase, model, max_calls, resume, time_budget_s)
     opts = inspector_options(Path(ws), model)
     extra = 2 * len(scope_items(Path(ws))) if opts["coverage"] else 0  # one call and one repair per scope item
+    extra += 4 if opts["entries"] else 0  # the effects and budget questions
     budget, _f = V.open_visit(Path(ws), "SWE.1-inspect", resume, list,
                               (max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns) + extra,
                               time_budget_s)
@@ -400,6 +522,24 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             got = coverage_claims(sc, crec["doc"], facts)
             cov_claims += got
             cov_record.append({"scope": sc, "behaviours": crec["doc"]["behaviours"], "claims": got})
+    ent_claims, ent_record = {}, []
+    if opts["entries"]:  # F011-T054: one effects question and one budget question, each judged entry by entry
+        swrs = sorted(facts["reqs"])
+        for kind, rows, item in (("effects", effect_entries(ws, facts), "SWE1-02"),
+                                 ("budgets", budget_entries(ws), "SWE1-04")):
+            if not rows:
+                continue
+            ids = [r["entry"] for r in rows]
+            erec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:{kind}",
+                              lambda fi, pr, kind=kind, rows=rows: entries_packet(ws, bl, srcs, kind, rows, swrs, model,
+                                                                                  smp, fi, pr),
+                              lambda d, ids=ids: validate_entries(d, ids), budget)
+            if erec["status"] != "VALID":
+                issues += [f"{kind}: {e}" for e in erec["errors"][:3]]
+                continue
+            got = entry_claims(kind, erec["doc"], rows, facts)
+            ent_claims[item] = ent_claims.get(item, []) + got
+            ent_record.append({"kind": kind, "answers": erec["doc"]["entries"], "claims": got})
     for it in items:
         if it["id"] not in ASSERTIONS:
             issues.append(f"{it['id']}: no claim catalogue for this item (LRTX_SEMANTIC_INSPECTION_ITEM_UNKNOWN)")
@@ -432,6 +572,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         if it["id"] == "SWE1-05" and cov_claims:  # the coverage answers join the coverage item, decided the same way
             judged = judged + cov_claims
             rounds.append({"coverage": cov_claims})
+        if ent_claims.get(it["id"]):  # the entry answers join their item, decided the same way
+            judged = judged + ent_claims[it["id"]]
+            rounds.append({"entries": ent_claims[it["id"]]})
         standing = [c for c in judged if c["decision"] != "REFUTED"]
         verdict = "FAIL" if standing else "PASS"
         outcome = "ADJUDICATED_PASS" if d["verdict"] == "FAIL" and not standing else verdict
@@ -454,7 +597,8 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                         budget)
     S.record(ws, "SWE.1/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                   "result": res, "items": record, "inspector": "review_semantic",
-                                                  "options": opts, "coverage": cov_record})
+                                                  "options": opts, "coverage": cov_record,
+                                                  "entries": ent_record})
     notes = [f"LRTX_ADJUDICATED_PASS:{i}: {len(r['rounds'][-1]['claims'])} claim(s) refuted by the baseline"
              for i, r in record.items() if r["outcome"] == "ADJUDICATED_PASS"]
     status = "PASS" if res["status"] == "PASS" else "REWORK"

@@ -146,6 +146,12 @@ def _inspector(verdicts):
         seen[item] = n + 1
         default = [{"behaviours": []}] if item == "coverage" else [{"verdict": "PASS", "claims": [], "evidence_checked": [
             "workproducts/SWE.1/software_requirements.md"]}]  # F011-T049: coverage questions get an empty answer
+        if item in ("effects", "budgets"):  # F011-T054: every entry agrees / is covered
+            row = p["output_schema"]["properties"]["entries"]["items"]["properties"]
+            default = [{"entries": [{"entry": i, "reason": "stated by the requirement",
+                                     **({"agrees": True} if item == "effects" else
+                                        {"covered_by": row["covered_by"]["items"]["enum"][:1]})}
+                                    for i in row["entry"]["enum"]]}]
         answers = verdicts.get(item, default)
         doc = answers[min(n, len(answers) - 1)]
         return {"doc": json.loads(json.dumps(doc)), "errors": S.validate(doc, p["output_schema"]),
@@ -304,3 +310,47 @@ def test_coverage_answers_become_decided_swe1_05_claims(frozen, monkeypatch):
     assert rep["status"] == "REWORK" and rec["items"]["SWE1-05"]["outcome"] == "FAIL"
     assert any("XREG.NOFIELD" in f for f in rec["result"].get("issues", []) + [json.dumps(rec["items"])])
     assert rec["coverage"] and rec["options"]["coverage"] is True
+
+
+def test_entry_answers_become_decided_swe1_02_and_swe1_04_claims(frozen, monkeypatch):
+    """F011-T054: an effects entry the inspector says contradicts its requirement stands on that requirement unless
+    the requirement text states the entry's operation; an uncovered work-order budget stands unless a requirement
+    states the resource with that bound. Agreeing and covered entries make no claim."""
+    facts = RS.baseline_facts(frozen)
+    eff = RS.effect_entries(frozen, facts)
+    bud = RS.budget_entries(frozen)
+    assert eff and [b["resource"] for b in bud] == ["flash", "static RAM", "stack"]
+    assert RS.inspector_options(frozen, "qwen3.6:35b-a3b")["entries"] is True
+    first = eff[0]
+    assert RS._states_effect(first), first  # the clean baseline states its own effects
+    flipped = dict(first, value=hex(int(first["value"], 16) ^ 1)) if first["op"] == "write" else \
+        dict(first, op=RS.OPPOSITE[first["op"]])
+    assert not RS._states_effect(flipped)
+    doc = {"entries": [{"entry": e["entry"], "agrees": e is not first, "reason": "quoted words"} for e in eff]}
+    assert [c["decision"] for c in RS.entry_claims("effects", doc, eff, facts)] == ["REFUTED"]
+    got = RS.entry_claims("effects", doc, [flipped, *eff[1:]], facts)
+    assert [(c["assertion"], c["target_id"], c["decision"]) for c in got] == [
+        ("requirements_inconsistent", first["swr"], "STANDS")]
+    bdoc = {"entries": [{"entry": b["entry"], "covered_by": [], "reason": "no requirement"} for b in bud]}
+    assert {c["decision"] for c in RS.entry_claims("budgets", bdoc, bud, facts)} == {"REFUTED"}
+    stack = next(s for s, r in facts["reqs"].items() if "stack" in r["statement"])
+    less = {**facts, "reqs": {s: r for s, r in facts["reqs"].items() if s != stack}}
+    got = RS.entry_claims("budgets", bdoc, bud, less)
+    assert [c["decision"] for c in got] == ["REFUTED", "REFUTED", "STANDS"] and "budget_missing" in RS.render_claim(got[2])
+    assert RS.validate_entries({"entries": doc["entries"][1:] + doc["entries"][1:2]}, [e["entry"] for e in eff])[:1] \
+        == [f"entry {first['entry']} answered 0 times (answer each entry once)"]
+    # through the visit: a contradiction the requirement text confirms fails SWE1-02, the record keeps the answers
+    effp = frozen / "workproducts/SWE.1/register_effects.json"
+    raw = json.loads(effp.read_text())
+    call, _seen = _inspector({"effects": [doc]})
+    monkeypatch.setattr(S, "call", call)
+    assert RS.visit(frozen, "SWE.1", "qwen3-coder:30b")["status"] == "PASS"  # the claim is refuted by the text
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert [e["kind"] for e in rec["entries"]] == ["effects", "budgets"] and rec["options"]["entries"] is True
+    site = next(e for e in raw["effects"] if e.get("op") in ("set", "clear", "write"))  # the entry E01 pairs
+    site.update({"op": flipped["op"], **({"value": flipped["value"]} if flipped["op"] == "write" else {})})
+    effp.write_text(json.dumps(raw))
+    monkeypatch.setattr(S, "call", _inspector({"effects": [doc]})[0])
+    rep = RS.visit(frozen, "SWE.1", "qwen3-coder:30b")
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert rep["status"] == "REWORK" and rec["items"]["SWE1-02"]["outcome"] == "FAIL"

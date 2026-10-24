@@ -245,6 +245,8 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     rec["inspection"] = {"reply": rep["status"], "verdict": (rec_ins or {}).get("verdict"),
                          "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get(
                              "findings") or []]}
+    if rep["status"] not in ("PASS", "REWORK"):  # F011-T045 m9: why an inspection recorded nothing
+        rec["inspection"]["issues"] = [str(i)[:200] for i in rep.get("issues") or []][:5]
     text = " ".join(rec["inspection"]["findings"])
     on_target = bool(target) and (target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text))
                                   or bool(alt and alt in text))
@@ -306,6 +308,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seed", type=int, default=None, help="F011-T048: sampling seed of this run (recorded)")
     ap.add_argument("--coverage", choices=("on", "off"), default=None,
                     help="F011-T049: decomposed coverage questions (default: the profile's structured.inspector_coverage)")
+    ap.add_argument("--entries", choices=("on", "off"), default=None,
+                    help="F011-T054: per-entry effects and budget questions (default: structured.inspector_entries)")
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     if a.inspector == "semantic":
@@ -313,6 +317,7 @@ def main(argv: list[str] | None = None) -> int:
 
         RS.INSPECTOR["seed"] = a.seed
         RS.INSPECTOR["coverage"] = None if a.coverage is None else a.coverage == "on"
+        RS.INSPECTOR["entries"] = None if a.entries is None else a.entries == "on"
         OPTIONS["value"] = RS.inspector_options(a.holdout[0].resolve(), a.model)
     if a.lessons:
         from ..knowledge import inspection as IL
