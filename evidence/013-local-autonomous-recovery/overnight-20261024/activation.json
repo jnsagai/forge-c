@@ -1,7 +1,7 @@
 {
   "status": "DEPLOYED_SERVICE_STARTING",
-  "source_revision": "335a2e0b326f40fd819d11753d7217566c6e702f",
-  "policy_sha256": "9a35a887a5e7b9491679d69fa280da563bb6dd3dbfd74a77dbd888706dd3dacf",
+  "source_revision": "36ed0fc70bd8765f0cc90a45b21bbf02924b0269",
+  "policy_sha256": "480fc493a55ed1f912a067d9b4cd2d72920e2e13ca5342688d629beea807bdd5",
   "signature_present": true,
   "owner_private_key_accessed": false,
   "previous_attempts": 5,
@@ -12,15 +12,20 @@
   "cre_mode_changed": false,
   "scope": "Local diagnosis/rework and independently evaluated isolated source proposals; no automatic factory source promotion",
   "signing_method": "Existing SSH agent through owner public-key reference",
-  "prior_order": "afo-2523e8cc245bf79b",
-  "prior_planner_run": "01M5QVAH97WCR7E9W0VPTSMK8Q",
-  "prior_planner_reserved_tokens": 32000,
-  "prior_planner_reported_tokens": 24777,
-  "remaining_diagnosis_calls": 2,
-  "request_id": "q36c-local-selfheal-v3",
-  "capa_id": "CAPA-070",
-  "deployed_utc": "2026-10-24T21:08:08.472362+00:00",
-  "order_id": "afo-7c96f1e5c47b7bb2",
+  "prior_order": "afo-7c96f1e5c47b7bb2",
+  "prior_planner_runs": [
+    "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
+    "01M5QVAH97WCR7E9W0VPTSMK8Q",
+    "01M5QVW4QYPRC1JAX1Q413HEA8"
+  ],
+  "prior_planner_reserved_tokens": 48000,
+  "prior_planner_reported_tokens": 41633,
+  "prior_capacity_deducted": 48856,
+  "remaining_diagnosis_calls": 1,
+  "request_id": "q36c-local-selfheal-v4",
+  "capa_id": "CAPA-071",
+  "deployed_utc": "2026-10-24T21:16:54.477122+00:00",
+  "order_id": "afo-dabbb015814e03ed",
   "progress_branch": "overnight/2026-10-24-qwen-omniverse2",
-  "independent_fix_decision": "pd-be298db3a11459345cda"
+  "independent_fix_decision": "pd-78232fccefedf68697fa"
 }
