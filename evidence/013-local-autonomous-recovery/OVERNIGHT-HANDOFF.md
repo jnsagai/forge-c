@@ -1,0 +1,57 @@
+# Omniverse overnight local Qwen mission — 24–25 October 2026
+
+Requested morning reviewer: Codex Astra (`gpt-6-astra`) at ultra reasoning. Investigate the recorded evidence and propose improvements; this document does not schedule an assistant session.
+
+Owner: Jefferson. The owner explicitly approved local autonomous diagnosis/self-healing and required the remote machine to be dedicated to this mission. No competing benchmarks, model trials, gpt-oss campaign or unrelated tests are authorized. CPU parallelism belongs only to mission verification (bounded maximum 16 workers). Model precision, context, inspector independence and quality gates remain unchanged.
+
+Qualified runtime source: `36ed0fc70bd8765f0cc90a45b21bbf02924b0269` (PR https://github.com/jnsagai/forge-c/pull/41). The service runs from `/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-36ed0fc`. Progress commits use a separate worktree and branch `overnight/2026-10-24-qwen-omniverse2` at `/home/omniverse2/forge-c-remote/repos/forge-c-overnight-review`; production HEAD stays pinned.
+
+Authorization: `AUTH-OMNI-Q36-LOCAL-SELFHEAL-V4-20261024`, bound to the exact external policy and factory revision, expires 2026-10-25 09:00 UTC. It is signed by the owner's existing SSH agent using the public key reference. No private key material was read. Persistent factory source changes remain independently evaluated proposals; no automatic merge or source deployment is authorized by factory policy.
+
+Conductor: `systemctl --user status forge-conductor-local-omniverse2.service`. Recorder: `systemctl --user status forge-qwen-mission-recorder.service`. Native state: `/mnt/data/forge-c/lrtx-v2/state/conductor/conductor.sqlite3`; heartbeat: `/mnt/data/forge-c/lrtx-v2/state/afo/conductor.heartbeat`. Operator artifacts and latest status: `/mnt/data/forge-c/lrtx-v2/state/operator-runs/feature013-v4/`. CLI inside the isolated profile: `feature013-remote-exec.py -m forge_factory.afo.cli status` in that directory. A healthy heartbeat alone is not proof of a successful diagnosis or repair.
+
+RCC supervised order: `afo-3f6e7e61ea3df31a`, request `q36c-local-selfheal`. Five actual historical workorders, all packaged BLOCKED, are imported as receipted attempts (no reruns during import). The six-attempt cap leaves one new attempt; the recovery agent must propose a materially different valid plan. Legacy runs on factory `8713c7f` have no validated resume identity. Cross-revision recovery must therefore start fresh, carry its diagnosis and provenance, and independently regenerate/revalidate every phase. It must not copy old accepted baselines.
+
+Read `adoption.json` for all five workorder names, Fabro IDs, original times and immutable manifest/package hashes. The last historical run `WO-0008A-STM32N6-RCC-LL-q36-n2` / `01M5QPG9HT2SZW0PY5ZQSNE78X` ended 20:08:41 UTC, package BLOCKED with 50 gaps; SWE.1/SWE.2 passed, SWE.3 exhausted its bounded rework cycles. The old blind retry launcher was terminated, including its scheduled gpt-oss follow-on. Its enforcement receipt is in `../q36c/priority-enforcement-20261024.json`.
+
+Read `progress.json` and `timeline.jsonl` for decisions, job states, native gates, package hashes, proposal IDs/CRE results, and resource samples. Raw prompts, reasoning, private manuals, vendor code, credentials and model tokens must not enter this progress branch. Publishing depends on remote Git credentials; local Git commits are durable even if a push fails.
+
+Success requires all six independent SWE gates PASS plus the native sealed archive hash and READY manifest. Fabro SUCCEEDED alone does not establish success. Follow-on selected: a genuinely new STM32N6 GPIO LL driver with a bounded GPIOA scope. It may start only after that RCC success and after its own peripheral profile, authoritative RM0486 GPIO inputs and frozen intake are ready. Missing prerequisites are recorded BLOCKED; never silently substitute an old driver or claim a launch that did not happen.
+
+Qualification: 294 passed / 3 live-only skipped in the related regression; exact c008 head targeted 41 passed; independent trusted CRE decision `pd-f4cec1781f2bb1d1bc44` ELIGIBLE_FOR_OFFLINE_REVIEW, all hard gates PASS, 72 prevention symptoms absent, model calls/tokens zero. This eligibility is not an automatic deployment approval. The owner-approved operator deployed the qualified revision.
+
+Morning investigation: distinguish native evidence from summaries; inspect whether the planner actually ran and emitted a schema-valid useful diagnosis; whether scoped context reached only the owning author; whether correction loops converged; whether any Maintainer hypothesis had an independent baseline reproducer and candidate evaluation; whether anti-loop, unknown-usage accounting, revocation/deadlines and service recovery worked. Measure where time went before changing concurrency or prompts. Report failures and external review boundaries candidly. Propose source changes with tests and CRE evidence, preserving the gates and frozen oracles.
+
+## First live handoff failure and qualified continuation
+
+The first local planner `01M5QTF2X5M4WMSFKXPJ6KRHEJ` ran, attempted two invalid proposals, and ended without a valid recorded reply. Its parent `afo-3f6e7e61ea3df31a` is terminal BLOCKED, not healed. Reserved tokens 16,000, reported 15,507. CAPA-069 independently reproduced clipped schema-limit feedback and a native-success/output-integrity mismatch. Candidate a477 fixed both without changing limits; independent FIX decision `pd-d87410a1bb6dc7eacd23` passed all hard gates. Exact regression 78 passed.
+
+The continuation request `q36c-local-selfheal-v2` keeps all five original product attempts, leaving one new attempt, and reduces the remaining diagnosis-call cap from four to three and the token capacity by the full 16,000 reservation. Its new signed grant is bound to the exact a477 revision and continuation policy. The old blocked order and job remain unchanged; this is an operator-reviewed corrective source deployment, not evidence that the factory autonomously promoted itself. See both orders in progress.json and the v2 adoption receipt. Effectiveness/self-healing success is still unproved.
+
+Owner exception: download official `qwen3.8:27b-q8_0` in the background only, for later inspector testing. Service `forge-download-qwen38-q8.service` is CPUQuota 20%, nice 19/idle I/O, one stream at most 8 MiB/s. Status `/mnt/data/forge-c/downloads/qwen3.8-27b-q8_0/status.json`. All blob sizes and SHA-256 hashes are checked before the installed manifest is published. No inference, inspector campaign or model allowlist change is authorized by this download.
+
+## Actual MCP contract exposure correction
+
+The v2 planner `01M5QVAH97WCR7E9W0VPTSMK8Q` also failed: numeric schema_version, string budget values, overlong material difference, then a prose final response. Its native record stage exited 2. The corrected output check reported explicit FAILED, preserving terminal order `afo-2523e8cc245bf79b`; no new product attempt launched. The initial Field descriptions were not transmitted by the shared MCP SDK, which exposes only annotations.
+
+Source 335a2e0 uses a nested structured plan model whose actual registered MCP schema is the unchanged authoritative plan contract. Its uncoerced values still pass the same independent JSON-schema and scope/authority/budget checks. Legacy plan_json remains available; supplying both encodings is refused. No common SDK/authority code was changed. CAPA-070 has a sealed reproducer of actual MCP registration; regression 82 passed. Read the independent CRE decision for final eligibility before interpreting deployment evidence.
+
+Continuation v3 carries the two prior planner calls and their full 32,000 reserved tokens (reported 24,777); only two diagnosis calls and one product attempt remain. All prior orders and native receipts stay intact. This is operator-qualified corrective deployment, not autonomous factory promotion.
+
+The progress branch is an evidence branch based on c008. Its current source tree is not the production source: inspect the explicit runtime revision 335a2e0 in a separate worktree. Native success and operational effectiveness are still to be measured. The owner-authorized Qwen3.8 download is the sole side job; it does not launch inference.
+
+## Single-role workspace and final bounded diagnosis call
+
+The v3 planner `01M5QVW4QYPRC1JAX1Q413HEA8` was cancelled for token-budget exhaustion after three reads and no plan submission. Native reported tokens 16,856 versus reservation 16,000; polling observed an 856-token overrun. This is a failed diagnosis, not a repair. Parent afo-7c96f1e5c47b7bb2 remains terminal BLOCKED.
+
+The single-role workspace was advertising every product SKILL. Revision 36ed0fc makes the workspace contain only the same locked role SKILL, included byte-identically in its initial Git baseline. Existing product-workspace defaults remain unchanged. Role instructions, tools, case evidence, precision, token and turn bounds, and quality gates are unchanged. CAPA-071 reproduces unrelated skill exposure on335 and absence on36ed. This proves the workspace/context correction; it does not establish improved model convergence or speed. Read its independent CRE decision and later native receipts before judging that.
+
+V4 request q36c-local-selfheal-v4 retains five historical product receipts and one new product attempt. Three of the original four diagnosis calls are consumed: one remains. Previous reservations total48,000; conservative consumed capacity is48,856 (maximum of reservation and reported use per call), deducted from the original policy capacity; reported sum41,633. Every prior order remains terminal. No further replacement order or retry may reset this allowance. After this call, any BLOCKED/budget result must remain explicit for morning review. No success/Ready/self-healing claim is authorized without its native evidence.
+
+The evidence branch contains an older source base: inspect the explicit runtime36ed in its separate checkout. Check actual runtime-status.json and conductor heartbeat for activity; a healthy idle service does not mean Qwen is implementing a driver. The Qwen3.8 Q8 download remains the only permitted side job, and no later inspector test is running.
+
+## Final measured outcome (21:18 UTC)
+
+V4 planner01M5QWC6CP1BJKGXKEXWG6HXHM also failed after three successful reads, no broker plan submission and no valid compact reply. Reported13,071 tokens within16,000; workspace verified exactly one locked planner SKILL. Parent afo-dabbb015814e03ed is BLOCKED. All four original diagnosis calls are exhausted. Reported diagnosis use totals54,704; reserved64,000; conservative consumed capacity64,856 including the observed856-token overrun. No new product attempt launched; five historical product packages remain BLOCKED.
+
+The enabled conductor/recorder may stay healthy and idle for audit; that does not mean inference is active. No further diagnosis, model trial, replacement request or blind retry is authorized by the remaining policy allowance. The Qwen3.8 Q8 download continues as the explicit side job. Successful self-healing and overnight convergence are NOT demonstrated. RCC success did not occur, so GPIO follow-on is not triggered. Preserve these failures for morning Astra review; inspect native turn/completion behavior and actual tool exposure before recommending a new bounded experiment.

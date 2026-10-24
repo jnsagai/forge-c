@@ -1,0 +1,8 @@
+reproducers:
+- baseline_revision: c008ba11d36e2e23b60c455115ac637a95cf7fd9
+  id: AFO-operator-planner-handoff
+  observed_in: 01M5QTF2X5M4WMSFKXPJ6KRHEJ
+  script: reproducer.py
+  sha256: cc78eb22f180dbce1eb2719d63b9761d9e16e5dabd03e20b8fea17f02840e775
+  symptom_signature: planner schema limits disappear and native success lacks validated
+    output

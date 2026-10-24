@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<a477a6d8676f"
+  ],
+  "candidate_patch_sha256": "8dc25194c8a6c4a897f8e1cb4fd28c5fedef21c25cf2128c74ee76ac2ac388ea",
+  "capa_id": "CAPA-069",
+  "created_at": "2026-10-24T20:50:41.439856Z",
+  "event_ids": [],
+  "incident_ids": [
+    "cre-obs-omni-q36-planner-handoff"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": null,
+  "reproducer_id": "AFO-operator-planner-handoff",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-7c9ffcdf9992bd2d1507",
+    "reproducer-run:rr-3a89ef6a29a3a2cb5ec5"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Length constraints are clipped by long echoed values, and native success does not verify the recorded output; independently reproduced using sealed staged oracle.",
+  "schema_version": "1.0",
+  "state": "FIX_CANDIDATE",
+  "updated_at": "2026-10-24T20:54:47.979096Z"
+}
