@@ -39,7 +39,11 @@ class ReqIn(NoIn):
 
 
 class PlanIn(ToolInput):
-    plan_json: str = Field(min_length=10, max_length=4000)
+    plan_json: str = Field(min_length=10, max_length=4000, description=(
+        "Recovery-plan JSON object. material_difference_ref and rationale_code are each at most 200 characters; "
+        "put longer rationale in notes (at most 500 characters). budget_estimate has exactly the nonnegative integer "
+        "keys tokens_max, wall_seconds_max, turns_max. Use this case's exact order_id, attempt_id and "
+        "failure_fingerprint. Read required_plan_fields through read_budget_snapshot. Rejected proposals execute nothing."))
 
 
 def read_failure_bundle(ctx: ToolContext, a: NoIn) -> dict:

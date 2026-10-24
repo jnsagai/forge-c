@@ -253,6 +253,12 @@ def poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) -> 
             job["state"], job["error"] = "FAILED", "LOCAL_AGENT_TOKEN_BUDGET_EXHAUSTED"
         elif status in ("SUCCEEDED", "FAILED", "CANCELLED", "CANCELED"):
             job["state"] = "SUCCEEDED" if status == "SUCCEEDED" else "FAILED"
+            if job["state"] == "SUCCEEDED":
+                from ..contracts.agent_output import parse
+
+                reply = directory(job["job_id"]) / "reply.json"
+                if not reply.is_file() or reply.stat().st_size > planner.MAX_REPLY or not parse(reply.read_text()).ok:
+                    job["state"], job["error"] = "FAILED", "LOCAL_AGENT_OUTPUT_MISSING_OR_INVALID"
     except Exception as exc:  # noqa: BLE001 - preserve an uncertain live job until the original deadline
         job["poll_error"] = type(exc).__name__
     save(store, job)

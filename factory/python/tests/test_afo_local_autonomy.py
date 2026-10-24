@@ -125,9 +125,50 @@ def test_planner_dispatch_once_then_native_receipt_poll(local):
     calls = []
     job = L.poll(s, o, job, eff, client=client(), launch_fn=lambda j: calls.append(j["nonce"]) or "R1")
     assert job["state"] == "RUNNING"
+    reply = L.directory(job["job_id"]) / "reply.json"
+    reply.parent.mkdir(parents=True, exist_ok=True)
+    reply.write_text(json.dumps({"status": "BLOCKED", "artifacts": [], "issues": [], "next_action": "halt"}))
     job = L.poll(s, o, L.records(s, o["order_id"])[0], eff, client=client("SUCCEEDED"),
                  launch_fn=lambda _: pytest.fail("duplicate launch"))
     assert job["state"] == "SUCCEEDED" and job["reported_tokens"] == 11 and len(calls) == 1
+
+
+@pytest.mark.parametrize("reply", [None, "not JSON", "x" * 2001])
+def test_native_success_without_valid_recorded_output_is_failed_not_success(local, reply):
+    s, o, _, eff, _, _ = local
+    job = prepare(local)
+    job.update(state="RUNNING", run_id="R1")
+    if reply is not None:
+        p = L.directory(job["job_id"]) / "reply.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(reply)
+    job = L.poll(s, o, job, eff, client=client("SUCCEEDED"))
+    assert job["state"] == "FAILED" and job["error"] == "LOCAL_AGENT_OUTPUT_MISSING_OR_INVALID"
+    assert job["reported_tokens"] == 11 and job["reserved_tokens"] == 16000
+
+
+def test_schema_length_feedback_survives_mcp_issue_limit_and_allows_corrected_plan(local, monkeypatch):
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import afo
+
+    _, _, b, _, ws, case = local
+    monkeypatch.delenv("FORGE_MCP_TRUST", raising=False)
+    monkeypatch.setenv("FORGE_AFO_CASE", str(case))
+    monkeypatch.setenv("FORGE_BINDING_ID", "schema-feedback")
+    tool = "mcp__forge_afo_mcp__submit_recovery_plan"
+    op = next(o for o in afo.OPERATIONS if o.name == "submit_recovery_plan")
+    plan = recovery._base(b, "REWORK_LOCAL", "SWE.3", "R" * 201, material_difference_ref="M" * 201)
+    def submit(p):
+        args = {"plan_json": json.dumps(p)}
+        sdk.issue_ticket("schema-feedback", tool, args, "afo-recovery-planner", "agent", None, str(ws))
+        return sdk.invoke("forge-afo-mcp", op, args)
+    denied = submit(plan)
+    assert denied["status"] == "BLOCKED"
+    assert all("maxLength=200" in issue and "actual_length=201" in issue for issue in denied["issues"])
+    assert not (case.parent / "proposed-plan.json").exists()
+    plan.update(material_difference_ref="unit-map:repair-cross-unit-links", rationale_code="REPAIR_SPEC_ID_OWNERSHIP")
+    assert submit(plan)["status"] == "PASS"
+    assert json.loads((case.parent / "proposed-plan.json").read_text()) == plan
 
 
 def test_crash_after_accept_is_adopted_by_nonce_without_repeat(local):
