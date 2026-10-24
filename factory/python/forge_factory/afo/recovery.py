@@ -73,16 +73,22 @@ def plans(store: Store, order_id: str) -> list[dict]:
 
 
 def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) -> dict:
+    from .local_agent import records
+
     ps = plans(store, order["order_id"])
+    jobs = records(store, order["order_id"])
+    calls = {p["attempt_id"] for p in ps if p["source"] == "PLANNER"} | {
+        j["attempt_id"] for j in jobs if j["role"] == "afo-recovery-planner"}
     return {"attempts": len(store.attempts(order["order_id"])), "max_attempts": int(eff.get("budgets.max_order_attempts")),
             "variants_by_phase": {ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED")
                                   for ph in PHASES},
             "max_variants_per_phase": int(eff.get("budgets.max_strategy_variants_per_phase")),
-            "planner_calls": sum(1 for p in ps if p["source"] == "PLANNER"),
+            "planner_calls": len(calls),
             "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
             "wall_seconds": round((now or time.time()) - order["created_epoch"], 1),
             "max_wall_seconds": int(eff.get("budgets.max_order_wall_seconds")),
-            "tokens": "UNKNOWN (ACP/Codex usage is not reported to the factory; never read as zero)"}
+            "local_agent_reserved_tokens": sum(j["reserved_tokens"] for j in jobs),
+            "tokens": "UNKNOWN (unreported usage is never read as zero; local diagnosis capacity is reserved)"}
 
 
 def _base(bundle: dict, strategy: str, phase: str, rationale: str, **kw) -> dict:
@@ -143,6 +149,9 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
     issues = contracts.errors("recovery-plan", plan)
     if issues:
         return issues
+    if plan.get("order_id") != bundle["order_id"] or plan.get("attempt_id") != bundle["attempt_id"] or \
+            plan.get("failure_fingerprint") != bundle["fingerprint"]:
+        issues.append("PLAN_NOT_FOR_THIS_FAILURE")
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
@@ -200,7 +209,13 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
                      attempt_started_utc=atts[-1]["created_utc"] if atts else "", allowed_models=allowed)
     source = "RULE"
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
-        plan, source = planner(bundle, budget_snapshot(store, order, eff), ws), "PLANNER"
+        from .planner import Failed
+
+        try:
+            budget = {**budget_snapshot(store, order, eff), "allowed_model_profiles": allowed}
+            plan, source = planner(bundle, budget, ws), "PLANNER"
+        except Failed as exc:
+            plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], f"LOCAL_DIAGNOSIS_FAILED:{str(exc)[:100]}")
     if plan is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "NO_MATERIALLY_DIFFERENT_STRATEGY")
     reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models)
@@ -235,6 +250,7 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
         row = c.execute("SELECT command_id, payload FROM afo_commands_outbox WHERE idempotency_key=?",
                         (f"launch:{aid}",)).fetchone()
         payload = {**json.loads(row["payload"]), "resume_upto": owner,
+                   "recovery_plan": plan,
                    **({"model_profile": plan["model_profile"]} if plan.get("model_profile") else {}),
                    **({"lesson_ids": plan["lesson_ids"]} if plan.get("lesson_ids") else {})}
         c.execute("UPDATE afo_commands_outbox SET payload=? WHERE command_id=?", (json.dumps(payload), row["command_id"]))
@@ -252,16 +268,24 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
         b = bundle.build(ws, order["order_id"], attempt["attempt_id"]) if ws.is_dir() else None
         if b is None:
             return None
-        auth = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"), action="recover_workorder")
+        env = json.loads(order["envelope"])
+        auth = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"), action="recover_workorder",
+                          request={"order_id": env["request_id"], "driver_class": env["driver_class"],
+                                   "model": env["model_profile"]})
         if not auth.allow:  # recovery itself needs the owner's authorization; without it the order is BLOCKED
             store.transition(order["order_id"], "BLOCKED", f"recovery not authorized: {auth.code}",
                              terminal_reason=f"RECOVERY_NOT_AUTHORIZED:{auth.code}")
             return {"action": "blocked", "code": auth.code}
         scope = json.loads((authz.AUTH_DIR / f"{eff.get('authorization_ref')}.json").read_text()).get("scope") or {}
-        d = decide(store, order, b, ws=ws, eff=eff, auth_models=scope.get("models"), planner=planner)
+        from .planner import Pending
+
         epoch = store.acquire_lease("scheduler", owner, float(eff.get("queue.lease_seconds", 120)))
         if epoch is None:
-            return None
+            return {"action": "recovery_lease_busy"}
+        try:
+            d = decide(store, order, b, ws=ws, eff=eff, auth_models=scope.get("models"), planner=planner)
+        except Pending as exc:
+            return {"action": "diagnosing", "bundle_id": b["bundle_id"], "job_id": str(exc)}
         prev = attempt["record"]["workspace_ref"].removeprefix("workorder:")
         return {"bundle_id": b["bundle_id"], "failure_class": b["failure_class"],
                 **execute(store, order, d, epoch=epoch, eff=eff, previous_wo=prev)}

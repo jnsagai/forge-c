@@ -108,7 +108,8 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           sections: dict[str, str] | None = None, code_model: str | None = None,
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
-          delivery_style: str | None = None, structured: dict | None = None) -> tuple[str, dict]:
+          delivery_style: str | None = None, structured: dict | None = None,
+          recovery_plan: dict | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -125,6 +126,17 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
 
     prompts.PERIPHERAL["profile"] = load_profile(peripheral) if peripheral else None  # feature 009
     dot, nodes = _build(work_order, phases, goal, sections)
+    if recovery_plan is not None:
+        import re
+
+        from ..afo.recovery_context import note
+
+        owner = recovery_plan.get("owner_phase") or recovery_plan["affected_phase"]
+        extra = _q(note(recovery_plan))
+        for node, role in nodes.items():
+            if role.get("phase") == owner and role["role"].endswith("-author"):
+                pattern = rf'(  {re.escape(node)} \[.*?prompt=")((?:\\.|[^"\\])*)"'
+                dot = re.sub(pattern, lambda m: m.group(1) + m.group(2) + extra + '"', dot, flags=re.S)
     if structured:
         dot = structured_authors(dot, structured)
     if code_model:

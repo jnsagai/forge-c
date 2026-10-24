@@ -160,8 +160,8 @@ def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, 
         if not stopped:
             present = []
             refs = []
-            for rid in sorted(reps):
-                r = RR.run(store, policy, rid, cand, "PREVENTION", pool, reps)
+            runs = RR.run_many(store, policy, sorted(reps), cand, "PREVENTION", pool, reps)
+            for rid, r in zip(sorted(reps), runs, strict=True):
                 refs.append(f"reproducer-run:{r['run_id']}")
                 if r["verdict"] != "SYMPTOM_ABSENT":
                     present.append(f"{rid}:{r['verdict']}")

@@ -465,7 +465,8 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
         labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False,
         timeout_scale: float = 1.0, profile: str | None = None,
-        resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None) -> dict:
+        resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None,
+        recovery_plan: dict | None = None, fresh_recovery_from: str | None = None) -> dict:
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
     local = None
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
@@ -499,6 +500,25 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                            "suspended run model; use --acp-authors codex --acp-inspectors claude")
     # Preserve provider/profile/auth refusal order before touching a delivery or source workspace.
     spec = json.loads((example / "workorder.json").read_text())
+    fresh_origin = None
+    if fresh_recovery_from:
+        from .brownfield.resume import source_workspace
+        from .fabro.client import client_for_workspace, run_status
+
+        if resume:
+            raise ValueError("FRESH_RECOVERY_CANNOT_CARRY_PHASES")
+        source = source_workspace(fresh_recovery_from)
+        source_manifest = source / ".forge-run/manifest.json"
+        old = json.loads(source_manifest.read_text())
+        if source.is_symlink() or not source.resolve().is_relative_to((state_dir() / "workorders").resolve()) or \
+                old.get("work_order") != fresh_recovery_from:
+            raise ValueError("FRESH_RECOVERY_SOURCE_IDENTITY_INVALID")
+        rid = (source / ".forge-run/fabro_run_id").read_text().strip()
+        if run_status(client_for_workspace(source).get_run(rid)) not in {"SUCCEEDED", "FAILED", "CANCELLED", "CANCELED", "DEAD"}:
+            raise ValueError("FRESH_RECOVERY_SOURCE_NOT_TERMINAL")
+        fresh_origin = {"work_order": fresh_recovery_from, "source_manifest_sha256": sha256_file(source_manifest),
+                        "source_fabro_run_id": rid, "basis": "fresh revalidation after externally approved factory change; "
+                        "no prior phase evidence or delivered-code corrections carried"}
     resume_limits = {"max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
                      "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"]}
     if resume_max_attempts is not None and resume_max_attempts < 1 or \
@@ -534,6 +554,15 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         parts = [x.strip() for x in line.split(" | ")]
         if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
             secmap[parts[0]] = parts[3]
+    if recovery_plan is not None:
+        from .afo.recovery_context import install
+
+        if not resume and fresh_origin is None:
+            raise ValueError("RECOVERY_PLAN_REQUIRES_SOURCE_ATTEMPT")
+        install(ws, manifest, recovery_plan)
+    if fresh_origin is not None:
+        manifest["fresh_recovery_from"] = fresh_origin
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
                          sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
@@ -542,7 +571,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
                          delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
-                         structured=local_profile_structured(local, manifest, model))
+                         structured=local_profile_structured(local, manifest, model), recovery_plan=recovery_plan)
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
 

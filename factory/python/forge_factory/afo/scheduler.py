@@ -48,7 +48,7 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     fabro_url = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/")
     if not p.get("fabro", lambda: _healthy(fabro_url.rsplit("/api", 1)[0] + "/health"))():
         issues.append("FABRO_UNAVAILABLE")
-    if not p.get("gateway", lambda: _healthy("http://127.0.0.1:11437/health"))():
+    if not p.get("gateway", lambda: _healthy(gateway_health_url(order)))():
         issues.append("MODEL_GATEWAY_UNAVAILABLE")
     if env["model_profile"] not in (eff.get("engineering.allowed_model_profiles") or []):
         issues.append(f"MODEL_NOT_ALLOWED:{env['model_profile']}")
@@ -57,6 +57,16 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     if len(store.attempts(order["order_id"])) >= int(eff.get("budgets.max_order_attempts", 0)):
         issues.append("ORDER_ATTEMPT_BUDGET_EXHAUSTED")
     return issues
+
+
+def gateway_health_url(order: dict) -> str:
+    manifest = launch_manifest(order)
+    if manifest.get("profile"):
+        from ..lrtx.profile import load
+
+        port = int(load(manifest["profile"])["deployment"]["ports"]["gateway"])
+        return f"http://127.0.0.1:{port}/health"
+    return "http://127.0.0.1:11437/health"
 
 
 def _mcp_ok() -> bool:

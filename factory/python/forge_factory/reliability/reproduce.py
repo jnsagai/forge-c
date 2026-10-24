@@ -157,6 +157,15 @@ def reproducer_runs(store: CREStore, rid: str | None = None) -> list[dict]:
         return [dict(r) for r in c.execute(q + " ORDER BY at", a)]
 
 
+def run_many(store: CREStore, policy: Policy, ids: list[str], revision: str, role: str, pool: WorktreePool,
+             manifest: dict[str, dict] | None = None, *, jobs: int | None = None) -> list[dict]:
+    from .parallel import ordered_map
+
+    # Git worktree creation is serialized before any worker. Each run allocates its own sandbox/scratch/log.
+    pool.get(revision)
+    return ordered_map(lambda rid: run(store, policy, rid, revision, role, pool, manifest), sorted(ids), jobs=jobs)
+
+
 def causal_verdict(baseline: dict, candidate: dict) -> tuple[bool, str]:
     """CRE-T019: VERIFIED only when the same frozen reproducer shows the symptom on the baseline revision and not
     on the candidate revision, both executed by the runner."""

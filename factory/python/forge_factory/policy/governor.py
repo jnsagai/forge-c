@@ -77,7 +77,7 @@ def _in_fix_loop(workspace: str, role: str) -> bool:
 def turn_limit(role: str, workspace: str | None = None) -> int:
     """CAPA-015: authored max_turns, plus 1 turn per 2 allocated API functions above REFERENCE_FUNCTIONS for the
     code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25."""
-    base = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled
 

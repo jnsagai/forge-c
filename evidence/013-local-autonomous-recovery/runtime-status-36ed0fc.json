@@ -1,0 +1,125 @@
+{
+  "captured_utc": "2026-10-24T21:21:33.152865+00:00",
+  "orders": [
+    {
+      "order_id": "afo-3f6e7e61ea3df31a",
+      "request_id": "q36c-local-selfheal",
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FileNotFoundError"
+    },
+    {
+      "order_id": "afo-2523e8cc245bf79b",
+      "request_id": "q36c-local-selfheal-v2",
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-eee6c441f81a6dc5f362e221"
+    },
+    {
+      "order_id": "afo-7c96f1e5c47b7bb2",
+      "request_id": "q36c-local-selfheal-v3",
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-246750dfc45a4f2cde1c280d"
+    },
+    {
+      "order_id": "afo-dabbb015814e03ed",
+      "request_id": "q36c-local-selfheal-v4",
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-30cab5cc7333e35719e58374"
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-agent-5933a084b301ad77123f2168",
+      "order_id": "afo-3f6e7e61ea3df31a",
+      "role": "afo-recovery-planner",
+      "run_id": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
+      "state": "SUCCEEDED",
+      "error": null,
+      "reported_tokens": 15507,
+      "reserved_tokens": 16000,
+      "review_state": null
+    },
+    {
+      "job_id": "afo-agent-eee6c441f81a6dc5f362e221",
+      "order_id": "afo-2523e8cc245bf79b",
+      "role": "afo-recovery-planner",
+      "run_id": "01M5QVAH97WCR7E9W0VPTSMK8Q",
+      "state": "FAILED",
+      "error": "LOCAL_AGENT_OUTPUT_MISSING_OR_INVALID",
+      "reported_tokens": 9270,
+      "reserved_tokens": 16000,
+      "review_state": null
+    },
+    {
+      "job_id": "afo-agent-246750dfc45a4f2cde1c280d",
+      "order_id": "afo-7c96f1e5c47b7bb2",
+      "role": "afo-recovery-planner",
+      "run_id": "01M5QVW4QYPRC1JAX1Q413HEA8",
+      "state": "FAILED",
+      "error": "LOCAL_AGENT_TOKEN_BUDGET_EXHAUSTED",
+      "reported_tokens": 16856,
+      "reserved_tokens": 16000,
+      "review_state": null
+    },
+    {
+      "job_id": "afo-agent-30cab5cc7333e35719e58374",
+      "order_id": "afo-dabbb015814e03ed",
+      "role": "afo-recovery-planner",
+      "run_id": "01M5QWC6CP1BJKGXKEXWG6HXHM",
+      "state": "FAILED",
+      "error": "LOCAL_AGENT_OUTPUT_MISSING_OR_INVALID",
+      "reported_tokens": 13071,
+      "reserved_tokens": 16000,
+      "review_state": null
+    }
+  ],
+  "heartbeat": {
+    "ts": "2026-10-24T21:21:22.985408Z",
+    "epoch": 1792876882.985418,
+    "pid": 1894061,
+    "cycle": 17,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  },
+  "heartbeat_age_seconds": 10.2,
+  "recorder-status.json": {
+    "branch": "overnight/2026-10-24-qwen-omniverse2",
+    "captured_utc": "2026-10-24T21:18:03.337692+00:00",
+    "commit": "380d821883efb539230516ae169807b996d8f8e6",
+    "ok": true,
+    "worktree": "/home/omniverse2/forge-c-remote/repos/forge-c-overnight-review"
+  },
+  "recorder-publish.json": {
+    "attempted_utc": "2026-10-24T21:17:00.406024+00:00",
+    "branch": "overnight/2026-10-24-qwen-omniverse2",
+    "note": "Remote local Git commits remain durable regardless of network credentials",
+    "published": true
+  },
+  "forge-conductor-local-omniverse2.service": {
+    "NRestarts": "0",
+    "Id": "forge-conductor-local-omniverse2.service",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "forge-qwen-mission-recorder.service": {
+    "NRestarts": "0",
+    "Id": "forge-qwen-mission-recorder.service",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "forge-download-qwen38-q8.service": {
+    "NRestarts": "0",
+    "Id": "forge-download-qwen38-q8.service",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "download": {
+    "model": "qwen3.8:27b-q8_0",
+    "state": "DOWNLOADING",
+    "total_bytes": 29978242050,
+    "manifest_sha256": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+    "inference_started": false,
+    "verified_bytes": 931146229,
+    "partial_bytes": 1769254912
+  }
+}

@@ -437,8 +437,17 @@ def open_cases(store, eff, repo: Path = REPO_ROOT) -> list[str]:
         return []
     out = []
     for o in store.orders(("WAITING_EXTERNAL_CHANGE",)):
-        pid = f"mnt-{o['order_id'].removeprefix('afo-')[:16]}-a{len(store.attempts(o['order_id']))}"
+        from . import bundle, runtime
+
+        attempts = store.attempts(o["order_id"])
+        pid = f"mnt-{o['order_id'].removeprefix('afo-')[:16]}-a{len(attempts)}"
         if not (case_dir(pid) / "case.json").exists():
-            prepare(pid, "HEAD", {"order_id": o["order_id"], "reason": o.get("terminal_reason") or ""}, repo)
+            ws = runtime.workspace_of(attempts[-1])
+            failure = bundle.build(ws, o["order_id"], attempts[-1]["attempt_id"]) if ws.is_dir() else None
+            incident = {"order_id": o["order_id"], "reason": o.get("terminal_reason") or ""}
+            if failure:
+                incident.update({k: failure[k] for k in ("phase", "fingerprint", "error_code", "redacted_summary")})
+            revision = attempts[-1]["record"].get("factory_revision", "")
+            prepare(pid, revision if re.fullmatch(r"[0-9a-f]{40}", revision) else "HEAD", incident, repo)
             out.append(pid)
     return out
