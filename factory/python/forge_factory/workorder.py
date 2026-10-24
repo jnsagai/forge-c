@@ -467,28 +467,6 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         timeout_scale: float = 1.0, profile: str | None = None,
         resume_max_attempts: int | None = None, resume_max_wall_seconds: int | None = None) -> dict:
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
-
-    spec = json.loads((example / "workorder.json").read_text())
-    resume_limits = {"max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
-                     "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"]}
-    if resume_max_attempts is not None and resume_max_attempts < 1 or \
-            resume_max_wall_seconds is not None and resume_max_wall_seconds < 1:
-        raise ResumeRefused("RESUME_LIMITS_INVALID")
-    if resume and resume == wo:
-        raise ResumeRefused("RESUME_SOURCE_EQUALS_DESTINATION")
-    if resume_upto and not resume:
-        raise ResumeRefused("RESUME_UPTO_NEEDS_SOURCE")
-    if spec.get("delivery") and (state_dir() / "workorders" / wo).exists():
-        raise ResumeRefused("RESUME_DESTINATION_EXISTS: use a new work-order ID")
-    if resume and spec.get("delivery"):
-        _, source = check_source(resume, wo)
-        inherited = source["resume_identity"]["limits"]
-        if (resume_max_attempts is not None and resume_max_attempts != inherited["max_attempts"]) or \
-                (resume_max_wall_seconds is not None and resume_max_wall_seconds != inherited["max_wall_seconds"]):
-            raise ResumeRefused("RESUME_LIMIT_CHANGE_REFUSED")
-        resume_limits = inherited
-    if resume and intake_only:
-        raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
     local = None
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
@@ -519,6 +497,28 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
     if suspended and not (acp_authors and acp_inspectors):  # OD-2026-10-20-03: no agent node on a suspended model
         raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes would run on the "
                            "suspended run model; use --acp-authors codex --acp-inspectors claude")
+    # Preserve provider/profile/auth refusal order before touching a delivery or source workspace.
+    spec = json.loads((example / "workorder.json").read_text())
+    resume_limits = {"max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
+                     "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"]}
+    if resume_max_attempts is not None and resume_max_attempts < 1 or \
+            resume_max_wall_seconds is not None and resume_max_wall_seconds < 1:
+        raise ResumeRefused("RESUME_LIMITS_INVALID")
+    if resume and resume == wo:
+        raise ResumeRefused("RESUME_SOURCE_EQUALS_DESTINATION")
+    if resume_upto and not resume:
+        raise ResumeRefused("RESUME_UPTO_NEEDS_SOURCE")
+    if spec.get("delivery") and (state_dir() / "workorders" / wo).exists():
+        raise ResumeRefused("RESUME_DESTINATION_EXISTS: use a new work-order ID")
+    if resume and spec.get("delivery"):
+        _, source = check_source(resume, wo)
+        inherited = source["resume_identity"]["limits"]
+        if (resume_max_attempts is not None and resume_max_attempts != inherited["max_attempts"]) or \
+                (resume_max_wall_seconds is not None and resume_max_wall_seconds != inherited["max_wall_seconds"]):
+            raise ResumeRefused("RESUME_LIMIT_CHANGE_REFUSED")
+        resume_limits = inherited
+    if resume and intake_only:
+        raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
     ws, manifest = prepare(example, wo, provided_from, resume_limits=resume_limits) if spec.get("delivery") else \
         prepare(example, wo, provided_from)
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
