@@ -316,6 +316,8 @@ def test_real_skill_mcp_preflight_and_native_workflow_validation(local, monkeypa
     assert set(config["run"]["agent"]["mcps"]) == {"forge_afo_mcp"}
     assert config["run"]["agent"]["mcps"]["forge_afo_mcp"]["env"]["FORGE_AFO_CASE"] == job["case"]
     assert (ws / ".fabro/skills/afo-recovery-planner/SKILL.md").is_file()
+    assert {p.name for p in (ws / ".fabro/skills").iterdir()} == {job["role"]}
+    assert not real_run(["git", "-C", str(ws), "status", "--porcelain"], capture_output=True, text=True).stdout
     r = real_run([real_fabro, "validate", str(ws / ".forge-run/workflow.fabro")],
                  capture_output=True, text=True, timeout=30)
     assert r.returncode == 0, r.stderr + r.stdout

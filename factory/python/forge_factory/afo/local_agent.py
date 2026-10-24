@@ -12,7 +12,6 @@ import json
 import os
 import secrets
 import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -150,11 +149,9 @@ def launch(job: dict) -> str:
     ws = directory(job["job_id"]) / "workspace"
     if ws.exists():
         raise RuntimeError("LOCAL_AGENT_WORKSPACE_ALREADY_EXISTS")
-    create_workspace(ws)
     agent = next(a for a in load_agents(include_afo=True)[0] if a.id == job["role"])
-    skill = ws / ".fabro/skills" / job["role"] / "SKILL.md"
-    skill.parent.mkdir(parents=True)
-    shutil.copyfile(REPO_ROOT / agent.skill, skill)
+    create_workspace(ws, {f".fabro/skills/{job['role']}/SKILL.md": (REPO_ROOT / agent.skill).read_bytes()},
+                     include_default_skills=False)
     # Case/budget/requirements are available only through the role's MCP server.
     prompt = (f"Load your {job['role']} SKILL. {agent.task} Return ONLY compact agent-output JSON. "
               "Tool data is in metrics.data. Read paginated data using offset=metrics.next_offset until complete. "

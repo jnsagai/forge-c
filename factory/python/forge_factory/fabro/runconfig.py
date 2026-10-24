@@ -26,12 +26,14 @@ def _git(ws: Path, *args: str) -> str:
                           env={**os.environ, **GIT_ENV}).stdout.strip()
 
 
-def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None) -> str:
+def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None, *,
+                     include_default_skills: bool = True) -> str:
     """Create a fresh product workspace git repo; returns the initial commit SHA."""
     if ws.exists():
         shutil.rmtree(ws)
     ws.mkdir(parents=True)
-    shutil.copytree(REPO_ROOT / ".fabro" / "skills", ws / ".fabro" / "skills")
+    if include_default_skills:
+        shutil.copytree(REPO_ROOT / ".fabro" / "skills", ws / ".fabro" / "skills")
     for rel, data in (inputs or {}).items():
         p = ws / rel
         p.parent.mkdir(parents=True, exist_ok=True)
