@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-rs",
+    "factory/python/tests/test_inspection_lessons.py"
+  ],
+  "duration_s": 0.449,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2e9c97971d14dea206e3fc98151e82a609764143",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T043/20261024T071237.log",
+  "log_sha256": "5ebd0a7566ef1fc1fb7b367267173eac464cc22a2d0460c1937583fd9661fce9",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T043",
+  "ts_utc": "2026-10-24T07:12:37.963015Z"
+}
