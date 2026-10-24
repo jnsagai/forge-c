@@ -65,6 +65,10 @@
 | F011-AT-032 | After upstream gates, run frozen new 30-case campaign (10 RCC-LL, 10 IWDG-LL, 5 each HAL) without lookahead/benchmark contamination. Report >=27/30 goal or NOT_PASS with limits. |
 | F011-AT-033 | Stop/restart host-local services and run rollback drill: v2-only state changed, ACP/v1 and archived products preserved, no auto-promotion. |
 | F011-AT-034 | Final package includes exact trace, unresolved assumptions, compliance non-claims and baseline-versus-v2 cost per accepted workorder. No READY if any mandatory unresolved status. |
+| F011-AT-035 | A lesson with an injection, a gate-weakening statement, a driver-specific identifier or no recorded source is QUARANTINED; a validated lesson reaches the packet as reference data with provenance; the same input always selects the same lessons (packet hash stable). |
+| F011-AT-036 | Promote a lesson only when its source false rejection is removed and every paired must-still-detect defect is still detected on target; a lesson that hides a paired defect is refused by CRE. |
+| F011-AT-037 | The frozen test set (clean baselines + seeded mutations) is selected by a recorded seed and hashed before any local inspection; no lesson cites a test-set case; a test-set hash change voids the measurement. |
+| F011-AT-038 | Repeated runs (>=3 per case) on the frozen test set: report false rejections and on-target detection per run and the worst run; QUALIFIED only with 0 false rejections and all paired defects on target in every run. |
 
 ## Qualification order
 

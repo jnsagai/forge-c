@@ -1,0 +1,124 @@
+{
+  "baselines": 5,
+  "catalogue": "lrtx-seeded-1",
+  "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070",
+  "deterministic_detection": 0,
+  "false_rejections": 2,
+  "generated_at": "2026-10-24T06:42:30.775479Z",
+  "inspection_fail_off_target": 0,
+  "inspector": "semantic",
+  "missed": 0,
+  "model": "gpt-oss:120b",
+  "no_inspection": 0,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-006]: SWR-006 states the driver shall assert and then release the reset bit, but register_effects.json only records a 'clear' operation, missing the assert step. Remedia",
+          "SWE1-04: other [document]: CPU-related constraints such as maximum CPU cycles, execution time, or deterministic CPU load are not defined in the software requirements, so the CPU constraint portion of the crite"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-001]: SWR-001 specifies writing key 0xCCCC to IWDG_KR.KEY to start the watchdog, but register_effects.json maps SWR-001 to a write of value 0xAAAA, indicating a conflict"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 0,
+  "semantic_detection_on_target": 0
+}

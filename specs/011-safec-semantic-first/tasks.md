@@ -82,3 +82,13 @@ Each closed task MUST record test command, exit, relevant SHA/digest, limitation
 ## Dependencies and implementation rule
 
 `M0 -> M1 -> M2 -> M3 -> M4 -> M5 -> M6`. Only tasks marked [P] with isolated files may execute concurrently. An inspector not qualified at M4 blocks any final end-to-end run. A missing source or backend means a valid non-PASS outcome, not a gate downgrade. Use the exact test matrix in `acceptance-tests.md` and always record model-tool/source hashes and run revisions.
+
+## M4b — Inspector knowledge base (owner 2026-10-24; F011-FR-029..032, F011-AT-035..038)
+
+Gates F011-T030: a candidate qualifies only on the frozen test set of F011-T046.
+
+- [ ] **F011-T043 [US3]** Extend the existing lessons store (`factory/python/forge_factory/knowledge/store.py`) with inspection lessons: scope (phase, checklist item, layer, required artifacts), statement, recorded source (contract, ADR, owner decision or ruling), source false-rejection evidence and paired must-still-detect cases; reuse its lifecycle and validators and add a driver-specific-identifier validator (F011-AT-035).
+- [ ] **F011-T044 [US3]** Deterministic retrieval into the local-rtx-v2 SWE.1 inspector packet (`factory/python/forge_factory/lrtx/review_semantic.py`): at most 3 validated lessons per item within a token budget, as reference data with provenance; lesson ids and hashes recorded in the packet and inspection record; the Codex/Claude line unchanged (F011-AT-035).
+- [ ] **F011-T045 [US3]** Write the first lessons from the learning set (register_effects records final register state; ADR-0009 LL allocation; recorded PENDING safety allocation; work-order budgets and recorded upstream gaps), each with paired must-still-detect seeded defects, and promote each only through CRE (F011-AT-036).
+- [ ] **F011-T046 [US4]** Freeze the test set before any local inspection: clean baselines drawn by a recorded seed from SWE.1 baselines that passed the deterministic gate and the cloud inspector and were never inspected by a local model (stratified RCC/IWDG, LL/HAL; current checklist; one per distinct baseline hash), plus seeded mutations from a frozen generic operator catalogue; record every hash; a disputed clean case goes to the owner for a ruling, never to the inspector's result (F011-AT-037).
+- [ ] **F011-T047 [US3]** Measure each candidate (gpt-oss:120b high, qwen3.6:35b-a3b with and without thinking) with the validated lessons on the frozen test set, >=3 runs per case, worst run counted; record per-run results, wall time and the QualificationRecord; then decide F011-T030 (F011-AT-038).

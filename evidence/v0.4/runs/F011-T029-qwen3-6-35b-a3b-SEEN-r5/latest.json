@@ -1,0 +1,36 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.seeded",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0009A-STM32N6-IWDG-LL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0002A-STM32N6-RCC-LL-rc1/workspace",
+    "--case",
+    "S1-OMIT",
+    "--case",
+    "S1-QM",
+    "--model",
+    "qwen3.6:35b-a3b",
+    "--inspector",
+    "semantic",
+    "--out",
+    "/mnt/data/forge-c/lrtx-v2/m5/qwen3-6-35b-a3b-seen.json"
+  ],
+  "duration_s": 134.692,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d9f237428f905c3d8293f324c2a777b3de3ee653",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T029-qwen3-6-35b-a3b-SEEN-r5/20261024T053815.log",
+  "log_sha256": "a82e86687d6df3a5ae92f87a73d759bf847ed80b51ade43d9d690e5b338a309d",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T029-qwen3-6-35b-a3b-SEEN-r5",
+  "ts_utc": "2026-10-24T05:38:15.126979Z"
+}

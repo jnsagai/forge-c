@@ -1,0 +1,36 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.seeded",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0009A-STM32N6-IWDG-LL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0002A-STM32N6-RCC-LL-rc1/workspace",
+    "--case",
+    "S1-OMIT",
+    "--case",
+    "S1-QM",
+    "--model",
+    "gpt-oss:120b",
+    "--inspector",
+    "semantic",
+    "--out",
+    "/mnt/data/forge-c/lrtx-v2/m5/gpt-oss-120b-seen.json"
+  ],
+  "duration_s": 3586.437,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "d07102b3e456d2d98290ac3578b584abe07e2402",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T029-gpt-oss-120b-SEEN-r5/20261024T033105.log",
+  "log_sha256": "6ab8860649689f4c0d5b2dbb2bcc55559407fa1442ede792a2e2e1a1fad49748",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T029-gpt-oss-120b-SEEN-r5",
+  "ts_utc": "2026-10-24T03:31:05.869180Z"
+}

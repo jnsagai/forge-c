@@ -1,0 +1,40 @@
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 134512.8}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 83621.9}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 76765.8}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-03:reinspect", "attempt": 0, "errors": 0, "wall_ms": 65928.6}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 72404.5}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 62871.9}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 56462.3}
+{"lrtx_progress": "inspect:3a9658a6b12b3d96:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 52321.0}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 113492.8}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 73847.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 158993.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 158296.8}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-03:reinspect", "attempt": 0, "errors": 0, "wall_ms": 123862.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 86563.6}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 66628.9}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 118793.9}
+{"lrtx_progress": "inspect:a5e3d013e1649364:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 41660.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 74451.9}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 160516.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-02:reinspect", "attempt": 0, "errors": 0, "wall_ms": 46568.7}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 265744.7}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-03:reinspect", "attempt": 0, "errors": 0, "wall_ms": 97333.5}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 62566.7}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 129361.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 62605.4}
+{"lrtx_progress": "inspect:b1f639357ed8909f:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 71747.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 89509.7}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-01:reinspect", "attempt": 0, "errors": 0, "wall_ms": 103000.5}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 162644.2}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 0, "errors": 1, "wall_ms": 74826.0}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03", "attempt": 1, "errors": 0, "wall_ms": 99475.5}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03:reinspect", "attempt": 0, "errors": 3, "wall_ms": 101947.2}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-03:reinspect", "attempt": 1, "errors": 0, "wall_ms": 86108.4}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 88548.5}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-04:reinspect", "attempt": 0, "errors": 0, "wall_ms": 51930.1}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 46685.9}
+{"lrtx_progress": "inspect:7b7dfa298c40ca12:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 160706.1}
+{"schema": "forge-c/lrtx-seeded/1", "catalogue": "lrtx-seeded-1", "catalogue_sha256": "03bdc7c7cdfc4558859ae9e70aa5a930a693d71d516cd022fd89862856550070", "model": "gpt-oss:120b", "inspector": "semantic", "generated_at": "2026-10-24T04:30:52.270365Z", "deterministic_detection": 2, "semantic_detection_on_target": 1, "inspection_fail_off_target": 0, "missed": 1, "seeded": 4, "false_rejections": 0, "baselines": 2, "no_inspection": 0, "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+
+--- stderr ---
