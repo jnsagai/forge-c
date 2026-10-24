@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-24T21:17:00.406024+00:00",
+  "captured_utc": "2026-10-24T21:18:03.337692+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "PILOT",
@@ -44,11 +44,11 @@
       "deadline_epoch": 1792880215.1414735,
       "job_id": "afo-agent-30cab5cc7333e35719e58374",
       "order_id": "afo-dabbb015814e03ed",
-      "reported_tokens": null,
+      "reported_tokens": 13071,
       "reserved_tokens": 16000,
       "role": "afo-recovery-planner",
       "run_id": "01M5QWC6CP1BJKGXKEXWG6HXHM",
-      "state": "RUNNING"
+      "state": "FAILED"
     }
   ],
   "exclusivity": "Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials",
@@ -644,8 +644,8 @@
       "order_id": "afo-dabbb015814e03ed",
       "policy_sha256": "480fc493a55ed1f912a067d9b4cd2d72920e2e13ca5342688d629beea807bdd5",
       "request_id": "q36c-local-selfheal-v4",
-      "state": "RUNNING",
-      "terminal_reason": null
+      "state": "BLOCKED",
+      "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-30cab5cc7333e35719e58374"
     }
   ],
   "policy_sha256": "480fc493a55ed1f912a067d9b4cd2d72920e2e13ca5342688d629beea807bdd5",
@@ -662,13 +662,13 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.4541015625,
-      0.39599609375,
-      0.43017578125
+      1.29833984375,
+      0.74658203125,
+      0.5537109375
     ],
-    "gpu": "0, 25460, 49140, 188.96",
+    "gpu": "0, 25460, 49140, 29.55",
     "memory": {
-      "MemAvailable": "119139936 kB",
+      "MemAvailable": "119313388 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
