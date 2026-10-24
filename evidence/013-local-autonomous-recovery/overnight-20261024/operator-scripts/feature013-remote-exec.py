@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os,sys,subprocess
-repo='/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-c008ba1'
-root='/mnt/data/forge-c/lrtx-v2/state/operator-runs/feature013'
+repo='/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-a477a6d'
+root='/mnt/data/forge-c/lrtx-v2/state/operator-runs/feature013-v2'
 py='/mnt/data/forge-c/venv/bin/python'
 env=os.environ.copy()
 env.update(FORGE_REPO_ROOT=repo,PYTHONPATH=repo+'/factory/python',FORGE_DATA_ROOT='/mnt/data/forge-c',FORGE_LRTX_PROFILE='local-rtx-v2-omniverse2',FORGE_FABRO_BIN='/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl/fabro')

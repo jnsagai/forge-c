@@ -3,12 +3,12 @@
 import os,sys,json,time,hashlib,subprocess,sqlite3,signal
 from pathlib import Path
 from datetime import datetime,timezone
-REPO=Path('/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-c008ba1')
+REPO=Path('/home/omniverse2/forge-c-remote/repos/forge-c-autonomy-a477a6d')
 STATE=Path('/mnt/data/forge-c/lrtx-v2/state')
-OPS=STATE/'operator-runs/feature013'
+OPS=STATE/'operator-runs/feature013-v2'
 PROGRESS=Path('/home/omniverse2/forge-c-remote/repos/forge-c-overnight-review')
 BRANCH='overnight/2026-10-24-qwen-omniverse2'
-PIN='c008ba11d36e2e23b60c455115ac637a95cf7fd9'
+PIN='a477a6d8676f7dc1f75bfef7b04be6eda280d860'
 os.environ.update(FORGE_REPO_ROOT=str(REPO),FORGE_STATE_DIR=str(STATE),FORGE_DATA_ROOT='/mnt/data/forge-c/lrtx-v2',FORGE_ARCHIVE_DIR='/mnt/data/forge-c/lrtx-v2/archives')
 sys.path.insert(0,str(REPO/'factory/python'))
 from forge_factory.afo.dispatch import package_verdict
@@ -65,7 +65,7 @@ def snapshot():
    p=dict(r);rec=json.loads(p.pop('record'));p.update({k:rec.get(k) for k in ('outcome','branch_ref','cre_promotion_id','candidate_commit')});proposals.append(p)
  c.close()
  hb=read(STATE/'afo/conductor.heartbeat')
- ready=any(a.get('native_success_verified') for o in orders if o['request_id']=='q36c-local-selfheal' for a in o['attempts'])
+ ready=any(a.get('native_success_verified') for o in orders if o['request_id'].startswith('q36c-local-selfheal') for a in o['attempts'])
  return dict(source_revision=PIN,policy_sha256=read(OPS/'activation.json').get('policy_sha256'),orders=orders,diagnosis_jobs=jobs,recovery_plans=plans,maintainer_proposals=proposals,conductor={'mode':hb.get('mode'),'ok':hb.get('ok'),'heartbeat_fresh':time.time()-hb.get('epoch',0)<90},next_driver={'selection':'STM32N6 GPIO LL','condition':'RCC all six native gates PASS and sealed READY archive verified','condition_met':ready,'submission':'BLOCKED_PENDING_PROFILE_AND_FROZEN_INPUTS' if ready else 'NOT_TRIGGERED'},inspector_download={k:v for k,v in read(Path('/mnt/data/forge-c/downloads/qwen3.8-27b-q8_0/status.json')).items() if k in ('state','model','manifest_sha256','total_bytes','inference_started')},exclusivity='Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials')
 def resources():
  mem={}

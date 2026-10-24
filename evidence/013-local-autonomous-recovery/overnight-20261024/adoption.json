@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "recorded_utc": "2026-10-24T20:41:31.740592Z",
-  "order_id": "afo-3f6e7e61ea3df31a",
-  "source_revision": "c008ba11d36e2e23b60c455115ac637a95cf7fd9",
+  "recorded_utc": "2026-10-24T20:58:10.668836Z",
+  "order_id": "afo-2523e8cc245bf79b",
+  "source_revision": "a477a6d8676f7dc1f75bfef7b04be6eda280d860",
   "historical_attempts": [
     {
       "work_order": "WO-0008A-STM32N6-RCC-LL-q36c",
@@ -69,6 +69,11 @@
   "new_launches": 0,
   "max_total_attempts": 6,
   "remaining_attempts": 1,
-  "owner_authorization": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-20261024",
-  "policy_sha256": "779e85f710e1e36c584ba7b202687cba29948be0113316658b30b9506e4851c9"
+  "owner_authorization": "AUTH-OMNI-Q36-LOCAL-SELFHEAL-V2-20261024",
+  "policy_sha256": "a8aad9b3318056d195e8d3f0a1f89925e47743e079997e4afb9024f7e38aab29",
+  "prior_order": "afo-3f6e7e61ea3df31a",
+  "prior_planner_run": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
+  "prior_planner_reserved_tokens": 16000,
+  "remaining_recovery_calls": 3,
+  "continuation_reason": "Qualified schema-feedback/output-integrity correction; original terminal record remains immutable"
 }
