@@ -513,3 +513,13 @@ def test_lost_ledger_cannot_reset_original_root_budget(pair):
     (R.state_dir() / "resume/lineages.sqlite3").unlink()
     with pytest.raises(R.ResumeRefused, match="LINEAGE_LEDGER_MISSING"):
         WO.resume_from(dst, new, "WO-SRC")
+
+
+def test_existing_greenfield_attestation_is_unchanged(tmp_path):
+    from forge_factory.assurance.package import attestation
+
+    write(tmp_path, ".forge-run/manifest.json", {"resumed_from": {"stable_phases": {"SWE.1": "old-inspection"}}})
+    write(tmp_path, ".forge-run/model-profile.json", {"default": "unused", "provider": "unused",
+          "acp_authors": {"model": "author", "provider": "author-provider"},
+          "acp_inspectors": {"model": "inspector", "provider": "inspector-provider"}})
+    assert attestation(tmp_path)["decision"] == "SUPPORTED"

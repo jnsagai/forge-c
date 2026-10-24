@@ -56,8 +56,9 @@ def attestation(ws: Path) -> dict:
         ins |= {"model": p["acp_inspectors"].get("model"), "provider": p["acp_inspectors"].get("provider")}
     out = independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
     manifest = ws / ".forge-run/manifest.json"
-    resumed = (json.loads(manifest.read_text()).get("resumed_from") or {}) if manifest.is_file() else {}
-    if resumed.get("stable_phases"):
+    meta = json.loads(manifest.read_text()) if manifest.is_file() else {}
+    resumed = meta.get("resumed_from") or {}
+    if meta.get("delivery") and resumed.get("stable_phases"):
         inherited = ws / ".forge-run/resume/inherited-independence.json"
         prior = json.loads(inherited.read_text()) if inherited.is_file() else {
             "decision": "UNKNOWN", "shared_common_cause_refs": ["RESUME_SOURCE_INDEPENDENCE_NOT_RECORDED"]}
