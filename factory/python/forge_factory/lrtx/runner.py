@@ -21,11 +21,11 @@ PHASES = {"SWE.1": "swe1", "SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "swe4", "S
 def _call(ws: Path, fn, *args, **kwargs):
     from .structured import RECOVERY_WORKSPACE
 
-    token = RECOVERY_WORKSPACE.set(ws)
+    reset_marker = RECOVERY_WORKSPACE.set(ws)
     try:
         return fn(*args, **kwargs)
     finally:
-        RECOVERY_WORKSPACE.reset(token)
+        RECOVERY_WORKSPACE.reset(reset_marker)
 
 
 def author_module(ws: Path, step: str, phase: str) -> str:
