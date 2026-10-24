@@ -1,0 +1,40 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.seeded",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0002B-STM32N6-RCC-HAL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008A-STM32N6-RCC-LL-rc1b/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008B-STM32N6-RCC-HAL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008C-ST-RCC-LL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0009B-STM32N6-IWDG-HAL-rc4/workspace",
+    "--case",
+    "NONE",
+    "--model",
+    "qwen3.6:35b-a3b",
+    "--inspector",
+    "semantic",
+    "--out",
+    "/mnt/data/forge-c/lrtx-v2/m7/qwen3-6-35b-a3b-think-unseen.json"
+  ],
+  "duration_s": 668.242,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2ec19e422aed09fc4743c6a2b7a36adb7e9fe861",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T029-qwen3-6-35b-a3b-think-UNSEEN/20261024T070751.log",
+  "log_sha256": "0bb54c0c463f15611df5ff12347fd9b3ec0a2bc5ba46fa1100bd5702b993beba",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T029-qwen3-6-35b-a3b-think-UNSEEN",
+  "ts_utc": "2026-10-24T07:07:51.733233Z"
+}

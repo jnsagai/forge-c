@@ -1,0 +1,14 @@
+{
+ "schema": "forge-c/f011-t046-catalogue/1",
+ "catalogue": "lrtx-seeded-2",
+ "catalogue_sha256": "ea012b21ed2d4794956c9ed39076d3e96b512b23730f2df46dff4406626c7e6a",
+ "swe1_cases": [
+  "S1-OMIT",
+  "S1-QM",
+  "S1-EFFECT",
+  "S1-NOSTART",
+  "S1-GAPROW",
+  "S1-NOBUDGET"
+ ],
+ "frozen_with": "testset.json (F011-T046); a changed catalogue hash voids a measurement"
+}

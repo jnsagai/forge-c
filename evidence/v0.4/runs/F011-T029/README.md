@@ -22,6 +22,7 @@ nothing). Every run is kept, the void and partial ones included.
 | 5 (omniverse2) | SWE1-03 rules d07102b (CRE pd-3246c9d4c13746b3041e) | gpt-oss:120b (reasoning high) | seen 0 of 2; unseen 1 / 0 / 4 of 5 (WO-0008C, SWE1-04 budget fact defect) | 1 of 2 (RCC-LL on target, IWDG-LL missed) | NOT_QUALIFIED (IWDG S1-OMIT missed) |
 | 5 (omniverse2) | rules d07102b, pin d9f2374 (CRE pd-da8294942a40c170643e) | qwen3.6:35b-a3b (reasoning off) | seen 1 of 2 (IWDG-LL: SWE1-04/05/06 claims) | 0 (2 off target) | NOT_QUALIFIED; UNSEEN not run (rule) |
 | 6 (omniverse2) | + budget fact fix 2fcf40c (CRE pd-2c10d694071b23e63dde) | gpt-oss:120b (reasoning high) | unseen 2 / 0 / 3 of 5 (WO-0002B, WO-0009B: register_effects final-state misread) | — (unseen only) | NOT_QUALIFIED |
+| 7 (omniverse2) | rules 2fcf40c, thinking 2ec19e4 (CRE pd-5179d881d5209880c1f5) | qwen3.6:35b-a3b (thinking, effort high) | seen 0 of 2; unseen 1 / 0 / 4 of 5 (WO-0008C, SWE1-04 `other`: CPU/timing) | 0 (S1-OMIT missed on both) | NOT_QUALIFIED |
 
 S1-QM (QM safety scope) is caught by the unchanged deterministic SWE.1 gate in every run.
 
@@ -93,3 +94,11 @@ deterministic coverage gate). Its verdicts on the same inputs differ between run
 All seven holdouts and the seeded catalogue have now been used to find rule gaps: they are a learning set, not an
 unseen test. The owner chose an inspector knowledge base with a frozen test set (F011-T043..T047, spec addendum
 2026-10-24). A qwen3.6 run with thinking (owner "Measure with thinking", CRE pd-5179d881d5209880c1f5) is in progress.
+
+## Run 7 — qwen3.6:35b-a3b with thinking (omniverse2, 2026-10-24)
+
+Owner 2026-10-24 "Measure with thinking": the gateway reasons at effort high for this model on the omniverse2 profile
+only. The smoke request answered with content only (758 completion tokens for a one-word answer; reasoning stripped,
+`run7-omniverse2/smoke.json`). Seen: both clean baselines pass (reasoning off: 1 of 2 rejected), but S1-OMIT is missed
+on both. Unseen: 4 of 5 pass; WO-0008C rejected on SWE1-04 `other` (no CPU/timing constraints). NOT_QUALIFIED. Holdout
+lists unchanged (`run7-omniverse2/holdout-lists.sha256`).
