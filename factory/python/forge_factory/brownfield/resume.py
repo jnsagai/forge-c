@@ -323,7 +323,7 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
                     f".forge-run/lrtx/{phase}", f".forge-run/lrtx/{phase}-inspect"]:
             selected.update(files(src, rel))
     if stable:
-        for rel in ("verification", "evidence", ".forge-run/safec"):
+        for rel in ("verification", "evidence", ".forge-run/safec", ".forge-run/assurance"):
             selected.update(files(src, rel))
     for rel in (".forge-run/defects", ".forge-run/test-snapshots", ".forge-run/gates/upstream-loops.jsonl"):
         selected.update(files(src, rel))
@@ -362,6 +362,14 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
         if ledger.is_file():
             rows = [json.loads(line) for line in ledger.read_text().splitlines() if line.strip()]
             ledger.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows if r.get("phase") in stable))
+        assurance = ws / ".forge-run/assurance/gate-log.jsonl"
+        if assurance.is_file():
+            rows = [json.loads(line) for line in assurance.read_text().splitlines() if line.strip()]
+            # Keep source-context findings only for inherited phases and their current inspected baseline.
+            # Future phases must acquire their own assurance observations in the new attempt.
+            rows = [r for r in rows if r.get("phase") in stable and r.get("ts_utc", "") >=
+                    st.inspections(r["phase"])[-1]["recorded_at"]]
+            assurance.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
         # Later tool records never substitute for checks on the carried code baseline.
         for phase in stable:
             if Store(ws).gate(phase)["decision"] != "PASS":
@@ -376,6 +384,9 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
               "stable_phases": {ph: st.gate(ph)["reason"] for ph in stable},
               "restart_phase": remaining[0] if remaining else None, "invalidation_reason": invalidation,
               "copied_files_sha256": selected, "lineage": man["resume_lineage"], "validated_at": utc_now()}
+    report["filtered_evidence_sha256"] = {
+        rel: sha256_file(ws / rel) for rel in ("evidence/tool-results.jsonl", ".forge-run/assurance/gate-log.jsonl")
+        if (ws / rel).is_file()}
     man["resumed_from"] = {k: report[k] for k in ("source_work_order", "source_fabro_run_id", "stable_phases", "restart_phase")}
     man["resumed_from"]["validation_ref"] = ".forge-run/resume/validation.json"
     (ws / ".forge-run/resume").mkdir(parents=True, exist_ok=True)

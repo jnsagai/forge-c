@@ -523,3 +523,21 @@ def test_existing_greenfield_attestation_is_unchanged(tmp_path):
           "acp_authors": {"model": "author", "provider": "author-provider"},
           "acp_inspectors": {"model": "inspector", "provider": "inspector-provider"}})
     assert attestation(tmp_path)["decision"] == "SUPPORTED"
+
+
+def test_only_current_inherited_assurance_records_are_preserved(pair):
+    from forge_factory.assurance import observe
+
+    src, _, dst, new, _, _ = pair
+    rec = observe.phase(src, "SWE.1", Store(src).gate("SWE.1"), verify=False)
+    assert rec is not None
+    log = src / ".forge-run/assurance/gate-log.jsonl"
+    with log.open("a") as f:
+        f.write(json.dumps({"phase": "SWE.4", "state": "PASS", "ts_utc": rec["ts_utc"]}) + "\n")
+        f.write(json.dumps({"phase": "SWE.1", "state": "PASS", "ts_utc": "2000-01-01T00:00:00Z"}) + "\n")
+    WO.resume_from(dst, new, "WO-SRC")
+    records = [json.loads(line) for line in (dst / ".forge-run/assurance/gate-log.jsonl").read_text().splitlines()]
+    assert records == [rec]  # no relabelling of source findings and no stale/future PASS imported
+    report = json.loads((dst / ".forge-run/resume/validation.json").read_text())
+    assert report["filtered_evidence_sha256"][".forge-run/assurance/gate-log.jsonl"] == \
+        sha256_file(dst / ".forge-run/assurance/gate-log.jsonl")
