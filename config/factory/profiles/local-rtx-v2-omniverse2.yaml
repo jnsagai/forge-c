@@ -23,6 +23,10 @@ models:
     # every blob sha256-checked there; NOT_QUALIFIED until F011-T029 measures it
     gpt-oss:120b: {digest: 714d86958b6e870a9320e78126ac1ce3477727a1cd9bf7194b8ace0d84c62fd8, quantization: MXFP4,
                    license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-23 ("test also Qwen3.6-35B-A3B as inspector"): pulled on omniverse2 2026-10-24, every blob
+    # sha256-checked there (qwen35moe, 35.5B MoE, 3B active); reasoning off (gateway default); NOT_QUALIFIED until F011-T029
+    qwen3.6:35b-a3b: {digest: a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c, quantization: Q4_K_M,
+                      license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
     glm4:9b: {digest: 5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44, quantization: Q4_0,
               license: glm-4-9b License (not OSI; productization licence review required),
               role_qualification: NOT_QUALIFIED (inspector candidate)}
