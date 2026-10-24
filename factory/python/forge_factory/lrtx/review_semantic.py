@@ -140,9 +140,20 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                 decision, why = "REFUTED", f"{f['startup'][0]} specifies the reset/startup behaviour"
             else:
                 decision, why = "CONFIRMED", "no reset/startup requirement in the document"
+        elif a == "failure_handling_missing" and not t.startswith("SWR-") and m.get("layer") == "LL":
+            # ADR-0009 (owner decision 2026-10-16): an LL work order is register access with no waiting; timeouts,
+            # parameter checks and status codes belong to the HAL work order. A claim about one requirement stands.
+            decision, why = "REFUTED", ("the work order is layer LL (ADR-0009): register access with no waiting, "
+                                        "caller-bounded polling; timeouts, parameter checks and status codes are "
+                                        "allocated to the HAL work order")
         elif a in ("safety_allocation_missing", "hsi_not_baselined", "upstream_gap_not_recorded") or \
-                (a == "budget_missing" and t in INPUTS):
-            inp = {"safety_allocation_missing": "Safety allocation", "hsi_not_baselined": "HSI contract"}.get(a, t)
+                (a == "budget_missing" and t in INPUTS) or \
+                (a == "safe_state_missing" and not t.startswith("SWR-")) or \
+                (a == "failure_handling_missing" and t == "Safety allocation"):
+            # F011-AT-020: safe states come from the software safety allocation; a PENDING allocation recorded by
+            # the owner is the SWE.1 handling, neither approved nor a blocker. HAL failure handling stays a judgement.
+            inp = {"safety_allocation_missing": "Safety allocation", "hsi_not_baselined": "HSI contract",
+                   "safe_state_missing": "Safety allocation"}.get(a, t)
             row = f["gap_rows"].get(inp)
             if a == "upstream_gap_not_recorded" and inp not in INPUTS:
                 decision, why = "STANDS", f"{inp} is not one of the recorded upstream inputs"
@@ -161,7 +172,8 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                                             "traceability/requirements_to_tests.csv")
             else:
                 decision, why = "CONFIRMED", f"{t} is missing from a trace table or the test map"
-        if decision == "REFUTED" and a == "safety_allocation_missing" and _mandatory_safety_missing(m):
+        if decision == "REFUTED" and a in ("safety_allocation_missing", "safe_state_missing",
+                                           "failure_handling_missing") and _mandatory_safety_missing(m):
             decision, why = "STANDS", "the work order targets an ASIL with a mandatory safety input missing"
         out.append({**c, "identity": identity(item, c), "decision": decision, "evidence": why})
     return out

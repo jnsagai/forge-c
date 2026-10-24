@@ -55,7 +55,11 @@ def test_refutations_confirmations_and_judgements(frozen):
         (_c("requirement_not_verifiable", "Safety allocation"), "REFUTED"),  # aimed at an input, not a requirement
         (_c("budget_not_measurable", _budget(f, "flash")), "REFUTED"),  # '4096 bytes' is a bound with a unit
         (_c("requirement_infeasible", _budget(f, "flash")), "REFUTED"),  # meeting a budget is measured later
-        (_c("safe_state_missing", "document"), "STANDS"),            # a judgement: never decided by rules
+        (_c("safe_state_missing", "document"), "REFUTED"),           # AT-020: the recorded PENDING allocation
+        (_c("failure_handling_missing", "document"), "REFUTED"),     # ADR-0009: LL is register access, no waiting
+        (_c("failure_handling_missing", "Safety allocation"), "REFUTED"),  # the owner's recorded gap
+        (_c("safe_state_missing", swr), "STANDS"),                   # a claim about one requirement: a judgement
+        (_c("failure_handling_missing", swr), "STANDS"),
         (_c("other", swr), "STANDS"),
     ]
     got = RS.adjudicate(frozen, "SWE1-02", [c for c, _ in cases], f)
@@ -91,6 +95,30 @@ def test_a_missing_mandatory_safety_input_is_never_refuted(frozen):
     assert got[0]["decision"] == "STANDS"
 
 
+def test_swe1_03_rules_keep_hal_failure_handling_and_missing_safety_inputs(frozen):
+    """F011-T029 diagnostic (SWE1-03 false rejections of the owner-ruled clean LL baselines): the layer allocation
+    refutes only an LL document-level claim, the recorded allocation only a safe-state claim; a HAL work order's
+    failure handling, an unrecorded allocation and a missing mandatory ASIL input still stand."""
+    path = frozen / ".forge-run/manifest.json"
+    man = json.loads(path.read_text())
+    assert man["layer"] == "LL"
+    path.write_text(json.dumps({**man, "layer": "HAL"}))
+    got = RS.adjudicate(frozen, "SWE1-03", [_c("failure_handling_missing", "document"),
+                                            _c("safe_state_missing", "document")])
+    assert [g["decision"] for g in got] == ["STANDS", "REFUTED"]
+    gaps = frozen / "traceability/upstream_gaps.md"
+    text = gaps.read_text()
+    gaps.write_text("\n".join(x for x in text.splitlines() if not x.startswith("| Safety allocation |")))
+    got = RS.adjudicate(frozen, "SWE1-03", [_c("safe_state_missing", "document")])
+    assert got[0]["decision"] == "CONFIRMED"
+    gaps.write_text(text)
+    path.write_text(json.dumps({**man, "safety_target": "B",
+                                "owner_safety_document_issues": ["software safety analysis: NOT_PROVIDED"]}))
+    got = RS.adjudicate(frozen, "SWE1-03", [_c("safe_state_missing", "document"),
+                                            _c("failure_handling_missing", "document")])
+    assert [g["decision"] for g in got] == ["STANDS", "STANDS"]
+
+
 def _inspector(verdicts):
     """A scripted inspector: verdicts[item] is a list of answers, one per call of that item."""
     seen: dict[str, int] = {}
@@ -124,7 +152,8 @@ def test_a_clean_baseline_with_a_refuted_fail_is_adjudicated_pass_and_recorded(f
 
 
 def test_a_real_defect_claim_stands_and_the_item_fails(frozen, monkeypatch):
-    claim = _c("safe_state_missing", "document", "no requirement states the safe state after a failed refresh")
+    swr = sorted(RS.baseline_facts(frozen)["reqs"])[0]  # a claim about one requirement (document level: AT-020)
+    claim = _c("safe_state_missing", swr, "the requirement states no safe state after a failed register write")
     fail = {"verdict": "FAIL", "claims": [claim], "evidence_checked": ["workproducts/SWE.1/software_requirements.md"]}
     call, seen = _inspector({"SWE1-03": [fail]})
     monkeypatch.setattr(S, "call", call)
