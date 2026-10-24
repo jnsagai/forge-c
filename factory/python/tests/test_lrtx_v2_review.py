@@ -354,3 +354,21 @@ def test_entry_answers_become_decided_swe1_02_and_swe1_04_claims(frozen, monkeyp
     rep = RS.visit(frozen, "SWE.1", "qwen3-coder:30b")
     rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
     assert rep["status"] == "REWORK" and rec["items"]["SWE1-02"]["outcome"] == "FAIL"
+
+
+def test_engine_output_reaches_the_inspector_by_hash_only(frozen):
+    """F011-T036 (owner 2026-10-24, "Reference by hash"): the first semantic baseline inspected in a Fabro run
+    (WO-0008A-STM32N6-RCC-LL-q36b) was refused with SOURCE_TOO_LARGE on the 54 kB register obligations. The SafeC
+    engine files reach the inspector as path, sha256 and size; every other baseline file stays whole."""
+    from forge_factory.common import sha256_bytes
+    from forge_factory.lrtx import review as R
+
+    bl, srcs = R.evidence(frozen, "SWE.1")
+    by = {s["path"]: s for s in srcs}
+    engine = [f for f in bl["files"] if f in R.ENGINE_FILES]
+    assert engine, "the semantic SWE.1 baseline carries the engine output"
+    for f in engine:
+        assert f not in by and json.loads(by[f + "#sha256"]["text"])["sha256"] == sha256_bytes((frozen / f).read_bytes())
+    req = "workproducts/SWE.1/software_requirements.md"
+    assert by[req]["text"] == (frozen / req).read_text()
+    assert RS.validate({"verdict": "PASS", "claims": [], "evidence_checked": [engine[0]]}, {s["path"] for s in srcs}) == []

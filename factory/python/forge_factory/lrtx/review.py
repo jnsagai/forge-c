@@ -46,6 +46,14 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
     return out
 
 
+# F011-T036 (owner 2026-10-24, "Reference by hash"): the SafeC engine's machine output in a semantic SWE.1 baseline
+# (54 kB obligations, 37 kB oracle: over the per-source limit) reaches the inspector as path, hash and size only;
+# the deterministic oracle gate checks both files. Baselines without them (Codex/Claude line) are unchanged.
+ENGINE_FILES = ("workproducts/SWE.1/register_obligations.json", "workproducts/SWE.1/register_oracle.json")
+ENGINE_NOTE = ("SafeC engine output (register obligations / register oracle), checked by the deterministic oracle gate; "
+               "listed by hash only, not inspected text: judge the requirements, effects and traceability")
+
+
 def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     """The newest frozen baseline of the phase and its files (plus the upstream SWE.1 requirements for SWE.2+)."""
     from ..inspection.engine import Store
@@ -58,7 +66,11 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
-    srcs = [S.source(ws, f, max_chars=MAX_FILE_CHARS) for f in files if (Path(ws) / f).is_file()]
+    srcs = [S.source(ws, f, max_chars=MAX_FILE_CHARS) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
+    for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:
+        data = (Path(ws) / f).read_bytes()
+        note = json.dumps({"path": f, "sha256": sha256_bytes(data), "bytes": len(data), "content": ENGINE_NOTE}, indent=1)
+        srcs.append({"path": f"{f}#sha256", "text": note, "sha256": sha256_bytes(note.encode())})
     m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
     ctx = json.dumps({"work_order": m["work_order"], "layer": m.get("layer"), "scope": m["scope"], "target": m["target"],
                       "budgets": m["budgets"], "upstream": m.get("upstream")}, indent=1)
