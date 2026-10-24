@@ -144,8 +144,9 @@ def _inspector(verdicts):
         item = p["task"].split(":")[-1]
         n = seen.get(item, 0)
         seen[item] = n + 1
-        answers = verdicts.get(item, [{"verdict": "PASS", "claims": [], "evidence_checked": [
-            "workproducts/SWE.1/software_requirements.md"]}])
+        default = [{"behaviours": []}] if item == "coverage" else [{"verdict": "PASS", "claims": [], "evidence_checked": [
+            "workproducts/SWE.1/software_requirements.md"]}]  # F011-T049: coverage questions get an empty answer
+        answers = verdicts.get(item, default)
         doc = answers[min(n, len(answers) - 1)]
         return {"doc": json.loads(json.dumps(doc)), "errors": S.validate(doc, p["output_schema"]),
                 "usage": {"prompt_tokens": 1000, "completion_tokens": 100}, "wall_ms": 1.0, "finish_reason": "stop"}
@@ -222,3 +223,84 @@ def test_validated_lessons_reach_the_item_packet_as_reference_data_and_are_recor
     assert rec["items"]["SWE1-03"]["lessons"] == [{"id": "IL-001", "version": 1,
                                                    "sha256": IL.lesson_hash(les)}]
     assert rec["items"]["SWE1-01"]["lessons"] == []
+
+
+def test_inspector_sampling_comes_from_the_profile_reaches_every_item_packet_and_the_request(frozen, monkeypatch):
+    """F011-T048: per-model temperature over the profile default, the harness seed over the profile seed; the sampling
+    is part of the packet hash (the request body: next test); the record keeps the options."""
+    opts = RS.inspector_options(frozen, "qwen3.6:35b-a3b")
+    assert opts["sampling"] == {"temperature": 0.6, "seed": 1, "top_p": 0.95} and opts["coverage"] is True
+    assert RS.inspector_options(frozen, "gpt-oss:120b")["sampling"] == {"temperature": 0.2, "seed": 1}
+    monkeypatch.setitem(RS.INSPECTOR, "seed", 3)
+    assert RS.inspector_options(frozen, "gpt-oss:120b")["sampling"]["seed"] == 3
+    packets = []
+    call, _seen = _inspector({})
+    monkeypatch.setattr(S, "call", lambda p, **k: (packets.append(p), call(p, **k))[1])
+    assert RS.visit(frozen, "SWE.1", "gpt-oss:120b")["status"] == "PASS"
+    assert packets and all(p["sampling"] == {"temperature": 0.2, "seed": 3} for p in packets)
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert rec["options"]["sampling"] == {"temperature": 0.2, "seed": 3}
+    q = S.packet(phase="SWE.1", task="t", role="swe1-inspector", instructions="x", sources=[], criteria=[],
+                 output_schema={"type": "object"}, model="m")
+    r = S.packet(phase="SWE.1", task="t", role="swe1-inspector", instructions="x", sources=[], criteria=[],
+                 output_schema={"type": "object"}, model="m", sampling={"temperature": 0.2, "seed": 3})
+    assert "sampling" not in q and q["input_hash"] != r["input_hash"]  # no sampling: the packet is as before
+
+
+def test_the_request_body_carries_the_packet_sampling(monkeypatch):
+    import io
+
+    from forge_factory.lrtx import structured as SS
+
+    sent = {}
+
+    class Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def urlopen(req, timeout=None):
+        sent.update(json.loads(req.data))
+        return Resp(b'data: {"choices":[{"delta":{"content":"{}"},"finish_reason":"stop"}]}\n\ndata: [DONE]\n')
+
+    monkeypatch.setattr(SS.urllib.request, "urlopen", urlopen)
+    p = SS.packet(phase="SWE.1", task="t", role="swe1-inspector", instructions="x", sources=[], criteria=[],
+                  output_schema={"type": "object"}, model="m", sampling={"temperature": 0.2, "top_p": None, "seed": 7})
+    SS.call(p, url="http://127.0.0.1:9/v1")
+    assert sent["temperature"] == 0.2 and sent["seed"] == 7 and "top_p" not in sent
+    q = SS.packet(phase="SWE.1", task="t", role="swe1-inspector", instructions="x", sources=[], criteria=[],
+                  output_schema={"type": "object"}, model="m")
+    sent.clear()
+    SS.call(q, url="http://127.0.0.1:9/v1")
+    assert "temperature" not in sent and "seed" not in sent  # unchanged for every other caller
+
+
+def test_coverage_answers_become_decided_swe1_05_claims(frozen, monkeypatch):
+    """F011-T049: an uncovered scope behaviour on a field no requirement states stands (SWE1-05 FAIL naming the field);
+    one a requirement states (with its value) is refuted; covered behaviours make no claim."""
+    facts = RS.baseline_facts(frozen)
+    swr, stmt = sorted(facts["reqs"].items())[0]
+    import re as _re
+
+    field = _re.search(r"\b[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*\b", stmt["statement"]).group(0)
+    num = _re.search(r"\b0x[0-9A-Fa-f]+\b", stmt["statement"])
+    doc = {"behaviours": [
+        {"behaviour": "covered one", "register_field": field, "value": "", "covered_by": [swr]},
+        {"behaviour": "stated elsewhere", "register_field": field, "value": num.group(0) if num else "",
+         "covered_by": []},
+        {"behaviour": "start the counter", "register_field": "XREG.NOFIELD", "value": "0x5", "covered_by": []}]}
+    got = RS.coverage_claims("Start and refresh", doc, facts)
+    assert [c["decision"] for c in got] == ["REFUTED", "STANDS"] and "XREG.NOFIELD" in RS.render_claim(got[1])
+    assert RS.validate_coverage({"behaviours": [{"behaviour": "b", "register_field": "lower.case", "value": "",
+                                                 "covered_by": ["SWR-999"]}]}, set(facts["reqs"])) == [
+        "register_field 'lower.case' is not REGISTER.FIELD", "covered_by names SWR-999, not a requirement"]
+    assert all(not x.lower().startswith("out of scope") for x in RS.scope_items(frozen))
+    call, _seen = _inspector({"coverage": [{"behaviours": doc["behaviours"][2:]}]})
+    monkeypatch.setattr(S, "call", call)
+    rep = RS.visit(frozen, "SWE.1", "qwen3-coder:30b")
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert rep["status"] == "REWORK" and rec["items"]["SWE1-05"]["outcome"] == "FAIL"
+    assert any("XREG.NOFIELD" in f for f in rec["result"].get("issues", []) + [json.dumps(rec["items"])])
+    assert rec["coverage"] and rec["options"]["coverage"] is True

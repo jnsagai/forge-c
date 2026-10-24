@@ -191,6 +191,101 @@ def _mandatory_safety_missing(m: dict) -> bool:
     return asil in ("A", "B", "C", "D") and bool(m.get("owner_safety_document_issues"))
 
 
+INSPECTOR = {"seed": None, "coverage": None}  # F011-T048/T049: seeded harness overrides (--seed, --coverage)
+FIELD = re.compile(r"^[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*$")
+NUMBER = re.compile(r"\b0x[0-9A-Fa-f]+\b|\b\d+\b")
+
+
+def _profile_structured(ws: Path) -> tuple[str | None, dict]:
+    """The v2 profile of this work order (manifest binding, else the harness's FORGE_LRTX_PROFILE) and its
+    `structured` block."""
+    import os
+
+    from .profile import load
+
+    man = Path(ws) / ".forge-run/manifest.json"
+    pid = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+    pid = pid or os.environ.get("FORGE_LRTX_PROFILE")
+    return (pid, (load(pid).get("structured") or {})) if pid else (None, {})
+
+
+def inspector_options(ws: Path, model: str) -> dict:
+    """F011-T048/T049: the sampling (temperature, top_p, seed) and the coverage switch of the local SWE.1 inspector:
+    the profile's per-model values over its default, then the harness overrides. None: model defaults (as before)."""
+    pid, st = _profile_structured(ws)
+    table = st.get("inspector_sampling") or {}
+    sampling = {**(table.get("default") or {}), **(table.get(model) or {})}
+    if INSPECTOR["seed"] is not None:
+        sampling["seed"] = INSPECTOR["seed"]
+    coverage = INSPECTOR["coverage"] if INSPECTOR["coverage"] is not None else bool(st.get("inspector_coverage"))
+    return {"profile": pid, "sampling": sampling or None, "coverage": coverage}
+
+
+def scope_items(ws: Path) -> list[str]:
+    """The owner's in-scope work-order scope items (an 'Out of scope' item is no coverage obligation)."""
+    m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    return [x for x in m.get("scope") or [] if not str(x).strip().lower().startswith("out of scope")]
+
+
+def coverage_schema(swrs: list[str]) -> dict:
+    row = {"type": "object", "additionalProperties": False,
+           "required": ["behaviour", "register_field", "value", "covered_by"],
+           "properties": {"behaviour": {"type": "string", "minLength": 5, "maxLength": 200},
+                          "register_field": {"type": "string", "minLength": 3, "maxLength": 60},
+                          "value": {"type": "string", "maxLength": 24},
+                          "covered_by": {"type": "array", "maxItems": 5,
+                                         "items": {"type": "string", "enum": swrs or ["none"]}}}}
+    return {"type": "object", "additionalProperties": False, "required": ["behaviours"],
+            "properties": {"behaviours": {"type": "array", "maxItems": 12, "items": row}}}
+
+
+def coverage_packet(ws: Path, bl: dict, srcs: list[dict], scope: str, swrs: list[str], model: str, sampling,
+                    findings=None, previous=None) -> dict:
+    instr = (f"Coverage question on the frozen SWE.1 baseline {bl['baseline_id']}. Work-order scope item (written by "
+             f"the owner): \"{' '.join(scope.split())}\". List each register behaviour this scope item requires the "
+             "driver to perform or report: register_field is REGISTER.FIELD as the sources name it, value is the value "
+             "written when the scope or the manual fixes one (else \"\"), covered_by lists the requirements of the "
+             "baseline that specify exactly that behaviour (empty when none does). Only register behaviours: "
+             "structure, style and API-shape constraints are not behaviours. Judge only from the SOURCES.")
+    return S.packet(phase="SWE.1", task="inspect:coverage", role="swe1-inspector", instructions=instr, sources=srcs,
+                    criteria=["SWE1-05: coverage gaps against the work-order scope"],
+                    output_schema=coverage_schema(swrs), model=model, findings=findings, previous=previous,
+                    output_reserve=2048, sampling=sampling)
+
+
+def validate_coverage(doc: dict, swrs: set[str]) -> list[str]:
+    out = [f"register_field '{b['register_field']}' is not REGISTER.FIELD" for b in doc["behaviours"]
+           if not FIELD.match(b["register_field"])]
+    return out + [f"covered_by names {x}, not a requirement" for b in doc["behaviours"] for x in b["covered_by"]
+                  if x not in swrs]
+
+
+def _numbers(text: str) -> set[int]:
+    return {int(n, 16) if n.lower().startswith("0x") else int(n) for n in NUMBER.findall(text)}
+
+
+def coverage_claims(scope: str, doc: dict, facts: dict) -> list[dict]:
+    """Every uncovered behaviour as an SWE1-05 claim, decided: REFUTED when a requirement states that register field
+    (and that value, when one is given); otherwise it STANDS (the model's judgement)."""
+    out = []
+    for b in doc["behaviours"]:
+        if b["covered_by"]:
+            continue
+        f, v = b["register_field"], b["value"].strip()
+        want = _numbers(v) if v else set()
+        hit = next((s for s, r in sorted(facts["reqs"].items()) if f in r["statement"] and
+                    (not want or want & _numbers(r["statement"]))), None)
+        c = {"assertion": "scope_behaviour_uncovered", "target_id": "document", "related_ids": [],
+             "detail": (f"scope item '{' '.join(scope.split())[:60]}': {b['behaviour'][:120]} ({f}"
+                        f"{' = ' + v if v else ''}) has no requirement")[:300],
+             "remediation": f"add a requirement for {f}{' = ' + v if v else ''}"[:200]}
+        c["identity"] = identity("SWE1-05", {**c, "target_id": f"{f}={v}"})
+        c["decision"], c["evidence"] = ("REFUTED", f"{hit} states {f}" + (f" with {v}" if v else "")) if hit else \
+            ("STANDS", "the requirements state no such register behaviour")
+        out.append(c)
+    return out
+
+
 def lessons_dir(ws: Path) -> Path | None:
     """The inspection lesson set for this work order: the harness setting, else the profile flag
     structured.inspection_lessons (the Codex/Claude line never reaches this inspector)."""
@@ -220,7 +315,7 @@ def lesson_source(lessons: list[dict]) -> dict | None:
 
 
 def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[str], model: str, findings=None,
-                previous=None, lessons: list[dict] | None = None) -> dict:
+                previous=None, lessons: list[dict] | None = None, sampling: dict | None = None) -> dict:
     iid = item["id"]
     instr = (f"Inspect checklist item {iid} of SWE.1 on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
@@ -238,7 +333,7 @@ def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[
     return S.packet(phase="SWE.1", task=f"inspect:{iid}", role="swe1-inspector", instructions=instr, sources=srcs,
                     criteria=[f"{iid}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=claim_schema(iid, targets), model=model, findings=findings, previous=previous,
-                    output_reserve=2048)
+                    output_reserve=2048, sampling=sampling)
 
 
 def validate(doc: dict, paths: set[str]) -> list[str]:
@@ -263,8 +358,10 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
 
     if phase != "SWE.1":
         return R.visit(ws, phase, model, max_calls, resume, time_budget_s)
+    opts = inspector_options(Path(ws), model)
+    extra = 2 * len(scope_items(Path(ws))) if opts["coverage"] else 0  # one call and one repair per scope item
     budget, _f = V.open_visit(Path(ws), "SWE.1-inspect", resume, list,
-                              max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns,
+                              (max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns) + extra,
                               time_budget_s)
     try:
         return _visit(Path(ws), model, budget)
@@ -288,6 +385,21 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
     facts = baseline_facts(ws)
     targets = sorted(facts["reqs"]) + ["document"] + INPUTS
     verdicts, issues, record = {}, [], {}
+    opts = inspector_options(ws, model)
+    smp = opts["sampling"]
+    cov_claims, cov_record = [], []
+    if opts["coverage"]:  # F011-T049: one decomposed coverage question per in-scope work-order scope item
+        swrs = sorted(facts["reqs"])
+        for i, sc in enumerate(scope_items(ws)):
+            crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:coverage-{i}",
+                              lambda fi, pr, sc=sc: coverage_packet(ws, bl, srcs, sc, swrs, model, smp, fi, pr),
+                              lambda d: validate_coverage(d, set(swrs)), budget)
+            if crec["status"] != "VALID":
+                issues += [f"coverage-{i}: {e}" for e in crec["errors"][:3]]
+                continue
+            got = coverage_claims(sc, crec["doc"], facts)
+            cov_claims += got
+            cov_record.append({"scope": sc, "behaviours": crec["doc"]["behaviours"], "claims": got})
     for it in items:
         if it["id"] not in ASSERTIONS:
             issues.append(f"{it['id']}: no claim catalogue for this item (LRTX_SEMANTIC_INSPECTION_ITEM_UNKNOWN)")
@@ -296,7 +408,8 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         les = item_lessons(ws, it["id"], srcs)
         ipaths = paths | ({LESSON_SOURCE} if les else set())
         rec = V.run_task(ws, "SWE.1", task,
-                         lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les),
+                         lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les,
+                                                                    smp),
                          lambda d, ipaths=ipaths: validate(d, ipaths), budget)
         if rec["status"] != "VALID":
             issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
@@ -309,12 +422,16 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             refut = [f"claim {c['assertion']} [{c['target_id']}] is refuted by the baseline: {c['evidence']}"
                      for c in judged]
             rec = V.run_task(ws, "SWE.1", task + ":reinspect",
-                             lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les),
+                             lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr,
+                                                                        les, smp),
                              lambda d2, ipaths=ipaths: validate(d2, ipaths), budget, refut)
             if rec["status"] == "VALID":
                 d = rec["doc"]
                 judged = adjudicate(ws, it["id"], d["claims"], facts)
                 rounds.append({"verdict": d["verdict"], "claims": judged})
+        if it["id"] == "SWE1-05" and cov_claims:  # the coverage answers join the coverage item, decided the same way
+            judged = judged + cov_claims
+            rounds.append({"coverage": cov_claims})
         standing = [c for c in judged if c["decision"] != "REFUTED"]
         verdict = "FAIL" if standing else "PASS"
         outcome = "ADJUDICATED_PASS" if d["verdict"] == "FAIL" and not standing else verdict
@@ -336,7 +453,8 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         return R._reply(ws, "SWE.1", "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
                         budget)
     S.record(ws, "SWE.1/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
-                                                  "result": res, "items": record, "inspector": "review_semantic"})
+                                                  "result": res, "items": record, "inspector": "review_semantic",
+                                                  "options": opts, "coverage": cov_record})
     notes = [f"LRTX_ADJUDICATED_PASS:{i}: {len(r['rounds'][-1]['claims'])} claim(s) refuted by the baseline"
              for i, r in record.items() if r["outcome"] == "ADJUDICATED_PASS"]
     status = "PASS" if res["status"] == "PASS" else "REWORK"

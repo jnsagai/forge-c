@@ -92,3 +92,19 @@ Gates F011-T030: a candidate qualifies only on the frozen test set of F011-T046.
 - [ ] **F011-T045 [US3]** Write the first lessons from the learning set (register_effects records final register state; ADR-0009 LL allocation; recorded PENDING safety allocation; work-order budgets and recorded upstream gaps), each with paired must-still-detect seeded defects, and promote each only through CRE (F011-AT-036).
 - [X] **F011-T046 [US4]** Freeze the test set before any local inspection: clean baselines drawn by a recorded seed from SWE.1 baselines that passed the deterministic gate and the cloud inspector and were never inspected by a local model (stratified RCC/IWDG, LL/HAL; current checklist; one per distinct baseline hash), plus seeded mutations from a frozen generic operator catalogue; record every hash; a disputed clean case goes to the owner for a ruling, never to the inspector's result (F011-AT-037). ✅ Evidence: `evidence/v0.4/runs/F011-T046/latest.json`
 - [ ] **F011-T047 [US3]** Measure each candidate (gpt-oss:120b high, qwen3.6:35b-a3b with and without thinking) with the validated lessons on the frozen test set, >=3 runs per case, worst run counted; record per-run results, wall time and the QualificationRecord; then decide F011-T030 (F011-AT-038).
+
+## M4c — Inspector accuracy (owner 2026-10-24: "do 1 and 2 for now, but plan for 3, 4, 5 and 6 later")
+
+Measured basis: the local inspector calls set no temperature or seed (model defaults, temperature 1), and the same
+model rejected different clean baselines on identical inputs (F011-T029 runs 5-6); every candidate missed the omitted
+requirement on IWDG-LL. Each task is measured on the learning set first and counts only through F011-T047.
+
+- [ ] **F011-T048 [US3]** Inspector sampling: a per-model temperature (and top_p) for the local SWE.1 inspector in the v2 profiles (`structured.inspector_sampling`), a recorded seed per run (seeded harness `--seed`), both in the packet hash and every report; the author calls and the Codex/Claude line are unchanged.
+- [ ] **F011-T049 [US3]** Decomposed coverage questions: for each in-scope work-order scope item, the inspector lists the register behaviours it requires (register field, value) and the requirement covering each; an uncovered behaviour becomes an SWE1-05 claim on that field, refuted only when a requirement states that field (and value); enabled by `structured.inspector_coverage` or `--coverage`, recorded in reports. The model decides; no new gate (owner "Inspector only").
+
+### Planned later (owner 2026-10-24; not started)
+
+- [ ] **F011-T050 [US3]** Grow the inspection lesson set beyond IL-001..004 from new learning-set failures only, each with paired must-still-detect defects and CRE promotion (F011-FR-029..031); never from test-set cases.
+- [ ] **F011-T051 [US3]** Worked examples per SWE.1 checklist item (one correct PASS and one correct FAIL, generic, from the learning set), retrieved like lessons and measured like them; never from test-set cases.
+- [ ] **F011-T052 [US3]** Reasoning budget and model choice: measure further 48 GB candidates (for example a dense 32B and a 70B at Q4) and an optional two-model agreement rule, each with paired-defect proof that no true defect is hidden; record resources (F011-AT-030).
+- [ ] **F011-T053 [US3]** Fine-tuning study (needs an owner decision and its own feature spec: F011 lists training as a non-goal): an adapter for a non-author base model trained on the Claude inspection records of the learning set only, pinned and qualified like a model, with strict test-set exclusion.

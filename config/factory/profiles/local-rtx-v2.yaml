@@ -53,6 +53,12 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
   semantic_inspect_phases: [SWE.1]  # typed claims + deterministic adjudication (F011 M4)
   swe2_named_functions: true        # SWE.2 names fixed by the frozen requirements (F011 T031/T032)
   swe2_constrained_design: true     # SWE.2 sequence steps limited to interface names; claim-free wording (F011 T032)
+  # owner 2026-10-24 (F011-T048): the local inspector sampled at model defaults (temperature 1) and judged the
+  # same inputs differently between runs; low temperature, seed per run (harness --seed overrides)
+  inspector_sampling:
+    default: {temperature: 0.2, seed: 1}
+    qwen3.6:35b-a3b: {temperature: 0.6, top_p: 0.95}   # thinking mode: vendor guidance, greedy can loop
+  inspector_coverage: true   # F011-T049: decomposed coverage questions per work-order scope item
   reinspect_direct: true
   timeout_s: 3600
   visit_time_s: 1200

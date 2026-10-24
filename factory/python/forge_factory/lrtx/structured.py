@@ -65,7 +65,7 @@ def source(ws: Path, rel: str, max_chars: int | None = None) -> dict:
 def packet(*, phase: str, task: str, role: str, instructions: str, sources: list[dict], criteria: list[str],
            output_schema: dict, artifacts: list[dict] | None = None, findings: list[str] | None = None,
            previous: dict | None = None, model: str, output_reserve: int = DEFAULT_OUTPUT_RESERVE,
-           with_skill: bool = True) -> dict:
+           with_skill: bool = True, sampling: dict | None = None) -> dict:
     sk = skill(role) if with_skill else None
     p = {"schema": PACKET_SCHEMA, "prompt_version": PROMPT_VERSION, "phase": phase, "task": task, "role": role,
          "skill": {k: sk[k] for k in ("path", "sha256")} if sk else None, "model": model,
@@ -74,6 +74,8 @@ def packet(*, phase: str, task: str, role: str, instructions: str, sources: list
          "artifacts": [{k: a[k] for k in ("path", "sha256")} for a in artifacts or []],
          "findings": findings or [], "repair_of": hashlib.sha256(canonical_json(previous)).hexdigest()
          if previous is not None else None, "output_reserve": output_reserve}
+    if sampling:  # F011-T048: part of the input hash, so a checkpoint never crosses sampling settings
+        p["sampling"] = {k: sampling[k] for k in ("temperature", "top_p", "seed") if sampling.get(k) is not None}
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
@@ -186,6 +188,7 @@ def call(p: dict, *, temperature: float | None = None, schema_mode: str = "json_
                                                                           "schema": p["output_schema"]}}
     elif schema_mode == "json_object":
         body["response_format"] = {"type": "json_object"}
+    body.update(p.get("sampling") or {})  # F011-T048: the inspector's recorded sampling (temperature, top_p, seed)
     if temperature is not None:
         body["temperature"] = temperature
     t0 = time.monotonic()

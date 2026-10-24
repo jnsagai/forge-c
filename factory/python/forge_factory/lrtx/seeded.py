@@ -29,6 +29,7 @@ from ..common import pretty_json, sha256_bytes, utc_now
 
 CATALOGUE_VERSION = "lrtx-seeded-2"  # -2 (F011-T045): the paired SWE.1 defects of the inspection lessons
 LESSON_SET: dict = {"value": None}  # F011-T044: the inspection lesson set of this run (--lessons), in every report
+OPTIONS: dict = {"value": None}  # F011-T048/T049: the semantic inspector's sampling and coverage switch, in every report
 
 
 def _req_md(ws: Path) -> Path:
@@ -286,7 +287,7 @@ def _summary(rows: list[dict], model: str) -> dict:
             "false_rejections": sum(r["detected_by"].startswith("FALSE_REJECTION") for r in base),
             "baselines": len(base),
             "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base),
-            "inspection_lessons": LESSON_SET["value"], "rows": rows,
+            "inspection_lessons": LESSON_SET["value"], "inspector_options": OPTIONS["value"], "rows": rows,
             "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
 
 
@@ -302,8 +303,17 @@ def main(argv: list[str] | None = None) -> int:
                     help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)")
     ap.add_argument("--lessons-trial", action="store_true",
                     help="F011-T045 promotion trial: PROPOSED lessons that pass every check are retrieved too")
+    ap.add_argument("--seed", type=int, default=None, help="F011-T048: sampling seed of this run (recorded)")
+    ap.add_argument("--coverage", choices=("on", "off"), default=None,
+                    help="F011-T049: decomposed coverage questions (default: the profile's structured.inspector_coverage)")
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
+    if a.inspector == "semantic":
+        from . import review_semantic as RS
+
+        RS.INSPECTOR["seed"] = a.seed
+        RS.INSPECTOR["coverage"] = None if a.coverage is None else a.coverage == "on"
+        OPTIONS["value"] = RS.inspector_options(a.holdout[0].resolve(), a.model)
     if a.lessons:
         from ..knowledge import inspection as IL
         from . import review_semantic as RS
