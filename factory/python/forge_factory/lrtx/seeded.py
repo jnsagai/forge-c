@@ -28,6 +28,7 @@ from pathlib import Path
 from ..common import pretty_json, sha256_bytes, utc_now
 
 CATALOGUE_VERSION = "lrtx-seeded-1"
+LESSON_SET: dict = {"value": None}  # F011-T044: the inspection lesson set of this run (--lessons), in every report
 
 
 def _req_md(ws: Path) -> Path:
@@ -215,7 +216,8 @@ def _summary(rows: list[dict], model: str) -> dict:
             "missed": sum(r["detected_by"] == "MISSED" for r in seeded), "seeded": len(seeded),
             "false_rejections": sum(r["detected_by"].startswith("FALSE_REJECTION") for r in base),
             "baselines": len(base),
-            "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base), "rows": rows,
+            "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base),
+            "inspection_lessons": LESSON_SET["value"], "rows": rows,
             "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
 
 
@@ -227,8 +229,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--case", action="append", default=None)
     ap.add_argument("--inspector", choices=("structured", "semantic"), default="structured",
                     help="semantic: F011 typed claims with deterministic adjudication (SWE.1; other phases structured)")
+    ap.add_argument("--lessons", type=Path, default=None,
+                    help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)")
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
+    if a.lessons:
+        from ..knowledge import inspection as IL
+        from . import review_semantic as RS
+
+        RS.LESSONS["dir"] = a.lessons.resolve()
+        LESSON_SET["value"] = {"dir": str(a.lessons), "lessons": [
+            {"id": x.get("id"), "version": x.get("version"), "state": x["_state"], "sha256": x["_hash"]}
+            for x in IL.load(a.lessons)]}
     s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case, a.inspector)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}))
     return 0

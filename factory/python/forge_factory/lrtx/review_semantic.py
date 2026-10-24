@@ -43,6 +43,8 @@ ASSERTIONS = {
     "SWE1-06": ["requirement_not_verifiable", "ambiguity_not_documented", "other"],
 }
 INPUTS = ["HSI contract", "Safety allocation", "Budgets"]
+LESSONS = {"dir": None}  # F011-T044: set by the seeded harness (--lessons); otherwise the profile flag decides
+LESSON_SOURCE = "reference/inspection-lessons.md"
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
 BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz)\b", re.I)
@@ -188,8 +190,35 @@ def _mandatory_safety_missing(m: dict) -> bool:
     return asil in ("A", "B", "C", "D") and bool(m.get("owner_safety_document_issues"))
 
 
+def lessons_dir(ws: Path) -> Path | None:
+    """The inspection lesson set for this work order: the harness setting, else the profile flag
+    structured.inspection_lessons (the Codex/Claude line never reaches this inspector)."""
+    from ..knowledge import inspection as IL
+    from .swe2 import _structured_flag
+
+    if LESSONS["dir"]:
+        return Path(LESSONS["dir"])
+    return IL.LESSON_DIR if _structured_flag(ws, "inspection_lessons") else None
+
+
+def item_lessons(ws: Path, item_id: str, srcs: list[dict]) -> list[dict]:
+    """F011-T044: the validated lessons for one item, by phase, item, layer and the work products in the packet."""
+    from ..knowledge import inspection as IL
+    from ..layer import layer_of
+
+    d = lessons_dir(ws)
+    return IL.select("SWE.1", item_id, layer_of(ws), {s["path"] for s in srcs}, d) if d else []
+
+
+def lesson_source(lessons: list[dict]) -> dict | None:
+    from ..knowledge import inspection as IL
+
+    text = IL.render(lessons)
+    return {"path": LESSON_SOURCE, "sha256": sha256_bytes(text.encode()), "text": text} if text else None
+
+
 def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[str], model: str, findings=None,
-                previous=None) -> dict:
+                previous=None, lessons: list[dict] | None = None) -> dict:
     iid = item["id"]
     instr = (f"Inspect checklist item {iid} of SWE.1 on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
@@ -201,6 +230,9 @@ def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[
              "the requirement or section), remediation what would fix it. A claim is checked against the baseline: a "
              "claim the baseline contradicts is refuted and does not count. evidence_checked lists the source paths "
              "you used. " + " ".join(R._notes(ws, "SWE.1", iid)))
+    ref = lesson_source(lessons or [])
+    if ref:  # reference data with provenance, after the frozen work products; never part of the instructions
+        srcs = [*srcs, ref]
     return S.packet(phase="SWE.1", task=f"inspect:{iid}", role="swe1-inspector", instructions=instr, sources=srcs,
                     criteria=[f"{iid}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=claim_schema(iid, targets), model=model, findings=findings, previous=previous,
@@ -259,9 +291,11 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             issues.append(f"{it['id']}: no claim catalogue for this item (LRTX_SEMANTIC_INSPECTION_ITEM_UNKNOWN)")
             continue
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
+        les = item_lessons(ws, it["id"], srcs)
+        ipaths = paths | ({LESSON_SOURCE} if les else set())
         rec = V.run_task(ws, "SWE.1", task,
-                         lambda fi, pr, it=it: item_packet(ws, it, bl, srcs, targets, model, fi, pr),
-                         lambda d: validate(d, paths), budget)
+                         lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les),
+                         lambda d, ipaths=ipaths: validate(d, ipaths), budget)
         if rec["status"] != "VALID":
             issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
             continue
@@ -273,8 +307,8 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             refut = [f"claim {c['assertion']} [{c['target_id']}] is refuted by the baseline: {c['evidence']}"
                      for c in judged]
             rec = V.run_task(ws, "SWE.1", task + ":reinspect",
-                             lambda fi, pr, it=it: item_packet(ws, it, bl, srcs, targets, model, fi, pr),
-                             lambda d2: validate(d2, paths), budget, refut)
+                             lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les),
+                             lambda d2, ipaths=ipaths: validate(d2, ipaths), budget, refut)
             if rec["status"] == "VALID":
                 d = rec["doc"]
                 judged = adjudicate(ws, it["id"], d["claims"], facts)
@@ -282,10 +316,12 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         standing = [c for c in judged if c["decision"] != "REFUTED"]
         verdict = "FAIL" if standing else "PASS"
         outcome = "ADJUDICATED_PASS" if d["verdict"] == "FAIL" and not standing else verdict
-        record[it["id"]] = {"outcome": outcome, "rounds": rounds}
+        record[it["id"]] = {"outcome": outcome, "rounds": rounds,
+                            "lessons": [{k: x[k] for k in ("id", "version", "sha256")} for x in les]}
         verdicts[it["id"]] = {"verdict": verdict, "findings": [render_claim(c) for c in standing][:10],
                               "evidence_refs": [f"configuration/baselines/SWE.1/{bl['baseline_id']}.json",
-                                                *d["evidence_checked"][:8]]}
+                                                *[e for e in d["evidence_checked"]  # lessons are no work product
+                                                  if R._norm_path(e) != LESSON_SOURCE][:8]]}
     if issues:
         return R._reply(ws, "SWE.1", "FAILED", issues, budget)
     if st.latest_baseline("SWE.1")["baseline_hash"] != bl["baseline_hash"]:

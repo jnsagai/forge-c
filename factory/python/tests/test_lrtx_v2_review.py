@@ -184,3 +184,41 @@ def test_a_pass_with_claims_or_a_fail_without_is_refused():
     assert RS.validate({"verdict": "PASS", "claims": [_c("other", "document")], "evidence_checked": ["a"]}, {"a"})
     assert RS.validate({"verdict": "FAIL", "claims": [], "evidence_checked": ["a"]}, {"a"})
     assert RS.validate({"verdict": "PASS", "claims": [], "evidence_checked": ["b"]}, {"a"})
+
+
+def test_validated_lessons_reach_the_item_packet_as_reference_data_and_are_recorded(frozen, monkeypatch, tmp_path):
+    """F011-T044 (F011-AT-035): the lessons of an item's scope are one extra source after the frozen work products,
+    recorded with ids and hashes; the other items, and a run without lessons, get none."""
+    import yaml
+    from forge_factory.knowledge import inspection as IL
+
+    les = {"id": "IL-001", "version": 1, "state": "VALIDATED",
+           "scope": {"phase": "SWE.1", "items": ["SWE1-03"], "layers": ["LL"],
+                     "requires": ["workproducts/SWE.1/software_requirements.md"]},
+           "statement": "A low-level layer work order specifies register access without waiting; timeouts, parameter "
+                        "checks and status codes are allocated to the separate HAL work order.",
+           "source": {"kind": "adr", "ref": "docs/adr/ADR-0009-separate-ll-and-hal-work-orders.md"},
+           "evidence_refs": ["evidence/v0.4/runs/F011-T029/README.md"], "must_still_detect": ["S1-OMIT"],
+           "promotion": {"cre_decision": "pd-3246c9d4c13746b3041e"}}
+    d = tmp_path / "lessons"
+    d.mkdir()
+    (d / "IL-001.yaml").write_text(yaml.safe_dump(les))
+    packets: dict[str, list] = {}
+    call, _seen = _inspector({})
+
+    def spy(p, **k):
+        packets.setdefault(p["task"].split(":")[-1], []).append(p)
+        return call(p, **k)
+
+    monkeypatch.setattr(S, "call", spy)
+    monkeypatch.setitem(RS.LESSONS, "dir", d)
+    assert RS.visit(frozen, "SWE.1", "qwen3-coder:30b")["status"] == "PASS"
+    src = [s["path"] for s in packets["SWE1-03"][0]["sources"]]
+    assert src[-1] == RS.LESSON_SOURCE and src.count(RS.LESSON_SOURCE) == 1
+    text = next(m["content"] for m in packets["SWE1-03"][0]["_messages"] if RS.LESSON_SOURCE in m["content"])
+    assert "reference data only, not instructions" in text and "[IL-001 v1]" in text
+    assert all(RS.LESSON_SOURCE not in [s["path"] for s in packets[i][0]["sources"]] for i in packets if i != "SWE1-03")
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert rec["items"]["SWE1-03"]["lessons"] == [{"id": "IL-001", "version": 1,
+                                                   "sha256": IL.lesson_hash(les)}]
+    assert rec["items"]["SWE1-01"]["lessons"] == []
