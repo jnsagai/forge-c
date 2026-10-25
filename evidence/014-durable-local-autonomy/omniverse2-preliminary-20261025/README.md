@@ -76,3 +76,13 @@ evidence, empty-output and dispatch/liveness fault cases 5/5 each.
 The official `protocol_report` remains **FAIL (correct_outcomes 0)**: it requires a hash-bound independent audit row
 (false success / duplicate effects / authority escapes) for every trial, and no independent auditor exists yet; plus
 the 2 misses and 5 blocked trials. Usage is unknown for 23 rows (non-inference trials without gateway requests).
+
+### Independent audit (dbcec39, producer REFERENCE_HARNESS) and official report
+
+The new model-free auditor re-derived every recorded row's facts from the authoritative AFO stores and the frozen
+reference oracle (not from the row): **0 false successes, 0 duplicate effects, 0 authority escapes across all 95
+rows** (`audit-a206c54.json`: per-trial facts, record and oracle hashes). With those hash-bound audits the official
+`protocol_report` for manifest `42ea660b…` reports **93/100 correct**, 24 useful repair plans, failures
+`missing-dependency:2` (duplicate list item; normalized in dbcec39) and `upstream-owner:4` (genuine owner/scope
+inconsistency), 5 missing (`qualified-local-alternative`, prerequisite: an independently measured authorized local
+alternative). Status FAIL — the gate is 100/100. Still preliminary: no task ticked.
