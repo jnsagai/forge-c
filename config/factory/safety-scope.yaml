@@ -92,3 +92,57 @@ decisions:
           tools that produced or verified this work order, so no tool assurance assessment is performed.
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-21'
+  # OD-2026-10-25-02 (feature 015 ST-driver benchmark): the owner set the target ASIL of the five ST LL benchmark
+  # product scopes, answering "ASIL B for all five (Recommended)" to the agent's question "Which target ASIL do you set
+  # for the five ST benchmark driver scopes (CRC, SPI, USART, GPIO, TIM)?" (2026-10-25). The owner-signed safety
+  # documents (OD-2026-10-19-11) are registered under safety_documents only on the owner's signature.
+  - scope_id: SC-CRC-2026-10-25
+    examples: [0014c-st-cube-crc]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 CRC calculation unit LL driver delivered by ST
+      (benchmark example 0014c-st-cube-crc) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-SPI-2026-10-25
+    examples: [0011c-st-cube-spi]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 SPI1 LL driver delivered by ST
+      (benchmark example 0011c-st-cube-spi) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-USART-2026-10-25
+    examples: [0012c-st-cube-usart]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 USART1 LL driver delivered by ST
+      (benchmark example 0012c-st-cube-usart) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-GPIO-2026-10-25
+    examples: [0010c-st-cube-gpio]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 GPIOA LL driver delivered by ST
+      (benchmark example 0010c-st-cube-gpio) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-TIM-2026-10-25
+    examples: [0013c-st-cube-tim]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 TIM2 LL driver delivered by ST
+      (benchmark example 0013c-st-cube-tim) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
