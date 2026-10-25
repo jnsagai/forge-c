@@ -66,6 +66,27 @@ reports; `--trial` cannot shrink their denominator. Scoped completion is labeled
 `TRIAL_SUBSET_COMPLETE`, never whole-campaign qualification. Provisioning waits
 for an order's existing AFO admission before charging its diagnosis job.
 
+The owner-verified preparer archives its immutable manifest in the existing AFO
+artifact tree. Completed role jobs can then be recorded by model-free supervision
+after engineering authority expires or is revoked. Publication is recoverable
+across the artifact/SQL boundary; the original snapshot remains immutable while
+late usage and liveness settle in their existing ledgers.
+
+Purpose-aware queue admission creates a qualification wrapper without a product
+`FABRO_LAUNCH` command. Its neutral terminal state is `QUALIFICATION_RECORDED`:
+it means a protocol result was recorded, including a failed or unknown result.
+It is neither product READY nor product BLOCKED. Ordinary product orders cannot
+enter it. Closure requires the original qualification marker, a hash-bound result
+and proven native quiescence for every role worker; a held inference lease keeps
+the wrapper active. No product native identity or accepted gate is invented.
+
+Native command nodes, role MCP servers and policy hooks receive the same explicit
+non-secret data/policy/authorization/intent paths. Credentials are not forwarded
+through this context. Qualification usage comes from the gateway request ledger;
+Fabro command-node usage is retained separately and cannot replace model usage
+with zero. Recoverable protocol cases require an actual request-ledger entry in
+addition to the independent audit and accepted plan.
+
 Six response interventions are implemented at the native adapter boundary:
 administrative-field forgery, empty content, truncated JSON, an unqualified
 model switch, a genuinely distinct foreign case reference and a reworded tried

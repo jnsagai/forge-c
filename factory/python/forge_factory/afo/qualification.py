@@ -193,6 +193,8 @@ def validate(manifest):
         ):
             raise Refused("QUALIFICATION_MISSION_EXCEEDS_FROZEN_WORK")
     if manifest["stage"] == "protocol":
+        if manifest["identity"]["role"] != "afo-recovery-planner":
+            raise Refused("PROTOCOL_CAMPAIGN_ROLE_MISMATCH")
         cases = manifest["cases"]
         if len(cases) != 20 or len({c["case_id"] for c in cases}) != 20 or any(c["repeats"] != 5 for c in cases):
             raise Refused("PROTOCOL_DENOMINATOR_CHANGED")
@@ -255,6 +257,7 @@ def initial_reservation(manifest, job, eff, *, store=None):
     if tokens > int(eff.get("budgets.max_model_tokens_per_order")) or tokens > identity["context_tokens"]:
         raise Refused("QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY")
     from .protocol_faults import bind as bind_fault
+    from .qualification_state import metadata as qualification_metadata
 
     return {
         "reserved_tokens": tokens,
@@ -268,6 +271,7 @@ def initial_reservation(manifest, job, eff, *, store=None):
             "authorized_tokens": tokens,
         },
         **bind_fault(manifest, job),
+        **qualification_metadata(manifest, job["job_id"]),
     }
 
 
@@ -442,6 +446,9 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
             raise Refused("CAMPAIGN_JOB_CONFIGURATION_CHANGED", trial)
         # The case and its hash stay frozen. Campaign binding is deterministic
         # administrative metadata, so signing does not require a hash cycle.
+        from .qualification_state import metadata as qualification_metadata
+
+        archived = qualification_metadata(manifest, job["job_id"])
         with store.tx() as c:
             row = c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (job["job_id"],)).fetchone()
             current = json.loads(row[0])
@@ -450,6 +457,7 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
             current["qualification_manifest_sha256"] = sha
             current["qualification_identity"] = identity
             current["qualification_model_profile"] = manifest["model_profile"]
+            current.update(archived)
             c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(current), job["job_id"]))
         changed += 1
         if changed >= limit:
@@ -500,71 +508,113 @@ def step(manifest, authorization_ref, destination, *, store=None, trial_ids=None
             job = local_agent.poll(store, store.order(job["order_id"]), job, eff)
             if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
                 return {"status": "IN_PROGRESS", "trial": trial, "job_id": job["job_id"]}
-            from .completion_receipt import Context, Receipts
+            row = protocol_observation(store, manifest, trial, job)
+            from .qualification_state import record_completed
 
-            candidates = Receipts(store).for_job(Context.from_job(store, job["job_id"]))
-            receipt = (
-                Receipts(store).latest(job["receipt_id"]) if job.get("receipt_id") else (candidates[-1] if candidates else None)
-            )
-            observed = (
-                receipt["decision"]
-                if receipt and receipt["admissibility_state"] == "ACCEPTED"
-                else "REJECTED"
-                if receipt
-                else "FAILED_PROTOCOL"
-            )
-            from .execution_lifecycle import Executions
-
-            execution = Executions(store).get(job["job_id"])
-            if job["state"] == "REVOKED":
-                observed = "REVOKED"
-            elif (job.get("error") or "").startswith("MISSION_") and "EXHAUSTED" in job["error"]:
-                observed = "EXHAUSTED"
-            elif execution and execution["task_outcome"] != "ACTIVE" and execution["resource_lease"] == "HELD":
-                observed = "BLOCKED_LIVE_HELD"
-            row = {
-                "execution": execution,
-                "job_state": job["state"],
-                "job_error": job.get("error"),
-                "trial_id": trial,
-                "case_id": case["case_id"],
-                "repeat": repeat,
-                "expected": case["expected"],
-                "observed": observed,
-                "manifest_sha256": report["manifest_sha256"],
-                "native_run_id": job.get("run_id"),
-                "job_id": job["job_id"],
-                "receipt": receipt,
-                "reported_tokens": job.get("reported_tokens"),
-                "reserved_tokens": job["reserved_tokens"],
-                "false_success": None,
-                "duplicate_effects": None,
-                "authority_escapes": None,
-                "usage_unknown": job.get("reported_tokens") is None,
-            }
-            from .protocol_faults import evidence_kind, observation_matches
-
-            with store.tx() as c:
-                injection = c.execute(
-                    "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind=?",
-                    (job["job_id"], evidence_kind(job)),
-                ).fetchone()
-            if job.get("qualification_fault"):
-                row["declared_fault"] = job["qualification_fault"]
-                row["fault_observation"] = json.loads(injection[0]) if injection else None
-                if (
-                    job["qualification_fault"]["recipe"]["boundary"] == "before-evidence-read"
-                    and job.get("error") in ("EVIDENCE_MISSING_OR_CHANGED", "EVIDENCE_PATH_ESCAPE")
-                    and observation_matches(manifest, row)
-                ):
-                    row["observed"] = "REJECTED"
-            immutable_json(path, row)
+            recorded = record_completed(store, job, destination=dest)
+            if recorded:
+                row = recorded["row"]
+            else:
+                immutable_json(path, row)
             return {"status": "RECORDED", "trial": trial, "row_sha256": sha256_file(path)}
     return {
         "status": "CAMPAIGN_WINDOW_COMPLETE" if trial_ids is None else "TRIAL_SUBSET_COMPLETE",
         "factory_service": "CONTINUES_UNCHANGED",
         "report": protocol_report(manifest, load_rows(dest)),
     }
+
+
+def protocol_observation(store, manifest, trial, job):
+    """Read existing broker/native facts without dispatch, authority renewal or model calls."""
+    case_id, raw_repeat = trial.rsplit(":", 1)
+    repeat = int(raw_repeat)
+    case = next((c for c in manifest["cases"] if c["case_id"] == case_id), None)
+    if case is None:
+        raise Refused("QUALIFICATION_UNKNOWN_FROZEN_TRIAL")
+    report = {"manifest_sha256": digest(manifest)}
+    from .completion_receipt import Context, Receipts
+
+    binding_error = None
+    try:
+        candidates = Receipts(store).for_job(Context.from_job(store, job["job_id"]))
+    except (Refused, OSError, ValueError) as exc:
+        candidates = []
+        binding_error = getattr(exc, "code", "QUALIFICATION_CASE_UNAVAILABLE")
+    receipt = (
+        Receipts(store).latest(job["receipt_id"])
+        if job.get("receipt_id") and binding_error is None
+        else (candidates[-1] if candidates else None)
+    )
+    observed = (
+        receipt["decision"]
+        if receipt and receipt["admissibility_state"] == "ACCEPTED"
+        else "REJECTED"
+        if receipt
+        else "FAILED_PROTOCOL"
+    )
+    from .execution_lifecycle import Executions
+
+    execution = Executions(store).get(job["job_id"])
+    with store.tx() as c:
+        requests = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_request_ledger WHERE job_id=?", (job["job_id"],))]
+    reported = (
+        sum(r["reported_tokens"] for r in requests)
+        if requests and all(r.get("reported_tokens") is not None for r in requests)
+        else None
+    )
+    if job["state"] == "REVOKED":
+        observed = "REVOKED"
+    elif (job.get("error") or "").startswith("MISSION_") and "EXHAUSTED" in job["error"]:
+        observed = "EXHAUSTED"
+    elif execution and execution["task_outcome"] != "ACTIVE" and execution["resource_lease"] == "HELD":
+        observed = "BLOCKED_LIVE_HELD"
+    if binding_error:
+        observed = "UNKNOWN"
+    row = {
+        "execution": execution,
+        "job_state": job["state"],
+        "job_error": job.get("error"),
+        "trial_id": trial,
+        "case_id": case["case_id"],
+        "repeat": repeat,
+        "expected": case["expected"],
+        "observed": observed,
+        "manifest_sha256": report["manifest_sha256"],
+        "native_run_id": job.get("run_id"),
+        "job_id": job["job_id"],
+        "case_sha256": job["case_sha256"],
+        "case_binding_valid": binding_error is None,
+        "observation_blockers": [binding_error] if binding_error else [],
+        "receipt": receipt,
+        "reported_tokens": reported,
+        "native_fabro_reported_tokens": job.get("reported_tokens"),
+        "request_count": len(requests),
+        "requests_sha256": digest(requests),
+        "usage_source": "GATEWAY_REQUEST_LEDGER",
+        "reserved_tokens": job["reserved_tokens"],
+        "false_success": None,
+        "duplicate_effects": None,
+        "authority_escapes": None,
+        "usage_unknown": reported is None,
+    }
+    from .protocol_faults import evidence_kind, observation_matches
+
+    with store.tx() as c:
+        injection = c.execute(
+            "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind=?",
+            (job["job_id"], evidence_kind(job)),
+        ).fetchone()
+    if job.get("qualification_fault"):
+        row["declared_fault"] = job["qualification_fault"]
+        row["fault_observation"] = json.loads(injection[0]) if injection else None
+        if (
+            binding_error is None
+            and job["qualification_fault"]["recipe"]["boundary"] == "before-evidence-read"
+            and job.get("error") in ("EVIDENCE_MISSING_OR_CHANGED", "EVIDENCE_PATH_ESCAPE")
+            and observation_matches(manifest, row)
+        ):
+            row["observed"] = "REJECTED"
+    return row
 
 
 def product_step(manifest, destination, *, store=None):
@@ -639,6 +689,7 @@ def protocol_report(manifest, rows):
 
         ok = (
             row["observed"] == case["expected"]
+            and row.get("case_binding_valid") is not False
             and observation_matches(manifest, row)
             and (
                 row.get("native_run_id")
@@ -658,6 +709,7 @@ def protocol_report(manifest, rows):
                 and receipt.get("admissibility_state") == "ACCEPTED"
                 and receipt.get("decision") == "PROPOSE_REPAIR"
                 and bool(receipt.get("bound_plan"))
+                and row.get("request_count", 0) > 0
             )
         correct += bool(ok)
         useful += bool(receipt.get("admissibility_state") == "ACCEPTED" and receipt.get("decision") == "PROPOSE_REPAIR")

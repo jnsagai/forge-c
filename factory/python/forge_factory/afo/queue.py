@@ -99,10 +99,12 @@ MIGRATIONS = [
 MIGRATIONS.append(DURABLE_MIGRATION)
 MIGRATIONS.append("CREATE TABLE afo_product_jobs (job_id TEXT PRIMARY KEY,record TEXT NOT NULL);")
 MIGRATIONS.append(
-    "CREATE TABLE afo_mission_counters (event_id TEXT PRIMARY KEY,mission_id TEXT NOT NULL,job_id TEXT NOT NULL,kind TEXT NOT NULL);"
+    "CREATE TABLE afo_mission_counters "
+    "(event_id TEXT PRIMARY KEY,mission_id TEXT NOT NULL,job_id TEXT NOT NULL,kind TEXT NOT NULL);"
 )
 MIGRATIONS.append(
-    "CREATE TABLE afo_execution_evidence (job_id TEXT NOT NULL,kind TEXT NOT NULL,record TEXT NOT NULL,sha256 TEXT NOT NULL,PRIMARY KEY(job_id,kind));"
+    "CREATE TABLE afo_execution_evidence "
+    "(job_id TEXT NOT NULL,kind TEXT NOT NULL,record TEXT NOT NULL,sha256 TEXT NOT NULL,PRIMARY KEY(job_id,kind));"
 )
 
 # DISPATCH_PENDING/UNKNOWN -> PREPARED only when reconciliation PROVES the launch never reached Fabro (ADR-AFO-002)
@@ -332,6 +334,11 @@ class Store:
             )
         if to == "WAITING_EXTERNAL_CHANGE":  # AFO-T051: the TTL runs from here
             fields.setdefault("waiting_since_epoch", time.time())
+        if to == "QUALIFICATION_RECORDED":
+            from .qualification_state import can_close
+
+            if not can_close(c, oid):
+                raise QueueError("QUALIFICATION_RESULT_AND_QUIESCENCE_REQUIRED", oid)
         sets = ", ".join(["state=?", "version=version+1"] + [f"{k}=?" for k in fields])
         n = c.execute(
             f"UPDATE afo_work_orders SET {sets} WHERE order_id=? AND version=?",  # noqa: S608
@@ -381,7 +388,7 @@ class Store:
 
     # -- outbox (T018) -------------------------------------------------------------------------------------------
     def _enqueue(self, c, kind: str, idem: str, oid: str, attempt_id: str | None, epoch: int, payload: dict) -> str:
-        from .operations import configured, Intent
+        from .operations import Intent, configured
 
         if kind == "FABRO_LAUNCH" and configured():
             intent = Intent().read()
@@ -453,9 +460,21 @@ class Store:
         return max(cands, key=lambda o: (PRIORITY[o["priority"]] + (now - o["created_epoch"]) / aging_s, -o["created_epoch"]))
 
     def admit(
-        self, oid: str, *, epoch: int, scope: str, policy_sha256: str, authorization_id: str | None, max_concurrent: int
+        self,
+        oid: str,
+        *,
+        epoch: int,
+        scope: str,
+        policy_sha256: str,
+        authorization_id: str | None,
+        max_concurrent: int,
+        qualification_ref: str | None = None,
     ) -> str:
         """QUEUED -> ADMITTED and the FABRO_LAUNCH intent for attempt seq 1+, atomically, under the fencing epoch."""
+        if qualification_ref is not None and (
+            not isinstance(qualification_ref, str) or not re.fullmatch(r"qualification-014:[0-9a-f]{64}", qualification_ref)
+        ):
+            raise QueueError("QUALIFICATION_ADMISSION_REFERENCE_INVALID")
         with self.tx() as c:
             if not self.fence_ok(c, scope, epoch):
                 raise QueueError("FENCED", f"epoch {epoch} is stale")
@@ -494,7 +513,7 @@ class Store:
                 "exit_status": None,
                 "terminal_package_status": None,
                 "checkpoint_refs": [],
-                "evidence_refs": [],
+                "evidence_refs": [qualification_ref] if qualification_ref else [],
                 "finished_utc": None,
             }
             contracts.require("attempt", rec)
@@ -502,7 +521,16 @@ class Store:
                 "INSERT INTO afo_attempts (attempt_id, order_id, seq, state, record, created_utc) VALUES (?,?,?,?,?,?)",
                 (aid, oid, seq, "PREPARED", json.dumps(rec), rec["created_utc"]),
             )
-            self._enqueue(c, "FABRO_LAUNCH", f"launch:{aid}", oid, aid, epoch, {"attempt_id": aid})
+            if qualification_ref:
+                self._event(
+                    c,
+                    "qualification_admitted",
+                    oid,
+                    aid,
+                    {"qualification_ref": qualification_ref, "purpose": "ROLE_PROTOCOL_FIXTURE_NO_PRODUCT_LAUNCH"},
+                )
+            else:
+                self._enqueue(c, "FABRO_LAUNCH", f"launch:{aid}", oid, aid, epoch, {"attempt_id": aid})
             return aid
 
     @staticmethod

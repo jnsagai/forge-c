@@ -24,6 +24,14 @@ from . import planner
 from .queue import QueueError
 
 ROLES = {"afo-recovery-planner": "forge-afo-mcp", "afo-factory-maintainer": "forge-maintainer-mcp"}
+NATIVE_CONTEXT = (
+    "FORGE_DATA_ROOT",
+    "FORGE_AFO_POLICY",
+    "FORGE_AFO_AUTH_DIR",
+    "FORGE_AFO_ALLOWED_SIGNERS",
+    "FORGE_OPERATIONS_INTENT",
+    "FORGE_EVENTS_DIR",
+)
 SCHEMA = """CREATE TABLE IF NOT EXISTS afo_local_agent_jobs (
  job_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, role TEXT NOT NULL,
  state TEXT NOT NULL, record TEXT NOT NULL, UNIQUE(attempt_id, role))"""
@@ -147,6 +155,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         model_identity = load_profile(profile)["models"]["allowed"][model]
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
+        job["native_context"] = {key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)}
         if qualification_manifest is not None:
             from .qualification import initial_reservation
 
@@ -190,6 +199,22 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             c, "diagnosis_reserved", order["order_id"], attempt_id, {"job_id": job["job_id"], "role": role, "model": model}
         )
     return job
+
+
+def execution_context(job):
+    """The same small non-secret namespace context goes to command nodes and role MCP servers."""
+    values = {key: value for key, value in (job.get("native_context") or {}).items() if key in NATIVE_CONTEXT}
+    values["FORGE_LRTX_PROFILE"] = job["profile"]
+    if job.get("durable_protocol") or job.get("durable_native"):
+        values["FORGE_DURABLE_AUTONOMY"] = "1"
+    if any(not isinstance(value, str) or "\x00" in value for value in values.values()):
+        raise ValueError("LOCAL_AGENT_NATIVE_CONTEXT_INVALID")
+    return values
+
+
+def command_environment(job):
+    """Explicitly bridge the controller context into Fabro command nodes; never forward credentials."""
+    return " ".join(key + "=" + shlex.quote(value) for key, value in sorted(execution_context(job).items()))
 
 
 def launch(job: dict) -> str:
@@ -256,7 +281,7 @@ def launch(job: dict) -> str:
     )
     if job.get("durable_protocol"):
         command = (
-            f"{_env()} FORGE_REPO_ROOT={shlex.quote(str(REPO_ROOT))} {sys.executable} "
+            f"{_env()} {command_environment(job)} FORGE_REPO_ROOT={shlex.quote(str(REPO_ROOT))} {sys.executable} "
             f"-m forge_factory.afo.local_agent semantic --job {job['job_id']}"
         )
         graph = (
@@ -266,7 +291,8 @@ def launch(job: dict) -> str:
             " start -> generate -> exit\n}\n"
         )
     servers = fabro_mcp_config([ROLES[job["role"]]])
-    servers[ROLES[job["role"]]]["env"] = {**context, "FORGE_REPO_ROOT": str(REPO_ROOT)}
+    native_context = execution_context(job) if job.get("durable_protocol") or job.get("durable_native") else {}
+    servers[ROLES[job["role"]]]["env"] = {**native_context, **context, "FORGE_REPO_ROOT": str(REPO_ROOT)}
     binding = Binding(job["job_id"], str(ws), {"agent": {"role": job["role"], "phase": None}})
     toml = write_run(
         ws,
@@ -275,7 +301,7 @@ def launch(job: dict) -> str:
         binding,
         servers,
         model=job["model"],
-        hook_env={"FORGE_REPO_ROOT": str(REPO_ROOT)},
+        hook_env={**native_context, "FORGE_REPO_ROOT": str(REPO_ROOT)},
     )
     (ws / ".forge-run/local-profile.json").write_text(json.dumps(local, sort_keys=True))
     fab = os.environ.get("FORGE_FABRO_BIN", str(Path.home() / ".fabro/bin/fabro"))
@@ -443,10 +469,17 @@ def supervise(store, eff) -> list[dict]:
 
                 rec = Executions(store).get(job["job_id"])
                 if rec and rec["resource_lease"] == "RELEASED" and job["state"] not in ("RUNNING", "LAUNCHING"):
+                    from .qualification_state import record_completed
+
+                    record_completed(store, job)
                     continue
                 order = store.order(job["order_id"])
                 if order is not None:
-                    out.append(poll(store, order, job, eff))
+                    observed = poll(store, order, job, eff)
+                    out.append(observed)
+                    from .qualification_state import record_completed
+
+                    record_completed(store, observed)
                 continue
             if job["state"] not in ("PREPARED", "LAUNCHING", "RUNNING"):
                 continue
