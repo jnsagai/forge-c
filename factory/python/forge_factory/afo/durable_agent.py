@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .completion_receipt import Context, Receipts
 from .diagnosis_packet import evidence, load, measure_request
-from .durable import Refused, canonical, digest, immutable_json, schema
+from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
 
@@ -212,6 +212,7 @@ def request_material(job):
     output extension twice by sending its transformed measurement copy.
     """
     from ..lrtx.structured import skill
+    from .semantic_proposal import wire_schema
 
     case = json.loads(Path(job["case"]).read_text())
     packet = load(case["packet_ref"])
@@ -250,7 +251,7 @@ def request_material(job):
         ],
         "response_format": {
             "type": "json_schema",
-            "json_schema": {"name": "semantic_proposal", "strict": True, "schema": schema("semantic-proposal")},
+            "json_schema": {"name": "semantic_proposal", "strict": True, "schema": wire_schema()},
         },
     }
     from ..llm_gateway import sanitize_request

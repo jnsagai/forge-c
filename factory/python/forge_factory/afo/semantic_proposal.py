@@ -28,6 +28,29 @@ def parse(raw: str | bytes | dict) -> dict:
 DECISIONS = ("PROPOSE_REPAIR", "NEEDS_EVIDENCE", "CLOSE_BLOCKED")
 
 
+def wire_schema() -> dict:
+    """Grammar-friendly generation constraint derived from the unchanged authoritative contract.
+
+    Omniverse2 2026-10-25: through the local provider the authoritative schema (top-level oneOf
+    with branch-level required/not) constrained nothing useful; Qwen returned only
+    {"decision": ...}. This is an anyOf of closed objects, one per decision, without not/oneOf.
+    It is only a decoding aid: every answer is still parsed against the authoritative schema.
+    """
+    from .durable import schema
+
+    contract = schema("semantic-proposal")
+    branches = []
+    for branch in contract["oneOf"]:
+        decision = branch["properties"]["decision"]["const"]
+        forbidden = {name for rule in branch.get("not", {}).get("anyOf", []) for name in rule["required"]}
+        properties = {k: v for k, v in contract["properties"].items() if k not in forbidden}
+        properties["decision"] = {"const": decision}
+        branches.append(
+            {"type": "object", "properties": properties, "required": branch["required"], "additionalProperties": False}
+        )
+    return {"anyOf": branches}
+
+
 def diagnose(raw: str | bytes | dict) -> dict:
     """Value-free shape facts of a rejected proposal: no field values, prose, raw output or reasoning."""
     import re
