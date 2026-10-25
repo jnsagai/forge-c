@@ -156,10 +156,41 @@ _SAFE = (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Constant, ast.BitOr, ast.Bi
          ast.RShift, ast.Invert, ast.Add, ast.Sub, ast.Mult, ast.USub, ast.UAdd)
 
 
-def evaluate(expr: str, macros: dict[str, str], depth: int = 0) -> int | None:
-    """Integer value of a constant C expression built from literals, casts and object-like macros (None if unknown)."""
+def _fold_position(expr: str, macros: dict[str, str], depth: int) -> str | None:
+    """CMSIS POSITION_VAL(x) / __CLZ(__RBIT(x)) of a constant x: the index of its lowest set bit (32 for 0)."""
+    while True:
+        m = re.search(r"\b(?:POSITION_VAL|__CLZ\s*\(\s*__RBIT)\s*\(", expr)
+        if not m:
+            return expr
+        j, d = m.end(), 1
+        while j < len(expr) and d:
+            d += {"(": 1, ")": -1}.get(expr[j], 0)
+            j += 1
+        if d:
+            return None
+        inner = expr[m.end():j - 1]
+        end = j
+        if m.group(0).startswith("__CLZ"):  # the outer __CLZ( closes after __RBIT(...)
+            k = re.match(r"\s*\)", expr[j:])
+            if not k:
+                return None
+            end = j + k.end()
+        v = evaluate(inner, macros, depth + 1, intrinsics=True)
+        if v is None:
+            return None
+        expr = expr[:m.start()] + f"({(v & -v).bit_length() - 1 if v else 32})" + expr[end:]
+
+
+def evaluate(expr: str, macros: dict[str, str], depth: int = 0, intrinsics: bool = False) -> int | None:
+    """Integer value of a constant C expression built from literals, casts and object-like macros (None if unknown).
+    `intrinsics` (feature 015, outside RCC): POSITION_VAL / __CLZ(__RBIT()) of a constant are folded too (ST GPIO:
+    MODIFY_REG(GPIOx->MODER, GPIO_MODER_MODE0 << (POSITION_VAL(Pin) * 2U), ...) with the pin bound)."""
     if depth > 20:
         return None
+    if intrinsics:
+        expr = _fold_position(expr, macros, depth)
+        if expr is None:
+            return None
     e = re.sub(r"\(\s*(?:const\s+)?(?:volatile\s+)?u?int(?:8|16|32|64)_t\s*\)", "", expr)
     e = re.sub(r"\(\s*unsigned(?:\s+(?:int|long))?\s*\)", "", e)
     e = re.sub(r"\b(0[xX][0-9a-fA-F]+|\d+)[uUlL]+\b", r"\1", e)
@@ -168,7 +199,7 @@ def evaluate(expr: str, macros: dict[str, str], depth: int = 0) -> int | None:
         name = m.group(0)
         if name not in macros:
             raise KeyError(name)
-        v = evaluate(macros[name], macros, depth + 1)
+        v = evaluate(macros[name], macros, depth + 1, intrinsics)
         if v is None:
             raise KeyError(name)
         return f"({v})"
@@ -199,6 +230,10 @@ def alias_of(register: str) -> tuple[str, str] | None:
 
 
 CMSIS_BIT_MACROS = {"WRITE_REG", "SET_BIT", "CLEAR_BIT", "MODIFY_REG", "READ_BIT", "READ_REG"}
+ARRAY_AS = {("AFR", "0"): "AFRL", ("AFR", "1"): "AFRH"}
+# stm32n6xx.h exclusive-access (LDREX/STREX) forms, read like their plain macros (feature 015, outside RCC)
+ATOMIC_AS = {"ATOMIC_SET_BIT": "SET_BIT", "ATOMIC_CLEAR_BIT": "CLEAR_BIT", "ATOMIC_MODIFY_REG": "MODIFY_REG",
+             "ATOMIC_SETH_BIT": "SET_BIT", "ATOMIC_CLEARH_BIT": "CLEAR_BIT", "ATOMIC_MODIFYH_REG": "MODIFY_REG"}
 
 
 @dataclass
@@ -242,8 +277,15 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
     pfx = prefix
     effects: list[Effect] = []
 
+    if pfx != "RCC":  # CMSIS register arrays: GPIOx->AFR[0]/[1] are RM0486's GPIOx_AFRL/AFRH (others: name + index)
+        body = re.sub(r"->\s*(\w+)\s*\[\s*(\d+)U?\s*\]", lambda m: "->" + ARRAY_AS.get((m.group(1), m.group(2)),
+                                                                                    m.group(1) + m.group(2)), body)
+
+    def ev(x: str | None) -> int | None:
+        return None if x is None else evaluate(x, macros, intrinsics=pfx != "RCC")
+
     def eff(reg: str, op: str, mask_expr: str | None, text: str) -> None:
-        mask = evaluate(mask_expr, macros) if mask_expr is not None else None
+        mask = ev(mask_expr)
         al = alias_of(reg)
         if al and op in ("write", "set"):
             effects.append(Effect(al[0], al[1], mask, reg, text))
@@ -269,9 +311,12 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
         # RCC: the global instance exactly as before; other peripherals: the instance or its pointer parameter, with
         # or without the parentheses of a bound argument (CRC, CRCx, (CRC), SPI1, SPIx, ...)
         reg_ref = rf"RCC\s*->\s*({IDENT})" if pfx == "RCC" else rf"\(*\s*{pfx}\w*\s*\)*\s*->\s*({IDENT})"
-        macro_rx = rf"\b(WRITE_REG|SET_BIT|CLEAR_BIT|MODIFY_REG|READ_BIT|READ_REG)\s*\(\s*{reg_ref}\s*(?:,([^;]*))?\)\s*;?"
+        names = "WRITE_REG|SET_BIT|CLEAR_BIT|MODIFY_REG|READ_BIT|READ_REG"
+        if pfx != "RCC":  # CMSIS exclusive-access forms (ST USART: ATOMIC_MODIFY_REG(USARTx->CR1, RE | TE, dir))
+            names = "ATOMIC_(?:SETH?_BIT|CLEARH?_BIT|MODIFYH?_REG)|" + names
+        macro_rx = rf"\b({names})\s*\(\s*{reg_ref}\s*(?:,([^;]*))?\)\s*;?"
         for m in re.finditer(macro_rx, body):
-            macro, reg = m.group(1), f"{pfx}_" + m.group(2)
+            macro, reg = ATOMIC_AS.get(m.group(1), m.group(1)), f"{pfx}_" + m.group(2)
             rest = _split_args(m.group(3) or "")
             if macro == "WRITE_REG":
                 eff(reg, "write", rest[0] if rest else None, m.group(0))
@@ -281,7 +326,7 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
                 eff(reg, "clear", rest[0] if rest else None, m.group(0))
             elif macro == "MODIFY_REG":
                 eff(reg, "modify", rest[1] if len(rest) > 1 else None, m.group(0))
-                effects[-1].clear = evaluate(rest[0], macros) if rest else None
+                effects[-1].clear = ev(rest[0]) if rest else None
             else:
                 effects.append(Effect(reg, "read", evaluate(rest[0], macros) if rest else None, "", m.group(0)))
         for m in re.finditer(rf"{reg_ref}\s*(\|=|&=|=(?!=))\s*([^;]+);", body):
@@ -306,8 +351,8 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
             callee = defs.get(m.group(1))
             if callee is None or callee.name == defn.name:
                 continue
-            if pfx != "RCC" and callee.name in CMSIS_BIT_MACROS:  # already read semantically above; expanding
-                continue  # MODIFY_REG's own WRITE_REG would add a mask-less whole-register write (feature 015)
+            if pfx != "RCC" and (callee.name in CMSIS_BIT_MACROS or callee.name in ATOMIC_AS):  # read semantically
+                continue  # above; expanding MODIFY_REG's own WRITE_REG would add a mask-less whole-register write (015)
             j, d = m.end(), 1
             while j < len(body) and d:
                 d += {"(": 1, ")": -1}.get(body[j], 0)

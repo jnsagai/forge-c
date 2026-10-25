@@ -147,3 +147,38 @@ def test_a_set_requirement_against_a_modify_that_leaves_the_field_zero_is_still_
     p.write_text(json.dumps(d))
     r = C.check(ws, "SWE.3", write=False)
     assert [(f["kind"], f["function"]) for f in r["findings"]] == [("CONTRADICTION", "LL_SPI_SetClockPolarity")]
+
+
+def test_a_value_the_delivered_code_computes_is_deferred_to_the_tests_not_a_contradiction(tmp_path):
+    """ST LL_USART_SetBaudRate computes USART_BRR (clock, prescaler table, oversampling): no constant to compare, so the
+    case is recorded DEFERRED (not a package gap) and stated; a constant write that disagrees stays a contradiction.
+    Built on the real SPI package with one synthetic delivered function. Local run state: skipped where absent."""
+    import json
+    import os
+    import shutil
+    from pathlib import Path
+
+    import pytest
+
+    src = Path(os.environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders/WO-AFO-7a6810a8baf9b9c4-a1/workspace"
+    if not (src / C.CALLS).is_file():
+        pytest.skip("local SPI run state not present")
+    ws = tmp_path / "ws"
+    shutil.copytree(src, ws, ignore=shutil.ignore_patterns("build"))
+    h = ws / "software/ll/stm32n6xx_ll_spi.h"
+    h.chmod(0o644)  # the delivered copy is read-only (FROZEN); this private copy gets one synthetic function
+    h.write_text(h.read_text() + "\n__STATIC_INLINE void LL_SPI_SetComputed(SPI_TypeDef *SPIx, uint32_t a, uint32_t b)"
+                 "\n{\n  uint32_t t = a / b;\n  SPIx->CR2 = t;\n}\n")
+    eff, calls = json.loads((ws / C.EFFECTS).read_text()), json.loads((ws / C.CALLS).read_text())
+    for case, value, args in (("SET_COMPUTED", 3, ["SPI1", "9U", "3U"]), ("SET_TSIZE_BAD", 4, ["SPI1", 5])):
+        fn = "LL_SPI_SetComputed" if case == "SET_COMPUTED" else "LL_SPI_SetTransferSize"
+        eff["effects"].append({"case": case, "swr": "SWR-099", "register": "SPI_CR2", "field": "TSIZE", "op": "write",
+                               "value": value})
+        calls["calls"][case] = {"function": fn, "args": args}
+    (ws / C.EFFECTS).write_text(json.dumps(eff))
+    (ws / C.CALLS).write_text(json.dumps(calls))
+    r = C.check(ws, "SWE.3", write=False)
+    got = sorted((f["kind"], f["function"], f["status"]) for f in r["findings"])
+    assert got == [("CONTRADICTION", "LL_SPI_SetTransferSize", "OPEN"),
+                   ("DEFERRED_TO_TESTS", "LL_SPI_SetComputed", "DEFERRED")]
+    assert r["status"] == "FINDINGS"

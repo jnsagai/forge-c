@@ -51,6 +51,11 @@ def _rm_fields(ws: Path) -> dict[tuple[str, str], int]:
     return {(r, f): ((1 << (msb - lsb + 1)) - 1) << lsb for r, v in regs.items() for f, (msb, lsb) in v["fields"].items()}
 
 
+def _clears_by_zero(exps: list[dict], register: str) -> bool:
+    on = [x for x in exps if x.get("register") == register and x.get("op") != "no_write"]
+    return bool(on) and all(x.get("op") == "write" and str(x.get("value")) in ("0", "0x0", "0x00") for x in on)
+
+
 def _allocated_functions(ws: Path, names: set[str]) -> set[str]:
     """Delivered functions named in any requirement row of the SWE.2 architecture tables (any column: b005 put the
     function in the third column, and query requirements have no register-effect case to link them)."""
@@ -86,12 +91,12 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
         return {"status": "NOT_RUN", "findings": [], "issues": [f"CONFORMANCE_INPUT_MISSING:{exc}"]}
     findings: list[dict] = []
 
-    def add(kind: str, function: str, requirement: str, evidence: str, reference: str = "") -> None:
+    def add(kind: str, function: str, requirement: str, evidence: str, reference: str = "", status: str = "OPEN") -> None:
         key = (kind, function, requirement, evidence)
         if any((f["kind"], f["function"], f["requirement"], f["evidence"]) == key for f in findings):
             return
         findings.append({"id": f"CF-{len(findings) + 1:03d}", "kind": kind, "function": function,
-                         "requirement": requirement, "reference": reference, "evidence": evidence, "status": "OPEN"})
+                         "requirement": requirement, "reference": reference, "evidence": evidence, "status": status})
 
     from ..inspection.swtrace import swr_texts
 
@@ -151,6 +156,15 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                 lsb = (mask & -mask).bit_length() - 1
                 want = (int(str(x.get("value")), 0) << lsb) & mask if x.get("value") is not None else None
                 ops = ("write",) if pfx == "RCC" else ("write", "modify")  # CMSIS MODIFY_REG(reg, field, value)
+                computed = [g for g in writes if g.register == reg and g.op in ops]
+                if pfx != "RCC" and want is not None and computed and all(g.mask is None for g in computed):
+                    # feature 015: the delivered code computes the value (ST LL_USART_SetBaudRate: BRR from the clock,
+                    # prescaler table and oversampling); not decidable statically, so stated and left to the
+                    # requirement-based tests (SWE.4/SWE.6) instead of a false contradiction; never a pass claim
+                    add("DEFERRED_TO_TESTS", fn, swr, f"case {case}: {reg}.{field} = {x.get('value')} is computed by "
+                        "the delivered code (" + "; ".join(g.text.strip()[:60] for g in computed) + ")",
+                        x.get("source", ""), status="DEFERRED")
+                    continue
                 if not any(g.register == reg and g.op in ops and g.mask is not None and want is not None
                            and g.mask & mask == want for g in writes):
                     add("CONTRADICTION", fn, swr, f"case {case}: expected {reg}.{field} = {x.get('value')}; the code "
@@ -175,7 +189,11 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
             if allowed is None and any(x.get("op") != "no_write" for x in exps):
                 add("CONTRADICTION", fn, swr, f"case {case}: writes {g.via or g.register} which no requirement of "
                     f"this case names ({g.text.strip()[:80]})")
-            elif allowed is not None and g.mask is not None and g.mask & ~allowed:
+            elif allowed is not None and g.mask is not None and g.mask & ~allowed and not (
+                    pfx != "RCC" and g.op == "write" and not g.via and g.mask == (~allowed & 0xFFFFFFFF)
+                    and _clears_by_zero(exps, g.register)):
+                # feature 015: an rc_w0 flag clear (ST TIM: WRITE_REG(TIMx->SR, ~TIM_SR_UIF)) writes 1, i.e. no
+                # change, to every other flag; accepted only when the requirement writes 0 to exactly those fields
                 add("CONTRADICTION", fn, swr, f"case {case}: changes {g.register} bits {hex(g.mask & ~allowed)} that "
                     "the requirement does not name")
             if g.op == "write" and not g.via and not any(x.get("op") == "write" for x in exps):
@@ -190,4 +208,5 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
     if write:
         (ws / DELIVERY_DIR).mkdir(parents=True, exist_ok=True)
         (ws / DELIVERY_DIR / "conformance.json").write_text(pretty_json(rec))
-    return {"status": "FINDINGS" if findings else "CONFORMANT", "findings": findings, "issues": []}
+    return {"status": "FINDINGS" if any(f["status"] == "OPEN" for f in findings) else "CONFORMANT",
+            "findings": findings, "issues": []}

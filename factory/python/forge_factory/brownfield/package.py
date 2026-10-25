@@ -99,14 +99,19 @@ def stage(ws: Path, stage_dir: Path) -> list[str]:
             (stage_dir / "delivery").mkdir(parents=True, exist_ok=True)
             (stage_dir / "delivery" / name).write_bytes(src.read_bytes())
     cf = _load(ws, "conformance.json").get("findings") or []
+    op = [f for f in cf if f.get("status", "OPEN") == "OPEN"]
     lines = [f"- Delivered code (brownfield, {m.get('code_mode')}): origin {d.get('origin')}; licence {d.get('licence')}; "
              f"{len(m.get('delivered') or [])} delivered files fingerprinted (configuration/delivery.json); "
              f"{len(d['scope']['functions'])} scope functions, {scope.get('excluded_count', 0)} excluded.",
              f"- The requirements were frozen before the delivered code entered the work order (SWE.1 baseline "
              f"{rec['injection'].get('swe1_baseline_id')}).",
              f"- Delivered code at packaging: {rec['verification'] or 'NOT_CHECKED'}.",
-             f"- Conformance findings (delivered code vs requirements): {len(cf)} "
-             f"({', '.join(sorted({f['kind'] for f in cf})) or 'none'})."]
+             f"- Conformance findings (delivered code vs requirements): {len(op)} "
+             f"({', '.join(sorted({f['kind'] for f in op})) or 'none'})."]
+    dfr = [f for f in cf if f.get("status") == "DEFERRED"]
+    if dfr:  # feature 015: a value the delivered code computes is not decided statically
+        lines.append(f"- Conformance checks not decidable statically, left to the requirement-based tests: {len(dfr)} ("
+                     + "; ".join(f"{f['function']} {f['requirement']}" for f in dfr[:8]) + ").")
     if m.get("code_mode") == "FIX_ALLOWED":
         ch = _load(ws, "change_report.json").get("changes") or []
         lines.append(f"- Corrections of the delivered code: {len(ch)} file(s), each linked to a CODE defect "
