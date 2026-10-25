@@ -26,6 +26,7 @@ from pathlib import Path
 
 from ..common import canonical_json, sha256_bytes, state_dir, utc_now
 from . import contracts
+from .durable import MIGRATION as DURABLE_MIGRATION
 
 PRIORITY = {"LOW": 0, "NORMAL": 1, "HIGH": 2}
 ACTIVE_STATES = ("ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING")
@@ -94,6 +95,8 @@ MIGRATIONS = [
       next_epoch REAL NOT NULL DEFAULT 0, delivered_utc TEXT);
     """,
 ]
+MIGRATIONS.append(DURABLE_MIGRATION)
+
 # DISPATCH_PENDING/UNKNOWN -> PREPARED only when reconciliation PROVES the launch never reached Fabro (ADR-AFO-002)
 ATTEMPT_EDGES = {"PREPARED": {"DISPATCH_PENDING", "CANCELLED"},
                  "DISPATCH_PENDING": {"RUNNING", "UNKNOWN", "FAILED", "PREPARED"},
