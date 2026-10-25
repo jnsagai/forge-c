@@ -1,6 +1,6 @@
 # Implementation and qualification status
 
-Updated 2026-10-25. Exact runtime source candidate: `9891b593dcea0949ad53c363ac2d3e8ca100a242`. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
+Updated 2026-10-25 (Claude continuation). Exact runtime source candidate: `dddf00eb7d5b1638de6f0bc5d92fbda632ac6878` (see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 
 The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
 
@@ -9,8 +9,8 @@ The original authored specification and its three Feature 014 contracts are reta
 | Axis | Result |
 |---|---|
 | Runtime implementation | Verified core increments; native qualification tooling remains partial. Exact-revision core/release evidence is below. Wider inherited coverage uses separately recorded revisions; combined-ordering and optional/native limits remain explicit. |
-| Actual Qwen/Fabro/gateway interoperability | NOT_RUN on the new candidate. Fixture wire tests are not native qualification. |
-| Diagnosis, author, inspector, maintenance capability | NOT_RUN separately; no model family or nominal context setting implies role competence. |
+| Actual Qwen/Fabro/gateway interoperability | PRELIMINARY live trial subsets on Omniverse2 (one isolated runtime per revision, 836ae49..dddf00e): intake, admission, native Fabro runs, gateway metering, typed incidents, wrapper closure and the four dispatch/liveness fault controls exercised; seven runtime defects found and fixed. Grammar-friendly wire schema raised schema-valid answers from 0/6 to 23/24. Not a completed campaign. |
+| Diagnosis, author, inspector, maintenance capability | Diagnosis: PRELIMINARY FAIL for `qwen3.6:35b-a3b` (reasoning high, single constrained response): NEEDS_EVIDENCE chosen for evident conformance repairs across 5 positive cases × 4 prompt/interface variants; the NEEDS_EVIDENCE case correct. Author, inspector, maintenance: NOT_RUN. No model family or nominal context setting implies role competence. |
 | RCC recovery / sealed READY / GPIO follow-on | NOT_RUN. Historical RCC failures remain failures; GPIO requires all five explicit prerequisites. |
 | Cross-job learning benefit | NOT_RUN. Capture, qualified retrieval and comparison fixtures do not establish measured benefit. |
 | Continuous operation | Model-free controller and isolated systemd checks passed. Remote reboot/mount/load faults and 24/72/168-hour campaigns NOT_RUN. |
@@ -90,6 +90,37 @@ The [provider development record](../../evidence/014-durable-local-autonomy/foll
 The exact-`9891b59` independent evaluator is `cre-promotion-runner@918c6a4`; it returns REJECTED / PROTECTED_PATH_CHANGE and does not run later promotion gates. Feature 014 deliberately changes protected recovery/lesson authority surfaces under this externally requested engineering PR. This result is retained, not converted to eligibility or bypassed. Candidate source is never promoted automatically.
 
 A standalone delivery fixture probe emitted two diagnostic knowledge audit events into the shared local JSONL stream because it omitted the private event-path override. Benchmark jobs, services and outcome records were unchanged. Their exact event IDs are retained in [fixture event provenance](../../evidence/014-durable-local-autonomy/followup/fixture-event-provenance.json) for exclusion from operational/learning metrics. Append-only history was preserved; subsequent standalone probes require private state and event paths.
+
+## 2026-10-25 continuation: intake, fault controls and preliminary Omniverse2 trials
+
+Source commits on `feat/014-durable-local-autonomy` after the handover (`72edbec`): `d446ef6` signed qualification intake
+(enrollment through existing AFO authorities, mission linked before QUEUED, frozen-root launch resolution, protocol-only
+mission limits, wrapper start); `836ae49` the four remaining fault controls (revoked-before-dispatch, expired-mission,
+lost-launch-ack, cancel-ack-still-live; all twelve declared interventions now have executors); then fixes found by the
+live runs: `cc2b39c` packet import at intake, item-local wrapper refusal, `expose-api --host-port`; `20f6b02` typed
+incident codes and required operations intent; `8e1aee5` /proc race in provider identity; `2dfd32f` value-free
+rejection diagnostics; `c6850ac` pidfd syscall fallback; `e35ed0a` closed-branch wire schema; `7f197d2` bridge
+identities for managed stop; `677d45a`, `b759094`, `dddf00e` single-response contract, evidence aliases and decision rule.
+
+Exact `dddf00e` (clean dedicated worktree, private state/event roots): core **559 passed, 11 skipped**, 0 failures
+(500.1 s); release **13/13** (9.0 s); history replay and transient-systemd semantics PASS; independent CRE
+`cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, later gates NOT_RUN). The 11 skips (the
+`9891b59` run had 1) are 8 real-workspace history cases absent from the private state root, 2 cross-UID probes without a
+0600 owner file and the disabled live-Fabro check; earlier `4f954e2`, `836ae49`, `8e1aee5`, `677d45a` clean runs also
+passed with 0 failures.
+
+Retained: the `fc7e6d7` full run that exceeded 900 s was re-run: 507 passed/11 skipped in 1,007 s; one test took 328 s
+(normally ~2 s) during host memory pressure (systemd-oomd kill at 16:45:54) before a clean host shutdown at 16:50; the
+runner's final JSON lacks the release entry although its log/JUnit show 13 passed. A `cc2b39c` regression is invalid
+evidence: source files in its worktree were edited while it ran (its two failures exposed the real /proc race fixed in
+`8e1aee5`). One driver attempt started 33 s before its grant's issue time and was refused `AUTH_NOT_CURRENT` (no effect).
+Stuck wrappers from the 836ae49 attempt and stacks that the older code could not stop managed were closed/stopped
+through existing FSM edges or the unmanaged stack path after setting that runtime's intent to STOPPED with the reason.
+
+Preliminary live results, findings table and exposure facts:
+[omniverse2-preliminary-20261025](../../evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/README.md)
+(`summary.json` rows are sanitized; no reasoning, raw prompts or vendor content). They are trial subsets of separate
+per-revision campaigns; no report reduces the 100-trial denominator and no task is ticked from them.
 
 ## Executable qualification handoff
 

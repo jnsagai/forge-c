@@ -1,5 +1,5 @@
 {
-  "manifest_sha256": "63a9d5951dbae75a446ca15e60d38551294d8b6adac19491e3349fcb6156c62d",
+  "manifest_sha256": "10073a5dd961c31c35dd1fe7352e968ae9027caa1c2789827f36ad77d9158ad8",
   "status": "BLOCKED",
   "blockers": [
     "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
@@ -9,5 +9,7 @@
   "local_model_capability": "NOT_RUN",
   "product_success": "NOT_RUN",
   "learning_benefit": "NOT_RUN",
-  "operational_availability": "NOT_RUN"
+  "operational_availability": "NOT_RUN",
+  "trial_scope": null,
+  "campaign_denominator": 1
 }
