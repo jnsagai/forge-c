@@ -41,6 +41,11 @@ need the FR-003 parser change first. A task is checked only with run evidence (`
 
 - [ ] **F015-T065** Delivery of ST HAL code with its dependencies (hal_def, hal_conf template); examples `00NNd-st-cube-<id>-hal`; queue items after the LL items.
 
-## M7 — Freeze
+## M7 — Self-managed runs (FR-008)
+
+- [ ] **F015-T080** AFO on the production line: profile codex-claude (launcher passes the Claude inspectors), PILOT policy with the owner-signed authorization, fresh recovery attempts for delivered code, benchmark orders (`forge_factory.benchmark.afo_orders`), Conductor environment file; tests.
+- [ ] **F015-T081** Owner signs the authorization; install and start the Conductor on loop10 (cloud-stack Fabro); submit the onboarded benchmark orders; record the first self-managed outcomes.
+
+## M8 — Freeze
 
 - [ ] **F015-T070** Freeze the benchmark set (FR-006, SC-002) and open the PR (no merge without owner approval).

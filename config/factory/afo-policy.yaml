@@ -2,10 +2,14 @@
 # specs/005-autonomous-factory-operations/contracts/afo-policy.schema.json plus the code floor (policy.FLOOR).
 # OBSERVE_ONLY: AFO reads, simulates and records only. PILOT/ACTIVE take effect only with a signed owner
 # authorization (config/factory/afo-authorizations/, verified by forge_factory.afo.authz) bound to this file's sha256.
-# Models: owner rule 2026-10-16 (DeepSeek, no local Qwen) and 2026-10-18 (Codex authors via the forge ACP proxy).
+# Models: owner 2026-10-25 "I want it running with codex and claude as inspector, forget about deepseek now": only
+# the production line profile codex-claude (Codex authors, Claude inspectors, forge ACP proxy). Mode PILOT (owner
+# 2026-10-25 "AFO on main can't run this yet - solve it!"): it takes effect only with the owner-signed authorization
+# named below; without a valid signature the effective mode stays OBSERVE_ONLY.
 schema_version: '1.0'
 feature_id: 005-autonomous-factory-operations
-mode: OBSERVE_ONLY
+mode: PILOT
+authorization_ref: AUTH-AFO-PILOT-20261025
 integration:
   reuse_002_supervisor: true
   reuse_004_cre: true
@@ -40,8 +44,7 @@ engineering:
   allow_scoped_product_draft_rework: false
   enable_recovery_planner: false
   allowed_model_profiles:
-  - deepseek-flash
-  - codex-gpt-6.1-sol
+  - codex-claude
   preserve_independent_inspector: true
   require_material_difference: true
   require_frozen_upstream_revalidation: true

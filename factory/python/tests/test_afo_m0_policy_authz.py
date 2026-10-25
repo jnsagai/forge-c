@@ -75,10 +75,18 @@ def test_absent_invalid_or_floor_breaking_policy_is_disabled(env, tmp_path, monk
     assert policy.load(tmp_path / "junk.yaml").mode == "DISABLED"
 
 
-def test_the_shipped_policy_is_observe_only_and_needs_no_authorization():
+def test_the_shipped_policy_requests_pilot_for_the_production_line_and_acts_only_when_owner_signed():
+    """Owner 2026-10-25 ("AFO ... solve it! I want it running with codex and claude as inspector, forget about
+    deepseek now"): PILOT with the codex-claude profile only. Without the owner's valid signature the effective mode
+    stays OBSERVE_ONLY; the shipped authorization record is bound to the exact shipped policy."""
     e = policy.load()
-    assert e.mode == "OBSERVE_ONLY" and e.issues == [] and e.get("engineering.allowed_model_profiles") == [
-        "deepseek-flash", "codex-gpt-6.1-sol"]
+    assert yaml.safe_load(EXAMPLE.read_text())["mode"] == "PILOT"
+    assert e.get("engineering.allowed_model_profiles") == ["codex-claude"]
+    rec = json.loads((authz.AUTH_DIR / f"{e.get('authorization_ref')}.json").read_text())
+    assert authz.schema_errors(rec) == [] and rec["policy_sha256"] == e.sha256 and rec["scope"]["models"] == ["codex-claude"]
+    sig = authz.AUTH_DIR / rec["signature_ref"]
+    assert (e.mode, e.authorization_id) == ("PILOT", rec["authorization_id"]) if sig.is_file() else \
+        (e.mode == "OBSERVE_ONLY" and e.issues[0].startswith("MODE_PILOT_NOT_AUTHORIZED"))
 
 
 def test_pilot_takes_effect_only_with_a_valid_signed_authorization(env, tmp_path):

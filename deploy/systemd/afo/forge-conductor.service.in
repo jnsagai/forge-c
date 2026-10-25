@@ -23,6 +23,9 @@ Environment=FORGE_DATA_ROOT=@DATA@
 Environment=FORGE_STATE_DIR=@DATA@/state
 Environment=PYTHONPATH=@REPO@/factory/python
 Environment=PATH=@PATH@
+# optional host settings, e.g. the Fabro server the production line launches on (cloud stack: FORGE_FABRO_URL,
+# FORGE_FABRO_HOME, FORGE_FABRO_STORAGE, FORGE_FABRO_CONFIG); absent file: the defaults above
+EnvironmentFile=-@DATA@/state/afo/conductor.env
 ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight
 
 [Install]

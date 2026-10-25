@@ -116,15 +116,28 @@ def test_leases_fence_a_stale_scheduler(repo):
         s.attempt_transition(aid, "SUCCEEDED")                               # not an attempt edge
 
 
+# the AFO logic tests use two pre-approved profiles (the shipped policy since 2026-10-25 has only codex-claude, the
+# production line); the profile names are labels here, the launcher is never called with them
+LOGIC_PROFILES = ["deepseek-flash", "codex-gpt-6.1-sol"]
+
+
+def logic_policy(tmp_path, **update):
+    """The shipped policy with the two logic-test profiles (OBSERVE_ONLY unless `update` says otherwise)."""
+    pol = yaml.safe_load((REPO_ROOT / "config/factory/afo-policy.yaml").read_text())
+    pol["engineering"]["allowed_model_profiles"] = list(LOGIC_PROFILES)
+    pol.pop("authorization_ref", None)
+    pol.update({"mode": "OBSERVE_ONLY", **update})
+    pp = tmp_path / "afo-policy.yaml"
+    pp.write_text(yaml.safe_dump(pol))
+    return pp
+
+
 def _pilot(tmp_path, monkeypatch):
     key = tmp_path / "k"
     subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key)], check=True)
     signers = tmp_path / "signers"
     signers.write_text(f'Jefferson namespaces="{authz.NAMESPACE}" {(tmp_path / "k.pub").read_text()}')
-    pol = yaml.safe_load((REPO_ROOT / "config/factory/afo-policy.yaml").read_text())
-    pol.update(mode="PILOT", authorization_ref="AUTH-1")
-    pp = tmp_path / "afo-policy.yaml"
-    pp.write_text(yaml.safe_dump(pol))
+    pp = logic_policy(tmp_path, mode="PILOT", authorization_ref="AUTH-1")
     adir = tmp_path / "auth"
     adir.mkdir()
     sha = policy.load(pp).sha256
@@ -144,7 +157,7 @@ def _pilot(tmp_path, monkeypatch):
 
 def test_scheduler_by_mode_with_authority_preflight_backoff_and_budget(repo, tmp_path, monkeypatch):
     s = Store()
-    obs = policy.load()
+    obs = policy.load(logic_policy(tmp_path))
     oid, _ = s.submit(_env(repo), repo=repo, max_queued=10)
     r = scheduler.cycle(s, "A", eff=obs, probes=OK)
     assert r["action"] == "simulated" and r["would"] == "admit" and s.order(oid)["state"] == "QUEUED"

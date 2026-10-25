@@ -54,6 +54,16 @@ same inputs.
 - **FR-007** Existing behaviour is unchanged. This covers the RCC and IWDG work orders, the frozen compatibility
   fixtures, the local-rtx profiles and the factory gates. Every factory change goes through CRE.
 
+- **FR-008** (owner 2026-10-25: "the factory should be self-managed"; "AFO on main can't run this yet - solve it! I
+  want it running with codex and claude as inspector, forget about deepseek now") The queue runs as AFO work orders
+  on the production line:
+  - AFO's only pre-approved model profile is `codex-claude` (Codex authors, Claude inspectors);
+  - the policy requests PILOT, which takes effect only with the owner's SSH-signed authorization (scope: the benchmark
+    driver classes, `codex-claude`; actions: submit, launch, recover);
+  - a recovery attempt of a delivered-code order is a fresh work order, because main refuses `--resume-from` for
+    delivered code (validated brownfield resume is feature 012);
+  - the Conductor launches on the cloud-stack Fabro through an optional environment file.
+
 ## Non-goals
 
 - No change to gates, inspector policy or release policy.

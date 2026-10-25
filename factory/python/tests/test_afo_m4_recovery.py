@@ -57,7 +57,9 @@ def order(tmp_path, monkeypatch):
     s.attempt_transition(aid, "DISPATCH_PENDING", workspace_ref="workorder:WO-AFO-x-a1")
     s.attempt_transition(aid, "RUNNING", fabro_run_id="RUN1")
     s.transition(oid, "RUNNING", "launched")
-    eff = policy.load()
+    from test_afo_m2_queue import logic_policy
+
+    eff = policy.load(logic_policy(tmp_path))
     return s, s.order(oid), {**B, "order_id": oid, "attempt_id": aid}, epoch, eff
 
 
@@ -220,6 +222,9 @@ def test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked(w
     b = bundle.build(_real(wo), "afo-x", "afo-x-a1", open_capa=set())
     assert b["phase"] == phase and b["failure_class"] == "PRODUCT_QUALITY" and b["gate_result"] == "BLOCKED"
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
-    p = recovery.rule_plan(b, ws=_real(wo), order_env={}, tried_models={"deepseek-flash"}, eff=policy.load(),
-                           attempt_started_utc="", allowed_models=["deepseek-flash", "codex-gpt-6.1-sol"])
+    from test_afo_m2_queue import logic_policy
+
+    p = recovery.rule_plan(b, ws=_real(wo), order_env={}, tried_models={"deepseek-flash"},
+                           eff=policy.load(logic_policy(tmp_path)), attempt_started_utc="",
+                           allowed_models=["deepseek-flash", "codex-gpt-6.1-sol"])
     assert p is not None and p["strategy"] in ("RETURN_TO_OWNING_UPSTREAM_PHASE", "SWITCH_PREAPPROVED_MODEL_PROFILE")
