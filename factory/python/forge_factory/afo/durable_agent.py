@@ -382,11 +382,11 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
         doc = {**doc, "question_1_answer": prior}
         instructions = common + (
             "QUESTION 2 OF 2: question_1_answer established that an artifact conflicts with the authoritative "
-            "requirement. Choose the technique_id from packet.techniques that addresses this conflict and describe the "
-            "repair (strategy, affected_phase, target_obligations from packet.obligations, artifact_scope, "
-            "proposed_change, material_difference, validation_expectations); owner_phase only with "
-            "RETURN_TO_OWNING_UPSTREAM_PHASE. Choose technique_id=NONE with an explanation only if no listed technique "
-            "can address the conflict."
+            "requirement. Start with technique_id: the key of packet.techniques whose description fits the repair of "
+            "this conflict. Then describe that repair (strategy, affected_phase, target_obligations from "
+            "packet.obligations, artifact_scope, proposed_change, material_difference, validation_expectations); "
+            "owner_phase only with RETURN_TO_OWNING_UPSTREAM_PHASE. technique_id NONE (with an explanation) is reserved "
+            "for a conflict that none of the packet.techniques descriptions fits."
         )
         schema_name, wire = "diagnosis_technique", technique_schema(packet, packet["obligations"])
     else:

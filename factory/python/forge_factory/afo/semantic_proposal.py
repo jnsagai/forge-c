@@ -132,18 +132,21 @@ def technique_schema(packet, obligations) -> dict:
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
+    # technique_id comes first in both branches: the choice is an explicit enum value, never implied by whichever
+    # key the decoder emits first (batch 9: answers opened with "explanation", which forced NONE although their
+    # text named repair-implementation as the right technique).
     repair = {
-        "proposed_change": contract["proposed_change"],
-        "material_difference": contract["material_difference"],
         "technique_id": {"enum": sorted(packet.get("techniques") or {}) or ["NONE"]},
         "strategy": contract["strategy"],
         "affected_phase": contract["affected_phase"],
         "owner_phase": contract["owner_phase"],
         "target_obligations": {**contract["target_obligations"], "items": {"enum": sorted(obligations)}},
         "artifact_scope": contract["artifact_scope"],
+        "proposed_change": contract["proposed_change"],
+        "material_difference": contract["material_difference"],
         "validation_expectations": contract["validation_expectations"],
     }
-    blocked = {"explanation": contract["explanation"], "technique_id": {"const": "NONE"}}
+    blocked = {"technique_id": {"const": "NONE"}, "explanation": contract["explanation"]}
     branches = [{"type": "object", "properties": blocked, "required": list(blocked), "additionalProperties": False}]
     if packet.get("techniques"):
         required = [k for k in repair if k != "owner_phase"]

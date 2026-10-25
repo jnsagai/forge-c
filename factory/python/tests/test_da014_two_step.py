@@ -60,6 +60,7 @@ def test_question_schemas_only_offer_this_cases_references_and_catalogue(signed)
         assert list(branch["properties"])[:3] == ["rationale", "evidence_refs", "conflict"]
         assert set(branch["properties"]["evidence_refs"]["items"]["enum"]) == set(aliases.values())
     second = S.technique_schema(packet, packet["obligations"])
+    assert all(list(branch["properties"])[0] == "technique_id" for branch in second["anyOf"])
     assert set(second["anyOf"][0]["properties"]["technique_id"]["enum"]) == set(packet["techniques"])
     assert S.technique_schema({**packet, "techniques": {}}, packet["obligations"]) == {"anyOf": [second["anyOf"][-1]]}
     with pytest.raises(Refused, match="TWO_STEP_SECOND_QUESTION_REQUIRES_ESTABLISHED_CONFLICT"):
