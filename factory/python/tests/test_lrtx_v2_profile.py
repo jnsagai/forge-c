@@ -126,3 +126,21 @@ def test_fabro_command_nodes_carry_the_local_profile_only_inside_a_local_stack(m
     assert "FORGE_LRTX_PROFILE" not in plain
     monkeypatch.setenv("FORGE_LRTX_PROFILE", "local-rtx-v2-omniverse2")
     assert builder._env() == plain + " FORGE_LRTX_PROFILE=local-rtx-v2-omniverse2"
+
+
+def test_reasoning_off_variant_differs_from_omniverse2_only_in_the_qwen36_reasoning_factor():
+    """Feature 014 (owner 2026-10-25): one controlled configuration factor for the diagnosis comparison."""
+    from forge_factory.llm_gateway import sanitize_request
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q36-noreason")
+    ignored = {"id", "status", "description", "_path", "_sha256", "gateway", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    assert {k: v for k, v in base["deployment"].items() if k != "default_root"} == \
+        {k: v for k, v in variant["deployment"].items() if k != "default_root"}
+    reasoning = dict(base["gateway"]["reasoning"])
+    assert reasoning.pop("qwen3.6:35b-a3b") == {"effort": "high", "extra_output_tokens": 16384}
+    assert variant["gateway"] == {**base["gateway"], "reasoning": reasoning}
+    body = {"model": "qwen3.6:35b-a3b", "max_tokens": 2048, "messages": []}
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["reasoning_effort"] == "none"
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["max_tokens"] == 2048

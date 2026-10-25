@@ -477,6 +477,7 @@ def main(argv=None):
     ap.add_argument(
         "--qualification-job-tokens", type=int, help="explicit prospective envelope to freeze and sign; grants no allowance"
     )
+    ap.add_argument("--profile", default=PROFILE, help="pinned local profile the frozen cases bind (default: %(default)s)")
     args = ap.parse_args(argv)
     result = prepare(
         args.out,
@@ -484,6 +485,7 @@ def main(argv=None):
         campaign_id=args.campaign_id,
         authorization_ref=args.authorization_ref,
         qualification_job_tokens=args.qualification_job_tokens,
+        profile=args.profile,
     )
     print(
         json.dumps(
