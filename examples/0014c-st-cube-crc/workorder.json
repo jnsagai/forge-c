@@ -1,0 +1,173 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 26 (CRC) + memory map p.176"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.26 CRC register interface + memory map p.176 (CRC secure base 0x56024C00)",
+  "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the CRC benchmark work orders"
+ },
+ "scope": [
+  "LL (header-only, __STATIC_INLINE functions) as delivered by ST: register access through the CMSIS device structure CRC (stm32n6xx.h)",
+  "Reset the calculation unit (CRC_CR.RESET); set the polynomial size (CRC_CR.POLYSIZE), the input and output reversal (CRC_CR.REV_IN, CRC_CR.REV_OUT), the initial value (CRC_INIT) and the polynomial coefficients (CRC_POL)",
+  "Feed a 32-bit data word and read the current CRC (CRC_DR); write and read the independent data register (CRC_IDR)",
+  "Out of scope: HAL API, 8-bit and 16-bit data register accesses, reversal type selection (CRC_CR.RTYPE_IN, CRC_CR.RTYPE_OUT), DMA, the LL init/deinit functions of stm32n6xx_ll_crc.c"
+ ],
+ "system_names": [
+  "CRC LL driver",
+  "CRC driver",
+  "STM32N6 CRC LL driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+   "role": "reference_manual_crc_chapter"
+  },
+  {
+   "path": "../0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0014-crc-st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "LL",
+ "layer_note": "Feature 015 benchmark set (owner 2026-10-25): ST's existing STM32CubeN6 CRC LL code (stm32n6xx-hal-driver v1.4.0), FROZEN. Requirements are derived from RM0486 independently of the code; secure build (CMSIS selects CRC_S at 0x56024C00).",
+ "delivery": {
+  "code_mode": "FROZEN",
+  "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+  "licence": "BSD-3-Clause",
+  "licence_allows_modification": true,
+  "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+  "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+  "files": [
+   {
+    "from": "Inc/stm32n6xx_ll_crc.h",
+    "to": "software/ll/stm32n6xx_ll_crc.h"
+   }
+  ],
+  "scope": {
+   "functions": [
+    "LL_CRC_ResetCRCCalculationUnit",
+    "LL_CRC_SetPolynomialSize",
+    "LL_CRC_SetInputDataReverseMode",
+    "LL_CRC_SetOutputDataReverseMode",
+    "LL_CRC_SetInitialData",
+    "LL_CRC_SetPolynomialCoef",
+    "LL_CRC_FeedData32",
+    "LL_CRC_ReadData32",
+    "LL_CRC_Write_IDR",
+    "LL_CRC_Read_IDR"
+   ],
+   "note": "calculation unit reset, polynomial size/coefficients, initial value, input/output reversal, 32-bit data feed and read, independent data register"
+  },
+  "dependencies": [
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n6xx.h",
+    "to": "inputs/vendor/include/stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n657xx.h",
+    "to": "inputs/vendor/include/stm32n657xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/system_stm32n6xx.h",
+    "to": "inputs/vendor/include/system_stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "core_cm55.h",
+    "to": "inputs/vendor/include/core_cm55.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_version.h",
+    "to": "inputs/vendor/include/cmsis_version.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_compiler.h",
+    "to": "inputs/vendor/include/cmsis_compiler.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_gcc.h",
+    "to": "inputs/vendor/include/cmsis_gcc.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/cmsis_gcc_m.h",
+    "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_mpu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_pmu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv7m_cachel1.h",
+    "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   }
+  ],
+  "build": {
+   "style": "cmsis",
+   "defines": [
+    "STM32N657xx"
+   ],
+   "secure": true
+  }
+ },
+ "peripheral": "crc"
+}
