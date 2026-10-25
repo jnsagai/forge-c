@@ -186,7 +186,7 @@ def validate(manifest):
             or any(b["mission_id"] != mission["mission_id"] for b in manifest["jobs"].values())
             or mission["limits"]["max_attempts"] != 0
             or mission["limits"]["max_jobs"] > len(manifest["jobs"])
-            or mission["limits"]["max_requests"] > len(manifest["jobs"])
+            or mission["limits"]["max_requests"] > len(manifest["jobs"]) * requests_per_job(manifest["identity"])
             or mission["limits"]["max_tokens"] > sum(manifest["job_token_reservations"].values())
             or mission["limits"]["max_tools"] != 0
             or mission["limits"]["max_corrections"] != 0
@@ -211,6 +211,13 @@ def validate(manifest):
     if manifest["service_persists_after_campaign"] is not True:
         raise Refused("CAMPAIGN_CANNOT_STOP_FACTORY")
     return digest(manifest)
+
+
+def requests_per_job(identity):
+    """The signed task class fixes how many provider requests one protocol job may make (two-step diagnosis: 2)."""
+    from .semantic_proposal import TWO_STEP
+
+    return 2 if identity.get("task_class") == TWO_STEP else 1
 
 
 def initial_reservation(manifest, job, eff, *, store=None):

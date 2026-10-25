@@ -95,6 +95,90 @@ def diagnose(raw: str | bytes | dict) -> dict:
     return out
 
 
+TWO_STEP = "two-step-diagnosis"
+
+
+def two_step(job) -> bool:
+    """Only a signed qualification identity (or measured role capability) selects the two-question mode."""
+    identity = job.get("qualification_identity") or ((job.get("role_capabilities") or {}).get(job.get("role")) or {}).get(
+        "identity"
+    )
+    return bool(identity) and identity.get("task_class") == TWO_STEP
+
+
+def _evidence_items(aliases):
+    return {"type": "array", "items": {"enum": sorted(aliases)}, "minItems": 1, "maxItems": 16, "uniqueItems": True}
+
+
+def conflict_schema(aliases) -> dict:
+    """Question 1: is there a requirement conflict? Rationale precedes the verdict in generation order."""
+    from .durable import schema
+
+    contract = schema("semantic-proposal")["properties"]
+    base = {"rationale": {"type": "string", "minLength": 1, "maxLength": 500}, "evidence_refs": _evidence_items(aliases)}
+    branches = []
+    for verdict in ("YES", "NO", "UNKNOWN"):
+        properties = {**base, "conflict": {"const": verdict}}
+        required = ["rationale", "evidence_refs", "conflict"]
+        if verdict == "UNKNOWN":
+            properties["missing_evidence"] = contract["missing_evidence"]
+            required.append("missing_evidence")
+        branches.append({"type": "object", "properties": properties, "required": required, "additionalProperties": False})
+    return {"anyOf": branches}
+
+
+def technique_schema(packet, obligations) -> dict:
+    """Question 2 (after an established conflict): one catalogued technique, or NONE with an explanation."""
+    from .durable import schema
+
+    contract = schema("semantic-proposal")["properties"]
+    repair = {
+        "proposed_change": contract["proposed_change"],
+        "material_difference": contract["material_difference"],
+        "technique_id": {"enum": sorted(packet.get("techniques") or {}) or ["NONE"]},
+        "strategy": contract["strategy"],
+        "affected_phase": contract["affected_phase"],
+        "owner_phase": contract["owner_phase"],
+        "target_obligations": {**contract["target_obligations"], "items": {"enum": sorted(obligations)}},
+        "artifact_scope": contract["artifact_scope"],
+        "validation_expectations": contract["validation_expectations"],
+    }
+    blocked = {"explanation": contract["explanation"], "technique_id": {"const": "NONE"}}
+    branches = [{"type": "object", "properties": blocked, "required": list(blocked), "additionalProperties": False}]
+    if packet.get("techniques"):
+        required = [k for k in repair if k != "owner_phase"]
+        branches.insert(0, {"type": "object", "properties": repair, "required": required, "additionalProperties": False})
+    return {"anyOf": branches}
+
+
+def assemble(first: dict, second: dict | None) -> dict:
+    """Deterministic semantic proposal from the two answers; the broker still validates it against the contract."""
+    refs = first["evidence_refs"]
+    if first["conflict"] == "UNKNOWN":
+        return {"decision": "NEEDS_EVIDENCE", "evidence_refs": refs, "missing_evidence": first["missing_evidence"]}
+    if first["conflict"] == "NO":
+        return {
+            "decision": "CLOSE_BLOCKED",
+            "evidence_refs": refs,
+            "blocking_reason": "UNSUPPORTED_HYPOTHESIS",
+            "explanation": first["rationale"],
+        }
+    if second is None or second.get("technique_id") == "NONE":
+        return {
+            "decision": "CLOSE_BLOCKED",
+            "evidence_refs": refs,
+            "blocking_reason": "NO_ALLOWED_MATERIAL_STRATEGY",
+            "explanation": (second or {}).get("explanation") or first["rationale"],
+        }
+    proposal = {
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": refs,
+        "causal_hypothesis": first["rationale"],
+        **{k: second[k] for k in second if k != "explanation"},
+    }
+    return proposal
+
+
 def signature(proposal: dict) -> str:
     """Catalogued approach, target, scope and checks; wording/seeds/administrative IDs cannot buy another try."""
     return digest(
