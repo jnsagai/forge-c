@@ -25,16 +25,30 @@ CALLS = "workproducts/SWE.2/api_calls.json"
 ARCH = "workproducts/SWE.2/software_architecture.md"
 
 
-def _field_mask(register: str, field: str, macros: dict[str, str]) -> int | None:
-    """Bit mask of RM field `register.field` from the delivered macros (forge: LL_RCC_<REG>_<FIELD>_MSK; CMSIS:
-    RCC_<REG>_<FIELD>_Msk or RCC_<REG>_<FIELD>)."""
-    reg = register.removeprefix("RCC_")
-    for name in (f"LL_RCC_{reg}_{field}_MSK", f"RCC_{reg}_{field}_Msk", f"RCC_{reg}_{field}"):
+def _field_mask(register: str, field: str, macros: dict[str, str], prefix: str = "RCC") -> int | None:
+    """Bit mask of RM field `register.field` from the delivered macros (forge: LL_<P>_<REG>_<FIELD>_MSK; CMSIS:
+    <P>_<REG>_<FIELD>_Msk or <P>_<REG>_<FIELD>), P the work order's register prefix (feature 015: RCC was
+    hard-coded, so every CRC field read 'has no definition in the delivered code')."""
+    reg = register.removeprefix(f"{prefix}_")
+    for name in (f"LL_{prefix}_{reg}_{field}_MSK", f"{prefix}_{reg}_{field}_Msk", f"{prefix}_{reg}_{field}"):
         if name in macros:
             v = S.evaluate(name, macros)
             if v:
                 return v
     return None
+
+
+def _rm_fields(ws: Path) -> dict[tuple[str, str], int]:
+    """(register, field) -> bit mask from the work order's RM register sections (feature 015: a field the RM names
+    differently from the vendor macros, e.g. RM CRC_INIT.CRC_INIT vs CMSIS CRC_INIT_INIT, is still checkable; the
+    requirements are RM-derived)."""
+    from ..inspection.regmap import rm_registers
+
+    try:
+        regs = rm_registers(ws)
+    except (OSError, ValueError, KeyError):
+        return {}
+    return {(r, f): ((1 << (msb - lsb + 1)) - 1) << lsb for r, v in regs.items() for f, (msb, lsb) in v["fields"].items()}
 
 
 def _allocated_functions(ws: Path, names: set[str]) -> set[str]:
@@ -56,6 +70,10 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
     ws = Path(ws)
     m = manifest_of(ws)
     style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
+    from ..layer import register_prefix
+
+    pfx = register_prefix(ws)
+    rm_fields = _rm_fields(ws) if pfx != "RCC" else {}
     texts = {rel: (ws / rel).read_text(errors="replace") for rel in reference_paths(m) if (ws / rel).is_file()}
     macros = S.constant_macros(list(texts.values()))
     defs = {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
@@ -82,6 +100,20 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
     by_case: dict[str, list[dict]] = {}
     for e in effects:
         by_case.setdefault(e.get("case", ""), []).append(e)
+    # feature 015: one requirement may set coupled fields in one call (ST: a reversal mode writes REV_IN with RTYPE_IN,
+    # a prescaler MBR with BPASS), stated as one effect case per field; outside RCC the bits a function may change
+    # are those its requirement names across all its cases
+    swr_bits: dict[tuple[str, str], dict[str, int]] = {}
+    if pfx != "RCC":
+        for case, exps in by_case.items():
+            fn_ = str((calls.get(case) or {}).get("function", ""))
+            for x in exps:
+                if x.get("op") != "no_write" and x.get("register"):
+                    mk = _field_mask(x["register"], x.get("field") or "", macros, pfx) or \
+                        rm_fields.get((x["register"], x.get("field") or ""))
+                    if mk:
+                        b = swr_bits.setdefault((fn_, x.get("swr", "")), {})
+                        b[x["register"]] = b.get(x["register"], 0) | mk
     for case, exps in by_case.items():
         swr = exps[0].get("swr", "")
         call = calls.get(case) or {}
@@ -95,7 +127,7 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                                                                         if fn and fn.upper() != "NONE" else ""))
             continue
         used.add(fn)
-        got = S.register_effects(defs[fn], macros, style, [str(a) for a in call.get("args") or []], defs)
+        got = S.register_effects(defs[fn], macros, style, [str(a) for a in call.get("args") or []], defs, prefix=pfx)
         writes = [g for g in got if g.op != "read"]
         expected_bits: dict[str, int] = {}
         for x in exps:
@@ -109,7 +141,7 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                     add("CONTRADICTION", fn, swr, f"case {case}: requirement says no write to {reg or 'any register'}; "
                         f"the code does {g.op} on {g.via or g.register} ({g.text.strip()[:80]})", x.get("source", ""))
                 continue
-            mask = _field_mask(reg or "", field or "", macros)
+            mask = _field_mask(reg or "", field or "", macros, pfx) or rm_fields.get((reg or "", field or ""))
             if mask is None:
                 add("CONTRADICTION", fn, swr, f"case {case}: field {reg}.{field} has no definition in the delivered "
                     "code (cannot be checked)")
@@ -118,7 +150,8 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
             if op == "write":  # feature 009: the field must hold the value (a whole-register write is expected)
                 lsb = (mask & -mask).bit_length() - 1
                 want = (int(str(x.get("value")), 0) << lsb) & mask if x.get("value") is not None else None
-                if not any(g.register == reg and g.op == "write" and g.mask is not None and want is not None
+                ops = ("write",) if pfx == "RCC" else ("write", "modify")  # CMSIS MODIFY_REG(reg, field, value)
+                if not any(g.register == reg and g.op in ops and g.mask is not None and want is not None
                            and g.mask & mask == want for g in writes):
                     add("CONTRADICTION", fn, swr, f"case {case}: expected {reg}.{field} = {x.get('value')}; the code "
                         "does: " + ("; ".join(f"{g.op} {g.register} {g.mask if g.mask is None else hex(g.mask)}"
@@ -132,6 +165,8 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                     f"the code does: {seen}")
         for g in writes:  # extra effects beyond what the requirement cases of this function state
             allowed = expected_bits.get(g.register)
+            if pfx != "RCC":
+                allowed = swr_bits.get((fn, swr), {}).get(g.register, allowed)
             if allowed is None and any(x.get("op") != "no_write" for x in exps):
                 add("CONTRADICTION", fn, swr, f"case {case}: writes {g.via or g.register} which no requirement of "
                     f"this case names ({g.text.strip()[:80]})")

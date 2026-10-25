@@ -198,6 +198,9 @@ def alias_of(register: str) -> tuple[str, str] | None:
     return None
 
 
+CMSIS_BIT_MACROS = {"WRITE_REG", "SET_BIT", "CLEAR_BIT", "MODIFY_REG", "READ_BIT", "READ_REG"}
+
+
 @dataclass
 class Effect:
     register: str              # base register after alias mapping, e.g. RCC_CR
@@ -229,10 +232,13 @@ def _split_args(s: str) -> list[str]:
 
 
 def register_effects(defn: Definition, macros: dict[str, str], style: str, args: list[str] | None = None,
-                     defs: dict[str, Definition] | None = None, depth: int = 0) -> list[Effect]:
+                     defs: dict[str, Definition] | None = None, depth: int = 0, prefix: str = "RCC") -> list[Effect]:
     """Register effects of one function or macro, with arguments bound; follows calls into other delivered
-    definitions (one level per call, up to 4 levels)."""
+    definitions (one level per call, up to 4 levels). `prefix` is the work order's RM register prefix (feature 015:
+    the RCC-only patterns missed ST's CRC/SPI code, which reaches the registers through an instance pointer such as
+    `CRCx->CR` or `(CRC)->CR` once the argument is bound, and writes 8/16-bit data registers through a cast)."""
     body = _bind(defn.body, defn.params, args or [])
+    pfx = prefix
     effects: list[Effect] = []
 
     def eff(reg: str, op: str, mask_expr: str | None, text: str) -> None:
@@ -244,9 +250,9 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
             effects.append(Effect(reg, op, mask, "", text))
 
     if style == "forge":
-        acc = re.compile(rf"ll_rcc_regs\s*\[\s*LL_RCC_({IDENT}?)_OFFSET\s*/\s*4U?\s*\]")
+        acc = re.compile(rf"ll_{pfx.lower()}_regs\s*\[\s*LL_{pfx}_({IDENT}?)_OFFSET\s*/\s*4U?\s*\]")
         for m in re.finditer(acc.pattern + r"\s*(\|=|&=|=(?!=))\s*([^;]+);", body):
-            reg, op, rhs = "RCC_" + m.group(1), m.group(2), m.group(3).strip()
+            reg, op, rhs = f"{pfx}_" + m.group(1), m.group(2), m.group(3).strip()
             if op == "|=":
                 eff(reg, "set", rhs, m.group(0))
             elif op == "&=":
@@ -257,12 +263,14 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
         writes = {m.start() for m in re.finditer(acc.pattern + r"\s*(\|=|&=|=(?!=))", body)}
         for m in acc.finditer(body):
             if m.start() not in writes:
-                effects.append(Effect("RCC_" + m.group(1), "read", None, "", m.group(0)))
+                effects.append(Effect(f"{pfx}_" + m.group(1), "read", None, "", m.group(0)))
     else:
-        reg_ref = rf"RCC\s*->\s*({IDENT})"
+        # RCC: the global instance exactly as before; other peripherals: the instance or its pointer parameter, with
+        # or without the parentheses of a bound argument (CRC, CRCx, (CRC), SPI1, SPIx, ...)
+        reg_ref = rf"RCC\s*->\s*({IDENT})" if pfx == "RCC" else rf"\(*\s*{pfx}\w*\s*\)*\s*->\s*({IDENT})"
         macro_rx = rf"\b(WRITE_REG|SET_BIT|CLEAR_BIT|MODIFY_REG|READ_BIT|READ_REG)\s*\(\s*{reg_ref}\s*(?:,([^;]*))?\)\s*;?"
         for m in re.finditer(macro_rx, body):
-            macro, reg = m.group(1), "RCC_" + m.group(2)
+            macro, reg = m.group(1), f"{pfx}_" + m.group(2)
             rest = _split_args(m.group(3) or "")
             if macro == "WRITE_REG":
                 eff(reg, "write", rest[0] if rest else None, m.group(0))
@@ -275,23 +283,35 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
             else:
                 effects.append(Effect(reg, "read", evaluate(rest[0], macros) if rest else None, "", m.group(0)))
         for m in re.finditer(rf"{reg_ref}\s*(\|=|&=|=(?!=))\s*([^;]+);", body):
-            reg, op, rhs = "RCC_" + m.group(1), m.group(2), m.group(3).strip()
+            reg, op, rhs = f"{pfx}_" + m.group(1), m.group(2), m.group(3).strip()
             if op == "|=":
                 eff(reg, "set", rhs, m.group(0))
             elif op == "&=":
                 eff(reg, "clear" if rhs.startswith("~") else "modify", re.sub(r"^~\s*", "", rhs), m.group(0))
             else:
                 eff(reg, "write", rhs, m.group(0))
+        if pfx != "RCC":  # 8/16-bit data register access through a cast: *((__IO uint8_t *)&SPIx->TXDR) = v
+            cast = (rf"\*\s*\(\s*\(\s*(?:__IO\s+|volatile\s+)?uint(?:8|16|32)_t(?:\s+__IO|\s+volatile)?\s*\*\s*\)"
+                    rf"\s*\(?\s*&\s*{reg_ref}\s*\)?\s*\)")
+            for m in re.finditer(cast + r"\s*=(?!=)\s*([^;]+);", body):
+                eff(f"{pfx}_" + m.group(1), "write", m.group(2).strip(), m.group(0))
+            writes = {m.start() for m in re.finditer(cast + r"\s*=(?!=)", body)}
+            for m in re.finditer(cast, body):
+                if m.start() not in writes:
+                    effects.append(Effect(f"{pfx}_" + m.group(1), "read", None, "", m.group(0)))
     if defs and depth < 4:  # calls into other delivered functions/macros
         for m in re.finditer(rf"\b({IDENT})\s*\(", body):
             callee = defs.get(m.group(1))
             if callee is None or callee.name == defn.name:
                 continue
+            if pfx != "RCC" and callee.name in CMSIS_BIT_MACROS:  # already read semantically above; expanding
+                continue  # MODIFY_REG's own WRITE_REG would add a mask-less whole-register write (feature 015)
             j, d = m.end(), 1
             while j < len(body) and d:
                 d += {"(": 1, ")": -1}.get(body[j], 0)
                 j += 1
-            effects += register_effects(callee, macros, style, _split_args(body[m.end():j - 1]), defs, depth + 1)
+            effects += register_effects(callee, macros, style, _split_args(body[m.end():j - 1]), defs, depth + 1,
+                                        prefix)
     return effects
 
 
