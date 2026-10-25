@@ -48,7 +48,7 @@ def repair(aliases_seen):
         "affected_phase": "SWE.3",
         "owner_phase": "SWE.3",
         "target_obligations": ["USPEC-001"],
-        "artifact_scope": ["software/hal"],
+        "artifact_scope": ["software/hal/reg32.c"],
         "validation_expectations": [{"test_ref": "gate:SWE.3:route=PASS", "expected_result": "PASS"}],
     }
 
@@ -151,3 +151,19 @@ def test_repair_question_offers_declared_tests_and_owner_phase_follows_the_strat
     assert upstream["owner_phase"] == "SWE.3" and AUTHORITY.is_valid(json.loads(dealias(job, json.dumps(upstream))))
     body, _ = request_material(job, step=3, prior={"question_1_answer": first, "question_2_answer": CHOICE})
     assert json.loads(body["messages"][1]["content"])["tests"] == packet["tests"]
+
+
+def test_question_grammars_offer_only_contract_legal_phases_scopes_and_verdicts(signed):
+    p = signed
+    job, packet, aliases = two_step_job(p)
+    paths = [a["path"] for a in packet["artifacts"]]
+    wire = S.repair_schema(packet["obligations"], packet["tests"], phase="SWE.3", paths=paths)
+    assert wire["properties"]["affected_phase"]["enum"] == ["SWE.3"]
+    assert wire["properties"]["owner_phase"]["enum"] == ["SWE.1", "SWE.2", "SWE.3"]
+    assert wire["properties"]["artifact_scope"]["items"]["enum"] == sorted(set(paths))
+    # An incomplete packet admits only NEEDS_EVIDENCE under the contract, so only UNKNOWN is offered.
+    incomplete = S.conflict_schema({"F1", "A1"}, complete=False)
+    assert [b["properties"]["conflict"]["const"] for b in incomplete["anyOf"]] == ["UNKNOWN"]
+    body, _ = request_material(job, step=1)
+    verdicts = [b["properties"]["conflict"]["const"] for b in body["response_format"]["json_schema"]["schema"]["anyOf"]]
+    assert verdicts == (["YES", "NO", "UNKNOWN"] if packet["complete"] else ["UNKNOWN"])

@@ -110,14 +110,18 @@ def _evidence_items(aliases):
     return {"type": "array", "items": {"enum": sorted(aliases)}, "minItems": 1, "maxItems": 16, "uniqueItems": True}
 
 
-def conflict_schema(aliases) -> dict:
-    """Question 1: is there a requirement conflict? Rationale precedes the verdict in generation order."""
+def conflict_schema(aliases, *, complete=True) -> dict:
+    """Question 1: is there a requirement conflict? Rationale precedes the verdict in generation order.
+
+    The contract admits only NEEDS_EVIDENCE for an incomplete packet, so then only UNKNOWN is offered and the
+    question measures the missing-evidence answer (disclosed with the qualification results).
+    """
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
     base = {"rationale": {"type": "string", "minLength": 1, "maxLength": 500}, "evidence_refs": _evidence_items(aliases)}
     branches = []
-    for verdict in ("YES", "NO", "UNKNOWN"):
+    for verdict in ("YES", "NO", "UNKNOWN") if complete else ("UNKNOWN",):
         properties = {**base, "conflict": {"const": verdict}}
         required = ["rationale", "evidence_refs", "conflict"]
         if verdict == "UNKNOWN":
@@ -141,26 +145,33 @@ def technique_choice_schema(packet) -> dict:
     }
 
 
-def repair_schema(obligations, tests=None) -> dict:
+def repair_schema(obligations, tests=None, *, phase=None, paths=None) -> dict:
     """Question 3 (after a catalogued technique was chosen): flat repair fields, bounds inside the contract's.
 
     Test references are enums of the case's declared independent tests. owner_phase is always asked and kept
     by assembly only with RETURN_TO_OWNING_UPSTREAM_PHASE (the contract forbids it otherwise); a model switch
     is not offered here because no authorized alternative catalogue is part of this question.
+    The case phase fixes affected_phase, an upstream owner can only be that phase or an earlier one, and the
+    scope is limited to the case's artifact paths; the broker still checks owner/scope consistency.
     """
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
     text = {"type": "string", "minLength": 1, "maxLength": 300}
+    phases = contract["affected_phase"]["enum"]
     return {
         "type": "object",
         "properties": {
             "strategy": {"enum": [s for s in contract["strategy"]["enum"] if s != "SWITCH_PREAPPROVED_MODEL_PROFILE"]},
-            "affected_phase": contract["affected_phase"],
-            "owner_phase": contract["owner_phase"],
+            "affected_phase": {"enum": [phase]} if phase else contract["affected_phase"],
+            "owner_phase": {"enum": phases[: phases.index(phase) + 1]} if phase else contract["owner_phase"],
             "target_obligations": {"type": "array", "items": {"enum": sorted(obligations)}, "minItems": 1, "maxItems": 4},
-            "artifact_scope": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 200},
-                               "minItems": 1, "maxItems": 4},
+            "artifact_scope": {
+                "type": "array",
+                "items": {"enum": sorted(set(paths))} if paths else {"type": "string", "minLength": 1, "maxLength": 200},
+                "minItems": 1,
+                "maxItems": 4,
+            },
             "proposed_change": text,
             "material_difference": text,
             "validation_expectations": {

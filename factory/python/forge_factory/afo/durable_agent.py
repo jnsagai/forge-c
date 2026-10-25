@@ -375,7 +375,7 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
             "artifacts satisfy it, conflict=UNKNOWN only when a decisive fact is absent from this message "
             "(packet.missing lists known absences). Whether and how to repair is decided in the next questions, not here."
         )
-        schema_name, wire, cap = "diagnosis_conflict", conflict_schema(set(aliases.values())), 2048
+        schema_name, wire, cap = "diagnosis_conflict", conflict_schema(set(aliases.values()), complete=packet["complete"]), 2048
     elif step in (2, 3):
         answers = prior if isinstance(prior, dict) else {}
         first = answers.get("question_1_answer") or {}
@@ -408,7 +408,13 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
                 "validation_expectations (test_ref from tests with its expected_result); owner_phase names the phase "
                 "that owns the defect (used only with RETURN_TO_OWNING_UPSTREAM_PHASE)."
             )
-            schema_name, wire, cap = "diagnosis_repair", repair_schema(packet["obligations"], packet.get("tests")), 1024
+            wire = repair_schema(
+                packet["obligations"],
+                packet.get("tests"),
+                phase=packet["binding"]["phase"],
+                paths=[a["path"] for a in packet["artifacts"]],
+            )
+            schema_name, cap = "diagnosis_repair", 1024
     else:
         raise Refused("TWO_STEP_QUESTION_UNKNOWN")
     body = {
