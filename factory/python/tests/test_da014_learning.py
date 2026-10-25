@@ -173,3 +173,27 @@ def test_chronological_comparison_includes_learning_cost_and_holdout(memory):
     learned["costs"].pop("validation_tokens")
     with pytest.raises(Refused):
         comparison.compare(manifest, [baseline], [learned])
+
+
+def test_detached_failed_job_capture_survives_absent_package_and_keeps_unknown(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from forge_factory.afo.queue import Store
+    from forge_factory.knowledge.store import LessonStore
+    from forge_factory.knowledge.experience import capture_workorders, consolidate, report
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    store = Store(tmp_path / "afo.sqlite3")
+    lessons = LessonStore(tmp_path / "lessons.sqlite3")
+    ws = tmp_path / "state/workorders/WO-detached/workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"work_order": "WO-detached", "driver": "RCC"}))
+    (ws / ".forge-run/fabro_run_id").write_text("native-detached")
+    client = SimpleNamespace(get_run=lambda _: {"lifecycle": {"status": {"kind": "FAILED"}}})
+    ids = capture_workorders(store, lessons, client=client)
+    assert len(ids) == 1
+    assert not capture_workorders(store, lessons, client=client)  # sweep cursor wraps without recharging
+    assert capture_workorders(store, lessons, client=client) == ids
+    consolidate(lessons)
+    metrics = report(lessons)
+    assert metrics["unique_experiences"] == 1 and metrics["dispositions"]["DEFERRED_BUDGET"] == 1

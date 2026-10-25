@@ -73,6 +73,18 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
     for cmd in store.commands("PENDING"):
         if cmd["kind"] != "FABRO_LAUNCH":
             continue
+        from .operations import configured, Intent
+
+        payload = json.loads(cmd["payload"])
+        if configured():
+            intent = Intent().read()
+            if intent["mode"] != "RUNNING":
+                out.append({"command_id": cmd["command_id"], "action": "operations_wait"})
+                continue
+            if payload.get("operations_epoch") != intent["epoch"]:
+                _set_cmd(store, cmd["command_id"], "QUARANTINED")
+                out.append(item_failure(store, cmd["order_id"], ValueError("STALE_OPERATIONS_COMMAND"), "outbox_epoch"))
+                continue
         order = store.order(cmd["order_id"])
         env = json.loads(order["envelope"])
         d = decide({"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]})
@@ -114,6 +126,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
             )
             continue
         manifest = json.loads(manifest_path.read_text())
+        if configured():
+            manifest = {**manifest, "operations_epoch": payload["operations_epoch"]}
         payload = json.loads(cmd["payload"])
         if payload.get("resume_from"):  # recovery attempt: resume verified phases from the previous attempt
             manifest = {

@@ -69,6 +69,8 @@ def cycle(n: int) -> tuple[str, bool, str]:
             with FabroClient(token=load_token(), timeout=5) as client:
                 product_job.reconcile(store, eff, client)
             dispatch.enforce_deadlines(store, eff)
+            if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+                learning_cycle(store)
         return eff.mode, True, ("; ".join(eff.issues))[:200]
     store = Store()
     from . import local_agent
@@ -127,16 +129,23 @@ def cycle(n: int) -> tuple[str, bool, str]:
                 connection.execute("PRAGMA wal_checkpoint(PASSIVE)")
             finally:
                 connection.close()
-        from ..knowledge.store import LessonStore
-        from ..knowledge.experience import capture_afo, consolidate
-
-        lessons = LessonStore()
-        capture_afo(store, lessons, runtime.workspace_of, limit=32)
-        consolidate(lessons, limit=32)
-        from ..knowledge.improvement import route as improvement_routes
-
-        improvement_routes(lessons, limit=32)
+        learning_cycle(store)
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
+
+
+def learning_cycle(store):
+    from ..knowledge.store import LessonStore
+    from ..knowledge.experience import capture_afo, capture_workorders, consolidate
+    from ..knowledge.improvement import route
+    from .runtime import workspace_of
+    from ..fabro.client import FabroClient, load_token
+
+    lessons = LessonStore()
+    capture_afo(store, lessons, workspace_of, limit=32)
+    with FabroClient(token=load_token(), timeout=3) as client:
+        capture_workorders(store, lessons, client=client, limit=8)
+    consolidate(lessons, limit=32)
+    route(lessons, limit=32)
 
 
 class Conductor:

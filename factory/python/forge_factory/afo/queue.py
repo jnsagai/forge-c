@@ -374,6 +374,13 @@ class Store:
 
     # -- outbox (T018) -------------------------------------------------------------------------------------------
     def _enqueue(self, c, kind: str, idem: str, oid: str, attempt_id: str | None, epoch: int, payload: dict) -> str:
+        from .operations import configured, Intent
+
+        if kind == "FABRO_LAUNCH" and configured():
+            intent = Intent().read()
+            if intent["mode"] != "RUNNING":
+                raise QueueError("OPERATIONS_ADMISSION_FENCED")
+            payload = {**payload, "operations_epoch": intent["epoch"]}
         cid = "afo-cmd-" + sha256_bytes(canonical_json([kind, idem]))[:20]
         rec = {
             "schema_version": "1.0",

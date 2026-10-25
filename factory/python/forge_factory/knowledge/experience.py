@@ -332,3 +332,66 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
                     (control, rows[-1][identity_col], utc_now(), "deterministic-learning-reconciler"),
                 )
     return out
+
+
+def capture_workorders(afo_store, lessons, *, client=None, limit=8):
+    """Bounded reconciliation also covers detached/non-AFO jobs and interrupted finalizers."""
+    import heapq
+    import os
+    from ..common import state_dir
+    from ..fabro.client import run_status, FabroUnavailable
+
+    root = state_dir() / "workorders"
+    if not root.is_dir():
+        return []
+    with afo_store.tx() as c:
+        row = c.execute("SELECT value FROM afo_control WHERE key='learning_workspace_cursor'").fetchone()
+    cursor = row[0] if row else ""
+    with os.scandir(root) as entries:
+        names = heapq.nsmallest(limit, (p.name for p in entries if p.name > cursor and p.is_dir(follow_symlinks=False)))
+    out = []
+    for name in names:
+        ws = root / name / "workspace"
+        try:
+            manifest = ws / ".forge-run/manifest.json"
+            if not manifest.is_file() or manifest.is_symlink():
+                continue
+            rid = ws / ".forge-run/fabro_run_id"
+            native = rid.read_text().strip() if rid.is_file() and not rid.is_symlink() else None
+            package_path = ws / ".forge-run/package.json"
+            package = json.loads(package_path.read_text()) if package_path.is_file() and not package_path.is_symlink() else None
+            identity = native or "workorder:" + name
+            out.extend(capture_workspace(lessons, ws, identity, package=package))
+            if native and client is not None and not package:
+                try:
+                    outcome = run_status(client.get_run(native))
+                except (FabroUnavailable, OSError, ValueError):
+                    outcome = "UNKNOWN"
+                if outcome in OUTCOMES:
+                    out.append(
+                        capture(
+                            lessons,
+                            identity,
+                            "JOB",
+                            outcome,
+                            facts={"native_status": outcome, "package_status": "UNAVAILABLE"},
+                            source_refs=[
+                                "native-run:" + native,
+                                "workspace-manifest:sha256:" + digest(json.loads(manifest.read_text())),
+                            ],
+                            cohort={"server": os.environ.get("FORGE_FABRO_URL"), "product_acceptance": "UNKNOWN"},
+                        )
+                    )
+        except (OSError, KeyError, ValueError, TypeError):
+            # Keep the source/pending work intact and revisit next sweep. A poison
+            # workspace cannot starve independent jobs or turn missing evidence into PASS.
+            continue
+    with afo_store.tx() as c:
+        if names:
+            c.execute(
+                "INSERT INTO afo_control VALUES ('learning_workspace_cursor',?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                (names[-1], utc_now(), "deterministic-learning-reconciler"),
+            )
+        else:
+            c.execute("DELETE FROM afo_control WHERE key='learning_workspace_cursor'")
+    return out

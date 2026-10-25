@@ -612,3 +612,25 @@ def test_continuous_native_probes_and_cancel_ack_are_backed_off_durably(protocol
     status[0] = "CANCELLED"
     settled = ex.reconcile(p.ctx.job_id, client, cancel=True)
     assert settled["resource_lease"] == "RELEASED" and calls == ["status", "cancel", "status"]
+
+
+def test_pending_outbox_cannot_rebind_to_newer_operator_resume_epoch(protocol, tmp_path, monkeypatch):
+    from forge_factory.afo.dispatch import dispatch_pending
+
+    p = protocol
+    tmp_path.chmod(0o700)
+    intent = Intent(tmp_path / "intent.json")
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(intent.path))
+    run = intent.set("RUNNING", actor="owner", reason="fixture", initialize=True)
+    with p.store.tx() as c:
+        p.store._enqueue(
+            c, "FABRO_LAUNCH", "fixture-stale-command", p.ctx.order_id, p.ctx.attempt_id, 1, {"attempt_id": p.ctx.attempt_id}
+        )
+    cmd = next(c for c in p.store.commands("PENDING") if c["idempotency_key"] == "fixture-stale-command")
+    assert json.loads(cmd["payload"])["operations_epoch"] == run["epoch"]
+    intent.set("STOPPED", actor="owner", reason="stop")
+    intent.set("RUNNING", actor="owner", reason="newer resume")
+    launched = []
+    outcomes = dispatch_pending(p.store, lambda *args: launched.append(args))
+    assert not launched and any(r.get("action") == "item_blocked" for r in outcomes)
+    assert any(c["command_id"] == cmd["command_id"] for c in p.store.commands("QUARANTINED"))

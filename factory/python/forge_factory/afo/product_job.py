@@ -28,6 +28,8 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         intent = Intent().read()
         if intent["mode"] != "RUNNING":
             raise Refused("OPERATIONS_ADMISSION_REFUSED")
+        if manifest.get("operations_epoch") != intent["epoch"]:
+            raise Refused("OPERATIONS_ADMISSION_FENCED")
         binding["operations_epoch"] = intent["epoch"]
     job = {
         **binding,
