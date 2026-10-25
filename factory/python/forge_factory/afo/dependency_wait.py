@@ -6,6 +6,7 @@ import json
 import time
 
 from .durable import Refused, canonical, digest
+from ..fabro.client import FabroUnavailable
 
 
 def probe(store, scope, condition, observe, *, now=None, maximum=600, minimum=15):
@@ -32,7 +33,7 @@ def probe(store, scope, condition, observe, *, now=None, maximum=600, minimum=15
     try:
         result = observe()
         healthy = result.get("ok") is True
-    except (OSError, TimeoutError, ValueError) as exc:
+    except (OSError, TimeoutError, ValueError, FabroUnavailable) as exc:
         result, healthy = {"ok": False, "error": type(exc).__name__}, False
     rec.update(
         last_probe=now, failures=0 if healthy else rec["failures"] + 1, healthy=healthy, result=result, due=True, next_probe=due

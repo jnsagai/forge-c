@@ -25,6 +25,13 @@ def key(identity):
         or not identity["model_digest"]
         or type(identity["context_tokens"]) is not int
         or identity["context_tokens"] < 1
+        or any(
+            not isinstance(identity[k], str) or not identity[k] or len(identity[k]) > 256
+            for k in IDENTITY
+            if k not in ("context_tokens", "sampling")
+        )
+        or not isinstance(identity["sampling"], dict)
+        or not identity["sampling"]
     ):
         raise Refused("ROLE_CAPABILITY_IDENTITY_INCOMPLETE")
     return digest(identity)
@@ -45,6 +52,17 @@ def record(identity, *, report_path, report_sha256, expected_manifest_sha256):
         or report.get("execution_host") not in ("omniverse", "omniverse2")
     ):
         raise Refused("CAPABILITY_NOT_INDEPENDENTLY_QUALIFIED")
+    envelope = report.get("envelope") or {}
+    if type(envelope.get("max_obligations")) is not int or envelope["max_obligations"] < 1:
+        raise Refused("ROLE_CAPABILITY_ENVELOPE_UNMEASURED")
+    for ref in report["independent_oracle_refs"]:
+        if (
+            not isinstance(ref, dict)
+            or ref.get("producer") not in ("CRE", "reference", "metamorphic", "mutant", "deterministic_gate")
+            or Path(ref["path"]).is_symlink()
+            or sha256_file(Path(ref["path"])) != ref["sha256"]
+        ):
+            raise Refused("ROLE_CAPABILITY_ORACLE_UNRESOLVED")
     rec = {
         "schema": "forge-c/role-capability/1",
         "identity": identity,
@@ -72,6 +90,11 @@ def require(ref, identity, *, semantic_obligations=None):
     q = rec["report"]
     if sha256_file(Path(q["path"])) != q["sha256"]:
         raise Refused("ROLE_CAPABILITY_REPORT_STALE")
+    report = json.loads(Path(q["path"]).read_text())
+    for oracle in report["independent_oracle_refs"]:
+        path = Path(oracle["path"])
+        if path.is_symlink() or sha256_file(path) != oracle["sha256"]:
+            raise Refused("ROLE_CAPABILITY_ORACLE_STALE")
     if semantic_obligations is not None and semantic_obligations > rec["envelope"]["max_obligations"]:
         raise Refused("CAPABILITY_LIMIT", "coherent objective exceeds measured semantic complexity")
     return rec

@@ -84,6 +84,22 @@ def reserve(store, binding, body, *, eff=None):
     )
     if rec["replay"]:
         raise Refused("GENERATION_ALREADY_RESERVED_OR_SENT")
+    from .execution_lifecycle import Executions
+
+    Executions(store)._save_evidence(
+        ctx.job_id,
+        "REQUEST_METADATA:" + rec["request_id"],
+        {
+            "request_id": rec["request_id"],
+            "body_sha256": measured["sha256"],
+            "measurement": measured,
+            "model": job["model"],
+            "role": binding.get("role") or job.get("role"),
+            "schema_mode": (body.get("response_format") or {}).get("type"),
+            "policy_sha256": eff.sha256,
+            "output_cap": cap,
+        },
+    )
     return rec
 
 

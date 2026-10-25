@@ -35,7 +35,15 @@ def route(store, *, capa_registry=None, minimum_executions=2, limit=32):
         refs = sorted({r["experience_id"] for r in records})
         fingerprint = records[0]["facts"].get("fingerprint")
         capa = (
-            next((c for c in capas if c.get("fingerprint") == fingerprint and c.get("reproducer_id")), None)
+            next(
+                (
+                    c
+                    for c in capas
+                    if (c.get("fingerprint") == fingerprint or fingerprint in capa_registry.links(c["capa_id"], "fingerprint"))
+                    and c.get("reproducer_id")
+                ),
+                None,
+            )
             if fingerprint
             else None
         )

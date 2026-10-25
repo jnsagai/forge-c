@@ -203,8 +203,10 @@ def step(manifest, authorization_ref, destination, *, store=None):
     report = preflight(manifest, live=True, authorization_ref=authorization_ref)
     if report["blockers"]:
         return report
+    if manifest["stage"] in ("benchmark", "rcc"):
+        return product_step(manifest, destination, store=store)
     if manifest["stage"] != "protocol":
-        return {**report, "status": "BLOCKED", "blockers": ["USE_APPROVED_PRODUCT_OR_SOAK_ENTRYPOINT_FOR_THIS_STAGE"]}
+        return {**report, "status": "BLOCKED", "blockers": ["USE_EXISTING_AFO_SOAK_ENTRYPOINT_FOR_OPERATIONAL_STAGE"]}
     from .queue import Store
     from .policy import load
     from . import local_agent
@@ -234,7 +236,12 @@ def step(manifest, authorization_ref, destination, *, store=None):
                 return {"status": "IN_PROGRESS", "trial": trial, "job_id": job["job_id"]}
             from .completion_receipt import Receipts
 
-            receipt = Receipts(store).latest(job["receipt_id"]) if job.get("receipt_id") else None
+            from .completion_receipt import Context
+
+            candidates = Receipts(store).for_job(Context.from_job(store, job["job_id"]))
+            receipt = (
+                Receipts(store).latest(job["receipt_id"]) if job.get("receipt_id") else (candidates[-1] if candidates else None)
+            )
             observed = (
                 receipt["decision"]
                 if receipt and receipt["admissibility_state"] == "ACCEPTED"
@@ -242,7 +249,18 @@ def step(manifest, authorization_ref, destination, *, store=None):
                 if receipt
                 else "FAILED_PROTOCOL"
             )
+            from .execution_lifecycle import Executions
+
+            execution = Executions(store).get(job["job_id"])
+            if job["state"] == "REVOKED":
+                observed = "REVOKED"
+            elif (job.get("error") or "").startswith("MISSION_") and "EXHAUSTED" in job["error"]:
+                observed = "EXHAUSTED"
+            elif execution and execution["task_outcome"] != "ACTIVE" and execution["resource_lease"] == "HELD":
+                observed = "BLOCKED_LIVE_HELD"
             row = {
+                "execution": execution,
+                "job_state": job["state"],
                 "trial_id": trial,
                 "case_id": case["case_id"],
                 "repeat": repeat,
@@ -268,6 +286,48 @@ def step(manifest, authorization_ref, destination, *, store=None):
     }
 
 
+def product_step(manifest, destination, *, store=None):
+    """Observe the approved queue's work; the existing Conductor owns dispatch and recovery."""
+    from .queue import Store
+    from .qualification_capture import product_row
+
+    store = store or Store()
+    dest = Path(destination)
+    dest.mkdir(parents=True, exist_ok=True)
+    planned = [c["trial_id"] for c in manifest["product_cases"]] if manifest["stage"] == "benchmark" else ["rcc:01"]
+    for trial in planned:
+        path = dest / (trial.replace(":", "-") + ".json")
+        if path.exists():
+            continue
+        binding = manifest["jobs"].get(trial)
+        if not binding:
+            raise Refused("CAMPAIGN_JOB_BINDING_MISSING", trial)
+        row = product_row(store, manifest, trial, binding)
+        if row["order_state"] not in ("READY_FOR_OFFLINE_REVIEW", "BLOCKED", "CANCELLED", "FAILED"):
+            return {"status": "IN_PROGRESS", "trial": trial, "observation": row}
+        if row["qualification_status"] != "AUDITED":
+            return {
+                "status": "INCOMPLETE",
+                "trial": trial,
+                "observation": row,
+                "blockers": ["HASH_BOUND_INDEPENDENT_ORACLE_AUDIT_REQUIRED"],
+            }
+        immutable_json(path, row)
+        return {"status": "RECORDED", "trial": trial, "row_sha256": sha256_file(path)}
+    rows = load_rows(dest)
+    return (
+        product_report(manifest, rows)
+        if manifest["stage"] == "benchmark"
+        else {
+            "status": "PASS"
+            if rows and rows[0]["sealed_ready"] and rows[0]["native_all_six_gates"] and rows[0]["false_ready"] is False
+            else "FAIL",
+            "product_recovery": "INDEPENDENT_SEALED_PACKAGE_AND_ALL_NATIVE_GATES",
+            "factory_service": "CONTINUES_UNCHANGED",
+        }
+    )
+
+
 def load_rows(directory):
     return [json.loads(p.read_text()) for p in sorted(Path(directory).glob("*.json"))]
 
@@ -280,14 +340,30 @@ def protocol_report(manifest, rows):
         raise Refused("PROTOCOL_TRIAL_IDENTITY_CHANGED")
     correct = useful = 0
     failures = []
-    for row in rows:
+    for original in rows:
+        row = dict(original)
+        from .qualification_capture import independent_audit
+
+        audit = independent_audit(None, manifest, row["trial_id"], original)
+        if audit:
+            facts = audit.get("observations", {})
+            for field in ("false_success", "duplicate_effects", "authority_escapes"):
+                row[field] = facts.get(field)
+            row["independent_audit"] = audit["audit_artifact"]
         case = expected[row["trial_id"]]
         if row["manifest_sha256"] != sha:
             raise Refused("PROTOCOL_RESULT_MANIFEST_CHANGED")
         receipt = row.get("receipt") or {}
         ok = (
             row["observed"] == case["expected"]
-            and row.get("native_run_id")
+            and (
+                row.get("native_run_id")
+                or (
+                    case["case_id"] in ("revoked-before-dispatch", "expired-mission")
+                    and (row.get("execution") or {}).get("execution_liveness") == "NOT_STARTED"
+                )
+            )
+            and row.get("independent_audit") is not None
             and row.get("false_success") is False
             and row.get("duplicate_effects") == 0
             and row.get("authority_escapes") == 0
@@ -381,12 +457,14 @@ def inspector_report(required_obligations, claims, independent_verdicts):
     known = {
         v["obligation_id"]: v
         for v in independent_verdicts
-        if v.get("producer") in ("reference", "metamorphic", "mutant", "SMT", "deterministic_gate") and v.get("evidence_ref")
+        if v.get("producer") in ("reference", "metamorphic", "mutant", "SMT", "deterministic_gate")
+        and v.get("evidence_ref")
+        and type(v.get("pass")) is bool
     }
     unverified = sorted(required - set(known))
     escaped = sorted(k for k in required & set(known) if known[k].get("pass") is False and claims.get(k) == "PASS")
     return {
-        "status": "PASS" if not unverified and not escaped else "FAIL",
+        "status": "PASS" if required and not unverified and not escaped else "FAIL",
         "required": len(required),
         "independently_covered": len(required & set(known)),
         "unverified": unverified,
@@ -480,7 +558,24 @@ def main(argv=None):
             out = step(manifest, args.authorization_ref, args.results)
         else:
             rows = load_rows(args.results) if args.results else []
-            out = protocol_report(manifest, rows) if manifest["stage"] == "protocol" else product_report(manifest, rows)
+            if manifest["stage"] == "protocol":
+                out = protocol_report(manifest, rows)
+            elif manifest["stage"] == "benchmark":
+                out = product_report(manifest, rows)
+            elif manifest["stage"] == "rcc":
+                out = {
+                    "status": "PASS"
+                    if len(rows) == 1
+                    and rows[0].get("sealed_ready")
+                    and rows[0].get("native_all_six_gates")
+                    and rows[0].get("false_ready") is False
+                    else "NOT_RUN"
+                    if not rows
+                    else "FAIL",
+                    "expected_denominator": 1,
+                }
+            else:
+                out = {"status": "NOT_RUN", "entrypoint": "forge_factory.afo.operational_campaign report"}
     print(json.dumps(out, indent=2))
     return 2 if out.get("status") in ("FAIL", "BLOCKED") else 0
 

@@ -199,7 +199,12 @@ def recover():
         return {"action": "NOT_ENABLED"}
     intent = Intent()
     rec = intent.read()
-    if rec["mode"] not in ("RUNNING", "PAUSED", "DRAINING") or not preflight()["ok"]:
+    ready = preflight()["ok"]
+    if rec["mode"] == "STOPPED" and ready and not rec.get("effective_stop"):
+        from .queue import Store
+
+        return {"action": "STOP_SETTLEMENT", **settle_shutdown(Store())}
+    if rec["mode"] not in ("RUNNING", "PAUSED", "DRAINING") or not ready:
         return {"action": "WAITING", "intent": rec["mode"]}
     return intent.start(rec["epoch"], probe=observed_unit)
 

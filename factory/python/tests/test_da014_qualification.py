@@ -95,12 +95,16 @@ def test_role_capability_is_exact_and_independent_not_context_advertising(tmp_pa
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     ident = identity()
     r = tmp_path / "report.json"
+    oracle = tmp_path / "oracle.json"
+    immutable_json(oracle, {"observed": "fixture-independent-expected"})
+    from forge_factory.common import sha256_file
+
     report = {
         "manifest_sha256": "m",
         "identity_sha256": C.key(ident),
         "status": "PASS",
         "execution_host": "omniverse2",
-        "independent_oracle_refs": ["fixture:independent-reference"],
+        "independent_oracle_refs": [{"producer": "reference", "path": str(oracle), "sha256": sha256_file(oracle)}],
         "envelope": {"max_obligations": 1},
     }
     immutable_json(r, report)
@@ -142,3 +146,28 @@ def test_operational_campaign_cannot_pass_idle_duration_without_faults_and_later
     report = O.report(m, "soak-014-fixture")
     assert report["status"] == "FAIL" and report["missing_faults"] and not report["post_campaign_continuity"]
     assert report["gross_24_7_window"]["unavailable_seconds"] > 0 and report["rolling_30_day_slo"] == "NOT_DEMONSTRATED"
+
+
+def test_independent_inspection_cannot_pass_unknown_or_same_model_agreement():
+    claims = {"SWR-001": "PASS"}
+    assert (
+        Q.inspector_report(
+            ["SWR-001"],
+            claims,
+            [{"obligation_id": "SWR-001", "producer": "QWEN", "pass": True, "evidence_ref": "model:agreement"}],
+        )["status"]
+        == "FAIL"
+    )
+    assert (
+        Q.inspector_report(
+            ["SWR-001"], claims, [{"obligation_id": "SWR-001", "producer": "reference", "pass": None, "evidence_ref": "unknown"}]
+        )["status"]
+        == "FAIL"
+    )
+    assert Q.inspector_report([], {}, [])["status"] == "FAIL"
+    result = Q.inspector_report(
+        ["SWR-001"],
+        claims,
+        [{"obligation_id": "SWR-001", "producer": "mutant", "pass": False, "evidence_ref": "actual:counterexample"}],
+    )
+    assert result["escaped_defects"] == ["SWR-001"] and result["status"] == "FAIL"

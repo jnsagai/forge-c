@@ -92,7 +92,7 @@ def from_native(store, native_id, *, client=None):
     matches = [json.loads(r[0]) for r in rows if native_id in json.loads(r[0])["native_run_ids"]]
     if not matches:
         import re
-        from ..fabro.client import FabroClient, load_token
+        from ..fabro.client import FabroClient, FabroUnavailable, load_token
 
         if not isinstance(native_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", native_id):
             raise Refused("NATIVE_REQUEST_IDENTITY_INVALID")
@@ -100,7 +100,7 @@ def from_native(store, native_id, *, client=None):
         client = client or FabroClient(token=load_token(), timeout=3)
         try:
             native = client.get_run(native_id)
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, FabroUnavailable) as exc:
             raise Refused("NATIVE_REQUEST_IDENTITY_UNCONFIRMED") from exc
         finally:
             if owned:

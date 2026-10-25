@@ -7,6 +7,7 @@ lease timeout, or idle GPU observation releases the inference owner.
 from __future__ import annotations
 
 import json
+import os
 
 from ..common import utc_now
 from ..fabro.client import run_status
@@ -185,7 +186,13 @@ class Executions:
         self._save_evidence(job_id, "CURSOR", {"offset": (cursor + len(bounded)) % len(ids)})
         for rid in bounded:
             try:
-                status = run_status(client.get_run(rid))
+                if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+                    from .dependency_wait import probe
+
+                    observed = probe(self.store, "native:" + job_id, "status:" + rid, lambda: self._observe_native(client, rid))
+                    status = observed.get("result", {}).get("status", "UNKNOWN")
+                else:
+                    status = run_status(client.get_run(rid))
             except Exception:  # noqa: BLE001 - unreachable/404 is not proof of native termination
                 status = "UNKNOWN"
             observations[rid] = status
@@ -209,7 +216,18 @@ class Executions:
                     continue
                 rec["cancel_attempts"] += 1
                 try:
-                    code = client.cancel(rid)
+                    if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+                        from .dependency_wait import probe
+
+                        cancel_observation = probe(
+                            self.store, "native:" + job_id, "cancel:" + rid, lambda: {"ok": False, "code": client.cancel(rid)}
+                        )
+                        if not cancel_observation.get("due"):
+                            rec["cancel_attempts"] -= 1
+                            continue
+                        code = cancel_observation.get("result", {}).get("code")
+                    else:
+                        code = client.cancel(rid)
                     if code in (200, 202, 204):
                         rec["cancellation_state"] = "ACKNOWLEDGED"
                         rec["last_cancel_error"] = None
@@ -221,6 +239,11 @@ class Executions:
             "LIVE" if rec["identity_state"] == "CONFIRMED" and all(s != "UNKNOWN" for s in observations.values()) else "UNKNOWN"
         )
         return self._write(rec, rec["revision"])
+
+    @staticmethod
+    def _observe_native(client, rid):
+        status = run_status(client.get_run(rid))
+        return {"ok": status != "UNKNOWN", "status": status}
 
     def _evidence(self, job_id, kind):
         with self.store.tx() as c:

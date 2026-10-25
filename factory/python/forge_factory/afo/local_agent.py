@@ -401,8 +401,10 @@ def supervise(store, eff) -> list[dict]:
     for row in raw:
         try:
             job = json.loads(row["record"])
-            if job["job_id"] != row["job_id"]:
+            if job["job_id"] != row["job_id"] or job["order_id"] != row["order_id"]:
                 raise ValueError("JOB_IDENTITY_MISMATCH")
+            if any(k not in job for k in ("state", "role", "model", "policy_sha256", "deadline_epoch")):
+                raise ValueError("MALFORMED_JOB_RECORD")
             jobs.append(job)
         except (ValueError, KeyError, TypeError) as exc:
             from .dispatch import item_failure
@@ -420,29 +422,34 @@ def supervise(store, eff) -> list[dict]:
                     ex.reconcile(row["job_id"], client, cancel=True)
     out = []
     for job in jobs:
-        if job.get("durable_protocol"):
-            from .execution_lifecycle import Executions
+        try:
+            if job.get("durable_protocol"):
+                from .execution_lifecycle import Executions
 
-            rec = Executions(store).get(job["job_id"])
-            if rec and rec["resource_lease"] == "RELEASED" and job["state"] not in ("RUNNING", "LAUNCHING"):
+                rec = Executions(store).get(job["job_id"])
+                if rec and rec["resource_lease"] == "RELEASED" and job["state"] not in ("RUNNING", "LAUNCHING"):
+                    continue
+                order = store.order(job["order_id"])
+                if order is not None:
+                    out.append(poll(store, order, job, eff))
+                continue
+            if job["state"] not in ("PREPARED", "LAUNCHING", "RUNNING"):
                 continue
             order = store.order(job["order_id"])
-            if order is not None:
-                out.append(poll(store, order, job, eff))
-            continue
-        if job["state"] not in ("PREPARED", "LAUNCHING", "RUNNING"):
-            continue
-        order = store.order(job["order_id"])
-        if order["state"] not in ("RUNNING", "WAITING_EXTERNAL_CHANGE"):
-            job["deadline_epoch"] = min(job["deadline_epoch"], time.time())
-        if (
-            eff.sha256 == job["policy_sha256"]
-            and enabled(job["role"], eff)
-            and time.time() < job["deadline_epoch"]
-            and authorized(order, eff, job["model"])
-        ):
-            continue
-        out.append(poll(store, order, job, eff))
+            if order["state"] not in ("RUNNING", "WAITING_EXTERNAL_CHANGE"):
+                job["deadline_epoch"] = min(job["deadline_epoch"], time.time())
+            if (
+                eff.sha256 == job["policy_sha256"]
+                and enabled(job["role"], eff)
+                and time.time() < job["deadline_epoch"]
+                and authorized(order, eff, job["model"])
+            ):
+                continue
+            out.append(poll(store, order, job, eff))
+        except (KeyError, ValueError, TypeError, FileNotFoundError) as exc:
+            from .dispatch import item_failure
+
+            out.append(item_failure(store, job["order_id"], exc, "agent_supervision"))
     return out
 
 

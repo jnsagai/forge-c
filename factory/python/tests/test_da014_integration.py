@@ -584,3 +584,31 @@ def test_gateway_adopts_authoritative_native_nonce_before_detach_ack(protocol):
     assert binding == {"job_id": p.ctx.job_id, "nonce": p.ctx.launch_nonce}
     assert ex.get(p.ctx.job_id)["native_run_ids"] == ["early-native"]
     assert ex.get(p.ctx.job_id)["resource_lease"] == "HELD"
+
+
+def test_continuous_native_probes_and_cancel_ack_are_backed_off_durably(protocol, monkeypatch):
+    from forge_factory.afo import dependency_wait
+
+    p = protocol
+    ex = Executions(p.store)
+    ex.reserve(p.ctx.job_id, "mission-test", p.ctx.launch_nonce)
+    ex.dispatch_intent(p.ctx.job_id)
+    ex.adopt(p.ctx.job_id, ["native-probe"])
+    monkeypatch.setenv("FORGE_DURABLE_AUTONOMY", "1")
+    now = [1000]
+    monkeypatch.setattr(dependency_wait.time, "time", lambda: now[0])
+    calls = []
+    status = ["RUNNING"]
+    client = SimpleNamespace(
+        get_run=lambda _: calls.append("status") or {"lifecycle": {"status": {"kind": status[0]}}},
+        cancel=lambda _: calls.append("cancel") or 202,
+    )
+    first = ex.reconcile(p.ctx.job_id, client, cancel=True)
+    assert first["resource_lease"] == "HELD" and calls == ["status", "cancel"]
+    now[0] = 1001
+    ex.reconcile(p.ctx.job_id, client, cancel=True)
+    assert calls == ["status", "cancel"]
+    now[0] = 1016
+    status[0] = "CANCELLED"
+    settled = ex.reconcile(p.ctx.job_id, client, cancel=True)
+    assert settled["resource_lease"] == "RELEASED" and calls == ["status", "cancel", "status"]

@@ -166,52 +166,57 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
         if not rows:
             c.execute("DELETE FROM afo_control WHERE key='learning_capture_cursor'")
     for row in rows:
-        att = {**dict(row), "record": json.loads(row["record"])}
-        record = att["record"]
-        native = record.get("fabro_run_id")
-        if not native:
-            continue  # uncertain unsent jobs need their own dispatch receipt, never a fabricated native identity
-        ws = workspace_of(att)
-        manifest_path = ws / ".forge-run/manifest.json"
-        manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
-        cohort = {"revision": manifest.get("factory_revision"), "server": record.get("fabro_server")}
-        # Exclude order/adoption alias from identity. Native metadata and outcome remain factual.
-        out.append(
-            capture(
-                lessons,
-                native,
-                "JOB",
-                att["state"],
-                facts={"package_status": record.get("terminal_package_status")},
-                source_refs=["native-run:" + native],
-                cohort=cohort,
+        try:
+            att = {**dict(row), "record": json.loads(row["record"])}
+            record = att["record"]
+            native = record.get("fabro_run_id")
+            if not native:
+                continue  # uncertain unsent jobs need their own dispatch receipt, never a fabricated native identity
+            ws = workspace_of(att)
+            manifest_path = ws / ".forge-run/manifest.json"
+            manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
+            cohort = {"revision": manifest.get("factory_revision"), "server": record.get("fabro_server")}
+            # Exclude order/adoption alias from identity. Native metadata and outcome remain factual.
+            out.append(
+                capture(
+                    lessons,
+                    native,
+                    "JOB",
+                    att["state"],
+                    facts={"package_status": record.get("terminal_package_status")},
+                    source_refs=["native-run:" + native],
+                    cohort=cohort,
+                )
             )
-        )
-        ws = workspace_of(att)
-        from ..inspection.engine import Store as InspectionStore
+            ws = workspace_of(att)
+            from ..inspection.engine import Store as InspectionStore
 
-        for phase in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
-            if not ws.is_dir():
-                continue
-            try:
-                records = InspectionStore(ws).inspections(phase)
-                for data in records:
-                    outcome = data.get("status") or data.get("result") or data.get("verdict")
-                    if outcome not in OUTCOMES:
-                        continue
-                    out.append(
-                        capture(
-                            lessons,
-                            native,
-                            phase,
-                            outcome,
-                            facts={"record_sha256": digest(data)},
-                            source_refs=["inspection:sha256:" + digest(data)],
-                            cohort=cohort,
+            for phase in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+                if not ws.is_dir():
+                    continue
+                try:
+                    records = InspectionStore(ws).inspections(phase)
+                    for data in records:
+                        outcome = data.get("status") or data.get("result") or data.get("verdict")
+                        if outcome not in OUTCOMES:
+                            continue
+                        out.append(
+                            capture(
+                                lessons,
+                                native,
+                                phase,
+                                outcome,
+                                facts={"record_sha256": digest(data)},
+                                source_refs=["inspection:sha256:" + digest(data)],
+                                cohort=cohort,
+                            )
                         )
-                    )
-            except (OSError, ValueError, TypeError):
-                continue
+                except (OSError, ValueError, TypeError):
+                    continue
+        except (KeyError, ValueError, TypeError, FileNotFoundError) as exc:
+            from ..afo.dispatch import item_failure
+
+            item_failure(afo_store, row["order_id"], exc, "learning_capture")
     if rows:
         last = rows[-1]
         with afo_store.tx() as c:
