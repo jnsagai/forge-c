@@ -89,14 +89,14 @@ def reasoning_policy() -> dict[str, dict]:
     return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} if isinstance(pol, dict) else {}
 
 
-def sanitize_request(body: dict) -> dict:
+def sanitize_request(body: dict, *, policy=None) -> dict:
     body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
-    pol = reasoning_policy().get(out.get("model"))
+    pol = (reasoning_policy() if policy is None else policy).get(out.get("model"))
     out["reasoning_effort"] = pol["effort"] if pol else "none"
     if pol and pol.get("extra_output_tokens"):  # the reasoning would otherwise use up the answer's reserve
         for key in ("max_tokens", "max_completion_tokens"):
-            if isinstance(out.get(key), int):
+            if type(out.get(key)) is int and out[key] > 0:
                 out[key] += int(pol["extra_output_tokens"])
     msgs = []
     for m in out.get("messages") or []:

@@ -56,7 +56,12 @@ def seal(
     dependencies: dict | None = None,
     prior_strategies=(),
     required_obligations=(),
+    techniques=None,
 ) -> dict:
+    if techniques is not None and (
+        not isinstance(techniques, (list, tuple)) or any(not isinstance(t, str) or t not in TECHNIQUES for t in techniques)
+    ):
+        raise Refused("PACKET_TECHNIQUE_CATALOG_INVALID")
     phase = bundle["phase"]
     if phase not in PHASES:
         raise Refused("PACKET_PHASE_INVALID")
@@ -111,7 +116,7 @@ def seal(
         "required_obligations": sorted(set(required_obligations) | set(obligations)),
         "global_constraints": ["preserve_authoritative_inputs", "independent_verification", "all_native_gates"],
         "prior_strategies": list(prior_strategies),
-        "techniques": dict(TECHNIQUES),
+        "techniques": {k: v for k, v in TECHNIQUES.items() if techniques is None or k in techniques},
         "tests": {f"gate:{phase}:route=PASS": {"expected_result": "PASS", "phase": phase}},
         "complete": not missing,
         "missing": sorted(set(missing)),

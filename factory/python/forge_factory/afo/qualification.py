@@ -166,6 +166,30 @@ def preflight(manifest, *, live=False, authorization_ref=None):
             blockers.append("PROTOCOL_JOB_IDENTITIES_MUST_BE_UNIQUE_AND_MATCH_FROZEN_TRIALS")
     if (manifest["stage"] in ("benchmark", "rcc") or manifest["stage"].startswith("operation-")) and not manifest["jobs"]:
         blockers.append("APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED")
+    if manifest["stage"] == "protocol":
+        from .qualification_inputs import readiness as input_readiness
+
+        for ref in manifest["inputs"]:
+            path = Path(ref["path"])
+            if path.suffix != ".json" or path.stat().st_size > 4 * 1024 * 1024:
+                continue
+            try:
+                inputs = json.loads(path.read_bytes())
+            except (ValueError, UnicodeError):
+                continue
+            if not isinstance(inputs, dict) or inputs.get("schema") != "forge-c/protocol-inputs-014/1":
+                continue
+            try:
+                blockers.extend(input_readiness(inputs)["blockers"])
+                if inputs["jobs"] != manifest["jobs"]:
+                    blockers.append("FROZEN_PROTOCOL_INPUT_JOB_BINDINGS_CHANGED")
+                actual = inputs["model_configuration"]
+                if actual["reasoning_effort"] != manifest["identity"]["reasoning"]:
+                    blockers.append("QUALIFICATION_EFFECTIVE_REASONING_IDENTITY_MISMATCH")
+                if actual["model"] != manifest["model_profile"] or actual["model_digest"] != manifest["identity"]["model_digest"]:
+                    blockers.append("QUALIFICATION_EFFECTIVE_MODEL_IDENTITY_MISMATCH")
+            except (OSError, Refused, KeyError, TypeError) as exc:
+                blockers.append(getattr(exc, "code", "FROZEN_PROTOCOL_INPUTS_INVALID"))
     if live:
         from . import authz, host
         from .policy import load
@@ -193,7 +217,7 @@ def preflight(manifest, *, live=False, authorization_ref=None):
     return {
         "manifest_sha256": sha,
         "status": "BLOCKED" if blockers else "PREPARED_NOT_RUN",
-        "blockers": blockers,
+        "blockers": sorted(set(blockers)),
         "runtime_implementation": "SEPARATE_TEST_EVIDENCE",
         "local_model_capability": "NOT_RUN",
         "product_success": "NOT_RUN",

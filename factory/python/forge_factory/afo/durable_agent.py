@@ -85,14 +85,25 @@ def poll(store, order, job, eff, client, launch_fn):
                 case = json.loads(Path(job["case"]).read_text())
                 sub, receipt = maintainer.submission(case, require_receipt=True)
                 receipt_ref = "maintainer-receipt:" + digest(receipt)
-                ex._save_evidence(job["job_id"], "MAINTENANCE_SUBMISSION", {
-                    "job_id": ctx.job_id, "nonce": ctx.launch_nonce,
-                    "case_sha256": job["case_sha256"], "receipt": receipt,
-                })
-                job.update(state="SUCCEEDED", receipt_ref=receipt_ref, completion={
-                    "status": "BLOCKED" if sub["veto"] else "PASS",
-                    "artifacts": [receipt_ref], "next_action": "escalate",
-                })
+                ex._save_evidence(
+                    job["job_id"],
+                    "MAINTENANCE_SUBMISSION",
+                    {
+                        "job_id": ctx.job_id,
+                        "nonce": ctx.launch_nonce,
+                        "case_sha256": job["case_sha256"],
+                        "receipt": receipt,
+                    },
+                )
+                job.update(
+                    state="SUCCEEDED",
+                    receipt_ref=receipt_ref,
+                    completion={
+                        "status": "BLOCKED" if sub["veto"] else "PASS",
+                        "artifacts": [receipt_ref],
+                        "next_action": "escalate",
+                    },
+                )
                 ex.outcome(job["job_id"], "BLOCKED", "CANDIDATE_REQUIRES_INDEPENDENT_REVIEW", receipt_ref)
             except (OSError, ValueError, KeyError, maintainer.MaintainerDenied) as exc:
                 job.update(state="FAILED", error="NO_VALID_MAINTENANCE_RECEIPT:" + type(exc).__name__)
@@ -156,8 +167,13 @@ def poll(store, order, job, eff, client, launch_fn):
     return job
 
 
-def request_body(store, job):
-    """Complete serialized request, including locked SKILL/schema and all primary evidence. No truncation."""
+def request_material(job):
+    """Build raw transport and measure the actual profile-transformed provider request.
+
+    Measurement is not permission to send. request_body and gateway admission
+    retain their independent finite-envelope checks. Never apply the gateway's
+    output extension twice by sending its transformed measurement copy.
+    """
     from ..lrtx.structured import skill
 
     case = json.loads(Path(job["case"]).read_text())
@@ -200,9 +216,31 @@ def request_body(store, job):
             "json_schema": {"name": "semantic_proposal", "strict": True, "schema": schema("semantic-proposal")},
         },
     }
-    measured = measure_request(body)
+    from ..llm_gateway import sanitize_request
+    from ..lrtx.profile import load as load_profile
+
+    if not job.get("profile"):
+        raise Refused("COMPLETE_REQUEST_PROFILE_REQUIRED")
+    profile = load_profile(job["profile"])
+    policy = (profile.get("gateway") or {}).get("reasoning") or {}
+    effective = sanitize_request(body, policy=policy)
+    measured = {
+        **measure_request(effective),
+        "wire_request_sha256": digest(body),
+        "profile_sha256": profile["_sha256"],
+        "effective_reasoning_effort": effective["reasoning_effort"],
+        "effective_output_cap": effective["max_tokens"],
+        "requested_output_cap": body["max_tokens"],
+        "gateway_transformation_count": 1,
+    }
+    return body, measured
+
+
+def request_body(store, job):
+    """Complete effective request must fit before native code contacts the gateway."""
+    body, measured = request_material(job)
     # Byte upper bound is deliberately conservative until a pinned tokenizer is independently qualified.
-    if measured["input_tokens"] + body["max_tokens"] > job["reserved_tokens"]:
+    if measured["input_tokens"] + measured["effective_output_cap"] > job["reserved_tokens"]:
         raise Refused("CAPABILITY_LIMIT", "complete serialized evidence does not fit the reserved job")
     return body, measured
 
