@@ -39,7 +39,7 @@ def route(store, *, capa_registry=None, minimum_executions=2, limit=32):
                 (
                     c
                     for c in capas
-                    if (c.get("fingerprint") == fingerprint or fingerprint in capa_registry.links(c["capa_id"], "fingerprint"))
+                    if (c.get("fingerprint") == fingerprint or fingerprint in capa_registry.links(c["capa_id"], "FINGERPRINT"))
                     and c.get("reproducer_id")
                 ),
                 None,

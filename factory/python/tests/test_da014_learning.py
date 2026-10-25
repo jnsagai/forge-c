@@ -217,3 +217,29 @@ def test_retraction_between_selection_and_delivery_fences_exposure(memory, tmp_p
     assert not memory.expose(found["lessons"], "job-B")
     assert not memory.consumers(rec["lesson_id"])
     assert experience.report(memory)["exposures"] == 0
+
+
+def test_recurring_facts_link_existing_capa_reproducer_without_fabricating_incident(memory, tmp_path):
+    from forge_factory.reliability.capa import CapaRegistry
+    from forge_factory.reliability.policy import load
+    from forge_factory.reliability.store import CREStore
+    from forge_factory.knowledge.improvement import route
+
+    registry = CapaRegistry(CREStore(tmp_path / "cre.sqlite3"), load(), lessons=memory)
+    registry.open("CAPA-9001", ["fixture-incident"], ["fixture-fingerprint"], "frozen fixture existing defect")
+    registry.triage("CAPA-9001", "fixture root cause for independent reproduction", "RPR-041", "independent-fixture")
+    before = len(registry.all())
+    for native in ("fixture-native-A", "fixture-native-B"):
+        experience.capture(
+            memory,
+            native,
+            "SWE.3",
+            "FAILED",
+            facts={"fingerprint": "fixture-fingerprint"},
+            source_refs=["fixture:independent-finding"],
+            cohort={},
+        )
+    routed = route(memory, capa_registry=registry)
+    assert len(routed) == 1 and routed[0]["record"]["lane"] == "CAPA_REPAIR"
+    assert len(registry.links("CAPA-9001", "experience")) == 2 and len(registry.all()) == before
+    assert routed[0]["record"]["authority"] == "PROPOSAL_ONLY_NO_DEPLOYMENT"

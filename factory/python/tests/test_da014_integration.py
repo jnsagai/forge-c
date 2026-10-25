@@ -671,3 +671,59 @@ def test_campaign_metadata_provisioning_has_no_case_hash_cycle_or_inference(prot
         saved = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (job["job_id"],)).fetchone()[0])
     assert saved["case_sha256"] == job["case_sha256"]
     assert saved["qualification_manifest_sha256"] == Q.digest(manifest)
+
+
+def test_enabled_conductor_outlives_every_job_and_campaign_outcome(protocol, tmp_path, monkeypatch):
+    from forge_factory.afo import conductor, operations, queue
+    from forge_factory.supervisor import service
+
+    tmp_path.chmod(0o700)
+    intent = Intent(tmp_path / "intent.json")
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(intent.path))
+    intent.set("RUNNING", actor="owner", reason="fixture", initialize=True)
+    monkeypatch.setattr(queue, "Store", lambda: protocol.store)
+    monkeypatch.setattr(operations, "settle_shutdown", lambda store: {"settled": True})
+    monkeypatch.setattr(service, "install_model_guard", lambda: None)
+    monkeypatch.setattr(service, "sd_notify", lambda *a: None)
+    monkeypatch.setattr(conductor.signal, "signal", lambda *a: None)
+    monkeypatch.setattr(conductor, "write_heartbeat", lambda *a: None)
+    outcomes = ["SUCCEEDED", "FAILED", "BLOCKED", "TIMED_OUT", "EXHAUSTED", "EMPTY_QUEUE", "CAMPAIGN_COMPLETE"]
+    observed = []
+    before = protocol.ledger.snapshot("mission-test")
+
+    def cycle(n):
+        observed.append(outcomes[n])
+        if n == len(outcomes) - 1:
+            intent.set("STOPPED", actor="owner", reason="explicit stop after continuity observation")
+        return "DISABLED", True, outcomes[n]
+
+    monkeypatch.setattr(conductor, "cycle", cycle)
+    assert conductor.Conductor(interval=0).run() == 77
+    assert observed == outcomes and protocol.ledger.snapshot("mission-test") == before
+
+
+def test_refused_queue_head_defers_and_independent_order_meets_next_cycle_bound(tmp_path, monkeypatch):
+    import copy
+    from forge_factory.afo import scheduler, authority, policy
+    from forge_factory.afo.queue import Store
+    from test_afo_m2_queue import _env
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    repo = tmp_path / "repo"
+    (repo / "afo-manifests").mkdir(parents=True)
+    store = Store(tmp_path / "fair.sqlite3")
+    a, _ = store.submit(_env(repo, rid="AA", name="a"), repo=repo, max_queued=10)
+    b, _ = store.submit(_env(repo, rid="BB", name="b"), repo=repo, max_queued=10)
+    eff = policy.load()
+    eff = policy.Effective("PILOT", "PILOT", eff.sha256, copy.deepcopy(eff.policy))
+
+    def decide(action, request, **kwargs):
+        return type("FixtureDecision", (), {"allow": request["order_id"] == "BB", "code": "AUTH_REFUSED_A"})()
+
+    monkeypatch.setattr(authority, "decide", decide)
+    probes = {k: lambda: True for k in ("mount", "capacity", "fabro", "gateway", "mcp")}
+    first = scheduler.cycle(store, "owner", eff=eff, probes=probes)
+    second = scheduler.cycle(store, "owner", eff=eff, probes=probes)
+    assert first["action"] == "refused" and first["order_id"] == a
+    assert second["action"] == "admitted" and second["order_id"] == b
+    assert store.order(a)["state"] == "QUEUED" and store.order(a)["defer_count"] == 1

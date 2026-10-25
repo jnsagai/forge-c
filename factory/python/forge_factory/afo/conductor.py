@@ -145,7 +145,11 @@ def learning_cycle(store):
     with FabroClient(token=load_token(), timeout=3) as client:
         capture_workorders(store, lessons, client=client, limit=8)
     consolidate(lessons, limit=32)
-    route(lessons, limit=32)
+    from ..reliability.capa import CapaRegistry
+    from ..reliability.store import CREStore
+    from ..reliability.policy import load as cre_policy
+
+    route(lessons, capa_registry=CapaRegistry(CREStore(), cre_policy(), lessons=lessons), limit=32)
 
 
 class Conductor:
