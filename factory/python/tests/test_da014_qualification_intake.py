@@ -118,6 +118,13 @@ def intake(tmp_path, monkeypatch):
         )
     # The runtime never shares the preparer's private state directory (the Omniverse2 layout).
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "runtime-state"))
+    operations = tmp_path / "operations"
+    operations.mkdir(mode=0o700)
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(operations / "intent.json"))
+    from forge_factory.afo.operations import Intent
+
+    Intent().set("STOPPED", actor="fixture-owner", reason="install", initialize=True)
+    Intent().set("RUNNING", actor="fixture-owner", reason="qualification window")
     authdir = tmp_path / "auth"
     authdir.mkdir()
     key = tmp_path / "fixture-owner-key"
@@ -360,3 +367,16 @@ def test_deterministic_role_refusal_closes_only_that_wrapper_and_frees_capacity(
     assert [a["state"] for a in p.store.attempts(first["order_id"])] == ["CANCELLED"]
     assert MissionLedger(p.store).snapshot(p.manifest["mission"]["mission_id"])["jobs"] == 0
     assert scheduler.cycle(p.store, "fixture-controller", eff=p.eff, probes=HEALTHY)["action"] == "admitted"
+
+
+def test_live_qualification_requires_a_running_operations_intent(intake, monkeypatch):
+    p = intake
+    from forge_factory.afo.operations import Intent
+
+    Intent().set("PAUSED", actor="fixture-owner", reason="hold")
+    held = Q.preflight(p.manifest, live=True, authorization_ref=REF, trial_ids=[FIRST])
+    assert "QUALIFICATION_OPERATIONS_INTENT_NOT_RUNNING" in held["blockers"]
+    monkeypatch.delenv("FORGE_OPERATIONS_INTENT")
+    out = N.enroll(p.manifest, REF, store=p.store, trial_ids=[FIRST])
+    assert out["status"] == "BLOCKED" and "QUALIFICATION_RUNTIME_OPERATIONS_INTENT_REQUIRED" in out["blockers"]
+    assert not p.store.orders()

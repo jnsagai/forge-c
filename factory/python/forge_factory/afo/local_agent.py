@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import secrets
 import shlex
 import subprocess
@@ -199,6 +200,23 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             c, "diagnosis_reserved", order["order_id"], attempt_id, {"job_id": job["job_id"], "role": role, "model": model}
         )
     return job
+
+
+def incident_code(exc) -> str:
+    """Bounded typed string for incident.json; a gateway HTTP refusal keeps only its typed error name."""
+    import urllib.error
+
+    if isinstance(exc, urllib.error.HTTPError):
+        try:
+            kind = json.loads(exc.read(4096)).get("error", {}).get("type")
+        except (OSError, ValueError, AttributeError):
+            kind = None
+        suffix = ":" + kind if isinstance(kind, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,120}", kind) else ""
+        return f"GATEWAY_HTTP_{exc.code}{suffix}"
+    code = getattr(exc, "code", None)
+    if isinstance(code, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,200}", code):
+        return code
+    return "NATIVE_GENERATION_TRANSPORT_OR_PROTOCOL_ERROR"
 
 
 def execution_context(job):
@@ -703,7 +721,7 @@ def main(argv=None) -> int:
         except Exception as exc:  # noqa: BLE001 - preserve a typed, bounded incident; never raw prompts/reasoning
             from .durable import immutable_json
 
-            code = getattr(exc, "code", "NATIVE_GENERATION_TRANSPORT_OR_PROTOCOL_ERROR")
+            code = incident_code(exc)
             immutable_json(
                 directory(job["job_id"]) / "incident.json",
                 {"job_id": job["job_id"], "case_sha256": job["case_sha256"], "nonce": job["nonce"], "code": code},

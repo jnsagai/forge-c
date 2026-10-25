@@ -350,6 +350,13 @@ def preflight(manifest, *, live=False, authorization_ref=None, trial_ids=None):
             blockers.append("QUALIFICATION_REVISION_CHANGED")
         if not host.preflight()["ok"]:
             blockers.append("AUTHORITATIVE_DATA_MOUNT_NOT_READY")
+        from .operations import Intent, configured
+
+        # Stack services (the request-admitting gateway) receive the private policy/grant paths only with an intent.
+        if not configured():
+            blockers.append("QUALIFICATION_RUNTIME_OPERATIONS_INTENT_REQUIRED")
+        elif Intent().read()["mode"] != "RUNNING":
+            blockers.append("QUALIFICATION_OPERATIONS_INTENT_NOT_RUNNING")
         auth = authz.find(
             eff.mode,
             eff.sha256 or "",

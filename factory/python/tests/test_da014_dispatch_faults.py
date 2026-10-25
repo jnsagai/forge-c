@@ -203,3 +203,36 @@ def test_live_snapshot_is_recorded_but_wrapper_capacity_is_not_released(signed):
     assert result["row"]["observed"] == "BLOCKED_LIVE_HELD"
     assert p.store.order(job["order_id"])["state"] == "RUNNING"
     assert SimpleNamespace(**result).product_acceptance == "NOT_REQUESTED"
+
+
+def test_gateway_http_refusal_becomes_a_typed_bounded_incident_code():
+    import io
+    import urllib.error
+
+    body = io.BytesIO(json.dumps({"error": {"type": "AUTH_NOT_REFERENCED"}}).encode())
+    refused = urllib.error.HTTPError("http://127.0.0.1:11456/chat/completions", 429, "Too Many Requests", {}, body)
+    assert L.incident_code(refused) == "GATEWAY_HTTP_429:AUTH_NOT_REFERENCED"
+    untyped = urllib.error.HTTPError("http://127.0.0.1/x", 502, "Bad Gateway", {}, io.BytesIO(b"<html>"))
+    assert L.incident_code(untyped) == "GATEWAY_HTTP_502"
+    assert L.incident_code(Refused("CAPABILITY_LIMIT")) == "CAPABILITY_LIMIT"
+    assert L.incident_code(SimpleNamespace(code=429)) == "NATIVE_GENERATION_TRANSPORT_OR_PROTOCOL_ERROR"
+
+
+def test_untyped_native_incident_is_recorded_without_breaking_the_lifecycle_contract(signed):
+    """Omniverse2 2026-10-25: an integer HTTP status in incident.json crashed failure recording."""
+    from forge_factory.afo.durable import immutable_json
+
+    p = signed
+    job, _, _ = bind(p, "empty-output", dispatch=False)
+    native = Native(job)
+    job = poll(p, job, native)
+    assert job["state"] == "RUNNING"
+    immutable_json(
+        L.directory(job["job_id"]) / "incident.json",
+        {"job_id": job["job_id"], "case_sha256": job["case_sha256"], "nonce": job["nonce"], "code": 429},
+    )
+    native.status = "FAILED"
+    job = poll(p, job, native)
+    assert (job["state"], job["error"]) == ("FAILED", "NATIVE_INCIDENT_CODE_INVALID")
+    live = Executions(p.store).get(job["job_id"])
+    assert live["task_outcome"] == "FAILED_PROTOCOL" and live["resource_lease"] == "RELEASED"

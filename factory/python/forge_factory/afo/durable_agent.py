@@ -195,7 +195,9 @@ def poll(store, order, job, eff, client, launch_fn):
                     job["case_sha256"],
                     job["nonce"],
                 ):
-                    code = data["code"]
+                    raw_code = data.get("code")
+                    # An incident file is native-node output; only a bounded string may become a terminal reason.
+                    code = raw_code if isinstance(raw_code, str) and 0 < len(raw_code) <= 200 else "NATIVE_INCIDENT_CODE_INVALID"
             job.update(state="FAILED", error=code)
             ex.outcome(job["job_id"], "FAILED_PROTOCOL", job["error"])
     L.save(store, job)
