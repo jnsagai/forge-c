@@ -481,6 +481,14 @@ def test_continuous_service_render_uses_actual_local_namespace_and_shared_state(
     assert str(tmp_path / "profile/state") in conductor and "forge-fabro-cloud.service" not in conductor
     assert "FORGE_CONDUCTOR_UNIT=forge-conductor-local-omniverse2.service" in units["forge-afo-watchdog.service"]
     assert "--max-cycles" not in conductor
+    from forge_factory.lrtx import stack
+
+    monkeypatch.setenv("FORGE_AFO_POLICY", str(tmp_path / "approved-policy.yaml"))
+    monkeypatch.setenv("FORGE_CPU_JOBS", "4")
+    monkeypatch.setenv("FORGE_FABRO_TOKEN", "fixture-unrelated-server-credential")
+    profile_env = stack.envmap(stack.settings("local-rtx-v2-omniverse2"))
+    assert profile_env["FORGE_AFO_POLICY"] == str(tmp_path / "approved-policy.yaml")
+    assert profile_env["FORGE_CPU_JOBS"] == "4" and "FORGE_FABRO_TOKEN" not in profile_env
 
 
 def test_systemd_restart_recipe_requires_existing_cre_operational_authority(tmp_path):

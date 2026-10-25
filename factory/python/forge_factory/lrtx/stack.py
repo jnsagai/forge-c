@@ -83,6 +83,8 @@ def envmap(s: dict) -> dict[str, str]:
             "FORGE_CONDUCTOR_UNIT",
             "FORGE_DURABLE_AUTONOMY",
             "FORGE_DURABLE_NATIVE_HEADER",
+            "FORGE_AFO_POLICY",
+            "FORGE_CPU_JOBS",
             "FORGE_AFO_AUTH_DIR",
             "FORGE_AFO_ALLOWED_SIGNERS",
             "FORGE_CRE_POLICY",
