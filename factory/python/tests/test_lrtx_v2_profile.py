@@ -144,3 +144,17 @@ def test_reasoning_off_variant_differs_from_omniverse2_only_in_the_qwen36_reason
     body = {"model": "qwen3.6:35b-a3b", "max_tokens": 2048, "messages": []}
     assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["reasoning_effort"] == "none"
     assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["max_tokens"] == 2048
+
+
+def test_qwen38_variant_only_adds_the_verified_model_without_reasoning():
+    """Feature 014 (owner 2026-10-25): diagnosis model comparison against the reasoning-off qwen3.6 batch."""
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q38")
+    ignored = {"id", "status", "description", "_path", "_sha256", "models", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    allowed = dict(variant["models"]["allowed"])
+    added = allowed.pop("qwen3.8:27b-q8_0")
+    assert added["digest"] == "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039" and added["quantization"] == "Q8_0"
+    assert allowed == base["models"]["allowed"] and variant["models"]["default"] == base["models"]["default"]
+    assert "qwen3.8:27b-q8_0" not in variant["gateway"]["reasoning"]

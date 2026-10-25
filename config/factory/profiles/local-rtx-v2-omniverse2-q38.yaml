@@ -1,0 +1,116 @@
+schema: forge-c/local-profile/1
+id: local-rtx-v2-omniverse2-q38
+version: 1
+status: EXPERIMENTAL - not qualified (feature 014 diagnosis model comparison); selecting it is an explicit owner/operator action
+description: >-
+  Feature 014 diagnosis model comparison (owner 2026-10-25: "qwen3.8:27b-q8"): identical to local-rtx-v2-omniverse2
+  plus the separately downloaded, blob-verified qwen3.8:27b-q8_0 (no gateway reasoning entry, so effort none, like the
+  reasoning-off qwen3.6 variant it is compared with). Nothing here qualifies a model or changes the base profile.
+host_reference: {gpu: RTX 6000 Ada 48 GB, cpu: Core Ultra 9 285K, ram_gb: 125}
+local_only: true
+provider: ollama
+models:
+  default: qwen3-coder:30b
+  allowed:
+    qwen3-coder:30b: {digest: 06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca, quantization: Q4_K_M,
+                      role_qualification: NOT_QUALIFIED}
+    # F011-T028 inspector candidates of other families (owner 2026-10-22: "you can download, but do it on loop10");
+    # pulled into the loop10 model store; NOT_QUALIFIED until F011-T029 measures them
+    gpt-oss:20b: {digest: f38aa0c53da5f8c49d08c43a99df24ff53167fe68e24664a7777288e7656fdfe, quantization: MXFP4,
+                  license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-22 inspector pick for the 48 GB host; imported on omniverse2 from the owner's drive 2026-10-23,
+    # every blob sha256-checked there; NOT_QUALIFIED until F011-T029 measures it
+    gpt-oss:120b: {digest: 714d86958b6e870a9320e78126ac1ce3477727a1cd9bf7194b8ace0d84c62fd8, quantization: MXFP4,
+                   license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-23 ("test also Qwen3.6-35B-A3B as inspector"): pulled on omniverse2 2026-10-24, every blob
+    # sha256-checked there (qwen35moe, 35.5B MoE, 3B active); reasoning off (gateway default); NOT_QUALIFIED until F011-T029
+    qwen3.6:35b-a3b: {digest: a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c, quantization: Q4_K_M,
+                      license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    glm4:9b: {digest: 5b699761eca535dc55047ad9d2dbf54e3b8697709419ef78a70503ed4bfbcf44, quantization: Q4_0,
+              license: glm-4-9b License (not OSI; productization licence review required),
+              role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-22: "If no local model qualifies as inspector try another candidate model"; pulled on loop10
+    phi4:14b: {digest: ac896e5b8b34a1f4efa7b14d7520725140d5512484457fab45d2a4ea14c69dba, quantization: Q4_K_M,
+               license: MIT, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    mistral-small3.2:24b: {digest: 5a408ab55df5c1b5cf46533c368813b30bf9e4d8fc39263bf2a3338cfa3b895b, quantization: Q4_K_M,
+                           license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+    # owner 2026-10-24/25: downloaded on omniverse2 for a future test (forge-download-qwen38-q8, every blob sha256
+    # verified, manifest 8f5fb6b7...); first measured as the Feature 014 diagnosis comparison model
+    qwen3.8:27b-q8_0: {digest: 8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039, quantization: Q8_0,
+                       license: UNVERIFIED (licence review required), role_qualification: NOT_QUALIFIED}
+    granite3.3:8b: {digest: fd429f23b90980ed1bef53b990894e7b0199331f6ae90c5650240a7d5b70f1f7, quantization: Q4_K_M,
+                    license: Apache-2.0, role_qualification: NOT_QUALIFIED (inspector candidate)}
+runtime:
+  # host tuning for the 48 GB GPU (owner 2026-10-22: "lets use the most of the machine"): author and inspector both
+  # resident, full-precision KV cache, and a context that holds a 24 k packet plus 16 k of reasoning and the answer
+  ollama:
+    OLLAMA_NUM_PARALLEL: "1"
+    OLLAMA_MAX_LOADED_MODELS: "2"
+    OLLAMA_FLASH_ATTENTION: "1"
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: "65536"
+    OLLAMA_NOPRUNE: "1"
+  timeout_scale: 4
+structured:               # SWE.1 register tasks are semantic (SafeC); every other phase as in local-rtx-v1
+  phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  inspect_phases_by_layer: {LL: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6], HAL: [], LL+HAL: []}
+  semantic_phases: [SWE.1]          # semantic-first author (F011 M3)
+  semantic_inspect_phases: [SWE.1]  # typed claims + deterministic adjudication (F011 M4)
+  swe2_named_functions: true        # SWE.2 names fixed by the frozen requirements (F011 T031/T032)
+  swe2_constrained_design: true     # SWE.2 sequence steps limited to interface names; claim-free wording (F011 T032)
+  # owner 2026-10-24 (F011-T048): the local inspector sampled at model defaults (temperature 1) and judged the
+  # same inputs differently between runs; low temperature, seed per run (harness --seed overrides)
+  inspector_sampling:
+    default: {temperature: 0.2, seed: 1}
+    qwen3.6:35b-a3b: {temperature: 0.6, top_p: 0.95}   # thinking mode: vendor guidance, greedy can loop
+  inspector_coverage: true   # F011-T049: decomposed coverage questions per work-order scope item
+  inspector_entries: true    # F011-T054: per-entry effects and budget questions
+  # F011-T036: a delivered-code (brownfield) work order keeps only these phases structured; the others run
+  # as the existing agent nodes (the structured SWE.3-SWE.6 tasks need code tasks of a local code author)
+  brownfield_structured_phases: [SWE.1, SWE.2]
+  reinspect_direct: true
+  timeout_s: 3600
+  visit_time_s: 1200
+safec:                    # ADR-0015: a pinned, hash-verified local engine; never a phase or release authority
+  engine:
+    binary: /mnt/data/forge-c/safec/engines/cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2-xhost/safec-bridge
+    binary_sha256: 5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f
+    source_commit_sha: cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2  # cross-host build; adds check_reset (F011-T016) and sealed evidence (S013-T014) to 7032f48
+    semantic_profile: register-io-0.1
+  timeout_s: 60
+gateway:
+  # owner 2026-10-22 ("I agree with A per-model exception in the gateway"): a model that cannot answer with reasoning
+  # off reasons at this fixed effort; the gateway still strips every reasoning field before anything is stored (FR-025)
+  reasoning:
+    # owner 2026-10-22: "go to high directly, on omniverse I dont care about energy, time and resources"
+    gpt-oss:20b: {effort: high, extra_output_tokens: 16384}
+    gpt-oss:120b: {effort: high, extra_output_tokens: 16384}
+    # owner 2026-10-24 ("Measure with thinking"): qwen3.6 answers with reasoning off but its claims were shallow
+    # (F011-T029 run 5: 1 false rejection of 2, S1-OMIT off target); measured again with thinking on this host only
+    qwen3.6:35b-a3b: {effort: high, extra_output_tokens: 16384}
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 1800
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /mnt/data/forge-c/lrtx-v2-q38
+  ports: {ollama: 11455, gateway: 11456, fabro: 32391}
+  # the existing deployment, other owner services and the local-rtx-v1 stack
+  forbidden_ports: [8765, 8787, 11434, 11435, 11436, 11437, 11445, 11446, 32290, 32291, 32390]
+  writable_env: [FORGE_DATA_ROOT, FORGE_STATE_DIR, FORGE_ARCHIVE_DIR, FORGE_FABRO_CONFIG, FORGE_FABRO_STORAGE,
+                 FORGE_FABRO_HOME, FORGE_VENV, UV_CACHE_DIR, PIP_CACHE_DIR]
+  shared_readonly:
+    toolchains: /mnt/data/forge-c/toolchains
+    standards: /mnt/data/forge-c/standards
+    inputs: /mnt/data/forge-c/inputs
+    ollama-0.34.0: /mnt/data/forge-c/ollama-0.34.0
+    ollama-models: /mnt/data/forge-c/ollama-models
+existing_deployment:      # never written by this profile: the checkouts (this host runs no Codex/Claude line)
+  roots:
+    - /home/omniverse2/forge-c-remote/repos/forge-c
+    - /home/omniverse2/forge-c-remote/repos/safec
+network:
+  required: namespace_denied
