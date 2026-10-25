@@ -38,13 +38,16 @@ def test_items_run_in_order_skip_missing_examples_and_record_outcomes(env):
         _finish(ws, "READY_FOR_OFFLINE_REVIEW", list(Q.PHASES))
         return {"fabro_run_id": "R" + wo, "workspace": str(ws)}
 
+    onboarded = [i for i in q["items"] if (Q.REPO_ROOT / i["example"] / "workorder.json").is_file()]
+    assert onboarded and len(onboarded) < len(q["items"])  # GPIO and TIM wait for the parser change (F015-T040)
     st = Q.run(q, launcher=launcher, sleep=lambda s: None)
-    assert launched == ["WO-BENCH-CRC-ST-r1"]  # only CRC is onboarded
+    assert launched == [Q.work_order_id(q, i, 1) for i in onboarded]  # queue order, one at a time
     assert st["items"]["crc-st"]["status"] == "READY_FOR_OFFLINE_REVIEW"
-    assert st["items"]["spi-st"]["status"] == "SKIPPED_NOT_ONBOARDED"
+    assert st["items"]["tim-st"]["status"] == "SKIPPED_NOT_ONBOARDED"
     out = st["items"]["crc-st"]["attempts"][0]["outcome"]
     assert out["phases_passed"] == list(Q.PHASES) and out["blocked_at"] is None
-    assert Q.run(q, launcher=launcher, sleep=lambda s: None) and launched == ["WO-BENCH-CRC-ST-r1"]  # recorded: skipped
+    n = len(launched)
+    assert Q.run(q, launcher=launcher, sleep=lambda s: None) and len(launched) == n  # recorded outcomes: skipped
 
 
 def test_a_retry_gets_a_new_work_order_id_and_a_blocked_outcome_is_kept(env):
