@@ -41,6 +41,9 @@ def identity(pid: int) -> dict | None:
         status = (base / "status").read_text().splitlines()
         line = next(line for line in status if line.startswith("NSpid:"))
         record["namespace_pid"] = int(line.split()[-1])
+    except FileNotFoundError:
+        # The process exited between the stat and status reads: that is absence, exactly as for the first read.
+        return None
     except (OSError, ValueError, StopIteration) as exc:
         raise Refused("PROVIDER_PROCESS_OBSERVATION_UNAVAILABLE", type(exc).__name__) from exc
     return record

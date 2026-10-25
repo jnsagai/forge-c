@@ -153,3 +153,24 @@ def test_corrupt_kernel_identity_does_not_become_a_quiescence_proof(tmp_path, fi
         with pytest.raises(Refused, match="MANAGED_PROVIDER_IDENTITY_INVALID"):
             P.quiet(bad)
         assert P.quiet(instance) is None
+
+
+def test_process_exiting_between_kernel_reads_is_absence_not_an_observation_error(monkeypatch):
+    """Loaded host 2026-10-25: /proc/<pid>/status vanished after stat was read during retirement."""
+    child = subprocess.Popen(["sleep", "30"])
+    try:
+        real = Path.read_text
+
+        def vanishing(self, *a, **k):
+            if self.name == "status" and self.parent.name == str(child.pid):
+                raise FileNotFoundError(str(self))
+            return real(self, *a, **k)
+
+        monkeypatch.setattr(Path, "read_text", vanishing)
+        assert P.identity(child.pid) is None
+        monkeypatch.setattr(Path, "read_text", lambda self, *a, **k: (_ for _ in ()).throw(PermissionError(str(self))))
+        with pytest.raises(Refused, match="PROVIDER_PROCESS_OBSERVATION_UNAVAILABLE"):
+            P.identity(child.pid)
+    finally:
+        child.kill()
+        child.wait()
