@@ -43,3 +43,11 @@ Model-free recovery uses currently approved recipes. Changing or rolling back a 
 - Local semantic capability: freeze per-role cases and independent expected outcomes; distinguish protocol failure, missing evidence, faulty verifier and model capability limit.
 - Resource limits: measure model residency, input processing, generation and cancellation on the selected profile before changing precision/context/concurrency.
 - Full RCC repair cause: inspect actual SWE.3 findings and reference/tool evidence; 50 package gaps are not 50 independently diagnosed defects.
+
+## D8 — Every-job learning extends existing capabilities
+
+The existing general `LessonStore` has durable SQLite/FTS5, validation, bounded retrieval, usage, TTL and retraction, but its source proof is restricted to PROMOTED repairs. The knowledge MCP and curator use that same repair-only contract. Extend those interfaces with explicit versioned ordinary-outcome/negative-observation source checks instead of fabricating incidents or adding a parallel knowledge authority.
+
+Keep Feature 011 inspector knowledge separate: generic recorded-source lessons, deterministic scope selection, paired critical-defect checks and CRE promotion are stronger than ordinary author memory. Reuse Feature 003 comparable KPI cohorts and Feature 004 CAPA/CRE for effect measurement and candidate improvements. Full detail and observed integration gaps are in [continuous-learning.md](continuous-learning.md).
+
+Every job produces factual experience and a disposition. A novel transferable lesson or improved metric is an empirical result, not a mandatory model assertion. Preserve negative results, chronological evaluation and independent holdouts; count learning overhead. Normal validated-memory use can improve future behavior within existing knowledge authority, while protected source/prompt changes still follow external promotion rules.

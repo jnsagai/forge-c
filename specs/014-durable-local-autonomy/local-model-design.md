@@ -46,7 +46,7 @@ Each model role has its own measured context, output, time and verification prof
 | Semantic inspector | Required role-appropriate inputs and frozen inspection obligations | Existing inspection verdict, finding identities and evidence references | Independent inspection framework and frozen release gates | Critical-defect detection and false rejection on separate held-out defects; formatting alone is insufficient. |
 | Counterexample / deterministic verifier | Candidate artifacts, authoritative property/test definitions and impact manifest | Reproducible failure or supported PASS for the checked properties | Existing independent tools and oracles | Tool coverage and assumptions are recorded; a model does not expand the meaning of PASS. |
 | Factory maintainer | Eligible incident, reproducer and currently allowlisted candidate workspace | Candidate patch, predicted improvement and qualification evidence | Independent CRE and existing external promotion authority | Baseline-fail/candidate-pass plus regression and holdout results; protected edits remain external engineering. |
-| Lesson candidate author, if used | Independently verified repair and its failure history | Conditional lesson proposal with evidence references and applicability limits | Deterministic provenance checks and independent lesson qualification | Benefit on separate applicable cases; stale and nonapplicable cases rejected. |
+| Existing lessons curator, when model distillation is useful | Verified ordinary-job outcomes, checked negative observations or promoted repairs with explicit source kind | Conditional lesson proposal with evidence references and applicability limits | Existing deterministic knowledge validation extended compatibly; separate inspector promotion path | Benefit on separate applicable/adverse cases; stale and nonapplicable lessons rejected. Every-job factual capture itself is model-free. |
 
 Administrative plan fields, broker receipts and compact completion artifacts are controller outputs. They are not a second model task. Optional narrative explanations cannot replace any required structured artifact.
 
@@ -133,7 +133,7 @@ Fine-tuning is not a first-line fix for a broken evidence/protocol/completion pa
 
 ## Lessons and self-improvement
 
-A reusable lesson must name the verified failure class, applicable component/device/source versions, supporting repair and verification receipts, known negative cases and invalidation conditions. Store it separately from authoritative requirements and policy. Retrieval must test applicability, and the controller must be able to retract a lesson without modifying historical evidence.
+A reusable lesson must name its verified source kind, supported success pattern/failure observation/procedure, applicable component/device/source versions, independent outcome receipts, known adverse cases and invalidation conditions. Every ordinary job contributes factual experience even when no new lesson is justified. Extend the existing knowledge store/curator/MCP and usage history as described in [continuous-learning.md](continuous-learning.md); preserve legacy repair validation and the separate inspector channel. Store learning separately from authoritative requirements/policy, test applicability and support retraction without altering historical evidence.
 
 Prefer compact conditional recipes that improve evidence selection or repair targeting over growing a universal prompt with every prior experience. A lesson may suggest an action; it cannot authorize it, declare a gate passed or override a source contradiction. Evaluate benefit on separate cases and retain failures so repeated mistakes do not become accepted memory.
 
@@ -162,6 +162,7 @@ The intended outcome is measured unattended progress within this capability enve
 | Per-role capability and short-horizon decomposition | DA-FR-031–032 | DA-AT-031–032; LM-01, LM-02, LM-04, LM-06 |
 | Evidence-indexed memory and bounded verifier-guided search | DA-FR-033–034 | DA-AT-033–034; LM-04, LM-05, LM-08 |
 | Correlated inspection errors and capability-limit fallback | DA-FR-035–036 | DA-AT-035–036; LM-06, LM-08 |
+| Every-job learning through existing knowledge, inspection, CRE and KPI paths | DA-FR-037–044 | DA-AT-037–044; chronological ordinary-job transfer and comparable memory-enabled/baseline evaluation |
 
 ## Primary references
 

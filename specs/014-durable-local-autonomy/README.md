@@ -10,8 +10,9 @@ Start with [codex-prompt.md](codex-prompt.md), then follow [quickstart.md](quick
 
 | Document | Purpose |
 |---|---|
-| [spec.md](spec.md) | Prioritized stories, 36 requirements, boundaries and success criteria |
+| [spec.md](spec.md) | Prioritized stories, 44 requirements, boundaries and success criteria |
 | [local-model-design.md](local-model-design.md) | Role capability, task decomposition, context/memory, correlated errors and capability fallback |
+| [continuous-learning.md](continuous-learning.md) | Learning from every job through the existing knowledge store, curator/MCP, inspector lessons, CAPA/CRE and KPI paths |
 | [plan.md](plan.md) | Existing modules, implementation order, persistence and compatibility |
 | [tasks.md](tasks.md) | Unchecked implementation and qualification tasks |
 | [acceptance-tests.md](acceptance-tests.md) | Deterministic/native/live acceptance scenarios and required evidence |
@@ -24,3 +25,5 @@ Start with [codex-prompt.md](codex-prompt.md), then follow [quickstart.md](quick
 | [validation.md](validation.md) | Actual spec checks and explicitly unrun runtime milestones |
 
 The first engineering milestone is complete evidence → bounded semantic proposal → durable receipt → one effective verified repair. A passing protocol, healthy service or blocked package does not independently prove product success.
+
+Continuous improvement is core scope: every run/driver/feature contributes persistent experience, and subsequent eligible jobs reuse independently qualified knowledge. This preserves current capability boundaries and does not require future automatic source promotion.

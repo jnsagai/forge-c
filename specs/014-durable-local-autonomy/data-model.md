@@ -17,7 +17,10 @@ The existing `specs/005-autonomous-factory-operations/contracts/recovery-plan.sc
 | Completion receipt revision | Receipt ID plus monotonically increasing revision; broker/controller | Proposal hash, case hash, mission/order/attempt/job IDs, launch nonce, predecessor receipt digest, independent submission/admissibility/execution states and decision/verification references. Immutable revisions form an audit chain. |
 | Execution record | Execution ID and stable launch nonce; controller | Durable dispatch intent, native identity candidates, admission state, task outcome, execution liveness, cancellation state, fenced resource lease and quiescence evidence. Terminal task outcome does not erase possible native execution. |
 | Verification job/receipt | Stable verifier job ID and outbox key; independent verifier/broker | Baseline/candidate artifact hashes, verifier identity/configuration, scoped obligations, test invocations and results, lease/heartbeat, terminal decision, evidence references. Candidate authors cannot issue acceptance receipts. |
-| Lesson candidate | Content hash plus applicability/version key; knowledge service | Verified repair evidence, applicability checks, exclusions, negative results and invalidation conditions. Candidate lessons remain untrusted until independently validated. |
+| Lesson candidate | Content hash plus applicability/version key; existing knowledge service | Explicit versioned source kind: legacy promoted repair, verified ordinary outcome or verified negative observation. Source-specific qualification, applicability/exclusions, supporting/adverse evidence and invalidation. No fake repair source or untested remedy claim. |
+| Job experience | Stable execution/event identity plus evidence digest; existing event/knowledge subsystem | Job/driver/feature, phase/role, target/input/model/tool/configuration identities, factual verdicts, hypotheses labeled separately, artifacts, cost and uncertainty. Immutable and deduplicated across replay/adoption. |
+| Learning disposition | Experience ID plus durable processing revision; existing knowledge/outbox path | Pending/candidate/duplicate/no-new-evidence/deferred/insufficient/restricted outcome, budget allocation and related lesson/evaluation IDs. Independent of product verdict. |
+| Lesson use and effect | Existing lesson usage/history extended with version/hash, role and cohort | Retrieved/exposed/applied status, job/phase, input compatibility, independent later outcome and comparison evidence. Exposure is not proof of application or causal benefit. |
 
 The first implementation should extend the existing transactional state/outbox design. This document does not mandate a new database, orchestrator or distributed service.
 
@@ -71,6 +74,10 @@ Admissibility REJECTED remains rejected in that receipt family. A corrected prop
 10. **Verification and release:** RECOVERED/VERIFIED require an authentic independent receipt covering the intended repair and impacted dependencies plus native quiescence. A complete READY archive requires all unchanged release gates. External release/deployment authority remains external.
 
 ## Evolution and privacy constraints
+
+Every-job knowledge integration follows [continuous-learning.md](continuous-learning.md). Extend `LessonStore` persistence and `forge-knowledge-mcp`, preserving its lifecycle and legacy schema/source rules. During implementation, define and validate additive versioned experience/source contracts against the existing lesson schema; do not reuse repair-only fields for fabricated incidents. The proposed semantic-proposal/completion/execution schemas in this package do not claim to implement this migration.
+
+Lesson identity includes applicability/source versions as well as content; old versions remain auditable. Independent job experience may support or contradict a candidate without altering previously sealed records. Ordinary success/failure learning never bypasses the separately governed generic inspection-lesson path. Terminal job capture and learning processing reconcile independently, with deterministic capture possible even when distillation has no authorized budget.
 
 Version these proposed interfaces independently of the unchanged recovery-plan schema. Unknown versions fail closed. Hash serialization is defined in `contracts/README.md`; clients cannot rely on unspecified JSON key order. State migrations require independently qualified compatibility/recovery evidence and remain outside automatic worker promotion.
 

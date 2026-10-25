@@ -11,13 +11,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parents[1]
-COUNT = 36
+COUNT = 44
 
 
 def main() -> int:
     errors: list[str] = []
     required = ('README.md', 'spec.md', 'plan.md', 'tasks.md', 'research.md',
-                'local-model-design.md', 'data-model.md', 'quickstart.md',
+                'local-model-design.md', 'continuous-learning.md', 'data-model.md', 'quickstart.md',
                 'codex-prompt.md', 'evidence-baseline.md', 'acceptance-tests.md',
                 'future-worker-promotion.md', 'validation.md', 'traceability.csv')
     for name in required:

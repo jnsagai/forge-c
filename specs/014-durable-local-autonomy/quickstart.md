@@ -20,7 +20,7 @@ Use one of these alternatives, not both. Do not reset a dirty working tree. The 
 
 ## Read before coding
 
-Read `.specify/memory/constitution.md`, this feature's `spec.md`, `local-model-design.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/README.md`, `tasks.md` and `acceptance-tests.md`. Review Features 005, 010, 012 and 013 where referenced. Preserve applicable repository instructions. Do not reinitialize Spec Kit or regenerate these authored documents from generic templates.
+Read `.specify/memory/constitution.md`, this feature's `spec.md`, `local-model-design.md`, `continuous-learning.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/README.md`, `tasks.md` and `acceptance-tests.md`. Review Features 002/003/004 learning/KPI/CRE, 005, 010/011, 012 and 013 where referenced. Preserve applicable repository instructions. Do not reinitialize Spec Kit or regenerate these authored documents from generic templates.
 
 ## Validate this specification
 
@@ -41,6 +41,7 @@ Relevant existing regression entry points include:
 
 ```bash
 PYTHONPATH=factory/python python3 -m pytest factory/python/tests/test_afo_local_autonomy.py factory/python/tests/test_afo_m4_recovery.py factory/python/tests/test_afo_m5_maintainer.py factory/python/tests/test_brownfield_resume.py
+PYTHONPATH=factory/python python3 -m pytest factory/python/tests/test_m5_lessons.py factory/python/tests/test_inspection_lessons.py factory/python/tests/test_controlroom_scorecard.py
 python3 tests/spec/validate_design.py
 ```
 

@@ -6,6 +6,8 @@
 
 Repair the diagnosis-to-execution boundary before evaluating another product retry. Extend existing case preparation, MCP, native adapter, AFO ledger/outbox and verifier. Make Qwen return a small semantic judgment; deterministic code binds the authoritative plan, validates admission, records the receipt and completes the job.
 
+Also close the learning loop on every ordinary driver/feature job using the existing knowledge, events, curator, inspection-lessons, CRE and KPI components. [Continuous learning](continuous-learning.md) defines the additive extension; a second learning engine or unrelated memory stack is not needed.
+
 ## Technical Context
 
 - **Language/version:** existing repository Python environment and lockfiles; inspect actual supported version during implementation rather than upgrading it for this feature.
@@ -38,6 +40,8 @@ Recheck after design and before activation. No constitutional exception is reque
 | Execution and review | `afo/local_agent.py`, `fabro/client.py`, existing AFO queue/outbox/store | liveness record and durable verifier lease/outbox |
 | Operations | existing supervisor/watchdog, local-profile preflight and service configuration | approved recipe inventory, deterministic restore/reconciliation tests |
 | Qualification | existing local harness, CRE, package verifier and status/scorecard | feature-scoped native protocol campaign and reporting |
+| Every-job learning | `knowledge/store.py`, `mcp/servers/knowledge.py`, existing lessons-curator SKILL, `events/*`, `workorder.py`/AFO reconciliation | additive experience/disposition records, versioned source kinds, durable learning outbox and backward-compatible qualification |
+| Learning transfer and impact | `knowledge/inspection.py`, `kpi/sources.py`, `kpi/engine.py`, `controlroom/scorecard.py`, existing CRE/maintainer | strict applicable retrieval, separate inspector channel, per-version consumption and comparable learning-benefit reports |
 
 Proposed filenames are design targets, not claims that modules already exist. Prefer extending an existing owner module when it avoids duplicate authorities. Do not migrate the whole application to new state enums; version internal adapter records and preserve compatible public states.
 
@@ -51,6 +55,7 @@ Documentation resides in `specs/014-durable-local-autonomy/`: specification, res
 3. **Bounded execution:** separate limit dimensions; link mission/product ledgers; admit requests before dispatch; reconcile cancellation and late run adoption; recover verifier leases and publication receipts. Exercise crashes at every effect/ack boundary.
 4. **Operational recovery:** typed incidents and approved recipes, resource isolation, model-free watchdog and restore tests. An exact signed release transition is required for any deployment rollback; absent authority, restart/reload only within approved configuration.
 5. **Product/maintainer paths:** counterexample-driven scoped repair and dependency impact, existing resume compatibility, independent inspections and candidate-only CRE. Add validated lessons without a trusted-prompt shortcut.
+   Implement DA-T037–044 as the core every-job learning increment: factual capture, bounded consolidation, compatible source validation, qualified retrieval and measured cross-job benefit. Successful ordinary work and verified negative observations are first-class sources. Preserve legacy repair and inspector lesson semantics.
 6. **Qualification:** deterministic checks first, then frozen native protocol cohort, real RCC recovery, staged operational soaks and representative product benchmark. Keep each status separate; record NOT_RUN/BLOCKED when live prerequisites are absent.
 7. **Measured adaptation:** when unchanged-profile qualification fails after deterministic fixes, compare one authorized model/runtime variable at a time. Evaluate harness candidates with stated predictions and independent held-out outcomes. Core delivery does not wait for future source-promotion policy approval.
 
@@ -70,10 +75,14 @@ The 100-run protocol gate does not imply 99% reliability or prove all product re
 
 Qualify diagnosis, authoring, inspection and maintainer behavior separately. Compare coherent obligation decomposition with the frozen larger-task baseline while retaining identical source coverage and cumulative budgets. Measure stale-memory handling, semantic defect detection, false rejections, useful-plan rate, regression-free defect closure and stall behavior. Do not choose a model/runtime configuration from tokens-per-second or schema compliance alone. Same-Qwen agreement cannot replace independent evidence.
 
+Add an end-to-end chronological learning scenario: ordinary job A → experience/disposition → independently qualified candidate → eligible job B retrieval/application → independent outcome comparison. Capture and deduplication can be tested without inference. Use current `test_m5_lessons.py` and `test_inspection_lessons.py` as mandatory regression anchors. A successful source job does not by itself prove transfer benefit, and a failed job does not prove its proposed remedy works.
+
 Every completed implementation task cites passing evidence from the exact tested candidate revision using the repository evidence conventions. Deployment/model tests use a separate currently valid signed campaign; implementation and offline tests proceed while live authorization is absent. No credential/private manual/raw reasoning enters committed evidence.
 
 ## Compatibility, migration and rollback
 
 Keep public legacy states and provider paths compatible; add explicit versioned adapter records. Test migration on copies of representative SQLite snapshots with history/usage conservation and restore verification. Do not rewrite the exhausted original mission. Runtime rollback means an authorized release transition, never an automatic downgrade of policy or database schema. Plan forward-compatible records before canary deployment.
+
+Knowledge migration is additive: preserve v0.4 repair source checks and existing lesson IDs/history/usage; add explicitly versioned ordinary-outcome/negative-observation sources and their validators. Implement matching curator/MCP/schema/registry/lock updates through normal external engineering. Keep `IL-*.yaml` inspector knowledge separately reviewed, selected and CRE-qualified. Test actual phase and tool-version matching, not just the presence of those API parameters.
 
 No automatic merge, deployment, new model allowlist, budget increase or gate relaxation is introduced. The optional future design is documented in [future-worker-promotion.md](future-worker-promotion.md).

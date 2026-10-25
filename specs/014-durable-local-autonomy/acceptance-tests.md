@@ -403,3 +403,91 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Then:** Repartition only where coverage remains sound, or select a qualified local alternative only within current authorization and remaining capacity. Otherwise emit typed CAPABILITY_LIMIT or MISSING_EVIDENCE with supporting observations and preserved history. Do not substitute missing facts with guessed content or relabel the same failed strategy as progress.
 - **Evidence:** Capability/admission decisions; repartition coverage; alternative configuration qualification/authorization checks; inference-route audit; final typed outcomes; unchanged budget, model-weight and authority records.
 - **Expected:** Every limit case receives a justified bounded remedy or explicit block; no endless retries, cloud fallback, autonomous weight training, automatic budget increase or unqualified model/adapter activation occurs.
+
+## DA-AT-037 — Factual experience from every execution
+
+- **Requirement:** DA-FR-037
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** Jobs and phase outcomes across multiple drivers and features, including success, failure, BLOCKED, cancellation and interrupted execution; original archives and execution identities are immutable.
+- **When:** Capture factual experience on each outcome, interrupt capture before/after persistence, replay terminal events and adopt the same native execution through another order.
+- **Then:** Link experience to stable execution, phase, driver, feature, source revision and evidence identities. Reconcile interrupted capture and deduplicate replay/adoption without hiding distinct phase outcomes. Preserve actual observations, unknowns and costs; capture does not itself assert a lesson, root cause or successful remedy.
+- **Evidence:** Expected-execution/outcome inventory; experience records and source hashes; crash/replay reconciliation traces; deduplication results; unchanged original archive hashes.
+- **Expected:** Every executed job and phase outcome has a factual, traceable experience record or an explicit recoverable capture-pending state that reconciles after restart; no duplicated execution, fabricated inference or mutation of original evidence.
+
+## DA-AT-038 — Bounded asynchronous learning disposition
+
+- **Requirement:** DA-FR-038
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** A durable queue of captured experiences, bounded consolidation capacity, shared mission budgets and cases with no novel lesson, unavailable consolidation capacity or unavailable model allowance.
+- **When:** Consolidate asynchronously, restart before/after candidate/disposition persistence, replay queue messages and continue normal admitted jobs while consolidation is deferred.
+- **Then:** Record a durable learning disposition for every job, including candidate created, no new lesson or deferred with a reason and reconciliation identity. Consolidation cannot block the controller indefinitely, force a lesson from every run, mint fresh budget or invoke Qwen merely because the machine is healthy and idle.
+- **Evidence:** Queue/disposition ledger; idempotency and restart traces; bounded scheduling/admission results; mission accounting; model-request counts during idle and exhausted-budget cases.
+- **Expected:** All jobs retain a truthful durable disposition; repeated processing creates no duplicate effective candidate; denied/deferred consolidation preserves work and budget. Healthy-idle monitoring makes zero model calls; separately admitted, budgeted learning work is accounted as work rather than idle monitoring.
+
+## DA-AT-039 — Extend the existing knowledge path compatibly
+
+- **Requirement:** DA-FR-039
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** Existing LessonStore records, forge-knowledge-mcp operations and deterministic curator checks, including valid and invalid legacy PROMOTED repair lessons; proposed versioned source kinds for ordinary success and verified negative observations.
+- **When:** Migrate/read legacy records and submit each source kind through the extended existing store, MCP contract and curator, including unknown versions, unverifiable sources and attempts to bypass legacy repair promotion.
+- **Then:** Validate each explicit version/source kind under its own qualified evidence contract. Preserve existing PROMOTED-and-tests-PASS requirements for legacy repair lessons. Ordinary success or negative observation requires genuine source evidence, not a fabricated incident/repair identity. No parallel knowledge engine becomes a competing authority.
+- **Evidence:** Versioned schema/operation contracts; migration and compatibility fixtures; legacy/new curator verdicts; source resolution receipts; knowledge-path architecture and storage audit.
+- **Expected:** Existing valid repair lessons remain valid and existing invalid repairs remain rejected; new source kinds use the same controlled lifecycle without fake incident records, unknown-version acceptance or a weakened legacy validation path.
+
+## DA-AT-040 — Applicable lessons before the next job or phase
+
+- **Requirement:** DA-FR-040
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** Validated and unvalidated lessons spanning different MCUs, tool/source versions, phases, roles and repair scopes; a pending next job/phase; author judgments and separately qualified inspection lessons; primary evidence with a deliberately missing required source.
+- **When:** Retrieve through the existing knowledge path before context assembly, enforce its bounded top-K and configured token allowances, then measure the complete serialized reference block including provenance and wrappers against its admission cap. Resolve the authorized stored artifact or assemble the full bounded lesson into the packet; include a decisive exclusion/warning after character 120 and a lesson that cannot fit completely.
+- **Then:** Apply MCU/version/phase/role/scope filters and return only applicable validated references, with top-K no greater than three. Deliver the complete bounded statement/remedy, constraints, exclusions and provenance to the consuming role; the warning after character 120 remains visible. Explicitly omit/defer an unfit lesson instead of supplying a misleading partial remedy. Preserve primary evidence priority; missing authoritative input remains missing. Do not inject retrieved author judgments into inspector context or let ordinary lessons bypass inspection-lesson qualification. An empty applicable result is valid.
+- **Evidence:** Retrieval/filter matrix; selected lesson IDs/versions/hashes and consumer records; actual serialized token measurements; context manifests; rejected cross-scope/role cases; missing-primary-source outcome.
+- **Expected:** Every admitted reference is applicable, validated and within both retrieval and measured serialization budgets; no author-to-inspector judgment leakage, missing-source substitution or assumption that character estimates alone prove token compliance.
+
+## DA-AT-041 — Independent lesson qualification by claim and scope
+
+- **Requirement:** DA-FR-041
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** Candidates derived from a successful run, a verified failure/limit, a promoted repair and a coincidental success pattern, each with explicit scope and claim; independent positive and negative cases; the separate IL inspection-lesson promotion rules.
+- **When:** Qualify each candidate's actual claim using source verification and scoped positive/negative checks, including counterexamples to an overgeneralized success and an attempt to describe a failed remedy as successful.
+- **Then:** Distinguish a reproducible useful lesson from mere correlation. A failure may support a bounded observed limitation without proving a remedy or universal incapability. The candidate author cannot self-validate. Ordinary LessonStore validation cannot confer IL promotion; generic inspection lessons retain their separate source, paired-defect and CRE requirements.
+- **Evidence:** Candidate claim/scope/source manifests; independent positive/negative results; rejected overclaims; curator decisions; separate IL qualification/promotion receipts where applicable.
+- **Expected:** Only independently supported scoped claims become validated lessons; correlated or unsupported remedies are quarantined/rejected, verified negative observations remain accurately labeled, and no ordinary success lesson bypasses the protected inspection-lesson path.
+
+## DA-AT-042 — Measured lesson use and benefit
+
+- **Requirement:** DA-FR-042
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** Per-lesson usage identities and frozen comparable replay or validation cohorts with predeclared configurations, independent oracles and with/without-lesson conditions; final acceptance holdouts are separately protected.
+- **When:** Evaluate lesson impact within authorized budgets, retaining every run, failure, retry and the costs of capture, consolidation, retrieval, generation and verification.
+- **Then:** Measure quality, false READY, critical-defect detection, first-pass yield, recurrent findings and total cost with explicit denominators. Prioritize quality constraints over efficiency gains. Record demonstrated benefit, no measured benefit, regression or insufficient evidence without promising improvement on every job; do not tune on final holdout outcomes.
+- **Evidence:** Lesson-to-consumer usage ledger; frozen cohort/configuration/oracle manifests; comparative results and uncertainty limits; complete cost ledger; final-holdout access/separation audit.
+- **Expected:** Every benefit claim has a comparable independent measurement; no false READY or missed critical defect is excused by lower cost, no unfavorable result is omitted, and no per-job improvement guarantee or final-holdout contamination is introduced.
+
+## DA-AT-043 — Scoped deduplication and durable invalidation
+
+- **Requirement:** DA-FR-043
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** Duplicate lessons with the same scoped source identity, similar wording describing distinct MCU facts, conflicting candidates, expired/retracted lessons and tool/source-version changes affecting previously consumed lessons.
+- **When:** Deduplicate, validate conflicts, invalidate stale applicability and retract affected lessons, including restart/replay during lifecycle transitions and retrieval concurrent with invalidation.
+- **Then:** Use scope and source hashes in identity decisions; do not collapse different MCU/version facts merely because symptoms/remedy text matches. Exclude invalid, conflicting-unresolved, expired or retracted content from subsequent retrieval. Persist previous lifecycle history and identify affected consumer runs for follow-up without rewriting their original results.
+- **Evidence:** Scoped identity/dedup matrix; conflict and invalidation decisions; before/after retrieval results; durable lifecycle history; affected-consumer list; restart/race traces.
+- **Expected:** True duplicates create no duplicate effective lesson, distinct scoped facts remain distinct, invalidation prevents later retrieval, and prior history plus affected consumers survive restart without silently changing past execution verdicts.
+
+## DA-AT-044 — Integrate measured learning with CAPA, CRE and maintainer work
+
+- **Requirement:** DA-FR-044
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** Measured recurring issues, verified success patterns and lesson-impact records, together with existing CAPA/CRE and maintainer workflows, current edit allowlists and external promotion authority.
+- **When:** Aggregate evidence into deduplicated improvement hypotheses and route eligible candidates through those existing workflows; attempt protected-scope edits or automatic production promotion, and generate readiness metrics from mixed successful/failed learning outcomes.
+- **Then:** Preserve hypothesis-to-experience/lesson evidence links and apply the correct existing evaluation lane: defect repairs retain baseline-failing reproducers/CAPA; success-derived optimizations use measured-baseline CHANGE evaluation and external engineering when outside the maintainer grant, without fabricated incidents. Preserve independent evaluation and promotion rules. A pattern alone is not a proven cause or authorized deployment. Report experience coverage, qualified lessons, demonstrated benefits and improvement candidates as distinct metrics, separate from product gate success and operational readiness.
+- **Evidence:** Experience/lesson-to-CAPA/CRE/proposal traceability; workflow and allowlist decisions; candidate evaluation; denied promotion receipts; metric definitions, denominators and readiness reconciliation.
+- **Expected:** Learning feeds the existing improvement system without a parallel promotion authority; no protected edit or automatic source activation occurs, and captured experience, validated lessons or staged candidates cannot falsely satisfy product PASS or readiness gates.

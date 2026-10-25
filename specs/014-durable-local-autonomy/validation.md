@@ -14,7 +14,7 @@ python3 specs/014-durable-local-autonomy/contracts/validate_contracts.py
 
 Validation environment: Python 3, development-only `jsonschema==4.23.0`. No production dependency, model, deployment or runtime configuration is changed by this package. Results are recorded after executing the checks; they do not complete any runtime task.
 
-**Specification validation result:** PASS — 36 requirements, 36 tasks and 36 acceptance cases have complete matching traceability and no broken local document links. Three Draft 2020-12 schemas and all 25 synthetic contract fixtures passed their expected classifications: 13 positive accepted and 12 negative rejected. The checker reports `SPEC_CONTRACTS_ONLY_NOT_RUNTIME`.
+**Specification validation result:** PASS — 44 requirements, 44 tasks and 44 acceptance cases have complete matching traceability and no broken local document links. Three Draft 2020-12 schemas and all 25 synthetic contract fixtures passed their expected classifications: 13 positive accepted and 12 negative rejected. The checker reports `SPEC_CONTRACTS_ONLY_NOT_RUNTIME`.
 
 No production test, Qwen inference or remote service action was performed for this specification delivery. All implementation tasks remain unchecked; all runtime acceptance cases remain NOT_RUN.
 
@@ -25,6 +25,8 @@ No production test, Qwen inference or remote service action was performed for th
 | Core implementation | NOT_IMPLEMENTED | Candidate source, reproducer contrast, integration/fault tests and inherited regression |
 | Actual MCP/native adapter behavior | NOT_RUN | Registered schema and installed-path positive/negative results |
 | Per-role local Qwen capability | NOT_RUN | Digest/config-bound semantic cohorts, effective context and independent inspector measures |
+| Every-job learning and knowledge compatibility | NOT_IMPLEMENTED / NOT_RUN | Successful/failed/blocked job capture, source-kind migration, legacy repair/inspection regression, bounded retrieval and retraction |
+| Measured cross-job learning benefit | NOT_RUN | Chronological transfer and comparable memory-enabled/baseline outcomes with full learning overhead and quality retained |
 | 20 × 5 native protocol cohort | NOT_RUN | Frozen manifest, all outcomes, admissible plans on recoverable cases, complete accounting |
 | Genuine RCC recovery | NOT_RUN | Real implementation, all six independent gates and sealed READY archive |
 | 24h smoke / 72h pilot / 168h soak | NOT_RUN | Authorized fault exposure, real admitted work, intervention and recovery records |

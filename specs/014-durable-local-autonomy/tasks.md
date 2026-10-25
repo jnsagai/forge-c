@@ -92,6 +92,26 @@ Task IDs map one-to-one to requirement/test IDs in `traceability.csv`; dependenc
 
 - [ ] **DA-T030 [US5]** Maintain readiness/evidence ledgers and document future-worker-promotion as proposal-only; update `docs/afo/LOCAL-SELF-HEALING.md` and this feature's `validation.md` without adding an auto-promote switch. Trace: DA-FR-030; DA-AT-030. Dependencies: independent documentation; final status after relevant tests.
 
+## US9 — Continuous learning from every driver and feature
+
+Core scope: extend existing knowledge, events, inspection, CRE and KPI paths. Design compatible source types early; capture/disposition can ship before live effectiveness is demonstrated. Independent implementation and fixture milestones do not wait for live campaign authorization.
+
+- [ ] **DA-T037 [US9]** Add idempotent factual job/phase experience capture through existing `events/*`, `workorder.py`, AFO reconciliation and `knowledge/store.py`; cover all terminal outcomes, immutable package references and adopted/replayed execution deduplication. Trace: DA-FR-037; DA-AT-037. Dependencies: existing event receipts; DA-T009 durable effects.
+
+- [ ] **DA-T038 [US9]** Add recoverable learning intent/disposition and bounded consolidation in the existing knowledge/curator/AFO dispatch paths; deterministic duplicate/no-new-evidence handling and explicit deferred budgets must not require extra inference. Trace: DA-FR-038; DA-AT-038. Dependencies: DA-T037; DA-T011/012 accounting and admission.
+
+- [ ] **DA-T039 [US9]** Extend the existing lesson contract, `knowledge/store.py`, `mcp/servers/knowledge.py` and lessons-curator SKILL plus matching registries/locks with versioned ordinary-outcome/negative-observation sources; preserve legacy PROMOTED repair validation and migration history. Trace: DA-FR-039; DA-AT-039. Dependencies: DA-T037; source-contract design before DA-T038 model integration; no live campaign prerequisite.
+
+- [ ] **DA-T040 [US9]** Integrate qualified lesson retrieval before relevant jobs/phases via existing knowledge MCP/packet builders; enforce actual phase/role/target/source/tool-version predicates, current k/token bounds and measured context; deliver complete bounded lesson meaning/constraints/provenance via authorized artifact resolution or packet assembly, testing an exclusion after character 120 and explicit omission when unfit; record exposure versus application. Trace: DA-FR-040; DA-AT-040. Dependencies: DA-T039; DA-T003/004 role and context implementation.
+
+- [ ] **DA-T041 [US9]** Implement independent source-specific candidate validation and applicable/adverse qualification through existing knowledge/CRE tools; retain generic inspector IL recorded-source/paired-defect/CRE promotion and author-inspector boundaries. Trace: DA-FR-041; DA-AT-041. Dependencies: DA-T039; existing independent knowledge/inspection validators.
+
+- [ ] **DA-T042 [US9]** Add chronological job-A-to-B transfer and frozen memory-enabled/baseline comparisons under existing KPI/qualification mechanisms, including all learning costs and holdout isolation; demonstrate benefit without a per-run monotonic-score claim. Trace: DA-FR-042; DA-AT-042. Dependencies: DA-T040/041 implementation; authorized model evaluation separately gated.
+
+- [ ] **DA-T043 [US9]** Extend existing knowledge dedup/history/TTL/retract/consumer tracking with source-scope/version identity, contradiction detection and successor-version qualification; test stale tools/MCUs and rollback of retrieval eligibility. Trace: DA-FR-043; DA-AT-043. Dependencies: DA-T039/040/041 implementation.
+
+- [ ] **DA-T044 [US9]** Connect measured recurring findings/success patterns to the appropriate existing CAPA/CRE/maintainer or external-engineering lane (repair reproducer versus measured-baseline CHANGE, without fake incidents), and add separate learning coverage/usage/benefit views to `kpi/engine.py` and `controlroom/scorecard.py`. Trace: DA-FR-044; DA-AT-044. Dependencies: DA-T037 through DA-T043 implementation milestones; demonstrated benefit remains separately reported.
+
 ## Completion evidence
 
 Use the repository evidence convention (`scripts/mark_task.py` where applicable) and cite an existing passing `evidence/v0.4/runs/.../latest.json` with tested revision, command, exit code and artifact hashes. Spec validators validate documentation/contracts only; their PASS cannot tick implementation tasks. Do not overwrite old evidence.
