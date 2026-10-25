@@ -112,6 +112,26 @@ Core scope: extend existing knowledge, events, inspection, CRE and KPI paths. De
 
 - [ ] **DA-T044 [US9]** Connect measured recurring findings/success patterns to the appropriate existing CAPA/CRE/maintainer or external-engineering lane (repair reproducer versus measured-baseline CHANGE, without fake incidents), and add separate learning coverage/usage/benefit views to `kpi/engine.py` and `controlroom/scorecard.py`. Trace: DA-FR-044; DA-AT-044. Dependencies: DA-T037 through DA-T043 implementation milestones; demonstrated benefit remains separately reported.
 
+## US10 — Continuous 24/7 factory operation (P0)
+
+Core increment through existing AFO/systemd/supervisor capabilities. Service lifetime is indefinite; individual engineering jobs and all budgets remain finite. Design operations intent and restart ownership before wiring automatic recovery so operator stop is preserved from the first increment.
+
+- [ ] **DA-T045 [US10]** Add compatible durable operations intent and separate service/authority/job state in existing Conductor/operations paths; prevent production finite-cycle/end-of-campaign exit and verify last-job/empty/exhausted-queue continuity. Trace: DA-FR-045; DA-AT-045. Dependencies: DA-T009/011/013 durable state/accounting/liveness; DA-T050 operator-control design before activation.
+
+- [ ] **DA-T046 [US10]** Extend existing service renderer/templates and supervisor/watchdog with approved boot, crash, unexpected clean-exit, hung-cycle and start-limit recovery; persist bounded slow-path cooldown and respect actual local-profile dependencies and operator intent. Test real systemd semantics separately from fixture/render checks. Trace: DA-FR-046; DA-AT-046. Dependencies: DA-T016/017; DA-T045/050 implementation before recovery activation.
+
+- [ ] **DA-T047 [US10]** Persist dependency wait/reprobe/recovery predicates in existing queue/supervisor operations paths; bound probes and subprocess calls, preserve cooldown across restart and automatically resume only eligible work after verified restoration. Exercise long outages, exhausted authority and ambiguous native execution without budget/lease resets. Trace: DA-FR-047; DA-AT-047. Dependencies: DA-T011/013/015/045; coordinate DA-T046 recovery ownership.
+
+- [ ] **DA-T048 [US10]** Add item-local exception containment and fair continuation to existing scheduler/reconciliation/learning paths, including authority-refused head-of-line and malformed candidates; preserve shared integrity fail-closed behavior, dependencies and one-inference admission. Trace: DA-FR-048; DA-AT-048. Dependencies: DA-T045/047; DA-T038 learning integration where enabled.
+
+- [ ] **DA-T049 [US10]** Extend existing resource/retention/backup/preflight mechanisms for long-running service: bounded housekeeping, evidence/pin protection, reserved control-plane capacity, backpressure and missing/full/read-only-mount observation. Test restoration without data-root fallback, destructive resets or starvation. Trace: DA-FR-049; DA-AT-049. Dependencies: DA-T017/045/047; DA-T043 retention compatibility.
+
+- [ ] **DA-T050 [US10]** Integrate authenticated durable pause/drain/resume/revocation/shutdown with existing operations controls and every boot/restart actor; define intent storage/epoch and fail-closed unknown intent, fence/serialize start effects, reject stale outbox replay and settle concurrent start-versus-stop before confirming effective shutdown. Respect deliberate OS stop/disable/mask and reconcile native workers on resume. Trace: DA-FR-050; DA-AT-050. Dependencies: DA-T045 intent-contract co-design; existing operator controls; no dependency on live DA-T046 qualification.
+
+- [ ] **DA-T051 [US10]** Extend existing events/status/KPI/scorecard with separate service intent, control-plane/worker readiness and product progress, gross 24/7 outage intervals, UNKNOWN telemetry, wait deadlines, recovery/intervention counts and queue-age metrics. Freeze denominator and restoration rules. Trace: DA-FR-051; DA-AT-051. Dependencies: DA-T018/045/047/050; compatible with DA-T044 learning metrics.
+
+- [ ] **DA-T052 [US10]** Extend the fault harness and DA-T026 campaign report with DA-AT-045–051 coverage, declared finite timing/fairness bounds, real-work exposure and post-campaign continuous-service/later-intake checks; run deterministic/systemd integration and only separately authorized live 24h/72h/168h campaigns. Preserve all faults/outages and distinct 30-day SLO status. Trace: DA-FR-052; DA-AT-052. Dependencies: DA-T045–051 implementation; DA-T026 harness; live execution additionally requires valid authority and prerequisites.
+
 ## Completion evidence
 
 Use the repository evidence convention (`scripts/mark_task.py` where applicable) and cite an existing passing `evidence/v0.4/runs/.../latest.json` with tested revision, command, exit code and artifact hashes. Spec validators validate documentation/contracts only; their PASS cannot tick implementation tasks. Do not overwrite old evidence.

@@ -14,7 +14,7 @@ python3 specs/014-durable-local-autonomy/contracts/validate_contracts.py
 
 Validation environment: Python 3, development-only `jsonschema==4.23.0`. No production dependency, model, deployment or runtime configuration is changed by this package. Results are recorded after executing the checks; they do not complete any runtime task.
 
-**Specification validation result:** PASS — 44 requirements, 44 tasks and 44 acceptance cases have complete matching traceability and no broken local document links. Three Draft 2020-12 schemas and all 25 synthetic contract fixtures passed their expected classifications: 13 positive accepted and 12 negative rejected. The checker reports `SPEC_CONTRACTS_ONLY_NOT_RUNTIME`.
+**Specification validation result:** PASS — 52 requirements, 52 tasks and 52 acceptance cases have complete matching traceability and no broken local document links. Three Draft 2020-12 schemas and all 25 synthetic contract fixtures passed their expected classifications: 13 positive accepted and 12 negative rejected. The checker reports `SPEC_CONTRACTS_ONLY_NOT_RUNTIME`.
 
 No production test, Qwen inference or remote service action was performed for this specification delivery. All implementation tasks remain unchecked; all runtime acceptance cases remain NOT_RUN.
 
@@ -27,11 +27,12 @@ No production test, Qwen inference or remote service action was performed for th
 | Per-role local Qwen capability | NOT_RUN | Digest/config-bound semantic cohorts, effective context and independent inspector measures |
 | Every-job learning and knowledge compatibility | NOT_IMPLEMENTED / NOT_RUN | Successful/failed/blocked job capture, source-kind migration, legacy repair/inspection regression, bounded retrieval and retraction |
 | Measured cross-job learning benefit | NOT_RUN | Chronological transfer and comparable memory-enabled/baseline outcomes with full learning overhead and quality retained |
+| Continuous 24/7 service and operator controls | NOT_IMPLEMENTED / NOT_RUN | Empty/exhausted-campaign continuity; boot/crash/hang/clean-exit/start-limit recovery; durable waiting/fairness/resource hygiene; respected shutdown and honest outage reporting |
 | 20 × 5 native protocol cohort | NOT_RUN | Frozen manifest, all outcomes, admissible plans on recoverable cases, complete accounting |
 | Genuine RCC recovery | NOT_RUN | Real implementation, all six independent gates and sealed READY archive |
-| 24h smoke / 72h pilot / 168h soak | NOT_RUN | Authorized fault exposure, real admitted work, intervention and recovery records |
+| 24h smoke / 72h pilot / 168h soak | NOT_RUN | Authorized fault exposure, real admitted work, intervention/outage/recovery records and post-campaign service continuity |
 | 27/30 representative product benchmark | NOT_RUN | Frozen case mix, all retries/failures, critical defect detection and no known false READY |
-| 30-day availability objective | NOT_DEMONSTRATED | Actual admitted-work availability window and outage accounting |
+| 30-day availability objective | NOT_DEMONSTRATED | Complete gross 24/7 service window with outage/UNKNOWN accounting and separately labeled worker/workload measures |
 | Automatic persistent worker promotion | OUT_OF_CORE_SCOPE / NOT_AUTHORIZED | Separate policy review, implementation and qualification; not enabled here |
 
 Historical failure facts are in `evidence-baseline.md`; none is relabeled successful. V4 native stopping cause remains unresolved. Passing this package's checker validates design consistency and synthetic structural fixtures only, never Qwen capability, operational recovery, source promotion or safety compliance.

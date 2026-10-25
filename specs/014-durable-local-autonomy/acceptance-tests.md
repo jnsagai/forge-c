@@ -180,7 +180,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Status:** NOT_RUN
 - **Given:** An authorized fault campaign and qualified restart, stale-lease reconciliation, model reload and rollback recipes; the watchdog and last-known-good bootstrap are independent of the failed model service.
 - **When:** Inject approved gateway/model/service failures, then exercise a failed recovery and unavailable-prerequisite case.
-- **Then:** Detect and execute applicable recipes without asking Qwen to repair its unavailable serving process. Preserve the ledger and evidence, bound restart attempts, verify recovery health and block explicitly when prerequisites or rollback are unavailable.
+- **Then:** Detect and execute applicable recipes without asking Qwen to repair its unavailable serving process. Preserve the ledger and evidence, bound restart attempts, verify recovery health and block affected work explicitly when prerequisites or rollback are unavailable; model-free supervision and bounded prerequisite probes continue under DA-FR-045–052.
 - **Evidence:** Fault schedule; watchdog/recipe events; model-request counter; health and quiescence checks; recovery timings; failed-recipe disposition.
 - **Expected:** Zero model calls required for the operational recipes; observed recovery or explicit bounded dependency block for every fault; no uncontrolled restart loop, history loss or unverified rollback success.
 
@@ -491,3 +491,91 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Then:** Preserve hypothesis-to-experience/lesson evidence links and apply the correct existing evaluation lane: defect repairs retain baseline-failing reproducers/CAPA; success-derived optimizations use measured-baseline CHANGE evaluation and external engineering when outside the maintainer grant, without fabricated incidents. Preserve independent evaluation and promotion rules. A pattern alone is not a proven cause or authorized deployment. Report experience coverage, qualified lessons, demonstrated benefits and improvement candidates as distinct metrics, separate from product gate success and operational readiness.
 - **Evidence:** Experience/lesson-to-CAPA/CRE/proposal traceability; workflow and allowlist decisions; candidate evaluation; denied promotion receipts; metric definitions, denominators and readiness reconciliation.
 - **Expected:** Learning feeds the existing improvement system without a parallel promotion authority; no protected edit or automatic source activation occurs, and captured experience, validated lessons or staged candidates cannot falsely satisfy product PASS or readiness gates.
+
+## DA-AT-045 — Continuous service independent of job outcomes
+
+- **Requirement:** DA-FR-045
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** An externally enabled continuous-service mode, existing AFO admission policy, a predeclared supervision interval and detection/reconciliation deadlines, and jobs that succeed, fail, block, time out, exhaust their allowances or leave an empty queue.
+- **When:** Finish the last job in each state, exhaust all model allowances, close a finite campaign and observe beyond its end; then submit a separately authorized eligible order while the factory remains enabled.
+- **Then:** Keep the model-free control plane, health checks, reconciliation and intake operating throughout. Record job-local terminal outcomes without converting them into a global service stop. Healthy idle makes zero model calls and creates no artificial engineering work. Service enablement alone does not authorize any job, renew an expired grant or reset expenditure.
+- **Evidence:** Service-mode and heartbeat history; native job outcomes; supervision timestamps against declared deadlines; intake/admission receipts; inference counters; preserved authorization and mission ledgers.
+- **Expected:** No job outcome, empty queue or campaign completion causes autonomous global termination. All required control cycles meet their predeclared deadlines, and the new eligible order is processed within its declared scheduling bound without reopening exhausted work.
+
+## DA-AT-046 — Existing service-manager recovery across failure and reboot
+
+- **Requirement:** DA-FR-046
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** An isolated qualification environment with the actual local-profile service-unit inventory, persistent mount dependencies, enabled service mode, an independent watchdog, bounded immediate-restart policy and a predeclared slower recovery schedule after restart-limit exhaustion; all deadlines and allowed recipes are frozen before execution.
+- **When:** Exercise controller/model-service crashes, an unexpected clean process exit, a controller hang, loss of interactive login and reboot during uncertain dispatch. Exhaust the immediate restart allowance, retain the fault beyond that limit, then restore the eligible prerequisite before a scheduled slow probe. Also test an unavailable authoritative mount and corrupted state.
+- **Then:** Use the existing systemd/watchdog deployment path, independent of Qwen and the failed controller, to detect and recover eligible faults within declared bounds. Preserve durable identities, fencing, reservations and launch reconciliation. Rate-limited failure does not permanently abandon enabled supervision; slow recovery remains bounded and obeys desired mode. Missing mounts and corruption keep unsafe admission closed and expose the unresolved dependency instead of fabricating a repair or writing an ephemeral replacement store.
+- **Evidence:** Pinned service-unit/configuration inventory; fault schedule; independently captured process/watchdog events; restart counts and probe times; boot/mount checks; before/after ledger and outbox records; native run reconciliation.
+- **Expected:** Every declared recoverable fault meets its predeclared detection/restoration bound with zero duplicate effective launches or budget resets. Restart storms, silent permanent abandonment after rate limiting, false state restoration and unsupported corruption repair fail the test. Intentional operator stop follows DA-AT-050, not this unexpected-exit recovery path.
+
+## DA-AT-047 — Durable dependency waiting and bounded resumption
+
+- **Requirement:** DA-FR-047
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** Persisted waiting records for transient dependency loss, open breakers, resource pressure, exhausted engineering capacity, missing authoritative evidence and expired/revoked grants; each has an identity, typed cause, next eligible probe, material resume condition and predeclared bounded retry/backoff policy.
+- **When:** Hold each condition beyond the immediate retry limit, restart the controller, deliver duplicate events and advance controlled time across probe boundaries. Restore a transient prerequisite under still-valid authority, and separately restore a service while its job grant remains expired or its budget exhausted.
+- **Then:** Continue model-free supervision and due reconciliation without hot loops, fabricated strategy variation or spending new engineering tokens merely to probe health. Persist waiting and breaker history across restart. Automatically resume only eligible transiently blocked work whose dependency, policy, evidence, remaining capacity and native-liveness checks now pass; preserve terminal records and use existing authorized continuation semantics where required. A material external change may trigger re-evaluation but does not itself create permission or capacity.
+- **Evidence:** Waiting/probe records before and after restart; deterministic clock/event traces; breaker and admission decisions; retry counts; native-liveness checks; ledger comparisons; resumed and denied dispatch receipts.
+- **Expected:** Every due probe/reconciliation occurs within its predeclared bound and rate limit. Eligible transient work resumes within its scheduling bound; exhausted, revoked, evidence-deficient or uncertain-execution work remains accurately blocked. No restart, timer or service recovery resets authority, allowance or task history.
+
+## DA-AT-048 — Contain poisoned queue items and preserve fair progress
+
+- **Requirement:** DA-FR-048
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** A queue containing a malformed/refused head item, a persistently blocked order A, an independent permanently eligible order B and an order C that truly depends on A, with frozen priority/aging rules and a measurable scheduling bound for B. Include a separate case where A may still own the only inference lease.
+- **When:** Repeatedly encounter the poison/refused item, deliver duplicate scheduling events and restart the controller; keep A blocked while admitting more competing work within the declared load envelope.
+- **Then:** Persist a scoped deferral, quarantine or terminal disposition as appropriate through existing queue/incident/DLQ paths without repeatedly monopolizing the scheduler. Preserve deduplicated evidence, dependency edges and fairness. Admit B only when its required resources are genuinely available; C remains blocked. An uncertain live GPU execution retains its lease, while independent model-free control and eligible nonconflicting work continue.
+- **Evidence:** Queue snapshots; rejection/DLQ identities; scheduler decisions and elapsed wait times; priority/aging configuration; dependency and resource-lease traces; duplicate/restart receipts.
+- **Expected:** B meets its predeclared fairness bound whenever continuously eligible within the declared load envelope; no poison item causes global exit or starvation. C never bypasses A's prerequisite, and uncertain native liveness never produces overlapping inference. Unavailable resources are reported explicitly rather than misclassified as scheduler progress.
+
+## DA-AT-049 — Long-running resource hygiene and preserved supervision capacity
+
+- **Requirement:** DA-FR-049
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** The actual local resource profile, predeclared CPU/memory/I/O supervision reserves, bounded queue and housekeeping policies, disk/mount thresholds, evidence-retention constraints and authorized cleanup targets that exclude authoritative records, sealed packages and active workspaces.
+- **When:** Apply sustained worker load, a growing log/temp backlog and repeated housekeeping cycles; cross warning and admission-stop thresholds; remove the authoritative mount and exercise database corruption. Restore only prerequisites covered by an approved deterministic recipe, then rerun admission checks.
+- **Then:** Preserve health/reconciliation responsiveness within declared deadlines through resource isolation and backpressure. Bound cleanup work and storage growth without deleting required provenance, ledger/outbox records or protected artifacts. Stop affected admission before unsafe resource use while the independent supervisory path remains observable. Missing/corrupted authoritative storage never causes ephemeral fallback, blind repair or asserted successful restoration; record uncertainty and use only authorized verified restore paths.
+- **Evidence:** Resource time series; controller/watchdog latency; threshold/backpressure events; cleanup manifests and before/after protected hashes; retention decisions; mount/DB fault traces; verified restoration and admission results where authorized.
+- **Expected:** Predeclared supervision latency and reserve bounds hold within the tested envelope; cleanup is bounded and protected evidence remains intact. Resource loss produces visible degraded supervision and safe admission refusal, not hidden history loss or false recovery. Beyond-envelope failures remain honestly recorded and cannot count as demonstrated availability.
+
+## DA-AT-050 — Authenticated operator controls override automatic restart
+
+- **Requirement:** DA-FR-050
+- **Level:** real-native
+- **Status:** NOT_RUN
+- **Given:** Existing authenticated operator pause, drain, resume and shutdown controls; durable desired-mode state; policy-defined handling and deadlines for in-flight work; every configured boot, watchdog, service restart and slow recovery path.
+- **When:** Pause and drain with work in progress, revoke its admission, issue an authorized shutdown, and then trigger watcher polls, scheduled recovery, controller crash and machine reboot. Pause a recovery actor between reading RUNNING and dispatching start, commit STOPPED, then replay its stale epoch-bound command after restart; separately race a stop against an already in-flight service-manager start. Attempt unauthorized control changes and separately issue an authorized resume after reconciliation prerequisites return.
+- **Then:** Apply each control's declared admission/in-flight semantics, preserve cancellation uncertainty and audit every accepted/denied control. Reject stale start/restart commands using the operations epoch; serialize control effects and reconcile any already in-flight start against the newer stop. Confirm effective shutdown only after contrary pending effects and workers settle under policy; otherwise retain an unresolved status. Automatic recovery must not resurrect the factory after confirmed shutdown or dispatch new work against durable operator intent. Retain only independently authorized OS/host supervision under its documented scope. Authorized resume reconciles persisted work and native liveness before fresh admission; neither pause nor reboot resets expenditure or turns blocked products into accepted ones.
+- **Evidence:** Authenticated requested/effective control receipts; durable mode/epoch before and after reboot; complete restart-path decision matrix; stale-command and concurrent stop/start traces; in-flight/cancellation evidence; no-dispatch observation window covering all configured timers; rejected controls; resume reconciliation and ledger comparison.
+- **Expected:** Every control takes effect within its predeclared bound, unauthorized controls have no effect, and every automatic restart path respects intentional shutdown across reboot. No hidden workload continues or respawns contrary to the control policy; any unresolved cancellation remains explicit. Resume requires authorized intent and all current admission checks.
+
+## DA-AT-051 — Honest continuous-service, worker and product reporting
+
+- **Requirement:** DA-FR-051
+- **Level:** deterministic
+- **Status:** NOT_RUN
+- **Given:** A fixed observation timeline covering healthy work, empty-queue idle, an open dependency breaker, stalled inference, a terminal blocked product, planned maintenance, unplanned power/storage loss and missing/stale telemetry; observation cadence, staleness bounds and metric denominators are frozen in advance.
+- **When:** Project the timeline through existing event/KPI/scorecard paths, including restart and late-event reconciliation, and calculate wall-clock service coverage for a 24/7 configured window alongside the inherited explicitly defined availability SLO.
+- **Then:** Report desired mode, control-plane availability, dependency/worker liveness, admitted-work progress and independently accepted product outcomes separately. Missing evidence is UNKNOWN and cannot add available/productive minutes. Keep all outage minutes and causes, including declared exclusions, visible in raw accounting; no shortened service window or selective denominator may hide inactivity. Healthy idle is distinguishable from productive work and from an unobserved or unhealthy controller.
+- **Evidence:** Frozen source timeline and expected classifications; timestamped projected states; availability numerator/denominator and outage ledger; stale/late-event handling; reconciled product outcomes and metric formulas.
+- **Expected:** Every timeline segment matches its expected classification, all wall-clock minutes are accounted for and no missing telemetry or heartbeat implies engineering progress. A short successful soak does not establish the rolling-30-day availability objective, and a high service-availability score cannot substitute for product acceptance or learning benefit.
+
+## DA-AT-052 — Unattended continuity qualification beyond campaign completion
+
+- **Requirement:** DA-FR-052
+- **Level:** live
+- **Status:** NOT_RUN
+- **Given:** Authorized 24-hour smoke, 72-hour pilot and 168-hour qualification stages with frozen eligible fault/load envelopes, real admitted work, valid budgets, independent observation, measurable detection/restoration/fairness bounds and declared cleanup/retention limits. The schedule distinguishes factory-enabled intervals from an explicit operator-stop test interval.
+- **When:** Complete each stage with declared coverage of last-job success/failure/block, empty/drained queue, dependency outage, unexpected clean service exit, crash/hang/reboot, restart-limit exhaustion followed by slow recovery, poisoned head-of-line work, resource pressure and intentional operator stop/resume. End the finite campaign while leaving continuous service enabled; observe across the declared post-campaign reconciliation/probe interval and submit another separately authorized eligible job.
+- **Then:** Meet the deterministic/native obligations of DA-AT-045–051 during real unattended operation, retaining every fault, outage, intervention and admitted-work outcome. Eligible recovery needs no corrective operator action; the explicitly scheduled operator-control exercise is separately recorded and never disguised as autonomous recovery. After the campaign ends, supervision continues and the subsequent eligible job is processed within its bound without extending old grants or launching artificial busywork.
+- **Evidence:** Stage manifests/authorizations; frozen workload and fault schedule; independent continuous observations; native job/lease/outbox/ledger receipts; restoration, fairness and resource measurements; outage and intervention registers; operator-control records; post-campaign continuity and subsequent admission evidence.
+- **Expected:** Every stage completes its declared duration and required fault/work coverage with zero unplanned corrective intervention for in-envelope recovery, zero false READY, lost accepted effects, duplicate effective execution or ledger reset. Any required-bound violation or unexplained observation gap fails that stage. Operator shutdown is respected, enabled service persists after campaign completion, and 168 hours alone is not reported as proof of the 30-day availability SLO or guaranteed uninterrupted hardware operation.

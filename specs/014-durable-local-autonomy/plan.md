@@ -8,6 +8,8 @@ Repair the diagnosis-to-execution boundary before evaluating another product ret
 
 Also close the learning loop on every ordinary driver/feature job using the existing knowledge, events, curator, inspection-lessons, CRE and KPI components. [Continuous learning](continuous-learning.md) defines the additive extension; a second learning engine or unrelated memory stack is not needed.
 
+Make continuous 24/7 service a P0 core requirement. [Continuous operation](continuous-operation.md) defines how existing AFO/systemd/supervisor services survive empty or exhausted campaigns, process failures and dependency waits, while preserving bounded jobs and authenticated operator control. Implement this increment alongside core recovery; it is not a future enhancement.
+
 ## Technical Context
 
 - **Language/version:** existing repository Python environment and lockfiles; inspect actual supported version during implementation rather than upgrading it for this feature.
@@ -39,6 +41,7 @@ Recheck after design and before activation. No constitutional exception is reque
 | Limits and accounting | `policy/governor.py`, `policy/fabro_hook.py`, `fabro/runconfig.py`, local gateway admission | `afo/mission_ledger.py`, request-bound accounting adapter |
 | Execution and review | `afo/local_agent.py`, `fabro/client.py`, existing AFO queue/outbox/store | liveness record and durable verifier lease/outbox |
 | Operations | existing supervisor/watchdog, local-profile preflight and service configuration | approved recipe inventory, deterministic restore/reconciliation tests |
+| Continuous operation | `afo/conductor.py`, `scheduler.py`, `watchdog.py`, `services.py`, existing queue/outbox, `deploy/systemd/afo/*`, supervisor service | durable operations intent, bounded item isolation/fairness, independent cooldown recovery after start-limit exhaustion, resource hygiene and separate availability reporting |
 | Qualification | existing local harness, CRE, package verifier and status/scorecard | feature-scoped native protocol campaign and reporting |
 | Every-job learning | `knowledge/store.py`, `mcp/servers/knowledge.py`, existing lessons-curator SKILL, `events/*`, `workorder.py`/AFO reconciliation | additive experience/disposition records, versioned source kinds, durable learning outbox and backward-compatible qualification |
 | Learning transfer and impact | `knowledge/inspection.py`, `kpi/sources.py`, `kpi/engine.py`, `controlroom/scorecard.py`, existing CRE/maintainer | strict applicable retrieval, separate inspector channel, per-version consumption and comparable learning-benefit reports |
@@ -53,7 +56,7 @@ Documentation resides in `specs/014-durable-local-autonomy/`: specification, res
    Define the role-specific local-model capability envelope and short-horizon task design before changing prompts or adding agents. See [local-model-design.md](local-model-design.md).
 2. **Packet and completion MVP:** complete finding inventory, scoped retrieval, measured packet partitioning, semantic proposal, strict binder and durable receipt. Remove model-authored administrative/finalization work. Validate actual SDK serialization, not only Pydantic classes.
 3. **Bounded execution:** separate limit dimensions; link mission/product ledgers; admit requests before dispatch; reconcile cancellation and late run adoption; recover verifier leases and publication receipts. Exercise crashes at every effect/ack boundary.
-4. **Operational recovery:** typed incidents and approved recipes, resource isolation, model-free watchdog and restore tests. An exact signed release transition is required for any deployment rollback; absent authority, restart/reload only within approved configuration.
+4. **Operational recovery and 24/7 service:** typed incidents and approved recipes, resource isolation, model-free watchdog and restore tests. Implement DA-T045–052 through existing service/queue/operations paths: indefinite service intent, actual local units, boot/crash/hang/clean-exit/start-limit recovery, persistent bounded waiting, item isolation, fair scheduling, long-run resource hygiene and respected operator stop. An exact signed release transition is required for any deployment rollback; absent authority, restart/reload only within approved configuration.
 5. **Product/maintainer paths:** counterexample-driven scoped repair and dependency impact, existing resume compatibility, independent inspections and candidate-only CRE. Add validated lessons without a trusted-prompt shortcut.
    Implement DA-T037–044 as the core every-job learning increment: factual capture, bounded consolidation, compatible source validation, qualified retrieval and measured cross-job benefit. Successful ordinary work and verified negative observations are first-class sources. Preserve legacy repair and inspector lesson semantics.
 6. **Qualification:** deterministic checks first, then frozen native protocol cohort, real RCC recovery, staged operational soaks and representative product benchmark. Keep each status separate; record NOT_RUN/BLOCKED when live prerequisites are absent.
@@ -67,11 +70,15 @@ Maintain execution liveness independently of task outcome: launch ambiguity, run
 
 Link continuation orders to a single root mission ledger; retain existing phase/work-order limits as additional constraints. Define how reservations, actual usage, late usage and imported historical receipts reconcile without double-counting. Refuse further admission after exhaustion. Use monotonic deadlines where possible and UTC persisted provenance across restart/clock changes.
 
+Refusal after exhaustion is scoped to the affected lineage. The factory continues model-free service, waiting/probing and unrelated eligible work. Persist operations intent/epoch separately from AFO inference mode, plus dependency wait/cooldown records and observed outage intervals. Bound each loop stage and isolate item-local failures without hiding shared integrity failures. A stopped native worker or completed benchmark must not become a command to stop the Conductor.
+
 ## Evidence and qualification strategy
 
 Follow [acceptance-tests.md](acceptance-tests.md). Use deterministic provider fixtures to reproduce protocol faults; label them as fixtures. Native qualification must run the actual selected Qwen → gateway → Fabro → MCP path. Mixed protocol cases must include valid repairs, correct blocks, evidence requests, invalid proposals and transport failures with frozen expected outcomes.
 
 The 100-run protocol gate does not imply 99% reliability or prove all product repairs. The RCC and 30-work-order engineering cohorts measure actual independent outcomes. The 24/72/168h campaigns require eligible fault exposure and real work, not merely elapsed idle service time.
+
+Continuous-operation qualification must also test unexpected exit code 0, exhausted systemd start limits, restored dependencies after prolonged waits, a denied item ahead of eligible work, disk/mount faults, deliberate operator shutdown and post-campaign service continuity. Inspect installed systemd and actual local-profile units; rendered templates alone do not prove host behavior. Retain complete gross 24/7 outage accounting and separately qualify the 30-day availability objective.
 
 Qualify diagnosis, authoring, inspection and maintainer behavior separately. Compare coherent obligation decomposition with the frozen larger-task baseline while retaining identical source coverage and cumulative budgets. Measure stale-memory handling, semantic defect detection, false rejections, useful-plan rate, regression-free defect closure and stall behavior. Do not choose a model/runtime configuration from tokens-per-second or schema compliance alone. Same-Qwen agreement cannot replace independent evidence.
 

@@ -20,7 +20,7 @@ Use one of these alternatives, not both. Do not reset a dirty working tree. The 
 
 ## Read before coding
 
-Read `.specify/memory/constitution.md`, this feature's `spec.md`, `local-model-design.md`, `continuous-learning.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/README.md`, `tasks.md` and `acceptance-tests.md`. Review Features 002/003/004 learning/KPI/CRE, 005, 010/011, 012 and 013 where referenced. Preserve applicable repository instructions. Do not reinitialize Spec Kit or regenerate these authored documents from generic templates.
+Read `.specify/memory/constitution.md`, this feature's `spec.md`, `local-model-design.md`, `continuous-learning.md`, `continuous-operation.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/README.md`, `tasks.md` and `acceptance-tests.md`. Review Features 002/003/004 learning/KPI/CRE, 005, 010/011, 012 and 013 where referenced. Preserve applicable repository instructions. Do not reinitialize Spec Kit or regenerate these authored documents from generic templates.
 
 ## Validate this specification
 
@@ -42,12 +42,15 @@ Relevant existing regression entry points include:
 ```bash
 PYTHONPATH=factory/python python3 -m pytest factory/python/tests/test_afo_local_autonomy.py factory/python/tests/test_afo_m4_recovery.py factory/python/tests/test_afo_m5_maintainer.py factory/python/tests/test_brownfield_resume.py
 PYTHONPATH=factory/python python3 -m pytest factory/python/tests/test_m5_lessons.py factory/python/tests/test_inspection_lessons.py factory/python/tests/test_controlroom_scorecard.py
+PYTHONPATH=factory/python python3 -m pytest factory/python/tests/test_m3_supervisor.py factory/python/tests/test_t024_systemd.py
 python3 tests/spec/validate_design.py
 ```
 
 Use the actual repository environment and dependencies; do not claim these commands ran as part of specification delivery. Add meaningful fault/integration cases described in `acceptance-tests.md`, then run relevant inherited native/MCP/policy/local-profile/legacy packaging tests and independent CRE through the existing documented runner. Record exact candidate revision, command, versions, exit code, result and artifact hashes.
 
 The implementation must add an executable, documented native qualification entry point as DA-T024. Do not invent an existing CLI command for it in advance. It must support frozen manifest validation and dry-run/report generation without inference, plus a separate explicitly authorized live mode. Live mode must refuse missing authority and preserve cumulative accounting.
+
+For DA-T045–052, inspect existing AFO service/queue tests and add the continuous-operation matrix. Inventory actual installed local-profile units and boot/lingering/mount behavior; distinguish unit syntax validation from real crash/hang/reboot recovery. Prepare a manifest with finite probe/startup/backoff/cooldown/fairness bounds, authenticated operations intent and explicit fault exposure. Never install/start/stop host services merely to run a documentation validator. A measurement window ending must not disable the factory; test later eligible intake while preserving campaign budget expiry.
 
 ## Run live qualification only under valid campaign authority
 
