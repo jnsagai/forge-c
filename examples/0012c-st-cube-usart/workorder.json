@@ -1,0 +1,184 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 65 (USART) + memory map p.180"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.65 USART register interface + memory map p.180 (USART1 secure base 0x52001000)",
+  "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the USART benchmark work orders"
+ },
+ "scope": [
+  "LL (header-only, __STATIC_INLINE functions) as delivered by ST: register access through the CMSIS device structure USART1 (stm32n6xx.h); FIFO disabled (USART_CR1.FIFOEN = 0, reset state)",
+  "Enable/disable and enable status (USART_CR1.UE); while disabled: transfer direction (USART_CR1.TE with USART_CR1.RE), parity (USART_CR1.PCE with USART_CR1.PS), word length (USART_CR1.M0 with USART_CR1.M1), stop bits (USART_CR2.STOP), oversampling (USART_CR1.OVER8), bit order (USART_CR2.MSBFIRST), kernel clock prescaler (USART_PRESC.PRESCALER) and baud rate (USART_BRR, RM0486 65.5.8)",
+  "Status flags TXE, RXNE, TC, ORE, TEACK, REACK (USART_ISR) and clearing ORE and TC (USART_ICR, write 1); 8-bit data write (USART_TDR) and read (USART_RDR) (no waiting: the caller bounds its polling)",
+  "Out of scope: HAL API, FIFO mode and thresholds, interrupts, DMA, synchronous/smartcard/IrDA/LIN/RS-485 modes, auto baud rate, receiver timeout, wake-up, mute mode, hardware flow control, framing/noise/parity error flags, 7/9-bit data values, guard time, the LL init/deinit functions of stm32n6xx_ll_usart.c"
+ ],
+ "system_names": [
+  "USART LL driver",
+  "USART driver",
+  "STM32N6 USART LL driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0012-usart-st/inputs/RM0486-rev4-ch65-usart.md",
+   "role": "reference_manual_usart_chapter"
+  },
+  {
+   "path": "../0012-usart-st/inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0012-usart-st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "LL",
+ "layer_note": "Feature 015 benchmark set (owner 2026-10-25): ST's existing STM32CubeN6 USART LL code (stm32n6xx-hal-driver v1.4.0), FROZEN. Requirements are derived from RM0486 independently of the code; secure build (CMSIS selects USART1_S at 0x52001000).",
+ "delivery": {
+  "code_mode": "FROZEN",
+  "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+  "licence": "BSD-3-Clause",
+  "licence_allows_modification": true,
+  "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+  "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+  "files": [
+   {
+    "from": "Inc/stm32n6xx_ll_usart.h",
+    "to": "software/ll/stm32n6xx_ll_usart.h"
+   }
+  ],
+  "scope": {
+   "functions": [
+    "LL_USART_Enable",
+    "LL_USART_Disable",
+    "LL_USART_IsEnabled",
+    "LL_USART_SetTransferDirection",
+    "LL_USART_SetParity",
+    "LL_USART_SetDataWidth",
+    "LL_USART_SetStopBitsLength",
+    "LL_USART_SetOverSampling",
+    "LL_USART_SetTransferBitOrder",
+    "LL_USART_SetPrescaler",
+    "LL_USART_SetBaudRate",
+    "LL_USART_IsActiveFlag_TXE_TXFNF",
+    "LL_USART_IsActiveFlag_RXNE_RXFNE",
+    "LL_USART_IsActiveFlag_TC",
+    "LL_USART_IsActiveFlag_ORE",
+    "LL_USART_IsActiveFlag_TEACK",
+    "LL_USART_IsActiveFlag_REACK",
+    "LL_USART_ClearFlag_ORE",
+    "LL_USART_ClearFlag_TC",
+    "LL_USART_TransmitData8",
+    "LL_USART_ReceiveData8"
+   ],
+   "note": "enable/disable, configuration while disabled (direction, parity, word length, stop bits, oversampling, bit order, prescaler, baud rate), status flags and flag clears, 8-bit data"
+  },
+  "dependencies": [
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n6xx.h",
+    "to": "inputs/vendor/include/stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n657xx.h",
+    "to": "inputs/vendor/include/stm32n657xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/system_stm32n6xx.h",
+    "to": "inputs/vendor/include/system_stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "core_cm55.h",
+    "to": "inputs/vendor/include/core_cm55.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_version.h",
+    "to": "inputs/vendor/include/cmsis_version.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_compiler.h",
+    "to": "inputs/vendor/include/cmsis_compiler.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_gcc.h",
+    "to": "inputs/vendor/include/cmsis_gcc.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/cmsis_gcc_m.h",
+    "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_mpu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_pmu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv7m_cachel1.h",
+    "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   }
+  ],
+  "build": {
+   "style": "cmsis",
+   "defines": [
+    "STM32N657xx"
+   ],
+   "secure": true
+  }
+ },
+ "peripheral": "usart"
+}

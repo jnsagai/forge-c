@@ -1,0 +1,108 @@
+# Peripheral profile (feature 015, owner 2026-10-25 benchmark set): general-purpose I/O, instance GPIOA, RM0486 Rev 4
+# chapter 15 (pp. 783-807); secure base 0x56020000, 1 KB (RM0486 p.176, Table 3). Used with ST's CubeN6 LL code
+# delivered FROZEN. RM0486 names the registers of every port by the placeholder GPIOx_ (GPIOx_MODER); the factory's
+# register names drop the placeholder like CMSIS (GPIO_MODER) and the per-pin fields are numbered (MODE0..MODE15).
+schema: forge-c/peripheral-profile/0.1
+id: gpio
+name: General-purpose I/O (GPIOA)
+register_prefix: GPIO
+base_address: "0x56020000"
+mm_page: 176
+window_bytes: 1024
+system_name: GPIO LL driver
+rm:
+  doc: RM0486
+  chapter: 15
+  key_sections: ["15.3.3", "15.3.4", "15.3.5", "15.4.1", "15.4.2", "15.4.3", "15.4.4", "15.4.5", "15.4.6", "15.4.7",
+                 "15.4.9", "15.4.10", "15.4.11"]
+ll:
+  header: stm32n6xx_ll_gpio.h
+  compile_unit: stm32n6xx_ll_gpio.c
+  function_prefix: LL_GPIO_
+  register_block: ll_gpio_regs
+  register_count: 256
+  void_signatures: false
+hal:
+  header: stm32n6xx_hal_gpio.h
+  source: stm32n6xx_hal_gpio.c
+  function_prefix: HAL_GPIO_
+sim:
+  model: gpio_model.py
+  platform: stm32n6_gpio.repl
+# Prompt texts replacing the RCC domain content of the generic LL prompts (feature 009 mechanism); the ST HAL code
+# comes later (owner "LL first, HAL later"), so no HAL texts yet. Hardware facts stay in the RM0486 chapter 15 inputs.
+prompt:
+  swe1_cover: >-
+    Cover (only what the GPIO scope names) for port A (GPIOA; name the registers GPIO_MODER, GPIO_OTYPER, ... as the
+    RM0486 GPIOx_ registers of the port, and the per-pin fields with their pin number, e.g. GPIO_MODER.MODE5 for pin
+    5): the pin mode (write the requested 2-bit value to GPIO_MODER.MODEy of the requested pin: input, output,
+    alternate function, analog) and the mode query (return the 2-bit GPIO_MODER.MODEy value), the output type
+    (GPIO_OTYPER.OTy of each pin of the pin mask: push-pull or open-drain), the output speed (GPIO_OSPEEDR.OSPEEDy),
+    the pull-up/pull-down (GPIO_PUPDR.PUPDy), the alternate function of pins 0-7 (GPIO_AFRL.AFSELy) and 8-15
+    (GPIO_AFRH.AFSELy), each preserving the fields of the other pins; reading the input port (the GPIO_IDR value) and
+    the input pin query (return 1U when every pin of the mask is set in GPIO_IDR, else 0U); writing the output port
+    (GPIO_ODR), reading it and the output pin query (return 1U when every pin of the mask is set in GPIO_ODR, else
+    0U); setting the pins of a mask (write their GPIO_BSRR.BSy bits, the other GPIO_BSRR bits 0), resetting them
+    (write their GPIO_BRR.BRy bits) and toggling them (one GPIO_BSRR write: BRy for the pins of the mask set in
+    GPIO_ODR, BSy for those clear); one requirement per function and value, naming the register field (e.g.
+    GPIO_OSPEEDR.OSPEED5); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called
+    after reset, the GPIO LL driver shall not write any GPIO register.'). The configuration lock (GPIOx_LCKR), the
+    TrustZone secure/privilege configuration, the resource lock, the delay and advanced configuration registers, the
+    EXTI lines, the other ports and the LL init/deinit functions are out of scope.
+  swe1_effect_example: '{"case":"SET_MODE_PIN5_OUTPUT","swr":"SWR-001","register":"GPIO_MODER","field":"MODE5","op":"write","value":1}'
+  swe1_effect_rule: >-
+    Use op "write" with "value" (an integer or "0x..." string) for the per-pin fields (MODEy, OTy, OSPEEDy, PUPDy,
+    AFSELy: the pin's field value), for the output port write (one entry per pin set in the representative port value,
+    field ODy, value 1: e.g. 0x0021 gives OD0 and OD5) and for the write-only set/reset registers (GPIO_BSRR.BSy / GPIO_BSRR.BRy / GPIO_BRR.BRy: value 1, one entry per pin of the mask); a function taking
+    a pin or pin mask gets one representative pin (e.g. LL_GPIO_PIN_5) and its api_calls args pass it with the
+    representative value (e.g. ['GPIOA', 'LL_GPIO_PIN_5', 'LL_GPIO_MODE_OUTPUT']); the toggle function gets one entry
+    per field it writes for a stated GPIO_ODR preset. Queries and port reads get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the GPIO_TypeDef instance pointer first): LL_GPIO_SetPinMode,
+    LL_GPIO_GetPinMode, LL_GPIO_SetPinOutputType (pin mask), LL_GPIO_SetPinSpeed, LL_GPIO_SetPinPull,
+    LL_GPIO_SetAFPin_0_7, LL_GPIO_SetAFPin_8_15, LL_GPIO_ReadInputPort, LL_GPIO_IsInputPinSet (pin mask),
+    LL_GPIO_WriteOutputPort, LL_GPIO_ReadOutputPort, LL_GPIO_IsOutputPinSet (pin mask), LL_GPIO_SetOutputPin (pin
+    mask), LL_GPIO_ResetOutputPin (pin mask) and LL_GPIO_TogglePin (pin mask); list in Interfaces exactly the functions
+    of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_gpio (LL, header-only) and the GPIOA register block (0x56020000, RM0486
+    p.176) and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_gpio, GPIOA, showing a pin configured as output (mode, output type, speed, pull),
+    the pin set, the output pin query, the pin reset and toggled, and an input pin read, using the allocated LL_GPIO_
+    function names
+  ut_example: |-
+    static void ut_gpio_mode(void)
+    {
+        ut_reset_regs();
+        forge_host_gpio.MODER = GPIO_MODER_MODE3;
+        LL_GPIO_SetPinMode(GPIO, LL_GPIO_PIN_5, LL_GPIO_MODE_OUTPUT);
+        CHECK("UT-001", (forge_host_gpio.MODER & GPIO_MODER_MODE5) == GPIO_MODER_MODE5_0);
+        CHECK("UT-002", (forge_host_gpio.MODER & GPIO_MODER_MODE3) == GPIO_MODER_MODE3);
+        forge_host_gpio.IDR = GPIO_IDR_ID5;
+        CHECK("UT-003", LL_GPIO_IsInputPinSet(GPIO, LL_GPIO_PIN_5) == 1U);
+        forge_host_gpio.IDR = 0U;
+        CHECK("UT-004", LL_GPIO_IsInputPinSet(GPIO, LL_GPIO_PIN_5) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests pass the generated host instance GPIO (forge_host_device.h maps it to the RAM struct
+    forge_host_gpio; GPIOA is the device address and is used on the target only). Per-pin functions check the written
+    field of the pin and that a preset field of another pin of the same register is preserved; set/reset/toggle check
+    the GPIO_BSRR/GPIO_BRR value written; queries get a set and a clear case; port read/write check the register value.
+  target_model: >-
+    The simulated GPIOA (factory/sim/stm32n6/gpio_model.py) is a behavioural port model with the RM0486 port A reset
+    values (GPIO_MODER 0xABFFEFFF, GPIO_OSPEEDR 0x0C000000, GPIO_PUPDR 0x64000000, the others 0); GPIO_BSRR (write-only)
+    sets the GPIO_ODR bits of BSy and clears those of BRy (BSy wins when both are set); GPIO_BRR (write-only) clears
+    GPIO_ODR bits; GPIO_IDR (read-only) reads back GPIO_ODR for pins in output or alternate function mode, 1 for input
+    pins with pull-up, 0 otherwise. Expected values in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_gpio_target.c (a pin configured as output: mode, type, speed, pull reach their
+    registers and the other pins keep their reset fields; set, reset and toggle reach GPIO_ODR and read back through
+    GPIO_IDR) and software/tests/target/test_gpio_target_input.c (an input pin with pull-up reads 1, with pull-down 0)
+  field_mask_example: GPIO_MODER_MODE5
+  query_example: LL_GPIO_IsOutputPinSet(GPIOA, LL_GPIO_PIN_5)
+  integration: >-
+    a pin configured as output (mode, output type, speed, pull), the pin set, the output pin query, reset and toggled
+    with GPIO_ODR preset (on the host the output data register keeps what the test wrote), and an input pin read with
+    GPIO_IDR preset
+  requirement_example: When the GPIO pin mode function is called for pin 5 with the output mode value, the GPIO LL driver shall write 1 to GPIO_MODER.MODE5.

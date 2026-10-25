@@ -1,0 +1,120 @@
+# Peripheral profile (feature 015, owner 2026-10-25 benchmark set): universal synchronous/asynchronous receiver
+# transmitter, instance USART1, RM0486 Rev 4 chapter 65 (pp. 3279-3368); secure base 0x52001000, 1 KB (RM0486 p.180,
+# Table 3). Used with ST's CubeN6 LL code delivered FROZEN: the scope follows how ST's LL couples fields (TE with RE,
+# PCE with PS, M0 with M1) and ST's write-1-to-clear flag clears (a whole USART_ICR write).
+schema: forge-c/peripheral-profile/0.1
+id: usart
+name: Universal synchronous/asynchronous receiver transmitter (USART1)
+register_prefix: USART
+base_address: "0x52001000"
+mm_page: 180
+window_bytes: 1024
+system_name: USART LL driver
+rm:
+  doc: RM0486
+  chapter: 65
+  key_sections: ["65.8.2", "65.8.3", "65.8.6", "65.8.11", "65.8.12", "65.8.13", "65.8.14", "65.8.15"]
+ll:
+  header: stm32n6xx_ll_usart.h
+  compile_unit: stm32n6xx_ll_usart.c
+  function_prefix: LL_USART_
+  register_block: ll_usart_regs
+  register_count: 256
+  void_signatures: false
+hal:
+  header: stm32n6xx_hal_uart.h
+  source: stm32n6xx_hal_uart.c
+  function_prefix: HAL_UART_
+sim:
+  model: usart_model.py
+  platform: stm32n6_usart.repl
+# Prompt texts replacing the RCC domain content of the generic LL prompts (feature 009 mechanism); the ST HAL code
+# comes later (owner "LL first, HAL later"), so no HAL texts yet. Hardware facts stay in the RM0486 chapter 65 inputs.
+prompt:
+  swe1_cover: >-
+    Cover (only what the USART scope names), with the FIFO disabled (USART_CR1.FIFOEN = 0, the reset state: use the
+    FIFO-disabled register descriptions of RM0486 65.8.2 and 65.8.11, flags TXE and RXNE): enabling and disabling the
+    peripheral (set/clear USART_CR1.UE) and the enable status query (return 1U when USART_CR1.UE is set, else 0U); the
+    configuration written while USART_CR1.UE is 0 (RM0486 65.8: these fields can only be written when the USART is
+    disabled): the transfer direction (USART_CR1.TE together with USART_CR1.RE: one value sets both), the parity
+    (USART_CR1.PCE together with USART_CR1.PS: one value sets both), the word length (USART_CR1.M0 together with
+    USART_CR1.M1: one value sets both), the stop bits (USART_CR2.STOP), the oversampling (USART_CR1.OVER8), the bit
+    order (USART_CR2.MSBFIRST), the kernel clock prescaler (USART_PRESC.PRESCALER) and the baud rate (USART_BRR from
+    the kernel clock, the prescaler, the oversampling and the requested baud rate, RM0486 65.5.8; the driver writes
+    nothing for a prescaler value above the 256 division or a baud rate of 0), each preserving the other fields of its
+    register; the status queries TXE, RXNE, TC, ORE, TEACK and REACK (return 1U when the USART_ISR flag is set, else
+    0U); clearing ORE and TC (write 1 to USART_ICR.ORECF, USART_ICR.TCCF); writing an 8-bit data value to USART_TDR
+    and reading one from USART_RDR; one requirement per function and value, naming the register field (e.g.
+    USART_CR2.STOP); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after
+    reset, the USART LL driver shall not write any USART register.'). The FIFO mode and thresholds, interrupts, DMA,
+    synchronous/smartcard/IrDA/LIN/RS-485 modes, auto baud rate, receiver timeout, wake-up from low-power, mute mode,
+    hardware flow control, the framing/noise/parity error flags, 7-bit and 9-bit data values and the guard time are out
+    of scope.
+  swe1_effect_example: '{"case":"SET_STOP_2","swr":"SWR-007","register":"USART_CR2","field":"STOP","op":"write","value":2}'
+  swe1_effect_rule: >-
+    Use op "set"/"clear" for single bits (UE, OVER8, MSBFIRST and the coupled TE/RE, PCE/PS, M0/M1 bits) and op
+    "write" with "value" (an integer or "0x..." string) for multi-bit fields (STOP, PRESCALER, BRR) and for TDR; a
+    function that writes a caller-supplied value gets one entry with a representative value and the api_calls args
+    pass that value (the baud rate function: the kernel clock in Hz, the prescaler, the oversampling and the baud rate,
+    and the BRR value RM0486 65.5.8 gives for them); a function that sets coupled fields (TE with RE, PCE with PS, M0
+    with M1) gets one entry per field; a flag clear (USART_ICR is write-1-to-clear) gets op "write" of value 1 on its
+    USART_ICR field. Status queries and RDR reads get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the USART_TypeDef instance pointer first): LL_USART_Enable,
+    LL_USART_Disable, LL_USART_IsEnabled, LL_USART_SetTransferDirection (TE and RE), LL_USART_SetParity (PCE and PS),
+    LL_USART_SetDataWidth (M0 and M1), LL_USART_SetStopBitsLength, LL_USART_SetOverSampling,
+    LL_USART_SetTransferBitOrder, LL_USART_SetPrescaler, LL_USART_SetBaudRate (kernel clock, prescaler, oversampling,
+    baud rate), LL_USART_IsActiveFlag_TXE_TXFNF, LL_USART_IsActiveFlag_RXNE_RXFNE, LL_USART_IsActiveFlag_TC,
+    LL_USART_IsActiveFlag_ORE, LL_USART_IsActiveFlag_TEACK, LL_USART_IsActiveFlag_REACK, LL_USART_ClearFlag_ORE,
+    LL_USART_ClearFlag_TC, LL_USART_TransmitData8 and LL_USART_ReceiveData8; list in Interfaces exactly the functions
+    of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_usart (LL, header-only) and the USART1 register block (0x52001000, RM0486
+    p.180) and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_usart, USART1, showing the configuration while disabled (word length, parity,
+    stop bits, oversampling, prescaler, baud rate, direction), the enable, the caller polling TEACK/REACK, a data value
+    written to TDR, the caller polling TC and RXNE (the caller bounds each loop), the received value read and the TC
+    flag cleared, using the allocated LL_USART_ function names
+  ut_example: |-
+    static void ut_usart_stop(void)
+    {
+        ut_reset_regs();
+        forge_host_usart.CR2 = USART_CR2_MSBFIRST;
+        LL_USART_SetStopBitsLength(USART, LL_USART_STOPBITS_2);
+        CHECK("UT-001", (forge_host_usart.CR2 & USART_CR2_STOP) == USART_CR2_STOP_1);
+        CHECK("UT-002", (forge_host_usart.CR2 & USART_CR2_MSBFIRST) == USART_CR2_MSBFIRST);
+        forge_host_usart.ISR = USART_ISR_TC;
+        CHECK("UT-003", LL_USART_IsActiveFlag_TC(USART) == 1U);
+        forge_host_usart.ISR = 0U;
+        CHECK("UT-004", LL_USART_IsActiveFlag_TC(USART) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests pass the generated host instance USART (forge_host_device.h maps it to the RAM struct
+    forge_host_usart; USART1 is the device address and is used on the target only). Set/clear and value functions
+    check the written field (a coupled function: both fields) and that a preset unrelated field of the same register
+    is preserved; the baud rate function checks USART_BRR for oversampling 16 and 8 and that
+    nothing is written for a baud rate of 0; status queries get a flag-set and a flag-clear case; flag clear functions
+    check the USART_ICR bit; the data functions check the 8-bit value in USART_TDR / returned from USART_RDR.
+  target_model: >-
+    The simulated USART1 (factory/sim/stm32n6/usart_model.py) is a behavioural internal-loopback model: USART_ISR
+    resets to 0x000000C0 (TXE, TC) and the other registers to 0; while USART_CR1.UE is set, writes to USART_CR2,
+    USART_BRR, USART_PRESC and to the USART_CR1 fields that RM0486 65.8.2 lets change only while disabled (FIFOEN, M1,
+    DEAT, DEDT, OVER8, M0, WAKE, PCE, PS) are ignored; with UE set, USART_ISR.TEACK follows TE and REACK follows RE; a
+    value written to USART_TDR with UE and TE set is transmitted at once (TC set again) and, with RE set, received into
+    USART_RDR setting USART_ISR.RXNE; a value arriving while RXNE is set is lost and sets USART_ISR.ORE; a read of
+    USART_RDR clears RXNE; USART_ISR flags clear only through USART_ICR (write 1). Expected values in target checks
+    follow this model.
+  target_tests: >-
+    write software/tests/target/test_usart_target.c (configuration while disabled reaches USART_CR1/USART_CR2/
+    USART_BRR/USART_PRESC and is ignored while enabled; after enable with TE and RE, TEACK and REACK are set; a data
+    value written gives TC and RXNE and is read back, RXNE clear afterwards; TC clears through the clear function) and
+    software/tests/target/test_usart_target_overrun.c (two values written and none read: ORE is set, the first value
+    is kept, and ORE clears through the clear function)
+  field_mask_example: USART_CR2_STOP
+  query_example: LL_USART_IsActiveFlag_TC(USART1)
+  integration: >-
+    the configuration while disabled (word length, parity, stop bits, oversampling, bit order, prescaler, baud rate,
+    direction), enable, TEACK/REACK polled with the flags preset (on the host the status register keeps what the test
+    wrote), a data value written, TC and RXNE polled with the flags preset, the received value read and TC cleared
+  requirement_example: When the USART stop bits function is called with the two stop bits value, the USART LL driver shall write 2 to USART_CR2.STOP.

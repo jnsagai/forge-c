@@ -1,0 +1,112 @@
+# Peripheral profile (feature 015, owner 2026-10-25 benchmark set): general-purpose timer, instance TIM2 (32-bit),
+# RM0486 Rev 4 chapter 54 (TIM2/TIM3/TIM4/TIM5, pp. 2625-2738); secure base 0x50000000, 1 KB (RM0486 p.181, Table 3).
+# Used with ST's CubeN6 LL code delivered FROZEN: the scope follows how ST's LL couples fields (DIR with CMS) and ST's
+# rc_w0 flag clear (TIMx_SR written with 0 on the flag, 1 elsewhere). RM0486 names the registers by the placeholder
+# TIMx_ (TIMx_CR1); the factory's register names drop it like CMSIS (TIM_CR1).
+schema: forge-c/peripheral-profile/0.1
+id: tim
+name: General-purpose timer (TIM2)
+register_prefix: TIM
+base_address: "0x50000000"
+mm_page: 181
+window_bytes: 1024
+system_name: TIM LL driver
+rm:
+  doc: RM0486
+  chapter: 54
+  key_sections: ["54.4.2", "54.4.3", "54.4.4", "54.5.1", "54.5.4", "54.5.5", "54.5.6", "54.5.12", "54.5.13", "54.5.14"]
+ll:
+  header: stm32n6xx_ll_tim.h
+  compile_unit: stm32n6xx_ll_tim.c
+  function_prefix: LL_TIM_
+  register_block: ll_tim_regs
+  register_count: 256
+  void_signatures: false
+hal:
+  header: stm32n6xx_hal_tim.h
+  source: stm32n6xx_hal_tim.c
+  function_prefix: HAL_TIM_
+sim:
+  model: tim_model.py
+  platform: stm32n6_tim.repl
+# Prompt texts replacing the RCC domain content of the generic LL prompts (feature 009 mechanism); the ST HAL code
+# comes later (owner "LL first, HAL later"), so no HAL texts yet. Hardware facts stay in the RM0486 chapter 54 inputs.
+prompt:
+  swe1_cover: >-
+    Cover (only what the TIM scope names) for TIM2 (name the registers TIM_CR1, TIM_SR, ... as the RM0486 TIMx_
+    registers of the instance): enabling and disabling the counter (set/clear TIM_CR1.CEN) and the enable query
+    (return 1U when TIM_CR1.CEN is set, else 0U); the counter mode (TIM_CR1.DIR together with TIM_CR1.CMS: one value
+    sets both: up, down, center-aligned 1/2/3), the one-pulse mode (TIM_CR1.OPM), the auto-reload preload (set/clear
+    TIM_CR1.ARPE), the clock division (TIM_CR1.CKD), the update request source (TIM_CR1.URS) and the update event
+    enable (TIM_CR1.UDIS cleared enables, set disables), each preserving the other fields of TIM_CR1; writing and
+    reading the counter (TIM_CNT), the prescaler (TIM_PSC) and the auto-reload value (TIM_ARR); generating an update
+    event (set TIM_EGR.UG); the update flag query (return 1U when TIM_SR.UIF is set, else 0U) and its clear (TIM_SR is
+    rc_w0: write 0 to TIM_SR.UIF and 1 to the other TIM_SR bits, which leaves them unchanged); enabling and disabling
+    the update interrupt (set/clear TIM_DIER.UIE); one requirement per function and value, naming the register field
+    (e.g. TIM_CR1.ARPE); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called
+    after reset, the TIM LL driver shall not write any TIM register.'). The capture/compare channels and outputs, slave
+    mode and triggers, encoder mode, DMA, the other interrupts and flags, dithering, UIF remapping, the other timer
+    instances and the LL init/deinit functions are out of scope.
+  swe1_effect_example: '{"case":"SET_PSC_99","swr":"SWR-012","register":"TIM_PSC","field":"PSC","op":"write","value":99}'
+  swe1_effect_rule: >-
+    Use op "set"/"clear" for single bits (CEN, OPM, ARPE, URS, UDIS, UG, UIE, DIR) and op "write" with "value" (an
+    integer or "0x..." string) for multi-bit fields (CMS, CKD, CNT, PSC, ARR); a function that writes a caller-supplied
+    value gets one entry with a representative value and the api_calls args pass that value; the counter mode function
+    sets coupled fields (DIR with CMS) and gets one entry per field; the update flag clear gets op "write" of value 0
+    on TIM_SR.UIF (rc_w0). Queries and getters get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the TIM_TypeDef instance pointer first): LL_TIM_EnableCounter,
+    LL_TIM_DisableCounter, LL_TIM_IsEnabledCounter, LL_TIM_SetCounterMode (DIR and CMS), LL_TIM_SetOnePulseMode,
+    LL_TIM_EnableARRPreload, LL_TIM_DisableARRPreload, LL_TIM_SetClockDivision, LL_TIM_SetUpdateSource,
+    LL_TIM_EnableUpdateEvent, LL_TIM_DisableUpdateEvent, LL_TIM_SetCounter, LL_TIM_GetCounter, LL_TIM_SetPrescaler,
+    LL_TIM_GetPrescaler, LL_TIM_SetAutoReload, LL_TIM_GetAutoReload, LL_TIM_GenerateEvent_UPDATE,
+    LL_TIM_IsActiveFlag_UPDATE, LL_TIM_ClearFlag_UPDATE, LL_TIM_EnableIT_UPDATE and LL_TIM_DisableIT_UPDATE; list in
+    Interfaces exactly the functions of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_tim (LL, header-only) and the TIM2 register block (0x50000000, RM0486 p.181)
+    and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_tim, TIM2, showing the configuration (counter mode, prescaler, auto-reload with
+    preload), an update event generated to load the prescaler, the update flag cleared, the counter enabled, the caller
+    polling the update flag (the caller bounds the loop), the flag cleared and the counter disabled, using the
+    allocated LL_TIM_ function names
+  ut_example: |-
+    static void ut_tim_arpe(void)
+    {
+        ut_reset_regs();
+        forge_host_tim.CR1 = TIM_CR1_CEN;
+        LL_TIM_EnableARRPreload(TIM);
+        CHECK("UT-001", (forge_host_tim.CR1 & TIM_CR1_ARPE) == TIM_CR1_ARPE);
+        CHECK("UT-002", (forge_host_tim.CR1 & TIM_CR1_CEN) == TIM_CR1_CEN);
+        forge_host_tim.SR = TIM_SR_UIF;
+        CHECK("UT-003", LL_TIM_IsActiveFlag_UPDATE(TIM) == 1U);
+        forge_host_tim.SR = 0U;
+        CHECK("UT-004", LL_TIM_IsActiveFlag_UPDATE(TIM) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests pass the generated host instance TIM (forge_host_device.h maps it to the RAM struct forge_host_tim;
+    TIM2 is the device address and is used on the target only). Set/clear and value functions check the written field
+    (the counter mode: both fields) and that a preset unrelated field of the same register is preserved; value
+    registers check the written 32-bit (TIM_CNT, TIM_ARR) or 16-bit (TIM_PSC) value; the flag clear checks that
+    TIM_SR.UIF is written 0 and the other bits 1; queries get a set and a clear case.
+  target_model: >-
+    The simulated TIM2 (factory/sim/stm32n6/tim_model.py) is a behavioural counter whose time advances by one kernel
+    clock on every read of TIM_CNT or TIM_SR while TIM_CR1.CEN is set (deterministic polling): the counter steps every
+    (prescaler + 1) clocks, up to TIM_ARR then to 0 (up), down to 0 then to TIM_ARR (down) or up then down
+    (center-aligned); each overflow/underflow is an update event that sets TIM_SR.UIF unless TIM_CR1.UDIS is set,
+    loads the prescaler and, with TIM_CR1.ARPE, the auto-reload value, and clears CEN in one-pulse mode; TIM_EGR.UG
+    re-initialises the counter and prescaler and, unless UDIS is set, loads them and sets UIF unless TIM_CR1.URS is
+    set; TIM_SR is rc_w0; TIM_ARR resets to 0xFFFFFFFF, the others to 0. Expected values in target checks follow this
+    model.
+  target_tests: >-
+    write software/tests/target/test_tim_target.c (prescaler 0 and auto-reload 3 loaded by an update event with URS
+    set (no flag), the counter enabled up-counting: the update flag sets after the counter wraps and clears through the
+    clear function; one-pulse mode stops the counter at the update) and software/tests/target/test_tim_target_down.c
+    (down-counting from the auto-reload value: the counter decreases and the update flag sets at underflow)
+  field_mask_example: TIM_CR1_ARPE
+  query_example: LL_TIM_IsActiveFlag_UPDATE(TIM2)
+  integration: >-
+    the configuration (counter mode, clock division, prescaler, auto-reload with preload), an update event generated,
+    the update flag cleared, the counter enabled, the update flag polled with the flag preset (on the host the status
+    register keeps what the test wrote), the flag cleared and the counter disabled
+  requirement_example: When the TIM auto-reload preload enable function is called, the TIM LL driver shall set TIM_CR1.ARPE.
