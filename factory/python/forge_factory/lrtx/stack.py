@@ -736,9 +736,10 @@ def expose_api(s: dict, host_port: int | None = None) -> dict:
             start_new_session=True,
             env={"PATH": SYSTEM_PATH},
         )
+    # A managed stop signals only processes whose recorded identity still matches (never a reused PID).
     rec["api_bridge"] = {
-        "inner": {"pid": pi.pid, "argv": inner},
-        "outer": {"pid": po.pid, "argv": outer},
+        "inner": {"pid": pi.pid, "argv": inner, "identity": process_identity(pi.pid)},
+        "outer": {"pid": po.pid, "argv": outer, "identity": process_identity(po.pid)},
         "started_at": utc_now(),
     }
     f.write_text(pretty_json(rec))
