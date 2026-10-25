@@ -2,7 +2,7 @@
 
 Scope: owner-approved ("I do, I approve all") bounded protocol-qualification **trial subsets**, one isolated
 qualification runtime per exact source revision, model `qwen3.6:35b-a3b` (digest `a7eb95c5…`, Q4_K_M, gateway
-reasoning effort high), single-coherent-obligation diagnosis role. Each revision had its own frozen 100-trial manifest,
+reasoning effort high unless noted; `qwen3.8:27b-q8_0` in bcb8cae), single-coherent-obligation diagnosis role. Each revision had its own frozen 100-trial manifest,
 finite protocol-only mission (100 jobs / 100 requests / 3,276,800 tokens / 0 product attempts, deadline
 2026-10-27T19:00Z) and owner-signed grant (`AUTH-OMNI-Q014-QUAL-<REV>-20261025`, signed with the existing `jefferson`
 key through the SSH agent). **No campaign is complete; every report keeps the 100-trial denominator. Observed ==
@@ -27,6 +27,7 @@ proposal fields, exposure facts, token/request counts, row hashes; no reasoning,
 | b759094 | 6/6 admitted, 0 citation errors; still NEEDS_EVIDENCE for evident repairs | dddf00e: stated the contract's decision rule |
 | dddf00e | No change (5/6 NEEDS_EVIDENCE, 1 duplicate-item schema failure) | tuning stopped — measured capability limit |
 | 3de1a44 | Owner-chosen controlled factor: profile `local-rtx-v2-omniverse2-q36-noreason` (gateway reasoning off, otherwise identical, same digest). Same pattern: 6/6 NEEDS_EVIDENCE (missing-primary correct; 4 accepted wrong decision; 1 rejected for citing SWR-001 as an obligation); tokens fell to ~1.3–2.2k per trial from ~3.2–8.9k | reasoning effort is not the cause |
+| bcb8cae | Owner-chosen model comparison: `qwen3.8:27b-q8_0` (digest 8f5fb6b7…, Q8_0, 27.3B, first run; profile `local-rtx-v2-omniverse2-q38`, reasoning none, same cases). Same pattern: 6/6 NEEDS_EVIDENCE, all admitted (no citation errors); only missing-primary correct; ~1.3–2.2k tokens per trial | a second, denser Qwen generation shows the same over-caution |
 
 ## Fault controls exercised live
 
@@ -44,5 +45,6 @@ NEEDS_EVIDENCE for evident conformance repairs, while its own text correctly ide
 chose CLOSE_BLOCKED for the empty-technique case. Structured validity reached 23/24 answers in the last four batches.
 With gateway reasoning off (3de1a44, one changed configuration factor; the source revision also differs only by the
 variant profile file and a `--profile` preparation option) the decisions did not change, so the reasoning effort does
-not explain the over-caution. This is a role-capability failure for this model in both configurations, not evidence about other models, product recovery,
+not explain the over-caution. `qwen3.8:27b-q8_0` (bcb8cae, reasoning none) behaved the same on all six trials. This is a
+role-capability failure for both measured Qwen models and configurations, not evidence about other models, product recovery,
 learning benefit or availability (all NOT_RUN).

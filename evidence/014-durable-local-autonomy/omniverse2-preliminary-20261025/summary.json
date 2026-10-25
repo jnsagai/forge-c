@@ -1,7 +1,7 @@
 {
  "schema": "forge-c/feature014-omniverse2-preliminary/1",
  "host": "omniverse2",
- "model": "qwen3.6:35b-a3b",
+ "model": "per staging (see revision notes)",
  "scope": "PRELIMINARY_TRIAL_SUBSETS_PER_REVISION_NOT_CAMPAIGN_COMPLETION",
  "stagings": [
   {
@@ -2197,6 +2197,569 @@
      "fault": null,
      "native_adoption": null,
      "row_sha256": "01d618f5cfb996e3d8981117e87367fcf8520506cd395eed207ed14acc375871"
+    }
+   ]
+  },
+  {
+   "revision": "bcb8cae",
+   "manifest_sha256": "b57ee868b8ec2cb0f47c57273fde24362da9f188e1cd203713b593024fb8326d",
+   "authorization_id": "AUTH-OMNI-Q014-QUAL-BCB8CAE-20261025",
+   "driver_events": [
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:26:17.382738Z",
+     "event": "driver_start",
+     "trial": null,
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:26:33.145503Z",
+     "event": "enroll",
+     "trial": "obligation-counterexample:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:26:34.254019Z",
+     "event": "scheduler_cycle",
+     "trial": "obligation-counterexample:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:26:35.110529Z",
+     "event": "provision",
+     "trial": "obligation-counterexample:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:11.051189Z",
+     "event": "step",
+     "trial": "obligation-counterexample:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:11.052993Z",
+     "event": "trial_end",
+     "trial": "obligation-counterexample:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:23.109916Z",
+     "event": "enroll",
+     "trial": "unicode-contract:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:24.375467Z",
+     "event": "scheduler_cycle",
+     "trial": "unicode-contract:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:25.274400Z",
+     "event": "provision",
+     "trial": "unicode-contract:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:47.070826Z",
+     "event": "step",
+     "trial": "unicode-contract:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:47.072736Z",
+     "event": "trial_end",
+     "trial": "unicode-contract:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:58.963303Z",
+     "event": "enroll",
+     "trial": "late-finding:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:31:59.920166Z",
+     "event": "scheduler_cycle",
+     "trial": "late-finding:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:01.069203Z",
+     "event": "provision",
+     "trial": "late-finding:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:21.774857Z",
+     "event": "step",
+     "trial": "late-finding:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:21.776806Z",
+     "event": "trial_end",
+     "trial": "late-finding:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:33.183376Z",
+     "event": "enroll",
+     "trial": "upstream-owner:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:34.144469Z",
+     "event": "scheduler_cycle",
+     "trial": "upstream-owner:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:34.839926Z",
+     "event": "provision",
+     "trial": "upstream-owner:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:56.886739Z",
+     "event": "step",
+     "trial": "upstream-owner:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:32:56.888686Z",
+     "event": "trial_end",
+     "trial": "upstream-owner:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:08.365614Z",
+     "event": "enroll",
+     "trial": "missing-primary:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:09.678023Z",
+     "event": "scheduler_cycle",
+     "trial": "missing-primary:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:10.427337Z",
+     "event": "provision",
+     "trial": "missing-primary:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:32.843657Z",
+     "event": "step",
+     "trial": "missing-primary:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:32.845535Z",
+     "event": "trial_end",
+     "trial": "missing-primary:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:42.339454Z",
+     "event": "enroll",
+     "trial": "no-allowed-strategy:0",
+     "status": "ENROLLMENT_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:43.597404Z",
+     "event": "scheduler_cycle",
+     "trial": "no-allowed-strategy:0",
+     "status": "admitted",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:33:44.178170Z",
+     "event": "provision",
+     "trial": "no-allowed-strategy:0",
+     "status": "PROVISIONING_IN_PROGRESS",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:34:04.743338Z",
+     "event": "step",
+     "trial": "no-allowed-strategy:0",
+     "status": "RECORDED",
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:34:04.745210Z",
+     "event": "trial_end",
+     "trial": "no-allowed-strategy:0",
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    },
+    {
+     "log": "driver-batch8.jsonl",
+     "ts": "2026-10-25T21:34:04.745266Z",
+     "event": "driver_end",
+     "trial": null,
+     "status": null,
+     "blockers": null,
+     "error": "",
+     "refused": null
+    }
+   ],
+   "trials": [
+    {
+     "trial_id": "late-finding:0",
+     "expected": "PROPOSE_REPAIR",
+     "observed": "NEEDS_EVIDENCE",
+     "match": false,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFMJEA6SEQ504GJXK5P3PE",
+     "request_count": 1,
+     "reported_tokens": 2214,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "TEST_DIAGNOSTIC",
+        "obligation_ref": "USPEC-001",
+        "reason": "The decisive counterexample (F9) reports that reg_enable(0) returned 2, but the provided implementation source (A4) shows the expression 'before | UINT32_C(2)' which would also return 2 for input 0. A"
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "14688f2ffc7a8a88876ed5900a8664f0787b274da556fa9e08b2d8c1fcbde2ef"
+    },
+    {
+     "trial_id": "missing-primary:0",
+     "expected": "NEEDS_EVIDENCE",
+     "observed": "NEEDS_EVIDENCE",
+     "match": true,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFPP2PX738E3723W7K3MF3",
+     "request_count": 1,
+     "reported_tokens": 1299,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The finding F1 states that SWR-001 requires reg_enable(0) to return 1, but the authoritative requirement text for SWR-001 is not present in the primary_sources. The packet explicitly lists 'AUTHORITAI"
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "97712c6fc5a8def54694f816b14b6a3f7be6ef1cd2a465ef6731ff5947272a05"
+    },
+    {
+     "trial_id": "no-allowed-strategy:0",
+     "expected": "CLOSE_BLOCKED",
+     "observed": "NEEDS_EVIDENCE",
+     "match": false,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFQPS964B7JRXATM4RAGK1",
+     "request_count": 1,
+     "reported_tokens": 1765,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "TEST_DIAGNOSTIC",
+        "obligation_ref": "USPEC-001",
+        "reason": "The compiled reg_enable returned 2 for input 0, but the source in A4 uses UINT32_C(2) instead of UINT32_C(1). The test gate SWE.3:route=PASS is marked PASS, which contradicts the counterexample in F1."
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "32b9008150daf150a1d01dd3496712bd4735aed20336d66a906f048cebea8076"
+    },
+    {
+     "trial_id": "obligation-counterexample:0",
+     "expected": "PROPOSE_REPAIR",
+     "observed": "NEEDS_EVIDENCE",
+     "match": false,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFAMAJZ9AK60PNZVR8PRKR",
+     "request_count": 1,
+     "reported_tokens": 1865,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The packet lists 'SWR-001' in required_obligations but does not provide its definition or authoritative source. The finding F1 cites 'SWR-001' as the requirement violated, but the primary sources only"
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "9ff14faadb14bc8190ab43a2db3302eb9b78a78bfd44bbc47667a67e6749f6ba"
+    },
+    {
+     "trial_id": "unicode-contract:0",
+     "expected": "PROPOSE_REPAIR",
+     "observed": "NEEDS_EVIDENCE",
+     "match": false,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFKGASYZB3N8MCX1EZ2HEW",
+     "request_count": 1,
+     "reported_tokens": 1912,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The packet lists 'USPEC-001' as a required obligation, but the authoritative requirement text (A1) and unit specification (A3) only define 'SWR-001' and 'USPEC-001' as a combined identifier. The 'USP-"
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "f09122890b1ecbccce3dbe929d0fae5e1b6467fbb158ed57b01e5d805fe99460"
+    },
+    {
+     "trial_id": "upstream-owner:0",
+     "expected": "PROPOSE_REPAIR",
+     "observed": "NEEDS_EVIDENCE",
+     "match": false,
+     "job_state": "SUCCEEDED",
+     "job_error": null,
+     "native_run_id": "01M5TFNK8DT56Q221ES2YQ61RE",
+     "request_count": 1,
+     "reported_tokens": 1869,
+     "usage_unknown": false,
+     "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "authorization_state": "VALID",
+      "cancellation_state": "NOT_REQUESTED",
+      "task_outcome": "BLOCKED"
+     },
+     "receipt": {
+      "submission_state": "STORED",
+      "admissibility_state": "ACCEPTED",
+      "decision": "NEEDS_EVIDENCE",
+      "reason_codes": []
+     },
+     "proposal_diagnostic": null,
+     "proposal": {
+      "decision": "NEEDS_EVIDENCE",
+      "missing_evidence": [
+       {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The authoritative requirement (SWR-001) mandates mask 1, but the owning design (SWE.2) specifies mask 2. The packet does not contain the authoritative design rationale or waiver that would justify the"
+       }
+      ]
+     },
+     "fault": null,
+     "native_adoption": null,
+     "row_sha256": "7bd1b5e6ef02b1379027b72126f58b90600ff01641ccbae5ebdfa9b1510eceab"
     }
    ]
   },
