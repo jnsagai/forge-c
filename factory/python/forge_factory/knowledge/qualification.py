@@ -14,6 +14,20 @@ from ..afo.durable import Refused, canonical, digest
 from ..common import sha256_file
 
 
+def heldout_source(connection, source):
+    """An append-only correction classifies the whole execution, including older observations."""
+    record = json.loads(source["record"])
+    if record.get("cohort", {}).get("evaluation_holdout"):
+        return True
+    return (
+        connection.execute(
+            "SELECT 1 FROM job_experience WHERE execution_id=? AND json_extract(record,'$.cohort.evaluation_holdout')=1 LIMIT 1",
+            (record["execution_id"],),
+        ).fetchone()
+        is not None
+    )
+
+
 def record(store, lesson, *, manifest_path, manifest_sha256, reports):
     p = Path(manifest_path)
     if p.is_symlink() or sha256_file(p) != manifest_sha256:
@@ -54,7 +68,7 @@ def record(store, lesson, *, manifest_path, manifest_sha256, reports):
         ).fetchone()
         if not source or manifest.get("experience_source_hash") != source["source_hash"]:
             raise Refused("LESSON_EXPERIENCE_SOURCE_CHANGED")
-        if json.loads(source["record"]).get("cohort", {}).get("evaluation_holdout"):
+        if heldout_source(c, source):
             raise Refused("HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED")
         if lesson["source_kind"] == "NEGATIVE_OBSERVATION" and source["outcome"] in (
             "PASS",
@@ -82,13 +96,16 @@ def issues(store, lesson):
             "SELECT record,sha256 FROM lesson_qualifications WHERE qualification_id=?", (lesson.get("qualification_ref"),)
         ).fetchone()
         exp = c.execute(
-            "SELECT source_hash FROM job_experience WHERE experience_id=?", (lesson.get("experience_ref"),)
+            "SELECT source_hash,record FROM job_experience WHERE experience_id=?", (lesson.get("experience_ref"),)
         ).fetchone()
+        heldout = heldout_source(c, exp) if exp else False
         predecessor = c.execute("SELECT record,state FROM lessons WHERE lesson_id=?", (lesson.get("supersedes"),)).fetchone()
     if not row or not exp:
         return ["SOURCE_OUTCOME_OR_QUALIFICATION_UNRESOLVED"]
     rec = json.loads(row["record"])
     out = []
+    if heldout:
+        out.append("HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED")
     if (
         digest(rec) != row["sha256"]
         or rec["lesson_hash"] != store.content_hash(lesson)

@@ -13,8 +13,14 @@ from ..common import state_dir
 def route(store, *, capa_registry=None, minimum_executions=2, limit=32):
     if minimum_executions < 2 or not 1 <= limit <= 128:
         raise ValueError("bounded recurrence criteria required")
+    from .qualification import heldout_source
+
     with store._conn() as c:
-        rows = c.execute("SELECT record FROM job_experience ORDER BY created_at DESC LIMIT 1024").fetchall()
+        rows = [
+            row
+            for row in c.execute("SELECT record FROM job_experience ORDER BY created_at DESC LIMIT 1024").fetchall()
+            if not heldout_source(c, row)
+        ]
     groups = {}
     for row in rows:
         record = json.loads(row[0])

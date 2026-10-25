@@ -15,6 +15,7 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS job_experience (
  experience_id TEXT PRIMARY KEY, execution_id TEXT NOT NULL, phase TEXT NOT NULL, outcome TEXT NOT NULL,
  source_hash TEXT NOT NULL, record TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS job_experience_execution ON job_experience(execution_id);
 CREATE TABLE IF NOT EXISTS learning_dispositions (
  experience_id TEXT PRIMARY KEY REFERENCES job_experience(experience_id), state TEXT NOT NULL, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS learning_history (
@@ -175,7 +176,9 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
             ws = workspace_of(att)
             manifest_path = ws / ".forge-run/manifest.json"
             manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
-            cohort = {"revision": manifest.get("factory_revision"), "server": record.get("fabro_server")}
+            cohort = evaluation_scope(
+                {"revision": manifest.get("factory_revision"), "server": record.get("fabro_server")}, manifest
+            )
             # Exclude order/adoption alias from identity. Native metadata and outcome remain factual.
             out.append(
                 capture(
@@ -279,6 +282,21 @@ def capture_workspace(store, workspace, execution_id, *, package=None):
     return out
 
 
+def evaluation_scope(cohort, source):
+    """Keep factual capture while excluding acceptance/qualification data from distillation."""
+    if source.get("evaluation_holdout") or source.get("qualification_manifest_sha256"):
+        return {
+            **cohort,
+            "evaluation_holdout": True,
+            **(
+                {"qualification_manifest_sha256": source["qualification_manifest_sha256"]}
+                if source.get("qualification_manifest_sha256")
+                else {}
+            ),
+        }
+    return cohort
+
+
 def capture_controller_outcomes(afo_store, lessons, *, limit=32):
     """Capture non-product and never-dispatched terminal jobs without inventing native runs."""
     out = []
@@ -316,7 +334,7 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
                         outcome,
                         facts={"state_record_sha256": source, "error_code": value.get("error")},
                         source_refs=["afo-state:sha256:" + source],
-                        cohort={"model": value.get("model"), "revision": value.get("factory_revision")},
+                        cohort=evaluation_scope({"model": value.get("model"), "revision": value.get("factory_revision")}, value),
                     )
                 )
             except (ValueError, TypeError, KeyError) as exc:

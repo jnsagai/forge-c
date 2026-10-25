@@ -1,12 +1,15 @@
 """Every-outcome capture, qualified memory and chronological comparison fixtures."""
 
 import copy
+import json
 
 import pytest
 from forge_factory.afo.durable import Refused, digest, immutable_json
 from forge_factory.common import sha256_file
 from forge_factory.knowledge import comparison, experience, qualification
 from forge_factory.knowledge.store import LessonStore
+from test_afo_m4_recovery import order  # noqa: F401
+from test_da014_protocol import protocol  # noqa: F401
 
 
 @pytest.fixture
@@ -116,6 +119,98 @@ def test_ordinary_lesson_requires_independent_source_and_actual_scope(memory, tm
         assert memory.find(**{**args, k: v})["lessons"] == []
     report = experience.report(memory)
     assert report["exposures"] == 1 and report["applications"] == report["measured_benefits"] == 0
+
+
+def test_late_holdout_classification_retracts_older_source_without_erasing_facts(memory, tmp_path):
+    c = candidate(memory, tmp_path)
+    rec = memory.validate(memory.propose(c, phase="SWE.3")["lesson_id"])
+    assert rec["state"] == "VALIDATED"
+    correction = experience.capture(
+        memory,
+        "native-job-A",
+        "JOB",
+        "PASS",
+        facts={"classification": "frozen acceptance cohort"},
+        source_refs=["campaign:independent-frozen-manifest"],
+        cohort={"evaluation_holdout": True},
+    )
+    assert "HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED" in qualification.issues(memory, c)
+    assert not memory.find(
+        "register mapping",
+        "later-job",
+        phase="SWE.3",
+        role="swe3-author",
+        target="STM32N6",
+        source_version="v1",
+        tool_versions={"gcc": "14"},
+    )["lessons"]
+    assert memory.get(rec["lesson_id"])["state"] == "RETRACTED"
+    with pytest.raises(Refused, match="HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED"):
+        candidate(memory, tmp_path, version=2)
+    with memory._conn() as db:
+        assert db.execute("SELECT COUNT(*) FROM job_experience").fetchone()[0] == 2
+        assert db.execute("SELECT 1 FROM job_experience WHERE experience_id=?", (correction,)).fetchone()
+
+
+def test_afo_and_qualification_job_capture_preserve_evaluation_scope(protocol, tmp_path):  # noqa: F811
+    from forge_factory.afo.local_agent import save
+    from forge_factory.inspection.engine import Store as InspectionStore
+    from test_resume_from import _all_pass
+
+    p = protocol
+    memory = LessonStore(tmp_path / "holdout-lessons.sqlite3")
+    (p.ws / ".forge-run").mkdir()
+    (p.ws / ".forge-run/manifest.json").write_text(json.dumps({"evaluation_holdout": True}))
+    for phase, name in (("SWE.1", "software_requirements.md"), ("SWE.2", "software_architecture.md")):
+        directory = p.ws / "workproducts" / phase
+        directory.mkdir(parents=True)
+        (directory / name).write_text("Frozen capture fixture: SWR-001 maps to USPEC-001.\n")
+    inspections = InspectionStore(p.ws)
+    for phase in ("SWE.1", "SWE.2", "SWE.3"):
+        role = phase.lower().replace(".", "")
+        baseline = inspections.freeze(phase, role + "-author")
+        inspections.record_inspection(phase, role + "-inspector", baseline["baseline_id"], _all_pass(phase))
+    p.store.attempt_transition(p.bundle["attempt_id"], "FAILED")
+    save(p.store, {**p.job, "state": "FAILED", "qualification_manifest_sha256": "a" * 64})
+    before = p.ledger.snapshot("mission-test")
+    ids = experience.capture_afo(p.store, memory, lambda _: p.ws)
+    assert len(ids) >= 2
+    with memory._conn() as db:
+        records = [json.loads(r[0]) for r in db.execute("SELECT record FROM job_experience")]
+    assert all(r["cohort"].get("evaluation_holdout") is True for r in records)
+    assert any(r["phase"] == "SWE.3" for r in records)
+    agent = next(r for r in records if r["execution_id"].startswith("controller-agent:"))
+    assert agent["cohort"]["qualification_manifest_sha256"] == "a" * 64
+    experience.consolidate(memory)
+    assert sum(experience.report(memory)["dispositions"].values()) == len(records)
+    assert p.ledger.snapshot("mission-test") == before
+
+
+def test_late_holdout_classification_excludes_old_facts_from_improvement_routing(memory):
+    from forge_factory.knowledge.improvement import route
+
+    for native in ("heldout-A", "ordinary-B"):
+        experience.capture(
+            memory,
+            native,
+            "SWE.3",
+            "FAILED",
+            facts={"fingerprint": "same-failure"},
+            source_refs=["independent-gate:" + native],
+            cohort={"revision": "r1"},
+        )
+    assert len(route(memory)) == 1
+    experience.capture(
+        memory,
+        "heldout-A",
+        "JOB",
+        "FAILED",
+        facts={"classification": "frozen acceptance"},
+        source_refs=["campaign:heldout-manifest"],
+        cohort={"evaluation_holdout": True},
+    )
+    assert route(memory) == []
+    assert experience.report(memory)["unique_experiences"] == 3
 
 
 def test_self_asserted_passes_and_changed_scope_do_not_qualify(memory, tmp_path):

@@ -164,6 +164,13 @@ A complete evidence packet, short semantic judgment and deterministic receipt/bi
 
 Every ordinary success, failure, block, timeout and unknown outcome enters factual experience with a recoverable disposition. Qualified ordinary/negative lessons extend the existing LessonStore, preserve PROMOTED repair validation and separate inspector IL governance, and obey phase/role/target/source/tool/version and context limits. Delivery and retraction share a transactional fence. A captured experience or staged improvement proposal is not evidence of learning benefit. Learning comparisons include all retrieval, curation and validation cost.
 
+AFO job/phase capture preserves the workspace evaluation-holdout flag, and native
+qualification jobs retain their campaign identity as held-out experience. Facts
+and dispositions remain recorded, while those executions cannot supply distilled
+lessons or improvement-routing inputs. An append-only classification correction
+also excludes older observations of that execution: existing ordinary lessons are
+retracted at retrieval, new qualification is refused, and historical facts remain.
+
 ### Continuous service and approved recovery
 
 The explicitly configured `FORGE_OPERATIONS_INTENT` file is OS-owned/private and outside the application mount in a deployment. Provision it through the existing authenticated operator path; absence/corruption is UNKNOWN, never automatic RUNNING. Its RUNNING/PAUSED/DRAINING/STOPPED epochs fence every bounded native/service start. Pause stops new admission; drain allows admitted work to settle. STOPPED stays unresolved until pending contrary service-manager work and possibly live workers settle. Intentional OS stop, disable and mask remain respected.
