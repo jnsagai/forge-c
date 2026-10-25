@@ -419,6 +419,16 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
             order = store.order(doc["bundle"]["order_id"])
             if not order or MissionLedger(store).for_order(order["order_id"]) != binding["mission_id"]:
                 raise Refused("CAMPAIGN_MISSION_MUST_ALREADY_BE_AUTHORIZED_AND_REGISTERED", trial)
+            from . import qualification_intake
+
+            intake = qualification_intake.context(store, order)
+            if intake and intake["manifest_sha256"] != sha:
+                raise Refused("QUALIFICATION_WRAPPER_INTAKE_REQUIRED", trial)
+            if order["state"] == "ADMITTED" and intake:
+                order = qualification_intake.start(store, order, sha)
+            elif intake:
+                # The scheduler admitted these exact bytes; they must still match before the role job binds.
+                qualification_intake.verify_files(Path(intake["root"]), intake["intake"], intake["trial_id"])
             if order["state"] not in ("RUNNING", "WAITING_RECOVERY"):
                 waiting.append(trial)
                 continue
@@ -862,7 +872,7 @@ def gpio_admission(prerequisites):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("command", choices=["freeze", "dry-run", "provision", "step", "report"])
+    ap.add_argument("command", choices=["freeze", "dry-run", "enroll", "provision", "step", "report"])
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--stage", choices=STAGES, default="protocol")
     ap.add_argument("--identity", type=Path)
@@ -872,7 +882,7 @@ def main(argv=None):
     ap.add_argument(
         "--trial",
         action="append",
-        help="evaluate/provision/step only these frozen protocol trial IDs; report denominator stays 100",
+        help="evaluate/enroll/provision/step only these frozen protocol trial IDs; report denominator stays 100",
     )
     ap.add_argument("--protocol-faults", type=Path, help="explicit supported per-trial interventions, frozen before signing")
     ap.add_argument(
@@ -903,6 +913,10 @@ def main(argv=None):
         manifest = json.loads(args.manifest.read_text())
         if args.command == "dry-run":
             out = preflight(manifest, trial_ids=args.trial)
+        elif args.command == "enroll":
+            from .qualification_intake import enroll
+
+            out = enroll(manifest, args.authorization_ref, trial_ids=args.trial)
         elif args.command == "provision":
             out = provision(manifest, args.authorization_ref, trial_ids=args.trial)
         elif args.command == "step":

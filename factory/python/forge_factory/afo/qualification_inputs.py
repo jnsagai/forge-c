@@ -352,6 +352,16 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                 "priority": "NORMAL",
             }
             immutable_json(directory / "envelope.json", envelope)
+            # Intake re-verifies these exact bytes; inputs.json is itself bound by the signed manifest.
+            intake = {
+                name: {"path": str(path.relative_to(root)), "sha256": sha256_file(path)}
+                for name, path in (
+                    ("envelope", directory / "envelope.json"),
+                    ("launch_manifest", launch),
+                    ("run_manifest", ws / ".forge-run/manifest.json"),
+                    ("model_profile", ws / ".forge-run/model-profile.json"),
+                )
+            }
             trials.append(
                 {
                     "trial_id": trial,
@@ -361,6 +371,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                     "order_id": oid,
                     "attempt_id": aid,
                     "envelope": str(directory / "envelope.json"),
+                    "intake": intake,
                     "request_measurement": measure,
                     "output_reserve": measure["effective_output_cap"],
                     "job_token_reservation": reserved,

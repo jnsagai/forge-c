@@ -55,6 +55,18 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
         observed = probe(store, "admission:" + name, condition, lambda: {"ok": bool(observe())})
         return observed.get("healthy") is True
 
+    from . import qualification_intake
+    from .durable import Refused
+
+    try:
+        intake = qualification_intake.context(store, order)
+        frozen = qualification_intake.launch_manifest(intake) if intake else None
+    except Refused:
+        return ["QUALIFICATION_INTAKE_BINDING_CHANGED"]
+
+    def manifest_for():
+        return frozen if intake else launch_manifest(order)
+
     env = json.loads(order["envelope"])
     if not p.get("mount", lambda: host.preflight()["ok"])():
         issues.append("DATA_VOLUME_NOT_READY")
@@ -66,24 +78,36 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     fabro_url = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/")
     if not available("fabro", fabro_url, p.get("fabro", lambda: _healthy(fabro_url.rsplit("/api", 1)[0] + "/health"))):
         issues.append("FABRO_UNAVAILABLE")
-    if not available("gateway", env["model_profile"], p.get("gateway", lambda: _healthy(gateway_health_url(order)))):
+    if not available("gateway", env["model_profile"], p.get("gateway", lambda: _healthy(gateway_health_url(order, frozen)))):
         issues.append("MODEL_GATEWAY_UNAVAILABLE")
     if env["model_profile"] not in (eff.get("engineering.allowed_model_profiles") or []):
         issues.append(f"MODEL_NOT_ALLOWED:{env['model_profile']}")
     if not p.get("mcp", _mcp_ok)():
         issues.append("MCP_REGISTRY_INVALID")
-    if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+    if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1" or intake:
         from .mission_ledger import MissionLedger
-        from .durable import Refused
 
         try:
-            snap = MissionLedger(store).snapshot(MissionLedger(store).for_order(order["order_id"]))
+            mission = MissionLedger(store).for_order(order["order_id"])
+            snap = MissionLedger(store).snapshot(mission)
+            limits = snap["limits"]
             import time
 
-            if (
-                time.time() >= snap["limits"]["deadline"]
-                or snap["attempts"] >= snap["limits"]["max_attempts"]
-                or snap["charged_tokens"] >= snap["limits"]["max_tokens"]
+            if intake and (mission != intake["mission_id"] or limits["max_attempts"] != 0 or snap["attempts"]):
+                issues.append("QUALIFICATION_MISSION_NOT_PROTOCOL_ONLY")
+            elif intake:
+                # A protocol-only mission spends finite jobs/requests/tokens, never product attempts.
+                if (
+                    time.time() >= limits["deadline"]
+                    or snap["jobs"] >= limits["max_jobs"]
+                    or snap["requests"] >= limits["max_requests"]
+                    or snap["charged_tokens"] + intake["job_token_reservation"] > limits["max_tokens"]
+                ):
+                    issues.append("MISSION_ALLOWANCE_EXHAUSTED")
+            elif (
+                time.time() >= limits["deadline"]
+                or snap["attempts"] >= limits["max_attempts"]
+                or snap["charged_tokens"] >= limits["max_tokens"]
             ):
                 issues.append("MISSION_ALLOWANCE_EXHAUSTED")
             with store.tx() as c:
@@ -94,7 +118,7 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
             issues.append(exc.code)
     if durable:
         try:
-            manifest = p.get("manifest", lambda: launch_manifest(order))()
+            manifest = p.get("manifest", manifest_for)()
             for parent in manifest.get("depends_on_order_ids", []):
 
                 def ready(parent=parent):
@@ -107,11 +131,21 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
             issues.append("LAUNCH_MANIFEST_UNAVAILABLE_OR_INVALID")
     if len(store.attempts(order["order_id"])) >= int(eff.get("budgets.max_order_attempts", 0)):
         issues.append("ORDER_ATTEMPT_BUDGET_EXHAUSTED")
+    if intake:
+        try:
+            grant = qualification_intake.grant_record(intake["authorization_ref"])
+        except (OSError, ValueError):
+            grant = {}
+        if (
+            eff.get("authorization_ref") != intake["authorization_ref"]
+            or grant.get("signed_runbook_ref") != intake["qualification_ref"]
+        ):
+            issues.append("SIGNED_CAMPAIGN_RUNBOOK_MISMATCH")
     return issues
 
 
-def gateway_health_url(order: dict) -> str:
-    manifest = launch_manifest(order)
+def gateway_health_url(order: dict, manifest: dict | None = None) -> str:
+    manifest = launch_manifest(order) if manifest is None else manifest
     if manifest.get("profile"):
         from ..lrtx.profile import load
 
@@ -174,7 +208,14 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
     issues = preflight(cand, eff, store, probes)
     if issues:
         if any(
-            i in issues for i in ("ORDER_ATTEMPT_BUDGET_EXHAUSTED", "MISSION_ALLOWANCE_EXHAUSTED", "MISSION_LINK_REQUIRED")
+            i in issues
+            for i in (
+                "ORDER_ATTEMPT_BUDGET_EXHAUSTED",
+                "MISSION_ALLOWANCE_EXHAUSTED",
+                "MISSION_LINK_REQUIRED",
+                "QUALIFICATION_INTAKE_BINDING_CHANGED",
+                "QUALIFICATION_MISSION_NOT_PROTOCOL_ONLY",
+            )
         ) or any(i.startswith("MODEL_NOT_ALLOWED") for i in issues):
             store.transition(cand["order_id"], "BLOCKED", "; ".join(issues), terminal_reason=issues[0])
             rec = {**out, "action": "blocked", "issues": issues}
@@ -183,6 +224,9 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
             rec = {**out, "action": "deferred", "issues": issues, "wait_s": wait}
         record(rec)
         return rec
+    from . import qualification_intake
+
+    intake = qualification_intake.context(store, cand)  # verified by preflight in this cycle
     try:
         aid = store.admit(
             cand["order_id"],
@@ -191,6 +235,7 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
             policy_sha256=eff.sha256,
             authorization_id=eff.authorization_id,
             max_concurrent=int(eff.get("queue.max_concurrent_workorders", 1)),
+            qualification_ref=intake["qualification_ref"] if intake else None,
         )
     except QueueError as e:
         rec = {**out, "action": "not_admitted", "code": e.code}
