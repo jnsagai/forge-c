@@ -174,3 +174,30 @@ def test_process_exiting_between_kernel_reads_is_absence_not_an_observation_erro
     finally:
         child.kill()
         child.wait()
+
+
+@pytest.fixture
+def without_pidfd_bindings(monkeypatch):
+    """omniverse2's uv CPython 3.13.13 lacks both bindings although its kernel supports pidfds."""
+    monkeypatch.delattr(os, "pidfd_open", raising=False)
+    monkeypatch.delattr(signal, "pidfd_send_signal", raising=False)
+
+
+def test_raw_pidfd_fallback_signals_the_exact_process(without_pidfd_bindings):
+    from forge_factory.lrtx import pidfd
+
+    child = subprocess.Popen(["sleep", "30"])
+    descriptor = pidfd.open_pid(child.pid)
+    try:
+        pidfd.send_signal(descriptor, signal.SIGTERM)
+        assert child.wait(timeout=5) == -signal.SIGTERM
+    finally:
+        os.close(descriptor)
+    with pytest.raises(ProcessLookupError):
+        pidfd.open_pid(child.pid)
+
+
+def test_exact_provider_retirement_works_without_pidfd_bindings(tmp_path, without_pidfd_bindings):
+    with provider(tmp_path, "fallback") as instance:
+        proof = P.stop(instance, fenced_effect=lambda effect: effect())
+        assert proof and proof["kind"] == "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"

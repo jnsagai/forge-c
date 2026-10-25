@@ -27,6 +27,7 @@ import urllib.request
 from pathlib import Path
 
 from ..common import REPO_ROOT, pretty_json, utc_now
+from . import pidfd
 from . import profile as lp
 
 SYSTEM_PATH = "/usr/local/bin:/usr/bin:/bin"
@@ -638,13 +639,13 @@ def _stop(s: dict, *, managed=False) -> dict:
         if not expected or observed != expected:
             raise Refused("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
         try:
-            descriptor = os.pidfd_open(pid)
+            descriptor = pidfd.open_pid(pid)
         except ProcessLookupError:
             return
         try:
             if process_identity(pid) != expected:
                 raise Refused("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
-            signal.pidfd_send_signal(descriptor, sig)
+            pidfd.send_signal(descriptor, sig)
         finally:
             os.close(descriptor)
 

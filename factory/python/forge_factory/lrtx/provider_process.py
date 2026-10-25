@@ -17,6 +17,7 @@ from pathlib import Path
 
 from ..afo.durable import Refused, digest
 from ..common import utc_now
+from . import pidfd
 
 
 def boot_id() -> str:
@@ -175,7 +176,7 @@ def stop(instance: dict, *, fenced_effect) -> dict | None:
     if proof:
         return proof
     try:
-        descriptor = os.pidfd_open(instance["init_pid"])
+        descriptor = pidfd.open_pid(instance["init_pid"])
     except ProcessLookupError:
         return quiet(instance)
     try:
@@ -187,7 +188,7 @@ def stop(instance: dict, *, fenced_effect) -> dict | None:
                 return
             if any(current.get(k) != expected.get(k) for k in expected):
                 raise Refused("PROVIDER_IDENTITY_OBSERVATION_CHANGED")
-            signal.pidfd_send_signal(descriptor, signal.SIGKILL)
+            pidfd.send_signal(descriptor, signal.SIGKILL)
 
         fenced_effect(effect)
     finally:
