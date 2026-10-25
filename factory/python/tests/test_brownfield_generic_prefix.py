@@ -88,6 +88,25 @@ __STATIC_INLINE void LL_SPI_SetClockPolarity(SPI_TypeDef *SPIx, uint32_t ClockPo
     assert [(e.register, e.op, e.mask) for e in got] == [("CRC_IDR", "write", 0xA5A55A5A)]
     got = S.register_effects(defs["LL_SPI_SetClockPolarity"], {}, "cmsis", ["SPI1", "0x02000000U"], defs, prefix="SPI")
     assert [(e.register, e.op, e.mask) for e in got] == [("SPI_CFG2", "modify", 0x02000000)]  # no mask-less write
+    assert got[0].clear is None  # SPI_CFG2_CPOL is not defined in this source: the clear mask stays unknown
+
+
+def test_modify_reg_records_its_clear_mask_so_a_bound_value_sets_or_clears_the_field():
+    """WO-AFO-7a6810a8baf9b9c4-a1 (SPI): 23 false findings 'expected set SPI_CFG2.CPOL; the code does modify': ST's
+    MODIFY_REG(SPIx->CFG2, SPI_CFG2_CPOL, ClockPolarity) sets the field for one value and clears it for the other."""
+    src = """
+__STATIC_INLINE void LL_SPI_SetClockPolarity(SPI_TypeDef *SPIx, uint32_t ClockPolarity)
+{
+  MODIFY_REG(SPIx->CFG2, SPI_CFG2_CPOL, ClockPolarity);
+}
+"""
+    defs = {d.name: d for d in S.index(src, "software/ll/x.h")}
+    macros = S.constant_macros(["#define SPI_CFG2_CPOL_Pos (25U)\n#define SPI_CFG2_CPOL_Msk (0x1UL << SPI_CFG2_CPOL_Pos)\n"
+                                "#define SPI_CFG2_CPOL SPI_CFG2_CPOL_Msk\n"])
+    hi = S.register_effects(defs["LL_SPI_SetClockPolarity"], macros, "cmsis", ["SPI1", "0x02000000U"], defs, prefix="SPI")
+    lo = S.register_effects(defs["LL_SPI_SetClockPolarity"], macros, "cmsis", ["SPI1", "0x00000000U"], defs, prefix="SPI")
+    assert [(e.op, e.clear, e.mask) for e in hi] == [("modify", 0x02000000, 0x02000000)]
+    assert [(e.op, e.clear, e.mask) for e in lo] == [("modify", 0x02000000, 0x0)]
 
 
 def test_the_real_crc_r2_package_is_conformant_and_the_ready_rcc_pilots_are_unchanged():
@@ -97,9 +116,34 @@ def test_the_real_crc_r2_package_is_conformant_and_the_ready_rcc_pilots_are_unch
     from pathlib import Path
 
     st = Path(os.environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders"
-    for wo in ("WO-BENCH-CRC-ST-r2", "WO-0008C-ST-RCC-LL-b009"):
+    for wo in ("WO-BENCH-CRC-ST-r2", "WO-AFO-7a6810a8baf9b9c4-a1", "WO-0008C-ST-RCC-LL-b009"):
         ws = st / wo / "workspace"
         if not (ws / "workproducts/SWE.2/api_calls.json").is_file():
             continue
         r = C.check(ws, "SWE.3", write=False)
         assert r["status"] == "CONFORMANT", (wo, r["findings"][:3])
+
+
+def test_a_set_requirement_against_a_modify_that_leaves_the_field_zero_is_still_a_contradiction(tmp_path):
+    """The real SPI package with one requirement case turned around (CPOL high stated as a clear): the bound value
+    sets the bit, so exactly that case is reported. Local run state: skipped where it does not exist."""
+    import json
+    import os
+    import shutil
+    from pathlib import Path
+
+    import pytest
+
+    src = Path(os.environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders/WO-AFO-7a6810a8baf9b9c4-a1/workspace"
+    if not (src / C.CALLS).is_file():
+        pytest.skip("local SPI run state not present")
+    ws = tmp_path / "ws"
+    shutil.copytree(src, ws, ignore=shutil.ignore_patterns("build"))
+    p = ws / C.EFFECTS
+    d = json.loads(p.read_text())
+    flipped = [e for e in d["effects"] if e.get("case") == "SET_CPOL_HIGH"]
+    assert flipped and flipped[0]["op"] == "set"
+    flipped[0]["op"] = "clear"
+    p.write_text(json.dumps(d))
+    r = C.check(ws, "SWE.3", write=False)
+    assert [(f["kind"], f["function"]) for f in r["findings"]] == [("CONTRADICTION", "LL_SPI_SetClockPolarity")]

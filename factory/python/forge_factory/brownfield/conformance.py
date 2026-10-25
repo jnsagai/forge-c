@@ -158,6 +158,11 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                                               for g in writes) or "no register write"))
                 continue
             hit = [g for g in writes if g.register == reg and g.op == op and g.mask is not None and g.mask & mask]
+            if not hit and pfx != "RCC" and op in ("set", "clear"):  # ST: MODIFY_REG(reg, FIELD, value) with the
+                # value bound: sets the field when the value holds it, clears it when the value leaves it 0
+                hit = [g for g in writes if g.register == reg and g.op == "modify" and g.mask is not None
+                       and g.clear is not None and g.clear & mask == mask
+                       and g.mask & mask == (mask if op == "set" else 0)]
             if not hit:
                 seen = "; ".join(f"{g.op} {g.via or g.register} mask {g.mask if g.mask is None else hex(g.mask)}"
                                  for g in writes) or "no register write"

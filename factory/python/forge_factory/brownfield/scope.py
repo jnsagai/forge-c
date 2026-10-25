@@ -208,6 +208,7 @@ class Effect:
     mask: int | None           # bit mask (None: not a constant)
     via: str = ""              # the register the code actually accessed (alias)
     text: str = ""
+    clear: int | None = None   # MODIFY_REG's clear mask (op modify; mask is then the value written)
 
 
 def _bind(body: str, params: list[str], args: list[str]) -> str:
@@ -280,6 +281,7 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
                 eff(reg, "clear", rest[0] if rest else None, m.group(0))
             elif macro == "MODIFY_REG":
                 eff(reg, "modify", rest[1] if len(rest) > 1 else None, m.group(0))
+                effects[-1].clear = evaluate(rest[0], macros) if rest else None
             else:
                 effects.append(Effect(reg, "read", evaluate(rest[0], macros) if rest else None, "", m.group(0)))
         for m in re.finditer(rf"{reg_ref}\s*(\|=|&=|=(?!=))\s*([^;]+);", body):

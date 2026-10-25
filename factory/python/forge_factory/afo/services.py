@@ -30,11 +30,19 @@ UNITS = ("forge-ollama.service", "forge-llm-gateway.service", "forge-llm-gateway
          "forge-afo-watchdog.service", "forge-afo-watchdog.timer")
 
 
+def llvm_bin() -> str | None:
+    """The LLVM toolchain scripts/forge-env.sh puts first on PATH (MC/DC coverage needs clang >= 18; the host clang
+    is 12). Feature 015: AFO runs inherit the conductor's PATH, which lacked it, so their SWE.4 coverage was BLOCKED."""
+    b = os.environ.get("FORGE_LLVM_BIN") or str(data_root() / "toolchains/LLVM-19.1.7-Linux-X64/bin")
+    return b if os.access(Path(b) / "clang", os.X_OK) else None
+
+
 def values() -> dict[str, str]:
     venv = os.environ.get("FORGE_VENV") or str(data_root() / "venv")
     fabro = os.environ.get("FORGE_FABRO_BIN") or str(Path.home() / ".fabro/bin/fabro")
+    llvm = llvm_bin()
     return {"@REPO@": str(REPO_ROOT), "@DATA@": str(data_root()), "@VENV@": venv, "@FABRO@": fabro,
-            "@PATH@": f"{venv}/bin:/usr/local/bin:/usr/bin:/bin", "@CLOUD_CAP@":
+            "@PATH@": f"{venv}/bin:" + (f"{llvm}:" if llvm else "") + "/usr/local/bin:/usr/bin:/bin", "@CLOUD_CAP@":
                 os.environ.get("FORGE_CLOUD_COST_CAP_USD", "2.00")}
 
 
