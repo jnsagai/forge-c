@@ -151,9 +151,15 @@ def operations(auditor: bool) -> dict:
 
 def control(action: str, actor: str, reason: str) -> dict:
     """Operator pause / drain / resume (same semantics and audit as the CLI)."""
-    if action not in ("pause", "drain", "resume") or not reason.strip():
+    if action not in ("pause", "drain", "resume", "shutdown") or not reason.strip():
         raise ValueError("action must be pause|drain|resume with a reason")
     s = Store()
+    from .operations import configured, synchronize
+    if configured():
+        synchronize(s, action, actor, reason)
+        return s.control()
+    if action == 'shutdown':
+        raise ValueError('durable operations intent required')
     if action == "pause":
         s.set_control("paused", "1", actor, reason)
     elif action == "drain":

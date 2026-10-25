@@ -49,6 +49,21 @@ def render() -> dict[str, str]:
             if leftover:
                 raise ValueError(f"UNRENDERED_PLACEHOLDER:{u}:{leftover}")
         out[u] = t
+    intent = os.environ.get('FORGE_OPERATIONS_INTENT')
+    if intent:
+        # Explicit deployment render only; running this renderer does not install/enable any unit.
+        profile = os.environ.get('FORGE_CONDUCTOR_FABRO_UNIT', 'forge-fabro.service')
+        if profile not in ('forge-fabro.service', 'forge-fabro-cloud.service'):
+            raise ValueError('INVALID_CONDUCTOR_DEPENDENCY_UNIT')
+        for unit in ('forge-conductor.service', 'forge-afo-watchdog.service'):
+            text = out[unit]
+            text = text.replace('After=forge-fabro-cloud.service', 'After=' + profile)
+            text = text.replace('Restart=on-failure', 'Restart=always')
+            text = text.replace('[Service]', '[Service]\nEnvironment=FORGE_OPERATIONS_INTENT=' + intent)
+            if unit == 'forge-conductor.service':
+                text = text.replace('ExecStartPre=', 'ExecStartPre=' + vals['@VENV@'] + '/bin/python -m forge_factory.afo.operations boot-check\nExecStartPre=', 1)
+                text = text.replace('UMask=0077', 'UMask=0077\nCPUWeight=1000\nIOWeight=1000\nMemoryLow=256M\nTasksMax=128')
+            out[unit] = text
     return out
 
 

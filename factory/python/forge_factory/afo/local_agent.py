@@ -99,6 +99,17 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
            "profile": profile, "model": model, "policy_sha256": eff.sha256, "state": "PREPARED",
            "nonce": secrets.token_hex(16), "created_epoch": now, "deadline_epoch": deadline,
            "reserved_tokens": agent.max_stage_tokens, "reported_tokens": None, "run_id": None}
+    doc = json.loads(case.read_text())
+    if doc.get('packet_ref'):
+        from .mission_ledger import MissionLedger
+        job['mission_id'] = MissionLedger(store).for_order(order['order_id'])
+        if job['mission_id'] != doc.get('mission_id'):
+            raise QueueError('CASE_MISSION_MISMATCH', order['order_id'])
+        job['durable_protocol'] = '1.0'
+        MissionLedger(store).execution(job['mission_id'], job['job_id'],
+            'DIAGNOSIS' if role == 'afo-recovery-planner' else 'MAINTENANCE', reserved_tokens=job['reserved_tokens'])
+    elif os.environ.get('FORGE_DURABLE_AUTONOMY') == '1':
+        raise QueueError('DURABLE_MISSION_AND_PACKET_REQUIRED', order['order_id'])
     job["factory_revision"] = factory_revision()
     job["fabro_url"] = os.environ.get("FORGE_FABRO_URL")
     job["fabro_storage"] = os.environ.get("FORGE_FABRO_STORAGE")
@@ -172,6 +183,13 @@ def launch(job: dict) -> str:
              f'  agent [prompt="{_q(prompt)}", timeout="{seconds}s", max_visits=1]\n'
              f'  record [shape=parallelogram, stdin_source="context.response.agent", script="{_q(command)}"]\n'
              '  start -> agent -> record -> exit\n}\n')
+    if job.get('durable_protocol'):
+        command = (f"{_env()} FORGE_REPO_ROOT={shlex.quote(str(REPO_ROOT))} {sys.executable} "
+                   f"-m forge_factory.afo.local_agent semantic --job {job['job_id']}")
+        graph = ('digraph recovery {\n graph [goal="Bounded semantic recovery", max_visits="1"]\n'
+                 ' start [shape=Mdiamond]\n exit [shape=Msquare]\n'
+                 f' generate [shape=parallelogram, timeout="{seconds}s", script="{_q(command)}"]\n'
+                 ' start -> generate -> exit\n}\n')
     servers = fabro_mcp_config([ROLES[job["role"]]])
     servers[ROLES[job["role"]]]["env"] = {**context, "FORGE_REPO_ROOT": str(REPO_ROOT)}
     binding = Binding(job["job_id"], str(ws), {"agent": {"role": job["role"], "phase": None}})
@@ -192,6 +210,9 @@ def poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) -> 
     """All I/O is bounded native control-plane work; model inference runs independently in Fabro."""
     client = client or FabroClient(base_url=job.get("fabro_url"), token=load_token(job.get("fabro_storage")), timeout=5)
     launch_fn = launch_fn or launch
+    if job.get('durable_protocol'):
+        from .durable_agent import poll as durable_poll
+        return durable_poll(store, order, job, eff, client, launch_fn)
     if job["state"] in ("FAILED", "UNKNOWN", "TIMED_OUT", "REVOKED"):
         return job
     if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized(order, eff, job["model"]):
@@ -271,9 +292,20 @@ def supervise(store, eff) -> list[dict]:
         if not c.execute("SELECT 1 FROM sqlite_master WHERE name='afo_local_agent_jobs'").fetchone():
             return []
         jobs = [json.loads(r[0]) for r in c.execute(
-            "SELECT record FROM afo_local_agent_jobs WHERE state IN ('PREPARED','LAUNCHING','RUNNING')")]
+            "SELECT record FROM afo_local_agent_jobs")]
     out = []
     for job in jobs:
+        if job.get('durable_protocol'):
+            from .execution_lifecycle import Executions
+            rec = Executions(store).get(job['job_id'])
+            if rec and rec['resource_lease'] == 'RELEASED' and job['state'] not in ('RUNNING', 'LAUNCHING'):
+                continue
+            order = store.order(job['order_id'])
+            if order is not None:
+                out.append(poll(store, order, job, eff))
+            continue
+        if job['state'] not in ('PREPARED', 'LAUNCHING', 'RUNNING'):
+            continue
         order = store.order(job["order_id"])
         if order["state"] not in ("RUNNING", "WAITING_EXTERNAL_CHANGE"):
             job["deadline_epoch"] = min(job["deadline_epoch"], time.time())
@@ -295,8 +327,20 @@ def make_planner(store, eff):
             raise planner.Pending(job["job_id"])
         if job["state"] != "SUCCEEDED":
             raise planner.Failed(f"{job['state']}:{job['job_id']}")
+        if job.get('durable_protocol'):
+            return json.dumps(job['completion'])
         return (directory(job["job_id"]) / "reply.json").read_text()
-    return planner.make(invoke)
+    def freeze(bundle, workspace, budget):
+        from .mission_ledger import MissionLedger
+        from .durable import Refused
+        try:
+            mission = MissionLedger(store).for_order(bundle['order_id'])
+        except Refused:
+            if os.environ.get('FORGE_DURABLE_AUTONOMY') == '1':
+                raise
+            mission = None
+        return planner.case(bundle, workspace, budget, mission_id=mission)
+    return planner.make(invoke, freeze=freeze)
 
 
 def sweep_maintenance(store, eff) -> list[dict]:
@@ -326,18 +370,23 @@ def sweep_maintenance(store, eff) -> list[dict]:
 
 def launch_review(store, job: dict) -> None:
     """One CPU verification worker per submitted candidate; a lost dispatch never repeats publishing."""
-    with store.tx() as c:
-        current = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?",
-                                       (job["job_id"],)).fetchone()[0])
-        if current.get("review_state"):
-            return
-        current["review_state"] = "DISPATCHED"
-        c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(current), job["job_id"]))
-    log = directory(job["job_id"]) / "review.log"
-    with log.open("ab") as f:
-        subprocess.Popen([sys.executable, "-m", "forge_factory.afo.local_agent", "review", "--job", job["job_id"]],
-                         cwd=REPO_ROOT / "factory/python", env={**os.environ, "PYTHONPATH": str(REPO_ROOT / "factory/python")},
-                         stdin=subprocess.DEVNULL, stdout=f, stderr=f, start_new_session=True)
+    from .verification_job import VerificationJobs
+    queue = VerificationJobs(store)
+    queue.ensure(job['job_id'], job['case_sha256'])
+    def spawn(epoch):
+        log = directory(job['job_id']) / 'review.log'
+        log.parent.mkdir(parents=True, exist_ok=True)
+        with log.open('ab') as f:
+            subprocess.Popen([sys.executable, '-m', 'forge_factory.afo.local_agent', 'review',
+                              '--job', job['job_id'], '--epoch', str(epoch)],
+                cwd=REPO_ROOT / 'factory/python', env={**os.environ, 'PYTHONPATH': str(REPO_ROOT / 'factory/python')},
+                stdin=subprocess.DEVNULL, stdout=f, stderr=f, start_new_session=True)
+    epoch = queue.dispatch(job['job_id'], spawn)
+    if epoch is not None:
+        with store.tx() as c:
+            current = json.loads(c.execute('SELECT record FROM afo_local_agent_jobs WHERE job_id=?', (job['job_id'],)).fetchone()[0])
+            current['review_state'] = 'DISPATCHED'  # compatibility projection; verification_jobs is authoritative
+            c.execute('UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?', (json.dumps(current), job['job_id']))
 
 
 def review(store, job: dict, eff) -> dict:
@@ -377,26 +426,41 @@ def review(store, job: dict, eff) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["record-output", "review"])
+    ap.add_argument("command", choices=["record-output", "review", "semantic"])
     ap.add_argument("--job", required=True)
+    ap.add_argument("--epoch", type=int)
     args = ap.parse_args(argv)
+    if args.command == 'semantic':
+        from .durable_agent import generate
+        from .policy import load
+        from .queue import Store
+        store = Store()
+        with store.tx() as c:
+            job = json.loads(c.execute('SELECT record FROM afo_local_agent_jobs WHERE job_id=?', (args.job,)).fetchone()[0])
+        receipt = generate(store, job, load())
+        print(json.dumps({'receipt_id': receipt['receipt_id'], 'submission_state': receipt['submission_state']}))
+        return 0 if receipt['submission_state'] == 'STORED' else 2
     if args.command == "review":
         from .policy import load
         from .queue import Store
 
         store = Store()
+        from .verification_job import VerificationJobs
+        queue = VerificationJobs(store)
+        queue.claim(args.job, args.epoch)
         with store.tx() as c:
-            job = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (args.job,)).fetchone()[0])
-            if job.get("review_state") != "DISPATCHED":
-                return 2
-            job["review_state"] = "RUNNING"
-            c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(job), args.job))
+            job = json.loads(c.execute('SELECT record FROM afo_local_agent_jobs WHERE job_id=?', (args.job,)).fetchone()[0])
         try:
             result = review(store, job, load())
             job["review_state"] = result["status"]
         except Exception as exc:  # noqa: BLE001 - preserve failures, never turn an evaluator failure into eligibility
             job["review_state"], job["review_error"] = "BLOCKED", type(exc).__name__
-        save(store, job)
+        queue.finish(args.job, args.epoch, {'status': job['review_state'], 'error': job.get('review_error')})
+        # Do not overwrite concurrent native/cancellation observations with the worker's stale job snapshot.
+        with store.tx() as c:
+            current = json.loads(c.execute('SELECT record FROM afo_local_agent_jobs WHERE job_id=?', (args.job,)).fetchone()[0])
+        current.update({k: job[k] for k in ('review_state', 'review_error') if k in job})
+        save(store, current)
         return 0 if job["review_state"] == "PUBLISHED" else 2
     from ..contracts.agent_output import parse
 

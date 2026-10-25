@@ -50,7 +50,7 @@ def role_tools() -> dict[str, set[str]]:
         from .registry.mcp_registry import fabro_tool_name
 
         _ROLE_TOOLS = {a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ
-                       | (set() if a.readonly else _NATIVE_WRITE) for a in load_agents()[0]}
+                       | (set() if a.readonly else _NATIVE_WRITE) for a in load_agents(include_afo=True)[0]}
     return _ROLE_TOOLS
 
 
@@ -276,7 +276,16 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                 raise ValueError
         except ValueError:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
+        binding = body.pop('forge_execution', None)
         body = sanitize_request(body)
+        if binding is not None:
+            return await durable_request(request, binding, body, headers)
+        # Legacy calls retain their existing behavior, but cannot bypass a held durable native execution.
+        from .afo.queue import default_path, Store
+        if default_path().exists() or os.environ.get('FORGE_DURABLE_AUTONOMY') == '1':
+            from .afo.request_admission import unbound_allowed
+            if not unbound_allowed(Store()):
+                return JSONResponse({'error': {'type': 'durable_execution_busy_or_unbound'}}, status_code=429)
         if adm is not None:
             return await admitted(request, body, headers)
         if body.get("stream"):
@@ -343,6 +352,41 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if r.status_code != 200 or nshape is None or not dropped(usage, nshape):
                 break
         return JSONResponse(data, status_code=r.status_code)
+
+    async def durable_request(request, binding, body, headers):
+        from .afo import request_admission as durable
+        from .afo.durable import Refused
+        from .afo.queue import Store
+        store = Store()
+        try:
+            rec = durable.reserve(store, binding, body)
+        except (Refused, KeyError, ValueError) as exc:
+            code = exc.code if isinstance(exc, Refused) else 'INVALID_DURABLE_BINDING'
+            meter.refusal(body.get('model'), code)
+            return JSONResponse({'error': {'type': code}}, status_code=429)
+        # No transparent retry: each new generation needs its own durable reservation.
+        usage, completed = None, False
+        ticket = None
+        try:
+            if adm is not None:
+                ticket = await adm.enter(request.is_disconnected)
+                if ticket.refused:
+                    return JSONResponse({'error': {'type': 'admission_' + ticket.refused}}, status_code=429)
+            status, payload, usage, stripped, shape, timing = await _timed(body, headers, bool(body.get('stream')))
+            # A complete provider response with a finish reason is generation quiescence; transport close is not.
+            completed = status == 200 and shape.get('finish_reason') is not None
+            meter.record(body.get('model'), usage, stripped, timing.get('total_ms', 0), shape,
+                         {'request_id': rec['request_id'], 'mission_id': rec['mission_id']})
+            if body.get('stream'):
+                async def chunks():
+                    for line in payload:
+                        yield line
+                return StreamingResponse(chunks(), status_code=status, media_type='text/event-stream')
+            return JSONResponse(payload, status_code=status) if isinstance(payload, (dict, list)) else Response(payload, status_code=status)
+        finally:
+            durable.reconcile(store, rec['request_id'], usage, completed=completed)
+            if ticket is not None and not ticket.refused:
+                adm.leave(ticket)
 
     async def admitted(request: Request, body: dict, headers: dict | None):
         """Feature 010 (LRTX-FR-006/FR-007): one request at a time, bounded waiting, cancellation, separate timings.

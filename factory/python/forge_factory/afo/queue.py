@@ -121,6 +121,11 @@ def order_id_for(tenant: str, request_id: str) -> str:
 class Store:
     def __init__(self, path: Path | None = None, producer: str = "afo-conductor"):
         self.path = Path(path or default_path())
+        import os
+        if os.environ.get('FORGE_DURABLE_AUTONOMY') == '1':
+            from .host import preflight
+            if not preflight()['ok']:
+                raise QueueError('DURABLE_DATA_VOLUME_NOT_READY')
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.producer = producer
         with self.tx() as c:

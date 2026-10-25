@@ -55,7 +55,15 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     r = check(a.max_age)
     if not r["ok"]:
+        from .operations import configured
+        from .host import preflight
+        if configured() and not preflight()['ok']:
+            # Surviving independent layer reports via journal/stdout, without data-root fallback writes.
+            print(json.dumps({**r,'recovery':'WAITING_FOR_AUTHORITATIVE_VOLUME'}))
+            return 1
         r["alerted"] = alert(r, a.dedup)
+        from .operations import recover
+        r['recovery'] = recover()
     print(json.dumps(r))
     return 0 if r["ok"] else 1
 

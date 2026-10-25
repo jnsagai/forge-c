@@ -29,14 +29,20 @@ class Failed(Exception):
     """Diagnosis itself failed; preserve its reason instead of claiming no different strategy exists."""
 
 
-def case(bundle: dict, workspace: Path, budget: dict) -> Path:
-    d = state_dir() / "afo/cases" / bundle["bundle_id"]
+def case(bundle: dict, workspace: Path, budget: dict, *, mission_id: str | None = None) -> Path:
+    d = state_dir() / "afo/cases" / (bundle["bundle_id"] + ("-da014" if mission_id else ""))
     d.mkdir(parents=True, exist_ok=True)
     req = Path(workspace) / "workproducts/SWE.1/software_requirements.md"
     p = d / "case.json"
     doc = {"bundle": bundle, "workspace": str(workspace),
                              "requirements_sha256": sha256_file(req) if req.is_file() else None,
                              "budget": budget, "allowed_strategies": ALLOWED}
+    if mission_id:
+        from .diagnosis_packet import build
+        from .durable import immutable_json
+        doc.update(mission_id=mission_id, packet_ref=build(workspace, bundle))
+        immutable_json(p, doc)
+        return p
     if not p.exists():
         with p.open("x") as f:
             f.write(json.dumps(doc, sort_keys=True))
@@ -76,11 +82,11 @@ def parse(reply: str, case_dir: Path) -> dict | None:
     return plan
 
 
-def make(invoke):
+def make(invoke, *, freeze=case):
     """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
     def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
         try:
-            p = case(bundle, workspace or Path("."), budget)
+            p = freeze(bundle, workspace or Path("."), budget)
             reply = invoke(p)
         except (Pending, Failed):
             raise

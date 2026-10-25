@@ -87,6 +87,11 @@ def cycle(n: int) -> tuple[str, bool, str]:
         deadletter.sweep(store, runtime.workspace_of, window_s=window)  # AFO M6: one case + one alert per BLOCKED
         alerts.deliver(store)                                          # local fallback always; adapters optional
         store.forward_events()
+        from ..knowledge.store import LessonStore
+        from ..knowledge.experience import capture_afo, consolidate
+        lessons = LessonStore()
+        capture_afo(store, lessons, runtime.workspace_of, limit=32)
+        consolidate(lessons, limit=32)
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 
 
@@ -97,6 +102,9 @@ class Conductor:
     def run(self) -> int:
         from ..supervisor.service import install_model_guard, sd_notify
 
+        from .operations import configured, Intent
+        if configured() and self.max_cycles is not None:
+            raise ValueError('CONTINUOUS_SERVICE_CANNOT_HAVE_FINITE_CYCLE_LIMIT')
         install_model_guard()
         signal.signal(signal.SIGTERM, lambda *_: setattr(self, "stop", True))
         signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
@@ -104,6 +112,8 @@ class Conductor:
         ready = False
         while not self.stop and (self.max_cycles is None or n < self.max_cycles):
             try:
+                if configured() and Intent().read()['mode'] == 'STOPPED':
+                    break
                 mode, ok, detail = cycle(n)
             except Exception as exc:  # noqa: BLE001 - a failed cycle sends no watchdog ping; systemd decides
                 write_heartbeat(n, "UNKNOWN", False, f"{type(exc).__name__}: {exc}")

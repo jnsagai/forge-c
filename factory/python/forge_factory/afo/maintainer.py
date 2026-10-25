@@ -419,11 +419,26 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
         body = (f"AFO Factory Maintainer proposal {pid} (candidate {rec['candidate_commit'][:12]}).\n\n"
                 f"CAPA: {rec['capa_id']}; reproducer: {rec['reproducer_id']}; CRE decision: {rec['cre_promotion_id']} "
                 "(ELIGIBLE_FOR_OFFLINE_REVIEW).\nOffline human review only: no automatic merge or deployment.")
-        p = call(["gh", "pr", "create", "--draft", "--base", base_branch, "--head", branch,
+        existing = call(['gh', 'pr', 'list', '--head', branch, '--base', base_branch,
+                         '--state', 'all', '--json', 'url,isDraft,headRefOid'])
+        try:
+            matches = json.loads(existing.stdout) if existing.returncode == 0 else None
+        except (ValueError, AttributeError):
+            matches = None
+        if matches is None:
+            raise MaintainerDenied('PR_RECONCILIATION_UNKNOWN', branch)
+        if matches:
+            if len(matches) != 1 or matches[0].get('isDraft') is not True or matches[0].get('headRefOid') != rec['candidate_commit']:
+                raise MaintainerDenied('PR_RECONCILIATION_CONFLICT', branch)
+            pr_url = matches[0]['url']
+        else:
+            pr_url = None
+        p = None if pr_url else call(["gh", "pr", "create", "--draft", "--base", base_branch, "--head", branch,
                   "--title", f"AFO proposal {pid}: {rec['capa_id']}", "--body", body])
-        if getattr(p, "returncode", 1):
+        if p is not None and getattr(p, "returncode", 1):
             raise MaintainerDenied("PR_FAILED", str(getattr(p, "stderr", ""))[-120:])
-        pr_url = str(p.stdout).strip().splitlines()[-1]
+        if p is not None:
+            pr_url = str(p.stdout).strip().splitlines()[-1]
     sub = json.loads((case_dir(pid) / "submission.json").read_text())
     return record(store, case, sub, "ELIGIBLE_FOR_OFFLINE_REVIEW", "PUBLISHED", capa_id=rec["capa_id"],
                   promotion_id=rec["cre_promotion_id"], tests_ref=rec["tests_ref"], branch=branch, pr_url=pr_url,

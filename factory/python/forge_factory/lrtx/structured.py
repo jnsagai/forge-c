@@ -45,7 +45,12 @@ def skill(role: str) -> dict:
     """The role's versioned SKILL.md (the same file the Fabro agent nodes load), identified by its hash. A structured
     task receives the role's mission, work instruction and authoritative-input rules; the tool procedure and the
     agent exit format do not apply (the factory runner validates and writes, the answer follows the task schema)."""
-    p = REPO_ROOT / ".fabro/skills" / role / "SKILL.md"
+    if role.startswith('afo-'):
+        from ..registry.agents import load_agents
+        agent = next(a for a in load_agents(include_afo=True)[0] if a.id == role)
+        p = REPO_ROOT / agent.skill
+    else:
+        p = REPO_ROOT / ".fabro/skills" / role / "SKILL.md"
     raw = p.read_text(encoding="utf-8")
     import re
 

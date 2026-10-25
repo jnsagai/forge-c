@@ -45,6 +45,10 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     env = json.loads(order["envelope"])
     if not p.get("mount", lambda: host.preflight()["ok"])():
         issues.append("DATA_VOLUME_NOT_READY")
+    from .housekeeping import capacity
+    from ..common import data_root
+    if not p.get('capacity', lambda: capacity(data_root())['ok'])():
+        issues.append('CONTROL_PLANE_STORAGE_RESERVE_LOW')
     fabro_url = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/")
     if not p.get("fabro", lambda: _healthy(fabro_url.rsplit("/api", 1)[0] + "/health"))():
         issues.append("FABRO_UNAVAILABLE")
@@ -92,6 +96,9 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
         if expired:
             out["expired_waiting"] = expired
     # WAITING_EXTERNAL_CHANGE holds no capacity (not an ACTIVE state): unrelated approved orders keep being scheduled
+    from .operations import configured, Intent
+    if configured() and Intent().read()['mode'] != 'RUNNING':
+        return {**out, 'action': 'operations_wait'}
     cand = store.next_candidate(float(eff.get("queue.priority_aging_seconds", 3600)), now=now)
     if cand is None:
         return {**out, "action": "idle", "epoch": epoch}
@@ -105,6 +112,7 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
         return rec
     d = authority.decide("launch_workorder", request, afo=eff)
     if not d.allow:
+        store.defer(cand['order_id'], 'AUTHORITY:' + d.code, now=now)
         rec = {**out, "action": "refused", "code": d.code}
         record(rec)
         return rec

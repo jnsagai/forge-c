@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.afo.cli")
     ap.add_argument("cmd", choices=["submit", "status", "list", "pause", "drain", "resume", "backup",
                                     "external-change", "maintainer-process", "maintainer-publish", "operator-token",
-                                    "dead-letter-ack", "dead-letter-close"])
+                                    "dead-letter-ack", "dead-letter-close", "shutdown"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--state")
     ap.add_argument("--reason", default="")
@@ -70,6 +70,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if a.cmd in ("status", "list"):
         orders = store.orders((a.state,) if a.state else None)
+        from .continuous_metrics import status as continuous_status
+        if a.cmd == 'status':
+            print(json.dumps(continuous_status(store), indent=1))
         print(json.dumps({"mode": load().mode, "control": store.control(),
                           "orders": [{k: o[k] for k in ("order_id", "request_id", "state", "priority", "defer_count")}
                                      for o in orders] if a.cmd == "list" else
@@ -124,6 +127,12 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(json.dumps({"case_id": a.arg, "state": "ACKNOWLEDGED" if a.cmd.endswith("ack") else "CLOSED"}))
         return 0
+    from .operations import configured, synchronize
+    if a.cmd in ('pause', 'drain', 'resume', 'shutdown') and configured():
+        print(json.dumps({'operations': synchronize(store, a.cmd, actor, a.reason), 'control': store.control()}))
+        return 0
+    if a.cmd == 'shutdown':
+        raise SystemExit('durable operations intent must be configured for shutdown')
     if a.cmd == "pause":
         store.set_control("paused", "1", actor, a.reason)
     elif a.cmd == "drain":

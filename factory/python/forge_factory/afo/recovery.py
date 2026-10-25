@@ -24,7 +24,7 @@ import json
 import re
 import time
 
-from ..common import canonical_json, utc_now
+from ..common import canonical_json, sha256_bytes, utc_now
 from . import contracts
 from .queue import QueueError, Store
 
@@ -97,7 +97,7 @@ def _base(bundle: dict, strategy: str, phase: str, rationale: str, **kw) -> dict
          "material_difference_ref": kw.pop("material_difference_ref", f"strategy:{strategy}"),
          "artifact_scope": kw.pop("artifact_scope", []), "validation_tests": [f"gate:{phase}:route=PASS"],
          "budget_estimate": dict(ATTEMPT_ESTIMATE), "rationale_code": rationale, **kw}
-    p["plan_id"] = "afo-plan-" + plan_fingerprint(p)[:16]
+    p["plan_id"] = "afo-plan-" + sha256_bytes(canonical_json([bundle['order_id'], bundle['attempt_id'], plan_fingerprint(p)]))[:16]
     return p
 
 
