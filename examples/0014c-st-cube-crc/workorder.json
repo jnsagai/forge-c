@@ -14,9 +14,9 @@
  },
  "scope": [
   "LL (header-only, __STATIC_INLINE functions) as delivered by ST: register access through the CMSIS device structure CRC (stm32n6xx.h)",
-  "Reset the calculation unit (CRC_CR.RESET); set the polynomial size (CRC_CR.POLYSIZE), the input and output reversal (CRC_CR.REV_IN, CRC_CR.REV_OUT), the initial value (CRC_INIT) and the polynomial coefficients (CRC_POL)",
+  "Reset the calculation unit (CRC_CR.RESET); set the polynomial size (CRC_CR.POLYSIZE), the input reversal mode (CRC_CR.REV_IN with its reversal type CRC_CR.RTYPE_IN) and the output reversal mode (CRC_CR.REV_OUT with its reversal type CRC_CR.RTYPE_OUT), the initial value (CRC_INIT) and the polynomial coefficients (CRC_POL)",
   "Feed a 32-bit data word and read the current CRC (CRC_DR); write and read the independent data register (CRC_IDR)",
-  "Out of scope: HAL API, 8-bit and 16-bit data register accesses, reversal type selection (CRC_CR.RTYPE_IN, CRC_CR.RTYPE_OUT), DMA, the LL init/deinit functions of stm32n6xx_ll_crc.c"
+  "Out of scope: HAL API, 8-bit and 16-bit data register accesses, DMA, the LL init/deinit functions of stm32n6xx_ll_crc.c"
  ],
  "system_names": [
   "CRC LL driver",

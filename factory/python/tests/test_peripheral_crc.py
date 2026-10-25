@@ -92,3 +92,18 @@ def test_the_st_crc_work_order_delivers_the_frozen_st_ll_header(tmp_path, monkey
     assert spec["delivery"]["code_mode"] == "FROZEN" and spec["peripheral"] == "crc"
     _ws, man = WO.prepare(EX, "WO-CRC-ST-1")
     assert man["peripheral"] == "crc" and len(man["peripheral_profile_sha256"]) == 64
+
+
+def test_the_crc_model_reproduces_the_rm0486_reversal_examples():
+    """RM0486 26.3.3: output 0x11223344 -> 0x22CC4488 (bit level), 0x33441122 / 0x44332211 (RTYPE_OUT, half-word /
+    byte reversal by word); input 0x1A2B3C4D -> 0x3C4D1A2B / 0x4D3C2B1A with RTYPE_IN. ST's reversal modes set the
+    reversal field and its type bit together (run WO-BENCH-CRC-ST-r1 blocked on a scope that kept them apart)."""
+    m = _model()
+    m("write", 0x010, 0x11223344)
+    for cr, want in ((0x080, 0x22CC4488), (0x400 | 0x080, 0x33441122), (0x400 | 0x100, 0x44332211)):
+        m("write", 0x008, cr)
+        assert m("read", 0x000) == want, hex(cr)
+    ns = {}
+    exec(compile(MODEL.read_text().split("if request.IsInit:")[0], str(MODEL), "exec"), ns)  # noqa: S102
+    assert ns["_rev_in"](0x1A2B3C4D, 1, 1) == 0x3C4D1A2B and ns["_rev_in"](0x1A2B3C4D, 2, 1) == 0x4D3C2B1A
+    assert ns["_rev_in"](0x1A2B3C4D, 1, 0) == 0x58D43CB2 and ns["_rev_in"](0x1A2B3C4D, 3, 0) == 0xB23CD458

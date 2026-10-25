@@ -31,15 +31,16 @@ sim:
 prompt:
   swe1_cover: >-
     Cover (only what the CRC scope names): resetting the calculation unit (set CRC_CR.RESET), setting the polynomial
-    size (write the requested value to CRC_CR.POLYSIZE, within its 2-bit range), the input reversal (write the requested
-    value to CRC_CR.REV_IN, within its 2-bit range) and the output reversal (write the requested value to CRC_CR.REV_OUT,
-    within its 2-bit range), each preserving the other CRC_CR fields, writing the initial value (write the requested
+    size (write the requested value to CRC_CR.POLYSIZE, within its 2-bit range), the input reversal mode (write the
+    requested reversal to CRC_CR.REV_IN and its reversal type to CRC_CR.RTYPE_IN: one mode value sets both, RM0486
+    26.4.3) and the output reversal mode (CRC_CR.REV_OUT with its type CRC_CR.RTYPE_OUT, likewise), each preserving the
+    other CRC_CR fields, writing the initial value (write the requested
     value to CRC_INIT.INIT) and the polynomial coefficients (write the requested value to CRC_POL.POL), feeding a 32-bit
     data word (write the word to CRC_DR.DR), reading the current CRC (return CRC_DR.DR), and writing and reading the
     independent data register (CRC_IDR.IDR); one requirement per function and value, naming the register field (e.g.
     CRC_CR.POLYSIZE); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after
-    reset, the CRC LL driver shall not write any CRC register.'). 8-bit and 16-bit data register accesses, the reversal
-    type selection (CRC_CR.RTYPE_IN, CRC_CR.RTYPE_OUT) and DMA are out of scope.
+    reset, the CRC LL driver shall not write any CRC register.'). 8-bit and 16-bit data register accesses and DMA are out
+    of scope.
   swe1_effect_example: '{"case":"SET_POLYSIZE","swr":"SWR-002","register":"CRC_CR","field":"POLYSIZE","op":"write","value":1}'
   swe1_effect_rule: >-
     Use op "write" with "value" (an integer or "0x..." string) for a field the requirement writes a value to (polynomial
@@ -49,8 +50,9 @@ prompt:
   ll_api: >-
     static inline functions named exactly LL_CRC_ResetCRCCalculationUnit (set CRC_CR.RESET),
     LL_CRC_SetPolynomialSize(uint32_t PolySize), LL_CRC_SetInputDataReverseMode(uint32_t ReverseMode) and
-    LL_CRC_SetOutputDataReverseMode(uint32_t ReverseMode) (read-modify-write of their CRC_CR field, the value masked to
-    the field, the other CRC_CR fields preserved), LL_CRC_SetInitialData(uint32_t InitCrc) and
+    LL_CRC_SetOutputDataReverseMode(uint32_t ReverseMode) (read-modify-write of CRC_CR: the polynomial size field, or
+    the reversal field together with its reversal type bit - REV_IN with RTYPE_IN, REV_OUT with RTYPE_OUT - masked, the
+    other CRC_CR fields preserved), LL_CRC_SetInitialData(uint32_t InitCrc) and
     LL_CRC_SetPolynomialCoef(uint32_t PolynomCoef) (whole-register writes of CRC_INIT and CRC_POL),
     LL_CRC_FeedData32(uint32_t InData) (a 32-bit write of CRC_DR), uint32_t LL_CRC_ReadData32(void) (returns CRC_DR),
     LL_CRC_Write_IDR(uint32_t InData) and uint32_t LL_CRC_Read_IDR(void); list in Interfaces exactly the functions of
@@ -76,14 +78,14 @@ prompt:
         CHECK("UT-004", LL_CRC_ReadData32() == 0xDF8A8A2BU);
     }
   ut_rule: >-
-    Value functions check the written field value and that a preset unrelated field of the same register is preserved
-    (CRC_CR); write functions of whole registers check the register value; read functions return a preset register
+    Value functions check the written field value (a reversal mode: the reversal field and its reversal type bit) and
+    that a preset unrelated field of the same register is preserved (CRC_CR); write functions of whole registers check the register value; read functions return a preset register
     value; the reset function checks CRC_CR.RESET.
   target_model: >-
     The simulated CRC (factory/sim/stm32n6/crc_model.py) is behavioural: CRC_DR and CRC_INIT reset to 0xFFFFFFFF,
     CRC_POL to 0x04C11DB7 and the others to 0; a 32-bit write to CRC_DR combines the word with the current CRC
-    (polynomial CRC_POL of size CRC_CR.POLYSIZE, input reversal CRC_CR.REV_IN) and a read of CRC_DR returns the CRC
-    (bit-reversed when CRC_CR.REV_OUT is 1); setting CRC_CR.RESET or writing CRC_INIT loads CRC_INIT into the CRC and
+    (polynomial CRC_POL of size CRC_CR.POLYSIZE, input reversal CRC_CR.REV_IN of type CRC_CR.RTYPE_IN) and a read of
+    CRC_DR returns the CRC after the output reversal CRC_CR.REV_OUT of type CRC_CR.RTYPE_OUT (RM0486 26.3.3 examples); setting CRC_CR.RESET or writing CRC_INIT loads CRC_INIT into the CRC and
     CRC_CR.RESET reads 0; CRC_IDR is storage. With the reset configuration the CRC of the single word 0x12345678 reads
     0xDF8A8A2B. Expected values in target checks follow this model.
   target_tests: >-
@@ -107,7 +109,7 @@ prompt:
   hal_failure_responses: >-
     one requirement per failure response (invalid parameter -> HAL_ERROR without register writes, naming the invalid
     values: a NULL configuration, buffer or result pointer, a word count of 0, a polynomial size, input reversal or output
-    reversal value above 3, and an even polynomial, which RM0486 26.3.3 does not support), and one timing requirement:
+    reversal value outside its field and reversal type, and an even polynomial, which RM0486 26.3.3 does not support), and one timing requirement:
     every HAL_CRC_ function returns without waiting on a CRC flag (the computation of a fed word completes within 4 AHB
     clock cycles, RM0486 26.3.3)
   hal_api: >-

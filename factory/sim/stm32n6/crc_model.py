@@ -1,11 +1,13 @@
 # ruff: noqa: F821 - Renode injects `request` into Python peripheral scripts
 # Behavioural CRC model (RM0486 rev 4 chapter 26, feature 015): a 32-bit write to CRC_DR (0x000) combines the word with
 # the current CRC (MSB first, polynomial CRC_POL 0x014 of size CRC_CR.POLYSIZE bits 4:3 = 32/16/8/7 bits), after the
-# input reversal CRC_CR.REV_IN (bits 6:5: none, bit reversal by byte, by half-word, by word; RTYPE_IN = 0); a read of
-# CRC_DR returns the CRC, bit-reversed when CRC_CR.REV_OUT (bits 8:7) is 01 (RTYPE_OUT = 0). CRC_CR.RESET (bit 0) loads
+# input reversal CRC_CR.REV_IN (bits 6:5) of type CRC_CR.RTYPE_IN (bit 9): bit level (none, by byte, by half-word, by
+# word) or, with RTYPE_IN, half-word (01) or byte (10) reversal by word; a read of CRC_DR returns the CRC after the
+# output reversal CRC_CR.REV_OUT (bits 8:7) of type CRC_CR.RTYPE_OUT (bit 10): bit-reversed for 01, or with RTYPE_OUT
+# half-word (01) or byte (10) reversal by word (RM0486 26.3.3 examples). CRC_CR.RESET (bit 0) loads
 # CRC_INIT (0x010) into the CRC and reads 0; a write to CRC_INIT also loads it. CRC_IDR (0x004) is storage, untouched by
-# RESET. Reset values: CRC_DR and CRC_INIT 0xFFFFFFFF, CRC_POL 0x04C11DB7, CRC_CR and CRC_IDR 0. 8/16-bit data writes,
-# RTYPE_IN/RTYPE_OUT and DMA are out of the work orders' scope and not modelled.
+# RESET. Reset values: CRC_DR and CRC_INIT 0xFFFFFFFF, CRC_POL 0x04C11DB7, CRC_CR and CRC_IDR 0. 8/16-bit data writes
+# and DMA are out of the work orders' scope and not modelled.
 SCENARIO = "default"
 
 
@@ -17,7 +19,17 @@ def _rev(v, bits):
     return r
 
 
-def _rev_in(v, mode):
+def _swap(v, mode):
+    if mode == 1:  # half-word reversal done by word
+        return ((v << 16) | (v >> 16)) & 0xFFFFFFFF
+    if mode == 2:  # byte reversal done by word
+        return int.from_bytes(v.to_bytes(4, "little"), "big")
+    return v
+
+
+def _rev_in(v, mode, rtype):
+    if rtype:
+        return _swap(v, mode)
     if mode == 1:
         return sum(_rev((v >> s) & 0xFF, 8) << s for s in (0, 8, 16, 24))
     if mode == 2:
@@ -37,7 +49,8 @@ if request.IsInit:
 elif request.IsRead:
     off = request.Offset
     if off == 0x000:
-        request.Value = _rev(crc, 32) if ((regs[0x008] >> 7) & 0x3) == 1 else crc
+        mode, rtype = (regs[0x008] >> 7) & 0x3, (regs[0x008] >> 10) & 0x1
+        request.Value = _swap(crc, mode) if rtype else (_rev(crc, 32) if mode == 1 else crc)
     elif off == 0x008:
         request.Value = regs[0x008] & 0x7FE
     else:
@@ -48,7 +61,7 @@ elif request.IsWrite:
     if off == 0x000:
         n = _width(regs[0x008])
         mask = (1 << n) - 1
-        data = _rev_in(v, (regs[0x008] >> 5) & 0x3)
+        data = _rev_in(v, (regs[0x008] >> 5) & 0x3, (regs[0x008] >> 9) & 0x1)
         c = crc & mask
         for i in range(31, -1, -1):
             bit = ((data >> i) & 1) ^ ((c >> (n - 1)) & 1)
