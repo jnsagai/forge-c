@@ -29,9 +29,17 @@ def fabro_view(limit: int = 200):
 # want it running with codex and claude as inspector, forget about deepseek now": the production line only - Codex
 # authors and Claude inspectors through the forge ACP proxy (OD-2026-10-19-06/08). DeepSeek stays suspended
 # (model-suspensions.yaml): "deepseek-flash" is only Fabro's nominal run model, every agent node runs on ACP and the
-# cloud gateway refuses the suspended provider before any network call (CAPA-051/052).
+# cloud gateway refuses the suspended provider before any network call (CAPA-051/052). `model_gateway`: the model
+# gateway the profile's agent nodes need (None: none - every agent node runs on ACP, so admission does not depend on
+# the DeepSeek gateway; owner 2026-10-25 "a codex - claude based AFO, without deepseek").
 PROFILES = {"codex-claude": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": "codex",
-                             "acp_inspectors": "claude"}}
+                             "acp_inspectors": "claude", "model_gateway": None}}
+CLOUD_GATEWAY = "http://127.0.0.1:11437"
+
+
+def model_gateway(profile: str) -> str | None:
+    """The gateway an order's model profile needs (the cloud gateway for a profile this module does not define)."""
+    return PROFILES[profile].get("model_gateway", CLOUD_GATEWAY) if profile in PROFILES else CLOUD_GATEWAY
 
 
 def _brownfield(example: Path) -> bool:

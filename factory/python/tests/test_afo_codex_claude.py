@@ -49,3 +49,28 @@ def test_benchmark_envelopes_pass_the_intake_schema_and_the_authorization_scope(
         assert e["driver_class"] in rec["scope"]["driver_classes"] and e["model_profile"] in rec["scope"]["models"]
         m = json.loads((afo_orders.REPO_ROOT / e["input_manifest_ref"]).read_text())
         assert m["model_profile"] == "codex-claude" and (afo_orders.REPO_ROOT / m["example"] / "workorder.json").is_file()
+
+
+def test_an_all_acp_profile_is_admitted_without_the_deepseek_gateway():
+    """Owner 2026-10-25: "a codex - claude based AFO, without deepseek". The codex-claude profile routes no agent node
+    through a model gateway, so admission does not probe the cloud (DeepSeek) gateway; a profile this module does not
+    define keeps the gateway check."""
+    from forge_factory.afo import scheduler
+
+    class Eff:
+        def get(self, k, d=None):
+            return {"engineering.allowed_model_profiles": ["codex-claude", "other"],
+                    "budgets.max_order_attempts": 3}.get(k, d)
+
+    class Store:
+        def attempts(self, oid):
+            return []
+
+    probed = []
+    probes = {"mount": lambda: True, "fabro": lambda: True, "mcp": lambda: True,
+              "gateway": lambda: probed.append(1) or False}
+    order = {"order_id": "afo-x", "envelope": json.dumps({"model_profile": "codex-claude"})}
+    assert scheduler.preflight(order, Eff(), Store(), probes) == [] and probed == []
+    assert runtime.model_gateway("codex-claude") is None and runtime.model_gateway("other") == runtime.CLOUD_GATEWAY
+    other = {"order_id": "afo-y", "envelope": json.dumps({"model_profile": "other"})}
+    assert scheduler.preflight(other, Eff(), Store(), probes) == ["MODEL_GATEWAY_UNAVAILABLE"] and probed == [1]
