@@ -28,3 +28,17 @@ dispositions:
     approved_by: Jefferson Nascimento
     approved_at: '2026-10-20'
     reference: "owner answer 2026-10-20 to the agent's question on the 5 GL-ARG-01 findings of b008: 'Disposition them (Recommended)'"
+  - id: OD-2026-10-25-01
+    examples: [0010c-st-cube-gpio, 0011c-st-cube-spi, 0012c-st-cube-usart, 0013c-st-cube-tim, 0014c-st-cube-crc]
+    # feature 015 benchmark: DELIVERED-CODE findings (FROZEN vendor code) of GL-ARG-01 on ST's five LL headers
+    delivered_finding_regex: '^GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_(crc|spi|usart|gpio|tim)\.h:\d+$'
+    disposition: ACCEPTED_VENDOR_NAMING_STYLE
+    limitation: >-
+      ST's delivered LL headers (STM32CubeN6 stm32n6xx-hal-driver v1.4.0: stm32n6xx_ll_crc.h, _spi.h, _usart.h,
+      _gpio.h, _tim.h) name the parameters of the in-scope functions in the vendor's LL style (CRCx, SPIx, USARTx,
+      GPIOx, TIMx, Mode, ...); GL-ARG-01 of the factory's Cube2 HAL guideline subset (parameters in lower case) is not
+      the vendor's LL naming convention. The owner accepts these findings as a naming-style deviation of the delivered
+      code, not a defect; the code is unchanged (FROZEN). Same class as OD-2026-10-20-07.
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    reference: "owner answer 2026-10-25 to the agent's question on the 32 GL-ARG-01 findings of the CRC and SPI benchmark packages: 'All 5 LL headers (Recommended)'"
