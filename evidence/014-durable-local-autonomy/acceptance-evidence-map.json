@@ -1,9 +1,9 @@
 {
   "scope": "REQUIREMENT_TO_OBSERVED_FIXTURE_EVIDENCE_NOT_NATIVE_QUALIFICATION",
-  "runtime_source_revision": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
+  "runtime_source_revision": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
   "junit": {
-    "path": "evidence/v0.4/runs/DA014-core/20261025T125927.xml",
-    "sha256": "0170385133e1b893d5c3a039909893f761a7a85610099c23b11b60021ad4ba34"
+    "path": "evidence/v0.4/runs/DA014-core/20261025T132511.xml",
+    "sha256": "08ed62212ab907f75da8af3492bf8c5116b8bece737562c6c9d3ca77ecd2b19e"
   },
   "rows": [
     {
@@ -872,6 +872,10 @@
       "claimed_status": "PASS_DETERMINISTIC",
       "supporting_fixture_cases": [
         {
+          "node": "factory.python.tests.test_da014_learning::test_late_holdout_classification_retracts_older_source_without_erasing_facts",
+          "result": "PASS"
+        },
+        {
           "node": "factory.python.tests.test_da014_learning::test_ordinary_lesson_requires_independent_source_and_actual_scope",
           "result": "PASS"
         },
@@ -1436,6 +1440,10 @@
       "claimed_status": "PASS_DETERMINISTIC",
       "supporting_fixture_cases": [
         {
+          "node": "factory.python.tests.test_da014_learning::test_afo_and_qualification_job_capture_preserve_evaluation_scope",
+          "result": "PASS"
+        },
+        {
           "node": "factory.python.tests.test_da014_learning::test_detached_failed_job_capture_survives_absent_package_and_keeps_unknown",
           "result": "PASS"
         },
@@ -1500,6 +1508,10 @@
       "required_level": "real-native",
       "claimed_status": "IMPLEMENTED_FIXTURE_TESTED_LIVE_NOT_RUN",
       "supporting_fixture_cases": [
+        {
+          "node": "factory.python.tests.test_da014_learning::test_late_holdout_classification_retracts_older_source_without_erasing_facts",
+          "result": "PASS"
+        },
         {
           "node": "factory.python.tests.test_da014_learning::test_ordinary_lesson_requires_independent_source_and_actual_scope",
           "result": "PASS"
@@ -1571,6 +1583,10 @@
       "claimed_status": "PASS_DETERMINISTIC",
       "supporting_fixture_cases": [
         {
+          "node": "factory.python.tests.test_da014_learning::test_holdout_classification_between_selection_and_delivery_fences_exposure",
+          "result": "PASS"
+        },
+        {
           "node": "factory.python.tests.test_da014_learning::test_retraction_between_selection_and_delivery_fences_exposure",
           "result": "PASS"
         },
@@ -1589,6 +1605,10 @@
       "required_level": "deterministic",
       "claimed_status": "PASS_DETERMINISTIC",
       "supporting_fixture_cases": [
+        {
+          "node": "factory.python.tests.test_da014_learning::test_late_holdout_classification_excludes_old_facts_from_improvement_routing",
+          "result": "PASS"
+        },
         {
           "node": "factory.python.tests.test_da014_learning::test_recurring_facts_link_existing_capa_reproducer_without_fabricating_incident",
           "result": "PASS"

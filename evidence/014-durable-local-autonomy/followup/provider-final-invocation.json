@@ -1,7 +1,7 @@
 {
-  "git_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
+  "git_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
   "start_dirty": "",
-  "started_at": "2026-10-25T12:55:42.234623+00:00",
+  "started_at": "2026-10-25T13:19:41.169174+00:00",
   "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
   "umask": "0022",
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
@@ -47,12 +47,12 @@
         "factory/python/tests/test_brownfield_resume.py",
         "factory/python/tests/test_bubblewrap_confinement.py",
         "factory/python/tests/test_cre_d7_isolation.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-17e6cbd-core",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-17e6cbd-core.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-794e8d0-core",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-794e8d0-core.xml"
       ],
-      "started_at": "2026-10-25T12:55:42.234690+00:00",
+      "started_at": "2026-10-25T13:19:41.169304+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-25T12:58:46.712310+00:00"
+      "ended_at": "2026-10-25T13:22:42.432782+00:00"
     },
     {
       "label": "release",
@@ -62,14 +62,14 @@
         "pytest",
         "-q",
         "factory/python/tests/test_m7_governance_release.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-17e6cbd-release",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-17e6cbd-release.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-794e8d0-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-794e8d0-release.xml"
       ],
-      "started_at": "2026-10-25T12:58:46.784569+00:00",
+      "started_at": "2026-10-25T13:22:42.489154+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-25T12:59:02.391005+00:00"
+      "ended_at": "2026-10-25T13:22:53.831428+00:00"
     }
   ],
   "end_dirty": "",
-  "end_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351"
+  "end_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08"
 }

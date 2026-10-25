@@ -1,5 +1,5 @@
 {
-  "manifest_sha256": "bf488b025263e34607d1e569fca957616da1855d20e1087920f218d7203bf1b1",
+  "manifest_sha256": "9caa85fdd6119085aabe879c5158fca0b6f7a4965fed431aa20427dc9c55fe3b",
   "status": "BLOCKED",
   "blockers": [
     "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED",

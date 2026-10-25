@@ -1,6 +1,6 @@
 # Feature 014 implementation evidence
 
-Exact runtime source: `17e6cbde02bbe87ca21bce27a9a0728b80ccc351`.
+Exact runtime source: `794e8d0e5b26fd24276ad1331f0ed90a7ecafe08`.
 
 - `implementation-status.json` and `specs/014-durable-local-autonomy/implementation-status.csv` reconcile all 52 requirements/tasks/acceptance cases. Required native/live evidence remains NOT_RUN; unchecked tasks may have completed implementation/fixture subwork.
 - `baseline/` contains the redacted read-only native inventory, historical source hashes and offline migration/accounting result. No private SQLite dump, vendor input text, credentials, raw prompts or hidden reasoning is published.

@@ -1,0 +1,84 @@
+{
+  "before_documentation_head": "5352273291eb1c2acaa2a853862d641ce09c492c",
+  "before_pinned_module_control": {
+    "module_imports_pinned_before_pytest_conftest": true,
+    "results": {
+      "errors": 0,
+      "failures": 3,
+      "seconds": 0.847,
+      "skipped": 0,
+      "tests": 3,
+      "timestamp": "2026-10-25T13:15:18.581558+00:00"
+    }
+  },
+  "before_source_runtime": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
+  "delivery_after": {
+    "results": {
+      "errors": 0,
+      "failures": 0,
+      "seconds": 3.792,
+      "skipped": 0,
+      "tests": 30,
+      "timestamp": "2026-10-25T13:18:27.363815+00:00"
+    },
+    "source": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08"
+  },
+  "delivery_before": {
+    "expected_delivery_after_classification": false,
+    "exposures": 1,
+    "observed_delivery_after_classification": true,
+    "scope": "DETERMINISTIC_FIXTURE_NO_MODEL",
+    "source_revision": "bd527ae73367a0618f86acea2f25e8dc2a4d0004"
+  },
+  "full_source_core_record": "evidence/v0.4/runs/DA014-core/latest.json",
+  "intermediate_scope_fixture_failures": [
+    {
+      "name": "provider-learning-scope-second",
+      "reason": "Phase capture fixture lacked upstream frozen workproducts; fixture completed without changing production oracles.",
+      "results": {
+        "errors": 0,
+        "failures": 1,
+        "seconds": 3.928,
+        "skipped": 0,
+        "tests": 28,
+        "timestamp": "2026-10-25T13:11:42.407775+00:00"
+      }
+    },
+    {
+      "name": "provider-learning-scope-third",
+      "reason": "Phase capture fixture lacked upstream frozen workproducts; fixture completed without changing production oracles.",
+      "results": {
+        "errors": 0,
+        "failures": 1,
+        "seconds": 3.344,
+        "skipped": 0,
+        "tests": 29,
+        "timestamp": "2026-10-25T13:13:02.078163+00:00"
+      }
+    }
+  ],
+  "qualification_inference_requests": 0,
+  "scope": "DETERMINISTIC_CONTROLS_NO_QWEN",
+  "scope_after": {
+    "results": {
+      "errors": 0,
+      "failures": 0,
+      "seconds": 3.248,
+      "skipped": 0,
+      "tests": 29,
+      "timestamp": "2026-10-25T13:13:54.898284+00:00"
+    },
+    "source": "bd527ae73367a0618f86acea2f25e8dc2a4d0004"
+  },
+  "unusable_initial_control": {
+    "reason": "Test conftest prepended candidate source; passing output is not an old-source control. Retained privately and replaced with explicitly pinned imports.",
+    "results": {
+      "errors": 0,
+      "failures": 0,
+      "seconds": 1.337,
+      "skipped": 0,
+      "tests": 3,
+      "timestamp": "2026-10-25T13:14:48.278871+00:00"
+    }
+  }
+}
