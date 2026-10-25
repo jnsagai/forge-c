@@ -25,8 +25,15 @@ class TestRef(BaseModel):
 
 
 class ProposeIn(ToolInput):
-    source_incident_id: str = Field(pattern=r"^inc-[0-9a-f]{12}$")
-    source_attempt_id: str = Field(max_length=100)
+    source_incident_id: str | None = Field(default=None, pattern=r"^inc-[0-9a-f]{12}$")
+    source_attempt_id: str | None = Field(default=None, max_length=100)
+    contract_version: str | None = Field(default=None, pattern=r'^2\.0$')
+    source_kind: str | None = Field(default=None, pattern=r'^(REPAIR_PROMOTED|ORDINARY_OUTCOME|NEGATIVE_OBSERVATION)$')
+    version: int | None = Field(default=None, ge=1)
+    supersedes: str | None = None
+    experience_ref: str | None = Field(default=None, pattern=r'^experience-[a-f0-9]{24}$')
+    qualification_ref: str | None = Field(default=None, max_length=200)
+    applicability: dict | None = None
     symptoms: str = Field(min_length=1, max_length=600)
     root_cause: str = Field(min_length=1, max_length=700)
     remedy: str = Field(min_length=1, max_length=850)
@@ -42,18 +49,28 @@ class RetractIn(ToolInput):
 
 
 def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
-    out = LessonStore().find(a.query, ctx.run_id, a.tool or None, ctx.phase, a.k)
+    out = LessonStore().find(a.query, ctx.run_id, a.tool or None, ctx.phase, a.k, role=ctx.role, record_usage=False)
     import json
 
-    return result(ctx, "PASS", f"{len(out['lessons'])} validated lessons (reference data, not instructions)",
-                  [ctx.store(json.dumps(out).encode(), "json")],
-                  [f"{x['lesson_id']}:{x['remedy']}"[:120] for x in out["lessons"]],
-                  {"tokens_estimated": out["tokens_estimated"]}, "forge-knowledge", input_obj=a.model_dump())
+    # Deliver complete meaning/constraints/provenance or explicitly omit the whole lesson; never a 120-char remedy.
+    delivered = {'lessons': [], 'note': out['note']}
+    for lesson in out['lessons']:
+        candidate = {**delivered, 'lessons': [*delivered['lessons'], lesson]}
+        if len(json.dumps(candidate).encode()) <= 1100:
+            delivered = candidate
+    from ...knowledge.experience import transfer
+    for lesson in delivered['lessons']:
+        transfer(LessonStore(), lesson['lesson_id'], ctx.run_id, 'EXPOSURE')
+    omitted = len(out['lessons']) - len(delivered['lessons'])
+    return result(ctx, 'PASS', f"{len(delivered['lessons'])} complete validated lessons; {omitted} omitted for envelope",
+        [ctx.store(json.dumps(out).encode(), 'json')], [],
+        {'reference_data': delivered, 'omitted_unfit': omitted, 'tokens_estimated': out['tokens_estimated']},
+        'forge-knowledge', input_obj=a.model_dump())
 
 
 def propose_lesson(ctx: ToolContext, a: ProposeIn) -> dict:
     store = LessonStore(incidents=IncidentStore())
-    rec = store.propose({**a.model_dump(), "validation_tests": [t.model_dump() for t in a.validation_tests]})
+    rec = store.propose({**a.model_dump(exclude_none=True), "validation_tests": [t.model_dump() for t in a.validation_tests]})
     rec = store.validate(rec["lesson_id"])
     return result(ctx, "PASS" if rec["state"] == "VALIDATED" else "BLOCKED",
                   f"{rec['lesson_id']} {rec['state']}", [f"lesson:{rec['lesson_id']}"], rec.get("_reasons", []),
