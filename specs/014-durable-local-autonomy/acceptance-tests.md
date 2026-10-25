@@ -1,6 +1,6 @@
 # Acceptance tests: Durable Local Autonomy
 
-This document defines qualification work; it records no executed test or successful deployment. Every test is **NOT_RUN**. A test becomes PASS only when its listed evidence exists, matches the tested revision and configuration, and satisfies every expected result. Missing evidence is NOT_RUN or INCOMPLETE, never PASS.
+This document defines qualification work and records executed deterministic cases. It makes no deployment claim. The original definitions began NOT_RUN. Executed deterministic cases are updated below; native/live cases remain NOT_RUN. The dated validation ledger defines the tested scope. A test becomes PASS only when its listed evidence exists, matches the tested revision and configuration, and satisfies every expected result. Missing evidence is NOT_RUN or INCOMPLETE, never PASS.
 
 The one-to-one mapping is DA-AT-NNN to DA-FR-NNN. Levels are `deterministic` (fixtures, replay or controlled fault injection without model inference), `real-native` (the actual selected Qwen, gateway, Fabro and MCP path), and `live` (an explicitly authorized Omniverse2 campaign or operational fault exercise). Real-native and live tests require a new bounded campaign under the existing authorization process. Historical exhausted orders, expenditures and attempts remain immutable; this document grants no runtime or promotion authority.
 
@@ -12,7 +12,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-001
 - **Level:** deterministic (read-only reconstruction of recorded native evidence; no new inference)
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Read-only copies of the five historical product receipts, four diagnosis records, deployed source identities, and all available native terminal events; original records have recorded hashes.
 - **When:** Reconstruct the mission chronology and capture native start/end, terminal/stop reason, final-stage exit, usage and cancellation events without rewriting history. Exercise an explicit unavailable-event case.
 - **Then:** Preserve original hashes and distinguish five unique product executions from 20 adopted attempt rows. Separate execution, package, order and service states. Record v4's cause as unresolved unless new native evidence establishes it; identify the evidence supporting any later conclusion.
@@ -23,7 +23,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-002
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A sealed finding set containing decisive findings after character 300, after combined character 1,500, and across multiple page boundaries, with known IDs, types and artifact references.
 - **When:** Build the diagnosis packet, enumerate every page, and retrieve each referenced finding; inject a missing or truncated backing artifact.
 - **Then:** Every original finding remains identifiable and retrievable with its full relevant contents. Summary limits affect presentation only. Missing content produces explicit incompleteness and cannot be silently treated as a complete case.
@@ -34,7 +34,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-003
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Hash-bound artifacts assigned to distinct work orders, phases and roles, including downstream implementation unavailable to an upstream SWE.1 author, plus stale and substituted artifacts.
 - **When:** Retrieve permitted evidence and attempt cross-order, cross-role, downstream-to-upstream, stale-hash and path-escape access through the actual retrieval boundary.
 - **Then:** Return only evidence authorized for the caller's case, phase and role; verify bytes against the sealed hash. Reject unauthorized or changed content without exposing it.
@@ -67,7 +67,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-006
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Valid and invalid semantic proposals, authoritative case/mission state, and the unchanged recovery-plan validator, scope, authority and budget rules.
 - **When:** Bind schema version, IDs, hashes, authorization, fingerprints and budget fields from controller state, including spoofed administrative fields and a proposal differing only by label or random seed.
 - **Then:** Administrative binding is deterministic. The existing authoritative validator independently checks the bound plan. The binder neither supplies a missing hypothesis/evidence nor coerces invalid semantic values or manufactures material difference.
@@ -89,7 +89,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-008
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Broker cases for accepted repair, accepted CLOSE_BLOCKED, rejected proposal, wrong-case proposal and no proposal; final model output can be prose, malformed, absent or a fabricated success claim.
 - **When:** Persist the broker decision and interrupt processing before/after the response or compact completion write, then resume and reconcile.
 - **Then:** A durable receipt bound to plan, case, job, nonce and contract determines semantic completion. Deterministic code creates the final artifact. Acceptance survives lost responses; prose does not undo it; a model success claim cannot substitute for a matching admissible receipt.
@@ -100,7 +100,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-009
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** An accepted plan, a transactional dispatch outbox, stable effect identities, and competing or restarted workers.
 - **When:** Inject crashes before/after intent commit, native launch, receipt persistence and acknowledgement; replay deliveries; attempt execution from a worker with an expired fencing token.
 - **Then:** Reconcile effects by stable identity before retrying. Stale workers cannot commit new effects. Durable intent eventually reaches its recorded outcome without duplicate implementation, verification publication or release effects.
@@ -122,7 +122,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-011
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A mission lineage with historical product attempts, consumed diagnosis calls, reservations, an overrun and terminal continuation orders.
 - **When:** Restart the controller, adopt history, create an authorized continuation and attempt duplicate imports or a replacement order with fresh-looking counters.
 - **Then:** Resolve each order to the same durable mission ledger. Preserve historical identities and consumed capacity; count adopted executions once. Any new grant is explicit and traceable rather than an implicit reset.
@@ -155,7 +155,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-014
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A proposal awaiting independent verification with a durable dispatch intent, verifier identity, lease and heartbeat.
 - **When:** Kill the controller before/after dispatch-state persistence and worker spawn; kill the verifier during execution; restart and deliver duplicate completion events.
 - **Then:** Recover by adopting a demonstrably live worker or fencing and redispatching an expired one. A nonempty DISPATCHED field alone cannot suppress recovery. Publish at most one effective verification result for the proposal identity.
@@ -166,7 +166,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-015
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Distinct failures for missing output, invalid contract, unavailable evidence, infrastructure outage, exhausted budget and a semantically admissible CLOSE_BLOCKED decision.
 - **When:** Process each failure through recovery and attempt approved remedy selection, including repeat incidents and an unsupported remedy.
 - **Then:** Emit the correct typed incident and preserve its evidence. Select only a policy-approved operational remedy or permitted isolated candidate lane, bounded by lineage budgets and anti-loop rules. A protocol failure does not assert that useful engineering strategies are absent.
@@ -221,7 +221,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-020
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Historical artifacts with valid same-identity resume evidence, missing resume identity, changed factory revision, changed authoritative inputs and stale phase acceptance.
 - **When:** Attempt reuse or recovery from each case, including the legacy factory revision with no validated resume identity.
 - **Then:** Reuse content or accepted state only where the existing provenance/resume rules permit. Where a fresh cross-revision execution is required, regenerate and independently revalidate every phase; imported receipts do not import old passes or fabricate a new execution.
@@ -243,7 +243,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-022
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** The current maintainer allowlist and AFO-FR-053 authority boundary, an allowed candidate patch, forbidden AFO/CRE/skill/policy edits and a candidate eligible for offline review.
 - **When:** Execute candidate preparation/qualification in isolation and attempt forbidden edits, automatic merge, production source activation and use of eligibility as deployment authority.
 - **Then:** Permit only the existing allowed candidate operations; reject protected-scope changes. Preserve the independent reproducer/evaluation evidence and stage qualified proposals for external promotion. Neither ELIGIBLE nor this feature grants automatic persistent source deployment.
@@ -254,7 +254,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-023
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Repair lessons with provenance, failure class, component versions, applicability checks, verified outcomes, negative results and explicit invalidation conditions.
 - **When:** Retrieve lessons for matching and mismatching cases, change a relevant version/oracle, invalidate a lesson and attempt retrieval from the final held-out acceptance set.
 - **Then:** Apply lessons only when their conditions hold. Preserve negative history and record why a lesson was selected or rejected. Invalidation prevents further automatic reuse; final holdout evidence cannot become tuning/training material.
@@ -331,7 +331,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-030
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** The implementation candidate, all test statuses and evidence manifests, unresolved native evidence, the current promotion policy and any proposed future automatic-worker-promotion amendment.
 - **When:** Assemble the readiness/handoff report and independently reconcile claims against evidence, including NOT_RUN tests, failures, external dependencies and unauthorized/unqualified future capabilities.
 - **Then:** Publish an accurate requirement-to-test-to-evidence mapping, effective versions, bounded operating envelope, residual risks, restore/runbook instructions and external promotion needs. Label future-policy proposals as unapproved designs; current eligibility never activates source automatically.
@@ -408,7 +408,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-037
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Jobs and phase outcomes across multiple drivers and features, including success, failure, BLOCKED, cancellation and interrupted execution; original archives and execution identities are immutable.
 - **When:** Capture factual experience on each outcome, interrupt capture before/after persistence, replay terminal events and adopt the same native execution through another order.
 - **Then:** Link experience to stable execution, phase, driver, feature, source revision and evidence identities. Reconcile interrupted capture and deduplicate replay/adoption without hiding distinct phase outcomes. Preserve actual observations, unknowns and costs; capture does not itself assert a lesson, root cause or successful remedy.
@@ -419,7 +419,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-038
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A durable queue of captured experiences, bounded consolidation capacity, shared mission budgets and cases with no novel lesson, unavailable consolidation capacity or unavailable model allowance.
 - **When:** Consolidate asynchronously, restart before/after candidate/disposition persistence, replay queue messages and continue normal admitted jobs while consolidation is deferred.
 - **Then:** Record a durable learning disposition for every job, including candidate created, no new lesson or deferred with a reason and reconciliation identity. Consolidation cannot block the controller indefinitely, force a lesson from every run, mint fresh budget or invoke Qwen merely because the machine is healthy and idle.
@@ -430,7 +430,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-039
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Existing LessonStore records, forge-knowledge-mcp operations and deterministic curator checks, including valid and invalid legacy PROMOTED repair lessons; proposed versioned source kinds for ordinary success and verified negative observations.
 - **When:** Migrate/read legacy records and submit each source kind through the extended existing store, MCP contract and curator, including unknown versions, unverifiable sources and attempts to bypass legacy repair promotion.
 - **Then:** Validate each explicit version/source kind under its own qualified evidence contract. Preserve existing PROMOTED-and-tests-PASS requirements for legacy repair lessons. Ordinary success or negative observation requires genuine source evidence, not a fabricated incident/repair identity. No parallel knowledge engine becomes a competing authority.
@@ -474,7 +474,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-043
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Duplicate lessons with the same scoped source identity, similar wording describing distinct MCU facts, conflicting candidates, expired/retracted lessons and tool/source-version changes affecting previously consumed lessons.
 - **When:** Deduplicate, validate conflicts, invalidate stale applicability and retract affected lessons, including restart/replay during lifecycle transitions and retrieval concurrent with invalidation.
 - **Then:** Use scope and source hashes in identity decisions; do not collapse different MCU/version facts merely because symptoms/remedy text matches. Exclude invalid, conflicting-unresolved, expired or retracted content from subsequent retrieval. Persist previous lifecycle history and identify affected consumer runs for follow-up without rewriting their original results.
@@ -485,7 +485,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-044
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Measured recurring issues, verified success patterns and lesson-impact records, together with existing CAPA/CRE and maintainer workflows, current edit allowlists and external promotion authority.
 - **When:** Aggregate evidence into deduplicated improvement hypotheses and route eligible candidates through those existing workflows; attempt protected-scope edits or automatic production promotion, and generate readiness metrics from mixed successful/failed learning outcomes.
 - **Then:** Preserve hypothesis-to-experience/lesson evidence links and apply the correct existing evaluation lane: defect repairs retain baseline-failing reproducers/CAPA; success-derived optimizations use measured-baseline CHANGE evaluation and external engineering when outside the maintainer grant, without fabricated incidents. Preserve independent evaluation and promotion rules. A pattern alone is not a proven cause or authorized deployment. Report experience coverage, qualified lessons, demonstrated benefits and improvement candidates as distinct metrics, separate from product gate success and operational readiness.
@@ -496,7 +496,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-045
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** An externally enabled continuous-service mode, existing AFO admission policy, a predeclared supervision interval and detection/reconciliation deadlines, and jobs that succeed, fail, block, time out, exhaust their allowances or leave an empty queue.
 - **When:** Finish the last job in each state, exhaust all model allowances, close a finite campaign and observe beyond its end; then submit a separately authorized eligible order while the factory remains enabled.
 - **Then:** Keep the model-free control plane, health checks, reconciliation and intake operating throughout. Record job-local terminal outcomes without converting them into a global service stop. Healthy idle makes zero model calls and creates no artificial engineering work. Service enablement alone does not authorize any job, renew an expired grant or reset expenditure.
@@ -518,7 +518,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-047
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** Persisted waiting records for transient dependency loss, open breakers, resource pressure, exhausted engineering capacity, missing authoritative evidence and expired/revoked grants; each has an identity, typed cause, next eligible probe, material resume condition and predeclared bounded retry/backoff policy.
 - **When:** Hold each condition beyond the immediate retry limit, restart the controller, deliver duplicate events and advance controlled time across probe boundaries. Restore a transient prerequisite under still-valid authority, and separately restore a service while its job grant remains expired or its budget exhausted.
 - **Then:** Continue model-free supervision and due reconciliation without hot loops, fabricated strategy variation or spending new engineering tokens merely to probe health. Persist waiting and breaker history across restart. Automatically resume only eligible transiently blocked work whose dependency, policy, evidence, remaining capacity and native-liveness checks now pass; preserve terminal records and use existing authorized continuation semantics where required. A material external change may trigger re-evaluation but does not itself create permission or capacity.
@@ -529,7 +529,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-048
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A queue containing a malformed/refused head item, a persistently blocked order A, an independent permanently eligible order B and an order C that truly depends on A, with frozen priority/aging rules and a measurable scheduling bound for B. Include a separate case where A may still own the only inference lease.
 - **When:** Repeatedly encounter the poison/refused item, deliver duplicate scheduling events and restart the controller; keep A blocked while admitting more competing work within the declared load envelope.
 - **Then:** Persist a scoped deferral, quarantine or terminal disposition as appropriate through existing queue/incident/DLQ paths without repeatedly monopolizing the scheduler. Preserve deduplicated evidence, dependency edges and fairness. Admit B only when its required resources are genuinely available; C remains blocked. An uncertain live GPU execution retains its lease, while independent model-free control and eligible nonconflicting work continue.
@@ -562,7 +562,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-051
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC — source `cb9f2e7`; see `validation.md` and the per-task evidence.
 - **Given:** A fixed observation timeline covering healthy work, empty-queue idle, an open dependency breaker, stalled inference, a terminal blocked product, planned maintenance, unplanned power/storage loss and missing/stale telemetry; observation cadence, staleness bounds and metric denominators are frozen in advance.
 - **When:** Project the timeline through existing event/KPI/scorecard paths, including restart and late-event reconciliation, and calculate wall-clock service coverage for a 24/7 configured window alongside the inherited explicitly defined availability SLO.
 - **Then:** Report desired mode, control-plane availability, dependency/worker liveness, admitted-work progress and independently accepted product outcomes separately. Missing evidence is UNKNOWN and cannot add available/productive minutes. Keep all outage minutes and causes, including declared exclusions, visible in raw accounting; no shortened service window or selective denominator may hide inactivity. Healthy idle is distinguishable from productive work and from an unobserved or unhealthy controller.

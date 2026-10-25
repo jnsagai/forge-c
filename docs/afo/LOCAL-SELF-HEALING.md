@@ -130,3 +130,42 @@ inspection separation and the independent-review dispatcher. Fabro run outcomes
 are fixtures; these tests make no model calls and are not a live Qwen qualification
 or an unattended operational soak. See Feature 013 validation evidence for exact
 revisions and results.
+
+## Feature 014 durable operation (2026-10-25)
+
+The Feature 013 activation snapshot above is historical. The read-only Feature 014 inventory shows the existing `forge-conductor-local-omniverse2.service` and mission recorder active; the source candidate in PR #42 has not been deployed. Its exact tested revision and separate implementation/model/product/learning/availability results are recorded in `specs/014-durable-local-autonomy/validation.md`.
+
+Use existing AFO authority and a registered durable mission before enabling `FORGE_DURABLE_AUTONOMY=1`. New orders/continuations cannot reset consumed capacity. Unknown native/provider work keeps inference ownership, including after job terminality. Do not use cancel acknowledgements, listing gaps, timeouts or idle GPU as termination proof.
+
+A complete evidence packet, short semantic judgment and deterministic receipt/binding replace fragile model-written administration. The adapter measures the complete serialized request and reserves output. Unfit or unqualified work blocks within its scope; all global requirement/dependency coverage remains recorded. Role capability is measured separately for diagnosis, authoring, inspection and maintenance; same-model agreement is not independent correctness evidence.
+
+Every ordinary success, failure, block, timeout and unknown outcome enters factual experience with a recoverable disposition. Qualified ordinary/negative lessons extend the existing LessonStore, preserve PROMOTED repair validation and separate inspector IL governance, and obey phase/role/target/source/tool/version and context limits. Delivery and retraction share a transactional fence. A captured experience or staged improvement proposal is not evidence of learning benefit. Learning comparisons include all retrieval, curation and validation cost.
+
+### Continuous service and approved recovery
+
+The explicitly configured `FORGE_OPERATIONS_INTENT` file is OS-owned/private and outside the application mount in a deployment. Provision it through the existing authenticated operator path; absence/corruption is UNKNOWN, never automatic RUNNING. Its RUNNING/PAUSED/DRAINING/STOPPED epochs fence every bounded native/service start. Pause stops new admission; drain allows admitted work to settle. STOPPED stays unresolved until pending contrary service-manager work and possibly live workers settle. Intentional OS stop, disable and mask remain respected.
+
+The continuous renderer uses the actual selected namespace profile and Conductor unit, `Restart=always`, bounded bursts, an independent watchdog, a false boot condition for stopped/unknown intent and `RestartPreventExitStatus=77` for completed operator shutdown. Namespace entry forwards the selected policy, authority paths, operations intent and bounded CPU-job setting; it does not forward unrelated provider/server credentials. Rendering is not installation or activation.
+
+| Existing operational lane | Preconditions and bound |
+|---|---|
+| Conductor failed/start-limit recovery | Exact approved enabled unit, eligible failed result, current intent epoch and CRE-preauthorized `restart_conductor`; durable 600-second slow cooldown, no runtime `reset-failed`. |
+| Local profile dependency restoration | Existing LRTX stack start recipe, pinned PID/boot/start ownership, RUNNING intent and CRE-preauthorized `restart_local_stack`; refuse uncertain inference ownership and unsupported live legacy PIDs. No process-name killing. |
+| Native cancellation/reconciliation | Original job/mission/nonce, bounded persistent probes; cancel ACK does not release capacity, transport uncertainty stays visible. |
+| Independent verifier recovery | One CPU worker, stable verification identity/epoch, heartbeat/deadline and exact boot/PID-start/process-group ownership; bounded reclaim and publication reconciliation. |
+| Housekeeping/storage | Marked disposable scratch only, bounded files/bytes, preserve pins/archives/ledger/evidence. Missing/full/read-only storage closes affected admission without ephemeral fallback or destructive reset. |
+
+These catalogue entries do not enable themselves. Existing CRE policy must explicitly preauthorize an operational action; engineering grant expiry does not renew or cancel separately authorized host supervision. Protected source fixes, policy changes, release decisions and persistent worker promotion still require external review. No automatic source deployment is implemented.
+
+Keep the Conductor lifetime indefinite: no production `--max-cycles`, global exit on a failed/capability-limited job, empty queue, exhausted engineering allowance or campaign completion. Model-free health, dependency/backoff checks, native reconciliation and unrelated eligible work continue. Current authority and all remaining-capacity/resource checks must pass again before engineering work resumes.
+
+### Qualification entry points
+
+All live Qwen tests run on Omniverse2. Store local development/evidence/scratch on loop10. Existing valid authorization is used as-is; an exhausted or expired grant is not a retry allowance. See Feature 014 validation for exact blockers and executable commands.
+
+- `forge_factory.afo.history_qualification`: replay a hash-pinned private dump into a NEW offline copy, preserve every legacy row, deduplicate historical native identities and prove no fresh capacity appears.
+- `forge_factory.afo.qualification`: freeze/dry-run/provision/step/report for the 20x5 native protocol, RCC and fixed 30-product denominator; current signed campaign authority and independent oracle audits are mandatory for live results.
+- `forge_factory.afo.systemd_qualification`: uniquely named transient local CPU-only service semantics; does not deploy or qualify the remote profile.
+- `forge_factory.afo.operational_campaign` via the existing soak lane: 24/72/168-hour observation, bounded authorized faults, real work, gross outage/UNKNOWN accounting and later separately authorized intake. Ending the campaign does not stop continuous service.
+
+Runtime implementation, local-model capability, sealed product outcomes, measured learning benefit and operational availability remain distinct. Short fixture/controller/systemd passes do not demonstrate RCC repair, benchmark success, a 168-hour soak or the rolling 30-day SLO. Future worker promotion stays proposal-only under the separate policy review.

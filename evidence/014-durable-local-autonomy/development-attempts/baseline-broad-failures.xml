@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="39.622" timestamp="2026-10-25T10:02:54.616479+00:00" hostname="master"><testcase classname="factory.python.tests.test_easa_m2" name="test_at082_author_role_denied_and_audited" time="0.215"><failure message="PermissionError: [Errno 13] Permission denied: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-baseline-broad-failures/test_at082_author_role_denied_0/vault/expected/SWR-013.json'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-baseline-broad-failures/test_at082_author_role_denied_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x761b197d9940&gt;
+
+    def test_at082_author_role_denied_and_audited(tmp_path, monkeypatch):
+        monkeypatch.setattr(isolation, "available", lambda: False)
+        monkeypatch.setattr(oracle, "emit", lambda *a, **k: None)
+        s = AssuranceStore(tmp_path / "db.sqlite3")
+        v = oracle.HoldoutVault(tmp_path / "vault", store=s)
+        digests = v.deposit({"expected/SWR-013.json": b'{"status":"HAL_TIMEOUT"}'})
+        with pytest.raises(PermissionError):
+            v.read("swe4-author", "expected/SWR-013.json")
+&gt;       assert v.read("easa-verifier", "expected/SWR-013.json") == b'{"status":"HAL_TIMEOUT"}'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_easa_m2.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/assurance/oracle.py:110: in read
+    return (self.root / rel).read_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-baseline-broad-failures/test_at082_author_role_denied_0/vault/expected/SWR-013.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       PermissionError: [Errno 13] Permission denied: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-baseline-broad-failures/test_at082_author_role_denied_0/vault/expected/SWR-013.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: PermissionError</failure></testcase><testcase classname="factory.python.tests.test_easa_swtrace" name="test_check_phase_entry_point" time="0.428" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t012_observer_mcp_read_only_and_least_privilege" time="0.460"><failure message="AssertionError: assert ('PASS' == 'PASS'&#10;  &#10;    PASS and 0 &gt;= 1)">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-baseline-broad-failures/test_kpi_t012_observer_mcp_rea0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x761b19476210&gt;
+
+    def test_kpi_t012_observer_mcp_read_only_and_least_privilege(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+        monkeypatch.setenv("FORGE_MCP_TRUST", "env")
+        monkeypatch.setenv("FORGE_WORKSPACE", str(tmp_path))
+        S.compute_and_store(order("O1", "O1", "2026-10-14T00:30:00Z", ALL_PASS))
+        from forge_factory.mcp import sdk
+        from forge_factory.mcp.servers import observer
+        op = {o.name: o for o in observer.OPERATIONS}
+        monkeypatch.setenv("FORGE_ROLE", "release-manager")
+        ok = sdk.invoke("forge-observer-mcp", op["get_kpis"], {"kpi_id": "K02"})
+        assert ok["status"] == "PASS" and all(i.startswith("K02") for i in ok["issues"])
+        ev_ = sdk.invoke("forge-observer-mcp", op["get_kpi_evidence"], {"kpi_id": "K02"})
+&gt;       assert ev_["status"] == "PASS" and ev_["metrics"]["event_refs"] &gt;= 1
+E       AssertionError: assert ('PASS' == 'PASS'
+E         
+E           PASS and 0 &gt;= 1)
+
+factory/python/tests/test_kpi_003.py:269: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_final" name="test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim" time="37.635" /></testsuite></testsuites>

@@ -1,0 +1,22 @@
+{
+  "command": "python -m forge_factory.afo.history_qualification --dump <private-read-only-export> --sha256 86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783 --copy <new-loop10-offline-copy> --report <immutable-report>",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "c5a88d328329cf41dad7a5102a2b8b8ee62f4981",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-history/20261025T103554.log",
+  "log_sha256": "020331cd630abb19661c9f28a14c0f0c96e9035c2ae50de6c83179aae1380c95",
+  "report": "evidence/014-durable-local-autonomy/baseline/history-c5a88d3.json",
+  "report_sha256": "a147ec24d5638ae55e5833a83407c2fd6e1d440bbf07af46a798960f7b07f10d",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "OFFLINE_COPY_ONLY_NO_LIVE_DATABASE_MUTATION",
+  "status": "PASS",
+  "task": "DA014-history",
+  "ts_utc": "2026-10-25T10:35:54.046916+00:00"
+}

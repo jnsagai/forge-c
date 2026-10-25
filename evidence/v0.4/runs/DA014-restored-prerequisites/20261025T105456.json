@@ -1,0 +1,32 @@
+{
+  "command": "python -m pytest -q test_owner_safety_documents.py test_peripheral_contract.py test_peripheral_hal.py test_peripheral_iwdg.py test_peripheral_rcc_equivalence.py test_peripheral_sim.py test_safec_bridge_m0.py test_sim_renode.py::test_renode_found_from_mcp_server_environment (factory/python/tests prefix)",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "duration_s": 15.454,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "49b6c42c0c01d9ecfe79386ef09e3f3b64418bf0",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-restored-prerequisites/20261025T105456.xml",
+    "sha256": "541e36372420dd77946b0940ce74ace9dba2ce6542f244eb52b0f7d9a23a0fa2"
+  },
+  "log": "evidence/v0.4/runs/DA014-restored-prerequisites/20261025T105456.log",
+  "log_sha256": "b2c6720453f06d35157bf6fc9703ffce184bf1d11bc189b38e5a9b17338d728b",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 15.454,
+    "skipped": 0,
+    "tests": 45,
+    "timestamp": "2026-10-25T10:19:48.503921+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-restored-prerequisites",
+  "ts_utc": "2026-10-25T10:54:56.708119+00:00"
+}

@@ -1,0 +1,22 @@
+{
+  "command": "python -m forge_factory.afo.systemd_qualification --out <loop10-isolated-test-directory>",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/maintenance-followup",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-systemd/20261025T105456.log",
+  "log_sha256": "45f001e9660e847dd862fd083f466abfb6a4a1de58d8c8038b1cf3d876b4e5d0",
+  "report": "evidence/014-durable-local-autonomy/systemd/report.json",
+  "report_sha256": "81396b197ef72f90250bd25fd79f4a7c1e94885975dc89fdf3256766a43b0a60",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "ISOLATED_LOCAL_SYSTEMD_SEMANTICS_NO_QWEN_OR_DEPLOYMENT",
+  "status": "PASS",
+  "task": "DA014-systemd",
+  "ts_utc": "2026-10-25T10:54:56.747698+00:00"
+}
