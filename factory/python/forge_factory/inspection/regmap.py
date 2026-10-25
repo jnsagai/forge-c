@@ -77,10 +77,11 @@ def parse_section(text: str, prefix: str = "RCC") -> dict | None:
     for m in _PIN.finditer(text):  # 'Bits 31:0 MODEy[1:0]: ... pin y (y = 15 to 0)': MODE0..MODE15, 2 bits each
         msb, lsb, base = int(m.group(1)), int(m.group(2)), m.group(3)
         n = abs(int(m.group(4)) - int(m.group(5))) + 1
+        y0 = min(int(m.group(4)), int(m.group(5)))  # GPIOx_AFRH: AFSELy (y = 15 to 8) starts at pin 8
         width = (msb - lsb + 1) // n if msb >= lsb else 0
         if width and width * n == msb - lsb + 1:
             for y in range(n):
-                fields.setdefault(f"{base}{y}", (lsb + (y + 1) * width - 1, lsb + y * width))
+                fields.setdefault(f"{base}{y0 + y}", (lsb + (y + 1) * width - 1, lsb + y * width))
     return {"name": name, "offset": int(off.group(1), 16),
             "reset": reset.group(1).replace(" ", "") if reset else None, "fields": fields}
 

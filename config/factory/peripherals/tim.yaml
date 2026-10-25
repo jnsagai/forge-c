@@ -56,7 +56,9 @@ prompt:
     integer or "0x..." string) for multi-bit fields (CMS, CKD, CNT, PSC, ARR); a function that writes a caller-supplied
     value gets one entry with a representative value and the api_calls args pass that value; the counter mode function
     sets coupled fields (DIR with CMS) and gets one entry per field; the update flag clear gets op "write" of value 0
-    on TIM_SR.UIF (rc_w0). Queries and getters get op no_write with register/field.
+    on TIM_SR.UIF (rc_w0). RM0486 54.5.12 splits the 32-bit TIM_CNT into CNT[30:0] and bit 31 UIFCPY_CNT (CNT[31]
+    while UIFREMAP = 0, the reset state): a counter value of 2^31 or more is one entry per field (CNT and UIFCPY_CNT).
+    Queries and getters get op no_write with register/field.
   ll_api: >-
     the ST CubeN6 functions as delivered (each takes the TIM_TypeDef instance pointer first): LL_TIM_EnableCounter,
     LL_TIM_DisableCounter, LL_TIM_IsEnabledCounter, LL_TIM_SetCounterMode (DIR and CMS), LL_TIM_SetOnePulseMode,

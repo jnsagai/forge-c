@@ -79,3 +79,50 @@ def test_rm0486_chapter_54_parses_into_the_tim2_5_registers():
 def test_rm0486_rcc_chapter_parses_as_before():
     r = _regs(RCC_RM, "RCC")
     assert len(r) >= 200 and "RCC_PRIVCFGR0" not in r  # its heading wraps: unparsed before feature 015, still
+
+
+AFRH = """#### 15.4.10 GPIO port x AF high register (GPIOx_AFRH) (x = A to H, N to Q)
+
+```text
+                  Address offset: 0x24
+                  Reset value: 0x0000 0000
+                Bits 31:0 AFSELy[3:0]: Alternate function selection for port x I/O pin y (y = 15 to 8)
+```
+"""
+
+
+def test_a_pin_range_that_does_not_start_at_zero_keeps_its_pin_numbers():
+    from forge_factory.assurance import hardware
+
+    r = parse_section(AFRH, "GPIO")
+    h = hardware.parse_section(AFRH, "GPIO")
+    assert r["fields"]["AFSEL8"] == (3, 0) and r["fields"]["AFSEL13"] == (23, 20) and "AFSEL0" not in r["fields"]
+    assert (h["fields"]["AFSEL13"]["lsb"], h["fields"]["AFSEL13"]["msb"]) == (20, 23) and "AFSEL0" not in h["fields"]
+
+
+def _hw_index(rm, pfx, tmp_path):
+    from forge_factory.assurance import hardware
+
+    files, _ = WO.split_sections(rm.read_text(), rm.stem)
+    d = tmp_path / pfx
+    d.mkdir()
+    for k, v in files.items():
+        (d / k.split("/")[-1]).write_text(v)
+    return hardware.index(d, pfx)
+
+
+@pytest.mark.skipif(not (GPIO_RM.is_file() and TIM_RM.is_file() and RCC_RM.is_file()),
+                    reason="RM0486 chapters are local (ST copyrighted) inputs")
+def test_the_independent_contract_parser_indexes_gpio_tim_and_usart_alternate_names(tmp_path):
+    """WO-AFO-a0ac907dda749c01-a1 (GPIO) and WO-AFO-a934d41fb3e70e2c-a1 (USART) stopped STUCK at SWE.1 on
+    CONTRACT_NOT_IN_RM for GPIO_MODER.MODE5 and USART_ISR.TXE: the register-contract check uses assurance.hardware,
+    a parser independent of inspection.regmap (finding F-02), which had neither change."""
+    g = _hw_index(GPIO_RM, "GPIO", tmp_path)
+    t = _hw_index(TIM_RM, "TIM", tmp_path)
+    u = _hw_index(REPO_ROOT / "examples/0012-usart-st/inputs/RM0486-rev4-ch65-usart.md", "USART", tmp_path)
+    assert g["GPIO_MODER"]["fields"]["MODE5"]["access"] == ["rw"] and g["GPIO_MODER"]["reset"] == 0xABFFEFFF
+    assert t["TIM_SR"]["fields"]["UIF"]["access"] == ["rc_w0"] and t["TIM_CR1"]["reset"] == 0
+    isr = u["USART_ISR"]["fields"]
+    assert (isr["TXE"]["msb"], isr["TXFNF"]["msb"], isr["RXNE"]["msb"]) == (7, 7, 5)  # FIFO-disabled names merged
+    r = _hw_index(RCC_RM, "RCC", tmp_path)
+    assert len(r) >= 200 and "RCC_PRIVCFGR0" not in r  # RCC: exact heading rule, unchanged
