@@ -49,6 +49,9 @@ prompt:
     after reset, the GPIO LL driver shall not write any GPIO register.'). The configuration lock (GPIOx_LCKR), the
     TrustZone secure/privilege configuration, the resource lock, the delay and advanced configuration registers, the
     EXTI lines, the other ports and the LL init/deinit functions are out of scope.
+    Registers whose RM0486 access type is w (write-only: GPIO_BSRR, GPIO_BRR) return their reset value when read (RM0486
+    1.2, register conventions input): a requirement on them states the value written, verified with the register at its
+    reset value before the call.
   swe1_effect_example: '{"case":"SET_MODE_PIN5_OUTPUT","swr":"SWR-001","register":"GPIO_MODER","field":"MODE5","op":"write","value":1}'
   swe1_effect_rule: >-
     Use op "write" with "value" (an integer or "0x..." string) for the per-pin fields (MODEy, OTy, OSPEEDy, PUPDy,
@@ -85,6 +88,8 @@ prompt:
         CHECK("UT-004", LL_GPIO_IsInputPinSet(GPIO, LL_GPIO_PIN_5) == 0U);
     }
   ut_rule: >-
+    Host unit tests preset the write-only registers (GPIO_BSRR, GPIO_BRR: on the device a read returns the reset value, RM0486 1.2)
+    to their reset value before the call, never an arbitrary RAM value.
     Host unit tests pass the generated host instance GPIO (forge_host_device.h maps it to the RAM struct
     forge_host_gpio; GPIOA is the device address and is used on the target only). Per-pin functions check the written
     field of the pin and that a preset field of another pin of the same register is preserved; set/reset/toggle check

@@ -44,6 +44,14 @@
    "role": "reference_manual_memory_map"
   },
   {
+   "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+   "role": "reference_manual_register_conventions"
+  },
+  {
+   "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
    "path": "../0012-usart-st/inputs/inputs-manifest.json",
    "role": "conversion_provenance"
   },

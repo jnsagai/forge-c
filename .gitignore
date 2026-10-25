@@ -25,3 +25,4 @@ examples/0011-spi-st/inputs/*.md
 examples/0012-usart-st/inputs/*.md
 examples/0013-tim-st/inputs/*.md
 examples/0014-crc-st/inputs/*.md
+examples/0015-rm0486-conventions/inputs/*.md

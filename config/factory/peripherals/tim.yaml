@@ -47,6 +47,9 @@ prompt:
     after reset, the TIM LL driver shall not write any TIM register.'). The capture/compare channels and outputs, slave
     mode and triggers, encoder mode, DMA, the other interrupts and flags, dithering, UIF remapping, the other timer
     instances and the LL init/deinit functions are out of scope.
+    Registers whose RM0486 access type is w (write-only: TIM_EGR) return their reset value when read (RM0486 1.2,
+    register conventions input): a requirement on them states the value written, verified with the register at its reset
+    value before the call.
   swe1_effect_example: '{"case":"SET_PSC_99","swr":"SWR-012","register":"TIM_PSC","field":"PSC","op":"write","value":99}'
   swe1_effect_rule: >-
     Use op "set"/"clear" for single bits (CEN, OPM, ARPE, URS, UDIS, UG, UIE, DIR) and op "write" with "value" (an
@@ -84,6 +87,8 @@ prompt:
         CHECK("UT-004", LL_TIM_IsActiveFlag_UPDATE(TIM) == 0U);
     }
   ut_rule: >-
+    Host unit tests preset the write-only registers (TIM_EGR: on the device a read returns the reset value, RM0486 1.2)
+    to their reset value before the call, never an arbitrary RAM value.
     Host unit tests pass the generated host instance TIM (forge_host_device.h maps it to the RAM struct forge_host_tim;
     TIM2 is the device address and is used on the target only). Set/clear and value functions check the written field
     (the counter mode: both fields) and that a preset unrelated field of the same register is preserved; value

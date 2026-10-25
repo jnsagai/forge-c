@@ -50,6 +50,9 @@ prompt:
     synchronous/smartcard/IrDA/LIN/RS-485 modes, auto baud rate, receiver timeout, wake-up from low-power, mute mode,
     hardware flow control, the framing/noise/parity error flags, 7-bit and 9-bit data values and the guard time are out
     of scope.
+    Registers whose RM0486 access type is w (write-only: USART_ICR) return their reset value when read (RM0486 1.2,
+    register conventions input): a requirement on them states the value written, verified with the register at its reset
+    value before the call.
   swe1_effect_example: '{"case":"SET_STOP_2","swr":"SWR-007","register":"USART_CR2","field":"STOP","op":"write","value":2}'
   swe1_effect_rule: >-
     Use op "set"/"clear" for single bits (UE, OVER8, MSBFIRST and the coupled TE/RE, PCE/PS, M0/M1 bits) and op
@@ -90,6 +93,8 @@ prompt:
         CHECK("UT-004", LL_USART_IsActiveFlag_TC(USART) == 0U);
     }
   ut_rule: >-
+    Host unit tests preset the write-only registers (USART_ICR: on the device a read returns the reset value, RM0486 1.2)
+    to their reset value before the call, never an arbitrary RAM value.
     Host unit tests pass the generated host instance USART (forge_host_device.h maps it to the RAM struct
     forge_host_usart; USART1 is the device address and is used on the target only). Set/clear and value functions
     check the written field (a coupled function: both fields) and that a preset unrelated field of the same register
