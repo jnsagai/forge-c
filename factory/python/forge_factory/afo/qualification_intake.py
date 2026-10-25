@@ -158,6 +158,31 @@ def grant_record(authorization_ref):
     return json.loads((authz.AUTH_DIR / f"{authorization_ref}.json").read_text())
 
 
+def import_packets(manifest, inputs):
+    """Publish every frozen case's sealed packet into this runtime's state; content must match its case binding."""
+    from ..common import state_dir
+    from .diagnosis_packet import scoped_path
+    from .durable import immutable_json
+
+    root = Path(inputs["root"]).resolve()
+    for trial, binding in sorted(manifest["jobs"].items()):
+        case = Path(binding["case"])
+        raw = case.read_bytes() if case.is_file() and not case.is_symlink() else b""
+        if hashlib.sha256(raw).hexdigest() != binding["case_sha256"]:
+            raise Refused("QUALIFICATION_SOURCE_CASE_CHANGED", trial)
+        ref = strict_json(raw, MAX_INPUTS_BYTES)["packet_ref"]
+        if not str(ref.get("path", "")).startswith("afo/diagnosis-packets/"):
+            raise Refused("QUALIFICATION_INTAKE_PACKET_REFERENCE_INVALID", trial)
+        try:
+            source = scoped_path(root / "packets", ref["path"])
+            value = strict_json(source.read_bytes(), MAX_INPUTS_BYTES)
+        except (Refused, OSError) as exc:
+            raise Refused("QUALIFICATION_INTAKE_PACKETS_UNAVAILABLE", trial) from exc
+        if digest(value) != ref["sha256"]:
+            raise Refused("QUALIFICATION_INTAKE_PACKET_CHANGED", trial)
+        immutable_json(scoped_path(state_dir(), ref["path"]), value)
+
+
 def _record(store, rec):
     from .protocol_faults import _record as record
 
@@ -205,6 +230,7 @@ def enroll(manifest, authorization_ref, *, store=None, trial_ids=None, limit=8):
         (trial, *_context(manifest, inputs_path, inputs_sha, inputs, trial, authorization_ref))
         for trial in sorted(Q.selected_trials(manifest, trial_ids))
     ]
+    import_packets(manifest, inputs)
     ledger = MissionLedger(store)
     # Exact frozen limits only: an existing mission with any other identity is a forbidden reset.
     ledger.register(
@@ -289,3 +315,23 @@ def start(store, order, manifest_sha):
         raise Refused("QUALIFICATION_WRAPPER_ADMISSION_MISMATCH", order["order_id"])
     store.transition(order["order_id"], "RUNNING", "qualification wrapper started; no product run claimed")
     return store.order(order["order_id"])
+
+
+def refuse(store, order, code):
+    """Close a started wrapper whose role job was deterministically refused before reservation (item-local)."""
+    from ..common import utc_now
+    from . import local_agent
+
+    if context(store, order) is None or local_agent.records(store, order["order_id"]):
+        raise Refused("QUALIFICATION_WRAPPER_REFUSAL_NOT_APPLICABLE", order["order_id"])
+    reason = "QUALIFICATION_PROVISION_REFUSED:" + code
+    for att in store.attempts(order["order_id"]):
+        if att["state"] == "PREPARED" and not att["record"].get("fabro_run_id"):
+            store.attempt_transition(
+                att["attempt_id"],
+                "CANCELLED",
+                finished_utc=utc_now(),
+                exit_status="qualification_wrapper_closed_without_role_job",
+            )
+    store.transition(order["order_id"], "BLOCKED", "role job refused before reservation; no inference", terminal_reason=reason)
+    return reason

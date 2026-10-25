@@ -393,7 +393,7 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
     eff = load()
     sha = digest(manifest)
     changed = 0
-    waiting = []
+    waiting, refused = [], []
     for trial, binding in sorted(manifest["jobs"].items()):
         if trial not in selected_trials(manifest, trial_ids):
             continue
@@ -432,16 +432,23 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
             if order["state"] not in ("RUNNING", "WAITING_RECOVERY"):
                 waiting.append(trial)
                 continue
-            job = local_agent.prepare(
-                store,
-                order,
-                doc["bundle"]["attempt_id"],
-                "afo-recovery-planner",
-                case,
-                Path(doc["workspace"]),
-                eff,
-                qualification_manifest=manifest,
-            )
+            try:
+                job = local_agent.prepare(
+                    store,
+                    order,
+                    doc["bundle"]["attempt_id"],
+                    "afo-recovery-planner",
+                    case,
+                    Path(doc["workspace"]),
+                    eff,
+                    qualification_manifest=manifest,
+                )
+            except Refused as exc:
+                if not intake or local_agent.records(store, order["order_id"]):
+                    raise
+                # A deterministic refusal must not hold the single capacity slot for the rest of the campaign.
+                refused.append({"trial": trial, "code": qualification_intake.refuse(store, order, exc.code)})
+                continue
             if job["job_id"] != binding["job_id"] or job["case_sha256"] != binding["case_sha256"]:
                 raise Refused("CAMPAIGN_PREDECLARED_JOB_IDENTITY_MISMATCH", trial)
         if job["state"] != "PREPARED" or (job.get("factory_revision") or {}).get("commit") != manifest["source_revision"]:
@@ -473,9 +480,14 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
         if changed >= limit:
             return {"status": "PROVISIONING_IN_PROGRESS", "provisioned_this_call": changed, "inference_requests": 0}
     return {
-        "status": "WAITING_AFO_ADMISSION" if waiting else "PROVISIONED_NOT_RUN",
+        "status": "WAITING_AFO_ADMISSION"
+        if waiting
+        else "ROLE_JOB_REFUSED_WRAPPER_CLOSED"
+        if refused and not changed
+        else "PROVISIONED_NOT_RUN",
         "provisioned_this_call": changed,
         "waiting_trials": waiting,
+        "refused_trials": refused,
         "inference_requests": 0,
     }
 

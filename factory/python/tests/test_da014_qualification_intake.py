@@ -116,6 +116,8 @@ def intake(tmp_path, monkeypatch):
             authorization_ref=REF,
             qualification_job_tokens=32768,
         )
+    # The runtime never shares the preparer's private state directory (the Omniverse2 layout).
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "runtime-state"))
     authdir = tmp_path / "auth"
     authdir.mkdir()
     key = tmp_path / "fixture-owner-key"
@@ -328,3 +330,33 @@ def test_ordinary_orders_keep_repository_launch_manifests(intake, tmp_path):
     p = intake
     order = {"order_id": "ordinary", "manifest_sha256": "0" * 64, "input_manifest_ref": "x", "envelope": "{}"}
     assert N.context(p.store, order) is None
+
+
+def test_sealed_packets_are_imported_into_the_runtime_state_only_when_hashes_match(intake):
+    p = intake
+    case = json.loads(Path(p.manifest["jobs"][FIRST]["case"]).read_text())
+    copy_path = Path(p.inputs["root"]) / "packets" / case["packet_ref"]["path"]
+    runtime = p.tmp / "runtime-state" / case["packet_ref"]["path"]
+    assert copy_path.is_file() and not runtime.exists()
+    copy_path.chmod(0o600)
+    copy_path.write_text(copy_path.read_text().replace("SWR-001", "SWR-999", 1))
+    with pytest.raises(Refused, match="QUALIFICATION_INTAKE_PACKET_CHANGED"):
+        N.enroll(p.manifest, REF, store=p.store, trial_ids=[FIRST])
+    with p.store.tx() as c:
+        assert not c.execute("SELECT 1 FROM afo_missions").fetchone()
+    assert not p.store.orders() and not runtime.exists()
+
+
+def test_deterministic_role_refusal_closes_only_that_wrapper_and_frees_capacity(intake, monkeypatch):
+    p = intake
+    N.enroll(p.manifest, REF, store=p.store, trial_ids=[FIRST, SECOND])
+    scheduler.cycle(p.store, "fixture-controller", eff=p.eff, probes=HEALTHY)
+    monkeypatch.setattr(L, "prepare", lambda *a, **k: (_ for _ in ()).throw(Refused("PACKET_REFERENCE_INVALID")))
+    out = Q.provision(p.manifest, REF, store=p.store, trial_ids=[FIRST])
+    assert out["status"] == "ROLE_JOB_REFUSED_WRAPPER_CLOSED"
+    assert out["refused_trials"] == [{"trial": FIRST, "code": "QUALIFICATION_PROVISION_REFUSED:PACKET_REFERENCE_INVALID"}]
+    first = p.store.order(p.trial[FIRST]["order_id"])
+    assert first["state"] == "BLOCKED" and first["terminal_reason"].endswith("PACKET_REFERENCE_INVALID")
+    assert [a["state"] for a in p.store.attempts(first["order_id"])] == ["CANCELLED"]
+    assert MissionLedger(p.store).snapshot(p.manifest["mission"]["mission_id"])["jobs"] == 0
+    assert scheduler.cycle(p.store, "fixture-controller", eff=p.eff, probes=HEALTHY)["action"] == "admitted"

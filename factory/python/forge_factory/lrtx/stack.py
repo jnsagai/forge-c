@@ -685,14 +685,14 @@ def _stop(s: dict, *, managed=False) -> dict:
     return {"stopped": stopped}
 
 
-def bridge_argv(s: dict) -> tuple[list[str], list[str], Path]:
+def bridge_argv(s: dict, host_port: int | None = None) -> tuple[list[str], list[str], Path]:
     """Inbound-only relay of the profile's Fabro API to the host's loopback, for a read-only monitor: socat inside the
     namespace accepts on a 0600 unix socket in the profile root and connects to Fabro there; socat on the host listens
     on 127.0.0.1 only. Nothing inside the namespace gains a route out (the network check stays DENIED_VERIFIED)."""
     sock = s["root"] / "run/fabro-api.sock"
     port = s["ports"]["fabro"]
     inner = ["socat", f"UNIX-LISTEN:{sock},fork,mode=600,unlink-early", f"TCP:127.0.0.1:{port}"]
-    outer = ["socat", f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork", f"UNIX-CONNECT:{sock}"]
+    outer = ["socat", f"TCP-LISTEN:{host_port or port},bind=127.0.0.1,reuseaddr,fork", f"UNIX-CONNECT:{sock}"]
     return inner, outer, sock
 
 
@@ -703,7 +703,8 @@ def _host_port_free(port: int) -> bool:
         return so.connect_ex(("127.0.0.1", port)) != 0
 
 
-def expose_api(s: dict) -> dict:
+def expose_api(s: dict, host_port: int | None = None) -> dict:
+    """`host_port` lets a second isolated stack of the same profile be monitored while another holds the profile port."""
     holder = _holder(s)
     if holder is None:
         raise RuntimeError("local stack is not running (start it first)")
@@ -714,8 +715,10 @@ def expose_api(s: dict) -> dict:
     br = rec.get("api_bridge") or {}
     if br and all(_alive(br[k]["pid"], "socat") for k in ("inner", "outer")):
         return {"api_bridge": "already running", **{k: br[k]["pid"] for k in ("inner", "outer")}}
-    inner, outer, sock = bridge_argv(s)
-    port = s["ports"]["fabro"]
+    inner, outer, sock = bridge_argv(s, host_port)
+    port = host_port or s["ports"]["fabro"]
+    if port in s["profile"]["deployment"].get("forbidden_ports", []):
+        raise SystemExit(f"HOST_PORT_FORBIDDEN_BY_PROFILE:{port}")
     if not _host_port_free(port):
         raise SystemExit(f"HOST_PORT_IN_USE:127.0.0.1:{port} (never shared with another server)")
     log = s["root"] / "logs/api-bridge.log"
@@ -771,6 +774,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec", "expose-api"])
     ap.add_argument("--profile", default=os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
+    ap.add_argument("--host-port", type=int, help="expose-api only: host loopback port when the profile port is taken")
     ap.add_argument("rest", nargs=argparse.REMAINDER)
     a = ap.parse_args(argv)
     s = settings(a.profile)
@@ -784,7 +788,10 @@ def main(argv: list[str] | None = None) -> int:
         return exec_in(s, rest)
     if shutil.which("unshare") is None or shutil.which("nsenter") is None:
         raise SystemExit("util-linux unshare/nsenter required")
-    out = {"init": init, "start": start, "stop": stop, "status": status, "expose-api": expose_api}[a.cmd](s)
+    if a.cmd == "expose-api":
+        out = expose_api(s, a.host_port)
+    else:
+        out = {"init": init, "start": start, "stop": stop, "status": status}[a.cmd](s)
     print(json.dumps(out, default=str))
     return 0
 

@@ -149,3 +149,6 @@ def test_api_bridge_is_inbound_only_on_host_loopback(tmp_path):
     assert inner[1].startswith(f"UNIX-LISTEN:{sock},") and "mode=600" in inner[1]
     assert inner[2] == f"TCP:127.0.0.1:{port}"
     assert outer[1] == f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork" and outer[2] == f"UNIX-CONNECT:{sock}"
+    inner2, outer2, _ = stack.bridge_argv(s, 32394)
+    # A second stack of the same profile keeps its namespace port; only the host loopback listener moves.
+    assert inner2 == inner and outer2[1] == "TCP-LISTEN:32394,bind=127.0.0.1,reuseaddr,fork"

@@ -286,6 +286,8 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                 if name == "reworded-strategy"
                 else [],
             )
+            # The runtime resolves packets in its own state directory; intake imports this hash-bound copy.
+            immutable_json(root / "packets" / ref["path"], packets.load(ref))
             doc = {
                 "bundle": bundle,
                 "workspace": str(ws),
