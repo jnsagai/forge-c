@@ -27,7 +27,8 @@ def replay(dump_path, expected_sha256, copy_path, report_path):
             )
         ]
         before = {n: list(con.execute('SELECT * FROM "' + n.replace('"', '""') + '"')) for n in names}
-        old_version = con.execute("PRAGMA user_version").fetchone()[0]
+        # Conductor migrations use their own version table, not SQLite's unrelated user_version.
+        old_version = con.execute("SELECT MAX(version) FROM afo_schema_version").fetchone()[0] or 0
     finally:
         con.close()
     store = Store(target)

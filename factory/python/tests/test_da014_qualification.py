@@ -20,6 +20,27 @@ def identity(role="afo-recovery-planner"):
     }
 
 
+def test_history_replay_reports_the_conductor_schema_version(tmp_path):
+    import hashlib
+    import sqlite3
+
+    from forge_factory.afo.history_qualification import replay
+    from forge_factory.afo.queue import Store
+
+    original = tmp_path / "original.sqlite3"
+    Store(original)
+    with sqlite3.connect(original) as c:
+        assert c.execute("PRAGMA user_version").fetchone()[0] == 0
+        version = c.execute("SELECT MAX(version) FROM afo_schema_version").fetchone()[0]
+        dump = "\n".join(c.iterdump())
+    path = tmp_path / "snapshot.sql"
+    path.write_text(dump)
+    report = replay(path, hashlib.sha256(path.read_bytes()).hexdigest(),
+                    tmp_path / "offline-copy.sqlite3", tmp_path / "report.json")
+    assert report["schema_before"] == report["schema_after"] == version
+    assert report["original_source_mutated"] is False and report["new_live_inference"] is False
+
+
 def test_protocol_freezes_twenty_times_five_and_does_not_claim_dryrun_qualification(tmp_path):
     m = Q.freeze("protocol", tmp_path / "campaign.json", identity=identity())
     assert len(m["cases"]) == 20 and sum(c["repeats"] for c in m["cases"]) == 100
