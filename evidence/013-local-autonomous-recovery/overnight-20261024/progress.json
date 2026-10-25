@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-25T10:26:33.512508+00:00",
+  "captured_utc": "2026-10-25T10:29:34.404016+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "OBSERVE_ONLY",
@@ -56,7 +56,7 @@
     "inference_started": false,
     "manifest_sha256": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
     "model": "qwen3.8:27b-q8_0",
-    "state": "VERIFYING",
+    "state": "COMPLETE",
     "total_bytes": 29978242050
   },
   "maintainer_proposals": [],
@@ -662,13 +662,13 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.3017578125,
-      0.22119140625,
-      0.18896484375
+      0.6240234375,
+      0.5478515625,
+      0.3330078125
     ],
     "gpu": "0, 628, 49140, 26.31",
     "memory": {
-      "MemAvailable": "122653936 kB",
+      "MemAvailable": "122658524 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
