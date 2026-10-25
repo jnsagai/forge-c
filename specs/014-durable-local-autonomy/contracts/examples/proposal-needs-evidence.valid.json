@@ -1,0 +1,13 @@
+{
+  "decision": "NEEDS_EVIDENCE",
+  "evidence_refs": [
+    "case-evidence:inventory"
+  ],
+  "missing_evidence": [
+    {
+      "obligation_ref": "SWR-001",
+      "evidence_kind": "TEST_DIAGNOSTIC",
+      "reason": "The failing assertion and observed value are not in the sealed packet."
+    }
+  ]
+}

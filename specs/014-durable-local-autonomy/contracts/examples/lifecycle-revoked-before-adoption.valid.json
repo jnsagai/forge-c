@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "mission_id": "mission-example",
+  "job_id": "job-example",
+  "execution_id": "execution-example",
+  "revision": 2,
+  "lease_epoch": 2,
+  "launch_nonce": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "authorization_state": "REVOKED",
+  "admission_state": "DISPATCH_INTENT_RECORDED",
+  "identity_state": "UNCONFIRMED",
+  "native_run_ids": [],
+  "execution_liveness": "UNKNOWN",
+  "cancellation_state": "REQUESTED",
+  "cancel_attempts": 0,
+  "last_cancel_error": null,
+  "resource_lease": "HELD",
+  "task_outcome": "BLOCKED",
+  "terminal_reason": "AUTHORITY_REVOKED",
+  "quiescence_evidence_ref": null,
+  "outcome_evidence_ref": "incident:revocation",
+  "last_reconciled_at": "2026-10-25T10:00:01Z"
+}

@@ -1,0 +1,21 @@
+# Codex implementation prompt
+
+Implement Feature 014 in `specs/014-durable-local-autonomy/` on branch `feat/014-durable-local-autonomy`, based on PR #41 (`f6ff873d5b4f3e9e46956ef26766181aaec2289d`). Preserve local uncommitted work by using an isolated worktree when needed.
+
+Read the repository constitution and applicable instructions, then this feature's spec, local-model-design, plan, research, data-model, contracts, acceptance tests and tasks. These are authored requirements; do not replace them with generic Spec Kit output. Read the referenced Feature 005/010/012/013 boundaries and existing source before editing.
+
+The objective is reliable local Qwen self-X within a measured capability envelope: complete relevant evidence, short-horizon semantic proposals, deterministic administrative binding and completion, durable broker receipts, shared mission accounting, recoverable cancellation/verifier execution, model-free operational recovery and independently verified product repair. Qwen's role competence, effective context and error correlations must be measured; model size, a large context setting, multiple same-model agents or repeated prompting do not establish capability.
+
+Implement incrementally from `tasks.md`. Start with independently reproducible protocol faults and the local capability/task design; missing remote V4 traces must stay UNKNOWN but must not prevent unrelated deterministic work. Add meaningful regression/fault tests and run them before marking tasks complete. Preserve the existing authoritative recovery-plan schema and separate submission, admissibility, execution and verification. Never turn a missing proposal into a semantic no-strategy result.
+
+Use the actual selected Qwen/runtime settings for the baseline. Keep one admitted inference request and bounded CPU verification. Decompose by coherent obligations with global coverage and shared budgets; use external hash-bound evidence/checkpoints and independently validated lessons. Candidate search is finite and guided by verifier results. Same-model self-review does not replace independent checks. On measured capability limits, repartition or use a qualified authorized local alternative; otherwise block explicitly.
+
+Preserve original terminal orders, native execution IDs, usage and failed evidence. Continuation/new order IDs cannot reset the exhausted mission. Keep author/inspector separation, local-only isolation, fixed gates/oracles/holdouts, historical archives and existing provider/default compatibility. No raw hidden reasoning or credentials in logs.
+
+Codex is the external implementation engineer. This task does not grant the running factory permission to edit protected AFO/CRE/skills/policy or automatically deploy persistent source. Keep maintainer candidates within their existing allowlist and current external promotion boundary. The future worker-promotion document is proposal-only; do not add an enabling flag, broaden permissions or wait for that future policy decision before delivering core recovery.
+
+Complete source implementation, deterministic integration tests, inherited regression, spec validation and the reviewable qualification harness. Use the repository's existing independent CRE and evidence conventions. Check a task only with relevant passing evidence; document exact revision, command and limitations. Keep implementation, local protocol qualification, RCC recovery, product benchmark and 24/72/168h operational soak statuses separate.
+
+Live Omniverse2 inference, deployment and campaign execution require the applicable current authorization and prerequisites. Do not infer them from the old exhausted grant or model download. Prepare concrete commands/configuration/evidence first; when live work is unavailable, record the precise NOT_RUN/BLOCKED prerequisite and continue independent authorized work. Do not auto-merge or deploy the feature.
+
+Deliver incremental commits and a concise final report naming completed tasks, failing or unrun checks, exact evidence, unresolved native causes and the next qualification step. Do not claim Qwen achieves the benchmark until the frozen independent cohorts actually pass.

@@ -1,0 +1,155 @@
+{
+  "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "fixtures": [
+    {
+      "file": "proposal-repair.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Well-formed semantic repair; evidence membership and usefulness are not established by schema."
+    },
+    {
+      "file": "proposal-needs-evidence.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Evidence request; never binds a recovery plan or dispatches implementation."
+    },
+    {
+      "file": "proposal-close-blocked.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Candidate blocked decision; independent admissibility still required."
+    },
+    {
+      "file": "proposal-host-field.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Reject model-owned administrative fields."
+    },
+    {
+      "file": "proposal-wrong-type.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Reject semantic type errors; never coerce a string into an array."
+    },
+    {
+      "file": "proposal-mixed-decision.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Evidence request cannot smuggle repair/dispatch fields."
+    },
+    {
+      "file": "proposal-switch-without-profile.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Model-switch proposal must name its semantic choice."
+    },
+    {
+      "file": "proposal-empty-hypothesis.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Host must not fabricate an absent hypothesis."
+    },
+    {
+      "file": "receipt-stored-pending.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Storage is neither acceptance nor permission to execute."
+    },
+    {
+      "file": "receipt-accepted-not-dispatched.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Admissible repair has not yet executed."
+    },
+    {
+      "file": "receipt-scoped-verification.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Scoped independent repair verification; does not assert a READY package or deployment."
+    },
+    {
+      "file": "receipt-accepted-close.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Accepted CLOSE_BLOCKED is not a recovered product."
+    },
+    {
+      "file": "receipt-accepted-evidence-request.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Admissible evidence request permits only separately bounded retrieval."
+    },
+    {
+      "file": "receipt-submission-rejected.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Malformed submission can have an audit receipt without any accepted proposal."
+    },
+    {
+      "file": "receipt-dispatch-before-acceptance.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Stored proposal cannot authorize implementation."
+    },
+    {
+      "file": "receipt-false-verification.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Verified state requires a verifier receipt reference; authenticity remains a semantic check."
+    },
+    {
+      "file": "receipt-close-dispatch.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Accepted blocked decision cannot dispatch implementation."
+    },
+    {
+      "file": "lifecycle-reserved.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Reservation precedes durable dispatch intent."
+    },
+    {
+      "file": "lifecycle-revoked-before-adoption.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Terminal task with unresolved native execution retains lease and nonce reconciliation."
+    },
+    {
+      "file": "lifecycle-cancel-ack-still-running.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Cancel acknowledgement is not process termination."
+    },
+    {
+      "file": "lifecycle-quiescent.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Authoritative quiescence permits release while task remains blocked."
+    },
+    {
+      "file": "lifecycle-unknown-lease-release.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Uncertain execution retains exclusive resources."
+    },
+    {
+      "file": "lifecycle-cancel-ack-as-terminal.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Cannot label a live native run cancellation-confirmed."
+    },
+    {
+      "file": "lifecycle-unproven-quiescence.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Quiescence requires evidence; a timeout or 404 alone is insufficient."
+    },
+    {
+      "file": "lifecycle-model-claim-recovered.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "No recovered outcome before native quiescence and independent semantic validation."
+    }
+  ]
+}
