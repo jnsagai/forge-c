@@ -26,6 +26,9 @@ def test_the_repository_queue_lists_the_five_st_ll_items_in_order():
     q = Q.load()
     assert [i["id"] for i in q["items"]] == ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st"]
     assert Q.LINE[:4] == ["--acp-authors", "codex", "--acp-inspectors", "claude"]
+    from forge_factory.afo.runtime import PROFILES
+
+    assert Q.LINE[4:] == ["--model", PROFILES["codex-claude"]["model"], "--provider", PROFILES["codex-claude"]["provider"]]
 
 
 def test_items_run_in_order_skip_missing_examples_and_record_outcomes(env):
@@ -38,12 +41,13 @@ def test_items_run_in_order_skip_missing_examples_and_record_outcomes(env):
         _finish(ws, "READY_FOR_OFFLINE_REVIEW", list(Q.PHASES))
         return {"fabro_run_id": "R" + wo, "workspace": str(ws)}
 
+    q["items"].append({"id": "later-st", "example": "examples/0099c-not-onboarded"})  # a peripheral not onboarded
     onboarded = [i for i in q["items"] if (Q.REPO_ROOT / i["example"] / "workorder.json").is_file()]
-    assert onboarded and len(onboarded) < len(q["items"])  # GPIO and TIM wait for the parser change (F015-T040)
+    assert [i["id"] for i in onboarded] == ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st"]
     st = Q.run(q, launcher=launcher, sleep=lambda s: None)
     assert launched == [Q.work_order_id(q, i, 1) for i in onboarded]  # queue order, one at a time
     assert st["items"]["crc-st"]["status"] == "READY_FOR_OFFLINE_REVIEW"
-    assert st["items"]["tim-st"]["status"] == "SKIPPED_NOT_ONBOARDED"
+    assert st["items"]["later-st"]["status"] == "SKIPPED_NOT_ONBOARDED"
     out = st["items"]["crc-st"]["attempts"][0]["outcome"]
     assert out["phases_passed"] == list(Q.PHASES) and out["blocked_at"] is None
     n = len(launched)
@@ -72,3 +76,37 @@ def test_a_failed_launch_is_recorded_not_retried(env):
 
     st = Q.run(q, only="crc-st", launcher=broken, sleep=lambda s: None)
     assert st["items"]["crc-st"]["status"] == "LAUNCH_FAILED" and "launch_error" in st["items"]["crc-st"]["attempts"][0]
+
+
+def test_a_launched_attempt_without_outcome_is_reported_never_launched_again(env):
+    """A runner stopped while its run may still be live: no second attempt without an explicit retry."""
+    q = Q.load()
+    st = {"queue": q["id"], "items": {"crc-st": {"status": "RUNNING", "attempts": [
+        {"work_order": "WO-BENCH-CRC-ST-r1", "started_at": "2026-10-25T09:00:00Z", "fabro_run_id": "R1"}]}}}
+    Q.write_state(q, st)
+    launched = []
+
+    def launcher(example, wo):
+        launched.append(wo)
+        raise RuntimeError("LAUNCH_FAILED:not expected")
+
+    st = Q.run(q, only="crc-st", launcher=launcher, sleep=lambda s: None)
+    assert launched == [] and st["items"]["crc-st"]["status"] == "UNFINISHED_ATTEMPT"
+    st = Q.run(q, only="crc-st", retry="crc-st", launcher=launcher, sleep=lambda s: None)
+    assert launched == ["WO-BENCH-CRC-ST-r2"]  # explicit retry: a new recorded identity
+
+
+def test_every_benchmark_work_order_has_the_rm0486_register_conventions_input():
+    """WO-AFO-0756ac55b8ea81e6-a1 (SPI) stopped STUCK at SWE.4 on three escalated CODE defects: host tests preset the
+    write-only SPI_IFCR with other bits and ST's SET_BIT kept them. RM0486 1.2 (p.156): reading a write-only (w) bit
+    returns the reset value, so on the device ST's code writes exactly the flag; the convention was not an input."""
+    q = Q.load()
+    for item in q["items"]:
+        spec = json.loads((Q.REPO_ROOT / item["example"] / "workorder.json").read_text())
+        roles = {i["role"]: i["path"] for i in spec["inputs"]}
+        assert roles["reference_manual_register_conventions"].endswith("RM0486-rev4-register-conventions.md"), item
+    from forge_factory import peripheral
+
+    for pid, reg in (("spi", "SPI_IFCR"), ("usart", "USART_ICR"), ("gpio", "GPIO_BSRR"), ("tim", "TIM_EGR")):
+        pr = peripheral.load(pid)["prompt"]
+        assert reg in pr["ut_rule"] and "RM0486 1.2" in pr["ut_rule"] and "RM0486 1.2" in pr["swe1_cover"], pid

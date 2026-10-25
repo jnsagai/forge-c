@@ -3,7 +3,8 @@
 One work order at a time, in queue order, launched like every production run (Codex authors, Claude inspectors; the
 caller provides the cloud-bench environment, so the runs appear on the Fabro monitor under its source). For each item:
 - skipped when its example does not exist yet (peripheral not onboarded);
-- skipped when it already has a recorded outcome (a retry is an explicit `--retry ID` and gets a new work order id);
+- skipped when it already has a recorded outcome or a launched attempt without one (UNFINISHED_ATTEMPT: the run may
+  still be live); a retry is an explicit `--retry ID` and gets a new work order id;
 - otherwise launched with `--detach`, then the runner waits for the release package and records the outcome from the
   recorded evidence only: package status, gap count, the phases whose inspection passed, duration.
 Nothing is marked READY by the runner; the gates, inspectors and release manager decide.
@@ -21,10 +22,14 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from ..afo.runtime import PROFILES
 from ..common import REPO_ROOT, load_yaml, state_dir, utc_now
 
 QUEUE = REPO_ROOT / "config/factory/benchmark/st-driver-queue.yaml"
-LINE = ["--acp-authors", "codex", "--acp-inspectors", "claude", "--model", "deepseek-flash", "--provider", "deepseek"]
+_P = PROFILES["codex-claude"]  # one definition of the production line, shared with AFO (Codex authors, Claude
+# inspectors; the run model is nominal: DeepSeek is suspended and serves no agent node)
+LINE = ["--acp-authors", _P["acp_authors"], "--acp-inspectors", _P["acp_inspectors"], "--model", _P["model"],
+        "--provider", _P["provider"]]
 PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
 
 
@@ -110,6 +115,11 @@ def run(q: dict, only: str | None = None, retry: str | None = None, poll_s: floa
             continue
         done = [a for a in rec["attempts"] if a.get("outcome")]
         if done and retry != item["id"]:
+            continue
+        open_ = [a for a in rec["attempts"] if not a.get("outcome") and not a.get("launch_error")]
+        if open_ and retry != item["id"]:  # a launched attempt without outcome (runner stopped, run maybe live):
+            rec["status"] = "UNFINISHED_ATTEMPT"  # reported, never launched again; a retry is explicit (--retry)
+            write_state(q, st)
             continue
         wo = work_order_id(q, item, len(rec["attempts"]) + 1)
         att = {"work_order": wo, "started_at": utc_now()}
