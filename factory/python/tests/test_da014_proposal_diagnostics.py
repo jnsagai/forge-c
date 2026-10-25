@@ -118,3 +118,18 @@ def test_native_request_carries_the_wire_schema_and_the_broker_keeps_the_authori
     assert measured["wire_request_sha256"]
     raw = json.dumps({**VALID[0], "evidence_refs": ["not-in-case"]})
     assert Receipts(p.store).submit(Context.from_job(p.store, job["job_id"]), raw)["submission_state"] == "STORED"
+
+
+def test_single_response_mode_states_its_no_tool_evidence_contract(signed):
+    from forge_factory.afo.durable_agent import request_material
+
+    p = signed
+    job, _, _ = bind(p, "empty-output")
+    body, _ = request_material(job)
+    system = body["messages"][0]["content"]
+    assert "SINGLE-RESPONSE MODE: no tools are available" in system
+    assert "exact ref strings copied from packet.findings[].ref or packet.artifacts[].ref" in system
+    # The locked role SKILL text is still delivered unchanged ahead of the mode contract.
+    from forge_factory.lrtx.structured import skill
+
+    assert system.startswith(skill("afo-recovery-planner")["text"])
