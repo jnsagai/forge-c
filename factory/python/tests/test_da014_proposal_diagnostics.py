@@ -133,3 +133,28 @@ def test_single_response_mode_states_its_no_tool_evidence_contract(signed):
     from forge_factory.lrtx.structured import skill
 
     assert system.startswith(skill("afo-recovery-planner")["text"])
+
+
+def test_request_uses_short_aliases_and_answers_map_back_before_the_broker(signed):
+    from forge_factory.afo import diagnosis_packet as P
+    from forge_factory.afo.durable_agent import dealias, ref_aliases, request_material
+
+    p = signed
+    job, _, packet = bind(p, "empty-output")
+    aliases = ref_aliases(packet)
+    body, measured = request_material(job)
+    user = body["messages"][1]["content"]
+    assert measured["evidence_ref_aliases"] == len(aliases) >= 2
+    assert not any(ref in user for ref in aliases), "a long hash reference reached the model"
+    assert set(aliases.values()) <= {"F1", "F2", "A1", "A2", "A3"}
+    finding, artifact = packet["findings"][0]["ref"], packet["artifacts"][0]["ref"]
+    answer = {**VALID[0], "evidence_refs": [aliases[finding], aliases[artifact]], "target_obligations": ["USPEC-001"]}
+    assert json.loads(dealias(job, json.dumps(answer)))["evidence_refs"] == [finding, artifact]
+    receipt = Receipts(p.store).submit(Context.from_job(p.store, job["job_id"]), dealias(job, json.dumps(answer)))
+    assert receipt["submission_state"] == "STORED"
+    unchanged = json.dumps({**answer, "evidence_refs": [finding]})
+    assert dealias(job, unchanged) is unchanged
+    S.check(json.loads(dealias(job, json.dumps(answer))), P.load(json.loads(p.case.read_text())["packet_ref"]))
+    # Unknown names and malformed output are left untouched for the broker's existing refusals.
+    assert json.loads(dealias(job, json.dumps({**answer, "evidence_refs": ["A99"]})))["evidence_refs"] == ["A99"]
+    assert dealias(job, '{"evidence_refs": ["F1"') == '{"evidence_refs": ["F1"'
