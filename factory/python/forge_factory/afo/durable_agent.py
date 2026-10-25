@@ -521,6 +521,16 @@ def two_step_answer(store, job, send):
             value = strict_json(text)
         except Refused:
             return None
+        if isinstance(value, dict):
+            # Decoding grammars cannot enforce uniqueItems: drop exact duplicate list items only (matrix a206c54: one repeated
+            # missing_evidence entry made an otherwise valid UNKNOWN answer unusable). Nothing else is rewritten.
+            for key, items in value.items():
+                if isinstance(items, list):
+                    unique = []
+                    for item in items:
+                        if canonical(item) not in {canonical(u) for u in unique}:
+                            unique.append(item)
+                    value[key] = unique
         return value if Draft202012Validator(wire).is_valid(value) else None
 
     body, measured = request_body(store, job, step=1)
