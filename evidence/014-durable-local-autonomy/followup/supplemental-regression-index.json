@@ -1,0 +1,116 @@
+{
+  "groups": [
+    {
+      "file_count": 44,
+      "progress": "evidence/014-durable-local-autonomy/followup/compatibility-cb9f2e7-progress.json",
+      "source_revision": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+      "status": "PARTIAL_FAILURES_OR_TIMEOUTS"
+    },
+    {
+      "file_count": 103,
+      "progress": "evidence/014-durable-local-autonomy/followup/remaining-754e93c-progress.json",
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03",
+      "status": "PARTIAL_FAILURES_OR_TIMEOUTS"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/lrtx-v2-e973286.xml",
+      "junit_sha256": "e78fbe1966bf4c45e98ccea569c7626276b7afb9750f7e0e8399887405aa6956",
+      "name": "lrtx-v2-e973286",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 392.834,
+        "skipped": 0,
+        "tests": 18,
+        "timestamp": "2026-10-25T11:14:25.041350+00:00"
+      },
+      "source_revision": "e9732866604a1d1b33246c06405496e4d118cac3"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/fixture-754e93c.xml",
+      "junit_sha256": "5f8b8a47aa59f4831e08ed9d59ebc701c435aecdfb74b91fedc7ac62c5156ad5",
+      "name": "fixture-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 7.057,
+        "skipped": 1,
+        "tests": 38,
+        "timestamp": "2026-10-25T11:14:26.178236+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/readiness-snapshot-754e93c.xml",
+      "junit_sha256": "c5347833a436f4c80f12a2e1a3857668b4879bc0bde35eaec86e4dfbbf405777",
+      "name": "readiness-snapshot-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 0.4,
+        "skipped": 0,
+        "tests": 1,
+        "timestamp": "2026-10-25T11:29:49.221604+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/renode-discovery-754e93c.xml",
+      "junit_sha256": "5ca37f3b42bcc5b5521c0f66c009a9fce8e4b39ca1c3f101327cbf39e13e2489",
+      "name": "renode-discovery-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 0.561,
+        "skipped": 0,
+        "tests": 1,
+        "timestamp": "2026-10-25T11:29:49.497806+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/safec-pin-754e93c.xml",
+      "junit_sha256": "95176a706b62548a233761ad8fa7f995e5b24edf0edca33041c180180d537cb5",
+      "name": "safec-pin-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 8.498,
+        "skipped": 0,
+        "tests": 71,
+        "timestamp": "2026-10-25T11:31:12.657692+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/historical-corpus-754e93c.xml",
+      "junit_sha256": "3ec820c6527590e56691488874ac9891720acbe6080ac19ac18d757d1e0f98f0",
+      "name": "historical-corpus-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 427.619,
+        "skipped": 0,
+        "tests": 20,
+        "timestamp": "2026-10-25T11:33:43.945828+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    },
+    {
+      "junit": "evidence/014-durable-local-autonomy/followup/clean-repro-754e93c.xml",
+      "junit_sha256": "2616e3f8870fb302037cbc4ed9e2edf3332926f6981d8ae4dafbd6b754d25ca7",
+      "name": "clean-repro-754e93c",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 18.892,
+        "skipped": 0,
+        "tests": 1,
+        "timestamp": "2026-10-25T11:33:45.116484+00:00"
+      },
+      "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03"
+    }
+  ],
+  "limitation": "Groups overlap; do not sum pass counts into an independent cohort. Initial failures/timeouts/skips remain in per-file progress and private logs; follow-ups use the same assertions with restored prerequisites.",
+  "scope": "SEPARATE_HISTORICAL_REVISIONS_NOT_NEW_QWEN_OR_CURRENT_NATIVE_QUALIFICATION"
+}

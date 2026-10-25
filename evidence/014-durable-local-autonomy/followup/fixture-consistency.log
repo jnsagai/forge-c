@@ -1,0 +1,46 @@
+.....................................F                                   [100%]
+=================================== FAILURES ===================================
+_______________ test_kpi_t020_pilot_reconciles_with_raw_evidence _______________
+
+    @pytest.mark.skipif(not (Path(__import__("os").environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders").is_dir(),
+                        reason="no live work orders")
+    def test_kpi_t020_pilot_reconciles_with_raw_evidence():
+        import os
+    
+        from forge_factory.kpi.sources import collect_all
+        from forge_factory.release.finalize import archive_root
+        from forge_factory.supervisor.store import IncidentStore
+        evs = collect_all()
+        snap = E.snapshot(evs, "2026-10-01T00:00:00Z", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        assert E.schema_errors_kpi(snap) == []
+        # packages on disk vs package.sealed events (attempt level)
+        root = Path(os.environ["FORGE_STATE_DIR"]) / "workorders"
+        def local(ws):
+            prof = ws / ".forge-run/model-profile.json"
+            return not prof.is_file() or json.loads(prof.read_text()).get("local_only", True)
+    
+        sealed_ws = {ws.parent.name for ws in root.glob("*/workspace")
+                     if (ws / ".forge-run/package.json").is_file() and local(ws)}
+        assert sealed_ws == {e["attempt_id"] for e in evs if e["type"] == "package.sealed"}
+        import hashlib
+        for ws in root.glob("*/workspace"):  # every recorded package exists on disk with the recorded SHA-256
+            pj = ws / ".forge-run/package.json"
+            if pj.is_file():
+                p = json.loads(pj.read_text())
+                assert hashlib.sha256(Path(p["archive"]).read_bytes()).hexdigest() == p["archive_sha256"]
+        assert archive_root().is_dir()
+        # incidents ledger vs K16 denominator
+        inc = [i for i in IncidentStore().all(1000) if i["recoverable"] and i["state"] in ("RESOLVED", "REQUIRES_OFFLINE_ATTENTION")]
+        assert get(snap, "K16")["denominator"] == len(inc)
+        # initial inspections vs inspection files
+        first = {}
+        for ws in filter(local, root.glob("*/workspace")):
+            for f in sorted(ws.glob("inspection/SWE.*/INS-*.json")):
+                first.setdefault(f.parent.name, f)
+        for p in ("SWE.1", "SWE.2"):
+>           assert get(snap, "K02", phase=p)["denominator"] == (1 if p in first else 0)
+E           assert 4 == 1
+
+factory/python/tests/test_kpi_003.py:367: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_kpi_003.py::test_kpi_t020_pilot_reconciles_with_raw_evidence

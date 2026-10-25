@@ -1,1 +1,13 @@
-{"blockers":["FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED","APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED"],"learning_benefit":"NOT_RUN","local_model_capability":"NOT_RUN","manifest_sha256":"d0f2403dc09dcd71d5b3287ecb5edb7785c34b3c2bcac2a968633e758a859e1c","operational_availability":"NOT_RUN","product_success":"NOT_RUN","runtime_implementation":"SEPARATE_TEST_EVIDENCE","status":"BLOCKED"}
+{
+  "manifest_sha256": "bf488b025263e34607d1e569fca957616da1855d20e1087920f218d7203bf1b1",
+  "status": "BLOCKED",
+  "blockers": [
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED",
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED"
+  ],
+  "runtime_implementation": "SEPARATE_TEST_EVIDENCE",
+  "local_model_capability": "NOT_RUN",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_availability": "NOT_RUN"
+}

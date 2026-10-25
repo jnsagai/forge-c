@@ -1,19 +1,16 @@
 {
   "command": [
-    "env",
-    "-u",
-    "FORGE_FABRO_TOKEN",
-    "PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/maintenance-followup/factory/python",
-    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
-    "TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp",
     "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
     "-m",
     "pytest",
     "-q",
     "factory/python/tests/test_da014_integration.py",
+    "factory/python/tests/test_da014_isolation.py",
     "factory/python/tests/test_da014_learning.py",
     "factory/python/tests/test_da014_maintenance.py",
     "factory/python/tests/test_da014_protocol.py",
+    "factory/python/tests/test_da014_provider_process.py",
+    "factory/python/tests/test_da014_provider_recovery.py",
     "factory/python/tests/test_da014_qualification.py",
     "factory/python/tests/test_afo_local_autonomy.py",
     "factory/python/tests/test_afo_m0_audit.py",
@@ -38,36 +35,42 @@
     "factory/python/tests/test_t009_workflow_gates.py",
     "factory/python/tests/test_t005_t006_agents_skills.py",
     "factory/python/tests/test_brownfield_resume.py",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/final-cb9f2e7",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/final-cb9f2e7.xml"
+    "factory/python/tests/test_bubblewrap_confinement.py",
+    "factory/python/tests/test_cre_d7_isolation.py",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-17e6cbd-core",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-17e6cbd-core.xml"
   ],
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/maintenance-followup",
-  "duration_s": 175.66,
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
+  "duration_s": 183.421,
+  "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "exit_code": 0,
+  "fixture_provenance": "evidence/014-durable-local-autonomy/followup/provider-fixture-provenance.json",
   "git_dirty": false,
-  "git_head": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "git_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
+  "invocation_provenance": "evidence/014-durable-local-autonomy/followup/provider-final-invocation.json",
   "junit": {
-    "path": "evidence/v0.4/runs/DA014-core/20261025T105456.xml",
-    "sha256": "0074372e1620f81351e5c0eab6307919e6721463d2ccdff5a4258c6ab3ae4d26"
+    "path": "evidence/v0.4/runs/DA014-core/20261025T125927.xml",
+    "sha256": "0170385133e1b893d5c3a039909893f761a7a85610099c23b11b60021ad4ba34"
   },
-  "log": "evidence/v0.4/runs/DA014-core/20261025T105456.log",
-  "log_sha256": "76c23613bddeba6320f56e1c1e31882b3e6f8b6bb9086af75a430b7c41f77ddb",
+  "log": "evidence/v0.4/runs/DA014-core/20261025T125927.log",
+  "log_sha256": "0389db57bad59630e1abace4869d518a619cd073c303b2d64106033c547e3c6b",
   "results": {
     "errors": 0,
     "failures": 0,
-    "seconds": 175.66,
+    "seconds": 183.421,
     "skipped": 1,
-    "tests": 380,
-    "timestamp": "2026-10-25T10:51:40.563225+00:00"
+    "tests": 426,
+    "timestamp": "2026-10-25T12:55:42.391505+00:00"
   },
   "schema": "forge-c/task-evidence/0.4",
   "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
   "status": "PASS",
   "task": "DA014-core",
-  "ts_utc": "2026-10-25T10:54:56.648783+00:00"
+  "ts_utc": "2026-10-25T12:59:27.566960+00:00",
+  "umask": "0022"
 }

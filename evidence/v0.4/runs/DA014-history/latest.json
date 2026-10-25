@@ -1,22 +1,21 @@
 {
   "command": "python -m forge_factory.afo.history_qualification --dump <private-read-only-export> --sha256 86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783 --copy <new-loop10-offline-copy> --report <immutable-report>",
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/maintenance-followup",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
   "duration_s": null,
   "exit_code": 0,
   "git_dirty": false,
-  "git_head": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "git_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/DA014-history/20261025T105456.log",
-  "log_sha256": "5d64d530b40dde61efe115321395596e991f94ad4d59711b589196c7f71d7af2",
-  "report": "evidence/014-durable-local-autonomy/baseline/history-cb9f2e7.json",
-  "report_sha256": "b1a06e398da48e9ac602eee1222df6a3256e193dda3c225730733644f559d1c8",
+  "log": "evidence/v0.4/runs/DA014-history/20261025T125950.log",
+  "log_sha256": "45c09c2f16bd1ef8caf012b889a4283d9272ce0c97b5ad83ffc11b60a9ce0dfc",
+  "report": "evidence/014-durable-local-autonomy/baseline/history-17e6cbd.json",
   "schema": "forge-c/task-evidence/0.4",
-  "scope": "OFFLINE_COPY_ONLY_NO_LIVE_DATABASE_MUTATION",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
   "status": "PASS",
   "task": "DA014-history",
-  "ts_utc": "2026-10-25T10:54:56.743842+00:00"
+  "ts_utc": "2026-10-25T12:59:50.900670+00:00"
 }
