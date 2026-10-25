@@ -328,3 +328,50 @@ def test_request_concurrency_unknown_usage_and_overshoot(protocol):
     p.ledger.reconcile_request(rid, input_tokens=1000, output_tokens=18000, quiescent=True, evidence_ref="provider:terminal")
     assert p.ledger.snapshot("mission-test")["charged_tokens"] == 19000
     assert reserve(4) == "JOB_TOKEN_ENVELOPE_EXHAUSTED"
+
+
+def test_bounded_candidate_search_uses_independent_closure_and_rejects_reworded_retries(protocol):
+    import copy
+    from forge_factory.afo.semantic_proposal import rank_candidates
+
+    candidates = []
+    for index, technique in enumerate(("repair-implementation", "repair-traceability", "align-contract")):
+        proposal = {**protocol.proposal, "technique_id": technique}
+        feedback = {
+            "independent": True,
+            "receipt_ref": f"fixture-independent-gate:{index}",
+            "closed_obligations": [] if index == 0 else ["USPEC-001"],
+            "regressions": ["SWR-002"] if index == 1 else [],
+            "all_required_pass": index > 0,
+        }
+        candidates.append({"proposal": proposal, "verification": feedback, "confidence": 1000 - index, "votes": 100 - index})
+    assert rank_candidates(candidates, budget=2, stall_limit=3)["outcome"] == "EXHAUSTED"
+    selected = rank_candidates(candidates, budget=3, stall_limit=3)
+    assert selected["candidate"]["proposal"]["technique_id"] == "align-contract"
+    repeated = copy.deepcopy(candidates[0])
+    repeated["proposal"]["material_difference"] = "Same repair with another wording"
+    assert rank_candidates([candidates[0], repeated], budget=2)["reason"] == "REPEATED_STRATEGY"
+    candidates[0]["verification"]["independent"] = False
+    with pytest.raises(Refused, match="INDEPENDENT_VERIFIER_FEEDBACK_REQUIRED"):
+        rank_candidates(candidates, budget=3)
+
+
+def test_capability_limit_routes_never_renew_or_fall_back_to_cloud():
+    from forge_factory.afo.semantic_proposal import capability_route
+
+    options = dict(
+        complete=True,
+        fits=True,
+        qualified=False,
+        can_partition=False,
+        alternatives=[],
+        allowed_profiles=["qwen-local"],
+        remaining=True,
+    )
+    assert capability_route(**options)["outcome"] == "CAPABILITY_LIMIT"
+    assert capability_route(**{**options, "remaining": False})["outcome"] == "EXHAUSTED"
+    assert capability_route(**{**options, "complete": False})["outcome"] == "MISSING_EVIDENCE"
+    assert capability_route(**{**options, "fits": False, "can_partition": True})["outcome"] == "REPARTITION"
+    cloud = {"profile": "qwen-local", "qualified": True, "local_only": False}
+    assert capability_route(**{**options, "alternatives": [cloud]})["outcome"] == "CAPABILITY_LIMIT"
+    assert capability_route(**{**options, "alternatives": [{**cloud, "local_only": True}]})["action"] == "USE_LOCAL_PROFILE"

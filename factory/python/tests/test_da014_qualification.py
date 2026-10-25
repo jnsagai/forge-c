@@ -171,3 +171,29 @@ def test_independent_inspection_cannot_pass_unknown_or_same_model_agreement():
         [{"obligation_id": "SWR-001", "producer": "mutant", "pass": False, "evidence_ref": "actual:counterexample"}],
     )
     assert result["escaped_defects"] == ["SWR-001"] and result["status"] == "FAIL"
+
+
+def test_controlled_comparison_retains_frozen_denominator_and_no_automatic_selection(tmp_path):
+    import copy
+
+    manifest = Q.freeze("protocol", tmp_path / "manifest.json", identity=identity())
+    baseline = {
+        "manifest_sha256": digest(manifest),
+        "measured": True,
+        "native_run_ids": ["fixture-baseline"],
+        "identity": identity(),
+        "case_ids": ["frozen-case-A"],
+    }
+    candidate = copy.deepcopy(baseline)
+    candidate["identity"]["precision"] = "Q4"
+    candidate["independent_outcomes"] = [{"case_id": "frozen-case-A", "fixture_oracle": "FAIL"}]
+    report = Q.configuration_comparison(manifest, baseline, candidate)
+    assert report["changed_factor"] == "precision" and report["automatic_selection"] is False
+    assert report["automatic_deployment"] is False and report["rcc_success_prerequisite"] is False
+    candidate["case_ids"] = []
+    with pytest.raises(Refused, match="COMPARISON_DENOMINATOR_OR_ORACLE_MISSING"):
+        Q.configuration_comparison(manifest, baseline, candidate)
+    candidate["case_ids"] = baseline["case_ids"]
+    candidate["identity"]["reasoning"] = "high"
+    with pytest.raises(Refused, match="ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED"):
+        Q.configuration_comparison(manifest, baseline, candidate)

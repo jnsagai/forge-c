@@ -718,7 +718,7 @@ def test_refused_queue_head_defers_and_independent_order_meets_next_cycle_bound(
     eff = policy.Effective("PILOT", "PILOT", eff.sha256, copy.deepcopy(eff.policy))
 
     def decide(action, request, **kwargs):
-        return type("FixtureDecision", (), {"allow": request["order_id"] == "BB", "code": "AUTH_REFUSED_A"})()
+        return type("FixtureDecision", (), {"allow": request["order_id"] != "AA", "code": "AUTH_REFUSED_A"})()
 
     monkeypatch.setattr(authority, "decide", decide)
     probes = {k: lambda: True for k in ("mount", "capacity", "fabro", "gateway", "mcp")}
@@ -727,3 +727,95 @@ def test_refused_queue_head_defers_and_independent_order_meets_next_cycle_bound(
     assert first["action"] == "refused" and first["order_id"] == a
     assert second["action"] == "admitted" and second["order_id"] == b
     assert store.order(a)["state"] == "QUEUED" and store.order(a)["defer_count"] == 1
+    import hashlib
+    from test_da014_protocol import limits
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    env = _env(repo, rid="CC", name="c")
+    manifest = repo / env["input_manifest_ref"]
+    body = json.loads(manifest.read_text())
+    body["depends_on_order_ids"] = [a]
+    manifest.write_text(json.dumps(body))
+    env["manifest_sha256"] = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    c, _ = store.submit(env, repo=repo, max_queued=10)
+    ledger = MissionLedger(store)
+    ledger.register("fair-mission", "fixture:fairness", limits(), "fixture-authority", authorize=lambda *_: True)
+    ledger.link("fair-mission", c)
+    monkeypatch.setattr(scheduler, "launch_manifest", lambda order: json.loads((repo / order["input_manifest_ref"]).read_text()))
+    store.transition(b, "BLOCKED", "fixture independent job completed")
+    dependent = scheduler.cycle(store, "owner", eff=eff, probes=probes)
+    assert dependent["action"] == "deferred" and dependent["order_id"] == c
+    assert "ORDER_DEPENDENCY_NOT_READY:" + a in dependent["issues"]
+    assert store.order(c)["state"] == "QUEUED"
+
+
+def test_real_model_free_conductor_continues_without_engineering_authority_then_honors_stop(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from forge_factory.common import REPO_ROOT
+    from forge_factory.afo.queue import Store
+
+    private = tmp_path / "operations"
+    private.mkdir(mode=0o700)
+    intent = Intent(private / "intent.json")
+    intent.set("RUNNING", actor="owner-fixture", reason="isolated control-plane continuity", initialize=True)
+    state = tmp_path / "state"
+    store = Store(state / "conductor/conductor.sqlite3")
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    ledger = MissionLedger(store)
+    ledger.register(
+        "exhausted-fixture",
+        "isolated-expired-fixture",
+        dict(max_attempts=0, max_jobs=0, max_requests=0, max_tokens=0, max_tools=0, max_corrections=0, deadline=0),
+        "EXPIRED_OFFLINE_FIXTURE",
+        authorize=lambda *_: True,
+    )
+    before = ledger.snapshot("exhausted-fixture")
+    env = {
+        **os.environ,
+        "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+        "FORGE_STATE_DIR": str(state),
+        "FORGE_OPERATIONS_INTENT": str(intent.path),
+        "FORGE_AFO_POLICY": str(tmp_path / "missing-policy.yaml"),
+        "FORGE_DURABLE_AUTONOMY": "1",
+        "FORGE_FABRO_URL": "http://127.0.0.1:9/api/v1",
+        "FORGE_FABRO_STORAGE": str(tmp_path / "empty-native-storage"),
+    }
+    for key in ("NOTIFY_SOCKET", "WATCHDOG_PID", "WATCHDOG_USEC"):
+        env.pop(key, None)
+    log = tmp_path / "conductor.log"
+    with log.open("wb") as stream:
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "forge_factory.afo.conductor", "--interval", "0.1"],
+            env=env,
+            stdout=stream,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+        try:
+            heartbeat = state / "afo/conductor.heartbeat"
+            until = time.monotonic() + 20
+            observed = None
+            while time.monotonic() < until:
+                if heartbeat.is_file():
+                    observed = json.loads(heartbeat.read_text())
+                    if observed["cycle"] >= 2 and observed["ok"]:
+                        break
+                if proc.poll() is not None:
+                    break
+                time.sleep(0.05)
+            assert observed and observed["cycle"] >= 2 and observed["ok"], log.read_text()
+            assert observed["mode"] == "DISABLED" and proc.poll() is None
+            intent.set("STOPPED", actor="owner-fixture", reason="explicit stop after model-free observation")
+            assert proc.wait(timeout=10) == 77, log.read_text()
+            assert intent.read()["effective_stop"]
+            store = Store(state / "conductor/conductor.sqlite3")
+            assert MissionLedger(store).snapshot("exhausted-fixture") == before
+            with store.tx() as c:
+                assert c.execute("SELECT COUNT(*) FROM afo_request_ledger").fetchone()[0] == 0
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=5)

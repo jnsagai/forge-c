@@ -113,6 +113,13 @@ ATTEMPT_EDGES = {
     "UNKNOWN": {"RUNNING", "SUCCEEDED", "FAILED", "CANCELLED", "PREPARED"},
 }
 
+# Local-agent storage was historically created lazily by prepare()/records().
+# Continuous disabled/empty-queue supervision must be able to capture outcomes
+# before any model job has ever been prepared. Preserve all legacy rows in place.
+MIGRATIONS.append("""CREATE TABLE IF NOT EXISTS afo_local_agent_jobs (
+ job_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, role TEXT NOT NULL,
+ state TEXT NOT NULL, record TEXT NOT NULL, UNIQUE(attempt_id, role));""")
+
 
 class QueueError(ValueError):
     def __init__(self, code: str, detail: str = "", audit: tuple | None = None):

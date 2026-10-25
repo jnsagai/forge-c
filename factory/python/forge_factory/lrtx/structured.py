@@ -57,12 +57,13 @@ def skill(role: str) -> dict:
     import re
 
     parts = re.split(r"^## ", raw, flags=re.M)
-    kept = [f"## {x.strip()}" for x in parts[1:] if x.split("\n", 1)[0].strip() in SKILL_SECTIONS]
+    sections = (*SKILL_SECTIONS, "Feature 014 semantic mode") if role == "afo-recovery-planner" else SKILL_SECTIONS
+    kept = [f"## {x.strip()}" for x in parts[1:] if x.split("\n", 1)[0].strip() in sections]
     return {
         "role": role,
         "path": str(p.relative_to(REPO_ROOT)),
         "sha256": sha256_bytes(raw.encode()),
-        "sections": list(SKILL_SECTIONS),
+        "sections": list(sections),
         "text": "\n\n".join(kept),
     }
 
