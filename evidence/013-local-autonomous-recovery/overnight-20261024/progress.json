@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-25T08:44:45.620219+00:00",
+  "captured_utc": "2026-10-25T08:59:53.554685+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "PILOT",
@@ -54,10 +54,8 @@
   "exclusivity": "Qwen mission only, plus owner-requested low-priority Qwen3.8 Q8 download for a later inspector test; no competing inference or trials",
   "inspector_download": {
     "inference_started": false,
-    "manifest_sha256": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
     "model": "qwen3.8:27b-q8_0",
-    "state": "DOWNLOADING",
-    "total_bytes": 29978242050
+    "state": "FAILED"
   },
   "maintainer_proposals": [],
   "next_driver": {
@@ -662,13 +660,13 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.212890625,
-      0.1650390625,
-      0.1689453125
+      0.09521484375,
+      0.14599609375,
+      0.16455078125
     ],
-    "gpu": "0, 628, 49140, 26.50",
+    "gpu": "0, 628, 49140, 26.05",
     "memory": {
-      "MemAvailable": "122634944 kB",
+      "MemAvailable": "122654980 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
