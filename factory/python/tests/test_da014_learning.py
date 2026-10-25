@@ -213,6 +213,34 @@ def test_late_holdout_classification_excludes_old_facts_from_improvement_routing
     assert experience.report(memory)["unique_experiences"] == 3
 
 
+def test_holdout_classification_between_selection_and_delivery_fences_exposure(memory, tmp_path):
+    lesson = candidate(memory, tmp_path)
+    memory.validate(memory.propose(lesson, phase="SWE.3")["lesson_id"])
+    found = memory.find(
+        "register mapping",
+        "later-job",
+        phase="SWE.3",
+        role="swe3-author",
+        target="STM32N6",
+        source_version="v1",
+        tool_versions={"gcc": "14"},
+        record_usage=False,
+    )
+    assert found["lessons"]
+    experience.capture(
+        memory,
+        "native-job-A",
+        "JOB",
+        "PASS",
+        facts={"classification": "acceptance"},
+        source_refs=["campaign:heldout"],
+        cohort={"evaluation_holdout": True},
+    )
+    assert not memory.expose(found["lessons"], "later-job")
+    assert experience.report(memory)["exposures"] == 0
+    assert not memory.consumers(found["lessons"][0]["lesson_id"])
+
+
 def test_self_asserted_passes_and_changed_scope_do_not_qualify(memory, tmp_path):
     c = candidate(memory, tmp_path)
     c["applicability"]["targets"] = ["STM32H7"]

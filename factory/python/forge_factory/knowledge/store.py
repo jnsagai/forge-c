@@ -393,6 +393,12 @@ class LessonStore:
         if not row or row["state"] != "VALIDATED":
             return False
         rec = json.loads(row["record"])
+        if rec.get("source_kind") in ("ORDINARY_OUTCOME", "NEGATIVE_OBSERVATION"):
+            from .qualification import heldout_source
+
+            source = c.execute("SELECT record FROM job_experience WHERE experience_id=?", (rec.get("experience_ref"),)).fetchone()
+            if not source or heldout_source(c, source):
+                return False
         sha = hashlib.sha256(json.dumps(rec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         return sha == item["provenance"]["record_sha256"] and (not rec.get("expires_at") or rec["expires_at"] > utc_now())
 
