@@ -9,9 +9,12 @@
     "factory/python/tests/test_da014_learning.py",
     "factory/python/tests/test_da014_maintenance.py",
     "factory/python/tests/test_da014_protocol.py",
+    "factory/python/tests/test_da014_protocol_faults.py",
     "factory/python/tests/test_da014_provider_process.py",
     "factory/python/tests/test_da014_provider_recovery.py",
     "factory/python/tests/test_da014_qualification.py",
+    "factory/python/tests/test_da014_qualification_inputs.py",
+    "factory/python/tests/test_da014_qualification_reservations.py",
     "factory/python/tests/test_afo_local_autonomy.py",
     "factory/python/tests/test_afo_m0_audit.py",
     "factory/python/tests/test_afo_m0_contracts_status.py",
@@ -37,16 +40,16 @@
     "factory/python/tests/test_brownfield_resume.py",
     "factory/python/tests/test_bubblewrap_confinement.py",
     "factory/python/tests/test_cre_d7_isolation.py",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-794e8d0-core",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-794e8d0-core.xml"
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-9891b59-core",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-9891b59-core.xml"
   ],
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
-  "duration_s": 180.319,
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/protocol-fault-followup",
+  "duration_s": 234.822,
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "exit_code": 0,
   "fixture_provenance": "evidence/014-durable-local-autonomy/followup/provider-fixture-provenance.json",
   "git_dirty": false,
-  "git_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
+  "git_head": "9891b593dcea0949ad53c363ac2d3e8ca100a242",
   "host": {
     "node": "master",
     "python": "3.13.13",
@@ -54,23 +57,23 @@
   },
   "invocation_provenance": "evidence/014-durable-local-autonomy/followup/provider-final-invocation.json",
   "junit": {
-    "path": "evidence/v0.4/runs/DA014-core/20261025T132511.xml",
-    "sha256": "08ed62212ab907f75da8af3492bf8c5116b8bece737562c6c9d3ca77ecd2b19e"
+    "path": "evidence/v0.4/runs/DA014-core/20261025T143342.xml",
+    "sha256": "7409fda26246ef5520faa04355fc2f558ccc0653f7ef6d47ebb32bb638f87d74"
   },
-  "log": "evidence/v0.4/runs/DA014-core/20261025T132511.log",
-  "log_sha256": "fd1ea4cd48fb8f44785019cab2775e5b33da38b77235bf6ed4fa97b2c743f8a3",
+  "log": "evidence/v0.4/runs/DA014-core/20261025T143342.log",
+  "log_sha256": "0f26b81e292e44377dfbe0b1f97b59de32f6fab8a0730cb28a63ef20f4b905ec",
   "results": {
     "errors": 0,
     "failures": 0,
-    "seconds": 180.319,
+    "seconds": 234.822,
     "skipped": 1,
-    "tests": 430,
-    "timestamp": "2026-10-25T13:19:41.418874+00:00"
+    "tests": 480,
+    "timestamp": "2026-10-25T14:28:03.022386+00:00"
   },
   "schema": "forge-c/task-evidence/0.4",
   "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
   "status": "PASS",
   "task": "DA014-core",
-  "ts_utc": "2026-10-25T13:25:11.542334+00:00",
+  "ts_utc": "2026-10-25T14:33:42.777031+00:00",
   "umask": "0022"
 }

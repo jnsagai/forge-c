@@ -1,9 +1,9 @@
 {
-  "manifest_sha256": "f17e050f1c9f49dd3eb290c09e08f4ce3b43ca5cd5a6d3fcb33f5e004bd42e1d",
+  "manifest_sha256": "0c928061d981e888577ccd9238a49ad8f5e8f6b125246e16bb733fbffedd1715",
   "status": "BLOCKED",
   "blockers": [
-    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED",
-    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED"
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
   ],
   "runtime_implementation": "SEPARATE_TEST_EVIDENCE",
   "local_model_capability": "NOT_RUN",

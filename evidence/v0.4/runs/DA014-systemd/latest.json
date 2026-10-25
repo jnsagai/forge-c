@@ -1,21 +1,22 @@
 {
-  "command": "python -m forge_factory.afo.systemd_qualification --out <unique-loop10-output>",
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
+  "command": "python -m forge_factory.afo.systemd_qualification --out <loop10-isolated-test-directory>",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/protocol-fault-followup",
   "duration_s": null,
   "exit_code": 0,
   "git_dirty": false,
-  "git_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
+  "git_head": "9891b593dcea0949ad53c363ac2d3e8ca100a242",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/DA014-systemd/20261025T132700.log",
-  "log_sha256": "dfbaa9dc561d18e55158b13f5b48c16a62d7c9a86febbd5d2046fd725e76e657",
-  "report": "evidence/014-durable-local-autonomy/systemd/report.json",
+  "log": "evidence/v0.4/runs/DA014-systemd/20261025T143546.log",
+  "log_sha256": "7719ca76311db162ee413d1f3ca3273c04708c2c393da47075362547d1c8b27b",
+  "report": "evidence/014-durable-local-autonomy/systemd/9891b59-report.json",
+  "report_sha256": "93086f38f81599be997d8d388ad761ddd7f2b5ee2bbd9053adc12e9041de85c1",
   "schema": "forge-c/task-evidence/0.4",
-  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "scope": "ISOLATED_LOCAL_SYSTEMD_SEMANTICS_NO_QWEN_OR_DEPLOYMENT",
   "status": "PASS",
   "task": "DA014-systemd",
-  "ts_utc": "2026-10-25T13:27:00.021629+00:00"
+  "ts_utc": "2026-10-25T14:35:46.184928+00:00"
 }

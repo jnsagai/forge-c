@@ -194,6 +194,7 @@ Keep the Conductor lifetime indefinite: no production `--max-cycles`, global exi
 All live Qwen tests run on Omniverse2. Store local development/evidence/scratch on loop10. Existing valid authorization is used as-is; an exhausted or expired grant is not a retry allowance. See Feature 014 validation for exact blockers and executable commands.
 
 - `forge_factory.afo.history_qualification`: replay a hash-pinned private dump into a NEW offline copy, preserve every legacy row, deduplicate historical native identities and prove no fresh capacity appears.
+- `forge_factory.afo.qualification_inputs`: compile the explicit seeded virtual reference fixture and freeze all 100 protocol source cases, prospective bindings and effective gateway envelopes; creates no admission or authority. See `factory/qualification/014/README.md`.
 - `forge_factory.afo.qualification`: freeze/dry-run/provision/step/report for the 20x5 native protocol, RCC and fixed 30-product denominator; current signed campaign authority and independent oracle audits are mandatory for live results.
 - `forge_factory.afo.systemd_qualification`: uniquely named transient local CPU-only service semantics; does not deploy or qualify the remote profile.
 - `forge_factory.afo.operational_campaign` via the existing soak lane: 24/72/168-hour observation, bounded authorized faults, real work, gross outage/UNKNOWN accounting and later separately authorized intake. Ending the campaign does not stop continuous service.

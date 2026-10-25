@@ -1,8 +1,8 @@
 {
-  "git_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
+  "git_head": "9891b593dcea0949ad53c363ac2d3e8ca100a242",
   "start_dirty": "",
-  "started_at": "2026-10-25T13:19:41.169174+00:00",
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
+  "started_at": "2026-10-25T14:28:02.787342+00:00",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/protocol-fault-followup",
   "umask": "0022",
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "private_fixture_provenance": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fixture-provenance.json",
@@ -19,9 +19,12 @@
         "factory/python/tests/test_da014_learning.py",
         "factory/python/tests/test_da014_maintenance.py",
         "factory/python/tests/test_da014_protocol.py",
+        "factory/python/tests/test_da014_protocol_faults.py",
         "factory/python/tests/test_da014_provider_process.py",
         "factory/python/tests/test_da014_provider_recovery.py",
         "factory/python/tests/test_da014_qualification.py",
+        "factory/python/tests/test_da014_qualification_inputs.py",
+        "factory/python/tests/test_da014_qualification_reservations.py",
         "factory/python/tests/test_afo_local_autonomy.py",
         "factory/python/tests/test_afo_m0_audit.py",
         "factory/python/tests/test_afo_m0_contracts_status.py",
@@ -47,12 +50,12 @@
         "factory/python/tests/test_brownfield_resume.py",
         "factory/python/tests/test_bubblewrap_confinement.py",
         "factory/python/tests/test_cre_d7_isolation.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-794e8d0-core",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-794e8d0-core.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-9891b59-core",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-9891b59-core.xml"
       ],
-      "started_at": "2026-10-25T13:19:41.169304+00:00",
+      "started_at": "2026-10-25T14:28:02.787494+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-25T13:22:42.432782+00:00"
+      "ended_at": "2026-10-25T14:31:58.760929+00:00"
     },
     {
       "label": "release",
@@ -62,14 +65,14 @@
         "pytest",
         "-q",
         "factory/python/tests/test_m7_governance_release.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-794e8d0-release",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-794e8d0-release.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-9891b59-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-9891b59-release.xml"
       ],
-      "started_at": "2026-10-25T13:22:42.489154+00:00",
+      "started_at": "2026-10-25T14:31:58.844684+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-25T13:22:53.831428+00:00"
+      "ended_at": "2026-10-25T14:32:10.586548+00:00"
     }
   ],
   "end_dirty": "",
-  "end_head": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08"
+  "end_head": "9891b593dcea0949ad53c363ac2d3e8ca100a242"
 }
