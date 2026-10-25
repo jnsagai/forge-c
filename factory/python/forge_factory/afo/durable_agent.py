@@ -276,6 +276,9 @@ def generate(store, job, eff):
         raise Refused("QWEN_QUALIFICATION_REMOTE_ONLY")
     if not enabled(job["role"], eff) or not authorized(store.order(job["order_id"]), eff, job["model"]):
         raise Refused("GENERATION_NOT_AUTHORIZED")
+    from .protocol_faults import apply_primary
+
+    apply_primary(store, job, eff)
     body, measured = request_body(store, job)
     rid = "request-" + digest([job["job_id"], job["nonce"], 0])[:24]
     body["forge_execution"] = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": rid}

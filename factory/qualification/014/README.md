@@ -50,9 +50,10 @@ reservation. Rebinding an existing job's reservation remains forbidden. The
 ordinary production path retains the registry allowance. Full campaign readiness
 still requires every other prerequisite below.
 
-Four response interventions are implemented at the native adapter boundary:
-administrative-field forgery, empty content, truncated JSON and an unqualified
-model switch. Enable only a declared per-trial mapping using qualification
+Six response interventions are implemented at the native adapter boundary:
+administrative-field forgery, empty content, truncated JSON, an unqualified
+model switch, a genuinely distinct foreign case reference and a reworded tried
+strategy. Enable only a declared per-trial mapping using qualification
 `freeze --protocol-faults <json-file>`. Each entry must exactly match that seeded
 case's prospective recipe; the owner signature binds the mapping. Ordinary
 product cases cannot enable these controls. For example, `empty-output:0` maps to
@@ -67,9 +68,20 @@ oracle audit. Injected responses do not establish unmodified model competence.
 Unmodified empty or invalidly typed content is a protocol incident and cannot
 create a semantic completion receipt.
 
+Two pre-evidence interventions atomically replace only the frozen seeded
+`software/hal/reg32.c`: a hash-stale file or a symlink to a fixed nonauthoritative
+marker outside that fixture workspace. Both persist an immutable intent before
+the effect and adopt an identical completed effect on replay. Parent paths,
+regular-file type and bounded source size are checked; no external source is
+read through the injected symlink. Tests interrupt both sides of replacement.
+The original case and packet hashes remain unchanged so actual evidence access
+must refuse the altered source. Reports require the matching source-fault fact
+and its exact native incident code. A response fault likewise needs the specific
+broker rejection code; an unrelated refusal cannot satisfy the case.
+
 `inputs.json` includes prospective fault recipes. They are not executed fault
-evidence. Source/symlink/cross-case faults, strategy replay, revocation/expiry,
-lost launch acknowledgement and cancellation-with-live-request interventions
+evidence. Revocation/expiry, lost launch acknowledgement and
+cancellation-with-live-request interventions
 remain unprovisioned, as does the independently measured authorized local
 alternative; unresolved prerequisites block the full campaign. Dirty generator
 source also blocks readiness. Pass `inputs.json` and

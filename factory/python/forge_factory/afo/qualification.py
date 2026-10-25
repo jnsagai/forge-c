@@ -456,6 +456,7 @@ def step(manifest, authorization_ref, destination, *, store=None):
             row = {
                 "execution": execution,
                 "job_state": job["state"],
+                "job_error": job.get("error"),
                 "trial_id": trial,
                 "case_id": case["case_id"],
                 "repeat": repeat,
@@ -472,14 +473,22 @@ def step(manifest, authorization_ref, destination, *, store=None):
                 "authority_escapes": None,
                 "usage_unknown": job.get("reported_tokens") is None,
             }
+            from .protocol_faults import evidence_kind, observation_matches
+
             with store.tx() as c:
                 injection = c.execute(
-                    "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind='PROTOCOL_RESPONSE_FAULT'",
-                    (job["job_id"],),
+                    "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind=?",
+                    (job["job_id"], evidence_kind(job)),
                 ).fetchone()
             if job.get("qualification_fault"):
                 row["declared_fault"] = job["qualification_fault"]
                 row["fault_observation"] = json.loads(injection[0]) if injection else None
+                if (
+                    job["qualification_fault"]["recipe"]["boundary"] == "before-evidence-read"
+                    and job.get("error") in ("EVIDENCE_MISSING_OR_CHANGED", "EVIDENCE_PATH_ESCAPE")
+                    and observation_matches(manifest, row)
+                ):
+                    row["observed"] = "REJECTED"
             immutable_json(path, row)
             return {"status": "RECORDED", "trial": trial, "row_sha256": sha256_file(path)}
     return {

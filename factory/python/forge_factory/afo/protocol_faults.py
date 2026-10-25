@@ -10,13 +10,36 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import stat
+import tempfile
 import time
+from pathlib import Path
 
-from ..common import sha256_file
-from .durable import Refused, canonical, digest, strict_json
-from .qualification_inputs import FAULT_RECIPES
+from ..common import sha256_file, state_dir
+from .durable import Refused, canonical, digest, immutable_bytes, strict_json
+from .qualification_inputs import FAULT_RECIPES, IMPLEMENTATION
 
-SUPPORTED = {"administrative-forgery", "empty-output", "malformed-output", "unqualified-local-alternative"}
+RESPONSE = {
+    "administrative-forgery",
+    "empty-output",
+    "malformed-output",
+    "unqualified-local-alternative",
+    "cross-case-reference",
+    "reworded-strategy",
+}
+PRIMARY = {"stale-primary", "symlink-escape"}
+SUPPORTED = RESPONSE | PRIMARY
+REJECTION_CODES = {
+    "administrative-forgery": "CONTRACT_INVALID",
+    "malformed-output": "INVALID_JSON",
+    "cross-case-reference": "PROPOSAL_EVIDENCE_NOT_IN_CASE",
+    "reworded-strategy": "SEMANTIC_STRATEGY_ALREADY_TRIED",
+    "unqualified-local-alternative": "LOCAL_ALTERNATIVE_NOT_QUALIFIED_AND_AUTHORIZED",
+}
+PRIMARY_PATH = "software/hal/reg32.c"
+STALE_BYTES = IMPLEMENTATION.encode() + b"\n/* SIGNED QUALIFICATION STALE PRIMARY */\n"
+EXTERNAL_MARKER = b"Signed qualification symlink escape marker; not authoritative source.\n"
 
 
 def validate_catalogue(catalogue, jobs):
@@ -30,7 +53,8 @@ def validate_catalogue(catalogue, jobs):
 
 def bind(manifest, job):
     """Called only after initial_reservation verifies the exact owner signature."""
-    from pathlib import Path
+    from . import diagnosis_packet as P
+    from . import semantic_proposal as S
 
     matches = [trial for trial, binding in manifest["jobs"].items() if binding["job_id"] == job["job_id"]]
     if len(matches) != 1:
@@ -48,15 +72,56 @@ def bind(manifest, job):
         or fixture.get("prospective_fault") != recipe
     ):
         raise Refused("QUALIFICATION_FAULT_REQUIRES_EXPLICIT_FROZEN_FIXTURE")
-    return {"qualification_fault": {"trial_id": trial, "recipe": recipe, "manifest_sha256": digest(manifest)}}
+    result = {"qualification_fault": {"trial_id": trial, "recipe": recipe, "manifest_sha256": digest(manifest)}}
+    name = trial.rsplit(":", 1)[0]
+    packet = P.load(case["packet_ref"])
+    if name in PRIMARY:
+        source = next((a for a in packet["artifacts"] if a["path"] == PRIMARY_PATH), None)
+        if not source or source["sha256"] != hashlib.sha256(IMPLEMENTATION.encode()).hexdigest():
+            raise Refused("QUALIFICATION_PRIMARY_FAULT_REQUIRES_FROZEN_SEEDED_SOURCE")
+        P.evidence(packet, source["ref"], role=packet["role"], phase=packet["binding"]["phase"])
+        result["qualification_primary_ref"] = {k: source[k] for k in ("path", "sha256", "ref")}
+    elif name == "cross-case-reference":
+        own_refs = {a["ref"] for a in packet["artifacts"]} | {f["ref"] for f in packet["findings"]}
+        for other_trial, other in sorted(manifest["jobs"].items()):
+            if other_trial == trial:
+                continue
+            path = Path(other["case"])
+            if path.is_symlink() or sha256_file(path) != other["case_sha256"]:
+                raise Refused("QUALIFICATION_FOREIGN_CASE_CHANGED")
+            foreign_packet = P.load(json.loads(path.read_text())["packet_ref"])
+            foreign = next((a for a in foreign_packet["artifacts"] if a["ref"] not in own_refs), None)
+            if foreign:
+                P.evidence(foreign_packet, foreign["ref"], role=foreign_packet["role"], phase=foreign_packet["binding"]["phase"])
+                result["qualification_foreign_ref"] = {
+                    "trial_id": other_trial,
+                    "case_sha256": other["case_sha256"],
+                    "evidence_ref": foreign["ref"],
+                }
+                break
+        if "qualification_foreign_ref" not in result:
+            raise Refused("QUALIFICATION_DISTINCT_FOREIGN_EVIDENCE_REQUIRED")
+    elif name == "reworded-strategy":
+        fields = {
+            "decision": "PROPOSE_REPAIR",
+            "strategy": "REWORK_LOCAL",
+            "affected_phase": "SWE.3",
+            "technique_id": "repair-implementation",
+            "target_obligations": ["USPEC-001"],
+            "artifact_scope": ["software/hal"],
+            "validation_expectations": [{"test_ref": "gate:SWE.3:route=PASS", "expected_result": "PASS"}],
+        }
+        if S.signature(fields) not in packet["prior_strategies"]:
+            raise Refused("QUALIFICATION_FROZEN_PRIOR_STRATEGY_REQUIRED")
+        result["qualification_replay_fields"] = fields
+    return result
 
 
-def apply_response(store, job, raw, eff):
-    """Apply a fixed intervention once logically; preserve only bounded hashes in the existing ledger."""
+def _context(store, job, eff, boundary):
+    """Every boundary uses the same fresh authority, identity and native lease checks."""
     fault = job.get("qualification_fault")
     if fault is None:
-        return raw
-    from pathlib import Path
+        return None
 
     from . import authz, local_agent
     from .completion_receipt import Context
@@ -65,8 +130,8 @@ def apply_response(store, job, raw, eff):
     name = fault["trial_id"].rsplit(":", 1)[0]
     if name not in SUPPORTED or fault["recipe"] != FAULT_RECIPES[name]:
         raise Refused("QUALIFICATION_FAULT_RECIPE_UNSUPPORTED")
-    if not isinstance(raw, str) or len(raw.encode()) > 65536:
-        raise Refused("QUALIFICATION_RESPONSE_FAULT_INPUT_INVALID")
+    if fault["recipe"]["boundary"] != boundary:
+        return None
     ctx = Context.from_job(store, job["job_id"])
     if ctx.launch_nonce != job["nonce"] or ctx.case_sha256 != job["case_sha256"]:
         raise Refused("QUALIFICATION_FAULT_JOB_BINDING_INVALID")
@@ -103,6 +168,34 @@ def apply_response(store, job, raw, eff):
         or live.get("admission_state") not in ("DISPATCH_INTENT_RECORDED", "NATIVE_ACCEPTED")
     ):
         raise Refused("QUALIFICATION_FAULT_EXECUTION_NOT_ACTIVE")
+    return ctx, fault, name, current
+
+
+def _record(store, job_id, kind, evidence):
+    """Use the authoritative evidence table; changed replay cannot overwrite history."""
+    with store.tx() as c:
+        previous = c.execute(
+            "SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, kind)
+        ).fetchone()
+        if previous and digest(json.loads(previous["record"])) != previous["sha256"]:
+            raise Refused("QUALIFICATION_FAULT_EVIDENCE_CORRUPT")
+        if previous and previous["sha256"] != digest(evidence):
+            raise Refused("QUALIFICATION_FAULT_REPLAY_CHANGED")
+        c.execute(
+            "INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)",
+            (job_id, kind, canonical(evidence).decode(), digest(evidence)),
+        )
+
+
+def apply_response(store, job, raw, eff):
+    """Only a signed response-boundary recipe can transform visible model content."""
+    context = _context(store, job, eff, "after-provider-response")
+    if context is None:
+        return raw
+    if not isinstance(raw, str) or len(raw.encode()) > 65536:
+        raise Refused("QUALIFICATION_RESPONSE_FAULT_INPUT_INVALID")
+    ctx, fault, name, current = context
+    details = {}
     if name == "empty-output":
         changed = ""
     elif name == "malformed-output":
@@ -113,6 +206,21 @@ def apply_response(store, job, raw, eff):
             raise Refused("QUALIFICATION_RESPONSE_FAULT_REQUIRES_JSON_OBJECT")
         if name == "administrative-forgery":
             value["order_id"] = "qualification-forged-administrative-id"
+        elif name == "cross-case-reference":
+            foreign = current["qualification_foreign_ref"]
+            value["evidence_refs"] = [foreign["evidence_ref"]]
+            details["foreign_evidence"] = foreign
+        elif name == "reworded-strategy":
+            from .semantic_proposal import signature
+
+            if value.get("decision") != "PROPOSE_REPAIR":
+                raise Refused("QUALIFICATION_REPLAY_FAULT_REQUIRES_REPAIR_PROPOSAL")
+            value.update(current["qualification_replay_fields"])
+            value["material_difference"] = "Reworded qualification label for the same previously tried strategy"
+            # These fields are absent from the frozen REWORK_LOCAL strategy.
+            value.pop("owner_phase", None)
+            value.pop("model_profile", None)
+            details["replayed_strategy_sha256"] = signature(value)
         else:
             if value.get("decision") != "PROPOSE_REPAIR":
                 raise Refused("QUALIFICATION_MODEL_SWITCH_FAULT_REQUIRES_REPAIR_PROPOSAL")
@@ -125,23 +233,96 @@ def apply_response(store, job, raw, eff):
         "nonce": job["nonce"],
         "case_sha256": ctx.case_sha256,
         **fault,
+        **details,
         "original_response_sha256": hashlib.sha256(raw.encode()).hexdigest(),
         "injected_response_sha256": hashlib.sha256(changed.encode()).hexdigest(),
         "scope": "DECLARED_INTERVENTION_NOT_UNMODIFIED_MODEL_COMPETENCE",
     }
-    # Immutable insert in the authoritative evidence table: a changed replay is
-    # refused rather than overwriting the first intervention's observation.
-    with store.tx() as c:
-        previous = c.execute(
-            "SELECT sha256 FROM afo_execution_evidence WHERE job_id=? AND kind='PROTOCOL_RESPONSE_FAULT'", (job["job_id"],)
-        ).fetchone()
-        if previous and previous[0] != digest(evidence):
-            raise Refused("QUALIFICATION_FAULT_REPLAY_CHANGED")
-        c.execute(
-            "INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)",
-            (job["job_id"], "PROTOCOL_RESPONSE_FAULT", canonical(evidence).decode(), digest(evidence)),
-        )
+    _record(store, job["job_id"], "PROTOCOL_RESPONSE_FAULT", evidence)
     return changed
+
+
+def apply_primary(store, job, eff):
+    """Mutate only the explicitly seeded REG32 fixture; durable intent precedes atomic replacement."""
+    context = _context(store, job, eff, "before-evidence-read")
+    if context is None:
+        return None
+    from .diagnosis_packet import scoped_path
+
+    ctx, fault, name, current = context
+    primary = current["qualification_primary_ref"]
+    if primary["path"] != PRIMARY_PATH or primary["sha256"] != hashlib.sha256(IMPLEMENTATION.encode()).hexdigest():
+        raise Refused("QUALIFICATION_PRIMARY_FAULT_REQUIRES_FROZEN_SEEDED_SOURCE")
+    # Validate the parent independently: the intentional target symlink must be
+    # recognized on crash replay without following it or allowing a parent escape.
+    parent = scoped_path(Path(current["source_workspace"]), "software/hal")
+    path = parent / "reg32.c"
+    marker = scoped_path(state_dir(), "lrtx/protocol-faults/fault-" + digest(job["job_id"])[:24] + "/external-marker.txt")
+    if Path(current["source_workspace"]).resolve() in marker.resolve().parents:
+        raise Refused("QUALIFICATION_ESCAPE_MARKER_MUST_BE_OUTSIDE_WORKSPACE")
+    injected = (
+        hashlib.sha256(STALE_BYTES).hexdigest()
+        if name == "stale-primary"
+        else digest({"kind": "symlink", "target": str(marker), "target_sha256": hashlib.sha256(EXTERNAL_MARKER).hexdigest()})
+    )
+    fact = {
+        "schema": "forge-c/protocol-primary-fault-observation/1",
+        "job_id": job["job_id"],
+        "nonce": job["nonce"],
+        "case_sha256": ctx.case_sha256,
+        **fault,
+        "path": PRIMARY_PATH,
+        "original_entry_sha256": primary["sha256"],
+        "injected_entry_sha256": injected,
+        "entry_kind": "file" if name == "stale-primary" else "symlink",
+        "scope": "DECLARED_INTERVENTION_NOT_UNMODIFIED_MODEL_COMPETENCE",
+    }
+    _record(store, job["job_id"], "PROTOCOL_PRIMARY_FAULT_INTENT", fact)
+    if path.is_symlink():
+        if (
+            name != "symlink-escape"
+            or os.readlink(path) != str(marker)
+            or sha256_file(marker) != hashlib.sha256(EXTERNAL_MARKER).hexdigest()
+        ):
+            raise Refused("QUALIFICATION_PRIMARY_ENTRY_CHANGED")
+    else:
+        try:
+            descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(descriptor, "rb") as stream:
+                info = os.fstat(stream.fileno())
+                if not stat.S_ISREG(info.st_mode) or info.st_size > max(len(STALE_BYTES), len(IMPLEMENTATION.encode())):
+                    raise Refused("QUALIFICATION_PRIMARY_ENTRY_CHANGED")
+                original = stream.read(len(STALE_BYTES) + 1)
+        except OSError as exc:
+            raise Refused("QUALIFICATION_PRIMARY_ENTRY_CHANGED") from exc
+        if original != IMPLEMENTATION.encode() and not (name == "stale-primary" and original == STALE_BYTES):
+            raise Refused("QUALIFICATION_PRIMARY_ENTRY_CHANGED")
+        if original == IMPLEMENTATION.encode():
+            descriptor, staged = tempfile.mkstemp(prefix=".qualification-fault-", dir=parent)
+            temp = Path(staged)
+            try:
+                with os.fdopen(descriptor, "wb") as stream:
+                    if name == "stale-primary":
+                        stream.write(STALE_BYTES)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                        os.fchmod(stream.fileno(), 0o400)
+                if name == "symlink-escape":
+                    immutable_bytes(marker, EXTERNAL_MARKER)
+                    temp.unlink()
+                    os.symlink(str(marker), temp)
+                os.replace(temp, path)
+                directory = os.open(parent, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    os.fsync(directory)
+                finally:
+                    os.close(directory)
+            finally:
+                if temp.exists() or temp.is_symlink():
+                    temp.unlink()
+    # A crash after replacement simply adopts the same entry on the next call.
+    _record(store, job["job_id"], "PROTOCOL_PRIMARY_FAULT", fact)
+    return fact
 
 
 def observation_matches(manifest, row):
@@ -154,17 +335,48 @@ def observation_matches(manifest, row):
     declared = row.get("declared_fault") or {}
     if not isinstance(fact, dict) or not isinstance(declared, dict):
         return False
-    return (
+    common = (
         declared == {"trial_id": row["trial_id"], "recipe": recipe, "manifest_sha256": digest(manifest)}
         and all(fact.get(k) == v for k, v in declared.items())
         and fact.get("job_id") == binding["job_id"] == row["job_id"]
         and fact.get("case_sha256") == binding["case_sha256"]
         and fact.get("nonce") == (row.get("execution") or {}).get("launch_nonce")
-        and fact.get("schema") == "forge-c/protocol-fault-observation/1"
         and fact.get("scope") == "DECLARED_INTERVENTION_NOT_UNMODIFIED_MODEL_COMPETENCE"
-        and all(
-            isinstance(fact.get(k), str) and len(fact[k]) == 64 and all(c in "0123456789abcdef" for c in fact[k])
-            for k in ("original_response_sha256", "injected_response_sha256")
-        )
-        and fact["original_response_sha256"] != fact["injected_response_sha256"]
     )
+    if not common:
+        return False
+    name = row["trial_id"].rsplit(":", 1)[0]
+    if name in REJECTION_CODES and REJECTION_CODES[name] not in (row.get("receipt") or {}).get("reason_codes", []):
+        return False
+    if name == "empty-output" and row.get("job_error") != "EMPTY_MODEL_OUTPUT":
+        return False
+    if name in PRIMARY and row.get("job_error") != (
+        "EVIDENCE_MISSING_OR_CHANGED" if name == "stale-primary" else "EVIDENCE_PATH_ESCAPE"
+    ):
+        return False
+    primary = recipe["boundary"] == "before-evidence-read"
+    hashes = (
+        ("original_entry_sha256", "injected_entry_sha256")
+        if primary
+        else ("original_response_sha256", "injected_response_sha256")
+    )
+    return (
+        fact.get("schema")
+        == ("forge-c/protocol-primary-fault-observation/1" if primary else "forge-c/protocol-fault-observation/1")
+        and (
+            not primary
+            or (
+                fact.get("path") == PRIMARY_PATH
+                and fact.get("entry_kind") == ("file" if row["trial_id"].startswith("stale-primary:") else "symlink")
+            )
+        )
+        and all(
+            isinstance(fact.get(k), str) and len(fact[k]) == 64 and all(c in "0123456789abcdef" for c in fact[k]) for k in hashes
+        )
+        and fact[hashes[0]] != fact[hashes[1]]
+    )
+
+
+def evidence_kind(job):
+    recipe = (job.get("qualification_fault") or {}).get("recipe") or {}
+    return "PROTOCOL_PRIMARY_FAULT" if recipe.get("boundary") == "before-evidence-read" else "PROTOCOL_RESPONSE_FAULT"
