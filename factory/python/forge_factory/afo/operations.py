@@ -224,12 +224,13 @@ def recover_profile(store, *, external=False):
 
     def restore():
         rec = Intent().read()
-        if rec["mode"] != "RUNNING" or not operational_authorized("restart_local_stack"):
+        allowed = ("RUNNING", "PAUSED", "DRAINING") if stack.managed_serving() else ("RUNNING",)
+        if rec["mode"] not in allowed or not operational_authorized("restart_local_stack"):
             return {"ok": False, "code": "OPERATIONAL_RECIPE_NOT_AUTHORIZED"}
         intent = Intent()
         with intent.lock():
             current = intent.read()
-            if current["epoch"] != rec["epoch"] or current["mode"] != "RUNNING":
+            if current["epoch"] != rec["epoch"] or current["mode"] not in allowed:
                 return {"ok": False, "code": "OPERATIONS_START_FENCED"}
             # Lock order is intent -> SQLite, shared with shutdown. Hold admission
             # while restoring model-free dependencies so no owner appears mid-start.
@@ -239,7 +240,15 @@ def recover_profile(store, *, external=False):
                 if owner and not stack.managed_serving():
                     return {"ok": False, "code": "NATIVE_QUIESCENCE_UNPROVEN"}
                 if not owner:
-                    restored = stack._start(stack.settings(profile), recovery=True)
+                    if current["mode"] == "RUNNING":
+                        restored = stack._start(stack.settings(profile), recovery=True)
+                    else:
+                        restored = stack._start(stack.settings(profile), recovery=True, control_only=True)
+                        return {
+                            "ok": restored["health"].get("fabro") is True,
+                            "code": "CONTROL_PLANE_ONLY",
+                            "health": restored["health"],
+                        }
             if owner:
                 from .execution_lifecycle import Executions
                 from .mission_ledger import MissionLedger

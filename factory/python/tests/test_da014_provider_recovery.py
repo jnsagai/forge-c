@@ -323,3 +323,19 @@ def test_same_process_with_changed_namespace_is_not_treated_as_ended():
     changed = {**original, "netns": "net:[different]"}
     assert not stack._pinned_process_ended(original, changed)
     assert not stack._pinned_process_ended(None, original)
+
+
+@pytest.mark.parametrize("mode", ["PAUSED", "DRAINING"])
+@pytest.mark.parametrize("owned", [False, True])
+def test_pause_and_drain_preserve_model_free_recovery_without_new_inference(protocol, tmp_path, monkeypatch, mode, owned):
+    p = protocol
+    with provider(tmp_path, "controlled") as instance:
+        if owned:
+            dispatched(p, instance)
+        intent, calls = managed(p, instance, tmp_path, monkeypatch)
+        intent.set(mode, actor="owner", reason="control-state fixture")
+        result = operations.recover_profile(p.store, external=True)
+        assert result["result"]["code"] == ("ACTIVE_PROVIDER_PRESERVED" if owned else "CONTROL_PLANE_ONLY")
+        assert calls == [{"recovery": True, "control_only": True}]
+        assert P.quiet(instance) is None and intent.read()["mode"] == mode
+        assert Executions(p.store).pending() == ([] if not owned else [Executions(p.store).get(p.ctx.job_id)])
