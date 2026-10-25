@@ -17,11 +17,13 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import utc_now
-from .durable import Refused, canonical
+from .durable import Refused, canonical, strict_json
 
 MODES = {"RUNNING", "PAUSED", "DRAINING", "STOPPED"}
 # Fixed approved operational recipe: Conductor only; no recursive supervisor restarts.
-UNIT = "forge-conductor.service"
+UNIT = os.environ.get("FORGE_CONDUCTOR_UNIT", "forge-conductor.service")
+if UNIT not in ("forge-conductor.service", "forge-conductor-local-omniverse2.service"):
+    raise ValueError("UNAPPROVED_CONDUCTOR_RECOVERY_UNIT")
 COOLDOWN = 600
 
 
@@ -58,11 +60,11 @@ class Intent:
             st = self.path.stat()
             if self.path.is_symlink() or st.st_uid != os.getuid() or st.st_mode & 0o077:
                 raise Refused("OPERATIONS_RECORD_NOT_PRIVATE_OR_OWNED")
-            rec = json.loads(self.path.read_text())
+            rec = strict_json(self.path.read_bytes(), 65536)
             if rec["mode"] not in MODES or type(rec["epoch"]) is not int or rec["epoch"] < 1:
                 raise ValueError
             return rec
-        except (OSError, ValueError, KeyError):
+        except (OSError, ValueError, KeyError, TypeError):
             return {"mode": "UNKNOWN", "epoch": 0, "effective_stop": False}
 
     def _write(self, rec):
@@ -99,6 +101,8 @@ class Intent:
                 "effective_stop": False,
                 "next_recovery_epoch": old.get("next_recovery_epoch", 0),
                 "recoveries": old.get("recoveries", 0),
+                "pending_start": old.get("pending_start", False),
+                "last_recovery": old.get("last_recovery"),
             }
             # Commit STOPPED before bounded cancellation/stop; all start actors share this lock.
             self._write(rec)
@@ -109,15 +113,22 @@ class Intent:
                 self._write(rec)
             return rec
 
-    def start(self, epoch, *, probe, runner=None, now=None):
+    def start(self, epoch, *, probe, runner=None, now=None, authorize=None):
         now = time.time() if now is None else now
         with self.lock():
             rec = self.read()
             if rec["epoch"] != epoch or rec["mode"] not in ("RUNNING", "PAUSED", "DRAINING"):
                 raise Refused("OPERATIONS_START_FENCED")
             due = rec.get("next_recovery_epoch", 0)
+            if due - now > COOLDOWN:
+                rec["clock_regression_detected_at"] = now
+                rec["next_recovery_epoch"] = now + COOLDOWN
+                self._write(rec)
+                due = rec["next_recovery_epoch"]
             if now < due:
                 return {"action": "COOLDOWN", "next_probe": due}
+            if not (authorize or operational_authorized)():
+                return {"action": "WAITING_FOR_PREAUTHORIZED_OPERATIONAL_RECIPE"}
             state = probe()
             # An explicit systemctl stop produces inactive/success; never undo it. Disabled/masked is deliberate.
             if (
@@ -129,9 +140,12 @@ class Intent:
             rec["next_recovery_epoch"] = now + COOLDOWN
             rec["recoveries"] = rec.get("recoveries", 0) + 1
             rec["last_recovery"] = {"epoch": epoch, "at": now, "recipe": "conductor-failed-start-v1", "state": state}
+            rec["pending_start"] = True
             self._write(rec)  # persist cooldown before uncertain external start
             run = runner or (lambda argv: subprocess.run(argv, capture_output=True, text=True, timeout=20))
             result = run(["systemctl", "--user", "start", UNIT])
+            rec["pending_start"] = False
+            self._write(rec)
             # Do not reset-failed: retain systemd's burst limit. A future bounded probe can try after its interval.
             return {
                 "action": "START_REQUESTED",
@@ -141,9 +155,19 @@ class Intent:
             }
 
 
+def operational_authorized(action="restart_conductor"):
+    """Reuse CRE's persistent, pre-authorized operational boundary; engineering grant expiry is separate."""
+    from ..reliability.policy import load
+
+    try:
+        return load().automatic_action_allowed(action)
+    except (OSError, ValueError):
+        return False
+
+
 def observed_unit():
     r = subprocess.run(
-        ["systemctl", "--user", "show", UNIT, "--property=ActiveState,SubState,Result,UnitFileState"],
+        ["systemctl", "--user", "show", UNIT, "--property=ActiveState,SubState,Result,UnitFileState,Job"],
         capture_output=True,
         text=True,
         timeout=10,
@@ -180,6 +204,38 @@ def recover():
     return intent.start(rec["epoch"], probe=observed_unit)
 
 
+def recover_profile(store):
+    """Reuse the isolated stack's fixed start recipe; never kill an uncertain native owner."""
+    profile = os.environ.get("FORGE_OPERATIONS_PROFILE")
+    if not configured() or not profile:
+        return {"action": "NOT_ENABLED"}
+    from .dependency_wait import probe
+    from ..lrtx import stack
+
+    def restore():
+        rec = Intent().read()
+        if rec["mode"] != "RUNNING" or not operational_authorized("restart_local_stack"):
+            return {"ok": False, "code": "OPERATIONAL_RECIPE_NOT_AUTHORIZED"}
+        intent = Intent()
+        with intent.lock():
+            current = intent.read()
+            if current["epoch"] != rec["epoch"] or current["mode"] != "RUNNING":
+                return {"ok": False, "code": "OPERATIONS_START_FENCED"}
+            # Lock order is intent -> SQLite, shared with shutdown. Hold admission
+            # while restoring model-free dependencies so no owner appears mid-start.
+            with store.tx() as c:
+                held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
+                if held and held[0]:
+                    return {"ok": False, "code": "NATIVE_QUIESCENCE_UNPROVEN"}
+                restored = stack._start(stack.settings(profile), recovery=True)
+        return {
+            "ok": all(restored["health"].get(k) is True for k in ("fabro", "gateway", "ollama")),
+            "health": restored["health"],
+        }
+
+    return probe(store, "local-profile", profile, restore, minimum=60, maximum=600)
+
+
 def main(argv=None):
     import argparse
 
@@ -199,3 +255,59 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def fenced_call(epoch, effect):
+    """Serialize only the bounded external start effect with authenticated operator control."""
+    if not configured():
+        return effect()
+    intent = Intent()
+    with intent.lock():
+        rec = intent.read()
+        if rec["mode"] != "RUNNING" or rec["epoch"] != epoch:
+            raise Refused("OPERATIONS_ADMISSION_FENCED")
+        return effect()
+
+
+def settle_shutdown(store, *, probe=None, stop_runner=None, client=None):
+    """Requested stop remains unresolved until every native inference owner is quiescent."""
+    from ..fabro.client import FabroClient, load_token
+    from .execution_lifecycle import Executions
+
+    ex = Executions(store)
+    owned_client = client is None
+    client = client or FabroClient(token=load_token(), timeout=3)
+    try:
+        for rec in ex.pending()[:8]:
+            if rec["authorization_state"] == "VALID":
+                ex.revoke(rec["job_id"])
+            if rec["task_outcome"] == "ACTIVE":
+                ex.outcome(rec["job_id"], "BLOCKED", "OPERATOR_SHUTDOWN")
+            ex.reconcile(rec["job_id"], client, cancel=True)
+    finally:
+        if owned_client:
+            client.close()
+    unresolved = [r["job_id"] for r in ex.pending()]
+    result = {"settled": False, "unresolved_native_jobs": unresolved}
+    intent = Intent()
+    with intent.lock():
+        rec = intent.read()
+        if rec["mode"] != "STOPPED":
+            raise Refused("SHUTDOWN_INTENT_SUPERSEDED")
+        # A timed-out systemctl start may still be queued. Cancel it with a
+        # serialized stop and observe Job=0 before confirming the operator stop.
+        manager_settled = True
+        if rec.get("pending_start"):
+            run = stop_runner or (lambda args: subprocess.run(args, capture_output=True, text=True, timeout=20))
+            stopped = run(["systemctl", "--user", "stop", UNIT])
+            state = (probe or observed_unit)()
+            manager_settled = (
+                stopped.returncode == 0 and state.get("Job") in ("0", "") and state.get("ActiveState") in ("inactive", "failed")
+            )
+            if manager_settled:
+                rec["pending_start"] = False
+            result["service_manager_settled"] = manager_settled
+        result["settled"] = not unresolved and manager_settled
+        rec.update(effective_stop=result["settled"], stop_settlement=result)
+        intent._write(rec)
+    return result

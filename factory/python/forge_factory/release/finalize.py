@@ -9,6 +9,7 @@
 * Archives are write-once (refuse overwrite, chmod 0444). Callable from the workflow `finalize` node,
   the evidence MCP, or the external supervisor finalizer for crashed/exhausted runs.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -69,7 +70,7 @@ def _copy_tree(src: Path, dst: Path, pattern: str = "*") -> int:
                 t.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(f, t)
                 t.chmod(t.stat().st_mode | 0o200)  # feature 008 (b001): read-only delivered/provided files stay
-                n += 1                              # read-only in the workspace; the staged copy is a build input
+                n += 1  # read-only in the workspace; the staged copy is a build input
     return n
 
 
@@ -105,20 +106,31 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     checks["misra_coverage_assessed"] = cpp is not None and (ws / "verification/static/misra_coverage_matrix.md").is_file()
     checks["unit_verification"] = ok(latest(res, "forge-tests-mcp", "run_unit"))
     checks["integration_verification"] = ok(latest(res, "forge-tests-mcp", "run_integration"))
-    checks["software_verification"] = (gates["SWE.6"]["decision"] == "PASS" and checks["integration_verification"]
-                                       and ok(latest(res, "forge-tests-mcp", "run_robot")))  # SWE.6 Robot suite
+    checks["software_verification"] = (
+        gates["SWE.6"]["decision"] == "PASS"
+        and checks["integration_verification"]
+        and ok(latest(res, "forge-tests-mcp", "run_robot"))
+    )  # SWE.6 Robot suite
     tr_ok, tr_issues = trace_check(ws)
     checks["traceability"] = tr_ok
     size = latest(res, "forge-build-mcp", "measure_elf", lambda r: "target" in json.dumps(r["result"]["summary"]))
     stack = latest(res, "forge-build-mcp", "stack_usage", lambda r: "target" in json.dumps(r["result"]["summary"]))
-    fp = {"flash_bytes": size["result"]["metrics"].get("flash_bytes") if size else None,
-          "ram_bytes": size["result"]["metrics"].get("ram_bytes") if size else None,
-          "max_frame_bytes": stack["result"]["metrics"].get("max_frame_bytes") if stack else None,
-          "budgets": budgets, "scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image"}
-    checks["resource_budgets"] = bool(size and stack and budgets and fp["flash_bytes"] is not None
-                                      and fp["flash_bytes"] <= budgets.get("flash_bytes", -1)
-                                      and fp["ram_bytes"] <= budgets.get("static_ram_bytes", -1)
-                                      and fp["max_frame_bytes"] <= budgets.get("stack_bytes", -1))
+    fp = {
+        "flash_bytes": size["result"]["metrics"].get("flash_bytes") if size else None,
+        "ram_bytes": size["result"]["metrics"].get("ram_bytes") if size else None,
+        "max_frame_bytes": stack["result"]["metrics"].get("max_frame_bytes") if stack else None,
+        "budgets": budgets,
+        "scope": "object-level target build (cortex-m55, GNU Arm); not a linked firmware image",
+    }
+    checks["resource_budgets"] = bool(
+        size
+        and stack
+        and budgets
+        and fp["flash_bytes"] is not None
+        and fp["flash_bytes"] <= budgets.get("flash_bytes", -1)
+        and fp["ram_bytes"] <= budgets.get("static_ram_bytes", -1)
+        and fp["max_frame_bytes"] <= budgets.get("stack_bytes", -1)
+    )
     tgt = [r for r in res if r["server"] == "forge-sim-mcp" and r["op"] in ("run_renode", "run_hwsim")]
     checks["target_verification"] = any(ok(r) for r in tgt)
     checks["safety_gaps_declared"] = True  # known_limitations.md is always generated from facts below
@@ -126,18 +138,20 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     for p in PHASES:
         ins = store.inspections(p)
         if ins and ins[-1]["verdict"] != "PASS":
-            findings += [{"id": f"{p}:{f['id']}", "severity": f["severity"], "detail": f.get("detail", "")[:160]}
-                         for f in ins[-1]["findings"]]
+            findings += [
+                {"id": f"{p}:{f['id']}", "severity": f["severity"], "detail": f.get("detail", "")[:160]}
+                for f in ins[-1]["findings"]
+            ]
         if gates[p]["decision"] != "PASS":
-            findings.append({"id": f"{p}:GATE_{gates[p]['decision']}", "severity": "major",
-                             "detail": gates[p]["reason"][:160]})
+            findings.append({"id": f"{p}:GATE_{gates[p]['decision']}", "severity": "major", "detail": gates[p]["reason"][:160]})
     findings += [{"id": i, "severity": "major", "detail": "traceability"} for i in tr_issues]
     gl = ws / "verification/static/hal_guideline_conformance.json"
     if gl.is_file():
         rep = json.loads(gl.read_text())
         if rep["verdict"] != "PASS":
-            findings.append({"id": "SWE3-07:HAL_GUIDELINE", "severity": "major",
-                             "detail": f"{len(rep['violations'])} guideline violations"})
+            findings.append(
+                {"id": "SWE3-07:HAL_GUIDELINE", "severity": "major", "detail": f"{len(rep['violations'])} guideline violations"}
+            )
     rid_f = ws / ".forge-run" / "fabro_run_id"
     if rid_f.is_file():  # T028: unresolved infrastructure incidents affecting this run's provenance block it
         from ..supervisor.store import IncidentStore
@@ -145,16 +159,25 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
         rid = rid_f.read_text().strip()
         for inc in IncidentStore().all(500):
             if inc.get("run_id") == rid and inc["state"] != "RESOLVED":
-                findings.append({"id": f"INCIDENT:{inc['incident_id']}", "severity": "major",
-                                 "detail": f"{inc['component']}/{inc['fault_type']} {inc['state']}"})
+                findings.append(
+                    {
+                        "id": f"INCIDENT:{inc['incident_id']}",
+                        "severity": "major",
+                        "detail": f"{inc['component']}/{inc['fault_type']} {inc['state']}",
+                    }
+                )
     from ..inspection import defects  # ADR-0008: open/escalated defects are unresolved findings (never hidden)
 
     findings += [{"id": g, "severity": "major", "detail": "defect register"} for g in defects.gaps(ws)]
     from ..brownfield.package import findings as delivered_findings  # feature 008 (FR-009); [] for greenfield
 
     findings += delivered_findings(ws)
-    detail = {"gates": gates, "footprint": fp, "tool_results_considered": len(res),
-              "target_runs": [r["result"]["status"] for r in tgt]}
+    detail = {
+        "gates": gates,
+        "footprint": fp,
+        "tool_results_considered": len(res),
+        "target_runs": [r["result"]["status"] for r in tgt],
+    }
     return checks, findings, detail
 
 
@@ -167,30 +190,67 @@ def operational_inventory(ws: Path, stage: Path, run_id: str, fabro_run_id: str 
     _w(stage, "operations/agents/skills-manifest.json", pretty_json(lock))
     _w(stage, "operations/mcp/tool-registry.json", pretty_json(op_catalog()))
     hp = state_dir() / "supervisor" / "health.json"
-    _w(stage, "operations/supervisor/health-summary.json",
-       hp.read_text() if hp.is_file() else pretty_json({"status": "UNKNOWN", "reason": "no supervisor health sample"}))
+    _w(
+        stage,
+        "operations/supervisor/health-summary.json",
+        hp.read_text() if hp.is_file() else pretty_json({"status": "UNKNOWN", "reason": "no supervisor health sample"}),
+    )
     ist = IncidentStore()
-    _w(stage, "operations/incidents/incidents.jsonl",
-       "".join(json.dumps(ist.to_contract(i), sort_keys=True) + "\n" for i in ist.all(500)) or "\n")
-    _w(stage, "operations/repairs/repair-results.jsonl",
-       "".join(json.dumps(a, sort_keys=True) + "\n" for a in ist.attempts()) or "\n")
+    _w(
+        stage,
+        "operations/incidents/incidents.jsonl",
+        "".join(json.dumps(ist.to_contract(i), sort_keys=True) + "\n" for i in ist.all(500)) or "\n",
+    )
+    _w(
+        stage,
+        "operations/repairs/repair-results.jsonl",
+        "".join(json.dumps(a, sort_keys=True) + "\n" for a in ist.attempts()) or "\n",
+    )
     lessons = LessonStore().list()
-    _w(stage, "operations/knowledge/lesson-ledger.json",
-       pretty_json([{k: le.get(k) for k in ("lesson_id", "state", "source_incident_id", "source_attempt_id", "hash",
-                                            "created_at", "expires_at")} for le in lessons]))
+    _w(
+        stage,
+        "operations/knowledge/lesson-ledger.json",
+        pretty_json(
+            [
+                {
+                    k: le.get(k)
+                    for k in ("lesson_id", "state", "source_incident_id", "source_attempt_id", "hash", "created_at", "expires_at")
+                }
+                for le in lessons
+            ]
+        ),
+    )
     seg = []
     for f in sorted(events_dir().glob("*.jsonl")) if events_dir().is_dir() else []:
         seg.append({"segment": f.name, "sha256": sha256_file(f), "bytes": f.stat().st_size})
     pol = (REPO_ROOT / "config/factory/trace-policy.yaml").read_text()
-    _w(stage, "operations/telemetry/events-index.json",
-       pretty_json({"event_schema": "specs/002-self-healing-factory/contracts/event.schema.json",
-                    "capture_policy_sha256": sha256_bytes(pol.encode()), "segments": seg}))
+    _w(
+        stage,
+        "operations/telemetry/events-index.json",
+        pretty_json(
+            {
+                "event_schema": "specs/002-self-healing-factory/contracts/event.schema.json",
+                "capture_policy_sha256": sha256_bytes(pol.encode()),
+                "segments": seg,
+            }
+        ),
+    )
     _w(stage, "operations/telemetry/capture-policy.yaml", pol)
     usage = token_usage(fabro_run_id, ws)
     _w(stage, "operations/tokens/usage-by-agent.json", pretty_json(usage))
-    _w(stage, "operations/run/run-summary.json",
-       pretty_json({"run_id": run_id, "fabro_run_id": fabro_run_id, "finalized_at": utc_now(),
-                    "workspace_head": _git(ws, "rev-parse", "HEAD"), "dirty": bool(_git(ws, "status", "--porcelain"))}))
+    _w(
+        stage,
+        "operations/run/run-summary.json",
+        pretty_json(
+            {
+                "run_id": run_id,
+                "fabro_run_id": fabro_run_id,
+                "finalized_at": utc_now(),
+                "workspace_head": _git(ws, "rev-parse", "HEAD"),
+                "dirty": bool(_git(ws, "status", "--porcelain")),
+            }
+        ),
+    )
 
 
 def token_usage(fabro_run_id: str | None, ws: Path | None = None) -> dict:
@@ -201,20 +261,37 @@ def token_usage(fabro_run_id: str | None, ws: Path | None = None) -> dict:
 
         c = client_for_workspace(ws, timeout=10) if ws is not None else FabroClient(token=load_token(), timeout=10)
         u = c.usage(fabro_run_id)
-        stages = [{"stage": s["stage"]["id"], "model": s["model"]["model_id"], "provider": s["model"]["provider"],
-                   "tokens_input": s["usage"]["tokens"]["input"], "tokens_output": s["usage"]["tokens"]["output"],
-                   "state": s.get("state")} for s in u.get("stages", []) if s.get("model")]
+        stages = [
+            {
+                "stage": s["stage"]["id"],
+                "model": s["model"]["model_id"],
+                "provider": s["model"]["provider"],
+                "tokens_input": s["usage"]["tokens"]["input"],
+                "tokens_output": s["usage"]["tokens"]["output"],
+                "state": s.get("state"),
+            }
+            for s in u.get("stages", [])
+            if s.get("model")
+        ]
         # feature 007 (CR-T030): ACP stages carry no model in Fabro's usage - they are listed as not reported
         # instead of failing the whole run's usage (which made every Codex-author run 'unknown')
         unreported = [s["stage"]["id"] for s in u.get("stages", []) if not s.get("model")]
         if not stages and unreported:
-            return {"basis": "unknown", "reason": "only ACP stages: usage not reported by Fabro", "by_stage": [],
-                    "not_reported_stages": unreported}
-        # basis stays in the 002 token-usage enum: the listed values are reported, the missing stages are named
-        return {"basis": "reported", "source": "fabro /runs/{id}/usage", "by_stage": stages,
+            return {
+                "basis": "unknown",
+                "reason": "only ACP stages: usage not reported by Fabro",
+                "by_stage": [],
                 "not_reported_stages": unreported,
-                "total_input": sum(s["tokens_input"] for s in stages),
-                "total_output": sum(s["tokens_output"] for s in stages)}
+            }
+        # basis stays in the 002 token-usage enum: the listed values are reported, the missing stages are named
+        return {
+            "basis": "reported",
+            "source": "fabro /runs/{id}/usage",
+            "by_stage": stages,
+            "not_reported_stages": unreported,
+            "total_input": sum(s["tokens_input"] for s in stages),
+            "total_output": sum(s["tokens_output"] for s in stages),
+        }
     except Exception as exc:  # noqa: BLE001
         return {"basis": "unknown", "reason": f"usage unavailable: {type(exc).__name__}", "by_stage": []}
 
@@ -228,27 +305,40 @@ def _git(ws: Path, *args: str) -> str:
 
 def sup_reports(ws: Path, stage: Path, checks: dict, findings: list[dict], detail: dict) -> None:
     rows = "\n".join(f"| {k} | {'PASS' if v else 'NOT MET'} |" for k, v in sorted(checks.items()))
-    _w(stage, "support/SUP.1/quality_assurance_status.md",
-       "# SUP.1 Quality assurance status (generated from recorded gate evidence)\n\n| Check | Status |\n|---|---|\n"
-       f"{rows}\n\nGate decisions per phase: `{json.dumps({p: g['decision'] for p, g in detail['gates'].items()})}`\n")
+    _w(
+        stage,
+        "support/SUP.1/quality_assurance_status.md",
+        "# SUP.1 Quality assurance status (generated from recorded gate evidence)\n\n| Check | Status |\n|---|---|\n"
+        f"{rows}\n\nGate decisions per phase: `{json.dumps({p: g['decision'] for p, g in detail['gates'].items()})}`\n",
+    )
     store = Store(ws)
-    bl = "\n".join(f"- {p}: " + ", ".join(f"{b['baseline_id']} `{b['baseline_hash'][:16]}`" for b in store.baselines(p))
-                   for p in PHASES)
-    _w(stage, "support/SUP.8/configuration_status.md",
-       f"# SUP.8 Configuration status (generated)\n\nWorkspace commit: `{_git(ws, 'rev-parse', 'HEAD')}`\n\n"
-       f"## Frozen baselines\n{bl}\n")
+    bl = "\n".join(
+        f"- {p}: " + ", ".join(f"{b['baseline_id']} `{b['baseline_hash'][:16]}`" for b in store.baselines(p)) for p in PHASES
+    )
+    _w(
+        stage,
+        "support/SUP.8/configuration_status.md",
+        f"# SUP.8 Configuration status (generated)\n\nWorkspace commit: `{_git(ws, 'rev-parse', 'HEAD')}`\n\n"
+        f"## Frozen baselines\n{bl}\n",
+    )
     fl = "\n".join(f"- `{f['id']}` ({f['severity']}): {f['detail']}" for f in findings) or "- none open"
     from ..inspection import defects
 
     rv = "\n".join(f"- {x}" for x in defects.review_items(ws)) or "- none"
-    _w(stage, "support/SUP.9/problem_resolution_status.md",
-       f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n\n"
-       "## Defects filed or declared by the deterministic gate (human review required)\n"
-       f"{rv}\n")
+    _w(
+        stage,
+        "support/SUP.9/problem_resolution_status.md",
+        f"# SUP.9 Problem resolution status (generated)\n\n## Open findings\n{fl}\n\n"
+        "## Defects filed or declared by the deterministic gate (human review required)\n"
+        f"{rv}\n",
+    )
     revs = {p: len(store.baselines(p)) for p in PHASES}
-    _w(stage, "support/SUP.10/change_request_status.md",
-       "# SUP.10 Change request status (generated)\n\nBaseline revisions per phase (each revision after the first "
-       f"is a rework/change requiring re-inspection): `{json.dumps(revs)}`\n")
+    _w(
+        stage,
+        "support/SUP.10/change_request_status.md",
+        "# SUP.10 Change request status (generated)\n\nBaseline revisions per phase (each revision after the first "
+        f"is a rework/change requiring re-inspection): `{json.dumps(revs)}`\n",
+    )
 
 
 def tool_records(ws: Path) -> dict:
@@ -260,8 +350,17 @@ def tool_records(ws: Path) -> dict:
     for r in tool_results(ws):
         pv = r["result"].get("provenance") or {}
         name, ver = pv.get("tool") or "unrecorded", pv.get("version") or "NOT_RECORDED"
-        e = tools.setdefault(f"{name}|{ver}", {"tool": name, "version": ver, "operations": set(), "calls": 0,
-                                                "first_utc": r.get("ts_utc"), "last_utc": r.get("ts_utc")})
+        e = tools.setdefault(
+            f"{name}|{ver}",
+            {
+                "tool": name,
+                "version": ver,
+                "operations": set(),
+                "calls": 0,
+                "first_utc": r.get("ts_utc"),
+                "last_utc": r.get("ts_utc"),
+            },
+        )
         e["operations"].add(f"{r['server']}.{r['op']}")
         e["calls"] += 1
         e["last_utc"] = r.get("ts_utc") or e["last_utc"]
@@ -273,30 +372,44 @@ def tool_records(ws: Path) -> dict:
         prof = json.loads((Path(ws) / ".forge-run/model-profile.json").read_text())
     except (OSError, ValueError):
         prof = {}
-    models = {k: {kk: v for kk, v in (prof.get(k) or {}).items() if kk != "nodes"} | {"nodes": len((prof.get(k) or {}).get(
-        "nodes") or [])} for k in ("acp_authors", "acp_inspectors") if prof.get(k)}
-    models["run_model"] = {"model": prof.get("default"), "provider": prof.get("provider"),
-                           "note": prof.get("run_model_note") or prof.get("note")}
-    return {"schema": "forge-c/run-tool-records/0.1", "source": "evidence/tool-results.jsonl + .forge-run/model-profile.json",
-            "tools": sorted(tools.values(), key=lambda e: (e["tool"], e["version"])), "models": models}
+    models = {
+        k: {kk: v for kk, v in (prof.get(k) or {}).items() if kk != "nodes"}
+        | {"nodes": len((prof.get(k) or {}).get("nodes") or [])}
+        for k in ("acp_authors", "acp_inspectors")
+        if prof.get(k)
+    }
+    models["run_model"] = {
+        "model": prof.get("default"),
+        "provider": prof.get("provider"),
+        "note": prof.get("run_model_note") or prof.get("note"),
+    }
+    return {
+        "schema": "forge-c/run-tool-records/0.1",
+        "source": "evidence/tool-results.jsonl + .forge-run/model-profile.json",
+        "tools": sorted(tools.values(), key=lambda e: (e["tool"], e["version"])),
+        "models": models,
+    }
 
 
 def stage_tool_records(ws: Path, stage: Path) -> None:
     _w(stage, "configuration/toolchain_versions.json", pretty_json(tool_records(ws)))
 
 
-def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[str],
-                      owner_docs: list[str] | None = None) -> None:
-    lines = ["# Known limitations and declared safety gaps (generated from facts)", "",
-             "- This package is an offline review candidate. It is NOT an ISO 26262 / ASIL B approval, ASPICE "
-             "capability determination, tool qualification or production release.",
-             "- Unit/integration tests and coverage are HOST executions; they are not target (MCU) evidence.",
-             "- MISRA C: Cppcheck addon subset only; MISRA compliance is NOT claimed.",
-             "- Target verification: " + ("performed" if checks["target_verification"]
-                                          else "NOT_PERFORMED (no target/simulator evidence)") + ".",
-             f"- Footprint scope: {detail['footprint']['scope']}.",
-             "- Optional tools/operations declared DISABLED in the registry and not used in this run: "
-             + (", ".join(disabled) or "none")]
+def known_limitations(stage: Path, checks: dict, detail: dict, disabled: list[str], owner_docs: list[str] | None = None) -> None:
+    lines = [
+        "# Known limitations and declared safety gaps (generated from facts)",
+        "",
+        "- This package is an offline review candidate. It is NOT an ISO 26262 / ASIL B approval, ASPICE "
+        "capability determination, tool qualification or production release.",
+        "- Unit/integration tests and coverage are HOST executions; they are not target (MCU) evidence.",
+        "- MISRA C: Cppcheck addon subset only; MISRA compliance is NOT claimed.",
+        "- Target verification: "
+        + ("performed" if checks["target_verification"] else "NOT_PERFORMED (no target/simulator evidence)")
+        + ".",
+        f"- Footprint scope: {detail['footprint']['scope']}.",
+        "- Optional tools/operations declared DISABLED in the registry and not used in this run: "
+        + (", ".join(disabled) or "none"),
+    ]
     lines += [f"- Unmet check: `{k}`" for k, v in sorted(checks.items()) if not v]
     lines += owner_docs or []
     _w(stage, "safety/known_limitations.md", "\n".join(lines) + "\n")
@@ -317,10 +430,12 @@ def owner_safety_documents(wo: dict, stage: Path) -> list[str]:
             lines.append(f"- `{rel}` removed from the package: it is not the owner-signed version.")
     for d in wo.get("owner_safety_documents") or []:
         if (stage / d["path"]).is_file():
-            lines.append(f"- `{d['path']}`: signed by {d['approved_by']} on {d['approved_at']} (SHA-256 "
-                         f"`{d['sha256'][:16]}`, {d.get('decision') or 'no decision id'}). Its open findings and "
-                         "questions are listed in the document. An engineering review record, not a safety approval "
-                         "or certification.")
+            lines.append(
+                f"- `{d['path']}`: signed by {d['approved_by']} on {d['approved_at']} (SHA-256 "
+                f"`{d['sha256'][:16]}`, {d.get('decision') or 'no decision id'}). Its open findings and "
+                "questions are listed in the document. An engineering review record, not a safety approval "
+                "or certification."
+            )
     lines += [f"- Owner safety document not used: `{i}`." for i in wo.get("owner_safety_document_issues") or []]
     return lines
 
@@ -371,25 +486,39 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
 
     def summary(server: str, op: str, extra: dict | None = None) -> str:
         r = latest(res, server, op)
-        return pretty_json({"status": r["result"]["status"] if r else "NOT_RUN", "result": r["result"] if r else None,
-                            **(extra or {})})
+        return pretty_json(
+            {"status": r["result"]["status"] if r else "NOT_RUN", "result": r["result"] if r else None, **(extra or {})}
+        )
 
-    _w(stage, "verification/static/analysis_summary.json",
-       pretty_json({"cppcheck": json.loads(summary("forge-analysis-mcp", "cppcheck")),
-                    "clang_analyze": json.loads(summary("forge-analysis-mcp", "clang_analyze")),
-                    "misra_compliance": "NOT_CLAIMED"}))
-    _w(stage, "verification/unit/unit_verification_summary.json", summary("forge-tests-mcp", "run_unit",
-                                                                         {"environment": "host"}))
-    _w(stage, "verification/integration/integration_verification_summary.json",
-       summary("forge-tests-mcp", "run_integration", {"environment": "host"}))
-    _w(stage, "verification/software/software_verification_summary.json",
-       pretty_json({"swe6_gate": detail["gates"]["SWE.6"], "integration_status": checks["integration_verification"]}))
-    _w(stage, "verification/coverage/coverage_summary.json", summary("forge-tests-mcp", "llvm_coverage",
-                                                                    {"environment": "host"}))
+    _w(
+        stage,
+        "verification/static/analysis_summary.json",
+        pretty_json(
+            {
+                "cppcheck": json.loads(summary("forge-analysis-mcp", "cppcheck")),
+                "clang_analyze": json.loads(summary("forge-analysis-mcp", "clang_analyze")),
+                "misra_compliance": "NOT_CLAIMED",
+            }
+        ),
+    )
+    _w(stage, "verification/unit/unit_verification_summary.json", summary("forge-tests-mcp", "run_unit", {"environment": "host"}))
+    _w(
+        stage,
+        "verification/integration/integration_verification_summary.json",
+        summary("forge-tests-mcp", "run_integration", {"environment": "host"}),
+    )
+    _w(
+        stage,
+        "verification/software/software_verification_summary.json",
+        pretty_json({"swe6_gate": detail["gates"]["SWE.6"], "integration_status": checks["integration_verification"]}),
+    )
+    _w(stage, "verification/coverage/coverage_summary.json", summary("forge-tests-mcp", "llvm_coverage", {"environment": "host"}))
     _w(stage, "verification/footprint/memory_stack_summary.json", pretty_json(detail["footprint"]))
-    _w(stage, "verification/target/target_verification_summary.json",
-       pretty_json({"status": "PERFORMED" if checks["target_verification"] else "NOT_PERFORMED",
-                    "runs": detail["target_runs"]}))
+    _w(
+        stage,
+        "verification/target/target_verification_summary.json",
+        pretty_json({"status": "PERFORMED" if checks["target_verification"] else "NOT_PERFORMED", "runs": detail["target_runs"]}),
+    )
     from ..mcp.preflight import op_catalog
 
     used = {f"{r['server']}.{r['op']}" for r in tool_results(ws)}  # CAPA-064: an operation this run used is not "disabled"
@@ -401,9 +530,14 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     stage_tool_records(ws, stage)  # CAPA-064 (TAA-RCC FND-04): this run's tools and models, not a stale inventory
     operational_inventory(ws, stage, run_id, fabro_run_id)
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
-    quality = {"run_status": "COMPLETED" if all_phases_pass else "INCOMPLETE", "checks": checks,
-               "open_findings": findings, "derived_from": "recorded evidence only", "generated_at": utc_now(),
-               "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION"}
+    quality = {
+        "run_status": "COMPLETED" if all_phases_pass else "INCOMPLETE",
+        "checks": checks,
+        "open_findings": findings,
+        "derived_from": "recorded evidence only",
+        "generated_at": utc_now(),
+        "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
+    }
     _w(stage, "quality/final-gates.json", pretty_json(quality))
     return quality
 
@@ -424,9 +558,12 @@ def stage_delivered_unit(ws: Path, stage: Path) -> bool:
         u = delivered_unit(ws, Path(td))
         if u is None:
             return False
-        _w(stage, "software/src/forge_delivered_unit.c",
-           b"/* GENERATED by forge_factory: build-only compile unit of the header-only delivery (the delivered headers + "
-           b"one non-inline wrapper per scope function). NOT delivered code. */\n" + u.read_bytes())
+        _w(
+            stage,
+            "software/src/forge_delivered_unit.c",
+            b"/* GENERATED by forge_factory: build-only compile unit of the header-only delivery (the delivered headers + "
+            b"one non-inline wrapper per scope function). NOT delivered code. */\n" + u.read_bytes(),
+        )
     return True
 
 
@@ -467,10 +604,19 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
         for f in out_dir.iterdir():
             os.chmod(f, 0o444)
-        out = {"run_id": run_id, "package_status": res["package_status"], "archive": res["archive"],
-               "archive_sha256": res["archive_sha256"], "archive_ref": f"archive:sha256:{res['archive_sha256']}",
-               "gap_count": res["gap_count"], "gaps": gaps, "quality_run_status": quality["run_status"],
-               "scope": NOT_SAFETY, "policy": str(POLICY_V05.relative_to(REPO_ROOT)), "finalized_at": utc_now()}
+        out = {
+            "run_id": run_id,
+            "package_status": res["package_status"],
+            "archive": res["archive"],
+            "archive_sha256": res["archive_sha256"],
+            "archive_ref": f"archive:sha256:{res['archive_sha256']}",
+            "gap_count": res["gap_count"],
+            "gaps": gaps,
+            "quality_run_status": quality["run_status"],
+            "scope": NOT_SAFETY,
+            "policy": str(POLICY_V05.relative_to(REPO_ROOT)),
+            "finalized_at": utc_now(),
+        }
         os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
         (out_dir / "finalize-result.json").write_text(pretty_json(out))
         os.chmod(out_dir / "finalize-result.json", 0o444)
@@ -485,9 +631,20 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     out = sealed["out"]
     (ws / ".forge-run").mkdir(exist_ok=True)
     (ws / ".forge-run" / "package.json").write_text(pretty_json(out))
-    emit("human", "INFO" if out["package_status"] == "READY_FOR_OFFLINE_REVIEW" else "WARN",
-         f"Package {out['package_status']} gaps={out['gap_count']} run={run_id}", correlation_id=run_id, run_id=run_id,
-         payload_ref=out["archive_ref"])
+    emit(
+        "human",
+        "INFO" if out["package_status"] == "READY_FOR_OFFLINE_REVIEW" else "WARN",
+        f"Package {out['package_status']} gaps={out['gap_count']} run={run_id}",
+        correlation_id=run_id,
+        run_id=run_id,
+        payload_ref=out["archive_ref"],
+    )
+    from ..knowledge.store import LessonStore
+    from ..knowledge.experience import capture_workspace, consolidate
+
+    lessons = LessonStore()
+    capture_workspace(lessons, ws, run_id, package=out)
+    consolidate(lessons, limit=32)
     return out
 
 
@@ -512,8 +669,7 @@ def kpi_snapshot_into(ws: Path, stage: Path, release_status: str) -> dict:
     _w(stage, "operations/kpi/kpi-catalog.json", (KPI_CONTRACTS_DIR / "kpi-catalog.json").read_bytes())
     _w(stage, "operations/kpi/kpi-policy.yaml", (REPO_ROOT / "config/factory/kpi-policy.yaml").read_bytes())
     _w(stage, "operations/kpi/kpi-baselines.json", pretty_json(load_baselines()))
-    _w(stage, "operations/kpi/kpi-source-events.jsonl",
-       "".join(json.dumps(e, sort_keys=True) + "\n" for e in evs) or "\n")
+    _w(stage, "operations/kpi/kpi-source-events.jsonl", "".join(json.dumps(e, sort_keys=True) + "\n" for e in evs) or "\n")
     return snap
 
 
@@ -535,6 +691,7 @@ def cross_check_kpis(archive: Path) -> dict:
     if event_set_digest(win) != snap["event_set_digest"]:
         issues.append("EVENT_SET_DIGEST_MISMATCH")
     from ..common import canonical_json, sha256_bytes
+
     if sha256_bytes(canonical_json(cat)) != snap.get("source_catalog_hash"):
         issues.append("CATALOG_HASH_MISMATCH")
     k20 = [m for m in snap["metric_values"] if m["metric_id"] == "K20"]
@@ -545,8 +702,13 @@ def cross_check_kpis(archive: Path) -> dict:
         issues.append("APPROVAL_ASSERTION_FOUND")
     if man["scope"] != NOT_SAFETY:
         issues.append("PACKAGE_SCOPE_NOT_OFFLINE_REVIEW")
-    return {"archive": str(archive), "status": "PASS" if not issues else "FAIL", "issues": issues,
-            "snapshot_id": snap["snapshot_id"], "metrics": len(snap["metric_values"])}
+    return {
+        "archive": str(archive),
+        "status": "PASS" if not issues else "FAIL",
+        "issues": issues,
+        "snapshot_id": snap["snapshot_id"],
+        "metrics": len(snap["metric_values"]),
+    }
 
 
 def verify_archive(archive: Path) -> dict:

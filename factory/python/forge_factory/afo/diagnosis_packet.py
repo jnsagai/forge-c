@@ -125,7 +125,12 @@ def seal(
 def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
     phase = bundle["phase"]
     files, findings, missing = {}, [], []
-    patterns = [".forge-run/manifest.json", ".forge-run/gates/gate-log.jsonl", "verification/*.json*"]
+    patterns = [
+        ".forge-run/manifest.json",
+        ".forge-run/gates/gate-log.jsonl",
+        "verification/*.json*",
+        "evidence/tool-results.jsonl",
+    ]
     patterns += [f"workproducts/{p}/**/*" for p in PHASES[: PHASES.index(phase) + 1]]
     patterns += [f"inspection/{phase}/INS-*.json"]
     if PHASES.index(phase) >= 2:
@@ -141,7 +146,7 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
         if ph and PHASES.index(ph) > PHASES.index(phase):
             continue
         files[rel] = {"path": rel, "sha256": expected}
-    for rel in files:
+    for rel in list(files):
         p = scoped_path(workspace, rel)
         if not p.is_file() or p.stat().st_size > MAX_FILE_BYTES:
             continue
@@ -149,13 +154,22 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
             if rel.startswith(f"inspection/{phase}/"):
                 doc = json.loads(p.read_text())
                 findings.extend({**f, "source_ref": rel, "source_sha256": sha256_file(p)} for f in doc.get("findings", []))
+                # The complete per-item findings are authoritative; the top-level display list may be capped.
+                for item_id, item in (doc.get("items") or {}).items():
+                    for index, detail in enumerate(item.get("findings") or []):
+                        findings.append(
+                            {"id": f"{item_id}:{index}", "detail": detail, "source_ref": rel, "source_sha256": sha256_file(p)}
+                        )
             elif rel.endswith(".jsonl"):
+                scoped_rows = []
                 for line in p.read_text().splitlines():
                     if not line.strip():
                         continue
                     row = json.loads(line)
-                    if row.get("phase") not in (None, phase):
+                    row_phase = row.get("phase") or (row.get("result") or {}).get("phase")
+                    if row_phase not in PHASES or PHASES.index(row_phase) > PHASES.index(phase):
                         continue
+                    scoped_rows.append(row)
                     result = row.get("result") or row.get("gate") or {}
                     if isinstance(result, dict):
                         for n, issue in enumerate(result.get("issues") or result.get("findings") or []):
@@ -167,6 +181,15 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
                                     "source_sha256": sha256_file(p),
                                 }
                             )
+                # Serve an immutable phase-safe primary view, retaining the original full-file hash as provenance.
+                del files[rel]
+                view = {"source_path": rel, "source_sha256": sha256_file(p), "maximum_phase": phase, "rows": scoped_rows}
+                view_rel = f".forge-run/diagnosis-evidence/{phase}/{digest(view)}.json"
+                immutable_json(workspace / view_rel, view)
+                files[view_rel] = {"path": view_rel, "phase": phase}
+                for f in findings:
+                    if f.get("source_ref") == rel:
+                        f.update(source_ref=view_rel, source_sha256=sha256_file(workspace / view_rel))
         except (ValueError, UnicodeError, TypeError):
             missing.append(f"UNREADABLE_PRIMARY:{rel}")
     req = workspace / "workproducts/SWE.1/software_requirements.md"

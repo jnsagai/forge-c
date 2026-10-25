@@ -1,7 +1,6 @@
 """Every-outcome capture, qualified memory and chronological comparison fixtures."""
 
 import copy
-import json
 
 import pytest
 from forge_factory.afo.durable import Refused, digest, immutable_json

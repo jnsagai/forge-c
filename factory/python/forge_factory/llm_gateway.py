@@ -17,6 +17,7 @@ CAPA-052 (h001, OD-2026-10-20-03): while the owner suspends the upstream's provi
 every request is refused here and never reaches the provider - Fabro's server-side run-title generation called the
 suspended DeepSeek through this gateway once per run, outside the workflow graph that CAPA-051 guards.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,8 +50,10 @@ def role_tools() -> dict[str, set[str]]:
         from .registry.agents import load_agents
         from .registry.mcp_registry import fabro_tool_name
 
-        _ROLE_TOOLS = {a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ
-                       | (set() if a.readonly else _NATIVE_WRITE) for a in load_agents(include_afo=True)[0]}
+        _ROLE_TOOLS = {
+            a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ | (set() if a.readonly else _NATIVE_WRITE)
+            for a in load_agents(include_afo=True)[0]
+        }
     return _ROLE_TOOLS
 
 
@@ -83,8 +86,7 @@ def reasoning_policy() -> dict[str, dict]:
         pol = json.loads(os.environ.get("FORGE_GATEWAY_REASONING") or "{}")
     except ValueError:
         return {}
-    return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} \
-        if isinstance(pol, dict) else {}
+    return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} if isinstance(pol, dict) else {}
 
 
 def sanitize_request(body: dict) -> dict:
@@ -162,32 +164,56 @@ class Meter:
     def refusal(self, model: str | None, reason: str) -> None:
         """CAPA-052: a request refused before any upstream call (no tokens, no cost)."""
         with self.path.open("a") as f:
-            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "refused": reason,
-                                "upstream_called": False}, sort_keys=True) + "\n")
+            f.write(
+                json.dumps(
+                    {"ts_utc": utc_now(), "model": model or "unknown", "refused": reason, "upstream_called": False},
+                    sort_keys=True,
+                )
+                + "\n"
+            )
 
     def record_resources(self, model: str | None, resources: dict) -> None:
         """Feature 010 admission gateway: resource observation after a request (no tokens, no content)."""
         with self.path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources},
-                               sort_keys=True) + "\n")
+            f.write(
+                json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources}, sort_keys=True)
+                + "\n"
+            )
 
     def record_sample(self, resources: dict) -> None:
         """Feature 010 admission gateway: periodic resource sample (no request, no content)."""
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps({"ts_utc": utc_now(), "sample": resources}, sort_keys=True) + "\n")
 
-    def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
-               shape: dict | None = None, local: dict | None = None) -> None:
-        rec = {"ts_utc": utc_now(), "model": model or "unknown",
-               "tokens_input": (usage or {}).get("prompt_tokens"),
-               "tokens_output": (usage or {}).get("completion_tokens"),
-               "tokens_cache_hit": (usage or {}).get("prompt_cache_hit_tokens"),
-               "basis": "reported" if usage else "unknown",
-               "reasoning_stripped": stripped, "latency_ms": round(latency_ms, 1)}
+    def record(
+        self,
+        model: str | None,
+        usage: dict | None,
+        stripped: bool,
+        latency_ms: float,
+        shape: dict | None = None,
+        local: dict | None = None,
+    ) -> None:
+        rec = {
+            "ts_utc": utc_now(),
+            "model": model or "unknown",
+            "tokens_input": (usage or {}).get("prompt_tokens"),
+            "tokens_output": (usage or {}).get("completion_tokens"),
+            "tokens_cache_hit": (usage or {}).get("prompt_cache_hit_tokens"),
+            "basis": "reported" if usage else "unknown",
+            "reasoning_stripped": stripped,
+            "latency_ms": round(latency_ms, 1),
+        }
         if shape is not None:  # response shape only (never content): exposes upstream-dropped tool calls (ADR-0005)
-            rec.update({"content_chars": shape["content_chars"], "tool_calls": shape["tool_calls"],
-                        "finish_reason": shape.get("finish_reason"), "attempt": shape.get("attempt", 0),
-                        "dropped_output": dropped(usage, shape)})
+            rec.update(
+                {
+                    "content_chars": shape["content_chars"],
+                    "tool_calls": shape["tool_calls"],
+                    "finish_reason": shape.get("finish_reason"),
+                    "attempt": shape.get("attempt", 0),
+                    "dropped_output": dropped(usage, shape),
+                }
+            )
         if local is not None:  # feature 010 admission gateway only: queue/load/prefill/decode timing, resources
             rec["local"] = local
         with self.path.open("a", encoding="utf-8") as f:
@@ -207,8 +233,12 @@ def suspended(upstream: str, path: Path | None = None) -> dict | None:
     return suspension(provider, path) if provider else None
 
 
-def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
-               transport: httpx.AsyncBaseTransport | None = None, admission: Any = None) -> FastAPI:
+def create_app(
+    upstream: str = UPSTREAM,
+    meter_path: Path | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+    admission: Any = None,
+) -> FastAPI:
     """`admission` (feature 010, lrtx.admission.Admission; from FORGE_GATEWAY_MAX_INFLIGHT when not given) turns on the
     single-request queue, cancellation and timing; without it the gateway behaves as before."""
     if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
@@ -230,13 +260,14 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                 while True:
                     meter.record_sample(await asyncio.to_thread(la.resources, upstream.removesuffix("/v1")))
                     await asyncio.sleep(sample_s)
+
             task = asyncio.get_running_loop().create_task(loop())
             yield
             task.cancel()
+
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
-    client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0),
-                               transport=transport)
+    client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0), transport=transport)
 
     @app.get("/health")
     async def health() -> dict:
@@ -249,9 +280,16 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         if not s:
             return None
         meter.refusal(model, f"MODEL_SUSPENDED:{s['provider']}:{s['decision']}")
-        return JSONResponse({"error": {"message": f"MODEL_SUSPENDED: {s['provider']} is suspended by the owner "
-                                       f"({s['decision']}); the forge gateway did not call the provider",
-                                       "type": "model_suspended"}}, status_code=503)
+        return JSONResponse(
+            {
+                "error": {
+                    "message": f"MODEL_SUSPENDED: {s['provider']} is suspended by the owner "
+                    f"({s['decision']}); the forge gateway did not call the provider",
+                    "type": "model_suspended",
+                }
+            },
+            status_code=503,
+        )
 
     @app.get("/v1/models")
     async def models() -> Response:
@@ -266,8 +304,9 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         if (r := refused(None)) is not None:  # CAPA-052: before reading the body, before any upstream call
             return r
         if COST_CAP_USD > 0 and spent_usd(meter.path) >= COST_CAP_USD:  # paid upstream: hard spend cap
-            return JSONResponse({"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached",
-                                           "type": "cost_cap"}}, status_code=429)
+            return JSONResponse(
+                {"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached", "type": "cost_cap"}}, status_code=429
+            )
         auth = request.headers.get("authorization")  # the caller's credential is forwarded, never stored
         headers = {"Authorization": auth} if auth else None
         try:
@@ -276,25 +315,39 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                 raise ValueError
         except ValueError:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
-        binding = body.pop('forge_execution', None)
+        binding = body.pop("forge_execution", None)
+        native_id = request.headers.get("x-session-id")
+        if binding is None and native_id and os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1":
+            # Enable only after pinned Fabro header propagation is measured on the actual local profile.
+            from .afo.product_job import from_native
+            from .afo.queue import Store
+            from .afo.durable import Refused
+            import uuid
+
+            try:
+                binding = {**from_native(Store(), native_id), "request_id": "native-request-" + uuid.uuid4().hex}
+            except Refused as exc:
+                return JSONResponse({"error": {"type": exc.code}}, status_code=429)
         body = sanitize_request(body)
         if binding is not None:
             return await durable_request(request, binding, body, headers)
         # Legacy calls retain their existing behavior, but cannot bypass a held durable native execution.
         from .afo.queue import default_path, Store
-        if default_path().exists() or os.environ.get('FORGE_DURABLE_AUTONOMY') == '1':
+
+        if default_path().exists() or os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
             from .afo.request_admission import unbound_allowed
+
             if not unbound_allowed(Store()):
-                return JSONResponse({'error': {'type': 'durable_execution_busy_or_unbound'}}, status_code=429)
+                return JSONResponse({"error": {"type": "durable_execution_busy_or_unbound"}}, status_code=429)
         if adm is not None:
             return await admitted(request, body, headers)
         if body.get("stream"):
             body.setdefault("stream_options", {"include_usage": True})
 
             async def attempt() -> tuple[int, list[str], dict | None, bool, dict]:
-                upstream_resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body,
-                                                                       headers=headers),
-                                                  stream=True)
+                upstream_resp = await client.send(
+                    client.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True
+                )
                 lines: list[str] = []
                 usage, stripped = None, False
                 shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
@@ -345,8 +398,12 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
-                nshape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
-                         "finish_reason": ch.get("finish_reason"), "attempt": n}
+                nshape = {
+                    "content_chars": len(msg.get("content") or ""),
+                    "tool_calls": len(msg.get("tool_calls") or []),
+                    "finish_reason": ch.get("finish_reason"),
+                    "attempt": n,
+                }
             usage = data.get("usage") if isinstance(data, dict) else None
             meter.record(body.get("model"), usage, stripped, (time.monotonic() - t0) * 1000, nshape)
             if r.status_code != 200 or nshape is None or not dropped(usage, nshape):
@@ -357,34 +414,55 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         from .afo import request_admission as durable
         from .afo.durable import Refused
         from .afo.queue import Store
+
         store = Store()
         try:
             rec = durable.reserve(store, binding, body)
         except (Refused, KeyError, ValueError) as exc:
-            code = exc.code if isinstance(exc, Refused) else 'INVALID_DURABLE_BINDING'
-            meter.refusal(body.get('model'), code)
-            return JSONResponse({'error': {'type': code}}, status_code=429)
+            code = exc.code if isinstance(exc, Refused) else "INVALID_DURABLE_BINDING"
+            meter.refusal(body.get("model"), code)
+            return JSONResponse({"error": {"type": code}}, status_code=429)
         # No transparent retry: each new generation needs its own durable reservation.
-        usage, completed = None, False
+        usage, completed, started = None, False, False
         ticket = None
         try:
             if adm is not None:
                 ticket = await adm.enter(request.is_disconnected)
                 if ticket.refused:
-                    return JSONResponse({'error': {'type': 'admission_' + ticket.refused}}, status_code=429)
-            status, payload, usage, stripped, shape, timing = await _timed(body, headers, bool(body.get('stream')))
+                    return JSONResponse({"error": {"type": "admission_" + ticket.refused}}, status_code=429)
+            durable.start(store, rec, body)
+            started = True
+            status, payload, usage, stripped, shape, timing = await _timed(body, headers, bool(body.get("stream")))
             # A complete provider response with a finish reason is generation quiescence; transport close is not.
-            completed = status == 200 and shape.get('finish_reason') is not None
-            meter.record(body.get('model'), usage, stripped, timing.get('total_ms', 0), shape,
-                         {'request_id': rec['request_id'], 'mission_id': rec['mission_id']})
-            if body.get('stream'):
+            completed = status == 200 and shape.get("finish_reason") is not None
+            meter.record(
+                body.get("model"),
+                usage,
+                stripped,
+                timing.get("total_ms", 0),
+                shape,
+                {"request_id": rec["request_id"], "mission_id": rec["mission_id"]},
+            )
+            if body.get("stream"):
+
                 async def chunks():
                     for line in payload:
                         yield line
-                return StreamingResponse(chunks(), status_code=status, media_type='text/event-stream')
-            return JSONResponse(payload, status_code=status) if isinstance(payload, (dict, list)) else Response(payload, status_code=status)
+
+                return StreamingResponse(chunks(), status_code=status, media_type="text/event-stream")
+            return (
+                JSONResponse(payload, status_code=status)
+                if isinstance(payload, (dict, list))
+                else Response(payload, status_code=status)
+            )
+        except Refused as exc:
+            meter.refusal(body.get("model"), exc.code)
+            return JSONResponse({"error": {"type": exc.code}}, status_code=429)
+        except httpx.HTTPError:
+            meter.refusal(body.get("model"), "PROVIDER_REQUEST_OUTCOME_UNKNOWN")
+            return JSONResponse({"error": {"type": "PROVIDER_REQUEST_OUTCOME_UNKNOWN"}}, status_code=502)
         finally:
-            durable.reconcile(store, rec['request_id'], usage, completed=completed)
+            durable.reconcile(store, rec["request_id"], usage, completed=completed or not started)
             if ticket is not None and not ticket.refused:
                 adm.leave(ticket)
 
@@ -400,9 +478,10 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         ticket = await adm.enter(request.is_disconnected)
         if ticket.refused:
             meter.refusal(model, f"ADMISSION_{ticket.refused.upper()}")
-            return JSONResponse({"error": {"message": f"forge gateway admission: {ticket.refused}",
-                                           "type": "admission_" + ticket.refused}},
-                                status_code=429 if ticket.refused == "queue_full" else 503)
+            return JSONResponse(
+                {"error": {"message": f"forge gateway admission: {ticket.refused}", "type": "admission_" + ticket.refused}},
+                status_code=429 if ticket.refused == "queue_full" else 503,
+            )
         try:
             ollama = upstream.removesuffix("/v1")
             was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
@@ -420,9 +499,14 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                     meter.refusal(model, "ADMISSION_CANCELLED_RUNNING")
                     return Response(status_code=499)
                 status, payload, usage, stripped, shape, timing = res
-                local = {"queue_wait_ms": ticket.wait_ms, "queue_depth_at_arrival": ticket.depth_at_arrival,
-                         "model_loaded_before": was_loaded, "load": load if n == 0 else None, **timing,
-                         "resources_before": before if n == 0 else None}
+                local = {
+                    "queue_wait_ms": ticket.wait_ms,
+                    "queue_depth_at_arrival": ticket.depth_at_arrival,
+                    "model_loaded_before": was_loaded,
+                    "load": load if n == 0 else None,
+                    **timing,
+                    "resources_before": before if n == 0 else None,
+                }
                 meter.record(model, usage, stripped, (time.monotonic() - t0) * 1000, {**shape, "attempt": n}, local)
                 if status != 200 or not dropped(usage, shape):
                     break
@@ -431,12 +515,17 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         finally:
             adm.leave(ticket)
         if stream:
+
             async def gen():
                 for line in payload:
                     yield line
+
             return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
-        return JSONResponse(payload, status_code=status) if isinstance(payload, dict | list) else \
-            Response(payload, status_code=status)
+        return (
+            JSONResponse(payload, status_code=status)
+            if isinstance(payload, dict | list)
+            else Response(payload, status_code=status)
+        )
 
     async def _timed(body: dict, headers: dict | None, stream: bool):
         """One upstream attempt with wall-clock phases: time to first generated delta (prompt processing; the model is
@@ -455,13 +544,21 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
-                shape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
-                         "finish_reason": ch.get("finish_reason")}
+                shape = {
+                    "content_chars": len(msg.get("content") or ""),
+                    "tool_calls": len(msg.get("tool_calls") or []),
+                    "finish_reason": ch.get("finish_reason"),
+                }
             usage = data.get("usage") if isinstance(data, dict) else None
-            return r.status_code, data, usage, stripped, shape, {
-                "total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"}
-        resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body, headers=headers),
-                                 stream=True)
+            return (
+                r.status_code,
+                data,
+                usage,
+                stripped,
+                shape,
+                {"total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"},
+            )
+        resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
         lines: list[str] = []
         usage, stripped, first, last, deltas = None, False, None, None, 0
         try:
@@ -492,11 +589,16 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             await resp.aclose()
         end = time.monotonic()
         ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
-        timing = {"total_ms": ms(t0, end), "first_delta_ms": ms(t0, first) if first else None, "delta_chunks": deltas,
-                  "prefill_ms": ms(t0, first) if first and deltas > 1 else
-                  "UNKNOWN (answer arrived in one chunk: the first-delta time includes generation)",
-                  "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
-                  "basis": "gateway wall clock around the upstream stream; model preloaded separately"}
+        timing = {
+            "total_ms": ms(t0, end),
+            "first_delta_ms": ms(t0, first) if first else None,
+            "delta_chunks": deltas,
+            "prefill_ms": ms(t0, first)
+            if first and deltas > 1
+            else "UNKNOWN (answer arrived in one chunk: the first-delta time includes generation)",
+            "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
+            "basis": "gateway wall clock around the upstream stream; model preloaded separately",
+        }
         out = int((usage or {}).get("completion_tokens") or 0)
         if first and deltas > 1 and last > first:
             timing["decode_tokens_per_s"] = round(out / (last - first), 2)

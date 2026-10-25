@@ -7,6 +7,6 @@ RequiresMountsFor=@DATA@
 Type=oneshot
 Environment=FORGE_REPO_ROOT=@REPO@
 Environment=FORGE_DATA_ROOT=@DATA@
-Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=FORGE_STATE_DIR=@STATE@
 Environment=PYTHONPATH=@REPO@/factory/python
 ExecStart=@VENV@/bin/python -m forge_factory.afo.watchdog --max-age 300

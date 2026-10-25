@@ -8,6 +8,9 @@ from __future__ import annotations
 
 import json
 import os
+import signal
+import threading
+from contextlib import contextmanager
 import time
 from pathlib import Path
 
@@ -18,6 +21,8 @@ def identity(pid=None):
     pid = os.getpid() if pid is None else pid
     try:
         stat = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
+        if stat[0] == "Z":
+            return None
         return {"pid": pid, "start": stat[19], "boot": Path("/proc/sys/kernel/random/boot_id").read_text().strip()}
     except (OSError, IndexError):
         return None
@@ -27,7 +32,7 @@ class VerificationJobs:
     def __init__(self, store):
         self.store = store
 
-    def ensure(self, job_id, case_sha256):
+    def ensure(self, job_id, case_sha256, *, deadline_epoch=None):
         with self.store.tx() as c:
             row = c.execute("SELECT record FROM afo_verification_jobs WHERE job_id=?", (job_id,)).fetchone()
             if row:
@@ -40,6 +45,7 @@ class VerificationJobs:
                 "case_sha256": case_sha256,
                 "dispatches": 0,
                 "owner": None,
+                "deadline_epoch": deadline_epoch,
                 "verification_id": "verify-" + digest([job_id, case_sha256])[:24],
             }
             c.execute("INSERT INTO afo_verification_jobs VALUES (?,'READY',0,0,?)", (job_id, canonical(rec).decode()))
@@ -58,12 +64,22 @@ class VerificationJobs:
             if target is None:
                 raise Refused("VERIFIER_JOB_UNKNOWN")
             for row in rows:
-                if row["state"] not in ("DISPATCHING", "RUNNING"):
+                if row["state"] not in ("DISPATCHING", "RUNNING", "CANCELLING"):
                     continue
                 rec = json.loads(row["record"])
                 owner = rec.get("owner")
                 # Missing owner within the bounded spawn grace remains occupied.
-                if (not owner and row["lease_until"] > now) or owner and identity(owner["pid"]) == owner:
+                if not owner and row["lease_until"] > now:
+                    return None
+                if owner and identity(owner["pid"]) == owner:
+                    expired = row["lease_until"] <= now or rec.get("deadline_epoch") is not None and now >= rec["deadline_epoch"]
+                    if expired and rec.get("managed_process_group") and os.getpgid(owner["pid"]) == owner["pid"]:
+                        # Verified boot/PID-start identity plus dedicated process group: never process-name killing.
+                        os.killpg(owner["pid"], signal.SIGKILL)
+                        c.execute(
+                            "UPDATE afo_verification_jobs SET state='CANCELLING' WHERE job_id=? AND epoch=?",
+                            (row["job_id"], row["epoch"]),
+                        )
                     return None
                 if row["lease_until"] > now:
                     return None
@@ -75,7 +91,7 @@ class VerificationJobs:
                 return None
             rec = json.loads(target["record"])
             epoch = target["epoch"] + 1
-            if rec["dispatches"] >= 3:
+            if rec["dispatches"] >= 3 or rec.get("deadline_epoch") is not None and now >= rec["deadline_epoch"]:
                 c.execute("UPDATE afo_verification_jobs SET state='BLOCKED' WHERE job_id=?", (job_id,))
                 return None
             rec.update(dispatches=rec["dispatches"] + 1, owner=None)
@@ -94,11 +110,50 @@ class VerificationJobs:
                 raise Refused("VERIFIER_CLAIM_FENCED")
             rec = json.loads(row["record"])
             rec["owner"] = identity()
+            rec["managed_process_group"] = os.getpgid(os.getpid()) == os.getpid()
             c.execute(
                 "UPDATE afo_verification_jobs SET state='RUNNING',lease_until=?,record=? WHERE job_id=?",
                 (now + 60, canonical(rec).decode(), job_id),
             )
             return rec
+
+    def current(self, job_id, epoch):
+        row = self.get(job_id)
+        return bool(
+            row
+            and row["state"] == "RUNNING"
+            and row["epoch"] == epoch
+            and row["record"].get("owner") == identity()
+            and row["lease_until"] > time.time()
+        )
+
+    @contextmanager
+    def keepalive(self, job_id, epoch):
+        stop = threading.Event()
+
+        def beat():
+            while not stop.wait(15):
+                try:
+                    with self.store.tx() as c:
+                        row = c.execute("SELECT * FROM afo_verification_jobs WHERE job_id=?", (job_id,)).fetchone()
+                        if (
+                            not row
+                            or row["state"] != "RUNNING"
+                            or row["epoch"] != epoch
+                            or json.loads(row["record"]).get("owner") != identity()
+                        ):
+                            return
+                        c.execute("UPDATE afo_verification_jobs SET lease_until=? WHERE job_id=?", (time.time() + 60, job_id))
+                except Exception:  # noqa: BLE001 - lost heartbeat cannot extend a verifier lease
+                    return
+
+        thread = threading.Thread(target=beat, daemon=True)
+        thread.start()
+        try:
+            yield
+        finally:
+            stop.set()
+            thread.join(timeout=2)
 
     def finish(self, job_id, epoch, result):
         with self.store.tx() as c:

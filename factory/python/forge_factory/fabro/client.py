@@ -6,6 +6,7 @@ Only endpoints observed on the installed server are used:
   GET /api/v1/runs/{id}/usage, POST /api/v1/runs/{id}/cancel.
 No undocumented DB access, no UI scraping.
 """
+
 from __future__ import annotations
 
 import json
@@ -40,13 +41,27 @@ def load_token(storage_dir: str | None = None) -> str | None:
 
 
 class FabroClient:
-    def __init__(self, base_url: str | None = None, token: str | None = None, timeout: float = 5.0,
-                 transport: httpx.BaseTransport | None = None):
+    def __init__(
+        self,
+        base_url: str | None = None,
+        token: str | None = None,
+        timeout: float = 5.0,
+        transport: httpx.BaseTransport | None = None,
+    ):
         url = (base_url or os.environ.get("FORGE_FABRO_URL") or DEFAULT_URL).rstrip("/")
         if url.endswith("/api/v1"):
             url = url[: -len("/api/v1")]
         headers = {"Authorization": f"Bearer {token}"} if token else {}
         self._http = httpx.Client(base_url=url, headers=headers, timeout=timeout, transport=transport)
+
+    def close(self):
+        self._http.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.close()
 
     def _get(self, path: str, **params: Any) -> Any:
         try:

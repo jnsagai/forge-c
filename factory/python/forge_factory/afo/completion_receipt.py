@@ -101,8 +101,16 @@ class Receipts:
             n = c.execute(
                 "SELECT COUNT(*) FROM afo_semantic_proposals WHERE job_id=? AND nonce=?", (ctx.job_id, ctx.launch_nonce)
             ).fetchone()[0]
+            snap = MissionLedger._snapshot(c, ctx.mission_id)
+            if n and snap["corrections"] >= snap["limits"]["max_corrections"]:
+                raise Refused("MISSION_CORRECTIONS_EXHAUSTED")
             if n > max_corrections:
                 raise Refused("PROPOSAL_CORRECTIONS_EXHAUSTED")
+            if n:
+                c.execute(
+                    "INSERT INTO afo_mission_counters VALUES (?,?,?,?)",
+                    ("correction:" + rid, ctx.mission_id, ctx.job_id, "CORRECTION"),
+                )
             rec = {
                 "schema_version": "1.0",
                 "receipt_id": rid,
@@ -133,6 +141,19 @@ class Receipts:
     def _advance(
         self, rid: str, expected: int, changes: dict, *, decision: tuple | None = None, effect: tuple | None = None
     ) -> dict:
+        allowed = {
+            "admissibility_state",
+            "admissibility_receipt_ref",
+            "bound_plan",
+            "execution_state",
+            "execution_id",
+            "verification_receipt_ref",
+            "reason_codes",
+        }
+        if not set(changes) <= allowed:
+            raise Refused("RECEIPT_IMMUTABLE_IDENTITY")
+        if changes.get("execution_state") == "VERIFIED" and (not decision or decision[1] != "VERIFICATION"):
+            raise Refused("INDEPENDENT_VERIFICATION_RECEIPT_REQUIRED")
         with self.store.tx() as c:
             row = c.execute(
                 "SELECT record,sha256 FROM afo_completion_receipts WHERE receipt_id=? ORDER BY revision DESC LIMIT 1", (rid,)
@@ -210,6 +231,12 @@ class Receipts:
             if time.time() >= snap["limits"]["deadline"] or snap["charged_tokens"] > snap["limits"]["max_tokens"]:
                 raise Refused("MISSION_ALLOWANCE_EXHAUSTED")
             proposal = self.proposal(rec)
+            if (
+                j.get("selected_obligations")
+                and proposal["decision"] == "PROPOSE_REPAIR"
+                and not set(proposal["target_obligations"]) <= set(j["selected_obligations"])
+            ):
+                raise Refused("PROPOSAL_OUTSIDE_COHERENT_OBJECTIVE")
             plan = semantic_proposal.bind(
                 proposal,
                 packet,
@@ -312,3 +339,86 @@ class Receipts:
                 raise Refused("RECEIPT_CHAIN_BROKEN")
             previous = row["sha256"]
         return bool(rows)
+
+
+def for_plan(store, plan_id):
+    broker = Receipts(store)
+    with store.tx() as c:
+        ids = [r[0] for r in c.execute("SELECT DISTINCT receipt_id FROM afo_completion_receipts")]
+    matches = [r for rid in ids if (r := broker.latest(rid)).get("bound_plan") and r["bound_plan"]["plan_id"] == plan_id]
+    if len(matches) > 1:
+        raise Refused("BOUND_PLAN_RECEIPT_AMBIGUOUS")
+    return matches[0] if matches else None
+
+
+def applying(store, receipt_id, attempt_id):
+    broker = Receipts(store)
+    rec = broker.latest(receipt_id)
+    if rec["execution_state"] in ("APPLYING", "VERIFYING", "VERIFIED", "FAILED"):
+        return rec
+    if rec["execution_state"] != "DISPATCH_PENDING":
+        raise Refused("REPAIR_DISPATCH_NOT_REQUESTED")
+    with store.tx() as c:
+        row = c.execute("SELECT record FROM afo_attempts WHERE attempt_id=?", (attempt_id,)).fetchone()
+    attempt = json.loads(row[0]) if row else {}
+    if attempt.get("recovery_plan_id") != rec["bound_plan"]["plan_id"]:
+        raise Refused("REPAIR_ATTEMPT_NOT_BOUND")
+    result = broker._advance(receipt_id, rec["revision"], {"execution_state": "APPLYING"})
+    with store.tx() as c:
+        effect = c.execute("SELECT record FROM afo_durable_effects WHERE effect_id=?", (rec["execution_id"],)).fetchone()
+        payload = {**json.loads(effect[0]), "attempt_id": attempt_id}
+        c.execute(
+            "UPDATE afo_durable_effects SET state='APPLYING',record=? WHERE effect_id=?",
+            (canonical(payload).decode(), rec["execution_id"]),
+        )
+    return result
+
+
+def verified_attempt(store, attempt, workspace):
+    """Independent release/inspection authorities only; native SUCCEEDED is intentionally unused."""
+    plan_id = attempt["record"].get("recovery_plan_id")
+    if not plan_id:
+        return None
+    rec = for_plan(store, plan_id)
+    if not rec:
+        return None
+    broker = Receipts(store)
+    if rec["execution_state"] in ("VERIFIED", "FAILED"):
+        return rec
+    if rec["execution_state"] == "DISPATCH_PENDING":
+        rec = applying(store, rec["receipt_id"], attempt["attempt_id"])
+    if rec["execution_state"] == "APPLYING":
+        rec = broker._advance(rec["receipt_id"], rec["revision"], {"execution_state": "VERIFYING"})
+    from ..inspection.engine import Store as InspectionStore
+    from .dispatch import package_verdict
+
+    verdict = package_verdict(Path(workspace) / ".forge-run/package.json")
+    if verdict["verdict"] == "PENDING":
+        return rec
+    gates = {f"SWE.{i}": InspectionStore(Path(workspace)).gate(f"SWE.{i}") for i in range(1, 7)}
+    passed = verdict["verdict"] == "READY_FOR_OFFLINE_REVIEW" and all(g["decision"] == "PASS" for g in gates.values())
+    decision = {
+        "receipt_id": rec["receipt_id"],
+        "attempt_id": attempt["attempt_id"],
+        "plan_sha256": rec["bound_plan"]["sha256"],
+        "package": verdict,
+        "gates": gates,
+        "passed": passed,
+        "authority": "EXISTING_RELEASE_AND_INSPECTION_GATES",
+    }
+    did = "verification-" + digest(decision)[:24]
+    result = broker._advance(
+        rec["receipt_id"],
+        rec["revision"],
+        {
+            "execution_state": "VERIFIED" if passed else "FAILED",
+            "verification_receipt_ref": "afo-decision:" + did if passed else None,
+            "reason_codes": [] if passed else ["INDEPENDENT_REPAIR_VERIFICATION_FAILED"],
+        },
+        decision=(did, "VERIFICATION", decision),
+    )
+    from .execution_lifecycle import Executions
+
+    if Executions(store).get(rec["job_id"]):
+        Executions(store).verified_outcome(rec["job_id"], did)
+    return result

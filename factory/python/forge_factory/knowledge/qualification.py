@@ -50,10 +50,12 @@ def record(store, lesson, *, manifest_path, manifest_sha256, reports):
             raise Refused("LESSON_QUALIFICATION_FAILED")
     with store._conn() as c:
         source = c.execute(
-            "SELECT source_hash,outcome FROM job_experience WHERE experience_id=?", (lesson["experience_ref"],)
+            "SELECT source_hash,outcome,record FROM job_experience WHERE experience_id=?", (lesson["experience_ref"],)
         ).fetchone()
         if not source or manifest.get("experience_source_hash") != source["source_hash"]:
             raise Refused("LESSON_EXPERIENCE_SOURCE_CHANGED")
+        if json.loads(source["record"]).get("cohort", {}).get("evaluation_holdout"):
+            raise Refused("HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED")
         if lesson["source_kind"] == "NEGATIVE_OBSERVATION" and source["outcome"] in (
             "PASS",
             "SUCCEEDED",

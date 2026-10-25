@@ -4,6 +4,7 @@ The launcher calls `workorder.run(..., detach=True, labels=...)` - the same path
 pinned launch manifest (example, provided LL, model, provider, Codex authors, optional resume source). The view lists
 recent runs of the Fabro server the factory launches on (FORGE_FABRO_URL); unreachable -> None (never "no runs").
 """
+
 from __future__ import annotations
 
 import json
@@ -18,8 +19,8 @@ def fabro_view(limit: int = 200):
     from ..fabro.client import FabroClient, FabroUnavailable, load_token
 
     try:
-        c = FabroClient(token=load_token(os.environ.get("FORGE_FABRO_STORAGE")), timeout=10)
-        return c.list_runs(limit=limit)
+        with FabroClient(token=load_token(os.environ.get("FORGE_FABRO_STORAGE")), timeout=10) as c:
+            return c.list_runs(limit=limit)
     except (FabroUnavailable, OSError):
         return None
     except Exception:  # noqa: BLE001 - any unexpected listing failure is "unreachable", never an empty listing
@@ -27,8 +28,10 @@ def fabro_view(limit: int = 200):
 
 
 # pre-approved model profiles (policy engineering.allowed_model_profiles) -> launch parameters
-PROFILES = {"deepseek-flash": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": None},
-            "codex-gpt-6.1-sol": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": "codex"}}
+PROFILES = {
+    "deepseek-flash": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": None},
+    "codex-gpt-6.1-sol": {"model": "deepseek-flash", "provider": "deepseek", "acp_authors": "codex"},
+}
 
 
 def launcher(manifest: dict, wo: str, labels: dict) -> dict:
@@ -42,8 +45,12 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
             selected = manifest["model_profile"]
             if selected not in prof["models"]["allowed"]:
                 raise ValueError(f"LOCAL_MODEL_PROFILE_UNKNOWN:{selected}")
-            manifest = {**manifest, "model": selected, "provider": prof["provider"],
-                        "acp_authors": None, "acp_inspectors": None}
+            manifest = {**manifest, "model": selected, "provider": prof["provider"], "acp_authors": None, "acp_inspectors": None}
+            alternative = next(
+                (a for a in manifest.get("qualified_local_alternatives") or [] if a.get("model_profile") == selected), None
+            )
+            if alternative:
+                manifest = {**manifest, "role_capabilities": alternative["role_capabilities"]}
         elif manifest["model_profile"] not in PROFILES:
             raise ValueError(f"MODEL_PROFILE_UNKNOWN:{manifest['model_profile']}")
         else:
@@ -66,19 +73,36 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
             attempt = dispatch._attempt(store, labels["afo_attempt"])
             order = store.order(attempt["order_id"])
             eff = load()
-            grant = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"),
-                               action="launch_workorder", request=request_for(order))
+            grant = authz.find(
+                eff.mode,
+                eff.sha256 or "",
+                ref=eff.get("authorization_ref"),
+                action="launch_workorder",
+                request=request_for(order),
+            )
             record = json.loads((authz.AUTH_DIR / f"{eff.get('authorization_ref')}.json").read_text())
             if not grant.allow or record.get("signed_runbook_ref") != f"factory-revision:{approved}":
                 raise RuntimeError("FRESH_FACTORY_CHANGE_NOT_OWNER_AUTHORIZED")
             fresh, resume = resume, None
-    r = run(REPO_ROOT / manifest["example"], wo, detach=True, model=manifest.get("model", "deepseek-flash"),
-            provider=manifest.get("provider", "deepseek"), provided_from=manifest.get("provided_from"),
-            acp_authors=manifest.get("acp_authors"), resume=resume, fresh_recovery_from=fresh,
-            acp_inspectors=manifest.get("acp_inspectors"), profile=manifest.get("profile"),
-            resume_upto=manifest.get("resume_upto"), labels=labels,
-            resume_max_attempts=manifest.get("resume_max_attempts"),
-            resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"), recovery_plan=manifest.get("recovery_plan"))
+    r = run(
+        REPO_ROOT / manifest["example"],
+        wo,
+        detach=True,
+        model=manifest.get("model", "deepseek-flash"),
+        provider=manifest.get("provider", "deepseek"),
+        provided_from=manifest.get("provided_from"),
+        acp_authors=manifest.get("acp_authors"),
+        resume=resume,
+        fresh_recovery_from=fresh,
+        acp_inspectors=manifest.get("acp_inspectors"),
+        profile=manifest.get("profile"),
+        resume_upto=manifest.get("resume_upto"),
+        labels=labels,
+        resume_max_attempts=manifest.get("resume_max_attempts"),
+        resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"),
+        recovery_plan=manifest.get("recovery_plan"),
+        durable_binding=manifest.get("durable_binding"),
+    )
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")
     rev = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()

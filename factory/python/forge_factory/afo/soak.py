@@ -8,6 +8,7 @@ clock); every other gap is an observation hole and is reported as unknown outage
 DEMONSTRATED requires covered hours >= target with every covered sample healthy; anything less is IN_PROGRESS or
 NOT_DEMONSTRATED. A soak never changes the AFO mode.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,8 +43,14 @@ def live_probes() -> dict:
     from .scheduler import _healthy
 
     fabro = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/").rsplit("/api", 1)[0]
-    return {"data_volume": lambda: host.preflight()["ok"], "conductor": lambda: watchdog.check(120)["ok"],
-            "fabro": lambda: _healthy(fabro + "/health"), "gateway": lambda: _healthy("http://127.0.0.1:11437/health")}
+    return {
+        "data_volume": lambda: host.preflight()["ok"],
+        "conductor": lambda: watchdog.check(120)["ok"],
+        "fabro": lambda: _healthy(fabro + "/health"),
+        "gateway": lambda: _healthy(
+            os.environ.get("FORGE_LRTX_GATEWAY_URL", "http://127.0.0.1:11437/v1").rstrip("/").removesuffix("/v1") + "/health"
+        ),
+    }
 
 
 def start(soak_id: str, target_h: int, interval_s: float, authorization_ref: str) -> dict:
@@ -52,9 +59,17 @@ def start(soak_id: str, target_h: int, interval_s: float, authorization_ref: str
     p = path(soak_id)
     if p.exists():
         raise ValueError("soak exists (append samples with `sample`, never restart a soak id)")
-    head = {"kind": "start", "soak_id": soak_id, "target_hours": target_h, "interval_s": interval_s,
-            "authorization_ref": authorization_ref, "utc": utc_now(), "wall": time.time(), "mono": time.monotonic(),
-            "boot_id": _boot_id()}
+    head = {
+        "kind": "start",
+        "soak_id": soak_id,
+        "target_hours": target_h,
+        "interval_s": interval_s,
+        "authorization_ref": authorization_ref,
+        "utc": utc_now(),
+        "wall": time.time(),
+        "mono": time.monotonic(),
+        "boot_id": _boot_id(),
+    }
     _append(p, head)
     return head
 
@@ -74,8 +89,15 @@ def sample(soak_id: str, probes: dict | None = None) -> dict:
             res[k] = bool(f())
         except Exception:  # noqa: BLE001 - a probe error is an unhealthy sample, never a skipped one
             res[k] = False
-    rec = {"kind": "sample", "utc": utc_now(), "wall": time.time(), "mono": time.monotonic(), "boot_id": _boot_id(),
-           "healthy": all(res.values()), "probes": res}
+    rec = {
+        "kind": "sample",
+        "utc": utc_now(),
+        "wall": time.time(),
+        "mono": time.monotonic(),
+        "boot_id": _boot_id(),
+        "healthy": all(res.values()),
+        "probes": res,
+    }
     _append(path(soak_id), rec)
     return rec
 
@@ -101,8 +123,14 @@ def report(soak_id: str) -> dict:
     for a, b in zip(samples, samples[1:], strict=False):
         dw, dm = b["wall"] - a["wall"], b["mono"] - a["mono"]
         if a["boot_id"] != b["boot_id"] or dm < 0 or abs(dw - dm) > CLOCK_SKEW_S:
-            jumps.append({"from": a["utc"], "to": b["utc"], "wall_s": round(dw, 1),
-                          "mono_s": round(dm, 1) if a["boot_id"] == b["boot_id"] else None})
+            jumps.append(
+                {
+                    "from": a["utc"],
+                    "to": b["utc"],
+                    "wall_s": round(dw, 1),
+                    "mono_s": round(dm, 1) if a["boot_id"] == b["boot_id"] else None,
+                }
+            )
             continue
         if dw > 2 * iv:
             holes.append({"from": a["utc"], "to": b["utc"], "seconds": round(dw, 1)})
@@ -118,12 +146,20 @@ def report(soak_id: str) -> dict:
         status = "IN_PROGRESS"
     else:
         status = "NOT_DEMONSTRATED"
-    return {"soak_id": soak_id, "target_hours": head["target_hours"], "authorization_ref": head["authorization_ref"],
-            "samples": len(samples), "covered_hours": round(covered / 3600, 4),
-            "healthy_hours": round(healthy_s / 3600, 4), "unhealthy_samples": unhealthy,
-            "observation_holes": holes[:20], "clock_or_boot_jumps": jumps[:20],
-            "availability": round(healthy_s / covered, 6) if covered else None, "status": status,
-            "note": "real wall-clock samples only; holes and jumps are unknown exposure, never up time"}
+    return {
+        "soak_id": soak_id,
+        "target_hours": head["target_hours"],
+        "authorization_ref": head["authorization_ref"],
+        "samples": len(samples),
+        "covered_hours": round(covered / 3600, 4),
+        "healthy_hours": round(healthy_s / 3600, 4),
+        "unhealthy_samples": unhealthy,
+        "observation_holes": holes[:20],
+        "clock_or_boot_jumps": jumps[:20],
+        "availability": round(healthy_s / covered, 6) if covered else None,
+        "status": status,
+        "note": "real wall-clock samples only; holes and jumps are unknown exposure, never up time",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -48,7 +48,7 @@ def strict_json(raw: str | bytes, max_bytes: int = 16384):
 
     try:
         return json.loads(raw, object_pairs_hook=pairs, parse_constant=nonfinite)
-    except (ValueError, UnicodeError) as exc:
+    except (ValueError, UnicodeError, RecursionError) as exc:
         if isinstance(exc, Refused):
             raise
         raise Refused("INVALID_JSON", type(exc).__name__) from exc

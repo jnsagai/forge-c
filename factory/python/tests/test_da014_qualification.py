@@ -1,0 +1,144 @@
+"""Frozen qualification tooling fixtures; these tests make no model/readiness claim."""
+
+import pytest
+from forge_factory.afo import qualification as Q
+from forge_factory.afo.durable import Refused, digest, immutable_json
+from forge_factory.lrtx import role_capability as C
+
+
+def identity(role="afo-recovery-planner"):
+    return {
+        "role": role,
+        "model_digest": "fixture-digest",
+        "precision": "Q8",
+        "reasoning": "none",
+        "schema_mode": "json_schema",
+        "adapter_revision": "candidate",
+        "context_tokens": 8192,
+        "sampling": {"temperature": 0},
+        "task_class": "single-obligation",
+    }
+
+
+def test_protocol_freezes_twenty_times_five_and_does_not_claim_dryrun_qualification(tmp_path):
+    m = Q.freeze("protocol", tmp_path / "campaign.json", identity=identity())
+    assert len(m["cases"]) == 20 and sum(c["repeats"] for c in m["cases"]) == 100
+    report = Q.preflight(m)
+    assert report["status"] == "BLOCKED" and report["local_model_capability"] == "NOT_RUN"
+    assert Q.protocol_report(m, [])["status"] == "NOT_RUN"
+    m["cases"][0]["repeats"] = 6
+    with pytest.raises(Refused):
+        Q.validate(m)
+
+
+def test_protocol_blanket_blocks_and_missing_checks_cannot_pass(tmp_path):
+    m = Q.freeze("protocol", tmp_path / "campaign.json", identity=identity())
+    rows = []
+    for c in m["cases"]:
+        for i in range(5):
+            rows.append(
+                {
+                    "trial_id": f"{c['case_id']}:{i}",
+                    "manifest_sha256": digest(m),
+                    "observed": "CLOSE_BLOCKED",
+                    "native_run_id": f"fixture:{c['case_id']}:{i}",
+                    "receipt": {"admissibility_state": "ACCEPTED", "decision": "CLOSE_BLOCKED"},
+                    "false_success": False,
+                    "duplicate_effects": 0,
+                    "authority_escapes": 0,
+                }
+            )
+    report = Q.protocol_report(m, rows)
+    assert report["status"] == "FAIL" and report["observed_denominator"] == 100 and report["useful_plan_count"] == 0
+    rows[0]["trial_id"] = rows[1]["trial_id"]
+    with pytest.raises(Refused):
+        Q.protocol_report(m, rows)
+
+
+def test_product_denominators_and_all_quality_thresholds(tmp_path):
+    m = Q.freeze(
+        "benchmark",
+        tmp_path / "campaign.json",
+        identity=identity("swe3-author"),
+        baseline={"median_complete_prompt_tokens": 1000},
+    )
+    rows = [
+        {
+            "trial_id": m["product_cases"][i]["trial_id"],
+            "sealed_ready": i < 27,
+            "native_all_six_gates": i < 27,
+            "critical_defects": [{"case_id": cid, "independently_detected": True} for cid in m["critical_defect_ids"]],
+            "structured_calls": 100,
+            "invalid_structured": 0,
+            "complete_prompt_tokens": 450,
+            "false_ready": False,
+            "required_evidence_complete": True,
+        }
+        for i in range(30)
+    ]
+    assert Q.product_report(m, rows)["status"] == "PASS"  # synthetic report checker only
+    rows[-1]["invalid_structured"] = 30
+    assert Q.product_report(m, rows)["status"] == "FAIL"  # exactly 1% is not below 1%
+    rows[-1]["invalid_structured"] = 0
+    rows[-1]["critical_defects"][0]["independently_detected"] = False
+    assert Q.product_report(m, rows)["status"] == "FAIL"
+
+
+def test_gpio_each_missing_prerequisite_blocks():
+    all_ready = dict.fromkeys(("rcc_ready", "qualified_profile", "authoritative_inputs", "frozen_intake", "authorized"), True)
+    assert Q.gpio_admission(all_ready)["admit"]
+    for k in all_ready:
+        assert not Q.gpio_admission({**all_ready, k: False})["admit"]
+
+
+def test_role_capability_is_exact_and_independent_not_context_advertising(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ident = identity()
+    r = tmp_path / "report.json"
+    report = {
+        "manifest_sha256": "m",
+        "identity_sha256": C.key(ident),
+        "status": "PASS",
+        "execution_host": "omniverse2",
+        "independent_oracle_refs": ["fixture:independent-reference"],
+        "envelope": {"max_obligations": 1},
+    }
+    immutable_json(r, report)
+    from forge_factory.common import sha256_file
+
+    ref = C.record(ident, report_path=r, report_sha256=sha256_file(r), expected_manifest_sha256="m")
+    assert C.require(ref, ident, semantic_obligations=1)["qualified"]
+    for k, v in [("role", "swe3-inspector"), ("precision", "Q4"), ("reasoning", "high"), ("context_tokens", 16384)]:
+        with pytest.raises(Refused):
+            C.require(ref, {**ident, k: v})
+    with pytest.raises(Refused):
+        C.require(ref, ident, semantic_obligations=2)
+    with pytest.raises(Refused):
+        C.require(None, ident)
+
+
+def test_operational_campaign_cannot_pass_idle_duration_without_faults_and_later_intake(tmp_path, monkeypatch):
+    from forge_factory.afo import soak, operational_campaign as O
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    m = Q.freeze("operation-24", tmp_path / "manifest.json", identity=identity(), model_profile="qwen-fixture")
+    soak.start("soak-014-fixture", 24, 30, "AUTH-fixture")
+    path = soak.path("soak-014-fixture")
+    head = __import__("json").loads(path.read_text().splitlines()[0])
+    # Synthetic source timeline tests the report checker; no elapsed/live qualification claim.
+    for seconds in (0, 24 * 3600):
+        soak._append(
+            path,
+            {
+                "kind": "sample",
+                "wall": head["wall"] + seconds,
+                "mono": head["mono"] + seconds,
+                "boot_id": head["boot_id"],
+                "utc": "synthetic-fixture",
+                "healthy": True,
+                "probes": {"conductor": True, "gateway": True, "fabro": True, "data_volume": True},
+            },
+        )
+    report = O.report(m, "soak-014-fixture")
+    assert report["status"] == "FAIL" and report["missing_faults"] and not report["post_campaign_continuity"]
+    assert report["gross_24_7_window"]["unavailable_seconds"] > 0 and report["rolling_30_day_slo"] == "NOT_DEMONSTRATED"

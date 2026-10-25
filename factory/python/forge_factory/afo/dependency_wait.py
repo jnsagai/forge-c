@@ -16,6 +16,11 @@ def probe(store, scope, condition, observe, *, now=None, maximum=600, minimum=15
     with store.tx() as c:
         old = c.execute("SELECT next_probe,record FROM afo_dependency_waits WHERE wait_id=?", (key,)).fetchone()
         rec = json.loads(old["record"]) if old else {"scope": scope, "condition": condition, "failures": 0}
+        if old and old["next_probe"] - now > maximum:
+            # A backward wall-clock correction cannot postpone recovery indefinitely.
+            due = now + maximum
+            c.execute("UPDATE afo_dependency_waits SET next_probe=? WHERE wait_id=?", (due, key))
+            return {**rec, "due": False, "next_probe": due, "clock_regression": True}
         if old and now < old["next_probe"]:
             return {**rec, "due": False, "next_probe": old["next_probe"]}
         # Reserve the next probe before I/O; a crashed observer cannot cause a probe storm.

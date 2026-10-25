@@ -17,6 +17,7 @@ Order of authority for a blocked attempt (a FailureBundle):
      plan that only reworded or reseeded the same thing has the same fingerprint and is refused).
 Plans are recorded (afo_recovery_plans) with the decision; execution always opens a NEW attempt (checkpoints).
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -30,17 +31,28 @@ from .queue import QueueError, Store
 
 PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
 STRATEGIES_FOR = {
-    "PRODUCT_QUALITY": {"REWORK_LOCAL", "RESTART_FROM_LAST_VALID_CHECKPOINT", "RETURN_TO_OWNING_UPSTREAM_PHASE",
-                        "SWITCH_PREAPPROVED_MODEL_PROFILE", "CLOSE_BLOCKED"},
+    "PRODUCT_QUALITY": {
+        "REWORK_LOCAL",
+        "RESTART_FROM_LAST_VALID_CHECKPOINT",
+        "RETURN_TO_OWNING_UPSTREAM_PHASE",
+        "SWITCH_PREAPPROVED_MODEL_PROFILE",
+        "CLOSE_BLOCKED",
+    },
     "INFRASTRUCTURE": {"DEFER_TRANSIENT_DEPENDENCY", "CLOSE_BLOCKED"},
     "TRANSIENT_DEPENDENCY": {"DEFER_TRANSIENT_DEPENDENCY", "CLOSE_BLOCKED"},
-    "FACTORY_CODE_DEFECT": {"CLOSE_BLOCKED"}, "SPECIFICATION_GAP": {"CLOSE_BLOCKED"}, "SECURITY": {"CLOSE_BLOCKED"},
+    "FACTORY_CODE_DEFECT": {"CLOSE_BLOCKED"},
+    "SPECIFICATION_GAP": {"CLOSE_BLOCKED"},
+    "SECURITY": {"CLOSE_BLOCKED"},
     "UNKNOWN": {"CLOSE_BLOCKED"},
 }
-PROTECTED = re.compile(r"^(tests/reliability|evidence|config/factory|factory/release-manager|factory/checklists|"
-                       r"\.specify|specs|inputs|configuration/baselines|inspection)(/|$)|CLAUDE\.md$")
-DENY = re.compile(r"(?i)\b(disable|skip|bypass|weaken|relax|lower|raise)\b.{0,40}\b(gate|threshold|check|inspection|"
-                  r"policy|oracle|holdout|coverage|requirement)s?\b|\bauto[_ -]?merge\b|\bforce[_ -]?push\b")
+PROTECTED = re.compile(
+    r"^(tests/reliability|evidence|config/factory|factory/release-manager|factory/checklists|"
+    r"\.specify|specs|inputs|configuration/baselines|inspection)(/|$)|CLAUDE\.md$"
+)
+DENY = re.compile(
+    r"(?i)\b(disable|skip|bypass|weaken|relax|lower|raise)\b.{0,40}\b(gate|threshold|check|inspection|"
+    r"policy|oracle|holdout|coverage|requirement)s?\b|\bauto[_ -]?merge\b|\bforce[_ -]?push\b"
+)
 # one new attempt: the factory's own per-run bounds (author max_turns, run timeout); real token use is reported by
 # DeepSeek runs and UNKNOWN for Codex/ACP runs - an estimate, never read as consumption
 ATTEMPT_ESTIMATE = {"tokens_max": 120000, "wall_seconds_max": 21600, "turns_max": 35}
@@ -59,17 +71,21 @@ def _ensure(store: Store) -> None:
 
 
 def plan_fingerprint(p: dict) -> str:
-    return hashlib.sha256(canonical_json({k: p.get(k) for k in ("strategy", "affected_phase", "owner_phase",
-                                                                "model_profile", "material_difference_ref")}
-                                         | {"scope": sorted(p.get("artifact_scope") or []),
-                                            "lessons": sorted(p.get("lesson_ids") or [])})).hexdigest()
+    return hashlib.sha256(
+        canonical_json(
+            {k: p.get(k) for k in ("strategy", "affected_phase", "owner_phase", "model_profile", "material_difference_ref")}
+            | {"scope": sorted(p.get("artifact_scope") or []), "lessons": sorted(p.get("lesson_ids") or [])}
+        )
+    ).hexdigest()
 
 
 def plans(store: Store, order_id: str) -> list[dict]:
     _ensure(store)
     with store.tx() as c:
-        return [{**dict(r), "record": json.loads(r["record"])} for r in
-                c.execute("SELECT * FROM afo_recovery_plans WHERE order_id=? ORDER BY decided_utc", (order_id,))]
+        return [
+            {**dict(r), "record": json.loads(r["record"])}
+            for r in c.execute("SELECT * FROM afo_recovery_plans WHERE order_id=? ORDER BY decided_utc", (order_id,))
+        ]
 
 
 def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) -> dict:
@@ -78,26 +94,42 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
     ps = plans(store, order["order_id"])
     jobs = records(store, order["order_id"])
     calls = {p["attempt_id"] for p in ps if p["source"] == "PLANNER"} | {
-        j["attempt_id"] for j in jobs if j["role"] == "afo-recovery-planner"}
-    return {"attempts": len(store.attempts(order["order_id"])), "max_attempts": int(eff.get("budgets.max_order_attempts")),
-            "variants_by_phase": {ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED")
-                                  for ph in PHASES},
-            "max_variants_per_phase": int(eff.get("budgets.max_strategy_variants_per_phase")),
-            "planner_calls": len(calls),
-            "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
-            "wall_seconds": round((now or time.time()) - order["created_epoch"], 1),
-            "max_wall_seconds": int(eff.get("budgets.max_order_wall_seconds")),
-            "local_agent_reserved_tokens": sum(j["reserved_tokens"] for j in jobs),
-            "tokens": "UNKNOWN (unreported usage is never read as zero; local diagnosis capacity is reserved)"}
+        j["attempt_id"] for j in jobs if j["role"] == "afo-recovery-planner"
+    }
+    return {
+        "attempts": len(store.attempts(order["order_id"])),
+        "max_attempts": int(eff.get("budgets.max_order_attempts")),
+        "variants_by_phase": {
+            ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED") for ph in PHASES
+        },
+        "max_variants_per_phase": int(eff.get("budgets.max_strategy_variants_per_phase")),
+        "planner_calls": len(calls),
+        "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
+        "wall_seconds": round((now or time.time()) - order["created_epoch"], 1),
+        "max_wall_seconds": int(eff.get("budgets.max_order_wall_seconds")),
+        "local_agent_reserved_tokens": sum(j["reserved_tokens"] for j in jobs),
+        "tokens": "UNKNOWN (unreported usage is never read as zero; local diagnosis capacity is reserved)",
+    }
 
 
 def _base(bundle: dict, strategy: str, phase: str, rationale: str, **kw) -> dict:
-    p = {"schema_version": "1.0", "order_id": bundle["order_id"], "attempt_id": bundle["attempt_id"],
-         "failure_fingerprint": bundle["fingerprint"], "strategy": strategy, "affected_phase": phase,
-         "material_difference_ref": kw.pop("material_difference_ref", f"strategy:{strategy}"),
-         "artifact_scope": kw.pop("artifact_scope", []), "validation_tests": [f"gate:{phase}:route=PASS"],
-         "budget_estimate": dict(ATTEMPT_ESTIMATE), "rationale_code": rationale, **kw}
-    p["plan_id"] = "afo-plan-" + sha256_bytes(canonical_json([bundle['order_id'], bundle['attempt_id'], plan_fingerprint(p)]))[:16]
+    p = {
+        "schema_version": "1.0",
+        "order_id": bundle["order_id"],
+        "attempt_id": bundle["attempt_id"],
+        "failure_fingerprint": bundle["fingerprint"],
+        "strategy": strategy,
+        "affected_phase": phase,
+        "material_difference_ref": kw.pop("material_difference_ref", f"strategy:{strategy}"),
+        "artifact_scope": kw.pop("artifact_scope", []),
+        "validation_tests": [f"gate:{phase}:route=PASS"],
+        "budget_estimate": dict(ATTEMPT_ESTIMATE),
+        "rationale_code": rationale,
+        **kw,
+    }
+    p["plan_id"] = (
+        "afo-plan-" + sha256_bytes(canonical_json([bundle["order_id"], bundle["attempt_id"], plan_fingerprint(p)]))[:16]
+    )
     return p
 
 
@@ -107,8 +139,9 @@ def _phase_paths(phase: str) -> list[str]:
     return list(PHASE_PATHS.get(phase, []))
 
 
-def rule_plan(bundle: dict, *, ws, order_env: dict, tried_models: set[str], eff, attempt_started_utc: str,
-              allowed_models: list[str]) -> dict | None:
+def rule_plan(
+    bundle: dict, *, ws, order_env: dict, tried_models: set[str], eff, attempt_started_utc: str, allowed_models: list[str]
+) -> dict | None:
     cls, ph = bundle["failure_class"], bundle["phase"]
     if cls in ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY"):
         return _base(bundle, "DEFER_TRANSIENT_DEPENDENCY", ph, "DEPENDENCY_OWNED_BY_002_CRE")
@@ -121,25 +154,61 @@ def rule_plan(bundle: dict, *, ws, order_env: dict, tried_models: set[str], eff,
     up = defects.open_from(ws, ph) if ws is not None else []
     if up:
         owner = min((d["target_phase"] for d in up), key=PHASES.index)
-        return _base(bundle, "RETURN_TO_OWNING_UPSTREAM_PHASE", owner, "OPEN_UPSTREAM_DEFECT", owner_phase=owner,
-                     artifact_scope=_phase_paths(owner), upstream_invalidation=list(PHASES[PHASES.index(owner) + 1:]),
-                     material_difference_ref="defects:" + ",".join(sorted(d["id"] for d in up)))
-    lessons = _new_lessons(bundle, attempt_started_utc)
+        return _base(
+            bundle,
+            "RETURN_TO_OWNING_UPSTREAM_PHASE",
+            owner,
+            "OPEN_UPSTREAM_DEFECT",
+            owner_phase=owner,
+            artifact_scope=_phase_paths(owner),
+            upstream_invalidation=list(PHASES[PHASES.index(owner) + 1 :]),
+            material_difference_ref="defects:" + ",".join(sorted(d["id"] for d in up)),
+        )
+    lessons = _new_lessons(bundle, attempt_started_utc, ws=ws)
     if lessons:
-        return _base(bundle, "REWORK_LOCAL", ph, "LESSON_VALIDATED_AFTER_ATTEMPT", lesson_ids=lessons,
-                     artifact_scope=_phase_paths(ph), material_difference_ref="lessons:" + ",".join(lessons))
+        return _base(
+            bundle,
+            "REWORK_LOCAL",
+            ph,
+            "LESSON_VALIDATED_AFTER_ATTEMPT",
+            lesson_ids=lessons,
+            artifact_scope=_phase_paths(ph),
+            material_difference_ref="lessons:" + ",".join(lessons),
+        )
     for m in allowed_models:
         if m not in tried_models:
-            return _base(bundle, "SWITCH_PREAPPROVED_MODEL_PROFILE", ph, "UNTRIED_PREAPPROVED_MODEL", model_profile=m,
-                         artifact_scope=_phase_paths(ph), material_difference_ref=f"model:{m}")
+            return _base(
+                bundle,
+                "SWITCH_PREAPPROVED_MODEL_PROFILE",
+                ph,
+                "UNTRIED_PREAPPROVED_MODEL",
+                model_profile=m,
+                artifact_scope=_phase_paths(ph),
+                material_difference_ref=f"model:{m}",
+            )
     return None
 
 
-def _new_lessons(bundle: dict, since_utc: str) -> list[str]:
+def _new_lessons(bundle: dict, since_utc: str, *, ws=None) -> list[str]:
     try:
         from ..knowledge.store import LessonStore
 
-        out = LessonStore().find(bundle["error_code"], bundle["attempt_id"], None, bundle["phase"], 3)
+        from ..knowledge.context import applicability
+
+        scope = applicability(ws) if ws is not None else {}
+        holdout = scope.pop("holdout", False)
+        if holdout:
+            return []
+        out = LessonStore().find(
+            bundle["error_code"],
+            bundle["attempt_id"],
+            None,
+            bundle["phase"],
+            3,
+            role=bundle["phase"].lower().replace(".", "") + "-author",
+            record_usage=False,
+            **scope,
+        )
     except Exception:  # noqa: BLE001 - no lesson store: no lesson rule
         return []
     return sorted(x["lesson_id"] for x in out.get("lessons", []) if str(x.get("validated_at", "")) > since_utc)
@@ -149,14 +218,19 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
     issues = contracts.errors("recovery-plan", plan)
     if issues:
         return issues
-    if plan.get("order_id") != bundle["order_id"] or plan.get("attempt_id") != bundle["attempt_id"] or \
-            plan.get("failure_fingerprint") != bundle["fingerprint"]:
+    if (
+        plan.get("order_id") != bundle["order_id"]
+        or plan.get("attempt_id") != bundle["attempt_id"]
+        or plan.get("failure_fingerprint") != bundle["fingerprint"]
+    ):
         issues.append("PLAN_NOT_FOR_THIS_FAILURE")
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
-    if m and (m not in (eff.get("engineering.allowed_model_profiles") or []) or
-              (auth_models is not None and auth_models and m not in auth_models)):
+    if m and (
+        m not in (eff.get("engineering.allowed_model_profiles") or [])
+        or (auth_models is not None and auth_models and m not in auth_models)
+    ):
         issues.append(f"MODEL_NOT_PREAPPROVED:{m}")
     owner = plan.get("owner_phase") or plan["affected_phase"]
     allowed = _phase_paths(owner)
@@ -180,8 +254,13 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
         prior = plans(store, order["order_id"])
         if any(p["plan_fingerprint"] == fp for p in prior):
             issues.append("PLAN_ALREADY_TRIED")  # anti-loop: same plan, same fingerprint, never twice
-        if any(p["failure_fingerprint"] == bundle["fingerprint"] and p["strategy"] == plan["strategy"]
-               and p["status"] == "EXECUTED" and plan["strategy"] != "SWITCH_PREAPPROVED_MODEL_PROFILE" for p in prior):
+        if any(
+            p["failure_fingerprint"] == bundle["fingerprint"]
+            and p["strategy"] == plan["strategy"]
+            and p["status"] == "EXECUTED"
+            and plan["strategy"] != "SWITCH_PREAPPROVED_MODEL_PROFILE"
+            for p in prior
+        ):
             issues.append("SAME_FAILURE_SAME_STRATEGY_AGAIN")
     return issues
 
@@ -189,24 +268,61 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
 def record_plan(store: Store, plan: dict, *, source: str, status: str, reasons: list[str], budget: dict) -> None:
     _ensure(store)
     with store.tx() as c:
-        c.execute("INSERT OR IGNORE INTO afo_recovery_plans VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                  (plan["plan_id"], plan["order_id"], plan["attempt_id"], plan["failure_fingerprint"], plan["strategy"],
-                   plan_fingerprint(plan), source, status, json.dumps(reasons), json.dumps(plan), json.dumps(budget),
-                   utc_now()))
-        store._event(c, f"plan_{status.lower()}", plan["order_id"], plan["attempt_id"],
-                     {"plan_id": plan["plan_id"], "strategy": plan["strategy"], "reasons": reasons[:5]})
+        c.execute(
+            "INSERT OR IGNORE INTO afo_recovery_plans VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                plan["plan_id"],
+                plan["order_id"],
+                plan["attempt_id"],
+                plan["failure_fingerprint"],
+                plan["strategy"],
+                plan_fingerprint(plan),
+                source,
+                status,
+                json.dumps(reasons),
+                json.dumps(plan),
+                json.dumps(budget),
+                utc_now(),
+            ),
+        )
+        store._event(
+            c,
+            f"plan_{status.lower()}",
+            plan["order_id"],
+            plan["attempt_id"],
+            {"plan_id": plan["plan_id"], "strategy": plan["strategy"], "reasons": reasons[:5]},
+        )
 
 
-def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: list[str] | None,
-           planner=None) -> dict:
+def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: list[str] | None, planner=None) -> dict:
     """Choose and validate a plan for this blocked attempt. Returns {plan, status, reasons}."""
     env = json.loads(order["envelope"])
     atts = store.attempts(order["order_id"])
-    tried = {env["model_profile"]} | {p["record"].get("model_profile") for p in plans(store, order["order_id"])
-                                      if p["status"] == "EXECUTED" and p["record"].get("model_profile")}
+    tried = {env["model_profile"]} | {
+        p["record"].get("model_profile")
+        for p in plans(store, order["order_id"])
+        if p["status"] == "EXECUTED" and p["record"].get("model_profile")
+    }
     allowed = [m for m in (eff.get("engineering.allowed_model_profiles") or []) if not auth_models or m in auth_models]
-    plan = rule_plan(bundle, ws=ws, order_env=env, tried_models=tried, eff=eff,
-                     attempt_started_utc=atts[-1]["created_utc"] if atts else "", allowed_models=allowed)
+    from .dispatch import _durable_order
+
+    if _durable_order(store, order["order_id"]):
+        from .scheduler import launch_manifest
+        from ..lrtx.role_capability import local_alternatives
+        from ..workorder import factory_revision
+
+        allowed = local_alternatives(
+            launch_manifest(order), bundle["phase"], allowed_profiles=allowed, adapter_revision=factory_revision()["commit"]
+        )
+    plan = rule_plan(
+        bundle,
+        ws=ws,
+        order_env=env,
+        tried_models=tried,
+        eff=eff,
+        attempt_started_utc=atts[-1]["created_utc"] if atts else "",
+        allowed_models=allowed,
+    )
     source = "RULE"
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
         from .planner import Failed
@@ -220,8 +336,7 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "NO_MATERIALLY_DIFFERENT_STRATEGY")
     reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models)
     if reasons and plan["strategy"] != "CLOSE_BLOCKED":
-        record_plan(store, plan, source=source, status="REJECTED", reasons=reasons,
-                    budget=budget_snapshot(store, order, eff))
+        record_plan(store, plan, source=source, status="REJECTED", reasons=reasons, budget=budget_snapshot(store, order, eff))
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "PLAN_REJECTED:" + reasons[0][:60])
         source, reasons = "RULE", []
     status = "VALIDATED" if not reasons else "REJECTED"
@@ -233,28 +348,49 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
     """Apply a VALIDATED plan: a new attempt (never a re-run of the old one), a wait, or BLOCKED."""
     from .checkpoints import new_attempt
 
+    if decision.get("status") != "VALIDATED":
+        raise QueueError("RECOVERY_PLAN_NOT_VALIDATED")
     plan, oid = decision["plan"], order["order_id"]
     if plan["strategy"] == "CLOSE_BLOCKED":
         to = "WAITING_EXTERNAL_CHANGE" if plan["rationale_code"] == "FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE" else "BLOCKED"
         store.transition(oid, to, plan["rationale_code"], terminal_reason=plan["rationale_code"][:200])
         return {"order_id": oid, "action": to.lower()}
+    from .completion_receipt import Receipts, for_plan, applying
+
+    receipt = for_plan(store, plan["plan_id"])
+    if receipt:
+        from .local_agent import authorized
+
+        receipt = Receipts(store).request_dispatch(receipt["receipt_id"], authorize=lambda: authorized(store.order(oid), eff))
     store.transition(oid, "WAITING_RECOVERY", f"plan {plan['plan_id']} {plan['strategy']}")
     try:
-        aid = new_attempt(store, oid, plan_id=plan["plan_id"], epoch=epoch,
-                          max_attempts=int(eff.get("budgets.max_order_attempts")), source_wo=previous_wo)
+        aid = new_attempt(
+            store,
+            oid,
+            plan_id=plan["plan_id"],
+            epoch=epoch,
+            max_attempts=int(eff.get("budgets.max_order_attempts")),
+            source_wo=previous_wo,
+        )
     except QueueError as e:
         store.transition(oid, "BLOCKED", e.code, terminal_reason=e.code)
         return {"order_id": oid, "action": "blocked", "code": e.code}
     owner = plan.get("owner_phase") or plan["affected_phase"]
     with store.tx() as c:  # the launch payload carries what makes this attempt materially different
-        row = c.execute("SELECT command_id, payload FROM afo_commands_outbox WHERE idempotency_key=?",
-                        (f"launch:{aid}",)).fetchone()
-        payload = {**json.loads(row["payload"]), "resume_upto": owner,
-                   "recovery_plan": plan,
-                   **({"model_profile": plan["model_profile"]} if plan.get("model_profile") else {}),
-                   **({"lesson_ids": plan["lesson_ids"]} if plan.get("lesson_ids") else {})}
+        row = c.execute(
+            "SELECT command_id, payload FROM afo_commands_outbox WHERE idempotency_key=?", (f"launch:{aid}",)
+        ).fetchone()
+        payload = {
+            **json.loads(row["payload"]),
+            "resume_upto": owner,
+            "recovery_plan": plan,
+            **({"model_profile": plan["model_profile"]} if plan.get("model_profile") else {}),
+            **({"lesson_ids": plan["lesson_ids"]} if plan.get("lesson_ids") else {}),
+        }
         c.execute("UPDATE afo_commands_outbox SET payload=? WHERE command_id=?", (json.dumps(payload), row["command_id"]))
         c.execute("UPDATE afo_recovery_plans SET status='EXECUTED' WHERE plan_id=?", (plan["plan_id"],))
+    if receipt:
+        applying(store, receipt["receipt_id"], aid)
     return {"order_id": oid, "action": "new_attempt", "attempt_id": aid, "strategy": plan["strategy"]}
 
 
@@ -269,12 +405,20 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
         if b is None:
             return None
         env = json.loads(order["envelope"])
-        auth = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"), action="recover_workorder",
-                          request={"order_id": env["request_id"], "driver_class": env["driver_class"],
-                                   "model": env["model_profile"]})
+        auth = authz.find(
+            eff.mode,
+            eff.sha256 or "",
+            ref=eff.get("authorization_ref"),
+            action="recover_workorder",
+            request={"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]},
+        )
         if not auth.allow:  # recovery itself needs the owner's authorization; without it the order is BLOCKED
-            store.transition(order["order_id"], "BLOCKED", f"recovery not authorized: {auth.code}",
-                             terminal_reason=f"RECOVERY_NOT_AUTHORIZED:{auth.code}")
+            store.transition(
+                order["order_id"],
+                "BLOCKED",
+                f"recovery not authorized: {auth.code}",
+                terminal_reason=f"RECOVERY_NOT_AUTHORIZED:{auth.code}",
+            )
             return {"action": "blocked", "code": auth.code}
         scope = json.loads((authz.AUTH_DIR / f"{eff.get('authorization_ref')}.json").read_text()).get("scope") or {}
         from .planner import Pending
@@ -287,6 +431,10 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
         except Pending as exc:
             return {"action": "diagnosing", "bundle_id": b["bundle_id"], "job_id": str(exc)}
         prev = attempt["record"]["workspace_ref"].removeprefix("workorder:")
-        return {"bundle_id": b["bundle_id"], "failure_class": b["failure_class"],
-                **execute(store, order, d, epoch=epoch, eff=eff, previous_wo=prev)}
+        return {
+            "bundle_id": b["bundle_id"],
+            "failure_class": b["failure_class"],
+            **execute(store, order, d, epoch=epoch, eff=eff, previous_wo=prev),
+        }
+
     return recover

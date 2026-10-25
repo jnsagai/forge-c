@@ -1,7 +1,6 @@
 """Protocol/accounting fault fixtures. No model/GPU or live service is used."""
 
 import copy
-import json
 import time
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
@@ -238,6 +237,18 @@ def test_unique_history_and_continuation_no_reset(protocol):
     for _ in range(4):
         p.ledger.execution("mission-test", "fabro:server:run-A", "PRODUCT", reserved_tokens=0, imported=True)
     assert p.ledger.snapshot("mission-test")["attempts"] == 1
+    assert p.ledger.snapshot("mission-test")["unbounded_historical_usage"]
+    with pytest.raises(Refused, match="HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND"):
+        p.ledger.execution("mission-test", "not-yet-authorized", "DIAGNOSIS", reserved_tokens=1)
+    p.ledger.execution(
+        "mission-test",
+        "fabro:server:run-A",
+        "PRODUCT",
+        reserved_tokens=0,
+        reported_tokens=0,
+        imported=True,
+        evidence_refs=["fixture:independently-proven-no-generation"],
+    )
     p.ledger.link("mission-test", "continued-order", continuation_of=p.order["order_id"])
     assert p.ledger.for_order("continued-order") == "mission-test"
     for i in range(3):

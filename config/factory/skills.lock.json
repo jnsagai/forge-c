@@ -16,7 +16,7 @@
     },
     "lessons-curator": {
       "path": ".fabro/skills/lessons-curator/SKILL.md",
-      "sha256": "d99f20f812f92ebbf056b288bcaa82459885e0688b374f7b4f6f0fb96dd76395"
+      "sha256": "db63dd0d7557c9b95118bb6db29d386f338032642a91f0446e550fb420daa1dd"
     },
     "mcp-integrator": {
       "path": ".fabro/skills/mcp-integrator/SKILL.md",

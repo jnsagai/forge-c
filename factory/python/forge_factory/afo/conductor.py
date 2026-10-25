@@ -7,6 +7,7 @@ writes the heartbeat file and sends WATCHDOG=1. A hung or crashing cycle therefo
 systemd restarts the unit; the external afo-watchdog timer alerts on a stale heartbeat. The process makes no model
 call itself (the 002 supervisor's socket guard is installed): any agent work happens inside Fabro runs.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,8 +31,19 @@ def write_heartbeat(cycle: int, mode: str, ok: bool, detail: str = "") -> None:
     p = heartbeat_path()
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(".tmp")
-    tmp.write_text(json.dumps({"ts": utc_now(), "epoch": time.time(), "pid": os.getpid(), "cycle": cycle,
-                               "mode": mode, "ok": ok, "detail": detail[:200]}))
+    tmp.write_text(
+        json.dumps(
+            {
+                "ts": utc_now(),
+                "epoch": time.time(),
+                "pid": os.getpid(),
+                "cycle": cycle,
+                "mode": mode,
+                "ok": ok,
+                "detail": detail[:200],
+            }
+        )
+    )
     os.replace(tmp, p)  # atomic: a reader never sees a half-written heartbeat
 
 
@@ -51,12 +63,22 @@ def cycle(n: int) -> tuple[str, bool, str]:
 
             store = Store()
             local_agent.supervise(store, eff)
+            from . import product_job
+            from ..fabro.client import FabroClient, load_token
+
+            with FabroClient(token=load_token(), timeout=5) as client:
+                product_job.reconcile(store, eff, client)
             dispatch.enforce_deadlines(store, eff)
         return eff.mode, True, ("; ".join(eff.issues))[:200]
     store = Store()
     from . import local_agent
 
     local_agent.supervise(store, eff)
+    from . import product_job
+    from ..fabro.client import FabroClient, load_token
+
+    with FabroClient(token=load_token(), timeout=5) as client:
+        product_job.reconcile(store, eff, client)
     from . import dispatch
 
     dispatch.enforce_deadlines(store, eff)
@@ -68,14 +90,21 @@ def cycle(n: int) -> tuple[str, bool, str]:
         dispatch.reconcile_inflight(store, runtime.fabro_view)
         from . import recovery
 
-        dispatch.reconcile_running(store, runtime.fabro_view, recover=recovery.make_recover(
-            store, eff, f"conductor-{os.getpid()}", runtime.workspace_of,
-            planner=local_agent.make_planner(store, eff)))
+        dispatch.reconcile_running(
+            store,
+            runtime.fabro_view,
+            recover=recovery.make_recover(
+                store, eff, f"conductor-{os.getpid()}", runtime.workspace_of, planner=local_agent.make_planner(store, eff)
+            ),
+        )
         for o in store.orders(("RUNNING", "VALIDATING")):
-            att = store.attempts(o["order_id"])[-1]
-            ws = runtime.workspace_of(att)
-            if ws.is_dir():
-                checkpoints.capture(store, o["order_id"], att["attempt_id"], ws)
+            try:
+                att = store.attempts(o["order_id"])[-1]
+                ws = runtime.workspace_of(att)
+                if ws.is_dir():
+                    checkpoints.capture(store, o["order_id"], att["attempt_id"], ws)
+            except (KeyError, ValueError, TypeError, FileNotFoundError) as exc:
+                dispatch.item_failure(store, o["order_id"], exc, "checkpoint")
         dispatch.validate(store, runtime.workspace_of)
         from . import maintainer
 
@@ -85,13 +114,28 @@ def cycle(n: int) -> tuple[str, bool, str]:
 
         window = float(eff.get("notifications.dedupe_window_seconds", 900))
         deadletter.sweep(store, runtime.workspace_of, window_s=window)  # AFO M6: one case + one alert per BLOCKED
-        alerts.deliver(store)                                          # local fallback always; adapters optional
+        alerts.deliver(store)  # local fallback always; adapters optional
         store.forward_events()
+        from .housekeeping import clean
+        from ..common import state_dir
+
+        scratch = state_dir() / "afo/tmp"
+        if n % 60 == 0 and (scratch / ".forge-disposable").is_file():
+            clean(scratch, max_files=32, max_bytes=10 * 1024 * 1024)
+            connection = store.connect()
+            try:
+                connection.execute("PRAGMA wal_checkpoint(PASSIVE)")
+            finally:
+                connection.close()
         from ..knowledge.store import LessonStore
         from ..knowledge.experience import capture_afo, consolidate
+
         lessons = LessonStore()
         capture_afo(store, lessons, runtime.workspace_of, limit=32)
         consolidate(lessons, limit=32)
+        from ..knowledge.improvement import route as improvement_routes
+
+        improvement_routes(lessons, limit=32)
     return eff.mode, True, f"{r.get('action')} {r.get('order_id', '')}".strip()
 
 
@@ -103,8 +147,9 @@ class Conductor:
         from ..supervisor.service import install_model_guard, sd_notify
 
         from .operations import configured, Intent
+
         if configured() and self.max_cycles is not None:
-            raise ValueError('CONTINUOUS_SERVICE_CANNOT_HAVE_FINITE_CYCLE_LIMIT')
+            raise ValueError("CONTINUOUS_SERVICE_CANNOT_HAVE_FINITE_CYCLE_LIMIT")
         install_model_guard()
         signal.signal(signal.SIGTERM, lambda *_: setattr(self, "stop", True))
         signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
@@ -112,8 +157,17 @@ class Conductor:
         ready = False
         while not self.stop and (self.max_cycles is None or n < self.max_cycles):
             try:
-                if configured() and Intent().read()['mode'] == 'STOPPED':
-                    break
+                if configured() and Intent().read()["mode"] == "STOPPED":
+                    from .operations import settle_shutdown
+                    from .queue import Store
+
+                    settled = settle_shutdown(Store())
+                    if settled["settled"]:
+                        break
+                    write_heartbeat(n, "OPERATOR_STOP_PENDING", True, "native cancellation unresolved")
+                    time.sleep(min(self.interval, 15))
+                    n += 1
+                    continue
                 mode, ok, detail = cycle(n)
             except Exception as exc:  # noqa: BLE001 - a failed cycle sends no watchdog ping; systemd decides
                 write_heartbeat(n, "UNKNOWN", False, f"{type(exc).__name__}: {exc}")

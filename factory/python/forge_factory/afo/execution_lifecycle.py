@@ -64,11 +64,18 @@ class Executions:
         return self.get(job_id)
 
     def _write(self, rec: dict, expected_revision: int) -> dict:
-        validate("execution-lifecycle", {k: v for k, v in rec.items() if k != "quiescence_proof"})
+        validate("execution-lifecycle", rec)
         with self.store.tx() as c:
             old = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?", (rec["job_id"],)).fetchone()
             if not old or json.loads(old[0])["revision"] != expected_revision:
                 raise Refused("EXECUTION_FENCE_STALE")
+            if rec["execution_liveness"] in ("QUIESCENT", "NOT_STARTED") and rec.get("resource_lease") == "HELD":
+                active = c.execute(
+                    "SELECT COUNT(*) FROM afo_request_ledger WHERE job_id=? AND state NOT IN ('QUIESCENT','RESERVED')",
+                    (rec["job_id"],),
+                ).fetchone()[0]
+                if active:
+                    raise Refused("PROVIDER_QUIESCENCE_UNPROVEN")
             owner = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
             if rec["resource_lease"] == "HELD" and (
                 not owner or owner["holder"] != rec["job_id"] or owner["epoch"] != rec["lease_epoch"]
@@ -148,8 +155,9 @@ class Executions:
         rec = self.get(job_id)
         if rec["resource_lease"] == "RELEASED":
             return rec
-        if rec["execution_liveness"] == "QUIESCENT" and rec.get("quiescence_proof"):
-            MissionLedger(self.store).release_inference(job_id, proof=rec["quiescence_proof"])
+        proof = self._evidence(job_id, "QUIESCENCE")
+        if rec["execution_liveness"] in ("QUIESCENT", "NOT_STARTED") and proof:
+            MissionLedger(self.store).release_inference(job_id, proof=proof)
             return self._write({**rec, "resource_lease": "RELEASED"}, rec["revision"])
         if rec["admission_state"] == "RESERVED":
             # Dispatch intent and the external effect are ordered; this execution never contacted native Fabro.
@@ -171,7 +179,11 @@ class Executions:
         if not rec["native_run_ids"]:
             return self._write({**rec, "execution_liveness": "UNKNOWN"}, rec["revision"])
         observations, all_terminal = {}, True
-        for rid in rec["native_run_ids"]:
+        ids = rec["native_run_ids"]
+        cursor = (self._evidence(job_id, "CURSOR") or {"offset": 0})["offset"] % len(ids)
+        bounded = (ids[cursor:] + ids[:cursor])[:4]
+        self._save_evidence(job_id, "CURSOR", {"offset": (cursor + len(bounded)) % len(ids)})
+        for rid in bounded:
             try:
                 status = run_status(client.get_run(rid))
             except Exception:  # noqa: BLE001 - unreachable/404 is not proof of native termination
@@ -205,22 +217,53 @@ class Executions:
                         rec["last_cancel_error"] = f"HTTP_{code}"
                 except Exception as exc:  # noqa: BLE001 - cancellation remains pending and visible
                     rec["last_cancel_error"] = type(exc).__name__
-        rec["execution_liveness"] = "LIVE" if all(s != "UNKNOWN" for s in observations.values()) else "UNKNOWN"
+        rec["execution_liveness"] = (
+            "LIVE" if rec["identity_state"] == "CONFIRMED" and all(s != "UNKNOWN" for s in observations.values()) else "UNKNOWN"
+        )
         return self._write(rec, rec["revision"])
 
+    def _evidence(self, job_id, kind):
+        with self.store.tx() as c:
+            row = c.execute(
+                "SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, kind)
+            ).fetchone()
+        if not row:
+            return None
+        value = json.loads(row["record"])
+        if digest(value) != row["sha256"]:
+            raise Refused("EXECUTION_EVIDENCE_CHANGED")
+        return value
+
+    def _save_evidence(self, job_id, kind, value):
+        with self.store.tx() as c:
+            old = c.execute("SELECT sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, kind)).fetchone()
+            if kind == "QUIESCENCE" and old and old[0] != digest(value):
+                raise Refused("QUIESCENCE_EVIDENCE_REBOUND")
+            c.execute(
+                "INSERT INTO afo_execution_evidence VALUES (?,?,?,?) ON CONFLICT(job_id,kind) DO UPDATE SET record=excluded.record,sha256=excluded.sha256",
+                (job_id, kind, canonical(value).decode(), digest(value)),
+            )
+
     def _quiescent(self, rec: dict, proof: dict) -> dict:
-        rec = self._write(
-            {
-                **rec,
-                "execution_liveness": "NOT_STARTED" if rec["admission_state"] == "RESERVED" else "QUIESCENT",
-                "quiescence_evidence_ref": None if rec["admission_state"] == "RESERVED" else proof["evidence_ref"],
-                "cancellation_state": "QUIESCENCE_CONFIRMED"
-                if rec["cancellation_state"] != "NOT_REQUESTED" or rec["authorization_state"] != "VALID"
-                else "NOT_REQUESTED",
-                "quiescence_proof": proof,
-            },
-            rec["revision"],
-        )
+        self._save_evidence(rec["job_id"], "NATIVE_TERMINAL", proof)
+        try:
+            rec = self._write(
+                {
+                    **rec,
+                    "execution_liveness": "NOT_STARTED" if rec["admission_state"] == "RESERVED" else "QUIESCENT",
+                    "quiescence_evidence_ref": None if rec["admission_state"] == "RESERVED" else proof["evidence_ref"],
+                    "cancellation_state": "QUIESCENCE_CONFIRMED"
+                    if rec["cancellation_state"] != "NOT_REQUESTED" or rec["authorization_state"] != "VALID"
+                    else "NOT_REQUESTED",
+                },
+                rec["revision"],
+            )
+        except Refused as exc:
+            if exc.code != "PROVIDER_QUIESCENCE_UNPROVEN":
+                raise
+            self._save_evidence(rec["job_id"], "NATIVE_TERMINAL", proof)
+            return self._write({**rec, "execution_liveness": "UNKNOWN", "quiescence_evidence_ref": None}, rec["revision"])
+        self._save_evidence(rec["job_id"], "QUIESCENCE", proof)
         MissionLedger(self.store).release_inference(rec["job_id"], proof=proof)
         return self._write({**rec, "resource_lease": "RELEASED"}, rec["revision"])
 
@@ -228,3 +271,35 @@ class Executions:
         with self.store.tx() as c:
             rows = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_execution_liveness")]
         return [r for r in rows if r["resource_lease"] == "HELD"]
+
+    def verified_outcome(self, job_id, decision_id):
+        """Only the independent release/gate decision can complete an engineering recovery."""
+        with self.store.tx() as c:
+            row = c.execute(
+                "SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=? AND kind='VERIFICATION'", (decision_id,)
+            ).fetchone()
+        if not row:
+            raise Refused("INDEPENDENT_VERIFICATION_UNRESOLVED")
+        decision = json.loads(row["record"])
+        if digest(decision) != row["sha256"]:
+            raise Refused("INDEPENDENT_VERIFICATION_CHANGED")
+        from .completion_receipt import Receipts
+
+        receipt = Receipts(self.store).latest(decision["receipt_id"])
+        if not receipt or receipt["job_id"] != job_id or decision["plan_sha256"] != receipt["bound_plan"]["sha256"]:
+            raise Refused("VERIFICATION_EXECUTION_BINDING_MISMATCH")
+        rec = self.get(job_id)
+        if rec["execution_liveness"] != "QUIESCENT" or rec["resource_lease"] != "RELEASED":
+            raise Refused("VERIFIED_RECOVERY_NATIVE_QUIESCENCE_REQUIRED")
+        outcome = "RECOVERED" if decision["passed"] else "BLOCKED"
+        if rec["task_outcome"] not in ("ACTIVE", outcome):
+            raise Refused("TERMINAL_TASK_REENTRY_FORBIDDEN")
+        return self._write(
+            {
+                **rec,
+                "task_outcome": outcome,
+                "terminal_reason": "INDEPENDENT_REPAIR_VERIFIED" if decision["passed"] else "REPAIR_VERIFICATION_FAILED",
+                "outcome_evidence_ref": "afo-decision:" + decision_id,
+            },
+            rec["revision"],
+        )

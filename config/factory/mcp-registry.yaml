@@ -382,7 +382,7 @@ server_catalog:
     - lessons-curator
     - mcp-integrator
   - name: propose_lesson
-    logical_tool: Forge knowledge candidate store
+    logical_tool: Forge versioned repair and ordinary-outcome candidate store
     mandatory: true
     status: WRAPPER_TO_CREATE
     timeout_seconds: 60

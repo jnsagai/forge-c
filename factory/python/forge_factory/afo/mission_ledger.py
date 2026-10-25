@@ -11,7 +11,7 @@ import math
 import time
 
 from ..common import utc_now
-from .durable import Refused, canonical
+from .durable import Refused, canonical, digest
 
 
 class MissionLedger:
@@ -22,7 +22,7 @@ class MissionLedger:
         required = ("max_attempts", "max_jobs", "max_requests", "max_tokens", "max_tools", "max_corrections")
         if any(type(limits.get(k)) is not int or limits[k] < 0 for k in required):
             raise Refused("FINITE_MISSION_LIMITS_REQUIRED")
-        if not math.isfinite(limits.get("deadline", float("nan"))) or not authorization_ref:
+        if type(limits.get("deadline")) not in (int, float) or not math.isfinite(limits["deadline"]) or not authorization_ref:
             raise Refused("FINITE_MISSION_AUTHORITY_REQUIRED")
         if not authorize(authorization_ref, limits):
             raise Refused("MISSION_REGISTRATION_NOT_AUTHORIZED")
@@ -80,11 +80,20 @@ class MissionLedger:
             "attempts": sum(r["kind"] == "PRODUCT" for r in ex),
             "jobs": sum(r["kind"] in ("DIAGNOSIS", "MAINTENANCE", "LEARNING") for r in ex),
             "requests": len(req),
-            "tools": sum(r.get("tools", 0) for r in ex),
-            "corrections": sum(r.get("corrections", 0) for r in ex),
+            "tools": sum(r.get("tools", 0) for r in ex)
+            + c.execute("SELECT COUNT(*) FROM afo_mission_counters WHERE mission_id=? AND kind='TOOL'", (mission_id,)).fetchone()[
+                0
+            ],
+            "corrections": sum(r.get("corrections", 0) for r in ex)
+            + c.execute(
+                "SELECT COUNT(*) FROM afo_mission_counters WHERE mission_id=? AND kind='CORRECTION'", (mission_id,)
+            ).fetchone()[0],
             "charged_tokens": tokens,
             "usage_unknown": any(r.get("reported_tokens") is None for r in ex + req),
             "unique_executions": len(ex),
+            "unbounded_historical_usage": any(
+                r.get("imported") and r.get("reported_tokens") is None and r.get("reserved_tokens") == 0 for r in ex
+            ),
         }
 
     def snapshot(self, mission_id: str) -> dict:
@@ -117,6 +126,8 @@ class MissionLedger:
                 rec = json.loads(row["record"])
                 if row["mission_id"] != mission_id or rec["kind"] != kind:
                     raise Refused("EXECUTION_IDENTITY_REBOUND")
+                if reserved_tokens != rec["reserved_tokens"]:
+                    raise Refused("EXECUTION_RESERVATION_REBOUND")
                 if reported_tokens is not None:
                     rec["reported_tokens"] = max(reported_tokens, rec.get("reported_tokens") or 0)
                 rec["charge"] = max(rec["charge"], rec.get("reported_tokens") or 0)
@@ -125,6 +136,8 @@ class MissionLedger:
             snap = self._snapshot(c, mission_id)
             limits = snap["limits"]
             if not imported:
+                if snap["unbounded_historical_usage"]:
+                    raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
                 if (time.time() if now is None else now) >= limits["deadline"]:
                     raise Refused("MISSION_DEADLINE_EXHAUSTED")
                 count, cap = ("attempts", "max_attempts") if kind == "PRODUCT" else ("jobs", "max_jobs")
@@ -170,6 +183,8 @@ class MissionLedger:
             snap = self._snapshot(c, mission_id)
             if not authorize() or (time.time() if now is None else now) >= snap["limits"]["deadline"]:
                 raise Refused("REQUEST_NOT_AUTHORIZED")
+            if snap["unbounded_historical_usage"]:
+                raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
             if snap["charged_tokens"] > snap["limits"]["max_tokens"]:
                 raise Refused("MISSION_TOKEN_CAPACITY_EXHAUSTED")
             if snap["requests"] >= snap["limits"]["max_requests"]:
@@ -214,6 +229,37 @@ class MissionLedger:
             )
             return {**rec, "replay": False}
 
+    def start_request(self, request_id, *, authorize):
+        with self.store.tx() as c:
+            row = c.execute("SELECT record,state FROM afo_request_ledger WHERE request_id=?", (request_id,)).fetchone()
+            if not row or row["state"] != "RESERVED":
+                raise Refused("REQUEST_START_FENCED")
+            rec = json.loads(row["record"])
+            table = "afo_product_jobs" if rec["job_id"].startswith("afo-product-") else "afo_local_agent_jobs"
+            job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (rec["job_id"],)).fetchone()
+            order = (
+                c.execute("SELECT state FROM afo_work_orders WHERE order_id=?", (json.loads(job[0])["order_id"],)).fetchone()
+                if job
+                else None
+            )
+            if not order or order[0] not in ("ADMITTED", "RUNNING", "WAITING_RECOVERY", "WAITING_EXTERNAL_CHANGE"):
+                raise Refused("REQUEST_ORDER_NOT_ACTIVE")
+            live = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?", (rec["job_id"],)).fetchone()
+            ex = json.loads(live[0]) if live else {}
+            if (
+                not authorize()
+                or ex.get("resource_lease") != "HELD"
+                or ex.get("task_outcome") != "ACTIVE"
+                or ex.get("authorization_state") != "VALID"
+                or ex.get("execution_liveness") in ("NOT_STARTED", "QUIESCENT")
+            ):
+                raise Refused("REQUEST_AUTHORITY_CHANGED_BEFORE_PROVIDER_SEND")
+            rec.update(state="SENT", sent_at=utc_now())
+            c.execute(
+                "UPDATE afo_request_ledger SET state='SENT',record=? WHERE request_id=?", (canonical(rec).decode(), request_id)
+            )
+            return rec
+
     def reconcile_request(
         self,
         request_id: str,
@@ -252,11 +298,30 @@ class MissionLedger:
                 )
             return rec
 
+    def count(self, mission_id, job_id, kind, event_id):
+        if kind not in ("TOOL", "CORRECTION"):
+            raise Refused("MISSION_COUNTER_INVALID")
+        with self.store.tx() as c:
+            old = c.execute("SELECT * FROM afo_mission_counters WHERE event_id=?", (event_id,)).fetchone()
+            if old:
+                if (old["mission_id"], old["job_id"], old["kind"]) != (mission_id, job_id, kind):
+                    raise Refused("MISSION_COUNTER_REBOUND")
+                return
+            snap = self._snapshot(c, mission_id)
+            field, cap = ("tools", "max_tools") if kind == "TOOL" else ("corrections", "max_corrections")
+            if snap[field] >= snap["limits"][cap]:
+                raise Refused("MISSION_" + cap.upper() + "_EXHAUSTED")
+            c.execute("INSERT INTO afo_mission_counters VALUES (?,?,?,?)", (event_id, mission_id, job_id, kind))
+
     def acquire_inference(self, job_id: str, mission_id: str) -> int:
         with self.store.tx() as c:
             old = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
             if old and old["holder"] not in (None, job_id):
                 raise Refused("INFERENCE_EXECUTION_BUSY", old["holder"])
+            if not c.execute(
+                "SELECT 1 FROM afo_mission_executions WHERE identity=? AND mission_id=?", (job_id, mission_id)
+            ).fetchone():
+                raise Refused("EXECUTION_RESERVATION_REQUIRED")
             epoch = old["epoch"] if old and old["holder"] == job_id else (old["epoch"] + 1 if old else 1)
             c.execute(
                 "INSERT INTO afo_resource_ownership VALUES ('inference',?,?,?) ON CONFLICT(resource) DO UPDATE SET holder=excluded.holder,epoch=excluded.epoch,record=excluded.record",
@@ -271,12 +336,22 @@ class MissionLedger:
             if not r:
                 raise Refused("QUIESCENCE_NOT_PROVEN")
             ex = json.loads(r[0])
+            evidence = c.execute(
+                "SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? AND kind='QUIESCENCE'", (job_id,)
+            ).fetchone()
             if (
                 ex.get("execution_liveness") not in ("NOT_STARTED", "QUIESCENT")
-                or ex.get("quiescence_proof") != proof
+                or not evidence
+                or json.loads(evidence["record"]) != proof
+                or evidence["sha256"] != digest(proof)
                 or not proof
             ):
                 raise Refused("QUIESCENCE_NOT_PROVEN")
+            active = c.execute(
+                "SELECT COUNT(*) FROM afo_request_ledger WHERE job_id=? AND state NOT IN ('QUIESCENT','RESERVED')", (job_id,)
+            ).fetchone()[0]
+            if active:
+                raise Refused("PROVIDER_QUIESCENCE_UNPROVEN")
             c.execute(
                 "UPDATE afo_resource_ownership SET holder=NULL,epoch=epoch+1 WHERE resource='inference' AND holder=?", (job_id,)
             )

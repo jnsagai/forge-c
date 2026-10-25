@@ -7,6 +7,7 @@ malformed JSON, a plan for another case, a schema violation - yields None (no pl
 still only PROPOSED: recovery.validate decides. `make(invoke)` adapts a planner runner (a Fabro single-node run of the
 role, enabled by policy engineering.enable_recovery_planner) to recovery.decide.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,8 +17,13 @@ from pathlib import Path
 from ..common import sha256_file, state_dir
 from . import contracts
 
-ALLOWED = ["REWORK_LOCAL", "RESTART_FROM_LAST_VALID_CHECKPOINT", "RETURN_TO_OWNING_UPSTREAM_PHASE",
-           "SWITCH_PREAPPROVED_MODEL_PROFILE", "CLOSE_BLOCKED"]
+ALLOWED = [
+    "REWORK_LOCAL",
+    "RESTART_FROM_LAST_VALID_CHECKPOINT",
+    "RETURN_TO_OWNING_UPSTREAM_PHASE",
+    "SWITCH_PREAPPROVED_MODEL_PROFILE",
+    "CLOSE_BLOCKED",
+]
 MAX_REPLY = 2000
 
 
@@ -29,18 +35,23 @@ class Failed(Exception):
     """Diagnosis itself failed; preserve its reason instead of claiming no different strategy exists."""
 
 
-def case(bundle: dict, workspace: Path, budget: dict, *, mission_id: str | None = None) -> Path:
+def case(bundle: dict, workspace: Path, budget: dict, *, mission_id: str | None = None, prior_strategies=()) -> Path:
     d = state_dir() / "afo/cases" / (bundle["bundle_id"] + ("-da014" if mission_id else ""))
     d.mkdir(parents=True, exist_ok=True)
     req = Path(workspace) / "workproducts/SWE.1/software_requirements.md"
     p = d / "case.json"
-    doc = {"bundle": bundle, "workspace": str(workspace),
-                             "requirements_sha256": sha256_file(req) if req.is_file() else None,
-                             "budget": budget, "allowed_strategies": ALLOWED}
+    doc = {
+        "bundle": bundle,
+        "workspace": str(workspace),
+        "requirements_sha256": sha256_file(req) if req.is_file() else None,
+        "budget": budget,
+        "allowed_strategies": ALLOWED,
+    }
     if mission_id:
         from .diagnosis_packet import build
         from .durable import immutable_json
-        doc.update(mission_id=mission_id, packet_ref=build(workspace, bundle))
+
+        doc.update(mission_id=mission_id, packet_ref=build(workspace, bundle, prior_strategies=prior_strategies))
         immutable_json(p, doc)
         return p
     if not p.exists():
@@ -84,6 +95,7 @@ def parse(reply: str, case_dir: Path) -> dict | None:
 
 def make(invoke, *, freeze=case):
     """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
+
     def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
         try:
             p = freeze(bundle, workspace or Path("."), budget)
@@ -91,6 +103,7 @@ def make(invoke, *, freeze=case):
         except (Pending, Failed):
             raise
         except Exception as exc:  # noqa: BLE001 - an explicit failed diagnosis, never a fabricated plan
-            raise Failed(type(exc).__name__) from exc
+            raise Failed(str(getattr(exc, "code", type(exc).__name__))) from exc
         return parse(reply, p.parent)
+
     return planner

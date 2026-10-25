@@ -433,7 +433,7 @@ agents:
     do not touch protected paths or self-promote.
 - id: lessons-curator
   skill: .fabro/skills/lessons-curator/SKILL.md
-  description: Curate repair knowledge into safe, versioned reusable lessons.
+  description: Curate qualified repair and ordinary-outcome evidence into scoped, versioned reusable lessons.
   phase: null
   model: qwen3:8b
   model_provider: ollama
@@ -447,8 +447,8 @@ agents:
   readonly: true
   output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
   status: SPECIFIED_NOT_IMPLEMENTED
-  task: Summarize evidence-backed fixes, deduplicate and propose only; validation
-    engine grants shared publication.
+  task: Summarize factual repair and job outcomes, deduplicate and propose only; source-specific
+    independent validation grants retrieval eligibility.
 - id: mcp-integrator
   skill: .fabro/skills/mcp-integrator/SKILL.md
   description: Implement/repair MCP tool adapters as authorized fabric infrastructure.

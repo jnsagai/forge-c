@@ -14,6 +14,7 @@ The unmutated holdout runs through the same path, so a FAIL there is a false rej
 semantic detection and false rejections are reported separately. The catalogue is versioned and hashed in the report
 and is never adjusted to a model's results.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,7 +52,8 @@ def omit_requirement(ws: Path) -> str:
 def safety_scope_qm(ws: Path) -> str:
     (ws / "safety/software_safety_requirements.md").write_text(
         "# Software safety requirements\n\nQM development scope: no software safety requirements are allocated "
-        "(work-order owner decision).\n")
+        "(work-order owner decision).\n"
+    )
     return "safety/software_safety_requirements.md"
 
 
@@ -131,7 +133,7 @@ def invert_behaviour(ws: Path) -> str:
     for a, b in (("0x0000CCCCU", "0x0000AAAAU"), ("0xCCCCU", "0xAAAAU"), ("|=", "&= ~")):
         if a in t:
             h.write_text(t.replace(a, b, 1))
-            fn = re.findall(r"\b(LL_\w+)\s*\(", t[:t.index(a)])
+            fn = re.findall(r"\b(LL_\w+)\s*\(", t[: t.index(a)])
             return fn[-1] if fn else a
     raise ValueError("NO_MUTATION_SITE:invert_behaviour")
 
@@ -145,8 +147,8 @@ def comment_out_write(ws: Path) -> str:
     m = re.search(rf"^(\s+)({re.escape(register_block(ws))}\[[^\]]+\]\s*=[^;]+;)", t, re.M)
     if not m:
         raise ValueError("NO_MUTATION_SITE:comment_out_write")
-    h.write_text(t[:m.start()] + f"{m.group(1)}/* {m.group(2)} */" + t[m.end():])
-    fn = re.findall(r"\b(LL_\w+)\s*\(", t[:m.start()])
+    h.write_text(t[: m.start()] + f"{m.group(1)}/* {m.group(2)} */" + t[m.end() :])
+    fn = re.findall(r"\b(LL_\w+)\s*\(", t[: m.start()])
     return fn[-1] if fn else m.group(2)
 
 
@@ -159,20 +161,23 @@ def vacuous_test(ws: Path) -> str:
     m = re.search(r'CHECK\("(UT-\d+)",\s*(.+?)\);', t, re.S)
     if not m:
         raise ValueError("NO_MUTATION_SITE:vacuous_test")
-    p.write_text(t[:m.start()] + f'CHECK("{m.group(1)}", 1U == 1U);' + t[m.end():])
+    p.write_text(t[: m.start()] + f'CHECK("{m.group(1)}", 1U == 1U);' + t[m.end() :])
     return m.group(1)
 
 
 CATALOGUE = [
     {"id": "S1-OMIT", "phase": "SWE.1", "class": "omitted requirement", "apply": omit_requirement},
     {"id": "S1-QM", "phase": "SWE.1", "class": "safety-scope contradiction", "apply": safety_scope_qm},
-    {"id": "S1-EFFECT", "phase": "SWE.1", "class": "effects contract contradicts a requirement",
-     "apply": contradict_effect},
-    {"id": "S1-NOSTART", "phase": "SWE.1", "class": "missing reset/startup requirement", "apply": omit_startup,
-     "alt": "reset_startup_missing"},
+    {"id": "S1-EFFECT", "phase": "SWE.1", "class": "effects contract contradicts a requirement", "apply": contradict_effect},
+    {
+        "id": "S1-NOSTART",
+        "phase": "SWE.1",
+        "class": "missing reset/startup requirement",
+        "apply": omit_startup,
+        "alt": "reset_startup_missing",
+    },
     {"id": "S1-GAPROW", "phase": "SWE.1", "class": "upstream gap not recorded", "apply": unrecord_allocation_gap},
-    {"id": "S1-NOBUDGET", "phase": "SWE.1", "class": "missing resource budget", "apply": omit_budget,
-     "alt": "budget_missing"},
+    {"id": "S1-NOBUDGET", "phase": "SWE.1", "class": "missing resource budget", "apply": omit_budget, "alt": "budget_missing"},
     {"id": "S3-INVERT", "phase": "SWE.3", "class": "inverted behaviour", "apply": invert_behaviour},
     {"id": "S3-COMMENT", "phase": "SWE.3", "class": "commented-out code", "apply": comment_out_write},
     {"id": "S4-VACUOUS", "phase": "SWE.4", "class": "wrong test property", "apply": vacuous_test},
@@ -182,8 +187,11 @@ CATALOGUE = [
 def catalogue_hash() -> str:
     import inspect
 
-    return sha256_bytes("\n".join(f"{c['id']}|{c['phase']}|{c['class']}|{c.get('alt', '')}|"
-                                  f"{inspect.getsource(c['apply'])}" for c in CATALOGUE).encode())
+    return sha256_bytes(
+        "\n".join(
+            f"{c['id']}|{c['phase']}|{c['class']}|{c.get('alt', '')}|{inspect.getsource(c['apply'])}" for c in CATALOGUE
+        ).encode()
+    )
 
 
 def _refreeze(ws: Path, phase: str) -> dict:
@@ -226,13 +234,25 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     shutil.copytree(holdout, ws, symlinks=True, ignore=shutil.ignore_patterns("build"))
     for p in (ws / ".forge-run/lrtx").glob("*"):  # no checkpoints from any earlier evaluation
         shutil.rmtree(p) if p.is_dir() else p.unlink()
+    manifest_path = ws / ".forge-run/manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text())
+        manifest["evaluation_holdout"] = True
+        manifest_path.write_text(json.dumps(manifest, sort_keys=True))
     phase = case["phase"] if case else "SWE.1"
     # F011 (2026-10-22): an inspector restricted to existing requirement ids names the uncovered FIELD of an omitted
     # requirement, not its removed id; both count as on target (same rule for every inspector)
     alt = _omitted_field(ws) if case and case["id"] == "S1-OMIT" else (case or {}).get("alt")
     target = case["apply"](ws) if case else None
-    rec = {"case": name, "phase": phase, "class": case["class"] if case else "none", "target": target,
-           "target_field": alt, "inspector": inspector, "gate": _refreeze(ws, phase)}
+    rec = {
+        "case": name,
+        "phase": phase,
+        "class": case["class"] if case else "none",
+        "target": target,
+        "target_field": alt,
+        "inspector": inspector,
+        "gate": _refreeze(ws, phase),
+    }
     if rec["gate"]["result"] not in ("FROZEN", "FROZEN_BY_EVIDENCE", "FROZEN_BY_TOOL_EVIDENCE"):
         rec["detected_by"] = "deterministic gate" if case else "FALSE_REJECTION_BY_GATE"
         return rec
@@ -242,14 +262,17 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     rep = review.visit(ws, phase, model)
     ins = sorted(q for q in (ws / "inspection" / phase).glob("INS-*.json") if q.name not in earlier)
     rec_ins = json.loads(ins[-1].read_text()) if ins else None
-    rec["inspection"] = {"reply": rep["status"], "verdict": (rec_ins or {}).get("verdict"),
-                         "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get(
-                             "findings") or []]}
+    rec["inspection"] = {
+        "reply": rep["status"],
+        "verdict": (rec_ins or {}).get("verdict"),
+        "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get("findings") or []],
+    }
     if rep["status"] not in ("PASS", "REWORK"):  # F011-T045 m9: why an inspection recorded nothing
         rec["inspection"]["issues"] = [str(i)[:200] for i in rep.get("issues") or []][:5]
     text = " ".join(rec["inspection"]["findings"])
-    on_target = bool(target) and (target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text))
-                                  or bool(alt and alt in text))
+    on_target = bool(target) and (
+        target in text or (target.startswith("SWR-") and re.search(rf"\b{target}\b", text)) or bool(alt and alt in text)
+    )
     if rec_ins is None:
         rec["detected_by"] = f"NO_INSPECTION ({rep['status']})"
     elif case is None:
@@ -261,8 +284,7 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     return rec
 
 
-def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None,
-        inspector: str = "structured") -> dict:
+def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None, inspector: str = "structured") -> dict:
     rows = []
     with tempfile.TemporaryDirectory(prefix="lrtx-seeded-", dir=out.parent) as td:
         for h in holdouts:
@@ -279,18 +301,26 @@ def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = N
 def _summary(rows: list[dict], model: str) -> dict:
     seeded = [r for r in rows if r["case"] != "BASELINE" and not r["detected_by"].startswith("NOT_APPLICABLE")]
     base = [r for r in rows if r["case"] == "BASELINE"]
-    return {"schema": "forge-c/lrtx-seeded/1", "catalogue": CATALOGUE_VERSION, "catalogue_sha256": catalogue_hash(),
-            "model": model, "inspector": rows[0].get("inspector", "structured") if rows else None,
-            "generated_at": utc_now(),
-            "deterministic_detection": sum(r["detected_by"] == "deterministic gate" for r in seeded),
-            "semantic_detection_on_target": sum(r["detected_by"] == "inspection (on target)" for r in seeded),
-            "inspection_fail_off_target": sum(r["detected_by"] == "inspection (off target)" for r in seeded),
-            "missed": sum(r["detected_by"] == "MISSED" for r in seeded), "seeded": len(seeded),
-            "false_rejections": sum(r["detected_by"].startswith("FALSE_REJECTION") for r in base),
-            "baselines": len(base),
-            "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base),
-            "inspection_lessons": LESSON_SET["value"], "inspector_options": OPTIONS["value"], "rows": rows,
-            "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+    return {
+        "schema": "forge-c/lrtx-seeded/1",
+        "catalogue": CATALOGUE_VERSION,
+        "catalogue_sha256": catalogue_hash(),
+        "model": model,
+        "inspector": rows[0].get("inspector", "structured") if rows else None,
+        "generated_at": utc_now(),
+        "deterministic_detection": sum(r["detected_by"] == "deterministic gate" for r in seeded),
+        "semantic_detection_on_target": sum(r["detected_by"] == "inspection (on target)" for r in seeded),
+        "inspection_fail_off_target": sum(r["detected_by"] == "inspection (off target)" for r in seeded),
+        "missed": sum(r["detected_by"] == "MISSED" for r in seeded),
+        "seeded": len(seeded),
+        "false_rejections": sum(r["detected_by"].startswith("FALSE_REJECTION") for r in base),
+        "baselines": len(base),
+        "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base),
+        "inspection_lessons": LESSON_SET["value"],
+        "inspector_options": OPTIONS["value"],
+        "rows": rows,
+        "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -299,17 +329,36 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--case", action="append", default=None)
-    ap.add_argument("--inspector", choices=("structured", "semantic"), default="structured",
-                    help="semantic: F011 typed claims with deterministic adjudication (SWE.1; other phases structured)")
-    ap.add_argument("--lessons", type=Path, default=None,
-                    help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)")
-    ap.add_argument("--lessons-trial", action="store_true",
-                    help="F011-T045 promotion trial: PROPOSED lessons that pass every check are retrieved too")
+    ap.add_argument(
+        "--inspector",
+        choices=("structured", "semantic"),
+        default="structured",
+        help="semantic: F011 typed claims with deterministic adjudication (SWE.1; other phases structured)",
+    )
+    ap.add_argument(
+        "--lessons",
+        type=Path,
+        default=None,
+        help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)",
+    )
+    ap.add_argument(
+        "--lessons-trial",
+        action="store_true",
+        help="F011-T045 promotion trial: PROPOSED lessons that pass every check are retrieved too",
+    )
     ap.add_argument("--seed", type=int, default=None, help="F011-T048: sampling seed of this run (recorded)")
-    ap.add_argument("--coverage", choices=("on", "off"), default=None,
-                    help="F011-T049: decomposed coverage questions (default: the profile's structured.inspector_coverage)")
-    ap.add_argument("--entries", choices=("on", "off"), default=None,
-                    help="F011-T054: per-entry effects and budget questions (default: structured.inspector_entries)")
+    ap.add_argument(
+        "--coverage",
+        choices=("on", "off"),
+        default=None,
+        help="F011-T049: decomposed coverage questions (default: the profile's structured.inspector_coverage)",
+    )
+    ap.add_argument(
+        "--entries",
+        choices=("on", "off"),
+        default=None,
+        help="F011-T054: per-entry effects and budget questions (default: structured.inspector_entries)",
+    )
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     if a.inspector == "semantic":
@@ -325,9 +374,14 @@ def main(argv: list[str] | None = None) -> int:
 
         RS.LESSONS["dir"] = a.lessons.resolve()
         RS.LESSONS["include_proposed"] = a.lessons_trial
-        LESSON_SET["value"] = {"dir": str(a.lessons), "trial": a.lessons_trial, "lessons": [
-            {"id": x.get("id"), "version": x.get("version"), "state": x["_state"], "sha256": x["_hash"]}
-            for x in IL.load(a.lessons)]}
+        LESSON_SET["value"] = {
+            "dir": str(a.lessons),
+            "trial": a.lessons_trial,
+            "lessons": [
+                {"id": x.get("id"), "version": x.get("version"), "state": x["_state"], "sha256": x["_hash"]}
+                for x in IL.load(a.lessons)
+            ],
+        }
     s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case, a.inspector)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}))
     return 0

@@ -5,6 +5,7 @@ reports a failed cycle, appends ONE alert per dedup window to <state>/afo/alerts
 channel; external channels come with M6) and exits 1 so the timer unit shows the failure. It never restarts
 anything: restarts are systemd's (Restart=, WatchdogSec=) and bounded by StartLimitBurst.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,13 +58,25 @@ def main(argv: list[str] | None = None) -> int:
     if not r["ok"]:
         from .operations import configured
         from .host import preflight
-        if configured() and not preflight()['ok']:
+
+        if configured() and not preflight()["ok"]:
             # Surviving independent layer reports via journal/stdout, without data-root fallback writes.
-            print(json.dumps({**r,'recovery':'WAITING_FOR_AUTHORITATIVE_VOLUME'}))
+            print(json.dumps({**r, "recovery": "WAITING_FOR_AUTHORITATIVE_VOLUME"}))
             return 1
         r["alerted"] = alert(r, a.dedup)
         from .operations import recover
-        r['recovery'] = recover()
+
+        r["recovery"] = recover()
+    from .operations import configured, recover_profile
+    from .host import preflight
+
+    if configured() and preflight()["ok"]:
+        from .queue import Store
+
+        try:
+            r["profile_recovery"] = recover_profile(Store())
+        except (OSError, ValueError, TimeoutError) as exc:
+            r["profile_recovery"] = {"action": "WAITING", "code": getattr(exc, "code", type(exc).__name__)}
     print(json.dumps(r))
     return 0 if r["ok"] else 1
 

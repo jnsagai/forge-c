@@ -25,6 +25,7 @@ CREATE TRIGGER IF NOT EXISTS experiences_no_update BEFORE UPDATE ON job_experien
 CREATE TRIGGER IF NOT EXISTS experiences_no_delete BEFORE DELETE ON job_experience BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
 """
 OUTCOMES = {
+    "FAIL",
     "PASS",
     "SUCCEEDED",
     "READY_FOR_OFFLINE_REVIEW",
@@ -154,20 +155,26 @@ def report(store):
 
 def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
     """Reconcile terminal native product/phase outcomes, deduplicated across adopted orders."""
-    out = []
+    out = capture_controller_outcomes(afo_store, lessons, limit=limit)
     with afo_store.tx() as c:
+        saved = c.execute("SELECT value FROM afo_control WHERE key='learning_capture_cursor'").fetchone()
+        cursor = saved[0] if saved else ""
         rows = c.execute(
-            "SELECT * FROM afo_attempts WHERE state IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN') ORDER BY created_utc DESC LIMIT ?",
-            (limit,),
+            "SELECT * FROM afo_attempts WHERE state IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN') AND created_utc||attempt_id>? ORDER BY created_utc,attempt_id LIMIT ?",
+            (cursor, limit),
         ).fetchall()
+        if not rows:
+            c.execute("DELETE FROM afo_control WHERE key='learning_capture_cursor'")
     for row in rows:
         att = {**dict(row), "record": json.loads(row["record"])}
         record = att["record"]
         native = record.get("fabro_run_id")
         if not native:
             continue  # uncertain unsent jobs need their own dispatch receipt, never a fabricated native identity
-        cohort = {"revision": record.get("factory_revision"), "server": record.get("fabro_server")}
-        source = ["afo-attempt:" + att["attempt_id"]]
+        ws = workspace_of(att)
+        manifest_path = ws / ".forge-run/manifest.json"
+        manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
+        cohort = {"revision": manifest.get("factory_revision"), "server": record.get("fabro_server")}
         # Exclude order/adoption alias from identity. Native metadata and outcome remain factual.
         out.append(
             capture(
@@ -205,4 +212,118 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
                     )
             except (OSError, ValueError, TypeError):
                 continue
+    if rows:
+        last = rows[-1]
+        with afo_store.tx() as c:
+            c.execute(
+                "INSERT INTO afo_control VALUES ('learning_capture_cursor',?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                (last["created_utc"] + last["attempt_id"], utc_now(), "deterministic-learning-reconciler"),
+            )
+    return out
+
+
+def capture_workspace(store, workspace, execution_id, *, package=None):
+    """All authoritative inspection outcomes plus immutable package fact, including non-AFO work orders."""
+    from pathlib import Path
+    from ..inspection.engine import Store as InspectionStore
+
+    ws = Path(workspace)
+    m = ws / ".forge-run/manifest.json"
+    manifest = json.loads(m.read_text()) if m.is_file() else {}
+    cohort = {
+        "revision": manifest.get("factory_revision"),
+        "model_profile": manifest.get("local_profile"),
+        "driver": manifest.get("driver"),
+        "evaluation_holdout": bool(manifest.get("evaluation_holdout")),
+    }
+    out = []
+    for phase in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"):
+        for record in InspectionStore(ws).inspections(phase):
+            outcome = record.get("verdict")
+            if outcome not in OUTCOMES:
+                continue
+            sha = digest(record)
+            out.append(
+                capture(
+                    store,
+                    execution_id,
+                    phase,
+                    outcome,
+                    facts={
+                        "inspection_record_sha256": sha,
+                        "failed_items": sorted(k for k, v in record.get("items", {}).items() if v.get("verdict") == "FAIL"),
+                        "successful_scope": record.get("checklist_sha256") if outcome == "PASS" else None,
+                    },
+                    source_refs=["inspection:sha256:" + sha],
+                    cohort=cohort,
+                    observed_at=record.get("recorded_at"),
+                )
+            )
+    if package and package.get("package_status") in OUTCOMES:
+        out.append(
+            capture(
+                store,
+                execution_id,
+                "JOB",
+                package["package_status"],
+                facts={"archive_sha256": package.get("archive_sha256"), "gap_count": package.get("gap_count")},
+                source_refs=["archive:sha256:" + str(package.get("archive_sha256"))],
+                cohort=cohort,
+            )
+        )
+    return out
+
+
+def capture_controller_outcomes(afo_store, lessons, *, limit=32):
+    """Capture non-product and never-dispatched terminal jobs without inventing native runs."""
+    out = []
+    for table, identity_col, scope in (
+        ("afo_local_agent_jobs", "job_id", "agent"),
+        ("afo_work_orders", "order_id", "order"),
+    ):
+        control = "learning_" + scope + "_cursor"
+        with afo_store.tx() as c:
+            prior = c.execute("SELECT value FROM afo_control WHERE key=?", (control,)).fetchone()
+            cursor = prior[0] if prior else ""
+            fields = identity_col + ",record" if scope == "agent" else "order_id,state,envelope"
+            rows = c.execute(
+                f"SELECT {fields} FROM {table} WHERE {identity_col}>? ORDER BY {identity_col} LIMIT ?", (cursor, limit)
+            ).fetchall()
+            if not rows:
+                c.execute("DELETE FROM afo_control WHERE key=?", (control,))
+        for row in rows:
+            try:
+                value = json.loads(row["record"] if scope == "agent" else row["envelope"])
+                outcome = value.get("state") if scope == "agent" else row["state"]
+                if outcome not in OUTCOMES:
+                    continue
+                if scope == "order":
+                    with afo_store.tx() as c:
+                        attempts = c.execute("SELECT record FROM afo_attempts WHERE order_id=?", (row["order_id"],)).fetchall()
+                    if any(json.loads(a[0]).get("fabro_run_id") for a in attempts):
+                        continue  # adoption aliases are covered by their unique native execution
+                source = digest(value)
+                out.append(
+                    capture(
+                        lessons,
+                        "controller-" + scope + ":" + row[identity_col],
+                        value.get("role", "JOB"),
+                        outcome,
+                        facts={"state_record_sha256": source, "error_code": value.get("error")},
+                        source_refs=["afo-state:sha256:" + source],
+                        cohort={"model": value.get("model"), "revision": value.get("factory_revision")},
+                    )
+                )
+            except (ValueError, TypeError, KeyError) as exc:
+                if scope == "order":
+                    from ..afo.dispatch import item_failure
+
+                    item_failure(afo_store, row["order_id"], exc, "learning_capture")
+                # Keep malformed source untouched; no unsupported experience is synthesized.
+        if rows:
+            with afo_store.tx() as c:
+                c.execute(
+                    "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                    (control, rows[-1][identity_col], utc_now(), "deterministic-learning-reconciler"),
+                )
     return out
