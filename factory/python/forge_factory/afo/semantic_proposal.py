@@ -25,6 +25,53 @@ def parse(raw: str | bytes | dict) -> dict:
     return proposal
 
 
+DECISIONS = ("PROPOSE_REPAIR", "NEEDS_EVIDENCE", "CLOSE_BLOCKED")
+
+
+def diagnose(raw: str | bytes | dict) -> dict:
+    """Value-free shape facts of a rejected proposal: no field values, prose, raw output or reasoning."""
+    import re
+
+    from jsonschema import Draft202012Validator
+
+    from .durable import schema
+
+    def name(part):
+        return str(part) if re.fullmatch(r"[A-Za-z0-9_]{1,40}", str(part)) else "<other>"
+
+    def issue(e, branch=None):
+        rec = {"path": "/".join(name(p) for p in e.absolute_path)[:120], "validator": str(e.validator)[:40]}
+        return {**rec, "branch": branch} if branch else rec
+
+    data = raw if isinstance(raw, bytes) else raw.encode() if isinstance(raw, str) else canonical(raw)
+    out = {"bytes": len(data)}
+    try:
+        value = strict_json(data, 65536)
+    except Refused as exc:
+        return {**out, "parse": exc.code}
+    contract = schema("semantic-proposal")
+    known = set(contract.get("properties", {}))
+    out.update(parse="OK", type=type(value).__name__)
+    if isinstance(value, dict):
+        out["keys"] = sorted(k for k in value if k in known)
+        out["unknown_key_count"] = sum(k not in known for k in value)
+        declared = value.get("decision")
+        out["decision"] = declared if declared in DECISIONS else ("INVALID" if "decision" in value else None)
+    issues = []
+    for e in list(Draft202012Validator(contract).iter_errors(value))[:4]:
+        issues.append(issue(e))
+        if e.validator == "oneOf":
+            # Report only the branch the proposal declared (or every branch when it declared none), four issues each.
+            per_branch = {}
+            for index, sub in enumerate(e.context or []):
+                branch = DECISIONS[sub.relative_schema_path[0]] if sub.relative_schema_path else str(index)
+                if out.get("decision") in (None, "INVALID", branch) and per_branch.get(branch, 0) < 4:
+                    per_branch[branch] = per_branch.get(branch, 0) + 1
+                    issues.append(issue(sub, branch))
+    out["issues"] = issues[:20]
+    return out
+
+
 def signature(proposal: dict) -> str:
     """Catalogued approach, target, scope and checks; wording/seeds/administrative IDs cannot buy another try."""
     return digest(

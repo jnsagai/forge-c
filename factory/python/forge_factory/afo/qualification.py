@@ -581,6 +581,14 @@ def protocol_observation(store, manifest, trial, job):
         if receipt
         else "FAILED_PROTOCOL"
     )
+    diagnostic = None
+    if receipt and receipt.get("submission_state") == "REJECTED":
+        with store.tx() as c:
+            stored = c.execute(
+                "SELECT record FROM afo_semantic_proposals WHERE proposal_sha256=? AND job_id=?",
+                (receipt["proposal_sha256"], job["job_id"]),
+            ).fetchone()
+        diagnostic = json.loads(stored[0]).get("diagnostic") if stored else None
     from .execution_lifecycle import Executions
 
     execution = Executions(store).get(job["job_id"])
@@ -615,6 +623,7 @@ def protocol_observation(store, manifest, trial, job):
         "case_binding_valid": binding_error is None,
         "observation_blockers": [binding_error] if binding_error else [],
         "receipt": receipt,
+        "proposal_diagnostic": diagnostic,
         "reported_tokens": reported,
         "native_fabro_reported_tokens": job.get("reported_tokens"),
         "request_count": len(requests),

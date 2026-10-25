@@ -131,9 +131,12 @@ class Receipts:
                 "verification_receipt_ref": None,
                 "reason_codes": [error] if error else [],
             }
+            stored = {"proposal": proposal, "reason": error}
+            if error:
+                stored["diagnostic"] = semantic_proposal.diagnose(original)
             c.execute(
                 "INSERT INTO afo_semantic_proposals VALUES (?,?,?,?)",
-                (phash, ctx.job_id, ctx.launch_nonce, canonical({"proposal": proposal, "reason": error}).decode()),
+                (phash, ctx.job_id, ctx.launch_nonce, canonical(stored).decode()),
             )
             self._insert(c, rec)
         return rec
