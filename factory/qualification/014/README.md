@@ -125,3 +125,11 @@ source also blocks readiness. Pass `inputs.json` and
 its exact `jobs` mapping to the existing qualification freeze operation; preflight
 checks their readiness and effective model/reasoning identity. A prepared file,
 successful compiler check or dry-run never qualifies the 100 native trials.
+
+A durable local launch refusal is distinct from an uncertain native launch.
+Preflight and operator-fence failures can release inference capacity only when the
+controller proves the Fabro subprocess was never invoked. The existing execution
+ledger retains dispatch intent, a hash-bound non-dispatch proof, and the original
+job reservation. A timeout or any error after invoking that subprocess remains
+possibly live and follows native nonce reconciliation; a terminal job alone never
+releases capacity. Non-dispatch proof publication is recoverable after restart.

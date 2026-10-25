@@ -52,6 +52,13 @@ def poll(store, order, job, eff, client, launch_fn):
             rid = launch_fn(job)
             ex.adopt(job["job_id"], [rid])
             job.update(run_id=rid, state="RUNNING")
+        except L.LaunchNotStarted as exc:
+            if exc.job_id != job["job_id"] or exc.nonce != job["nonce"]:
+                raise Refused("LAUNCH_NOT_STARTED_BINDING_CHANGED") from exc
+            job.update(state="FAILED", error="NATIVE_LAUNCH_NOT_STARTED:" + exc.failure_type)
+            L.save(store, job)
+            ex.outcome(job["job_id"], "BLOCKED", job["error"])
+            job["execution"] = ex.not_dispatched(job["job_id"], failure_type=exc.failure_type)
         except Exception as exc:  # noqa: BLE001 - lost acknowledgments remain uncertain and reconcile
             job["error"] = "NATIVE_LAUNCH_UNCERTAIN:" + type(exc).__name__
         L.save(store, job)

@@ -100,6 +100,30 @@ class Executions:
             rec["revision"],
         )
 
+    def not_dispatched(self, job_id: str, *, failure_type: str) -> dict:
+        """Only the local launch boundary supplies this proof; native errors never do."""
+        rec = self.get(job_id)
+        self._check_not_dispatched(rec)
+        proof = {
+            "kind": "LOCAL_LAUNCH_NOT_STARTED",
+            "job_id": job_id,
+            "launch_nonce": rec["launch_nonce"],
+            "lease_epoch": rec["lease_epoch"],
+            "failure_type": failure_type,
+            "evidence_ref": "local-launch-not-started:" + digest([job_id, rec["launch_nonce"], rec["lease_epoch"], failure_type]),
+        }
+        self._save_evidence(job_id, "LAUNCH_NOT_STARTED", proof)
+        return self._quiescent(rec, proof)
+
+    @staticmethod
+    def _check_not_dispatched(rec):
+        if (
+            rec["admission_state"] != "DISPATCH_INTENT_RECORDED"
+            or rec["native_run_ids"]
+            or rec["identity_state"] not in ("NONE", "UNCONFIRMED")
+        ):
+            raise Refused("LAUNCH_NOT_STARTED_CONTRADICTED")
+
     def adopt(self, job_id: str, run_ids: list[str]) -> dict:
         rec = self.get(job_id)
         ids = sorted(set(rec["native_run_ids"]) | set(run_ids))
@@ -160,6 +184,12 @@ class Executions:
         if rec["execution_liveness"] in ("QUIESCENT", "NOT_STARTED") and proof:
             MissionLedger(self.store).release_inference(job_id, proof=proof)
             return self._write({**rec, "resource_lease": "RELEASED"}, rec["revision"])
+        not_started = self._evidence(job_id, "LAUNCH_NOT_STARTED")
+        if not_started:
+            self._check_not_dispatched(rec)
+            if any(not_started.get(k) != rec[k] for k in ("job_id", "launch_nonce", "lease_epoch")):
+                raise Refused("LAUNCH_NOT_STARTED_BINDING_CHANGED")
+            return self._quiescent(rec, not_started)
         if rec["admission_state"] == "RESERVED":
             # Dispatch intent and the external effect are ordered; this execution never contacted native Fabro.
             if cancel or rec["authorization_state"] != "VALID" or rec["task_outcome"] != "ACTIVE":
@@ -175,7 +205,7 @@ class Executions:
                 ]
                 if hits:
                     rec = self.adopt(job_id, hits)
-            except Exception:  # noqa: BLE001 - retained uncertainty, never a relaunch permission
+            except Exception:  # noqa: BLE001, S110 - retained uncertainty, never a relaunch permission
                 pass
         if not rec["native_run_ids"]:
             return self._write({**rec, "execution_liveness": "UNKNOWN"}, rec["revision"])
@@ -189,7 +219,9 @@ class Executions:
                 if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
                     from .dependency_wait import probe
 
-                    observed = probe(self.store, "native:" + job_id, "status:" + rid, lambda: self._observe_native(client, rid))
+                    observed = probe(
+                        self.store, "native:" + job_id, "status:" + rid, lambda rid=rid: self._observe_native(client, rid)
+                    )
                     status = observed.get("result", {}).get("status", "UNKNOWN")
                 else:
                     status = run_status(client.get_run(rid))
@@ -220,7 +252,10 @@ class Executions:
                         from .dependency_wait import probe
 
                         cancel_observation = probe(
-                            self.store, "native:" + job_id, "cancel:" + rid, lambda: {"ok": False, "code": client.cancel(rid)}
+                            self.store,
+                            "native:" + job_id,
+                            "cancel:" + rid,
+                            lambda rid=rid: {"ok": False, "code": client.cancel(rid)},
                         )
                         if not cancel_observation.get("due"):
                             rec["cancel_attempts"] -= 1
@@ -260,10 +295,11 @@ class Executions:
     def _save_evidence(self, job_id, kind, value):
         with self.store.tx() as c:
             old = c.execute("SELECT sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, kind)).fetchone()
-            if kind == "QUIESCENCE" and old and old[0] != digest(value):
+            if kind in ("QUIESCENCE", "LAUNCH_NOT_STARTED") and old and old[0] != digest(value):
                 raise Refused("QUIESCENCE_EVIDENCE_REBOUND")
             c.execute(
-                "INSERT INTO afo_execution_evidence VALUES (?,?,?,?) ON CONFLICT(job_id,kind) DO UPDATE SET record=excluded.record,sha256=excluded.sha256",
+                "INSERT INTO afo_execution_evidence VALUES (?,?,?,?) ON CONFLICT(job_id,kind) "
+                "DO UPDATE SET record=excluded.record,sha256=excluded.sha256",
                 (job_id, kind, canonical(value).decode(), digest(value)),
             )
 
@@ -273,8 +309,13 @@ class Executions:
             rec = self._write(
                 {
                     **rec,
-                    "execution_liveness": "NOT_STARTED" if rec["admission_state"] == "RESERVED" else "QUIESCENT",
-                    "quiescence_evidence_ref": None if rec["admission_state"] == "RESERVED" else proof["evidence_ref"],
+                    "execution_liveness": "NOT_STARTED"
+                    if rec["admission_state"] == "RESERVED" or proof["kind"] == "LOCAL_LAUNCH_NOT_STARTED"
+                    else "QUIESCENT",
+                    "identity_state": "NONE" if proof["kind"] == "LOCAL_LAUNCH_NOT_STARTED" else rec["identity_state"],
+                    "quiescence_evidence_ref": None
+                    if rec["admission_state"] == "RESERVED" or proof["kind"] == "LOCAL_LAUNCH_NOT_STARTED"
+                    else proof["evidence_ref"],
                     "cancellation_state": "QUIESCENCE_CONFIRMED"
                     if rec["cancellation_state"] != "NOT_REQUESTED" or rec["authorization_state"] != "VALID"
                     else "NOT_REQUESTED",

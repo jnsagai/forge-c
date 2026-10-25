@@ -217,7 +217,35 @@ def command_environment(job):
     return " ".join(key + "=" + shlex.quote(value) for key, value in sorted(execution_context(job).items()))
 
 
+class LaunchNotStarted(RuntimeError):
+    """Controller-local proof that the native launch subprocess was never invoked."""
+
+    def __init__(self, job, cause):
+        super().__init__(str(cause))
+        self.job_id = job["job_id"]
+        self.nonce = job["nonce"]
+        self.failure_type = type(cause).__name__
+
+
 def launch(job: dict) -> str:
+    invoked = False
+
+    def invoke(*args, **kwargs):
+        nonlocal invoked
+        # Mark before invoking the subprocess: any exception from this point,
+        # including executable lookup or timeout, conservatively retains uncertainty.
+        invoked = True
+        return subprocess.run(*args, **kwargs)
+
+    try:
+        return _launch(job, invoke)
+    except Exception as exc:
+        if not invoked:
+            raise LaunchNotStarted(job, exc) from exc
+        raise
+
+
+def _launch(job: dict, invoke) -> str:
     """Native single-role Fabro workflow, with no built-in shell/filesystem permissions for its agent."""
     from ..fabro.runconfig import create_workspace, fabro_env, write_run
     from ..lrtx import profile
@@ -309,7 +337,7 @@ def launch(job: dict) -> str:
 
     r = fenced_call(
         job.get("operations_epoch"),
-        lambda: subprocess.run(
+        lambda: invoke(
             [
                 fab,
                 "run",
