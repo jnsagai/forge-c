@@ -129,6 +129,7 @@ def test_single_response_mode_states_its_no_tool_evidence_contract(signed):
     system = body["messages"][0]["content"]
     assert "SINGLE-RESPONSE MODE: no tools are available" in system
     assert "exact ref strings copied from packet.findings[].ref or packet.artifacts[].ref" in system
+    assert "Decision rule: PROPOSE_REPAIR when the evidence shows an artifact conflicting" in system
     # The locked role SKILL text is still delivered unchanged ahead of the mode contract.
     from forge_factory.lrtx.structured import skill
 
