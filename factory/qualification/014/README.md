@@ -50,10 +50,29 @@ reservation. Rebinding an existing job's reservation remains forbidden. The
 ordinary production path retains the registry allowance. Full campaign readiness
 still requires every other prerequisite below.
 
+Four response interventions are implemented at the native adapter boundary:
+administrative-field forgery, empty content, truncated JSON and an unqualified
+model switch. Enable only a declared per-trial mapping using qualification
+`freeze --protocol-faults <json-file>`. Each entry must exactly match that seeded
+case's prospective recipe; the owner signature binds the mapping. Ordinary
+product cases cannot enable these controls. For example, `empty-output:0` maps to
+`{"boundary":"after-provider-response","recipe":"drop-content"}`.
+
+At execution the adapter rechecks the current signature, order/model scope,
+job/case/nonce, policy, deadline and held native execution. The authoritative
+evidence table retains original/injected visible-response hashes and the declared
+intervention, without response text or hidden reasoning. Changed replays are
+refused. Reports require matching exposure evidence as well as an independent
+oracle audit. Injected responses do not establish unmodified model competence.
+Unmodified empty or invalidly typed content is a protocol incident and cannot
+create a semantic completion receipt.
+
 `inputs.json` includes prospective fault recipes. They are not executed fault
-evidence. Native boundary injection and the independently measured authorized
-local alternative remain prerequisites; unresolved prerequisites block the full
-campaign. Dirty generator source also blocks readiness. Pass `inputs.json` and
+evidence. Source/symlink/cross-case faults, strategy replay, revocation/expiry,
+lost launch acknowledgement and cancellation-with-live-request interventions
+remain unprovisioned, as does the independently measured authorized local
+alternative; unresolved prerequisites block the full campaign. Dirty generator
+source also blocks readiness. Pass `inputs.json` and
 its exact `jobs` mapping to the existing qualification freeze operation; preflight
 checks their readiness and effective model/reasoning identity. A prepared file,
 successful compiler check or dry-run never qualifies the 100 native trials.

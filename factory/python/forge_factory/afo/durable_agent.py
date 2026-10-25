@@ -245,6 +245,24 @@ def request_body(store, job):
     return body, measured
 
 
+def response_receipt(store, job, answer, eff):
+    """Validate visible provider content and use the existing broker; never store hidden reasoning."""
+    from .protocol_faults import apply_response
+
+    try:
+        raw = answer["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as exc:
+        raise Refused("MODEL_RESPONSE_CONTENT_MISSING") from exc
+    if raw is None:
+        raw = ""
+    if not isinstance(raw, str):
+        raise Refused("INVALID_MODEL_OUTPUT_TYPE")
+    raw = apply_response(store, job, raw, eff)
+    if not raw.strip():
+        raise Refused("EMPTY_MODEL_OUTPUT")
+    return Receipts(store).submit(Context.from_job(store, job["job_id"]), raw)
+
+
 def generate(store, job, eff):
     """Called only by the native command node on Omniverse, through the existing local gateway."""
     import socket
@@ -262,14 +280,13 @@ def generate(store, job, eff):
     rid = "request-" + digest([job["job_id"], job["nonce"], 0])[:24]
     body["forge_execution"] = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": rid}
     url = _gateway_url().rstrip("/") + "/chat/completions"
-    if urlparse(url).hostname not in ("localhost", "127.0.0.1", "::1"):
+    if urlparse(url).scheme != "http" or urlparse(url).hostname not in ("localhost", "127.0.0.1", "::1"):
         raise Refused("EXTERNAL_GENERATION_ROUTE_DENIED")
-    request = urllib.request.Request(url, data=canonical(body), headers={"Content-Type": "application/json"})
+    request = urllib.request.Request(url, data=canonical(body), headers={"Content-Type": "application/json"})  # noqa: S310
     # Gateway owns request reservation and usage reconciliation, including crashes/disconnects.
     with urllib.request.urlopen(request, timeout=max(1, min(3600, job["deadline_epoch"] - time.time()))) as response:  # noqa: S310
         answer = json.loads(response.read(65537))
-    raw = answer["choices"][0]["message"].get("content") or ""
-    receipt = Receipts(store).submit(Context.from_job(store, job["job_id"]), raw)
+    receipt = response_receipt(store, job, answer, eff)
     # Persist measurement only; neither raw output nor hidden reasoning is retained.
     immutable_json(Path(job["case"]).parent / ("request-measure-" + rid + ".json"), measured)
     return receipt

@@ -45,7 +45,18 @@ def revision():
     ).stdout.strip()
 
 
-def freeze(stage, destination, *, identity, inputs=(), jobs=None, baseline=None, model_profile=None, job_token_reservations=None):
+def freeze(
+    stage,
+    destination,
+    *,
+    identity,
+    inputs=(),
+    jobs=None,
+    baseline=None,
+    model_profile=None,
+    job_token_reservations=None,
+    protocol_faults=None,
+):
     from ..lrtx.role_capability import key
 
     if stage not in STAGES:
@@ -125,6 +136,8 @@ def freeze(stage, destination, *, identity, inputs=(), jobs=None, baseline=None,
     }
     if job_token_reservations is not None:
         manifest["job_token_reservations"] = job_token_reservations
+    if protocol_faults is not None:
+        manifest["protocol_faults"] = protocol_faults
     validate(manifest)
     immutable_json(Path(destination), manifest)
     return manifest
@@ -137,6 +150,12 @@ def validate(manifest):
 
     if key(manifest["identity"]) != manifest["identity_sha256"]:
         raise Refused("CAMPAIGN_IDENTITY_CHANGED")
+    if "protocol_faults" in manifest:
+        from .protocol_faults import validate_catalogue
+
+        if manifest["stage"] != "protocol":
+            raise Refused("QUALIFICATION_FAULT_CATALOGUE_INVALID")
+        validate_catalogue(manifest["protocol_faults"], manifest["jobs"])
     if "job_token_reservations" in manifest:
         reservations = manifest["job_token_reservations"]
         expected = {binding["job_id"] for binding in manifest["jobs"].values()}
@@ -201,6 +220,8 @@ def initial_reservation(manifest, job, eff):
     tokens = manifest.get("job_token_reservations", {}).get(job["job_id"], job["reserved_tokens"])
     if tokens > int(eff.get("budgets.max_model_tokens_per_order")) or tokens > identity["context_tokens"]:
         raise Refused("QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY")
+    from .protocol_faults import bind as bind_fault
+
     return {
         "reserved_tokens": tokens,
         "qualification_manifest_sha256": sha,
@@ -212,6 +233,7 @@ def initial_reservation(manifest, job, eff):
             "registry_default_tokens": job["reserved_tokens"],
             "authorized_tokens": tokens,
         },
+        **bind_fault(manifest, job),
     }
 
 
@@ -244,7 +266,7 @@ def preflight(manifest, *, live=False, authorization_ref=None):
             if not isinstance(inputs, dict) or inputs.get("schema") != "forge-c/protocol-inputs-014/1":
                 continue
             try:
-                blockers.extend(input_readiness(inputs)["blockers"])
+                blockers.extend(input_readiness(inputs, protocol_faults=manifest.get("protocol_faults", {}))["blockers"])
                 if inputs["jobs"] != manifest["jobs"]:
                     blockers.append("FROZEN_PROTOCOL_INPUT_JOB_BINDINGS_CHANGED")
                 if any(
@@ -450,6 +472,14 @@ def step(manifest, authorization_ref, destination, *, store=None):
                 "authority_escapes": None,
                 "usage_unknown": job.get("reported_tokens") is None,
             }
+            with store.tx() as c:
+                injection = c.execute(
+                    "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind='PROTOCOL_RESPONSE_FAULT'",
+                    (job["job_id"],),
+                ).fetchone()
+            if job.get("qualification_fault"):
+                row["declared_fault"] = job["qualification_fault"]
+                row["fault_observation"] = json.loads(injection[0]) if injection else None
             immutable_json(path, row)
             return {"status": "RECORDED", "trial": trial, "row_sha256": sha256_file(path)}
     return {
@@ -527,8 +557,11 @@ def protocol_report(manifest, rows):
         if row["manifest_sha256"] != sha:
             raise Refused("PROTOCOL_RESULT_MANIFEST_CHANGED")
         receipt = row.get("receipt") or {}
+        from .protocol_faults import observation_matches
+
         ok = (
             row["observed"] == case["expected"]
+            and observation_matches(manifest, row)
             and (
                 row.get("native_run_id")
                 or (
@@ -705,6 +738,7 @@ def main(argv=None):
     ap.add_argument("--identity", type=Path)
     ap.add_argument("--input", type=Path, action="append", default=[])
     ap.add_argument("--jobs", type=Path)
+    ap.add_argument("--protocol-faults", type=Path, help="explicit supported per-trial interventions, frozen before signing")
     ap.add_argument(
         "--job-token-reservations", type=Path, help="explicit per-job initial qualification allowances, frozen before signing"
     )
@@ -723,6 +757,7 @@ def main(argv=None):
             jobs=json.loads(args.jobs.read_text()) if args.jobs else None,
             model_profile=args.model_profile,
             job_token_reservations=json.loads(args.job_token_reservations.read_text()) if args.job_token_reservations else None,
+            protocol_faults=json.loads(args.protocol_faults.read_text()) if args.protocol_faults else None,
         )
         out = {"status": "FROZEN_NOT_RUN", "manifest_sha256": digest(manifest)}
     else:

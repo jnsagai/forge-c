@@ -237,7 +237,8 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                         "id": f"context-{i}",
                         "obligation_id": "USPEC-001",
                         "detail": (
-                            "Fixture inventory context; this observation does not resolve the decisive register-effect counterexample."
+                            "Fixture inventory context; this observation does not resolve "
+                            "the decisive register-effect counterexample."
                         ),
                     }
                     for i in range(8)
@@ -402,7 +403,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     return result
 
 
-def readiness(inputs):
+def readiness(inputs, *, protocol_faults=None):
     """Report actual input/recipe prerequisites; this never grants native authority."""
     root = Path(inputs["root"]).resolve()
     template = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
@@ -432,8 +433,12 @@ def readiness(inputs):
         if doc["qualification_fixture"]["trial_id"] != trial["trial_id"] or doc["mission_id"] != binding["mission_id"]:
             raise Refused("QUALIFICATION_SOURCE_CASE_REBOUND", trial["trial_id"])
         blockers.update(doc["qualification_fixture"]["requires"])
-        if doc["qualification_fixture"].get("prospective_fault"):
-            blockers.add("NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED")
+        recipe = doc["qualification_fixture"].get("prospective_fault")
+        if recipe:
+            from .protocol_faults import SUPPORTED
+
+            if trial["trial_id"].rsplit(":", 1)[0] not in SUPPORTED or (protocol_faults or {}).get(trial["trial_id"]) != recipe:
+                blockers.add("NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED")
         if trial["request_measurement"]["input_tokens"] + trial["output_reserve"] > trial["job_token_reservation"]:
             blockers.add("COMPLETE_SERIALIZED_CASE_EXCEEDS_JOB_ENVELOPE")
     return {
