@@ -127,35 +127,62 @@ def conflict_schema(aliases) -> dict:
     return {"anyOf": branches}
 
 
-def technique_schema(packet, obligations) -> dict:
-    """Question 2 (after an established conflict): one catalogued technique, or NONE with an explanation."""
+def technique_choice_schema(packet) -> dict:
+    """Question 2: one flat enum choice (reason first). No anyOf: a large repair branch inside anyOf was never
+    produced by the local decoder in any batch, even when its own text named the fitting technique."""
+    return {
+        "type": "object",
+        "properties": {
+            "reason": {"type": "string", "minLength": 1, "maxLength": 300},
+            "technique_id": {"enum": [*sorted(packet.get("techniques") or {}), "NONE"]},
+        },
+        "required": ["reason", "technique_id"],
+        "additionalProperties": False,
+    }
+
+
+def repair_schema(obligations) -> dict:
+    """Question 3 (after a catalogued technique was chosen): flat repair fields, bounds inside the contract's."""
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
-    # technique_id comes first in both branches: the choice is an explicit enum value, never implied by whichever
-    # key the decoder emits first (batch 9: answers opened with "explanation", which forced NONE although their
-    # text named repair-implementation as the right technique).
-    repair = {
-        "technique_id": {"enum": sorted(packet.get("techniques") or {}) or ["NONE"]},
-        "strategy": contract["strategy"],
-        "affected_phase": contract["affected_phase"],
-        "owner_phase": contract["owner_phase"],
-        "target_obligations": {**contract["target_obligations"], "items": {"enum": sorted(obligations)}},
-        "artifact_scope": contract["artifact_scope"],
-        "proposed_change": contract["proposed_change"],
-        "material_difference": contract["material_difference"],
-        "validation_expectations": contract["validation_expectations"],
+    text = {"type": "string", "minLength": 1, "maxLength": 300}
+    return {
+        "type": "object",
+        "properties": {
+            "strategy": contract["strategy"],
+            "affected_phase": contract["affected_phase"],
+            "owner_phase": contract["owner_phase"],
+            "target_obligations": {"type": "array", "items": {"enum": sorted(obligations)}, "minItems": 1, "maxItems": 4},
+            "artifact_scope": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 200},
+                               "minItems": 1, "maxItems": 4},
+            "proposed_change": text,
+            "material_difference": text,
+            "validation_expectations": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "test_ref": {"type": "string", "minLength": 2, "maxLength": 120},
+                        "expected_result": {"type": "string", "minLength": 1, "maxLength": 120},
+                    },
+                    "required": ["test_ref", "expected_result"],
+                    "additionalProperties": False,
+                },
+                "minItems": 1,
+                "maxItems": 4,
+            },
+        },
+        "required": [
+            "strategy", "affected_phase", "target_obligations", "artifact_scope", "proposed_change",
+            "material_difference", "validation_expectations",
+        ],
+        "additionalProperties": False,
     }
-    blocked = {"technique_id": {"const": "NONE"}, "explanation": contract["explanation"]}
-    branches = [{"type": "object", "properties": blocked, "required": list(blocked), "additionalProperties": False}]
-    if packet.get("techniques"):
-        required = [k for k in repair if k != "owner_phase"]
-        branches.insert(0, {"type": "object", "properties": repair, "required": required, "additionalProperties": False})
-    return {"anyOf": branches}
 
 
-def assemble(first: dict, second: dict | None) -> dict:
-    """Deterministic semantic proposal from the two answers; the broker still validates it against the contract."""
+def assemble(first: dict, choice: dict | None = None, repair: dict | None = None) -> dict:
+    """Deterministic semantic proposal from the answers; the broker still validates it against the contract."""
     refs = first["evidence_refs"]
     if first["conflict"] == "UNKNOWN":
         return {"decision": "NEEDS_EVIDENCE", "evidence_refs": refs, "missing_evidence": first["missing_evidence"]}
@@ -166,20 +193,20 @@ def assemble(first: dict, second: dict | None) -> dict:
             "blocking_reason": "UNSUPPORTED_HYPOTHESIS",
             "explanation": first["rationale"],
         }
-    if second is None or second.get("technique_id") == "NONE":
+    if choice is None or choice["technique_id"] == "NONE" or repair is None:
         return {
             "decision": "CLOSE_BLOCKED",
             "evidence_refs": refs,
             "blocking_reason": "NO_ALLOWED_MATERIAL_STRATEGY",
-            "explanation": (second or {}).get("explanation") or first["rationale"],
+            "explanation": (choice or {}).get("reason") or first["rationale"],
         }
-    proposal = {
+    return {
         "decision": "PROPOSE_REPAIR",
         "evidence_refs": refs,
         "causal_hypothesis": first["rationale"],
-        **{k: second[k] for k in second if k != "explanation"},
+        "technique_id": choice["technique_id"],
+        **repair,
     }
-    return proposal
 
 
 def signature(proposal: dict) -> str:

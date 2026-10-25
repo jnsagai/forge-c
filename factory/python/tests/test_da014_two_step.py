@@ -37,11 +37,13 @@ def answers(*contents):
     return send, calls
 
 
+CHOICE = {"reason": "The implementation uses the wrong mask; repair it.", "technique_id": "repair-implementation"}
+
+
 def repair(aliases_seen):
     return {
         "proposed_change": "Use UINT32_C(1) as the EN mask in reg_enable.",
         "material_difference": "Sets the required bit 0 instead of bit 1.",
-        "technique_id": "repair-implementation",
         "strategy": "REWORK_LOCAL",
         "affected_phase": "SWE.3",
         "target_obligations": ["USPEC-001"],
@@ -59,12 +61,17 @@ def test_question_schemas_only_offer_this_cases_references_and_catalogue(signed)
     for branch in wire["anyOf"]:
         assert list(branch["properties"])[:3] == ["rationale", "evidence_refs", "conflict"]
         assert set(branch["properties"]["evidence_refs"]["items"]["enum"]) == set(aliases.values())
-    second = S.technique_schema(packet, packet["obligations"])
-    assert all(list(branch["properties"])[0] == "technique_id" for branch in second["anyOf"])
-    assert set(second["anyOf"][0]["properties"]["technique_id"]["enum"]) == set(packet["techniques"])
-    assert S.technique_schema({**packet, "techniques": {}}, packet["obligations"]) == {"anyOf": [second["anyOf"][-1]]}
+    choice = S.technique_choice_schema(packet)
+    # Flat, small questions: no anyOf around the repair fields (never produced by the local decoder).
+    assert "anyOf" not in choice and list(choice["properties"]) == ["reason", "technique_id"]
+    assert choice["properties"]["technique_id"]["enum"] == [*sorted(packet["techniques"]), "NONE"]
+    assert S.technique_choice_schema({**packet, "techniques": {}})["properties"]["technique_id"]["enum"] == ["NONE"]
+    assert "anyOf" not in json.dumps(S.repair_schema(packet["obligations"]))
     with pytest.raises(Refused, match="TWO_STEP_SECOND_QUESTION_REQUIRES_ESTABLISHED_CONFLICT"):
-        request_material(job, step=2, prior={"conflict": "NO"})
+        request_material(job, step=2, prior={"question_1_answer": {"conflict": "NO"}})
+    with pytest.raises(Refused, match="TWO_STEP_REPAIR_REQUIRES_CATALOGUED_TECHNIQUE"):
+        request_material(job, step=3, prior={"question_1_answer": {"conflict": "YES"},
+                                             "question_2_answer": {"technique_id": "NONE"}})
 
 
 def test_established_conflict_and_catalogued_technique_assemble_a_repair(signed):
@@ -73,11 +80,14 @@ def test_established_conflict_and_catalogued_technique_assemble_a_repair(signed)
     finding, artifact = aliases[packet["findings"][0]["ref"]], aliases[packet["artifacts"][-1]["ref"]]
     first = {"rationale": "The contract requires mask 1; reg_enable uses mask 2.", "evidence_refs": [finding, artifact],
              "conflict": "YES"}
-    send, calls = answers(first, repair(aliases))
+    send, calls = answers(first, CHOICE, repair(aliases))
     raw = two_step_answer(p.store, job, send)
     proposal = json.loads(dealias(job, raw))
-    assert [c[:2] for c in calls] == [(0, "diagnosis_conflict"), (1, "diagnosis_technique")]
-    assert json.loads(calls[1][2]["messages"][1]["content"])["question_1_answer"] == first
+    assert [c[:2] for c in calls] == [(0, "diagnosis_conflict"), (1, "diagnosis_technique_choice"), (2, "diagnosis_repair")]
+    third = json.loads(calls[2][2]["messages"][1]["content"])
+    assert third["question_1_answer"] == first and third["question_2_answer"] == CHOICE
+    assert "primary_sources" not in third and calls[1][2]["max_tokens"] == 512 and calls[2][2]["max_tokens"] == 1024
+    assert proposal["technique_id"] == "repair-implementation"
     assert proposal["decision"] == "PROPOSE_REPAIR" and proposal["causal_hypothesis"] == first["rationale"]
     assert AUTHORITY.is_valid(proposal)
     S.check(proposal, P.load(json.loads(p.case.read_text())["packet_ref"]))
@@ -86,21 +96,21 @@ def test_established_conflict_and_catalogued_technique_assemble_a_repair(signed)
 
 
 @pytest.mark.parametrize(
-    "first,second,decision,reason",
+    "first,choice,decision,reason",
     [
         ({"conflict": "UNKNOWN", "missing_evidence": [
             {"obligation_ref": "USPEC-001", "evidence_kind": "AUTHORITATIVE_INPUT", "reason": "contract absent"}]},
          None, "NEEDS_EVIDENCE", None),
         ({"conflict": "NO"}, None, "CLOSE_BLOCKED", "UNSUPPORTED_HYPOTHESIS"),
-        ({"conflict": "YES"}, {"explanation": "No listed technique applies.", "technique_id": "NONE"},
+        ({"conflict": "YES"}, {"reason": "No listed technique applies.", "technique_id": "NONE"},
          "CLOSE_BLOCKED", "NO_ALLOWED_MATERIAL_STRATEGY"),
     ],
 )
-def test_other_answers_assemble_contract_valid_decisions_with_bounded_requests(signed, first, second, decision, reason):
+def test_other_answers_assemble_contract_valid_decisions_with_bounded_requests(signed, first, choice, decision, reason):
     p = signed
     job, packet, aliases = two_step_job(p)
     first = {"rationale": "Stated comparison.", "evidence_refs": [aliases[packet["findings"][0]["ref"]]], **first}
-    send, calls = answers(first, second)
+    send, calls = answers(first, choice)
     proposal = json.loads(dealias(job, two_step_answer(p.store, job, send)))
     assert proposal["decision"] == decision and proposal.get("blocking_reason") == reason
     assert AUTHORITY.is_valid(proposal)
@@ -122,4 +132,4 @@ def test_single_response_jobs_are_unchanged_and_mission_requests_follow_the_sign
     p = signed
     job, _, _ = bind(p, "lost-launch-ack")
     assert not S.two_step(job)
-    assert Q.requests_per_job({"task_class": S.TWO_STEP}) == 2 and Q.requests_per_job({"task_class": "other"}) == 1
+    assert Q.requests_per_job({"task_class": S.TWO_STEP}) == 3 and Q.requests_per_job({"task_class": "other"}) == 1
