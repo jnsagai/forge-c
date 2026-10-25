@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | SSA-STB-001, version 1.0 |
-| Status | **DRAFT — for the owner's review, not reviewed, not approved** |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-25 |
 | Safety scopes | SC-CRC-2026-10-25, SC-SPI-2026-10-25, SC-USART-2026-10-25, SC-GPIO-2026-10-25, SC-TIM-2026-10-25; target ASIL B for each (owner decision OD-2026-10-25-02) |
 | Product | ST STM32CubeN6 v1.4.0 LL code (stm32n6xx-hal-driver v1.4.0, BSD-3-Clause), delivered FROZEN: `stm32n6xx_ll_crc.h` (`0014c-st-cube-crc`), `stm32n6xx_ll_spi.h` (`0011c-st-cube-spi`), `stm32n6xx_ll_usart.h` (`0012c-st-cube-usart`), `stm32n6xx_ll_gpio.h` (`0010c-st-cube-gpio`), `stm32n6xx_ll_tim.h` (`0013c-st-cube-tim`) |
 | Basis | Work order inputs, source requirements hash per scope: CRC `76d9347ef9a5d9e0e2f49a9c6c41f0fa0cbf52e8fe953ab433274f5ee1ba372a`, SPI `0700c04fa15af5fcdd4539d4de951da186d7d2e15f67bfa88819558b5a4949af`, USART `8a172ad502f3d75bcc0fcff7ac25ad586cc9e3bb0fd7f71df0a278cd28cecfc1`, GPIO `068be9376a6832b0da92eadd900f0db0a1ee5796520dcd263c5970c9b68e4d4e`, TIM `771f73af66c754cc43e54a35b761624cd389b640b123b0be233520d40b8f0283` |
@@ -11,9 +11,9 @@
 | Drafted by | Claude Opus 5.5 (Claude Code), 2026-10-25, from the delivered code, RM0486 Rev 4 and the factory records listed in section 12 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> Draft for the owner's review (OD-2026-10-19-11). It counts for a work order only after the owner signs it and its
-> register entries are completed; any later edit, or a change to the work order inputs, un-signs it. It records the
-> reviewer's engineering judgement; it is not a safety approval or a certification.
+> Signed version (owner decision OD-2026-10-25-03). It applies to the benchmark work orders of the five scopes whose
+> inputs match the basis above. Any edit to this file, or a change to the work order inputs, un-signs it until it
+> is re-reviewed. It records the reviewer's engineering judgement; it is not a safety approval or certification.
 
 ## 1. Purpose and scope
 
@@ -205,12 +205,12 @@ Delivered headers (SHA-256 in each work order's `configuration/delivery.json`); 
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-06 | |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "for my decisions I approve all" (2026-10-25), in reply to the request to review SSA-STB-001 and TAA-STB-001 v1.0 (commit badca41) and answer their open questions |
+| Answers to Q-01 to Q-06 | Q-01: ASR-01 to ASR-08 accepted. Q-02: assumptions of use accepted. Q-03: the findings stay open and are listed with the package. Q-04: USART, GPIO and TIM sections signed now, before their first runs complete. Q-05: SSA-FND-04 accepted (the SPI-R2 defects are a host-test artifact, not a code defect). Q-06: one analysis for the five scopes accepted. |
+| Changes made during review | None to the analysis; status, signed-version note and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-25 |
 
 Signing records the reviewer's engineering judgement on this analysis for the stated basis. It is not a safety
 approval of an item, a release decision or a certification.

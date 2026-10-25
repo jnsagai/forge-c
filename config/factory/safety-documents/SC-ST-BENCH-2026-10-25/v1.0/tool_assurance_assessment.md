@@ -3,17 +3,16 @@
 | Field | Value |
 |---|---|
 | Document | TAA-STB-001, version 1.0 |
-| Status | **DRAFT — for the owner's review, not reviewed, not approved** |
+| Status | **Approved with open findings** — signed by Jefferson Nascimento (owner), 2026-10-25 |
 | Safety scopes | SC-CRC-2026-10-25, SC-SPI-2026-10-25, SC-USART-2026-10-25, SC-GPIO-2026-10-25, SC-TIM-2026-10-25; target ASIL B for each (owner decision OD-2026-10-25-02) |
 | Product | ST STM32CubeN6 v1.4.0 LL code delivered FROZEN (feature 015 benchmark): CRC `0014c-st-cube-crc`, SPI1 `0011c-st-cube-spi`, USART1 `0012c-st-cube-usart`, GPIOA `0010c-st-cube-gpio`, TIM2 `0013c-st-cube-tim` |
 | Basis | Work order inputs, source requirements hash per scope: CRC `76d9347ef9a5d9e0e2f49a9c6c41f0fa0cbf52e8fe953ab433274f5ee1ba372a`, SPI `0700c04fa15af5fcdd4539d4de951da186d7d2e15f67bfa88819558b5a4949af`, USART `8a172ad502f3d75bcc0fcff7ac25ad586cc9e3bb0fd7f71df0a278cd28cecfc1`, GPIO `068be9376a6832b0da92eadd900f0db0a1ee5796520dcd263c5970c9b68e4d4e`, TIM `771f73af66c754cc43e54a35b761624cd389b640b123b0be233520d40b8f0283`; toolchain as used by the AFO benchmark runs on factory commits ed40ee4 to 710c56a |
 | Drafted by | Claude Opus 5.5 (Claude Code), 2026-10-25, from the factory records listed in section 8 |
 | Responsible engineer | Jefferson Nascimento (owner) |
 
-> Draft for the owner's review (OD-2026-10-19-11). It counts for a work order only after the owner signs it and its
-> register entries are completed; any later edit, or a change to the work order inputs, un-signs it. It records the
-> reviewer's engineering judgement; it is not a tool qualification, a safety approval or a certification. It builds on
-> the signed RCC assessment TAA-RCC-001 v1.1 (same factory, same tools) and states only what differs or is new.
+> Signed version (owner decision OD-2026-10-25-03). It applies to the benchmark work orders of the five scopes whose
+> inputs match the basis above. Any edit to this file, or a change to the work order inputs, un-signs it until it
+> is re-reviewed. It records the reviewer's engineering judgement; it is not a safety approval or certification.
 
 ## 1. Purpose and scope
 
@@ -133,12 +132,12 @@ WO-AFO-707cd2711fc865be-a1 (CRC), WO-AFO-0756ac55b8ea81e6-a1 (SPI-R2), WO-AFO-ec
 
 | Field | Value |
 |---|---|
-| Reviewed by (name, role) | |
-| Reviewer's statement | |
-| Answers to Q-01 to Q-04 | |
-| Changes made during review | |
-| Decision | ☐ Approved ☐ Approved with open findings (listed in the package limitations) ☐ Rejected |
-| Date | |
+| Reviewed by (name, role) | Jefferson Nascimento, owner and responsible engineer |
+| Reviewer's statement | "for my decisions I approve all" (2026-10-25), in reply to the request to review SSA-STB-001 and TAA-STB-001 v1.0 (commit badca41) and answer their open questions |
+| Answers to Q-01 to Q-04 | Q-01: carrying over TAA-RCC-001 v1.1 for the unchanged tools accepted. Q-02: the proposed TI, TD and TCL accepted. Q-04: TAA-FND-07 to TAA-FND-11 stay open and are listed with the package. Q-03: no measure chosen at signing; it remains open. |
+| Changes made during review | None to the analysis; status, signed-version note and this section completed on signing |
+| Decision | ☐ Approved ☒ Approved with open findings (listed in the package limitations) ☐ Rejected |
+| Date | 2026-10-25 |
 
 Signing records the reviewer's engineering judgement on the confidence in these tools for the stated use cases. It
 is not a tool qualification certificate, a safety approval or a certification.
