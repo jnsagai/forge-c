@@ -65,7 +65,7 @@ def reserve(store, binding, body, *, eff=None):
     cap = caps[0]
     if type(cap) is not int or cap < 1:
         raise Refused("PROVIDER_OUTPUT_CAP_REQUIRED")
-    if product or job.get("durable_protocol"):
+    if product or job.get("durable_protocol") or job.get("durable_native"):
         from ..lrtx.role_capability import admit_job
         from ..llm_gateway import detect_role
 

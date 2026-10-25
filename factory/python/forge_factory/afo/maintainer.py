@@ -231,43 +231,108 @@ def run_tests(case: dict, tests: list[str], timeout: int = 540) -> dict:
 
 # -- submit: broker commit + veto + sealed reproducer (T047) ------------------------------------------------------
 def submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+    """Serialize one submission; recover a lost commit acknowledgement from its frozen tree/parent."""
+    import fcntl
+
+    d = case_dir(case["proposal_id"])
+    with (d / ".submission.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        return _submit(case, summary, reproducer, signature)
+
+
+def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+    from .durable import digest, immutable_bytes, immutable_json, strict_json
+
     src, pid = Path(case["src"]), case["proposal_id"]
     if not (reproducer.startswith(CANDIDATE_TESTS) and reproducer.endswith(".py")):
         raise MaintainerDenied("REPRODUCER_NOT_CANDIDATE_OWNED", reproducer)
     if not re.fullmatch(r"[\w .:,/()'-]{8,160}", signature):
         raise MaintainerDenied("BAD_SYMPTOM_SIGNATURE", signature[:60])
-    _git("add", "-A", cwd=src)
-    if not _git("status", "--porcelain", cwd=src).strip():
-        raise MaintainerDenied("EMPTY_CANDIDATE")
-    _git(*IDENTITY, "commit", "-q", "--no-verify", "-m",
-         f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}", cwd=src)
-    cand = _git("rev-parse", "HEAD", cwd=src).strip()
+    d = case_dir(pid)
+    frozen = d / "case.json"
+    if digest(strict_json(frozen.read_bytes(), 65536)) != digest(case):
+        raise MaintainerDenied("FROZEN_CASE_CHANGED")
+    request = digest({"case_sha256": sha256_file(frozen), "summary": summary,
+                      "reproducer": reproducer, "signature": signature})
+    intent_path = d / "submission-intent.json"
+    if intent_path.exists():
+        intent = strict_json(intent_path.read_bytes(), 65536)
+        if intent["request_sha256"] != request:
+            raise MaintainerDenied("SUBMISSION_REPLAY_CHANGED")
+    else:
+        _git("add", "-A", cwd=src)
+        if not _git("status", "--porcelain", cwd=src).strip():
+            raise MaintainerDenied("EMPTY_CANDIDATE")
+        intent = {"request_sha256": request, "case_sha256": sha256_file(frozen),
+                  "parent": _git("rev-parse", "HEAD", cwd=src).strip(),
+                  "tree": _git("write-tree", cwd=src).strip(), "submitted_utc": utc_now(),
+                  "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}"}
+        immutable_json(intent_path, intent)
+    if (d / "submission-receipt.json").exists():
+        return submission(case, require_receipt=True)[0]
+    head = _git("rev-parse", "HEAD", cwd=src).strip()
+    if head == intent["parent"]:
+        if _git("write-tree", cwd=src).strip() != intent["tree"]:
+            raise MaintainerDenied("SUBMISSION_TREE_CHANGED")
+        _git(*IDENTITY, "commit", "-q", "--no-verify", "-m", intent["message"], cwd=src)
+        head = _git("rev-parse", "HEAD", cwd=src).strip()
+    # A crash after commit but before receipt must adopt precisely that effect, never commit again.
+    actual = _git("show", "-s", "--format=%P%n%T%n%B", head, cwd=src).strip().split("\n", 2)
+    if actual != [intent["parent"], intent["tree"], intent["message"]]:
+        raise MaintainerDenied("SUBMISSION_COMMIT_MISMATCH")
+    cand = head
     issues = veto(case["base"], cand, Path(case["repo"]))
     staged = None
     if not issues:
         text = _git("show", f"{cand}:{reproducer}", cwd=src)  # the committed content, not the live file
-        d = case_dir(pid) / "reproducer"
-        d.mkdir(parents=True, exist_ok=True)
-        script = d / "reproducer.py"
-        if script.exists():
-            script.chmod(0o600)
-        script.write_text(text)
+        repro_dir = case_dir(pid) / "reproducer"
+        repro_dir.mkdir(parents=True, exist_ok=True)
+        script = repro_dir / "reproducer.py"
         # read-only for everyone: the CRE verifier runs it as its sandbox UID (r: 0o400 was "Permission denied" in
         # the M5 drill); integrity is the sha256 in the sealed manifest, and no sandbox UID can write here
-        script.chmod(0o444)
+        immutable_bytes(script, text.encode(), 0o444)
         rid = "AFO-" + pid
         man = {"reproducers": [{"id": rid, "script": script.name, "sha256": sha256_file(script),
                                 "symptom_signature": signature, "observed_in": case["incident"].get("order_id", ""),
                                 "baseline_revision": case["base"], "fix_revision": cand,
                                 "source_path": reproducer}]}
-        import yaml
-
-        (d / "manifest.yaml").write_text(yaml.safe_dump(man, sort_keys=False))
-        staged = {"id": rid, "manifest": str(d / "manifest.yaml"), "sha256": man["reproducers"][0]["sha256"]}
+        # JSON is valid YAML; use immutable publication for the existing CRE manifest reader.
+        immutable_json(repro_dir / "manifest.yaml", man)
+        staged = {"id": rid, "manifest": str(repro_dir / "manifest.yaml"), "sha256": man["reproducers"][0]["sha256"]}
     sub = {"proposal_id": pid, "candidate": cand, "veto": issues, "staged": staged, "summary": summary[:300],
-           "submitted_utc": utc_now()}
-    (case_dir(pid) / "submission.json").write_text(json.dumps(sub, indent=2, sort_keys=True))
+           "submitted_utc": intent["submitted_utc"]}
+    sub_hash = immutable_json(d / "submission.json", sub)
+    receipt = {"schema_version": "1.0", "case_sha256": intent["case_sha256"],
+               "request_sha256": request, "submission_sha256": sub_hash, "candidate": cand,
+               "manifest_sha256": sha256_file(Path(staged["manifest"])) if staged else None,
+               "reproducer_sha256": staged["sha256"] if staged else None}
+    immutable_json(d / "submission-receipt.json", receipt)
     return sub
+
+
+def submission(case: dict, *, require_receipt: bool = False) -> tuple[dict, dict | None]:
+    """Read durable candidate evidence; a receipt proves submission, never product correctness."""
+    from .durable import digest, strict_json
+
+    d = case_dir(case["proposal_id"])
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+    path = d / "submission-receipt.json"
+    if not path.exists() and not require_receipt and not (d / "submission-intent.json").exists():
+        return sub, None  # legacy M5 submissions retain their independent validation path
+    receipt = strict_json(path.read_bytes(), 65536)
+    if (receipt["case_sha256"] != sha256_file(d / "case.json")
+            or digest(strict_json((d / "case.json").read_bytes(), 65536)) != digest(case)
+            or receipt["submission_sha256"] != sha256_file(d / "submission.json")
+            or receipt["candidate"] != sub["candidate"] or sub["proposal_id"] != case["proposal_id"]):
+        raise MaintainerDenied("SUBMISSION_RECEIPT_MISMATCH")
+    if sub["staged"]:
+        manifest = Path(sub["staged"]["manifest"])
+        if (manifest != d / "reproducer/manifest.yaml" or manifest.is_symlink()
+                or receipt["manifest_sha256"] != sha256_file(manifest)
+                or (manifest.parent / "reproducer.py").is_symlink()
+                or receipt["reproducer_sha256"] != sha256_file(manifest.parent / "reproducer.py")):
+            raise MaintainerDenied("SUBMISSION_REPRODUCER_CHANGED")
+    return sub, receipt
 
 
 def changed_paths(base: str, cand: str, repo: Path) -> list[str]:
@@ -346,7 +411,7 @@ def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, f
             tests_ref: str = "NOT_RUN", evaluator=None) -> dict:
     """Submission -> veto -> triage -> CRE evaluation -> append-only record. Never publishes or deploys."""
     case = load_case(pid)
-    sub = json.loads((case_dir(pid) / "submission.json").read_text())
+    sub, _ = submission(case)
     if sub["veto"]:
         rec = record(store, case, sub, "QUARANTINED", "QUARANTINED", tests_ref=tests_ref)
         quarantine(case)
@@ -395,6 +460,9 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
     if not eff.get("maintenance.enable_factory_maintainer"):
         raise MaintainerDenied("MAINTAINER_DISABLED_BY_POLICY")
     case = load_case(pid)
+    sub, _ = submission(case)
+    if sub["candidate"] != cur["record"]["candidate_commit"]:
+        raise MaintainerDenied("PUBLICATION_SUBMISSION_MISMATCH")
     rec, repo = cur["record"], Path(case["repo"])
     again = veto(rec["baseline_commit"], rec["candidate_commit"], repo)
     if again:
@@ -439,7 +507,6 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
             raise MaintainerDenied("PR_FAILED", str(getattr(p, "stderr", ""))[-120:])
         if p is not None:
             pr_url = str(p.stdout).strip().splitlines()[-1]
-    sub = json.loads((case_dir(pid) / "submission.json").read_text())
     return record(store, case, sub, "ELIGIBLE_FOR_OFFLINE_REVIEW", "PUBLISHED", capa_id=rec["capa_id"],
                   promotion_id=rec["cre_promotion_id"], tests_ref=rec["tests_ref"], branch=branch, pr_url=pr_url,
                   evidence=[x for x in rec["evidence_refs"] if x != "none"])

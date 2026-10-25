@@ -77,6 +77,28 @@ def poll(store, order, job, eff, client, launch_fn):
             job["usage_state"] = "UNKNOWN"
             job["usage_error"] = type(exc).__name__
     if rec["resource_lease"] == "RELEASED" and job["state"] in ("RUNNING", "LAUNCHING"):
+        if job.get("durable_native") == "maintenance-1":
+            from . import maintainer
+
+            try:
+                ctx = Context.from_job(store, job["job_id"])
+                case = json.loads(Path(job["case"]).read_text())
+                sub, receipt = maintainer.submission(case, require_receipt=True)
+                receipt_ref = "maintainer-receipt:" + digest(receipt)
+                ex._save_evidence(job["job_id"], "MAINTENANCE_SUBMISSION", {
+                    "job_id": ctx.job_id, "nonce": ctx.launch_nonce,
+                    "case_sha256": job["case_sha256"], "receipt": receipt,
+                })
+                job.update(state="SUCCEEDED", receipt_ref=receipt_ref, completion={
+                    "status": "BLOCKED" if sub["veto"] else "PASS",
+                    "artifacts": [receipt_ref], "next_action": "escalate",
+                })
+                ex.outcome(job["job_id"], "BLOCKED", "CANDIDATE_REQUIRES_INDEPENDENT_REVIEW", receipt_ref)
+            except (OSError, ValueError, KeyError, maintainer.MaintainerDenied) as exc:
+                job.update(state="FAILED", error="NO_VALID_MAINTENANCE_RECEIPT:" + type(exc).__name__)
+                ex.outcome(job["job_id"], "FAILED_PROTOCOL", job["error"])
+            L.save(store, job)
+            return job
         broker = Receipts(store)
         ctx = Context.from_job(store, job["job_id"])
         case = json.loads(Path(job["case"]).read_text())

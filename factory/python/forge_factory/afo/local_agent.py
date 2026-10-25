@@ -117,17 +117,24 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "run_id": None,
     }
     doc = json.loads(case.read_text())
-    if doc.get("packet_ref"):
+    durable_maintenance = role == "afo-factory-maintainer" and os.environ.get("FORGE_DURABLE_AUTONOMY") == "1"
+    if doc.get("packet_ref") or durable_maintenance:
         from .mission_ledger import MissionLedger
 
         job["mission_id"] = MissionLedger(store).for_order(order["order_id"])
-        if job["mission_id"] != doc.get("mission_id"):
+        if doc.get("packet_ref") and job["mission_id"] != doc.get("mission_id"):
             raise QueueError("CASE_MISSION_MISMATCH", order["order_id"])
-        job["durable_protocol"] = "1.0"
-        from .diagnosis_packet import load as load_packet
+        if durable_maintenance:
+            # Keep the existing restricted Maintainer MCP workflow; it is not a semantic planner.
+            if doc.get("incident", {}).get("order_id") != order["order_id"]:
+                raise QueueError("MAINTENANCE_CASE_ORDER_MISMATCH", order["order_id"])
+            job["durable_native"] = "maintenance-1"
+        else:
+            job["durable_protocol"] = "1.0"
+            from .diagnosis_packet import load as load_packet
 
-        packet = load_packet(doc["packet_ref"])
-        job["selected_obligations"] = sorted(packet["obligations"])[:1]
+            packet = load_packet(doc["packet_ref"])
+            job["selected_obligations"] = sorted(packet["obligations"])[:1]
         job["role_capabilities"] = man.get("role_capabilities") or {}
         job["qualified_local_alternatives"] = man.get("qualified_local_alternatives") or []
         job["qualification_manifest_sha256"] = doc.get("qualification_manifest_sha256")
@@ -309,7 +316,7 @@ def _poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) ->
     """All I/O is bounded native control-plane work; model inference runs independently in Fabro."""
     client = client or FabroClient(base_url=job.get("fabro_url"), token=load_token(job.get("fabro_storage")), timeout=5)
     launch_fn = launch_fn or launch
-    if job.get("durable_protocol"):
+    if job.get("durable_protocol") or job.get("durable_native"):
         from .durable_agent import poll as durable_poll
 
         return durable_poll(store, order, job, eff, client, launch_fn)
@@ -423,7 +430,7 @@ def supervise(store, eff) -> list[dict]:
     out = []
     for job in jobs:
         try:
-            if job.get("durable_protocol"):
+            if job.get("durable_protocol") or job.get("durable_native"):
                 from .execution_lifecycle import Executions
 
                 rec = Executions(store).get(job["job_id"])
@@ -574,6 +581,11 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
     ):
         raise RuntimeError("MAINTAINER_REVIEW_NOT_AUTHORIZED_OR_EXPIRED")
     case = json.loads(Path(job["case"]).read_text())
+    if job.get("durable_native"):
+        from .completion_receipt import Context
+
+        Context.from_job(store, job["job_id"])
+        maintainer.submission(case, require_receipt=True)
     signal.signal(signal.SIGALRM, expired)
     signal.alarm(max(1, int(job["deadline_epoch"] - time.time())))
     try:

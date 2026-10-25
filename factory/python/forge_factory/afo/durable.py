@@ -72,7 +72,11 @@ def validate(name: str, value) -> None:
 
 def immutable_json(path: Path, value) -> str:
     """Publish immutable canonical bytes; identical replay is allowed, changed replay is not."""
-    raw = canonical(value)
+    return immutable_bytes(path, canonical(value))
+
+
+def immutable_bytes(path: Path, raw: bytes, mode: int = 0o400) -> str:
+    """Publish a sealed broker artifact with the same crash-safe identity rules as JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
     import tempfile
 
@@ -82,7 +86,7 @@ def immutable_json(path: Path, value) -> str:
             f.write(raw)
             f.flush()
             os.fsync(f.fileno())
-            os.fchmod(f.fileno(), 0o400)
+            os.fchmod(f.fileno(), mode)
         try:
             os.link(temp, path)  # atomic publication, never a partial final artifact
         except FileExistsError:
