@@ -38,6 +38,18 @@ raise a reservation, or call the model. Any new qualification allowance must be
 explicitly finite and authorized before the job's initial reservation. Existing
 mission limits and exhausted history cannot be rebound.
 
+For a distinct owner-approved qualification campaign, the optional
+`--qualification-job-tokens <finite-tokens>` records prospective initial
+reservations. It does not authorize them. Preparation emits `jobs.json` and
+`requested-initial-reservations.json`; pass these to qualification `freeze` with
+`--jobs` and `--job-token-reservations`, together with the exact identity and
+`--input <directory>/inputs.json`. The owner signature must bind the resulting
+manifest hash. Provisioning checks that signature, source/case/mission/model
+identity, per-order policy cap and declared context before the first ledger
+reservation. Rebinding an existing job's reservation remains forbidden. The
+ordinary production path retains the registry allowance. Full campaign readiness
+still requires every other prerequisite below.
+
 `inputs.json` includes prospective fault recipes. They are not executed fault
 evidence. Native boundary injection and the independently measured authorized
 local alternative remain prerequisites; unresolved prerequisites block the full

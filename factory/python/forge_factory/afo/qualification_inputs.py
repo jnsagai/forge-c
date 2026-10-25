@@ -124,12 +124,12 @@ def reference(root: Path, compiler: Path) -> dict:
     return report
 
 
-def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, profile=PROFILE):
+def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, profile=PROFILE, qualification_job_tokens=None):
     """Materialize all 100 exact source cases; administrative admission remains separate."""
+    from ..lrtx.profile import load as load_profile
+    from ..registry.agents import load_agents
     from .durable_agent import request_material
     from .semantic_proposal import signature
-    from ..registry.agents import load_agents
-    from ..lrtx.profile import load as load_profile
 
     root = Path(root).resolve()
     if root.exists():
@@ -146,6 +146,11 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     selected = load_profile(profile)
     if model not in selected["models"]["allowed"]:
         raise Refused("QUALIFICATION_MODEL_NOT_IN_PINNED_PROFILE")
+    configured_context = int(selected["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"])
+    if qualification_job_tokens is not None and (
+        type(qualification_job_tokens) is not int or not 0 < qualification_job_tokens <= configured_context
+    ):
+        raise Refused("QUALIFICATION_INITIAL_RESERVATIONS_INVALID")
     root.mkdir(parents=True, mode=0o700)
     report = reference(root / "reference", Path(compiler))
     revision = {
@@ -154,7 +159,8 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     }
     template_path = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
     catalogue = json.loads(template_path.read_text())["cases"]
-    reserved = next(a.max_stage_tokens for a in load_agents(include_afo=True)[0] if a.id == "afo-recovery-planner")
+    registry_default = next(a.max_stage_tokens for a in load_agents(include_afo=True)[0] if a.id == "afo-recovery-planner")
+    reserved = registry_default if qualification_job_tokens is None else qualification_job_tokens
     mission = "qualification-014-" + campaign_id
     tenant = mission
     jobs, trials = {}, []
@@ -208,7 +214,10 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                 "evidence_refs": ["reference-harness:" + digest(report)],
                 "input_digests": {},
                 "requirements_refs": ["SWR-001", "USPEC-001"],
-                "redacted_summary": "Explicit qualification fixture: compiled seeded implementation fails the frozen REG32 contract; not an historical product incident.",
+                "redacted_summary": (
+                    "Explicit qualification fixture: compiled seeded implementation fails the frozen REG32 contract; "
+                    "not an historical product incident."
+                ),
                 "context_truncated": False,
                 "untrusted_source_refs": [],
             }
@@ -216,7 +225,10 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                 {
                     "id": "counterexample",
                     "obligation_id": "USPEC-001",
-                    "detail": f"For input {counterexample['input']}, compiled reg_enable returned {counterexample['observed']}; SWR-001 requires {counterexample['expected']}.",
+                    "detail": (
+                        f"For input {counterexample['input']}, compiled reg_enable returned {counterexample['observed']}; "
+                        f"SWR-001 requires {counterexample['expected']}."
+                    ),
                 }
             ]
             if name == "late-finding":
@@ -224,7 +236,9 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                     {
                         "id": f"context-{i}",
                         "obligation_id": "USPEC-001",
-                        "detail": "Fixture inventory context; this observation does not resolve the decisive register-effect counterexample.",
+                        "detail": (
+                            "Fixture inventory context; this observation does not resolve the decisive register-effect counterexample."
+                        ),
                     }
                     for i in range(8)
                 ] + findings
@@ -375,10 +389,15 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
         "jobs": jobs,
         "trials": trials,
         "count": len(trials),
+        "requested_initial_reservations": {binding["job_id"]: reserved for binding in jobs.values()},
+        "registry_default_tokens": registry_default,
+        "allowances_authorized": False,
         "runtime_admission_created": False,
         "grants_created": 0,
         "inference_requests": 0,
     }
+    immutable_json(root / "jobs.json", jobs)
+    immutable_json(root / "requested-initial-reservations.json", result["requested_initial_reservations"])
     immutable_json(root / "inputs.json", result)
     return result
 
@@ -431,8 +450,17 @@ def main(argv=None):
     ap.add_argument("--compiler", type=Path, default=shutil.which("clang"))
     ap.add_argument("--campaign-id", required=True)
     ap.add_argument("--authorization-ref", required=True)
+    ap.add_argument(
+        "--qualification-job-tokens", type=int, help="explicit prospective envelope to freeze and sign; grants no allowance"
+    )
     args = ap.parse_args(argv)
-    result = prepare(args.out, compiler=args.compiler, campaign_id=args.campaign_id, authorization_ref=args.authorization_ref)
+    result = prepare(
+        args.out,
+        compiler=args.compiler,
+        campaign_id=args.campaign_id,
+        authorization_ref=args.authorization_ref,
+        qualification_job_tokens=args.qualification_job_tokens,
+    )
     print(
         json.dumps(
             {

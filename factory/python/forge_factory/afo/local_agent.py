@@ -69,7 +69,7 @@ def enabled(role: str, eff) -> bool:
     return role in ROLES and eff.mode in ("PILOT", "ACTIVE") and bool(eff.get(flag))
 
 
-def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff) -> dict:
+def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None) -> dict:
     """Reserve the role call and its worst-case capacity BEFORE dispatch (including crashed launches)."""
     from ..registry.agents import load_agents
     from ..workorder import factory_revision
@@ -117,6 +117,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "run_id": None,
     }
     doc = json.loads(case.read_text())
+    if qualification_manifest is not None and not doc.get("packet_ref"):
+        from .durable import Refused
+
+        raise Refused("QUALIFICATION_COMPLETE_PACKET_REQUIRED")
     durable_maintenance = role == "afo-factory-maintainer" and os.environ.get("FORGE_DURABLE_AUTONOMY") == "1"
     if doc.get("packet_ref") or durable_maintenance:
         from .mission_ledger import MissionLedger
@@ -143,6 +147,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         model_identity = load_profile(profile)["models"]["allowed"][model]
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
+        if qualification_manifest is not None:
+            from .qualification import initial_reservation
+
+            job.update(initial_reservation(qualification_manifest, job, eff))
         MissionLedger(store).execution(
             job["mission_id"],
             job["job_id"],
@@ -151,7 +159,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         )
     elif os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
         raise QueueError("DURABLE_MISSION_AND_PACKET_REQUIRED", order["order_id"])
-    from .operations import configured, Intent
+    from .operations import Intent, configured
 
     if configured():
         intent = Intent().read()
@@ -480,8 +488,8 @@ def make_planner(store, eff):
         return (directory(job["job_id"]) / "reply.json").read_text()
 
     def freeze(bundle, workspace, budget):
-        from .mission_ledger import MissionLedger
         from .durable import Refused
+        from .mission_ledger import MissionLedger
 
         try:
             mission = MissionLedger(store).for_order(bundle["order_id"])

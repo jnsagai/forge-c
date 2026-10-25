@@ -5,7 +5,9 @@ import shutil
 from pathlib import Path
 
 import pytest
-from forge_factory.afo import qualification_inputs as I, diagnosis_packet as P, semantic_proposal as S
+from forge_factory.afo import diagnosis_packet as P
+from forge_factory.afo import qualification_inputs as I
+from forge_factory.afo import semantic_proposal as S
 from forge_factory.afo.durable import Refused
 from forge_factory.common import sha256_file
 
@@ -89,10 +91,10 @@ def test_case_builder_will_not_overwrite_existing_inputs(inputs):
 
 
 def test_native_adapter_measures_effective_reasoning_cap_without_applying_it_twice(inputs):
-    from forge_factory.afo.durable_agent import request_material, request_body
+    from forge_factory.afo.diagnosis_packet import measure_request
+    from forge_factory.afo.durable_agent import request_body, request_material
     from forge_factory.llm_gateway import sanitize_request
     from forge_factory.lrtx.profile import load
-    from forge_factory.afo.diagnosis_packet import measure_request
 
     job = {
         "case": inputs["jobs"]["obligation-counterexample:0"]["case"],
@@ -152,3 +154,24 @@ def test_missing_reference_compiler_refuses_before_creating_inputs(tmp_path):
     with pytest.raises(Refused, match="QUALIFICATION_REFERENCE_COMPILER_UNAVAILABLE"):
         I.prepare(tmp_path / "frozen", compiler=None, campaign_id="unavailable", authorization_ref="AUTH-FIXTURE")
     assert not (tmp_path / "frozen").exists()
+
+
+def test_explicit_qualification_envelopes_are_only_prospective_until_signed(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    compiler = shutil.which("clang")
+    if not compiler:
+        pytest.skip("actual C compiler unavailable")
+    result = I.prepare(
+        tmp_path / "explicit",
+        compiler=compiler,
+        campaign_id="explicit-envelope",
+        authorization_ref="AUTH-NOT-CREATED",
+        qualification_job_tokens=32768,
+    )
+    assert result["registry_default_tokens"] == 16000 and not result["allowances_authorized"]
+    assert set(result["requested_initial_reservations"].values()) == {32768}
+    assert all(t["job_token_reservation"] == 32768 for t in result["trials"])
+    assert json.loads((tmp_path / "explicit/jobs.json").read_text()) == result["jobs"]
+    assert "COMPLETE_SERIALIZED_CASE_EXCEEDS_JOB_ENVELOPE" not in I.readiness(result)["blockers"]
+    assert result["grants_created"] == result["inference_requests"] == 0

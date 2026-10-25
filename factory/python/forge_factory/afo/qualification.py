@@ -7,12 +7,14 @@ Missing authority/inputs produce explicit blockers; dry-run is not qualification
 """
 
 from __future__ import annotations
+
 import argparse
 import json
 import socket
 import statistics
 import subprocess
 from pathlib import Path
+
 from ..common import REPO_ROOT, sha256_file, utc_now
 from .durable import Refused, digest, immutable_json
 
@@ -43,7 +45,7 @@ def revision():
     ).stdout.strip()
 
 
-def freeze(stage, destination, *, identity, inputs=(), jobs=None, baseline=None, model_profile=None):
+def freeze(stage, destination, *, identity, inputs=(), jobs=None, baseline=None, model_profile=None, job_token_reservations=None):
     from ..lrtx.role_capability import key
 
     if stage not in STAGES:
@@ -121,6 +123,9 @@ def freeze(stage, destination, *, identity, inputs=(), jobs=None, baseline=None,
         "authorization_ref": None,
         "model_profile": model_profile,
     }
+    if job_token_reservations is not None:
+        manifest["job_token_reservations"] = job_token_reservations
+    validate(manifest)
     immutable_json(Path(destination), manifest)
     return manifest
 
@@ -132,6 +137,17 @@ def validate(manifest):
 
     if key(manifest["identity"]) != manifest["identity_sha256"]:
         raise Refused("CAMPAIGN_IDENTITY_CHANGED")
+    if "job_token_reservations" in manifest:
+        reservations = manifest["job_token_reservations"]
+        expected = {binding["job_id"] for binding in manifest["jobs"].values()}
+        if (
+            manifest["stage"] != "protocol"
+            or not expected
+            or not isinstance(reservations, dict)
+            or set(reservations) != expected
+            or any(type(v) is not int or not 0 < v <= manifest["identity"]["context_tokens"] for v in reservations.values())
+        ):
+            raise Refused("QUALIFICATION_INITIAL_RESERVATIONS_INVALID")
     if manifest["stage"] == "protocol":
         cases = manifest["cases"]
         if len(cases) != 20 or len({c["case_id"] for c in cases}) != 20 or any(c["repeats"] != 5 for c in cases):
@@ -149,6 +165,54 @@ def validate(manifest):
     if manifest["service_persists_after_campaign"] is not True:
         raise Refused("CAMPAIGN_CANNOT_STOP_FACTORY")
     return digest(manifest)
+
+
+def initial_reservation(manifest, job, eff):
+    """Bind an explicit signed qualification envelope BEFORE its first ledger reservation.
+
+    No runtime can infer this allowance from a model proposal, measured size or
+    expired grant. Existing ledger identities still reject reservation changes.
+    Production calls omit the manifest and retain the role registry allowance.
+    """
+    from . import authz
+
+    sha = validate(manifest)
+    if manifest["stage"] != "protocol" or manifest["source_revision"] != revision():
+        raise Refused("QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH")
+    matches = [b for b in manifest["jobs"].values() if b["job_id"] == job["job_id"]]
+    if len(matches) != 1 or any(matches[0].get(k) != job[k] for k in ("case", "case_sha256", "mission_id")):
+        raise Refused("QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH")
+    identity = manifest["identity"]
+    if (
+        job["model"] != manifest["model_profile"]
+        or job["model_digest"] != identity["model_digest"]
+        or job["precision"] != identity["precision"]
+        or job["role"] != identity["role"]
+        or identity["adapter_revision"] != manifest["source_revision"]
+    ):
+        raise Refused("QUALIFICATION_INITIAL_RESERVATION_IDENTITY_MISMATCH")
+    ref = eff.get("authorization_ref")
+    grant = authz.find(eff.mode, eff.sha256 or "", ref=ref, action="recover_workorder", request={"model": job["model"]})
+    if not grant.allow:
+        raise Refused(grant.code)
+    record = json.loads((authz.AUTH_DIR / f"{ref}.json").read_text())
+    if record.get("signed_runbook_ref") != "qualification-014:" + sha:
+        raise Refused("QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED")
+    tokens = manifest.get("job_token_reservations", {}).get(job["job_id"], job["reserved_tokens"])
+    if tokens > int(eff.get("budgets.max_model_tokens_per_order")) or tokens > identity["context_tokens"]:
+        raise Refused("QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY")
+    return {
+        "reserved_tokens": tokens,
+        "qualification_manifest_sha256": sha,
+        "qualification_identity": identity,
+        "qualification_model_profile": manifest["model_profile"],
+        "qualification_initial_reservation": {
+            "authorization_ref": ref,
+            "manifest_sha256": sha,
+            "registry_default_tokens": job["reserved_tokens"],
+            "authorized_tokens": tokens,
+        },
+    }
 
 
 def preflight(manifest, *, live=False, authorization_ref=None):
@@ -183,6 +247,11 @@ def preflight(manifest, *, live=False, authorization_ref=None):
                 blockers.extend(input_readiness(inputs)["blockers"])
                 if inputs["jobs"] != manifest["jobs"]:
                     blockers.append("FROZEN_PROTOCOL_INPUT_JOB_BINDINGS_CHANGED")
+                if any(
+                    manifest.get("job_token_reservations", {}).get(job_id, inputs["registry_default_tokens"]) != tokens
+                    for job_id, tokens in inputs["requested_initial_reservations"].items()
+                ):
+                    blockers.append("QUALIFICATION_REQUESTED_ENVELOPES_NOT_FROZEN")
                 actual = inputs["model_configuration"]
                 if actual["reasoning_effort"] != manifest["identity"]["reasoning"]:
                     blockers.append("QUALIFICATION_EFFECTIVE_REASONING_IDENTITY_MISMATCH")
@@ -233,10 +302,10 @@ def provision(manifest, authorization_ref, *, store=None, limit=8):
         return readiness
     if manifest["stage"] != "protocol" or not 1 <= limit <= 32:
         raise Refused("PROTOCOL_PROVISIONING_BOUND_REQUIRED")
-    from .queue import Store
-    from .policy import load
-    from .mission_ledger import MissionLedger
     from . import local_agent
+    from .mission_ledger import MissionLedger
+    from .policy import load
+    from .queue import Store
 
     store = store or Store()
     eff = load()
@@ -266,7 +335,14 @@ def provision(manifest, authorization_ref, *, store=None, limit=8):
             if not order or MissionLedger(store).for_order(order["order_id"]) != binding["mission_id"]:
                 raise Refused("CAMPAIGN_MISSION_MUST_ALREADY_BE_AUTHORIZED_AND_REGISTERED", trial)
             job = local_agent.prepare(
-                store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff
+                store,
+                order,
+                doc["bundle"]["attempt_id"],
+                "afo-recovery-planner",
+                case,
+                Path(doc["workspace"]),
+                eff,
+                qualification_manifest=manifest,
             )
             if job["job_id"] != binding["job_id"] or job["case_sha256"] != binding["case_sha256"]:
                 raise Refused("CAMPAIGN_PREDECLARED_JOB_IDENTITY_MISMATCH", trial)
@@ -306,9 +382,9 @@ def step(manifest, authorization_ref, destination, *, store=None):
         return product_step(manifest, destination, store=store)
     if manifest["stage"] != "protocol":
         return {**report, "status": "BLOCKED", "blockers": ["USE_EXISTING_AFO_SOAK_ENTRYPOINT_FOR_OPERATIONAL_STAGE"]}
-    from .queue import Store
-    from .policy import load
     from . import local_agent
+    from .policy import load
+    from .queue import Store
 
     store = store or Store()
     eff = load()
@@ -333,9 +409,7 @@ def step(manifest, authorization_ref, destination, *, store=None):
             job = local_agent.poll(store, store.order(job["order_id"]), job, eff)
             if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
                 return {"status": "IN_PROGRESS", "trial": trial, "job_id": job["job_id"]}
-            from .completion_receipt import Receipts
-
-            from .completion_receipt import Context
+            from .completion_receipt import Context, Receipts
 
             candidates = Receipts(store).for_job(Context.from_job(store, job["job_id"]))
             receipt = (
@@ -387,8 +461,8 @@ def step(manifest, authorization_ref, destination, *, store=None):
 
 def product_step(manifest, destination, *, store=None):
     """Observe the approved queue's work; the existing Conductor owns dispatch and recovery."""
-    from .queue import Store
     from .qualification_capture import product_row
+    from .queue import Store
 
     store = store or Store()
     dest = Path(destination)
@@ -631,6 +705,9 @@ def main(argv=None):
     ap.add_argument("--identity", type=Path)
     ap.add_argument("--input", type=Path, action="append", default=[])
     ap.add_argument("--jobs", type=Path)
+    ap.add_argument(
+        "--job-token-reservations", type=Path, help="explicit per-job initial qualification allowances, frozen before signing"
+    )
     ap.add_argument("--results", type=Path)
     ap.add_argument("--authorization-ref")
     ap.add_argument("--model-profile")
@@ -645,6 +722,7 @@ def main(argv=None):
             inputs=args.input,
             jobs=json.loads(args.jobs.read_text()) if args.jobs else None,
             model_profile=args.model_profile,
+            job_token_reservations=json.loads(args.job_token_reservations.read_text()) if args.job_token_reservations else None,
         )
         out = {"status": "FROZEN_NOT_RUN", "manifest_sha256": digest(manifest)}
     else:
