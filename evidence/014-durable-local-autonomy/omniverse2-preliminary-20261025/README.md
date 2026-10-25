@@ -26,6 +26,7 @@ proposal fields, exposure facts, token/request counts, row hashes; no reasoning,
 | 677d45a | No change; 3/6 rejected for mangled 64-hex references | b759094: short case-local evidence aliases |
 | b759094 | 6/6 admitted, 0 citation errors; still NEEDS_EVIDENCE for evident repairs | dddf00e: stated the contract's decision rule |
 | dddf00e | No change (5/6 NEEDS_EVIDENCE, 1 duplicate-item schema failure) | tuning stopped — measured capability limit |
+| 3de1a44 | Owner-chosen controlled factor: profile `local-rtx-v2-omniverse2-q36-noreason` (gateway reasoning off, otherwise identical, same digest). Same pattern: 6/6 NEEDS_EVIDENCE (missing-primary correct; 4 accepted wrong decision; 1 rejected for citing SWR-001 as an obligation); tokens fell to ~1.3–2.2k per trial from ~3.2–8.9k | reasoning effort is not the cause |
 
 ## Fault controls exercised live
 
@@ -41,5 +42,7 @@ Across 5 positive cases × 4 prompt/interface variants after constrained decodin
 NEEDS_EVIDENCE for evident conformance repairs, while its own text correctly identified the defect (mask
 `UINT32_C(2)` vs required `UINT32_C(1)`). It answered the NEEDS_EVIDENCE case correctly (b759094, dddf00e) and never
 chose CLOSE_BLOCKED for the empty-technique case. Structured validity reached 23/24 answers in the last four batches.
-This is a role-capability failure for this model/configuration, not evidence about other models, product recovery,
+With gateway reasoning off (3de1a44, one changed configuration factor; the source revision also differs only by the
+variant profile file and a `--profile` preparation option) the decisions did not change, so the reasoning effort does
+not explain the over-caution. This is a role-capability failure for this model in both configurations, not evidence about other models, product recovery,
 learning benefit or availability (all NOT_RUN).
