@@ -46,6 +46,7 @@ def repair(aliases_seen):
         "material_difference": "Sets the required bit 0 instead of bit 1.",
         "strategy": "REWORK_LOCAL",
         "affected_phase": "SWE.3",
+        "owner_phase": "SWE.3",
         "target_obligations": ["USPEC-001"],
         "artifact_scope": ["software/hal"],
         "validation_expectations": [{"test_ref": "gate:SWE.3:route=PASS", "expected_result": "PASS"}],
@@ -133,3 +134,20 @@ def test_single_response_jobs_are_unchanged_and_mission_requests_follow_the_sign
     job, _, _ = bind(p, "lost-launch-ack")
     assert not S.two_step(job)
     assert Q.requests_per_job({"task_class": S.TWO_STEP}) == 3 and Q.requests_per_job({"task_class": "other"}) == 1
+
+
+def test_repair_question_offers_declared_tests_and_owner_phase_follows_the_strategy(signed):
+    p = signed
+    job, packet, aliases = two_step_job(p)
+    wire = S.repair_schema(packet["obligations"], packet["tests"])
+    item = wire["properties"]["validation_expectations"]["items"]["properties"]
+    assert item["test_ref"]["enum"] == sorted(packet["tests"]) and "owner_phase" in wire["required"]
+    assert "SWITCH_PREAPPROVED_MODEL_PROFILE" not in wire["properties"]["strategy"]["enum"]
+    first = {"rationale": "SWE.2 specifies mask 2 against SWR-001.", "evidence_refs": [aliases[packet["findings"][0]["ref"]]],
+             "conflict": "YES"}
+    rework = S.assemble(first, CHOICE, repair(aliases))
+    assert "owner_phase" not in rework and AUTHORITY.is_valid(json.loads(dealias(job, json.dumps(rework))))
+    upstream = S.assemble(first, CHOICE, {**repair(aliases), "strategy": "RETURN_TO_OWNING_UPSTREAM_PHASE"})
+    assert upstream["owner_phase"] == "SWE.3" and AUTHORITY.is_valid(json.loads(dealias(job, json.dumps(upstream))))
+    body, _ = request_material(job, step=3, prior={"question_1_answer": first, "question_2_answer": CHOICE})
+    assert json.loads(body["messages"][1]["content"])["tests"] == packet["tests"]

@@ -389,6 +389,7 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
             "findings": view["findings"],
             "obligations": view["obligations"],
             "techniques": view.get("techniques") or {},
+            "tests": view.get("tests") or {},
             "artifacts": [{"ref": a["ref"], "path": a["path"]} for a in view["artifacts"]],
             **answers,
         }
@@ -404,10 +405,10 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
                 "QUESTION 3 OF 3: the conflict is established (question_1_answer) and the technique is chosen "
                 "(question_2_answer). Describe that repair: strategy, affected_phase, target_obligations (keys of "
                 "obligations), artifact_scope (artifact paths to change), proposed_change, material_difference and "
-                "validation_expectations (test_ref and expected_result); owner_phase only with "
-                "RETURN_TO_OWNING_UPSTREAM_PHASE."
+                "validation_expectations (test_ref from tests with its expected_result); owner_phase names the phase "
+                "that owns the defect (used only with RETURN_TO_OWNING_UPSTREAM_PHASE)."
             )
-            schema_name, wire, cap = "diagnosis_repair", repair_schema(packet["obligations"]), 1024
+            schema_name, wire, cap = "diagnosis_repair", repair_schema(packet["obligations"], packet.get("tests")), 1024
     else:
         raise Refused("TWO_STEP_QUESTION_UNKNOWN")
     body = {

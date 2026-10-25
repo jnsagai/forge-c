@@ -141,8 +141,13 @@ def technique_choice_schema(packet) -> dict:
     }
 
 
-def repair_schema(obligations) -> dict:
-    """Question 3 (after a catalogued technique was chosen): flat repair fields, bounds inside the contract's."""
+def repair_schema(obligations, tests=None) -> dict:
+    """Question 3 (after a catalogued technique was chosen): flat repair fields, bounds inside the contract's.
+
+    Test references are enums of the case's declared independent tests. owner_phase is always asked and kept
+    by assembly only with RETURN_TO_OWNING_UPSTREAM_PHASE (the contract forbids it otherwise); a model switch
+    is not offered here because no authorized alternative catalogue is part of this question.
+    """
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
@@ -150,7 +155,7 @@ def repair_schema(obligations) -> dict:
     return {
         "type": "object",
         "properties": {
-            "strategy": contract["strategy"],
+            "strategy": {"enum": [s for s in contract["strategy"]["enum"] if s != "SWITCH_PREAPPROVED_MODEL_PROFILE"]},
             "affected_phase": contract["affected_phase"],
             "owner_phase": contract["owner_phase"],
             "target_obligations": {"type": "array", "items": {"enum": sorted(obligations)}, "minItems": 1, "maxItems": 4},
@@ -163,8 +168,10 @@ def repair_schema(obligations) -> dict:
                 "items": {
                     "type": "object",
                     "properties": {
-                        "test_ref": {"type": "string", "minLength": 2, "maxLength": 120},
-                        "expected_result": {"type": "string", "minLength": 1, "maxLength": 120},
+                        "test_ref": {"enum": sorted(tests)} if tests else {"type": "string", "minLength": 2, "maxLength": 120},
+                        "expected_result": {"enum": sorted({t["expected_result"] for t in tests.values()})}
+                        if tests
+                        else {"type": "string", "minLength": 1, "maxLength": 120},
                     },
                     "required": ["test_ref", "expected_result"],
                     "additionalProperties": False,
@@ -174,7 +181,7 @@ def repair_schema(obligations) -> dict:
             },
         },
         "required": [
-            "strategy", "affected_phase", "target_obligations", "artifact_scope", "proposed_change",
+            "strategy", "affected_phase", "owner_phase", "target_obligations", "artifact_scope", "proposed_change",
             "material_difference", "validation_expectations",
         ],
         "additionalProperties": False,
@@ -200,12 +207,15 @@ def assemble(first: dict, choice: dict | None = None, repair: dict | None = None
             "blocking_reason": "NO_ALLOWED_MATERIAL_STRATEGY",
             "explanation": (choice or {}).get("reason") or first["rationale"],
         }
+    fields = dict(repair)
+    if fields.get("strategy") != "RETURN_TO_OWNING_UPSTREAM_PHASE":
+        fields.pop("owner_phase", None)  # the contract allows owner_phase only with that strategy
     return {
         "decision": "PROPOSE_REPAIR",
         "evidence_refs": refs,
         "causal_hypothesis": first["rationale"],
         "technique_id": choice["technique_id"],
-        **repair,
+        **fields,
     }
 
 
