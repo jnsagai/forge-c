@@ -21,6 +21,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.request
 from pathlib import Path
@@ -76,6 +77,7 @@ def envmap(s: dict) -> dict[str, str]:
         ),
     }
     if os.environ.get("FORGE_OPERATIONS_INTENT"):
+        env["FORGE_LRTX_ROOT"] = str(r)
         # Explicit continuous profile only. No provider credentials or unrelated deployment environment is inherited.
         for name in (
             "FORGE_OPERATIONS_INTENT",
@@ -261,10 +263,13 @@ def _wait(url: str, timeout: float) -> bool:
     return False
 
 
-def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path) -> subprocess.Popen:
+def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, serving=None) -> subprocess.Popen:
+    enter = _nsenter(holder)
+    if serving is not None:
+        enter = ["nsenter", "-t", str(serving["init_pid"]), "-U", "-n", "-m", "-p", "--preserve-credentials"]
     with log.open("ab") as fh:
         return subprocess.Popen(
-            _nsenter(holder) + argv,
+            enter + argv,
             env=env,
             stdout=fh,
             stderr=subprocess.STDOUT,
@@ -303,13 +308,92 @@ def start(s: dict, *, recovery=False) -> dict:
 
     if configured():
         epoch = Intent().read()["epoch"]
-        return fenced_call(epoch, lambda: _start(s, recovery=recovery))
+
+        def effect():
+            if managed_serving():
+                from ..afo.queue import Store
+                from ..afo.durable import Refused
+
+                _managed_scope(s)
+
+                database = s["root"] / "state/conductor/conductor.sqlite3"
+                if not database.exists() and (s["root"] / "run/services.json").exists():
+                    raise Refused("DURABLE_PROFILE_STATE_MISSING")
+                with Store(database).tx() as c:
+                    held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
+                    if held and held[0]:
+                        raise Refused("NATIVE_QUIESCENCE_UNPROVEN")
+                    return _start(s, recovery=recovery)
+            return _start(s, recovery=recovery)
+
+        return fenced_call(epoch, effect)
     if recovery:
         raise ValueError("OPERATIONS_INTENT_REQUIRED")
     return _start(s)
 
 
-def _start(s: dict, *, recovery=False) -> dict:
+def managed_serving() -> bool:
+    return os.environ.get("FORGE_DURABLE_AUTONOMY") == "1" and bool(os.environ.get("FORGE_OPERATIONS_INTENT"))
+
+
+def _managed_scope(s):
+    from ..afo.durable import Refused
+
+    selected = os.environ.get("FORGE_OPERATIONS_PROFILE")
+    if not selected or s["profile"]["id"] != selected or s["root"].resolve() != settings(selected)["root"].resolve():
+        raise Refused("MANAGED_PROFILE_SCOPE_MISMATCH")
+
+
+def _save_services(root: Path, record: dict) -> None:
+    """Crash-safe projection; provider instance evidence is separately immutable."""
+    from ..afo.durable import canonical
+
+    path = root / "run/services.json"
+    fd, temp = tempfile.mkstemp(prefix=".services-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(canonical(record))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp, path)
+        parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        if os.path.exists(temp):
+            os.unlink(temp)
+
+
+def serving_instance(s: dict) -> dict:
+    """Read a hash-bound kernel-captured instance; never upgrade legacy PID records."""
+    from ..afo.durable import Refused, digest, strict_json
+    from . import provider_process as provider
+
+    path = s["root"] / "run/services.json"
+    if path.is_symlink() or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o022:
+        raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+    rec = strict_json(path.read_bytes(), 65536)
+    instance = rec.get("serving_instance")
+    if not isinstance(instance, dict):
+        raise Refused("MANAGED_SERVING_INSTANCE_REQUIRED")
+    provider.validate(instance)
+    evidence = s["root"] / "run/provider-instances" / (digest(instance) + ".json")
+    if (
+        evidence.is_symlink()
+        or evidence.stat().st_uid != os.getuid()
+        or evidence.stat().st_mode & 0o022
+        or strict_json(evidence.read_bytes(), 16384) != instance
+        or instance["root"] != str(s["root"].resolve())
+        or instance["profile"] != s["profile"]["id"]
+        or instance["profile_sha256"] != s["profile"]["_sha256"]
+    ):
+        raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+    return instance
+
+
+def _start(s: dict, *, recovery=False, control_only=False) -> dict:
     r, p, prof = s["root"], s["ports"], s["profile"]
     env = envmap(s)
     if not (r / "venv/bin/python").exists():
@@ -351,6 +435,58 @@ def _start(s: dict, *, recovery=False) -> dict:
             raise RuntimeError("network namespace holder did not start")
     rec = json.loads((r / "run/services.json").read_text()) if (r / "run/services.json").is_file() else {}
     procs = rec.get("processes") or {}
+    serving = rec.get("serving_instance")
+    known_serving = serving is not None
+    if managed_serving() and not control_only:
+        from ..afo.durable import Refused, digest, immutable_json
+        from . import provider_process as provider
+
+        if serving is not None:
+            serving = serving_instance(s)
+            if provider.quiet(serving):
+                serving = None
+                # nsenter waiters can briefly outlive the retired namespace.
+                # They are not a serving instance and cannot be reused.
+                procs = {k: v for k, v in procs.items() if k not in ("ollama", "gateway")}
+        if serving is None:
+            if not known_serving and any(
+                _alive(pr["pid"], "ollama" if name == "ollama" else "forge_factory.llm_gateway")
+                for name, pr in procs.items()
+                if name in ("ollama", "gateway")
+            ):
+                raise Refused("LEGACY_SERVING_LIFETIME_UNPROVEN")
+            pending = rec.get("serving_holder")
+            observed = process_identity(pending["pid"]) if pending else None
+            if (
+                pending
+                and observed
+                and pending.get("identity")
+                and all(observed[k] == pending["identity"][k] for k in ("boot_id", "start_ticks", "uid"))
+            ):
+                parent_pid = pending["pid"]
+            else:
+                proc = _in_ns(
+                    holder,
+                    ["unshare", "--mount", "--pid", "--fork", "--mount-proc", "--kill-child=SIGKILL", "sleep", "infinity"],
+                    env,
+                    r / "logs/provider-holder.log",
+                    r,
+                )
+                parent_pid = proc.pid
+                rec["serving_holder"] = {"pid": proc.pid, "identity": process_identity(proc.pid)}
+                _save_services(r, {**rec, "processes": procs})
+            deadline = time.monotonic() + 3
+            while True:
+                try:
+                    serving = provider.capture(r, profile=prof["id"], profile_sha256=prof["_sha256"], parent_pid=parent_pid)
+                    break
+                except Refused:
+                    if time.monotonic() >= deadline:
+                        raise
+                    time.sleep(0.05)
+            immutable_json(r / "run/provider-instances" / (digest(serving) + ".json"), serving)
+            rec["serving_instance"] = serving
+            _save_services(r, {**rec, "processes": procs})
     ollama_env = {
         **env,
         **prof["runtime"]["ollama"],
@@ -403,10 +539,15 @@ def _start(s: dict, *, recovery=False) -> dict:
         ),
     }
     for name, (argv, penv, health) in specs.items():
+        if control_only and name != "fabro":
+            continue
         old = procs.get(name)
         if old and _alive(old["pid"], argv[1] if name != "ollama" else "ollama"):
             continue
-        proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)
+        if managed_serving() and name in ("ollama", "gateway"):
+            proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r, serving=serving)
+        else:
+            proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)
         procs[name] = {"pid": proc.pid, "argv": argv, "health": health}
         deadline = time.monotonic() + (5 if recovery else 60)
         while time.monotonic() < deadline and not _probe(holder, env, health):
@@ -429,29 +570,81 @@ def _start(s: dict, *, recovery=False) -> dict:
         "processes": procs,
         "health": health,
         "shared_readonly": prof["deployment"]["shared_readonly"],
+        **({"serving_instance": serving} if serving else {}),
+        **({"serving_holder": rec["serving_holder"]} if rec.get("serving_holder") else {}),
     }
-    (r / "run/services.json").write_text(pretty_json(rec))
+    _save_services(r, rec)
     return rec
 
 
 def stop(s: dict) -> dict:
+    if managed_serving():
+        from ..afo import operations
+        from ..afo.queue import Store
+        from ..afo.durable import Refused
+
+        _managed_scope(s)
+        store = Store(s["root"] / "state/conductor/conductor.sqlite3")
+        requested = operations.synchronize(store, "shutdown", str(os.getuid()), "Explicit local stack stop")
+        settlement = operations.settle_shutdown(store, external=True)
+        if not settlement["settled"]:
+            return {"stopped": [], "settlement": settlement}
+        intent = operations.Intent()
+        with intent.lock():
+            current = intent.read()
+            if current["mode"] != "STOPPED" or current["epoch"] != requested["epoch"]:
+                raise Refused("SHUTDOWN_INTENT_SUPERSEDED")
+            return _stop(s, managed=True)
+    return _stop(s)
+
+
+def _stop(s: dict, *, managed=False) -> dict:
     r = s["root"]
     f = r / "run/services.json"
     rec = json.loads(f.read_text()) if f.is_file() else {"processes": {}}
     stopped = []
+
+    def signal_owned(pid, expected, sig):
+        from ..afo.durable import Refused
+
+        observed = process_identity(pid)
+        if observed is None:
+            return
+        if not expected or observed != expected:
+            raise Refused("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
+        try:
+            descriptor = os.pidfd_open(pid)
+        except ProcessLookupError:
+            return
+        try:
+            if process_identity(pid) != expected:
+                raise Refused("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
+            signal.pidfd_send_signal(descriptor, sig)
+        finally:
+            os.close(descriptor)
+
     for name, pr in (rec.get("processes") or {}).items():
         marker = "ollama" if name == "ollama" else pr["argv"][1]
         if _alive(pr["pid"], marker):
-            os.kill(pr["pid"], signal.SIGTERM)
+            if managed:
+                signal_owned(pr["pid"], pr.get("identity"), signal.SIGTERM)
+            else:
+                os.kill(pr["pid"], signal.SIGTERM)
             stopped.append(name)
     for name, pr in (rec.get("api_bridge") or {}).items():
         if isinstance(pr, dict) and _alive(pr["pid"], "socat"):
-            os.kill(pr["pid"], signal.SIGTERM)
+            if managed:
+                signal_owned(pr["pid"], pr.get("identity"), signal.SIGTERM)
+            else:
+                os.kill(pr["pid"], signal.SIGTERM)
             stopped.append(f"api-bridge-{name}")
     rec.pop("api_bridge", None)
     holder = _holder(s)
     if holder is not None:  # `sleep infinity` may inherit an ignored SIGTERM from the launching shell
-        os.kill(holder, signal.SIGKILL)
+        if managed:
+            signal_owned(holder, rec.get("holder_identity"), signal.SIGKILL)
+        else:
+            os.kill(holder, signal.SIGKILL)
         stopped.append("netns-holder")
         # F011-T040 (drill on loop10): a start right after a stop found the killed holder still in /proc and tried to
         # reuse its namespace; wait until it is gone (bounded) and forget it
@@ -463,7 +656,7 @@ def stop(s: dict) -> dict:
     if f.is_file():
         rec["stopped_at"] = utc_now()
         rec["processes"] = {}
-        f.write_text(pretty_json(rec))
+        _save_services(r, rec)
     return {"stopped": stopped}
 
 

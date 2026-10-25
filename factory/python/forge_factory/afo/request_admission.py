@@ -73,6 +73,9 @@ def reserve(store, binding, body, *, eff=None):
         if not role:
             raise Refused("CAPABILITY_LIMIT", "native role identity is unqualified")
         admit_job(job, role, input_tokens=measured["input_tokens"], output_tokens=cap, body=body)
+    from .provider_recovery import current_instance
+
+    provider_instance = current_instance()
     rec = MissionLedger(store).reserve_request(
         ctx.mission_id,
         ctx.job_id,
@@ -81,6 +84,7 @@ def reserve(store, binding, body, *, eff=None):
         input_tokens=measured["input_tokens"],
         output_cap=cap,
         authorize=authorized,
+        provider_instance=provider_instance,
     )
     if rec["replay"]:
         raise Refused("GENERATION_ALREADY_RESERVED_OR_SENT")
@@ -145,6 +149,12 @@ def start(store, rec, body):
 
         if configured() and Intent().read()["mode"] not in ("RUNNING", "PAUSED", "DRAINING"):
             return False
+        from .provider_recovery import current_instance
+
+        instance = current_instance()
+        if instance is not None or rec.get("provider_instance") is not None:
+            if digest(instance) != rec.get("provider_instance_sha256"):
+                return False
         return (
             order is not None
             and order["state"] in ("ADMITTED", "RUNNING", "WAITING_RECOVERY", "WAITING_EXTERNAL_CHANGE")

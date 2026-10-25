@@ -203,19 +203,24 @@ def recover():
     if rec["mode"] == "STOPPED" and ready and not rec.get("effective_stop"):
         from .queue import Store
 
-        return {"action": "STOP_SETTLEMENT", **settle_shutdown(Store())}
+        return {"action": "STOP_SETTLEMENT", **settle_shutdown(Store(), external=True)}
     if rec["mode"] not in ("RUNNING", "PAUSED", "DRAINING") or not ready:
         return {"action": "WAITING", "intent": rec["mode"]}
     return intent.start(rec["epoch"], probe=observed_unit)
 
 
-def recover_profile(store):
-    """Reuse the isolated stack's fixed start recipe; never kill an uncertain native owner."""
+def recover_profile(store, *, external=False):
+    """Restore the existing profile without treating native terminal as provider quiet."""
     profile = os.environ.get("FORGE_OPERATIONS_PROFILE")
     if not configured() or not profile:
         return {"action": "NOT_ENABLED"}
     from .dependency_wait import probe
     from ..lrtx import stack
+
+    # Kernel identities are captured by the external observer. The Conductor
+    # runs inside the profile's user namespace and cannot safely adopt them.
+    if stack.managed_serving() and not external:
+        return {"action": "WAIT_FOR_EXTERNAL_WATCHDOG"}
 
     def restore():
         rec = Intent().read()
@@ -230,9 +235,38 @@ def recover_profile(store):
             # while restoring model-free dependencies so no owner appears mid-start.
             with store.tx() as c:
                 held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
-                if held and held[0]:
+                owner = held[0] if held else None
+                if owner and not stack.managed_serving():
                     return {"ok": False, "code": "NATIVE_QUIESCENCE_UNPROVEN"}
-                restored = stack._start(stack.settings(profile), recovery=True)
+                if not owner:
+                    restored = stack._start(stack.settings(profile), recovery=True)
+            if owner:
+                from .execution_lifecycle import Executions
+                from .mission_ledger import MissionLedger
+                from .provider_recovery import reconcile
+
+                ex = Executions(store)
+                live = ex.get(owner)
+                if not live:
+                    return {"ok": False, "code": "NATIVE_OWNER_IDENTITY_UNPROVEN"}
+                expired = time.time() >= MissionLedger(store).snapshot(live["mission_id"])["limits"]["deadline"]
+                table = "afo_product_jobs" if owner.startswith("afo-product-") else "afo_local_agent_jobs"
+                with store.tx() as c:
+                    job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (owner,)).fetchone()
+                if job:
+                    deadline = json.loads(job[0]).get("deadline_epoch")
+                    expired = expired or (isinstance(deadline, (int, float)) and time.time() >= deadline)
+                terminal = ex._evidence(owner, "NATIVE_TERMINAL")
+                eligible = terminal or expired or live["authorization_state"] != "VALID" or live["task_outcome"] != "ACTIVE"
+                if not eligible:
+                    return {"ok": False, "code": "ACTIVE_PROVIDER_PRESERVED"}
+                instance = stack.serving_instance(stack.settings(profile))
+                proof = reconcile(store, owner, instance, retire=True, fenced_effect=lambda effect: effect())
+                # The retained inference owner blocks new admission. Restoring
+                # Fabro permits native status/cancel reconciliation only; no
+                # replacement gateway or model may start until that completes.
+                restored = stack._start(stack.settings(profile), recovery=True, control_only=True)
+                return {"ok": False, "code": "WAITING_FOR_NATIVE_RECONCILIATION", "provider": proof, "health": restored["health"]}
         return {
             "ok": all(restored["health"].get(k) is True for k in ("fabro", "gateway", "ollama")),
             "health": restored["health"],
@@ -274,12 +308,46 @@ def fenced_call(epoch, effect):
         return effect()
 
 
-def settle_shutdown(store, *, probe=None, stop_runner=None, client=None):
+def settle_shutdown(store, *, probe=None, stop_runner=None, client=None, external=False):
     """Requested stop remains unresolved until every native inference owner is quiescent."""
+    intent = Intent()
+    with intent.lock():
+        rec = intent.read()
+        if rec["mode"] != "STOPPED":
+            raise Refused("SHUTDOWN_INTENT_SUPERSEDED")
+        from ..lrtx import stack
+
+        if stack.managed_serving() and os.environ.get("FORGE_OPERATIONS_PROFILE") and not external:
+            return {"settled": rec.get("effective_stop") is True, "code": "WAIT_FOR_EXTERNAL_WATCHDOG"}
+        return _settle_shutdown_locked(store, intent, rec, probe=probe, stop_runner=stop_runner, client=client)
+
+
+def _settle_shutdown_locked(store, intent, intent_record, *, probe, stop_runner, client):
     from ..fabro.client import FabroClient, load_token
     from .execution_lifecycle import Executions
 
     ex = Executions(store)
+    serving_settled = True
+    serving_result = None
+    from ..lrtx import stack
+
+    if stack.managed_serving() and os.environ.get("FORGE_OPERATIONS_PROFILE"):
+        # STOP is already durable. Serialize exact-instance retirement with
+        # resume/recovery before issuing any signal. Legacy lifetimes remain
+        # unresolved; they cannot be retroactively adopted as managed evidence.
+        try:
+            from ..lrtx import provider_process
+            from .provider_recovery import reconcile
+
+            instance = stack.serving_instance(stack.settings(os.environ["FORGE_OPERATIONS_PROFILE"]))
+            serving_result = provider_process.stop(instance, fenced_effect=lambda effect: effect())
+            serving_settled = bool(serving_result)
+            if serving_settled:
+                for live in ex.pending()[:8]:
+                    reconcile(store, live["job_id"], instance, fenced_effect=lambda effect: effect())
+        except (OSError, ValueError) as exc:
+            serving_settled = False
+            serving_result = {"code": getattr(exc, "code", type(exc).__name__)}
     owned_client = client is None
     client = client or FabroClient(token=load_token(), timeout=3)
     try:
@@ -294,25 +362,23 @@ def settle_shutdown(store, *, probe=None, stop_runner=None, client=None):
             client.close()
     unresolved = [r["job_id"] for r in ex.pending()]
     result = {"settled": False, "unresolved_native_jobs": unresolved}
-    intent = Intent()
-    with intent.lock():
-        rec = intent.read()
-        if rec["mode"] != "STOPPED":
-            raise Refused("SHUTDOWN_INTENT_SUPERSEDED")
-        # A timed-out systemctl start may still be queued. Cancel it with a
-        # serialized stop and observe Job=0 before confirming the operator stop.
-        manager_settled = True
-        if rec.get("pending_start"):
-            run = stop_runner or (lambda args: subprocess.run(args, capture_output=True, text=True, timeout=20))
-            stopped = run(["systemctl", "--user", "stop", UNIT])
-            state = (probe or observed_unit)()
-            manager_settled = (
-                stopped.returncode == 0 and state.get("Job") in ("0", "") and state.get("ActiveState") in ("inactive", "failed")
-            )
-            if manager_settled:
-                rec["pending_start"] = False
-            result["service_manager_settled"] = manager_settled
-        result["settled"] = not unresolved and manager_settled
-        rec.update(effective_stop=result["settled"], stop_settlement=result)
-        intent._write(rec)
+    if serving_result is not None:
+        result["serving_settlement"] = serving_result
+    # A timed-out systemctl start may still be queued. Cancel it with a
+    # serialized stop and observe Job=0 before confirming the operator stop.
+    rec = intent_record
+    manager_settled = True
+    if rec.get("pending_start"):
+        run = stop_runner or (lambda args: subprocess.run(args, capture_output=True, text=True, timeout=20))
+        stopped = run(["systemctl", "--user", "stop", UNIT])
+        state = (probe or observed_unit)()
+        manager_settled = (
+            stopped.returncode == 0 and state.get("Job") in ("0", "") and state.get("ActiveState") in ("inactive", "failed")
+        )
+        if manager_settled:
+            rec["pending_start"] = False
+        result["service_manager_settled"] = manager_settled
+    result["settled"] = not unresolved and manager_settled and serving_settled
+    rec.update(effective_stop=result["settled"], stop_settlement=result)
+    intent._write(rec)
     return result

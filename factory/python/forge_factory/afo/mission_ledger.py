@@ -169,6 +169,7 @@ class MissionLedger:
         output_cap: int,
         authorize,
         now=None,
+        provider_instance=None,
     ) -> dict:
         if any(type(n) is not int or n < 0 for n in (input_tokens, output_cap)):
             raise Refused("REQUEST_LIMIT_INVALID")
@@ -180,6 +181,8 @@ class MissionLedger:
                     raise Refused("REQUEST_ID_REBOUND")
                 # A replay reads the reservation, but is never permission to send the generation again.
                 return {**rec, "replay": True}
+            if c.execute("SELECT 1 FROM afo_execution_evidence WHERE job_id=? AND kind='GENERATION_FENCE'", (job_id,)).fetchone():
+                raise Refused("GENERATION_RETIREMENT_FENCED")
             snap = self._snapshot(c, mission_id)
             if not authorize() or (time.time() if now is None else now) >= snap["limits"]["deadline"]:
                 raise Refused("REQUEST_NOT_AUTHORIZED")
@@ -218,6 +221,11 @@ class MissionLedger:
                 "charge": charge,
                 "state": "RESERVED",
                 "created_at": utc_now(),
+                **(
+                    {"provider_instance": provider_instance, "provider_instance_sha256": digest(provider_instance)}
+                    if provider_instance is not None
+                    else {}
+                ),
             }
             c.execute(
                 "INSERT INTO afo_request_ledger VALUES (?,?,?,?,?)",
@@ -235,6 +243,10 @@ class MissionLedger:
             if not row or row["state"] != "RESERVED":
                 raise Refused("REQUEST_START_FENCED")
             rec = json.loads(row["record"])
+            if c.execute(
+                "SELECT 1 FROM afo_execution_evidence WHERE job_id=? AND kind='GENERATION_FENCE'", (rec["job_id"],)
+            ).fetchone():
+                raise Refused("GENERATION_RETIREMENT_FENCED")
             table = "afo_product_jobs" if rec["job_id"].startswith("afo-product-") else "afo_local_agent_jobs"
             job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (rec["job_id"],)).fetchone()
             order = (

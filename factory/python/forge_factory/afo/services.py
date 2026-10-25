@@ -77,6 +77,8 @@ def render() -> dict[str, str]:
             )
             text = text.replace("Restart=on-failure", "Restart=always")
             text = text.replace("[Service]", "[Service]\nEnvironment=FORGE_OPERATIONS_INTENT=" + intent)
+            if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+                text = text.replace("[Service]", "[Service]\nEnvironment=FORGE_DURABLE_AUTONOMY=1")
             if unit == "forge-conductor.service":
                 text = text.replace(
                     "ExecStartPre=",

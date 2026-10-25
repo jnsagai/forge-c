@@ -14,7 +14,7 @@ from forge_factory.lrtx import provider_process as P
 
 
 @contextmanager
-def provider(tmp_path, name):
+def provider(tmp_path, name, *, network=False):
     root = tmp_path / name
     root.mkdir()
     log = (root / "namespace.log").open("wb")
@@ -23,6 +23,7 @@ def provider(tmp_path, name):
             "unshare",
             "--user",
             "--map-root-user",
+            *(["--net"] if network else []),
             "--mount",
             "--pid",
             "--fork",

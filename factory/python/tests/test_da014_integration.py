@@ -474,12 +474,17 @@ def test_continuous_service_render_uses_actual_local_namespace_and_shared_state(
     monkeypatch.setenv("FORGE_CONDUCTOR_UNIT", "forge-conductor-local-omniverse2.service")
     monkeypatch.setenv("FORGE_CONDUCTOR_FABRO_UNIT", "external-local-profile")
     monkeypatch.setenv("FORGE_LRTX_ROOT", str(tmp_path / "profile"))
+    monkeypatch.setenv("FORGE_DURABLE_AUTONOMY", "1")
     units = services.render()
     conductor = units["forge-conductor-local-omniverse2.service"]
     assert "Restart=always" in conductor and "StartLimitBurst=5" in conductor
     assert "forge_factory.lrtx.stack exec --profile local-rtx-v2-omniverse2" in conductor
     assert str(tmp_path / "profile/state") in conductor and "forge-fabro-cloud.service" not in conductor
     assert "FORGE_CONDUCTOR_UNIT=forge-conductor-local-omniverse2.service" in units["forge-afo-watchdog.service"]
+    assert all(
+        "Environment=FORGE_DURABLE_AUTONOMY=1" in units[u]
+        for u in ("forge-conductor-local-omniverse2.service", "forge-afo-watchdog.service")
+    )
     assert "--max-cycles" not in conductor
     from forge_factory.lrtx import stack
 

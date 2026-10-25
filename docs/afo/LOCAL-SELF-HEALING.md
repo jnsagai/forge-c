@@ -133,6 +133,29 @@ revisions and results.
 
 ## Feature 014 durable operation (2026-10-25)
 
+Managed continuous local profiles place the gateway and Ollama workers together
+in a private PID namespace. Before request admission, the existing stack records
+its namespace-init boot/start/UID/namespace identity in an immutable hash-bound
+artifact; each request carries that exact identity. Legacy requests without this
+binding remain unresolved rather than acquiring invented termination evidence.
+
+When native terminal evidence, an expired job/mission deadline, revoked authority
+or a terminal task makes retirement eligible, the external watchdog uses the
+existing approved `restart_local_stack` recipe and operator-intent lock. A durable
+generation fence precedes an exact pidfd signal. Independently observing the old
+namespace init ended proves its gateway, queued producers and model workers ended.
+Request charges and unknown usage remain; completion receipts remain valid.
+The inference lease still requires authoritative native execution reconciliation.
+While it is held, recovery may restore Fabro alone to obtain status/cancellation;
+it cannot start a replacement gateway/model island. Healthy active work is preserved.
+
+Shutdown settlement uses the same external observer and serializes provider/native
+effects against newer resume intent. The Conductor waits for the durable effective
+stop receipt, while the watchdog checks pending stops even with a healthy heartbeat.
+Managed `stack stop` records authenticated OS-owner stop intent and retains the
+control plane until uncertain native work settles. This is source behavior and
+kernel-fixture evidence, not a deployed or qualified Omniverse2 service topology.
+
 The Feature 013 activation snapshot above is historical. The read-only Feature 014 inventory shows the existing `forge-conductor-local-omniverse2.service` and mission recorder active; the source candidate in PR #42 has not been deployed. Its exact tested revision and separate implementation/model/product/learning/availability results are recorded in `specs/014-durable-local-autonomy/validation.md`.
 
 Use existing AFO authority and a registered durable mission before enabling `FORGE_DURABLE_AUTONOMY=1`. New orders/continuations cannot reset consumed capacity. Unknown native/provider work keeps inference ownership, including after job terminality. Do not use cancel acknowledgements, listing gaps, timeouts or idle GPU as termination proof.
