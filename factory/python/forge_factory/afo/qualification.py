@@ -617,6 +617,11 @@ def protocol_observation(store, manifest, trial, job):
     if job.get("qualification_fault"):
         row["declared_fault"] = job["qualification_fault"]
         row["fault_observation"] = json.loads(injection[0]) if injection else None
+        with store.tx() as c:
+            adoption = c.execute(
+                "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind='NONCE_LIST_ADOPTION'", (job["job_id"],)
+            ).fetchone()
+        row["native_adoption"] = json.loads(adoption[0]) if adoption else None
         if (
             binding_error is None
             and job["qualification_fault"]["recipe"]["boundary"] == "before-evidence-read"

@@ -29,7 +29,15 @@ RESPONSE = {
     "reworded-strategy",
 }
 PRIMARY = {"stale-primary", "symlink-escape"}
-SUPPORTED = RESPONSE | PRIMARY
+DISPATCH = {"revoked-before-dispatch", "expired-mission", "lost-launch-ack", "cancel-ack-still-live"}
+SUPPORTED = RESPONSE | PRIMARY | DISPATCH
+# Native execution state each boundary requires before its intervention may be applied.
+ADMISSION = {
+    "before-native-dispatch": ("RESERVED",),
+    "after-native-acceptance": ("DISPATCH_INTENT_RECORDED",),
+    "during-native-execution": ("NATIVE_ACCEPTED",),
+}
+DISPATCH_SCHEMA = "forge-c/protocol-dispatch-fault-observation/1"
 REJECTION_CODES = {
     "administrative-forgery": "CONTRACT_INVALID",
     "malformed-output": "INVALID_JSON",
@@ -165,7 +173,7 @@ def _context(store, job, eff, boundary):
         or live.get("resource_lease") != "HELD"
         or live.get("task_outcome") != "ACTIVE"
         or live.get("authorization_state") != "VALID"
-        or live.get("admission_state") not in ("DISPATCH_INTENT_RECORDED", "NATIVE_ACCEPTED")
+        or live.get("admission_state") not in ADMISSION.get(boundary, ("DISPATCH_INTENT_RECORDED", "NATIVE_ACCEPTED"))
     ):
         raise Refused("QUALIFICATION_FAULT_EXECUTION_NOT_ACTIVE")
     return ctx, fault, name, current
@@ -325,6 +333,180 @@ def apply_primary(store, job, eff):
     return fact
 
 
+def _evidence(store, job_id, kind):
+    with store.tx() as c:
+        row = c.execute("SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, kind)).fetchone()
+    if not row:
+        return None
+    value = json.loads(row["record"])
+    if digest(value) != row["sha256"]:
+        raise Refused("QUALIFICATION_FAULT_EVIDENCE_CORRUPT")
+    return value
+
+
+def _dispatch_fact(job, ctx, fault, **details):
+    return {
+        "schema": DISPATCH_SCHEMA,
+        "job_id": job["job_id"],
+        "nonce": job["nonce"],
+        "case_sha256": ctx.case_sha256,
+        **fault,
+        **details,
+        "scope": "DECLARED_INTERVENTION_NOT_UNMODIFIED_MODEL_COMPETENCE",
+    }
+
+
+def _replay(job, intent):
+    """A recorded intent was authorized when written; replay only finishes its own effect."""
+    fault = job.get("qualification_fault") or {}
+    if intent["job_id"] != job["job_id"] or intent["nonce"] != job["nonce"] or any(intent.get(k) != v for k, v in fault.items()):
+        raise Refused("QUALIFICATION_FAULT_REPLAY_CHANGED")
+    return intent
+
+
+def apply_dispatch(store, job, eff):
+    """Job-scoped authority or deadline intervention before dispatch intent.
+
+    The common grant and mission stay unchanged, so one negative trial cannot block
+    the matrix. The existing poll then refuses dispatch through its ordinary path.
+    """
+    from .execution_lifecycle import Executions
+
+    fault = job.get("qualification_fault")
+    if not fault or fault["recipe"]["boundary"] != "before-native-dispatch":
+        return None
+    ex = Executions(store)
+    intent = _evidence(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT_INTENT")
+    if intent is None:
+        context = _context(store, job, eff, "before-native-dispatch")
+        if context is None:
+            return None
+        ctx, fault, name, _ = context
+        details = {"lease_epoch": ex.get(job["job_id"])["lease_epoch"]}
+        if name == "revoked-before-dispatch":
+            details["effect"] = "EXECUTION_AUTHORITY_REVOKED"
+        else:
+            # Only this job's view of the mission deadline elapses; the registered mission is not edited.
+            details.update(effect="JOB_SCOPED_MISSION_DEADLINE_ELAPSED", effective_mission_deadline=time.time())
+        intent = _dispatch_fact(job, ctx, fault, **details)
+        _record(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT_INTENT", intent)
+    _replay(job, intent)
+    live = ex.get(job["job_id"])
+    if intent["effect"] == "EXECUTION_AUTHORITY_REVOKED" and live["authorization_state"] == "VALID":
+        ex.revoke(job["job_id"], "REVOKED")
+    _record(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT", intent)
+    return intent
+
+
+def drop_launch_ack(store, job, eff, run_id):
+    """Discard a real native launch receipt; recovery must adopt by the existing nonce listing, once."""
+    context = _context(store, job, eff, "after-native-acceptance")
+    if context is None:
+        return False
+    ctx, fault, _, _ = context
+    fact = _dispatch_fact(
+        job, ctx, fault, effect="LAUNCH_ACK_DROPPED", dropped_ack_sha256=hashlib.sha256(run_id.encode()).hexdigest()
+    )
+    _record(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT", fact)
+    return True
+
+
+def cancel_with_live_request(store, job, eff, client, rec):
+    """Request cancellation only while a real gateway request is SENT; acknowledgment must not release capacity."""
+    from .execution_lifecycle import Executions
+
+    fault = job.get("qualification_fault")
+    if not fault or fault["recipe"]["boundary"] != "during-native-execution":
+        return None
+    if _evidence(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT"):
+        return None
+    ex = Executions(store)
+    intent = _evidence(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT_INTENT")
+    if intent is None:
+        if (
+            rec["identity_state"] != "CONFIRMED"
+            or rec["execution_liveness"] != "LIVE"
+            or rec["task_outcome"] != "ACTIVE"
+            or rec["resource_lease"] != "HELD"
+        ):
+            return None
+        with store.tx() as c:
+            live = sorted(
+                r[0]
+                for r in c.execute("SELECT request_id FROM afo_request_ledger WHERE job_id=? AND state='SENT'", (job["job_id"],))
+            )
+        if not live:
+            return None
+        context = _context(store, job, eff, "during-native-execution")
+        if context is None:
+            return None
+        ctx, fault, _, _ = context
+        intent = _dispatch_fact(
+            job,
+            ctx,
+            fault,
+            effect="CANCEL_REQUESTED_WITH_LIVE_REQUEST",
+            live_request_ids=live,
+            native_run_ids=rec["native_run_ids"],
+        )
+        _record(store, job["job_id"], "PROTOCOL_DISPATCH_FAULT_INTENT", intent)
+        ex.outcome(job["job_id"], "BLOCKED", "QUALIFICATION_CANCEL_REQUESTED_WITH_LIVE_REQUEST")
+    _replay(job, intent)
+    after = ex.reconcile(job["job_id"], client, cancel=True)
+    _record(
+        store,
+        job["job_id"],
+        "PROTOCOL_DISPATCH_FAULT",
+        {
+            **intent,
+            "cancellation_state": after["cancellation_state"],
+            "cancel_acknowledged": after["cancellation_state"] == "ACKNOWLEDGED",
+            "last_cancel_error": after["last_cancel_error"],
+            "resource_lease_after_cancel": after["resource_lease"],
+        },
+    )
+    return after
+
+
+def _dispatch_matches(name, fact, row):
+    execution = row.get("execution") or {}
+    if fact.get("schema") != DISPATCH_SCHEMA:
+        return False
+    if name == "revoked-before-dispatch":
+        return (
+            fact.get("effect") == "EXECUTION_AUTHORITY_REVOKED"
+            and row.get("job_state") == "REVOKED"
+            and execution.get("authorization_state") == "REVOKED"
+            and execution.get("execution_liveness") == "NOT_STARTED"
+            and not execution.get("native_run_ids")
+        )
+    if name == "expired-mission":
+        return (
+            fact.get("effect") == "JOB_SCOPED_MISSION_DEADLINE_ELAPSED"
+            and row.get("job_error") == "MISSION_DEADLINE_EXHAUSTED"
+            and execution.get("authorization_state") == "EXPIRED"
+            and execution.get("execution_liveness") == "NOT_STARTED"
+            and not execution.get("native_run_ids")
+        )
+    if name == "lost-launch-ack":
+        ids = execution.get("native_run_ids") or []
+        adoption = row.get("native_adoption") or {}
+        return (
+            fact.get("effect") == "LAUNCH_ACK_DROPPED"
+            and len(ids) == 1
+            and hashlib.sha256(ids[0].encode()).hexdigest() == fact.get("dropped_ack_sha256")
+            and adoption.get("run_ids") == ids
+            and adoption.get("launch_nonce") == fact.get("nonce")
+        )
+    return (
+        fact.get("effect") == "CANCEL_REQUESTED_WITH_LIVE_REQUEST"
+        and bool(fact.get("live_request_ids"))
+        and fact.get("cancel_acknowledged") is True
+        and fact.get("resource_lease_after_cancel") == "HELD"
+        and execution.get("resource_lease") == "HELD"
+    )
+
+
 def observation_matches(manifest, row):
     """An expected refusal cannot stand in for the declared fault exposure."""
     recipe = manifest.get("protocol_faults", {}).get(row["trial_id"])
@@ -346,6 +528,8 @@ def observation_matches(manifest, row):
     if not common:
         return False
     name = row["trial_id"].rsplit(":", 1)[0]
+    if name in DISPATCH:
+        return _dispatch_matches(name, fact, row)
     if name in REJECTION_CODES and REJECTION_CODES[name] not in (row.get("receipt") or {}).get("reason_codes", []):
         return False
     if name == "empty-output" and row.get("job_error") != "EMPTY_MODEL_OUTPUT":
@@ -378,5 +562,7 @@ def observation_matches(manifest, row):
 
 
 def evidence_kind(job):
-    recipe = (job.get("qualification_fault") or {}).get("recipe") or {}
-    return "PROTOCOL_PRIMARY_FAULT" if recipe.get("boundary") == "before-evidence-read" else "PROTOCOL_RESPONSE_FAULT"
+    boundary = ((job.get("qualification_fault") or {}).get("recipe") or {}).get("boundary")
+    if boundary == "before-evidence-read":
+        return "PROTOCOL_PRIMARY_FAULT"
+    return "PROTOCOL_DISPATCH_FAULT" if boundary in ADMISSION else "PROTOCOL_RESPONSE_FAULT"

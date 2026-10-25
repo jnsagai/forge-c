@@ -20,7 +20,7 @@ from test_afo_m4_recovery import order  # noqa: F401
 from test_da014_qualification_reservations import signed  # noqa: F401
 
 
-def bind(signed, name, *, fixture=True):
+def bind(signed, name, *, fixture=True, dispatch=True):
     p = signed
     trial = name + ":0"
     recipe = F.FAULT_RECIPES[name]
@@ -90,9 +90,10 @@ def bind(signed, name, *, fixture=True):
     job = L.prepare(
         p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff, qualification_manifest=p.manifest
     )
-    ex = Executions(p.store)
-    ex.reserve(job["job_id"], job["mission_id"], job["nonce"])
-    ex.dispatch_intent(job["job_id"])
+    if dispatch:
+        ex = Executions(p.store)
+        ex.reserve(job["job_id"], job["mission_id"], job["nonce"])
+        ex.dispatch_intent(job["job_id"])
     packet = P.load(doc["packet_ref"])
     proposal = dict(
         decision="PROPOSE_REPAIR",
@@ -208,12 +209,16 @@ def test_signed_catalogue_does_not_enable_faults_for_ordinary_product_cases(sign
 
 
 def test_missing_and_unsupported_fault_executors_remain_blocked():
-    with pytest.raises(Refused, match="QUALIFICATION_FAULT_RECIPE_UNSUPPORTED"):
-        F.validate_catalogue(
-            {"cancel-ack-still-live:0": F.FAULT_RECIPES["cancel-ack-still-live"]}, {"cancel-ack-still-live:0": {}}
-        )
+    assert set(F.FAULT_RECIPES) == F.SUPPORTED
+    for trial, recipe in (
+        ("invented-fault:0", F.FAULT_RECIPES["cancel-ack-still-live"]),
+        ("cancel-ack-still-live:0", {**F.FAULT_RECIPES["cancel-ack-still-live"], "boundary": "before-native-dispatch"}),
+    ):
+        with pytest.raises(Refused, match="QUALIFICATION_FAULT_RECIPE_UNSUPPORTED"):
+            F.validate_catalogue({trial: recipe}, {trial: {}})
     raw = '{"visible":"unchanged"}'
     assert F.apply_response(None, {}, raw, None) is raw
+    assert F.apply_dispatch(None, {}, None) is None and F.cancel_with_live_request(None, {}, None, None, {}) is None
 
 
 @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])

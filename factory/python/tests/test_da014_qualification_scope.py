@@ -78,7 +78,8 @@ def test_one_eligible_trial_keeps_full_frozen_matrix_and_does_not_claim_full_gat
     inputs, manifest = campaign
     full = Q.preflight(manifest)
     assert "INDEPENDENTLY_MEASURED_AUTHORIZED_LOCAL_ALTERNATIVE" in full["blockers"]
-    assert "NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED" in full["blockers"]
+    # Every declared intervention now has a signed executor; capability prerequisites still block.
+    assert "NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED" not in full["blockers"]
     before = digest(manifest)
     ready = Q.preflight(manifest, trial_ids=["obligation-counterexample:0"])
     # An uncommitted generator remains an independent blocker in a development
@@ -95,11 +96,16 @@ def test_one_eligible_trial_keeps_full_frozen_matrix_and_does_not_claim_full_gat
 def test_scoped_preparation_retains_its_own_fault_and_capability_prerequisites(campaign):
     _, manifest = campaign
     alternative = Q.preflight(manifest, trial_ids=["qualified-local-alternative:0"])
-    fault = Q.preflight(manifest, trial_ids=["cancel-ack-still-live:0"])
+    # All twelve recipes now have executors, but a trial still needs its own signed recipe.
+    unsigned = copy.deepcopy(manifest)
+    del unsigned["protocol_faults"]["cancel-ack-still-live:0"]
+    fault = Q.preflight(unsigned, trial_ids=["cancel-ack-still-live:0"])
     assert "INDEPENDENTLY_MEASURED_AUTHORIZED_LOCAL_ALTERNATIVE" in alternative["blockers"]
     assert "NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED" not in alternative["blockers"]
     assert "NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED" in fault["blockers"]
     assert "INDEPENDENTLY_MEASURED_AUTHORIZED_LOCAL_ALTERNATIVE" not in fault["blockers"]
+    signed = Q.preflight(manifest, trial_ids=["cancel-ack-still-live:0"])
+    assert "NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED" not in signed["blockers"]
     with pytest.raises(Refused, match="QUALIFICATION_TRIAL_SCOPE_INVALID"):
         Q.preflight(manifest, trial_ids=["invented-favorable-trial:0"])
 

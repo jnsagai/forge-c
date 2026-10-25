@@ -44,14 +44,36 @@ def poll(store, order, job, eff, client, launch_fn):
         # Crash after durable dispatch intent but before the job projection. Adopt, never launch twice.
         job["state"] = "LAUNCHING"
     if job["state"] == "PREPARED" and valid:
+        from .protocol_faults import apply_dispatch
+
+        fault = apply_dispatch(store, job, eff) or {}
+        if ex.get(job["job_id"])["authorization_state"] != "VALID":
+            job["state"] = "REVOKED"
+        else:
+            # A job reserved before its mission deadline never dispatches after it.
+            deadline = MissionLedger(store).snapshot(job["mission_id"])["limits"]["deadline"]
+            if time.time() >= min(deadline, fault.get("effective_mission_deadline", deadline)):
+                job.update(state="FAILED", error="MISSION_DEADLINE_EXHAUSTED")
+                ex.revoke(job["job_id"], "EXPIRED")
+        if job["state"] != "PREPARED":
+            if ex.get(job["job_id"])["task_outcome"] == "ACTIVE":
+                ex.outcome(job["job_id"], "BLOCKED", job.get("error") or job["state"])
+            job["execution"] = ex.reconcile(job["job_id"], client, cancel=True)
+            L.save(store, job)
+            return job
         # Persist the uncertain effect BEFORE contacting native Fabro. Never redispatch this nonce.
         ex.dispatch_intent(job["job_id"])
         job["state"] = "LAUNCHING"
         L.save(store, job)
         try:
             rid = launch_fn(job)
-            ex.adopt(job["job_id"], [rid])
-            job.update(run_id=rid, state="RUNNING")
+            from .protocol_faults import drop_launch_ack
+
+            if drop_launch_ack(store, job, eff, rid):
+                job["error"] = "NATIVE_LAUNCH_UNCERTAIN:QualificationDroppedAcknowledgement"
+            else:
+                ex.adopt(job["job_id"], [rid])
+                job.update(run_id=rid, state="RUNNING")
         except L.LaunchNotStarted as exc:
             if exc.job_id != job["job_id"] or exc.nonce != job["nonce"]:
                 raise Refused("LAUNCH_NOT_STARTED_BINDING_CHANGED") from exc
@@ -64,6 +86,12 @@ def poll(store, order, job, eff, client, launch_fn):
         L.save(store, job)
         return job
     rec = ex.reconcile(job["job_id"], client, cancel=job["state"] in ("FAILED", "UNKNOWN", "TIMED_OUT", "REVOKED"))
+    from .protocol_faults import cancel_with_live_request
+
+    cancelled = cancel_with_live_request(store, job, eff, client, rec)
+    if cancelled is not None:
+        rec = cancelled
+        job.update(state="FAILED", error="QUALIFICATION_CANCEL_REQUESTED_WITH_LIVE_REQUEST")
     job["execution"] = rec
     if len(rec["native_run_ids"]) == 1:
         job["run_id"] = rec["native_run_ids"][0]

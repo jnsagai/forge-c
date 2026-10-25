@@ -205,6 +205,9 @@ class Executions:
                 ]
                 if hits:
                     rec = self.adopt(job_id, hits)
+                    if self._evidence(job_id, "NONCE_LIST_ADOPTION") is None:
+                        adoption = {"job_id": job_id, "launch_nonce": rec["launch_nonce"], "run_ids": hits}
+                        self._save_evidence(job_id, "NONCE_LIST_ADOPTION", adoption)
             except Exception:  # noqa: BLE001, S110 - retained uncertainty, never a relaunch permission
                 pass
         if not rec["native_run_ids"]:
