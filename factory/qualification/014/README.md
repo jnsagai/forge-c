@@ -50,6 +50,22 @@ reservation. Rebinding an existing job's reservation remains forbidden. The
 ordinary production path retains the registry allowance. Full campaign readiness
 still requires every other prerequisite below.
 
+The optional freeze argument `--mission <json-file>` binds an explicit mission
+ID, lineage and finite ledger limits into that same signed manifest. The existing
+ledger validates the limits. The protocol scope permits no product attempts,
+tools or corrections, and cannot exceed its frozen job/request/token work.
+Initial preparation refuses a registered mission whose identity, lineage,
+limits or authorization differs. No mission is created by freeze/provision.
+
+`dry-run`, `provision` and `step` accept repeated `--trial <case-id:repeat>` for
+scoped protocol work. This checks every frozen source-case hash and retains all
+100 expected trials; it evaluates capability/fault prerequisites only for the
+selected trials. A missing alternative therefore still blocks its own case
+without claiming other cases are unavailable. Full reports remain 100-case
+reports; `--trial` cannot shrink their denominator. Scoped completion is labeled
+`TRIAL_SUBSET_COMPLETE`, never whole-campaign qualification. Provisioning waits
+for an order's existing AFO admission before charging its diagnosis job.
+
 Six response interventions are implemented at the native adapter boundary:
 administrative-field forgery, empty content, truncated JSON, an unqualified
 model switch, a genuinely distinct foreign case reference and a reworded tried

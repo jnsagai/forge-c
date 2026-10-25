@@ -13,6 +13,7 @@ import json
 import socket
 import statistics
 import subprocess
+import time
 from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_file, utc_now
@@ -56,6 +57,7 @@ def freeze(
     model_profile=None,
     job_token_reservations=None,
     protocol_faults=None,
+    mission=None,
 ):
     from ..lrtx.role_capability import key
 
@@ -138,6 +140,8 @@ def freeze(
         manifest["job_token_reservations"] = job_token_reservations
     if protocol_faults is not None:
         manifest["protocol_faults"] = protocol_faults
+    if mission is not None:
+        manifest["mission"] = mission
     validate(manifest)
     immutable_json(Path(destination), manifest)
     return manifest
@@ -167,6 +171,27 @@ def validate(manifest):
             or any(type(v) is not int or not 0 < v <= manifest["identity"]["context_tokens"] for v in reservations.values())
         ):
             raise Refused("QUALIFICATION_INITIAL_RESERVATIONS_INVALID")
+    if "mission" in manifest:
+        from .mission_ledger import validate_limits
+
+        mission = manifest["mission"]
+        if not isinstance(mission, dict) or set(mission) != {"mission_id", "lineage", "limits"}:
+            raise Refused("QUALIFICATION_MISSION_INVALID")
+        if any(not isinstance(mission[k], str) or not mission[k] or len(mission[k]) > 256 for k in ("mission_id", "lineage")):
+            raise Refused("QUALIFICATION_MISSION_INVALID")
+        validate_limits(mission["limits"])
+        if (
+            manifest["stage"] != "protocol"
+            or not manifest.get("job_token_reservations")
+            or any(b["mission_id"] != mission["mission_id"] for b in manifest["jobs"].values())
+            or mission["limits"]["max_attempts"] != 0
+            or mission["limits"]["max_jobs"] > len(manifest["jobs"])
+            or mission["limits"]["max_requests"] > len(manifest["jobs"])
+            or mission["limits"]["max_tokens"] > sum(manifest["job_token_reservations"].values())
+            or mission["limits"]["max_tools"] != 0
+            or mission["limits"]["max_corrections"] != 0
+        ):
+            raise Refused("QUALIFICATION_MISSION_EXCEEDS_FROZEN_WORK")
     if manifest["stage"] == "protocol":
         cases = manifest["cases"]
         if len(cases) != 20 or len({c["case_id"] for c in cases}) != 20 or any(c["repeats"] != 5 for c in cases):
@@ -186,7 +211,7 @@ def validate(manifest):
     return digest(manifest)
 
 
-def initial_reservation(manifest, job, eff):
+def initial_reservation(manifest, job, eff, *, store=None):
     """Bind an explicit signed qualification envelope BEFORE its first ledger reservation.
 
     No runtime can infer this allowance from a model proposal, measured size or
@@ -217,6 +242,15 @@ def initial_reservation(manifest, job, eff):
     record = json.loads((authz.AUTH_DIR / f"{ref}.json").read_text())
     if record.get("signed_runbook_ref") != "qualification-014:" + sha:
         raise Refused("QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED")
+    if manifest.get("mission") is not None:
+        from .mission_ledger import MissionLedger
+
+        if store is None:
+            raise Refused("QUALIFICATION_AUTHORITATIVE_MISSION_REQUIRED")
+        actual = MissionLedger(store).snapshot(job["mission_id"])
+        expected = manifest["mission"]
+        if any(actual[k] != expected[k] for k in ("mission_id", "lineage", "limits")) or actual["authorization_ref"] != ref:
+            raise Refused("QUALIFICATION_REGISTERED_MISSION_DIFFERS_FROM_SIGNED_SCOPE")
     tokens = manifest.get("job_token_reservations", {}).get(job["job_id"], job["reserved_tokens"])
     if tokens > int(eff.get("budgets.max_model_tokens_per_order")) or tokens > identity["context_tokens"]:
         raise Refused("QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY")
@@ -237,9 +271,21 @@ def initial_reservation(manifest, job, eff):
     }
 
 
-def preflight(manifest, *, live=False, authorization_ref=None):
+def selected_trials(manifest, trial_ids=None):
+    selected = set(manifest["jobs"]) if trial_ids is None else set(trial_ids)
+    if trial_ids is not None and (not selected or not selected <= set(manifest["jobs"])):
+        raise Refused("QUALIFICATION_TRIAL_SCOPE_INVALID")
+    return selected
+
+
+def preflight(manifest, *, live=False, authorization_ref=None, trial_ids=None):
     sha = validate(manifest)
+    if trial_ids is not None and manifest["stage"] != "protocol":
+        raise Refused("QUALIFICATION_TRIAL_SCOPE_ONLY_FOR_PROTOCOL")
+    selected = selected_trials(manifest, trial_ids)
     blockers = []
+    if manifest.get("mission") and time.time() >= manifest["mission"]["limits"]["deadline"]:
+        blockers.append("QUALIFICATION_MISSION_DEADLINE_EXHAUSTED")
     if not manifest.get("model_profile"):
         blockers.append("EXACT_MODEL_PROFILE_NOT_PROVISIONED")
     if not manifest["inputs"]:
@@ -266,7 +312,13 @@ def preflight(manifest, *, live=False, authorization_ref=None):
             if not isinstance(inputs, dict) or inputs.get("schema") != "forge-c/protocol-inputs-014/1":
                 continue
             try:
-                blockers.extend(input_readiness(inputs, protocol_faults=manifest.get("protocol_faults", {}))["blockers"])
+                blockers.extend(
+                    input_readiness(
+                        inputs,
+                        protocol_faults=manifest.get("protocol_faults", {}),
+                        trial_ids=selected if trial_ids is not None else None,
+                    )["blockers"]
+                )
                 if inputs["jobs"] != manifest["jobs"]:
                     blockers.append("FROZEN_PROTOCOL_INPUT_JOB_BINDINGS_CHANGED")
                 if any(
@@ -286,6 +338,8 @@ def preflight(manifest, *, live=False, authorization_ref=None):
         from .policy import load
 
         eff = load()
+        if authorization_ref != eff.get("authorization_ref"):
+            blockers.append("QUALIFICATION_POLICY_AUTHORIZATION_REF_MISMATCH")
         if socket.gethostname().split(".")[0] not in ("omniverse", "omniverse2"):
             blockers.append("QWEN_MUST_EXECUTE_ON_OMNIVERSE")
         if revision() != manifest["source_revision"]:
@@ -314,12 +368,14 @@ def preflight(manifest, *, live=False, authorization_ref=None):
         "product_success": "NOT_RUN",
         "learning_benefit": "NOT_RUN",
         "operational_availability": "NOT_RUN",
+        "trial_scope": sorted(selected) if trial_ids is not None else None,
+        "campaign_denominator": manifest["expected_trials"],
     }
 
 
-def provision(manifest, authorization_ref, *, store=None, limit=8):
+def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=None):
     """Bind predeclared cases after campaign signing; no grant, mission or allowance is created."""
-    readiness = preflight(manifest, live=True, authorization_ref=authorization_ref)
+    readiness = preflight(manifest, live=True, authorization_ref=authorization_ref, trial_ids=trial_ids)
     if readiness["blockers"]:
         return readiness
     if manifest["stage"] != "protocol" or not 1 <= limit <= 32:
@@ -333,7 +389,10 @@ def provision(manifest, authorization_ref, *, store=None, limit=8):
     eff = load()
     sha = digest(manifest)
     changed = 0
+    waiting = []
     for trial, binding in sorted(manifest["jobs"].items()):
+        if trial not in selected_trials(manifest, trial_ids):
+            continue
         with store.tx() as c:
             old = c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (binding["job_id"],)).fetchone()
         if old:
@@ -356,6 +415,9 @@ def provision(manifest, authorization_ref, *, store=None, limit=8):
             order = store.order(doc["bundle"]["order_id"])
             if not order or MissionLedger(store).for_order(order["order_id"]) != binding["mission_id"]:
                 raise Refused("CAMPAIGN_MISSION_MUST_ALREADY_BE_AUTHORIZED_AND_REGISTERED", trial)
+            if order["state"] not in ("RUNNING", "WAITING_RECOVERY"):
+                waiting.append(trial)
+                continue
             job = local_agent.prepare(
                 store,
                 order,
@@ -392,12 +454,17 @@ def provision(manifest, authorization_ref, *, store=None, limit=8):
         changed += 1
         if changed >= limit:
             return {"status": "PROVISIONING_IN_PROGRESS", "provisioned_this_call": changed, "inference_requests": 0}
-    return {"status": "PROVISIONED_NOT_RUN", "provisioned_this_call": changed, "inference_requests": 0}
+    return {
+        "status": "WAITING_AFO_ADMISSION" if waiting else "PROVISIONED_NOT_RUN",
+        "provisioned_this_call": changed,
+        "waiting_trials": waiting,
+        "inference_requests": 0,
+    }
 
 
-def step(manifest, authorization_ref, destination, *, store=None):
+def step(manifest, authorization_ref, destination, *, store=None, trial_ids=None):
     """One bounded native control-plane step. Repeated calls adopt the same job; campaign end never stops services."""
-    report = preflight(manifest, live=True, authorization_ref=authorization_ref)
+    report = preflight(manifest, live=True, authorization_ref=authorization_ref, trial_ids=trial_ids)
     if report["blockers"]:
         return report
     if manifest["stage"] in ("benchmark", "rcc"):
@@ -415,6 +482,8 @@ def step(manifest, authorization_ref, destination, *, store=None):
     for case in manifest["cases"]:
         for repeat in range(5):
             trial = f"{case['case_id']}:{repeat}"
+            if trial not in selected_trials(manifest, trial_ids):
+                continue
             path = dest / (trial.replace(":", "-") + ".json")
             if path.exists():
                 continue
@@ -492,7 +561,7 @@ def step(manifest, authorization_ref, destination, *, store=None):
             immutable_json(path, row)
             return {"status": "RECORDED", "trial": trial, "row_sha256": sha256_file(path)}
     return {
-        "status": "CAMPAIGN_WINDOW_COMPLETE",
+        "status": "CAMPAIGN_WINDOW_COMPLETE" if trial_ids is None else "TRIAL_SUBSET_COMPLETE",
         "factory_service": "CONTINUES_UNCHANGED",
         "report": protocol_report(manifest, load_rows(dest)),
     }
@@ -747,6 +816,12 @@ def main(argv=None):
     ap.add_argument("--identity", type=Path)
     ap.add_argument("--input", type=Path, action="append", default=[])
     ap.add_argument("--jobs", type=Path)
+    ap.add_argument("--mission", type=Path, help="explicit finite qualification mission and lineage, frozen before signing")
+    ap.add_argument(
+        "--trial",
+        action="append",
+        help="evaluate/provision/step only these frozen protocol trial IDs; report denominator stays 100",
+    )
     ap.add_argument("--protocol-faults", type=Path, help="explicit supported per-trial interventions, frozen before signing")
     ap.add_argument(
         "--job-token-reservations", type=Path, help="explicit per-job initial qualification allowances, frozen before signing"
@@ -755,6 +830,8 @@ def main(argv=None):
     ap.add_argument("--authorization-ref")
     ap.add_argument("--model-profile")
     args = ap.parse_args(argv)
+    if args.trial and args.command in ("freeze", "report"):
+        ap.error("--trial scopes readiness/provisioning/stepping; freeze and report always retain the whole campaign")
     if args.command == "freeze":
         if args.identity is None:
             ap.error("--identity is required for freeze")
@@ -767,18 +844,19 @@ def main(argv=None):
             model_profile=args.model_profile,
             job_token_reservations=json.loads(args.job_token_reservations.read_text()) if args.job_token_reservations else None,
             protocol_faults=json.loads(args.protocol_faults.read_text()) if args.protocol_faults else None,
+            mission=json.loads(args.mission.read_text()) if args.mission else None,
         )
         out = {"status": "FROZEN_NOT_RUN", "manifest_sha256": digest(manifest)}
     else:
         manifest = json.loads(args.manifest.read_text())
         if args.command == "dry-run":
-            out = preflight(manifest)
+            out = preflight(manifest, trial_ids=args.trial)
         elif args.command == "provision":
-            out = provision(manifest, args.authorization_ref)
+            out = provision(manifest, args.authorization_ref, trial_ids=args.trial)
         elif args.command == "step":
             if args.results is None:
                 ap.error("--results required")
-            out = step(manifest, args.authorization_ref, args.results)
+            out = step(manifest, args.authorization_ref, args.results, trial_ids=args.trial)
         else:
             rows = load_rows(args.results) if args.results else []
             if manifest["stage"] == "protocol":

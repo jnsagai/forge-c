@@ -403,7 +403,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     return result
 
 
-def readiness(inputs, *, protocol_faults=None):
+def readiness(inputs, *, protocol_faults=None, trial_ids=None):
     """Report actual input/recipe prerequisites; this never grants native authority."""
     root = Path(inputs["root"]).resolve()
     template = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
@@ -411,6 +411,9 @@ def readiness(inputs, *, protocol_faults=None):
         raise Refused("QUALIFICATION_INPUT_TEMPLATE_CHANGED")
     cases = json.loads(template.read_text())["cases"]
     expected = {f"{case['case_id']}:{i}" for case in cases for i in range(5)}
+    selected = expected if trial_ids is None else set(trial_ids)
+    if not selected or not selected <= expected:
+        raise Refused("QUALIFICATION_TRIAL_SCOPE_INVALID")
     if (
         len(inputs["trials"]) != 100
         or {t["trial_id"] for t in inputs["trials"]} != expected
@@ -432,6 +435,8 @@ def readiness(inputs, *, protocol_faults=None):
         doc = json.loads(path.read_text())
         if doc["qualification_fixture"]["trial_id"] != trial["trial_id"] or doc["mission_id"] != binding["mission_id"]:
             raise Refused("QUALIFICATION_SOURCE_CASE_REBOUND", trial["trial_id"])
+        if trial["trial_id"] not in selected:
+            continue
         blockers.update(doc["qualification_fixture"]["requires"])
         recipe = doc["qualification_fixture"].get("prospective_fault")
         if recipe:
@@ -445,6 +450,7 @@ def readiness(inputs, *, protocol_faults=None):
         "status": "BLOCKED" if blockers else "INPUTS_PREPARED_NOT_NATIVE_QUALIFIED",
         "blockers": sorted(blockers),
         "source_cases": 100,
+        "evaluated_trial_count": len(selected),
         "inference_requests": 0,
     }
 

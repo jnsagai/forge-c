@@ -150,7 +150,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if qualification_manifest is not None:
             from .qualification import initial_reservation
 
-            job.update(initial_reservation(qualification_manifest, job, eff))
+            job.update(initial_reservation(qualification_manifest, job, eff, store=store))
         MissionLedger(store).execution(
             job["mission_id"],
             job["job_id"],

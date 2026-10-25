@@ -14,15 +14,22 @@ from ..common import utc_now
 from .durable import Refused, canonical, digest
 
 
+def validate_limits(limits):
+    """The ledger's finite-envelope validator is shared by campaign preparation."""
+    required = ("max_attempts", "max_jobs", "max_requests", "max_tokens", "max_tools", "max_corrections")
+    if not isinstance(limits, dict) or any(type(limits.get(k)) is not int or limits[k] < 0 for k in required):
+        raise Refused("FINITE_MISSION_LIMITS_REQUIRED")
+    if type(limits.get("deadline")) not in (int, float) or not math.isfinite(limits["deadline"]):
+        raise Refused("FINITE_MISSION_AUTHORITY_REQUIRED")
+
+
 class MissionLedger:
     def __init__(self, store):
         self.store = store
 
     def register(self, mission_id: str, lineage: str, limits: dict, authorization_ref: str, *, authorize) -> dict:
-        required = ("max_attempts", "max_jobs", "max_requests", "max_tokens", "max_tools", "max_corrections")
-        if any(type(limits.get(k)) is not int or limits[k] < 0 for k in required):
-            raise Refused("FINITE_MISSION_LIMITS_REQUIRED")
-        if type(limits.get("deadline")) not in (int, float) or not math.isfinite(limits["deadline"]) or not authorization_ref:
+        validate_limits(limits)
+        if not authorization_ref:
             raise Refused("FINITE_MISSION_AUTHORITY_REQUIRED")
         if not authorize(authorization_ref, limits):
             raise Refused("MISSION_REGISTRATION_NOT_AUTHORIZED")
@@ -232,7 +239,8 @@ class MissionLedger:
                 (request_id, mission_id, job_id, "RESERVED", canonical(rec).decode()),
             )
             c.execute(
-                "INSERT INTO afo_resource_ownership VALUES ('generation',?,1,?) ON CONFLICT(resource) DO UPDATE SET holder=excluded.holder,epoch=epoch+1,record=excluded.record",
+                "INSERT INTO afo_resource_ownership VALUES ('generation',?,1,?) ON CONFLICT(resource) "
+                "DO UPDATE SET holder=excluded.holder,epoch=epoch+1,record=excluded.record",
                 (request_id, canonical({"mission_id": mission_id}).decode()),
             )
             return {**rec, "replay": False}
@@ -248,7 +256,7 @@ class MissionLedger:
             ).fetchone():
                 raise Refused("GENERATION_RETIREMENT_FENCED")
             table = "afo_product_jobs" if rec["job_id"].startswith("afo-product-") else "afo_local_agent_jobs"
-            job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (rec["job_id"],)).fetchone()
+            job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (rec["job_id"],)).fetchone()  # noqa: S608 - two literal table names
             order = (
                 c.execute("SELECT state FROM afo_work_orders WHERE order_id=?", (json.loads(job[0])["order_id"],)).fetchone()
                 if job
@@ -336,7 +344,8 @@ class MissionLedger:
                 raise Refused("EXECUTION_RESERVATION_REQUIRED")
             epoch = old["epoch"] if old and old["holder"] == job_id else (old["epoch"] + 1 if old else 1)
             c.execute(
-                "INSERT INTO afo_resource_ownership VALUES ('inference',?,?,?) ON CONFLICT(resource) DO UPDATE SET holder=excluded.holder,epoch=excluded.epoch,record=excluded.record",
+                "INSERT INTO afo_resource_ownership VALUES ('inference',?,?,?) ON CONFLICT(resource) "
+                "DO UPDATE SET holder=excluded.holder,epoch=excluded.epoch,record=excluded.record",
                 (job_id, epoch, canonical({"mission_id": mission_id, "lease_expiry_releases": False}).decode()),
             )
             return epoch
