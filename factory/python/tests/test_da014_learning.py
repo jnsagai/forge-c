@@ -197,3 +197,23 @@ def test_detached_failed_job_capture_survives_absent_package_and_keeps_unknown(t
     consolidate(lessons)
     metrics = report(lessons)
     assert metrics["unique_experiences"] == 1 and metrics["dispositions"]["DEFERRED_BUDGET"] == 1
+
+
+def test_retraction_between_selection_and_delivery_fences_exposure(memory, tmp_path):
+    c = candidate(memory, tmp_path)
+    rec = memory.validate(memory.propose(c, phase="SWE.3")["lesson_id"])
+    found = memory.find(
+        "register mapping",
+        "job-B",
+        phase="SWE.3",
+        role="swe3-author",
+        target="STM32N6",
+        source_version="v1",
+        tool_versions={"gcc": "14"},
+        record_usage=False,
+    )
+    assert found["lessons"]
+    memory.retract(rec["lesson_id"], "independent adverse case invalidated scope")
+    assert not memory.expose(found["lessons"], "job-B")
+    assert not memory.consumers(rec["lesson_id"])
+    assert experience.report(memory)["exposures"] == 0

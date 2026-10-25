@@ -114,11 +114,17 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
         record = json.loads((authz.AUTH_DIR / f"{eff.get('authorization_ref')}.json").read_text())
         if record.get("signed_runbook_ref") != "qualification-014:" + campaign:
             raise Refused("QUALIFICATION_CAMPAIGN_NOT_AUTHORIZED")
-        return {"qualification_only": True}
-    entry = (job.get("role_capabilities") or {}).get(role)
-    if not entry:
-        raise Refused("CAPABILITY_LIMIT", "role capability has not been independently measured")
+        entry = {"identity": job.get("qualification_identity")}
+        if job.get("model") != job.get("qualification_model_profile"):
+            raise Refused("QUALIFICATION_MODEL_PROFILE_CHANGED")
+    else:
+        entry = (job.get("role_capabilities") or {}).get(role)
+        if not entry:
+            raise Refused("CAPABILITY_LIMIT", "role capability has not been independently measured")
     identity = entry["identity"]
+    if not identity:
+        raise Refused("QUALIFICATION_IDENTITY_NOT_PROVISIONED")
+    key(identity)
     if identity["role"] != role or job.get("model_digest") != identity["model_digest"]:
         raise Refused("ROLE_CAPABILITY_MODEL_OR_ROLE_CHANGED")
     revision = (job.get("factory_revision") or {}).get("commit")
@@ -132,7 +138,11 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
             raise Refused("ROLE_CAPABILITY_REASONING_OR_SCHEMA_CHANGED")
         if any(body.get(k) != v for k, v in identity["sampling"].items()):
             raise Refused("ROLE_CAPABILITY_SAMPLING_CHANGED")
-    rec = require(entry["ref"], identity, semantic_obligations=1 if role == "afo-recovery-planner" else None)
+    rec = (
+        {"qualification_only": True}
+        if campaign
+        else require(entry["ref"], identity, semantic_obligations=1 if role == "afo-recovery-planner" else None)
+    )
     if input_tokens + output_tokens > identity["context_tokens"]:
         raise Refused("CAPABILITY_LIMIT", "complete serialized request exceeds qualified context allowance")
     return rec

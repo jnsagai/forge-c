@@ -96,15 +96,17 @@ def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
             "forge-knowledge",
             input_obj={},
         )
-    from ...knowledge.experience import transfer
-
-    store = LessonStore()
-    for lesson in delivered["lessons"]:
-        transfer(store, lesson["lesson_id"], ctx.run_id, "EXPOSURE")
-        with store._conn() as c:
-            from ...common import utc_now
-
-            c.execute("INSERT INTO lesson_usage VALUES (?,?,?)", (lesson["lesson_id"], ctx.run_id, utc_now()))
+    if not LessonStore().expose(delivered["lessons"], ctx.run_id):
+        return result(
+            ctx,
+            "PASS",
+            "Lessons omitted after concurrent invalidation",
+            [],
+            [],
+            {"data": '{"lessons":[]}'},
+            "forge-knowledge",
+            input_obj={},
+        )
     return response
 
 

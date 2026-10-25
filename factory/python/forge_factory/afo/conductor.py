@@ -164,6 +164,7 @@ class Conductor:
         signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
         n = 0
         ready = False
+        operator_stop = False
         while not self.stop and (self.max_cycles is None or n < self.max_cycles):
             try:
                 if configured() and Intent().read()["mode"] == "STOPPED":
@@ -172,6 +173,7 @@ class Conductor:
 
                     settled = settle_shutdown(Store())
                     if settled["settled"]:
+                        operator_stop = True
                         break
                     write_heartbeat(n, "OPERATOR_STOP_PENDING", True, "native cancellation unresolved")
                     time.sleep(min(self.interval, 15))
@@ -194,7 +196,7 @@ class Conductor:
                     break
                 time.sleep(0.1)
         sd_notify("STOPPING=1")
-        return 0
+        return 77 if operator_stop else 0
 
 
 def heartbeat_age(now: float | None = None) -> float | None:

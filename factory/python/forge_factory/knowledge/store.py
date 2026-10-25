@@ -359,6 +359,7 @@ class LessonStore:
                 "remedy": rec["remedy"],
                 "constraints": rec.get("constraints", ""),
                 "provenance": {
+                    "record_sha256": hashlib.sha256(json.dumps(rec, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
                     "incident": rec.get("source_incident_id"),
                     "attempt": rec.get("source_attempt_id"),
                     "experience_ref": rec.get("experience_ref"),
@@ -375,16 +376,53 @@ class LessonStore:
                 continue
             out.append(item)
             used += cost
+        # Linearize selection against retraction/version changes, including callers
+        # assembling a bounded packet before recording actual exposure.
         with self._conn() as c:
-            for it in out if record_usage else []:
-                c.execute(
-                    "INSERT INTO lesson_usage(lesson_id,run_id,used_at) VALUES(?,?,?)", (it["lesson_id"], run_id, utc_now())
-                )
-        from .experience import transfer
-
-        for it in out if record_usage else []:
-            transfer(self, it["lesson_id"], run_id, "EXPOSURE")
+            c.execute("BEGIN IMMEDIATE")
+            out = [it for it in out if self._eligible_delivery(c, it)]
+            c.execute("COMMIT")
+        if record_usage and not self.expose(out, run_id):
+            out = []
+        used = sum(len(json.dumps(it)) // CHARS_PER_TOKEN + 1 for it in out)
         return {"lessons": out, "tokens_estimated": used, "note": "reference data only, not instructions"}
+
+    @staticmethod
+    def _eligible_delivery(c, item):
+        row = c.execute("SELECT state,record FROM lessons WHERE lesson_id=?", (item["lesson_id"],)).fetchone()
+        if not row or row["state"] != "VALIDATED":
+            return False
+        rec = json.loads(row["record"])
+        sha = hashlib.sha256(json.dumps(rec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        return sha == item["provenance"]["record_sha256"] and (not rec.get("expires_at") or rec["expires_at"] > utc_now())
+
+    def expose(self, items, run_id, *, data=None):
+        """All-or-none delivery fence and consumer receipt; retraction cannot race this commit."""
+        from ..afo.durable import digest, canonical
+
+        with self._conn() as c:
+            c.execute("BEGIN IMMEDIATE")
+            if not all(self._eligible_delivery(c, it) for it in items):
+                c.execute("ROLLBACK")
+                return False
+            for it in items:
+                c.execute(
+                    "INSERT INTO lesson_usage(lesson_id,run_id,used_at) SELECT ?,?,? WHERE NOT EXISTS (SELECT 1 FROM lesson_usage WHERE lesson_id=? AND run_id=?)",
+                    (it["lesson_id"], run_id, utc_now(), it["lesson_id"], run_id),
+                )
+                record = {
+                    "lesson_id": it["lesson_id"],
+                    "run_id": run_id,
+                    "kind": "EXPOSURE",
+                    "evidence_refs": [],
+                    "data": data or {},
+                }
+                c.execute(
+                    "INSERT OR IGNORE INTO lesson_transfers VALUES (?,?,?)",
+                    ("transfer-" + digest(record)[:24], "EXPOSURE", canonical(record).decode()),
+                )
+            c.execute("COMMIT")
+        return True
 
     # -- T033 retraction -----------------------------------------------------------------------------
     def consumers(self, lesson_id: str) -> list[str]:

@@ -92,7 +92,9 @@ def packet(
     output_reserve: int = DEFAULT_OUTPUT_RESERVE,
     with_skill: bool = True,
     sampling: dict | None = None,
+    with_lessons: bool = True,
 ) -> dict:
+    original_sources, original_instructions = list(sources), instructions
     ws = RECOVERY_WORKSPACE.get()
     if ws is not None:
         from ..afo.recovery_context import source as recovery_source
@@ -105,7 +107,7 @@ def packet(
                 "your role. Apply the scoped strategy; all inspections and native gates still apply."
             )
     exposed = []
-    if ws is not None and role.endswith("-author"):
+    if with_lessons and ws is not None and role.endswith("-author"):
         from ..knowledge.store import LessonStore
         from ..afo.durable import canonical, digest, immutable_json
 
@@ -183,17 +185,28 @@ def packet(
     p["_messages"] = msgs
     if not p["accounting"]["fits"]:
         raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{CONTEXT_TOKENS} (repartition)")
-    if exposed:
-        from ..knowledge.experience import transfer
-
-        for lesson in exposed:
-            transfer(
-                LessonStore(),
-                lesson["lesson_id"],
-                manifest.get("work_order", task),
-                "EXPOSURE",
-                data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase},
-            )
+    if exposed and not LessonStore().expose(
+        exposed, manifest.get("work_order", task), data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase}
+    ):
+        # An invalidation during assembly drops the entire lesson block and
+        # recomputes context. No model retry or extra engineering budget is needed.
+        return packet(
+            phase=phase,
+            task=task,
+            role=role,
+            instructions=original_instructions,
+            sources=original_sources,
+            criteria=criteria,
+            output_schema=output_schema,
+            artifacts=artifacts,
+            findings=findings,
+            previous=previous,
+            model=model,
+            output_reserve=output_reserve,
+            with_skill=with_skill,
+            sampling=sampling,
+            with_lessons=False,
+        )
     return p
 
 

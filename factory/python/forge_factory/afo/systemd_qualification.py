@@ -106,6 +106,35 @@ def run(out):
                 "observations": obs,
             }
         )
+        intentional = start(
+            "intentional-exit",
+            ["/usr/bin/python3", "-c", "raise SystemExit(77)"],
+            ["RestartPreventExitStatus=77", "StartLimitIntervalSec=5", "StartLimitBurst=2"],
+        )
+        exited, obs = wait_for(intentional, lambda s: s.get("ActiveState") == "failed", 3)
+        time.sleep(0.3)
+        final = show(intentional)
+        rows.append(
+            {
+                "case": "operator-exit-77-prevents-restart-always",
+                "pass": exited and final.get("NRestarts") == "0",
+                "observations": obs,
+                "state": final,
+            }
+        )
+        blocked = start(
+            "boot-condition",
+            ["/usr/bin/sleep", "60"],
+            ["ExecCondition=/usr/bin/false", "StartLimitIntervalSec=5", "StartLimitBurst=2"],
+        )
+        inactive, obs = wait_for(blocked, lambda s: s.get("ActiveState") == "inactive", 3)
+        rows.append(
+            {
+                "case": "stopped-boot-condition-does-not-enter-restart-loop",
+                "pass": inactive and show(blocked).get("NRestarts") == "0",
+                "observations": obs,
+            }
+        )
         call(["systemctl", "--user", "stop", crash], check=True)
         time.sleep(0.5)
         stopped = show(crash)

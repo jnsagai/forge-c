@@ -80,10 +80,13 @@ def render() -> dict[str, str]:
             if unit == "forge-conductor.service":
                 text = text.replace(
                     "ExecStartPre=",
-                    "ExecStartPre=" + vals["@VENV@"] + "/bin/python -m forge_factory.afo.operations boot-check\nExecStartPre=",
+                    "ExecCondition=" + vals["@VENV@"] + "/bin/python -m forge_factory.afo.operations boot-check\nExecStartPre=",
                     1,
                 )
-                text = text.replace("UMask=0077", "UMask=0077\nCPUWeight=1000\nIOWeight=1000\nMemoryLow=256M\nTasksMax=128")
+                text = text.replace(
+                    "UMask=0077",
+                    "UMask=0077\nRestartPreventExitStatus=77\nCPUWeight=1000\nIOWeight=1000\nMemoryLow=256M\nTasksMax=128",
+                )
             selected = os.environ.get("FORGE_OPERATIONS_PROFILE")
             if selected:
                 from ..lrtx.profile import load

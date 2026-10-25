@@ -634,3 +634,40 @@ def test_pending_outbox_cannot_rebind_to_newer_operator_resume_epoch(protocol, t
     outcomes = dispatch_pending(p.store, lambda *args: launched.append(args))
     assert not launched and any(r.get("action") == "item_blocked" for r in outcomes)
     assert any(c["command_id"] == cmd["command_id"] for c in p.store.commands("QUARANTINED"))
+
+
+def test_campaign_metadata_provisioning_has_no_case_hash_cycle_or_inference(protocol, monkeypatch):
+    from forge_factory.afo import qualification as Q, policy
+
+    p = protocol
+    revision = "1" * 40
+    from test_da014_qualification import identity
+
+    ident = identity()
+    job = {
+        **p.job,
+        "state": "PREPARED",
+        "factory_revision": {"commit": revision},
+        "model": "qwen-fixture",
+        "model_digest": ident["model_digest"],
+        "precision": ident["precision"],
+    }
+    L.save(p.store, job)
+    manifest = {
+        "identity": ident,
+        "model_profile": "qwen-fixture",
+        "stage": "protocol",
+        "source_revision": revision,
+        "jobs": {"fixture:0": {"job_id": job["job_id"], "case_sha256": job["case_sha256"], "mission_id": job["mission_id"]}},
+    }
+    monkeypatch.setattr(Q, "preflight", lambda *a, **kw: {"blockers": []})
+    monkeypatch.setattr(policy, "load", lambda: p.eff)
+    before = p.ledger.snapshot("mission-test")
+    result = Q.provision(manifest, "AUTH-fixture", store=p.store)
+    assert result["status"] == "PROVISIONED_NOT_RUN" and result["inference_requests"] == 0
+    assert Q.provision(manifest, "AUTH-fixture", store=p.store)["provisioned_this_call"] == 0
+    assert p.ledger.snapshot("mission-test") == before
+    with p.store.tx() as c:
+        saved = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (job["job_id"],)).fetchone()[0])
+    assert saved["case_sha256"] == job["case_sha256"]
+    assert saved["qualification_manifest_sha256"] == Q.digest(manifest)

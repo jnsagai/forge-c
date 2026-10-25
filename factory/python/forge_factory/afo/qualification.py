@@ -160,6 +160,10 @@ def preflight(manifest, *, live=False, authorization_ref=None):
         blockers.append("FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED")
     if manifest["stage"] == "protocol" and len(manifest["jobs"]) != 100:
         blockers.append("APPROVED_100_JOB_BINDINGS_NOT_PROVISIONED")
+    elif manifest["stage"] == "protocol":
+        expected = {f"{case['case_id']}:{repeat}" for case in manifest["cases"] for repeat in range(5)}
+        if set(manifest["jobs"]) != expected or len({b["job_id"] for b in manifest["jobs"].values()}) != 100:
+            blockers.append("PROTOCOL_JOB_IDENTITIES_MUST_BE_UNIQUE_AND_MATCH_FROZEN_TRIALS")
     if (manifest["stage"] in ("benchmark", "rcc") or manifest["stage"].startswith("operation-")) and not manifest["jobs"]:
         blockers.append("APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED")
     if live:
@@ -196,6 +200,77 @@ def preflight(manifest, *, live=False, authorization_ref=None):
         "learning_benefit": "NOT_RUN",
         "operational_availability": "NOT_RUN",
     }
+
+
+def provision(manifest, authorization_ref, *, store=None, limit=8):
+    """Bind predeclared cases after campaign signing; no grant, mission or allowance is created."""
+    readiness = preflight(manifest, live=True, authorization_ref=authorization_ref)
+    if readiness["blockers"]:
+        return readiness
+    if manifest["stage"] != "protocol" or not 1 <= limit <= 32:
+        raise Refused("PROTOCOL_PROVISIONING_BOUND_REQUIRED")
+    from .queue import Store
+    from .policy import load
+    from .mission_ledger import MissionLedger
+    from . import local_agent
+
+    store = store or Store()
+    eff = load()
+    sha = digest(manifest)
+    changed = 0
+    for trial, binding in sorted(manifest["jobs"].items()):
+        with store.tx() as c:
+            old = c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (binding["job_id"],)).fetchone()
+        if old:
+            job = json.loads(old[0])
+            if (
+                job["case_sha256"] != binding["case_sha256"]
+                or job.get("mission_id") != binding["mission_id"]
+                or job.get("qualification_manifest_sha256") not in (None, sha)
+            ):
+                raise Refused("CAMPAIGN_JOB_REBOUND", trial)
+            if sha256_file(Path(job["case"])) != binding["case_sha256"]:
+                raise Refused("CAMPAIGN_FROZEN_CASE_CHANGED", trial)
+            if job.get("qualification_manifest_sha256") == sha:
+                continue
+        else:
+            case = Path(binding["case"])
+            if case.is_symlink() or sha256_file(case) != binding["case_sha256"]:
+                raise Refused("CAMPAIGN_FROZEN_CASE_CHANGED", trial)
+            doc = json.loads(case.read_text())
+            order = store.order(doc["bundle"]["order_id"])
+            if not order or MissionLedger(store).for_order(order["order_id"]) != binding["mission_id"]:
+                raise Refused("CAMPAIGN_MISSION_MUST_ALREADY_BE_AUTHORIZED_AND_REGISTERED", trial)
+            job = local_agent.prepare(
+                store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff
+            )
+            if job["job_id"] != binding["job_id"] or job["case_sha256"] != binding["case_sha256"]:
+                raise Refused("CAMPAIGN_PREDECLARED_JOB_IDENTITY_MISMATCH", trial)
+        if job["state"] != "PREPARED" or (job.get("factory_revision") or {}).get("commit") != manifest["source_revision"]:
+            raise Refused("CAMPAIGN_PROVISIONING_REQUIRES_UNDISPATCHED_EXACT_REVISION", trial)
+        identity = manifest["identity"]
+        if (
+            job.get("model") != manifest["model_profile"]
+            or job.get("model_digest") != identity["model_digest"]
+            or job.get("precision") != identity["precision"]
+            or job["role"] != identity["role"]
+        ):
+            raise Refused("CAMPAIGN_JOB_CONFIGURATION_CHANGED", trial)
+        # The case and its hash stay frozen. Campaign binding is deterministic
+        # administrative metadata, so signing does not require a hash cycle.
+        with store.tx() as c:
+            row = c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (job["job_id"],)).fetchone()
+            current = json.loads(row[0])
+            if current["state"] != "PREPARED" or current.get("qualification_manifest_sha256") not in (None, sha):
+                raise Refused("CAMPAIGN_PROVISIONING_FENCED", trial)
+            current["qualification_manifest_sha256"] = sha
+            current["qualification_identity"] = identity
+            current["qualification_model_profile"] = manifest["model_profile"]
+            c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(current), job["job_id"]))
+        changed += 1
+        if changed >= limit:
+            return {"status": "PROVISIONING_IN_PROGRESS", "provisioned_this_call": changed, "inference_requests": 0}
+    return {"status": "PROVISIONED_NOT_RUN", "provisioned_this_call": changed, "inference_requests": 0}
 
 
 def step(manifest, authorization_ref, destination, *, store=None):
@@ -526,7 +601,7 @@ def gpio_admission(prerequisites):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("command", choices=["freeze", "dry-run", "step", "report"])
+    ap.add_argument("command", choices=["freeze", "dry-run", "provision", "step", "report"])
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--stage", choices=STAGES, default="protocol")
     ap.add_argument("--identity", type=Path)
@@ -552,6 +627,8 @@ def main(argv=None):
         manifest = json.loads(args.manifest.read_text())
         if args.command == "dry-run":
             out = preflight(manifest)
+        elif args.command == "provision":
+            out = provision(manifest, args.authorization_ref)
         elif args.command == "step":
             if args.results is None:
                 ap.error("--results required")
