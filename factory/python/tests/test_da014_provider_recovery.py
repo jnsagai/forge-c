@@ -121,7 +121,7 @@ def test_watchdog_preserves_active_request_and_defers_inside_namespace(protocol,
         assert operations.recover_profile(p.store)["action"] == "WAIT_FOR_EXTERNAL_WATCHDOG"
         result = operations.recover_profile(p.store, external=True)
         assert result["result"]["code"] == "ACTIVE_PROVIDER_PRESERVED"
-        assert P.quiet(instance) is None and not calls
+        assert P.quiet(instance) is None and calls == [{"recovery": True, "control_only": True}]
 
 
 def test_native_terminal_recovers_only_fabro_until_lease_reconciliation(protocol, tmp_path, monkeypatch):
@@ -286,3 +286,40 @@ def test_external_watchdog_settles_stop_even_with_healthy_conductor(protocol, tm
     monkeypatch.setattr(operations, "recover_profile", lambda store, **kw: calls.append(kw) or {"action": "WAITING"})
     assert watchdog.main([]) == 0
     assert calls == ["settle", {"external": True}]
+
+
+@pytest.mark.parametrize("reused", ["boot_id", "start_ticks"])
+def test_recovery_forgets_ended_holder_without_signaling_reused_pid(tmp_path, monkeypatch, reused):
+    (tmp_path / "venv/bin").mkdir(parents=True)
+    (tmp_path / "venv/bin/python").touch()
+    (tmp_path / "run").mkdir()
+    pid = os.getpid()
+    original = stack.process_identity(pid)
+    old = {**original, reused: "old-boot" if reused == "boot_id" else "0"}
+    (tmp_path / "run/holder.pid").write_text(str(pid))
+    stack._save_services(tmp_path, {"holder_identity": old, "processes": {}})
+    monkeypatch.setattr(stack, "_holder", lambda _: pid)
+    monkeypatch.setattr(stack, "envmap", lambda _: {})
+    monkeypatch.setattr(os, "kill", lambda *a: pytest.fail("recovery signaled a reused PID"))
+    effects = []
+
+    class FreshNamespaceRequested(Exception):
+        pass
+
+    def launch(argv, **kwargs):
+        effects.append(argv)
+        assert not (tmp_path / "run/holder.pid").exists()
+        raise FreshNamespaceRequested
+
+    monkeypatch.setattr(stack.subprocess, "Popen", launch)
+    with pytest.raises(FreshNamespaceRequested):
+        stack._start({"root": tmp_path, "ports": {}, "profile": {}}, recovery=True)
+    assert len(effects) == 1 and effects[0][:2] == ["setsid", "unshare"]
+    assert stack.process_identity(pid) == original
+
+
+def test_same_process_with_changed_namespace_is_not_treated_as_ended():
+    original = stack.process_identity(os.getpid())
+    changed = {**original, "netns": "net:[different]"}
+    assert not stack._pinned_process_ended(original, changed)
+    assert not stack._pinned_process_ended(None, original)

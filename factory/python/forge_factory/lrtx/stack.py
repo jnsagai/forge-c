@@ -303,6 +303,19 @@ def process_identity(pid):
         return None
 
 
+def _pinned_process_ended(expected, current):
+    """A different boot/start proves the OLD process ended, never ownership of the new PID."""
+    if not expected or not current:
+        return False
+    return bool(
+        expected.get("boot_id")
+        and expected.get("start_ticks")
+        and current.get("boot_id")
+        and current.get("start_ticks")
+        and (expected["boot_id"], expected["start_ticks"]) != (current["boot_id"], current["start_ticks"])
+    )
+
+
 def start(s: dict, *, recovery=False) -> dict:
     from ..afo.operations import configured, Intent, fenced_call
 
@@ -400,15 +413,27 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         raise RuntimeError("run `init` first")
     holder = _holder(s)
     saved = r / "run/services.json"
+    retired = set()
     if recovery and saved.is_file():
         prior = json.loads(saved.read_text())
         # A live legacy PID without a pinned start identity is not safe to adopt automatically.
         if holder and (not prior.get("holder_identity") or process_identity(holder) != prior["holder_identity"]):
-            raise ValueError("LOCAL_NAMESPACE_OWNERSHIP_UNPROVEN")
-        for pr in (prior.get("processes") or {}).values():
+            if _pinned_process_ended(prior.get("holder_identity"), process_identity(holder)):
+                # The old process ended. Forget its stale projection without
+                # signaling or adopting the unrelated process now at that PID.
+                (r / "run/holder.pid").unlink(missing_ok=True)
+                holder = None
+            else:
+                raise ValueError("LOCAL_NAMESPACE_OWNERSHIP_UNPROVEN")
+        for name, pr in (prior.get("processes") or {}).items():
+            if control_only and name in ("ollama", "gateway"):
+                continue
             current = process_identity(pr["pid"])
             if current and (not pr.get("identity") or current != pr["identity"]):
-                raise ValueError("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
+                if _pinned_process_ended(pr.get("identity"), current):
+                    retired.add(name)
+                else:
+                    raise ValueError("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
     if holder is None:
         # user + network namespace: loopback only; the GPU device nodes stay usable
         subprocess.Popen(
@@ -434,7 +459,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         if holder is None:
             raise RuntimeError("network namespace holder did not start")
     rec = json.loads((r / "run/services.json").read_text()) if (r / "run/services.json").is_file() else {}
-    procs = rec.get("processes") or {}
+    procs = {k: v for k, v in (rec.get("processes") or {}).items() if k not in retired}
     serving = rec.get("serving_instance")
     known_serving = serving is not None
     if managed_serving() and not control_only:

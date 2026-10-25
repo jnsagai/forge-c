@@ -259,7 +259,8 @@ def recover_profile(store, *, external=False):
                 terminal = ex._evidence(owner, "NATIVE_TERMINAL")
                 eligible = terminal or expired or live["authorization_state"] != "VALID" or live["task_outcome"] != "ACTIVE"
                 if not eligible:
-                    return {"ok": False, "code": "ACTIVE_PROVIDER_PRESERVED"}
+                    restored = stack._start(stack.settings(profile), recovery=True, control_only=True)
+                    return {"ok": False, "code": "ACTIVE_PROVIDER_PRESERVED", "health": restored["health"]}
                 instance = stack.serving_instance(stack.settings(profile))
                 proof = reconcile(store, owner, instance, retire=True, fenced_effect=lambda effect: effect())
                 # The retained inference owner blocks new admission. Restoring
