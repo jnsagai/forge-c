@@ -470,3 +470,25 @@ def test_an_ambiguity_quoted_from_the_open_points_is_documented(frozen):
     other = _c("ambiguity_not_documented", "document", "The term 'nominal refresh window' is never defined anywhere.")
     got = RS.adjudicate(frozen, "SWE1-06", [quoted, other], facts)
     assert [c["decision"] for c in got] == ["REFUTED", "STANDS"]
+
+
+def test_stepwise_coverage_offers_only_source_fields_and_register_wildcards(frozen):
+    """Omniverse2 2026-10-26: a generic RCC scope item drew placeholder fields ('RCC_AHB2ENR.<field>') three times and
+    the inspection recorded nothing. Stepwise coverage answers from the fields the frozen sources name, or REG.*."""
+    from forge_factory.lrtx import review as R
+
+    facts = RS.baseline_facts(frozen)
+    _bl, srcs = R.evidence(frozen, "SWE.1")
+    fields = RS.source_fields(srcs)
+    assert fields and all(RS.FIELD.match(f) or RS.WILDCARD.match(f) for f in fields)
+    wide = next(f for f in fields if f.endswith(".*"))
+    schema = RS.coverage_schema(sorted(facts["reqs"]), fields)
+    assert schema["properties"]["behaviours"]["items"]["properties"]["register_field"]["enum"] == fields
+    assert RS.validate_coverage({"behaviours": [{"behaviour": "any clock", "register_field": wide, "value": "",
+                                                 "covered_by": []}]}, set(facts["reqs"])) == []
+    named = [s for s, r in facts["reqs"].items() if wide[:-2] in r["statement"]]
+    got = RS.coverage_claims("enable a clock", {"behaviours": [{"behaviour": "any clock", "register_field": wide,
+                                                                "value": "", "covered_by": []}]}, facts)
+    assert [c["decision"] for c in got] == (["REFUTED"] if named else ["STANDS"])
+    assert RS.coverage_schema(["SWR-001"])["properties"]["behaviours"]["items"]["properties"]["register_field"] == {
+        "type": "string", "minLength": 3, "maxLength": 60}  # the F011 (non-stepwise) question is unchanged

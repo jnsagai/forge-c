@@ -209,6 +209,7 @@ def _mandatory_safety_missing(m: dict) -> bool:
 
 INSPECTOR = {"seed": None, "coverage": None, "entries": None, "stepwise": None}  # F011-T048/T049/T054, F014: harness
 FIELD = re.compile(r"^[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*$")
+WILDCARD = re.compile(r"^[A-Z][A-Z0-9_]*\.\*$")  # F014 stepwise: a behaviour on any field of the register
 NUMBER = re.compile(r"\b0x[0-9A-Fa-f]+\b|\b\d+\b")
 
 
@@ -249,11 +250,20 @@ def scope_items(ws: Path) -> list[str]:
     return [x for x in m.get("scope") or [] if not str(x).strip().lower().startswith("out of scope")]
 
 
-def coverage_schema(swrs: list[str]) -> dict:
+def source_fields(srcs: list[dict]) -> list[str]:
+    """F014 stepwise: the closed answer set of a coverage question, every REGISTER.FIELD the frozen sources name and
+    REGISTER.* for each of their registers (Omniverse2 2026-10-26: a generic RCC scope item drew placeholder fields
+    such as 'RCC_AHB2ENR.<field>' three times and the inspection recorded nothing)."""
+    found = {m for s in srcs for m in re.findall(r"\b[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*\b", s.get("text") or "")}
+    return sorted(found | {f.split(".")[0] + ".*" for f in found})
+
+
+def coverage_schema(swrs: list[str], fields: list[str] | None = None) -> dict:
+    field = {"type": "string", "enum": fields} if fields else {"type": "string", "minLength": 3, "maxLength": 60}
     row = {"type": "object", "additionalProperties": False,
            "required": ["behaviour", "register_field", "value", "covered_by"],
            "properties": {"behaviour": {"type": "string", "minLength": 5, "maxLength": 200},
-                          "register_field": {"type": "string", "minLength": 3, "maxLength": 60},
+                          "register_field": field,
                           "value": {"type": "string", "maxLength": 24},
                           "covered_by": {"type": "array", "maxItems": 5,
                                          "items": {"type": "string", "enum": swrs or ["none"]}}}}
@@ -262,22 +272,24 @@ def coverage_schema(swrs: list[str]) -> dict:
 
 
 def coverage_packet(ws: Path, bl: dict, srcs: list[dict], scope: str, swrs: list[str], model: str, sampling,
-                    findings=None, previous=None) -> dict:
+                    findings=None, previous=None, fields: list[str] | None = None) -> dict:
     instr = (f"Coverage question on the frozen SWE.1 baseline {bl['baseline_id']}. Work-order scope item (written by "
              f"the owner): \"{' '.join(scope.split())}\". List each register behaviour this scope item requires the "
              "driver to perform or report: register_field is REGISTER.FIELD as the sources name it, value is the value "
              "written when the scope or the manual fixes one (else \"\"), covered_by lists the requirements of the "
              "baseline that specify exactly that behaviour (empty when none does). Only register behaviours: "
-             "structure, style and API-shape constraints are not behaviours. Judge only from the SOURCES.")
+             "structure, style and API-shape constraints are not behaviours. Judge only from the SOURCES."
+             + (" register_field is one of the offered names; REGISTER.* stands for a behaviour on any field of that "
+                "register (for example a peripheral clock chosen by the caller)." if fields else ""))
     return S.packet(phase="SWE.1", task="inspect:coverage", role="swe1-inspector", instructions=instr, sources=srcs,
                     criteria=["SWE1-05: coverage gaps against the work-order scope"],
-                    output_schema=coverage_schema(swrs), model=model, findings=findings, previous=previous,
+                    output_schema=coverage_schema(swrs, fields), model=model, findings=findings, previous=previous,
                     output_reserve=2048, sampling=sampling)
 
 
 def validate_coverage(doc: dict, swrs: set[str]) -> list[str]:
     out = [f"register_field '{b['register_field']}' is not REGISTER.FIELD" for b in doc["behaviours"]
-           if not FIELD.match(b["register_field"])]
+           if not (FIELD.match(b["register_field"]) or WILDCARD.match(b["register_field"]))]
     return out + [f"covered_by names {x}, not a requirement" for b in doc["behaviours"] for x in b["covered_by"]
                   if x not in swrs]
 
@@ -295,7 +307,9 @@ def coverage_claims(scope: str, doc: dict, facts: dict) -> list[dict]:
             continue
         f, v = b["register_field"], b["value"].strip()
         want = _numbers(v) if v else set()
-        hit = next((s for s, r in sorted(facts["reqs"].items()) if f in r["statement"] and
+        wide = f.split(".")[0] if WILDCARD.match(f) else None  # register-wide: any requirement on that register
+        hit = next((s for s, r in sorted(facts["reqs"].items()) if
+                    (re.search(rf"\b{re.escape(wide)}\b", r["statement"]) if wide else f in r["statement"]) and
                     (not want or want & _numbers(r["statement"]))), None)
         c = {"assertion": "scope_behaviour_uncovered", "target_id": "document", "related_ids": [],
              "detail": (f"scope item '{' '.join(scope.split())[:60]}': {b['behaviour'][:120]} ({f}"
@@ -629,7 +643,8 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         swrs = sorted(facts["reqs"])
         for i, sc in enumerate(scope_items(ws)):
             crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:coverage-{i}",
-                              lambda fi, pr, sc=sc: coverage_packet(ws, bl, srcs, sc, swrs, model, smp, fi, pr),
+                              lambda fi, pr, sc=sc: coverage_packet(ws, bl, srcs, sc, swrs, model, smp, fi, pr,
+                                                                    source_fields(srcs) if opts["stepwise"] else None),
                               lambda d: validate_coverage(d, set(swrs)), budget)
             if crec["status"] != "VALID":
                 issues += [f"coverage-{i}: {e}" for e in crec["errors"][:3]]
