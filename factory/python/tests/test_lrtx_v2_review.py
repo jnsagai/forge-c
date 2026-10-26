@@ -593,7 +593,10 @@ def test_behaviours_on_one_field_are_told_apart_by_their_purpose_words(frozen):
              "register_field": "IWDG_KR.KEY"}
     assert "start" in RS.purpose_words(start) and "iwdg_kr" not in RS.purpose_words(start)
     assert RS.behaviour_hit({**facts, "reqs": reqs}, start) == "SWR-001"
-    only_refresh = {**facts, "reqs": {"SWR-002": reqs["SWR-002"]}}
+    # after the S1-OMIT seed the IWDG baseline still has several key writes (refresh and the access keys)
+    access = {"statement": "When the write-access enable function is called, the IWDG LL driver shall write 0x00005555 "
+                           "to IWDG_KR.KEY.", "verification": ""}
+    only_refresh = {**facts, "reqs": {"SWR-002": reqs["SWR-002"], "SWR-003": access}}
     got = RS.behaviour_claims(start, {"quote": "", "answer": "NONE"}, only_refresh)
     assert [c["decision"] for c in got] == ["STANDS"] and "IWDG_KR.KEY" in RS.render_claim(got[0])
 
@@ -614,3 +617,14 @@ def test_a_cited_requirement_must_state_the_behaviour_itself(frozen):
     assert [c["decision"] for c in got] == ["REFUTED"]  # clean: SWR-001 states it
     got = RS.behaviour_claims(enable, wrong, {**facts, "reqs": {"SWR-002": reqs["SWR-002"]}})
     assert [c["decision"] for c in got] == ["STANDS"] and "RCC_CR.HSION" in RS.render_claim(got[0])
+
+
+def test_purpose_words_decide_only_between_several_candidates(frozen):
+    """Run 4 (2026-10-26): 'set the reload value in IWDG_RLR.RL' was rejected because SWR-006 ('write the requested
+    value to IWDG_RLR.RL'), the one requirement on that field, never says 'reload'."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-006": {"statement": "When the reload set function is called, the IWDG LL driver shall write the "
+                                     "requested value to IWDG_RLR.RL.".replace("reload set", "set"), "verification": ""}}
+    reload = {"phrase": "set the reload value in IWDG_RLR.RL", "action": "write", "register_field": "IWDG_RLR.RL"}
+    assert RS.behaviour_claims(reload, {"quote": "", "answer": "SWR-006"}, {**facts, "reqs": reqs}) == []
+    assert RS.behaviour_hit({**facts, "reqs": reqs}, reload) == "SWR-006"

@@ -342,7 +342,9 @@ def _truth(ws: Path, p: dict) -> dict:
         facts = RS.baseline_facts(ws)
         act = {"set": "set", "clear": "clear", "write": "write"}
         enum = schema["properties"]["behaviours"]["items"]["properties"]["register_field"]["enum"]
-        return {"behaviours": [{"phrase": f"{e['op']} {e['field']}", "action": act[e["op"]], "register_field": e["field"]}
+        # phrases carry the effect's case so the purpose-word path is exercised (run 4 hole: bare phrases never were)
+        return {"behaviours": [{"phrase": f"{e['case'].lower().replace('_', ' ')}: {e['op']} {e['field']}"[:80],
+                                "action": act[e["op"]], "register_field": e["field"]}
                                for e in RS.effect_entries(ws, facts) if e["field"] in enum][:16]}
     if item == "coverage":
         return {"behaviours": []}
