@@ -1,5 +1,5 @@
 {
-  "manifest_sha256": "803016d27d64820982babf3d4714224cd7ae400d901d35c40fa18e279bb8f9b0",
+  "manifest_sha256": "09b4f0bd28768c63ba6825be301d2231371a6e21622625bc1476868bfae21b3c",
   "status": "BLOCKED",
   "blockers": [
     "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",

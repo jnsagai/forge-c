@@ -48,16 +48,16 @@
     "factory/python/tests/test_brownfield_resume.py",
     "factory/python/tests/test_bubblewrap_confinement.py",
     "factory/python/tests/test_cre_d7_isolation.py",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-5dc2df3-core",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-5dc2df3-core.xml"
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-de324a3-core",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-de324a3-core.xml"
   ],
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/regression-5dc2df3",
-  "duration_s": 498.958,
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/regression-de324a3",
+  "duration_s": 506.948,
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "exit_code": 0,
   "fixture_provenance": "evidence/014-durable-local-autonomy/followup/provider-fixture-provenance.json",
   "git_dirty": false,
-  "git_head": "5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb",
+  "git_head": "de324a3c8686f06be566d479ea1a2d9dac48c61a",
   "host": {
     "node": "master",
     "python": "3.13.13",
@@ -65,23 +65,23 @@
   },
   "invocation_provenance": "evidence/014-durable-local-autonomy/followup/provider-final-invocation.json",
   "junit": {
-    "path": "evidence/v0.4/runs/DA014-core/20261026T022309.xml",
-    "sha256": "a7786e6b2a4372f35b1fc9bd1e62a6df0a16972281779e5ef262871476e64005"
+    "path": "evidence/v0.4/runs/DA014-core/20261026T032257.xml",
+    "sha256": "d629e0e19ebba74ae5fc8eb4c55af71a40617f413de816a5c9b84cdbf6188563"
   },
-  "log": "evidence/v0.4/runs/DA014-core/20261026T022309.log",
-  "log_sha256": "0fc201a45baaf39c6a6fac21837562f6c258dfb11a791bc1b50cd7666e33a672",
+  "log": "evidence/v0.4/runs/DA014-core/20261026T032257.log",
+  "log_sha256": "08ef8fcbf3b7daa30f6ed7fde5908d90b13b8494c7c8174ee438058c8c563d60",
   "results": {
     "errors": 0,
     "failures": 0,
-    "seconds": 498.958,
+    "seconds": 506.948,
     "skipped": 11,
-    "tests": 587,
-    "timestamp": "2026-10-26T02:13:04.411628+00:00"
+    "tests": 590,
+    "timestamp": "2026-10-26T03:13:27.328911+00:00"
   },
   "schema": "forge-c/task-evidence/0.4",
   "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
   "status": "PASS",
   "task": "DA014-core",
-  "ts_utc": "2026-10-26T02:23:09.643881+00:00",
+  "ts_utc": "2026-10-26T03:22:57.888027+00:00",
   "umask": "0022"
 }

@@ -1,8 +1,8 @@
 {
-  "git_head": "5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb",
+  "git_head": "de324a3c8686f06be566d479ea1a2d9dac48c61a",
   "start_dirty": "",
-  "started_at": "2026-10-26T02:13:04.285759+00:00",
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/regression-5dc2df3",
+  "started_at": "2026-10-26T03:13:27.197953+00:00",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/regression-de324a3",
   "umask": "0022",
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "private_fixture_provenance": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fixture-provenance.json",
@@ -58,12 +58,12 @@
         "factory/python/tests/test_brownfield_resume.py",
         "factory/python/tests/test_bubblewrap_confinement.py",
         "factory/python/tests/test_cre_d7_isolation.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-5dc2df3-core",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-5dc2df3-core.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-de324a3-core",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-de324a3-core.xml"
       ],
-      "started_at": "2026-10-26T02:13:04.285818+00:00",
+      "started_at": "2026-10-26T03:13:27.198007+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-26T02:21:23.855693+00:00"
+      "ended_at": "2026-10-26T03:21:54.748360+00:00"
     },
     {
       "label": "release",
@@ -73,14 +73,14 @@
         "pytest",
         "-q",
         "factory/python/tests/test_m7_governance_release.py",
-        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-5dc2df3-release",
-        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-5dc2df3-release.xml"
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-de324a3-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-de324a3-release.xml"
       ],
-      "started_at": "2026-10-26T02:21:23.879647+00:00",
+      "started_at": "2026-10-26T03:21:54.769283+00:00",
       "exit_code": 0,
-      "ended_at": "2026-10-26T02:21:33.376641+00:00"
+      "ended_at": "2026-10-26T03:22:04.155603+00:00"
     }
   ],
   "end_dirty": "",
-  "end_head": "5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb"
+  "end_head": "de324a3c8686f06be566d479ea1a2d9dac48c61a"
 }

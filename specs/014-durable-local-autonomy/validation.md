@@ -1,6 +1,6 @@
 # Implementation and qualification status
 
-Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb` (`dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
+Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 
 The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
 
@@ -115,6 +115,11 @@ Exact `5dc2df3` (clean dedicated worktree, private state/event roots): core **57
 (499.0 s); release **13/13** (9.2 s); history replay and transient-systemd semantics PASS; six prepared manifests BLOCKED
 as before; independent CRE `cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, not waived).
 Clean `a206c54` (570 passed) and `dbcec39` (575 passed) runs also had 0 failures.
+
+Exact `de324a3` (after `455e1dd` measured objective/work class and capability report, `74ba546` preregistered
+comparison factors, `c8af6fe` intake-manifest holdout scope, `de324a3` killable-group fix): core **579 passed, 11
+skipped**, 0 failures (506.9 s); release **13/13**; history replay and transient-systemd semantics PASS; independent CRE
+**REJECTED / PROTECTED_PATH_CHANGE** (retained).
 
 Whole inherited suite on `74ba546` (197 files, one process each with private state, two native e2e files
 excluded; [summary](../../evidence/014-durable-local-autonomy/inherited-whole-suite-74ba546.json)): 1,648 tests,
