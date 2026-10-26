@@ -542,3 +542,17 @@ def test_an_ambiguity_claim_on_a_recorded_upstream_input_is_refuted(frozen):
     assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-06", [claim], facts)] == ["REFUTED"]
     gone = {**facts, "gap_rows": {**facts["gap_rows"], "Safety allocation": None}}
     assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-06", [claim], gone)] == ["STANDS"]
+
+
+def test_a_count_bound_is_measurable(frozen):
+    """Run 2 (2026-10-26): SWR-009 'at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations' was confirmed unmeasurable
+    because the unit list had only sizes, times and frequencies."""
+    facts = RS.baseline_facts(frozen)
+    swr = sorted(facts["reqs"])[0]
+    timed = {**facts, "reqs": {**facts["reqs"], swr: {**facts["reqs"][swr], "statement":
+             "The HAL RCC driver shall poll the ready flag at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations."}}}
+    got = RS.adjudicate(frozen, "SWE1-04", [_c("budget_not_measurable", swr, "iterations are not a unit")], timed)
+    assert [c["decision"] for c in got] == ["REFUTED"]
+    vague = {**facts, "reqs": {**facts["reqs"], swr: {**facts["reqs"][swr], "statement": "The driver shall be fast."}}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-04", [_c("budget_not_measurable", swr)], vague)] == [
+        "CONFIRMED"]

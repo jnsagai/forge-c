@@ -48,7 +48,9 @@ LESSONS = {"dir": None, "include_proposed": False}  # F011-T044: seeded harness 
 LESSON_SOURCE = "reference/inspection-lessons.md"
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
-BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz)\b", re.I)
+# run 2 (2026-10-26): "at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations" is a measurable count bound
+BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz|"
+                   r"(?:polling\s+)?(?:iterations?|polls?|attempts?|retries|calls?))\b", re.I)
 BUDGET = re.compile(r"\bat most \d+ bytes of (?:flash|static RAM|stack)\b|\buse 0 bytes of static RAM\b", re.I)
 # measured (F011-T029 run 5, WO-0008C): the budget requirements say "use 0 bytes of persistent static RAM ... within
 # the 64-byte static RAM budget"; a budget is a requirement naming the resource with a byte bound, in any phrasing
