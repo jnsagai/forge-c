@@ -103,4 +103,12 @@ All three earlier failure types fixed (missing-primary 5/5, model-switch fault 5
 **0/0/0** (`audit-b7ce315.json`); official report **90/100**: all five late-finding trials were refused by the gateway
 before sending (`GATEWAY_HTTP_429:JOB_TOKEN_ENVELOPE_EXHAUSTED`, four request reservations 33,473 > 32,768 for the
 nine-finding case). 5dc2df3 repeats only cited findings in questions 2–4 and caps citations at six; a deterministic
-measurement of all frozen cases gives a worst case of 32,320 tokens. Fourth matrix running on 5dc2df3.
+measurement of all frozen cases gives a worst case of 32,320 tokens.
+
+### Fourth full matrix (5dc2df3, 95 trials, 01:15–02:10 UTC)
+
+Late-finding trials fit the envelope (5/5). **95/95 eligible trials observed == expected**, 25 accepted repair plans.
+Independent audit **0 false successes / 0 duplicate effects / 0 authority escapes** (`audit-5dc2df3.json`). Official
+report for manifest `ec0dbe75…`: 95 correct, **no failures**, status **INCOMPLETE** (expected 100, observed 95): the five
+`qualified-local-alternative` trials still need their prerequisite, an independently measured authorized local
+alternative. This is one temperature-0 matrix on one model and host, so it stays preliminary and no task is ticked.
