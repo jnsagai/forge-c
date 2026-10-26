@@ -675,3 +675,14 @@ def test_the_imposed_verb_decides_not_any_action_word(frozen):
                           "RCC_AHB1RSTR.ADC12RST.", "verification": ""}
     release = {"phrase": "ADC12 reset release", "action": "clear", "register_field": "RCC_AHB1RSTR.ADC12RST"}
     assert RS.behaviour_claims(release, {"quote": "", "answer": "SWR-006"}, {**facts, "reqs": {"SWR-006": pulse}}) == []
+
+
+def test_a_register_write_states_a_set_or_clear_behaviour(frozen):
+    """Run 8 (2026-10-26): 'Enable write access to IWDG_PR with the documented key' (set IWDG_PR.*) was rejected
+    although SWR-003 imposes 'write 0x00005555 to IWDG_KR.KEY' to enable write access to IWDG_PR."""
+    facts = RS.baseline_facts(frozen)
+    swr = {"statement": "When the write-access enable function is called, the IWDG LL driver shall write 0x00005555 to "
+                        "IWDG_KR.KEY to enable write access to IWDG_PR and IWDG_RLR.", "verification": ""}
+    access = {"phrase": "Enable write access to IWDG_PR with the documented key", "action": "set",
+              "register_field": "IWDG_PR.*"}
+    assert RS.behaviour_claims(access, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": {"SWR-003": swr}}) == []

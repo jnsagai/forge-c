@@ -642,7 +642,9 @@ def candidates(facts: dict, b: dict) -> list[str]:
     f = b["register_field"]
     name = f.split(".")[0] if WILDCARD.match(f) else f
     bare = name.split(".")[-1]
-    kind = ACTIONS[b["action"]]
+    # run 8: a register write is how a bit is set or cleared ('Enable write access to IWDG_PR' is SWR-003's
+    # 'shall write 0x00005555 to IWDG_KR.KEY')
+    kind = ACTIONS[b["action"]] + (ACTIONS["write"] if b["action"] in ("set", "clear") else ())
     return [x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or re.search(
         rf"\b{re.escape(bare)}\b", r["statement"])) and any(v.startswith(kind) for v in imposed_verbs(r["statement"]))]
 
