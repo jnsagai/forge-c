@@ -1,0 +1,5 @@
+crc: 6 attempts recorded, 1 READY
+  BENCH-CRC-ST-R4 WO-AFO-efc1871950537b1a-a1 rev f81747e gaps 0 archive sha256 verified b94d8296b15574a261f7df0b30fa2d1f92028b8768b180344c4e9de995fcf6a5
+  owner review: OD-2026-10-26-02 "CRC, SPI reviewed and approved"
+
+--- stderr ---

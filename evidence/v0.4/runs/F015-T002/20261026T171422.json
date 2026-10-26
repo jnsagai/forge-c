@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f015-ev/t002",
+    "factory/python/tests/test_benchmark_queue.py",
+    "factory/python/tests/test_benchmark_record.py"
+  ],
+  "duration_s": 0.46,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "e2065e7844234f2591eac2071731d3578e25954e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F015-T002/20261026T171422.log",
+  "log_sha256": "0933a0eed6e077d7e0f5f70039e34e544186519d33b332426ded6d3d5c27e977",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "F015-T002",
+  "ts_utc": "2026-10-26T17:14:22.848997Z"
+}

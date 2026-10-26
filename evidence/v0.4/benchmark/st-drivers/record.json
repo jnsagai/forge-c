@@ -1,0 +1,5266 @@
+{
+ "entries": [
+  {
+   "attempt_id": "afo-e3327041a90a6305-a1",
+   "attempt_state": "FAILED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 10
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1305.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_CRC_LL_ST",
+    "git_revision": "f229fbdf15d1064f30e1ba7904eb48873efed4e7",
+    "input_manifest_ref": "config/factory/benchmark/afo/crc-st.json",
+    "manifest_sha256": "82b867d9c7ff81d2edfa4d7251be7f49013d9bee5646a76aa16e8d78ad78d00a",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T10:30:39.232872Z"
+   },
+   "fabro_run_id": "01M5S9TK1R3PRE6NY1PNKEQZPS",
+   "factory_revision": "f229fbdf15d1064f30e1ba7904eb48873efed4e7",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-e3327041a90a6305",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "c7a291c1d7085d0661b3aa7b3c66b3d2a9ed072a26d4d179723d3b4e4f4ae711",
+    "finalized_at": "2026-10-25T10:52:39.407908Z",
+    "gap_count": 52,
+    "gaps": [
+     "missing_or_empty_file:configuration/toolchain_versions.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:operations/agents/skills-manifest.json",
+     "missing_or_empty_file:operations/incidents/incidents.jsonl",
+     "missing_or_empty_file:operations/knowledge/lesson-ledger.json",
+     "missing_or_empty_file:operations/kpi/kpi-baselines.json",
+     "missing_or_empty_file:operations/kpi/kpi-catalog.json",
+     "missing_or_empty_file:operations/kpi/kpi-policy.yaml",
+     "missing_or_empty_file:operations/kpi/kpi-snapshot.json",
+     "missing_or_empty_file:operations/kpi/kpi-source-events.jsonl",
+     "missing_or_empty_file:operations/mcp/tool-registry.json",
+     "missing_or_empty_file:operations/repairs/repair-results.jsonl",
+     "missing_or_empty_file:operations/run/run-summary.json",
+     "missing_or_empty_file:operations/supervisor/health-summary.json",
+     "missing_or_empty_file:operations/telemetry/events-index.json",
+     "missing_or_empty_file:operations/tokens/usage-by-agent.json",
+     "missing_or_empty_file:safety/known_limitations.md",
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "missing_or_empty_file:support/SUP.1/quality_assurance_status.md",
+     "missing_or_empty_file:support/SUP.10/change_request_status.md",
+     "missing_or_empty_file:support/SUP.8/configuration_status.md",
+     "missing_or_empty_file:support/SUP.9/problem_resolution_status.md",
+     "missing_or_empty_file:verification/coverage/coverage_summary.json",
+     "missing_or_empty_file:verification/footprint/memory_stack_summary.json",
+     "missing_or_empty_file:verification/integration/integration_verification_summary.json",
+     "missing_or_empty_file:verification/software/software_verification_summary.json",
+     "missing_or_empty_file:verification/static/analysis_summary.json",
+     "missing_or_empty_file:verification/target/target_verification_summary.json",
+     "missing_or_empty_file:verification/unit/unit_verification_summary.json",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:software/src",
+     "missing_or_empty_section:support/SUP.1",
+     "missing_or_empty_section:support/SUP.10",
+     "missing_or_empty_section:support/SUP.8",
+     "missing_or_empty_section:support/SUP.9",
+     "missing_or_empty_section:verification/coverage",
+     "missing_or_empty_section:verification/footprint",
+     "missing_or_empty_section:verification/integration",
+     "missing_or_empty_section:verification/software",
+     "missing_or_empty_section:verification/target",
+     "missing_or_empty_section:verification/unit",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "missing_quality_report:quality/final-gates.json",
+     "missing_required_pattern:software/src/*.c"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "af4d72334174841169fb50e614af4f05e870489c5a5bc44e1898c67efaa5b32b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-CRC-ST",
+   "route": "AFO",
+   "started_at": "2026-10-25T10:30:54.744467Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 674552,
+      "cache_write": 95711,
+      "calls": 3,
+      "input": 50,
+      "output": 5737
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 317312,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 19168,
+      "output": 1472
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 317312,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 19168,
+      "output": 1472
+     },
+     "inspector": {
+      "cache_read": 674552,
+      "cache_write": 95711,
+      "calls": 3,
+      "input": 50,
+      "output": 5737
+     }
+    }
+   },
+   "work_order": "WO-AFO-e3327041a90a6305-a1"
+  },
+  {
+   "attempt_id": "afo-7a6810a8baf9b9c4-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 23
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-005",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_spi.h",
+     "sha256": "4b10449cf1f02162578630a6a279354294aa9bda27fbcb7433fe7d708a1a4077"
+    }
+   ],
+   "driver": "STM32N6 serial peripheral interface (SPI1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 3238.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_SPI_LL_ST",
+    "git_revision": "f229fbdf15d1064f30e1ba7904eb48873efed4e7",
+    "input_manifest_ref": "config/factory/benchmark/afo/spi-st.json",
+    "manifest_sha256": "d3f5f1ee261b2281a6f538505aa4e1ad198c52a0751accc9632a82e6fd9b304b",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T10:30:39.233578Z"
+   },
+   "fabro_run_id": "01M5SB30ZX8S7PF5EAWNMQY348",
+   "factory_revision": "ed40ee4244aa52341842816173feda8e0b8a2dbc",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch67-spi.md",
+     "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+     "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-7a6810a8baf9b9c4",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "4f1cfa4da8a2ecabc58fa5b0847f3baffe95d71d7bfa17cc62bc81f046ab67a8",
+    "finalized_at": "2026-10-25T11:47:06.585437Z",
+    "gap_count": 48,
+    "gaps": [
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "unresolved_finding:CONFORMANCE:CF-001:CONTRADICTION:LL_SPI_SetMode:SWR-004",
+     "unresolved_finding:CONFORMANCE:CF-002:CONTRADICTION:LL_SPI_SetMode:SWR-004",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_SPI_SetClockPhase:SWR-005",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_SPI_SetClockPhase:SWR-005",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_SPI_SetClockPolarity:SWR-006",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_SPI_SetClockPolarity:SWR-006",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_SPI_SetTransferBitOrder:SWR-007",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_SPI_SetTransferBitOrder:SWR-007",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-011:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-012:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-013:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-014:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-015:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-016:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-017:CONTRADICTION:LL_SPI_SetBaudRatePrescaler:SWR-008",
+     "unresolved_finding:CONFORMANCE:CF-018:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-019:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-020:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-021:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-022:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-023:CONTRADICTION:LL_SPI_SetNSSMode:SWR-011",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1077",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1106",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1172",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1209",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1333",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1402",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1563",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1634",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1645",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1667",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1722",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1755",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1803",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:1836",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:2331",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:2370",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:543",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:555",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:566",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:651",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:787",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_spi.h:960",
+     "unresolved_finding:escalated_defect:DEF-002:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "spi",
+   "peripheral_profile_sha256": "5184cbc106ed495d56a838057459bfa7cee94265664276d310016ebeaa7e9548",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 2,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-002",
+     "inspections_failed": 1,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-SPI-ST",
+   "route": "AFO",
+   "started_at": "2026-10-25T10:53:08.855094Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1716115,
+      "cache_write": 289906,
+      "calls": 8,
+      "input": 110,
+      "output": 13550
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 839936,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 17176,
+      "output": 2750
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 839936,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 17176,
+      "output": 2750
+     },
+     "inspector": {
+      "cache_read": 1626164,
+      "cache_write": 272222,
+      "calls": 7,
+      "input": 102,
+      "output": 12998
+     },
+     "other": {
+      "cache_read": 89951,
+      "cache_write": 17684,
+      "calls": 1,
+      "input": 8,
+      "output": 552
+     }
+    }
+   },
+   "work_order": "WO-AFO-7a6810a8baf9b9c4-a1"
+  },
+  {
+   "attempt_id": "afo-707cd2711fc865be-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "ARCHITECTURE",
+     "status": "FIXED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2915.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_CRC_LL_ST",
+    "git_revision": "ed40ee4244aa52341842816173feda8e0b8a2dbc",
+    "input_manifest_ref": "config/factory/benchmark/afo/crc-st.json",
+    "manifest_sha256": "82b867d9c7ff81d2edfa4d7251be7f49013d9bee5646a76aa16e8d78ad78d00a",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T10:52:49.566710Z"
+   },
+   "fabro_run_id": "01M5SE6QTK3MJFH4W7VS7KQ7WD",
+   "factory_revision": "ed40ee4244aa52341842816173feda8e0b8a2dbc",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-707cd2711fc865be",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "5aa5091585342a38f383c4694c5d38612b1c8f12a1b4e9d10b9ab7c0f0f94b29",
+    "finalized_at": "2026-10-25T12:36:12.658020Z",
+    "gap_count": 14,
+    "gaps": [
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:181",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:197",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:284",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:317",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:347",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:377",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:411",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:449",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:497",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:510",
+     "unresolved_finding:escalated_defect:DEF-003:FACTORY",
+     "unresolved_finding:open_defect:DEF-001:ARCHITECTURE:FIXED"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "af4d72334174841169fb50e614af4f05e870489c5a5bc44e1898c67efaa5b32b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-002",
+     "inspections_failed": 0,
+     "inspections_passed": 2,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 1
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-CRC-ST-R2",
+   "route": "AFO",
+   "started_at": "2026-10-25T11:47:37.890673Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1758646,
+      "cache_write": 289972,
+      "calls": 8,
+      "input": 114,
+      "output": 14050
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 673920,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 18737,
+      "output": 2163
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 673920,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 18737,
+      "output": 2163
+     },
+     "inspector": {
+      "cache_read": 1666190,
+      "cache_write": 271389,
+      "calls": 7,
+      "input": 106,
+      "output": 13486
+     },
+     "other": {
+      "cache_read": 92456,
+      "cache_write": 18583,
+      "calls": 1,
+      "input": 8,
+      "output": 564
+     }
+    }
+   },
+   "work_order": "WO-AFO-707cd2711fc865be-a1"
+  },
+  {
+   "attempt_id": "afo-0756ac55b8ea81e6-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_spi.h",
+     "sha256": "4b10449cf1f02162578630a6a279354294aa9bda27fbcb7433fe7d708a1a4077"
+    }
+   ],
+   "driver": "STM32N6 serial peripheral interface (SPI1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1418.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_SPI_LL_ST",
+    "git_revision": "5e8b5bc1435eef7da39062c0e7619ad59c1dce4a",
+    "input_manifest_ref": "config/factory/benchmark/afo/spi-st.json",
+    "manifest_sha256": "d3f5f1ee261b2281a6f538505aa4e1ad198c52a0751accc9632a82e6fd9b304b",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:22:14.339489Z"
+   },
+   "fabro_run_id": "01M5T87FHNEXRDEH66M684RSRX",
+   "factory_revision": "5e8b5bc1435eef7da39062c0e7619ad59c1dce4a",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch67-spi.md",
+     "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+     "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-0756ac55b8ea81e6",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "fe70fe0082a589f11e7409bf49f7e46b6e7a259f57b119f5b204870aabb12f10",
+    "finalized_at": "2026-10-25T19:46:04.798782Z",
+    "gap_count": 26,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:CODE",
+     "unresolved_finding:escalated_defect:DEF-003:CODE",
+     "unresolved_finding:escalated_defect:DEF-004:CODE"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "spi",
+   "peripheral_profile_sha256": "5184cbc106ed495d56a838057459bfa7cee94265664276d310016ebeaa7e9548",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-LL-19-01, UT:SPEC_NOT_VERIFIED:USPEC-LL-20-01); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-SPI-ST-R2",
+   "route": "AFO",
+   "started_at": "2026-10-25T19:22:26.178946Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 589810,
+      "cache_write": 99724,
+      "calls": 3,
+      "input": 46,
+      "output": 5310
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 442752,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 5896,
+      "output": 2033
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 442752,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 5896,
+      "output": 2033
+     },
+     "inspector": {
+      "cache_read": 589810,
+      "cache_write": 99724,
+      "calls": 3,
+      "input": 46,
+      "output": 5310
+     }
+    }
+   },
+   "work_order": "WO-AFO-0756ac55b8ea81e6-a1"
+  },
+  {
+   "attempt_id": "afo-eca972eb13bc60d1-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1838.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_CRC_LL_ST",
+    "git_revision": "5e8b5bc1435eef7da39062c0e7619ad59c1dce4a",
+    "input_manifest_ref": "config/factory/benchmark/afo/crc-st.json",
+    "manifest_sha256": "82b867d9c7ff81d2edfa4d7251be7f49013d9bee5646a76aa16e8d78ad78d00a",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:22:14.339312Z"
+   },
+   "fabro_run_id": "01M5T9KAXXBS8ACMR935D1P075",
+   "factory_revision": "5e8b5bc1435eef7da39062c0e7619ad59c1dce4a",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-eca972eb13bc60d1",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "d4a5dc84accf3fb15949a97f2c64ab4d603d506f671838dd55c62496610cf72d",
+    "finalized_at": "2026-10-25T20:17:01.179847Z",
+    "gap_count": 2,
+    "gaps": [
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "af4d72334174841169fb50e614af4f05e870489c5a5bc44e1898c67efaa5b32b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-CRC-ST-R3",
+   "route": "AFO",
+   "started_at": "2026-10-25T19:46:23.713606Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1437838,
+      "cache_write": 209856,
+      "calls": 7,
+      "input": 100,
+      "output": 11366
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 509056,
+      "cache_write": 0,
+      "calls": 12,
+      "input": 9935,
+      "output": 1262
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 509056,
+      "cache_write": 0,
+      "calls": 12,
+      "input": 9935,
+      "output": 1262
+     },
+     "inspector": {
+      "cache_read": 1354264,
+      "cache_write": 194735,
+      "calls": 6,
+      "input": 92,
+      "output": 10900
+     },
+     "other": {
+      "cache_read": 83574,
+      "cache_write": 15121,
+      "calls": 1,
+      "input": 8,
+      "output": 466
+     }
+    }
+   },
+   "work_order": "WO-AFO-eca972eb13bc60d1-a1"
+  },
+  {
+   "attempt_id": "afo-424019eb2e254450-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_spi.h",
+     "sha256": "4b10449cf1f02162578630a6a279354294aa9bda27fbcb7433fe7d708a1a4077"
+    }
+   ],
+   "driver": "STM32N6 serial peripheral interface (SPI1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2382.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_SPI_LL_ST",
+    "git_revision": "d9a2163a6d33770d9959477fa0d30b2c7ca0cee5",
+    "input_manifest_ref": "config/factory/benchmark/afo/spi-st.json",
+    "manifest_sha256": "d3f5f1ee261b2281a6f538505aa4e1ad198c52a0751accc9632a82e6fd9b304b",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:55:14.954342Z"
+   },
+   "fabro_run_id": "01M5TBCG7M6B47T9ZKN3TBF75Q",
+   "factory_revision": "b2e27220d2e1fa2eeb9e5c1a7e8499fce8f12010",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch67-spi.md",
+     "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+     "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-424019eb2e254450",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "be6063c5d6f14c8de508b00a161e8d8436a3e574ec47cfddc6d59424b67d783a",
+    "finalized_at": "2026-10-25T20:57:17.141650Z",
+    "gap_count": 2,
+    "gaps": [
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "spi",
+   "peripheral_profile_sha256": "57f74f4e1656443e9dcaac8095bc254345a71be1726f41a3eed5318018d9fe62",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 3,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-SPI-ST-R3",
+   "route": "AFO",
+   "started_at": "2026-10-25T20:17:35.011222Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1466522,
+      "cache_write": 243591,
+      "calls": 7,
+      "input": 96,
+      "output": 11691
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 759808,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 8458,
+      "output": 3164
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 759808,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 8458,
+      "output": 3164
+     },
+     "inspector": {
+      "cache_read": 1380103,
+      "cache_write": 227521,
+      "calls": 6,
+      "input": 88,
+      "output": 11176
+     },
+     "other": {
+      "cache_read": 86419,
+      "cache_write": 16070,
+      "calls": 1,
+      "input": 8,
+      "output": 515
+     }
+    }
+   },
+   "work_order": "WO-AFO-424019eb2e254450-a1"
+  },
+  {
+   "attempt_id": "afo-a934d41fb3e70e2c-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 681.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "d9a2163a6d33770d9959477fa0d30b2c7ca0cee5",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:55:14.954485Z"
+   },
+   "fabro_run_id": "01M5TDNYW9KXSZ6N6BHTVZ1KK2",
+   "factory_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-a934d41fb3e70e2c",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "58575d3aef269421f2d16a27c310b0ad21d337c20d1f171965a530f00f3d8a23",
+    "finalized_at": "2026-10-25T21:09:04.401811Z",
+    "gap_count": 51,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:resource_budgets",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe1_inspection",
+     "failed_or_missing_quality_check:swe2_inspection",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+     "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.1",
+     "missing_or_empty_section:inspection/SWE.2",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:software/build",
+     "missing_or_empty_section:software/include",
+     "missing_or_empty_section:software/src",
+     "missing_or_empty_section:workproducts/SWE.2",
+     "missing_or_empty_section:workproducts/SWE.3",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "missing_required_pattern:software/build/*.elf",
+     "missing_required_pattern:software/build/*.map",
+     "missing_required_pattern:software/include/*.h",
+     "missing_required_pattern:software/src/*.c",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:DELIVERY:NOT_INJECTED",
+     "unresolved_finding:SWE.1:GATE_REWORK",
+     "unresolved_finding:SWE.2:GATE_REWORK",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:QUERY_RXNE:USART_ISR.RXNE, CONTRACT_NOT_IN_RM:workproducts/S); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 3,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST",
+   "route": "AFO",
+   "started_at": "2026-10-25T20:57:43.368973Z",
+   "usage": {
+    "per_model": {
+     "gpt-6.1-sol": {
+      "cache_read": 231296,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 1428,
+      "output": 842
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 231296,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 1428,
+      "output": 842
+     }
+    }
+   },
+   "work_order": "WO-AFO-a934d41fb3e70e2c-a1"
+  },
+  {
+   "attempt_id": "afo-a0ac907dda749c01-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_gpio.h",
+     "sha256": "c5a921e733e5bed5747a99daea0eefa1499936d3b33eec3409bb89395bc48350"
+    }
+   ],
+   "driver": "STM32N6 general-purpose I/O (GPIOA) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 771.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_GPIO_LL_ST",
+    "git_revision": "d9a2163a6d33770d9959477fa0d30b2c7ca0cee5",
+    "input_manifest_ref": "config/factory/benchmark/afo/gpio-st.json",
+    "manifest_sha256": "c16b980de4342d468cb4937f334eb62a7b76e66f8ecbb7bf92bdc01042e38034",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:55:14.954618Z"
+   },
+   "fabro_run_id": "01M5TEBFQMQBQ2T2ZJ5AFXWGS3",
+   "factory_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch15-gpio.md",
+     "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+     "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-a0ac907dda749c01",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "615dd40f450e06d9ee454960bc94f548256a4c7dff2527950c2e6180afd5b9cc",
+    "finalized_at": "2026-10-25T21:22:20.846886Z",
+    "gap_count": 51,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:resource_budgets",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe1_inspection",
+     "failed_or_missing_quality_check:swe2_inspection",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+     "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.1",
+     "missing_or_empty_section:inspection/SWE.2",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:software/build",
+     "missing_or_empty_section:software/include",
+     "missing_or_empty_section:software/src",
+     "missing_or_empty_section:workproducts/SWE.2",
+     "missing_or_empty_section:workproducts/SWE.3",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "missing_required_pattern:software/build/*.elf",
+     "missing_required_pattern:software/build/*.map",
+     "missing_required_pattern:software/include/*.h",
+     "missing_required_pattern:software/src/*.c",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:DELIVERY:NOT_INJECTED",
+     "unresolved_finding:SWE.1:GATE_REWORK",
+     "unresolved_finding:SWE.2:GATE_REWORK",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "gpio",
+   "peripheral_profile_sha256": "6f358e754ec47fa6d3004853cb7091a304cb187f779bc9993222fd0fdad99c7b",
+   "phases": {
+    "SWE.1": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:GET_MODE_PIN5_ALTERNATE:GPIO_MODER.MODE5, CONTRACT_NOT_IN_RM); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 3,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-GPIO-ST",
+   "route": "AFO",
+   "started_at": "2026-10-25T21:09:29.512253Z",
+   "usage": {
+    "per_model": {
+     "gpt-6.1-sol": {
+      "cache_read": 203008,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 2097,
+      "output": 1469
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 203008,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 2097,
+      "output": 1469
+     }
+    }
+   },
+   "work_order": "WO-AFO-a0ac907dda749c01-a1"
+  },
+  {
+   "attempt_id": "afo-395399335e1c034e-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_tim.h",
+     "sha256": "a9d2c8f0bee55daf32b39cb7bca06898739ff93284ce8b7a0770a42fd57dccb7"
+    }
+   ],
+   "driver": "STM32N6 general-purpose timer (TIM2) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 661.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_TIM_LL_ST",
+    "git_revision": "d9a2163a6d33770d9959477fa0d30b2c7ca0cee5",
+    "input_manifest_ref": "config/factory/benchmark/afo/tim-st.json",
+    "manifest_sha256": "78ebb8cab4a20bc591dc67cd55ae7bda48e0544ec5642ccac48e54f1fca89fe7",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T19:55:14.954754Z"
+   },
+   "fabro_run_id": "01M5TF3SSSBCVFQCHNWP7ZQ0CS",
+   "factory_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+     "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+     "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-395399335e1c034e",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "09958016a4b6d58dbc6aae79221c220757c012ba1a56ab276ba824d122382eb2",
+    "finalized_at": "2026-10-25T21:33:47.283558Z",
+    "gap_count": 51,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:resource_budgets",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe1_inspection",
+     "failed_or_missing_quality_check:swe2_inspection",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+     "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.1",
+     "missing_or_empty_section:inspection/SWE.2",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:software/build",
+     "missing_or_empty_section:software/include",
+     "missing_or_empty_section:software/src",
+     "missing_or_empty_section:workproducts/SWE.2",
+     "missing_or_empty_section:workproducts/SWE.3",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "missing_required_pattern:software/build/*.elf",
+     "missing_required_pattern:software/build/*.map",
+     "missing_required_pattern:software/include/*.h",
+     "missing_required_pattern:software/src/*.c",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:DELIVERY:NOT_INJECTED",
+     "unresolved_finding:SWE.1:GATE_REWORK",
+     "unresolved_finding:SWE.2:GATE_REWORK",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "tim",
+   "peripheral_profile_sha256": "eb1e1d7197bde80ab87e05e731c4d6d901f3afa5754665369abb2813bd2f84ed",
+   "phases": {
+    "SWE.1": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:DISABLE_COUNTER:TIM_CR1.CEN, CONTRACT_NOT_IN_RM:workproducts); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 3,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "INCOMPLETE",
+     "final_reason": null,
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-TIM-ST",
+   "route": "AFO",
+   "started_at": "2026-10-25T21:22:46.199387Z",
+   "usage": {
+    "per_model": {
+     "gpt-6.1-sol": {
+      "cache_read": 217472,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 2117,
+      "output": 987
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 217472,
+      "cache_write": 0,
+      "calls": 4,
+      "input": 2117,
+      "output": 987
+     }
+    }
+   },
+   "work_order": "WO-AFO-395399335e1c034e-a1"
+  },
+  {
+   "attempt_id": "afo-efc1871950537b1a-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1928.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_CRC_LL_ST",
+    "git_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+    "input_manifest_ref": "config/factory/benchmark/afo/crc-st.json",
+    "manifest_sha256": "82b867d9c7ff81d2edfa4d7251be7f49013d9bee5646a76aa16e8d78ad78d00a",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T20:47:16.026109Z"
+   },
+   "fabro_run_id": "01M5TFRXFH6E493D4PGFD250MQ",
+   "factory_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-efc1871950537b1a",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "b94d8296b15574a261f7df0b30fa2d1f92028b8768b180344c4e9de995fcf6a5",
+    "finalized_at": "2026-10-25T22:06:25.872710Z",
+    "gap_count": 0,
+    "gaps": [],
+    "status": "READY_FOR_OFFLINE_REVIEW"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "af4d72334174841169fb50e614af4f05e870489c5a5bc44e1898c67efaa5b32b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-CRC-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-25T21:34:17.483123Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1312287,
+      "cache_write": 225889,
+      "calls": 7,
+      "input": 92,
+      "output": 11655
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 549760,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 17840,
+      "output": 1746
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 549760,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 17840,
+      "output": 1746
+     },
+     "inspector": {
+      "cache_read": 1226799,
+      "cache_write": 210158,
+      "calls": 6,
+      "input": 84,
+      "output": 11253
+     },
+     "other": {
+      "cache_read": 85488,
+      "cache_write": 15731,
+      "calls": 1,
+      "input": 8,
+      "output": 402
+     }
+    }
+   },
+   "work_order": "WO-AFO-efc1871950537b1a-a1"
+  },
+  {
+   "attempt_id": "afo-125b96c419d7bc90-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_spi.h",
+     "sha256": "4b10449cf1f02162578630a6a279354294aa9bda27fbcb7433fe7d708a1a4077"
+    }
+   ],
+   "driver": "STM32N6 serial peripheral interface (SPI1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2403.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_SPI_LL_ST",
+    "git_revision": "f81747ee595d71c170a2d45e4c592f4098821e03",
+    "input_manifest_ref": "config/factory/benchmark/afo/spi-st.json",
+    "manifest_sha256": "d3f5f1ee261b2281a6f538505aa4e1ad198c52a0751accc9632a82e6fd9b304b",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T20:47:16.026183Z"
+   },
+   "fabro_run_id": "01M5THMHD0NM83VXX1ZP1YM2NK",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch67-spi.md",
+     "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+     "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-125b96c419d7bc90",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "ebfd17e8e4de709b22e3c56b3a0872f6c2c1b57b76a2a0550ef33cfc8b77e717",
+    "finalized_at": "2026-10-25T22:46:53.102184Z",
+    "gap_count": 0,
+    "gaps": [],
+    "status": "READY_FOR_OFFLINE_REVIEW"
+   },
+   "peripheral": "spi",
+   "peripheral_profile_sha256": "57f74f4e1656443e9dcaac8095bc254345a71be1726f41a3eed5318018d9fe62",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-002",
+     "inspections_failed": 1,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-SPI-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-25T22:06:50.984363Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1807802,
+      "cache_write": 299415,
+      "calls": 8,
+      "input": 114,
+      "output": 14822
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 670592,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 13439,
+      "output": 2499
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 670592,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 13439,
+      "output": 2499
+     },
+     "inspector": {
+      "cache_read": 1719644,
+      "cache_write": 282793,
+      "calls": 7,
+      "input": 106,
+      "output": 14393
+     },
+     "other": {
+      "cache_read": 88158,
+      "cache_write": 16622,
+      "calls": 1,
+      "input": 8,
+      "output": 429
+     }
+    }
+   },
+   "work_order": "WO-AFO-125b96c419d7bc90-a1"
+  },
+  {
+   "attempt_id": "afo-b165153de937ec43-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 8
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "ARCHITECTURE",
+     "status": "REJECTED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1016.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T21:41:40.839344Z"
+   },
+   "fabro_run_id": "01M5TKYRSVXERRFYSPXB47QHSZ",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-b165153de937ec43",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "e3ff7f02970d29799f73ea1eaeaa0c1ece8638e97694c0a7c8b985cb2c76d8eb",
+    "finalized_at": "2026-10-25T23:04:20.098917Z",
+    "gap_count": 37,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (UNIT:SWR_NOT_REFINED:SWR-025 (allocated to SWC_LL but no unit-spec item traces it: add 'Traces: SWR-025' to the USPEC it); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 1
+    }
+   },
+   "request_id": "BENCH-USART-ST-R2",
+   "route": "AFO",
+   "started_at": "2026-10-25T22:47:24.251150Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 295326,
+      "cache_write": 42815,
+      "calls": 2,
+      "input": 28,
+      "output": 2867
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 300800,
+      "cache_write": 0,
+      "calls": 6,
+      "input": 3098,
+      "output": 1220
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 300800,
+      "cache_write": 0,
+      "calls": 6,
+      "input": 3098,
+      "output": 1220
+     },
+     "inspector": {
+      "cache_read": 295326,
+      "cache_write": 42815,
+      "calls": 2,
+      "input": 28,
+      "output": 2867
+     }
+    }
+   },
+   "work_order": "WO-AFO-b165153de937ec43-a1"
+  },
+  {
+   "attempt_id": "afo-889090e22f5adc87-a1",
+   "attempt_state": "FAILED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_gpio.h",
+     "sha256": "c5a921e733e5bed5747a99daea0eefa1499936d3b33eec3409bb89395bc48350"
+    }
+   ],
+   "driver": "STM32N6 general-purpose I/O (GPIOA) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": null,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_GPIO_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/gpio-st.json",
+    "manifest_sha256": "c16b980de4342d468cb4937f334eb62a7b76e66f8ecbb7bf92bdc01042e38034",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T21:41:40.839487Z"
+   },
+   "fabro_run_id": "01M5TMYB2BG4E0VANKC248G4F1",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch15-gpio.md",
+     "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+     "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-889090e22f5adc87",
+   "order_state": "BLOCKED",
+   "package": null,
+   "peripheral": "gpio",
+   "peripheral_profile_sha256": "6f358e754ec47fa6d3004853cb7091a304cb187f779bc9993222fd0fdad99c7b",
+   "phases": {
+    "SWE.1": {
+     "final": "REWORK",
+     "final_reason": "NO_BASELINE",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 2,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-GPIO-ST-R2",
+   "route": "AFO",
+   "started_at": "2026-10-25T23:04:38.751208Z",
+   "usage": {
+    "per_model": {},
+    "per_role": {}
+   },
+   "work_order": "WO-AFO-889090e22f5adc87-a1"
+  },
+  {
+   "attempt_id": "afo-37545e4e4ec30297-a1",
+   "attempt_state": "FAILED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_tim.h",
+     "sha256": "a9d2c8f0bee55daf32b39cb7bca06898739ff93284ce8b7a0770a42fd57dccb7"
+    }
+   ],
+   "driver": "STM32N6 general-purpose timer (TIM2) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": null,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_TIM_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/tim-st.json",
+    "manifest_sha256": "78ebb8cab4a20bc591dc67cd55ae7bda48e0544ec5642ccac48e54f1fca89fe7",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-25T21:41:40.839633Z"
+   },
+   "fabro_run_id": "01M5V4TCWTHY142DRS5RJF7XV0",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+     "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+     "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-37545e4e4ec30297",
+   "order_state": "BLOCKED",
+   "package": null,
+   "peripheral": "tim",
+   "peripheral_profile_sha256": "ff86ae310295270cd9f450fecbe4856ac677e05ddd3c97f91ae717d8388d01c1",
+   "phases": {
+    "SWE.1": {
+     "final": "REWORK",
+     "final_reason": "NO_BASELINE",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 2,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-TIM-ST-R2",
+   "route": "AFO",
+   "started_at": "2026-10-26T03:42:06.614349Z",
+   "usage": {
+    "per_model": {},
+    "per_role": {}
+   },
+   "work_order": "WO-AFO-37545e4e4ec30297-a1"
+  },
+  {
+   "attempt_id": "afo-39c00e8a1cfe25f9-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 16
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1723.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:21:17.163273Z"
+   },
+   "fabro_run_id": "01M5VMSSQED1V272E4HGGCBTY0",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-39c00e8a1cfe25f9",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "d18e6d5bca41d6be6aa5ade1ae12e6f2801e1c6ef48885d0166301a849f241c4",
+    "finalized_at": "2026-10-26T08:50:07.000593Z",
+    "gap_count": 46,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-011:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-012:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-013:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-014:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-015:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-016:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-017:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-018:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "BLOCKED",
+     "final_reason": "rework budget exhausted (3 failed cycles)",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 2,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R3",
+   "route": "AFO",
+   "started_at": "2026-10-26T08:21:24.021009Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 362162,
+      "cache_write": 62897,
+      "calls": 2,
+      "input": 30,
+      "output": 3459
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 459648,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 14226,
+      "output": 1717
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 459648,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 14226,
+      "output": 1717
+     },
+     "inspector": {
+      "cache_read": 362162,
+      "cache_write": 62897,
+      "calls": 2,
+      "input": 30,
+      "output": 3459
+     }
+    }
+   },
+   "work_order": "WO-AFO-39c00e8a1cfe25f9-a1"
+  },
+  {
+   "attempt_id": "afo-c522096b86f34687-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-005",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-006",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-007",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-008",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_gpio.h",
+     "sha256": "c5a921e733e5bed5747a99daea0eefa1499936d3b33eec3409bb89395bc48350"
+    }
+   ],
+   "driver": "STM32N6 general-purpose I/O (GPIOA) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 3411.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_GPIO_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/gpio-st.json",
+    "manifest_sha256": "c16b980de4342d468cb4937f334eb62a7b76e66f8ecbb7bf92bdc01042e38034",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:21:17.163590Z"
+   },
+   "fabro_run_id": "01M5VPEW5G7PWW5QXD1Y4QSRKC",
+   "factory_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch15-gpio.md",
+     "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+     "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-c522096b86f34687",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "5dfbc5576a88adb0a61929aebe8145aebde5418473a7dba1b1b8cd898941bd9e",
+    "finalized_at": "2026-10-26T09:47:14.897285Z",
+    "gap_count": 12,
+    "gaps": [
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_section:inspection/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:DELIVERED_CODE:ALLOCATED_NOT_DELIVERED:LL_GPIO_PULL_DOWN",
+     "unresolved_finding:DELIVERED_CODE:ALLOCATED_NOT_DELIVERED:LL_GPIO_PULL_NO",
+     "unresolved_finding:DELIVERED_CODE:ALLOCATED_NOT_DELIVERED:LL_GPIO_PULL_UP",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY",
+     "unresolved_finding:escalated_defect:DEF-005:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "gpio",
+   "peripheral_profile_sha256": "6f358e754ec47fa6d3004853cb7091a304cb187f779bc9993222fd0fdad99c7b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_robot:FAIL, VT:SWR_NOT_VERIFIED:SWR-008, VT:SWR_NOT_VERIFIED:SWR-009, VT:SWR_NOT_VERIFIED:SWR); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-GPIO-ST-R3",
+   "route": "AFO",
+   "started_at": "2026-10-26T08:50:23.448430Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1129361,
+      "cache_write": 201831,
+      "calls": 5,
+      "input": 70,
+      "output": 7940
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 748032,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 21352,
+      "output": 2533
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 748032,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 21352,
+      "output": 2533
+     },
+     "inspector": {
+      "cache_read": 1129361,
+      "cache_write": 201831,
+      "calls": 5,
+      "input": 70,
+      "output": 7940
+     }
+    }
+   },
+   "work_order": "WO-AFO-c522096b86f34687-a1"
+  },
+  {
+   "attempt_id": "afo-74b711f1fa30365c-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 1
+   },
+   "defects": [],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_tim.h",
+     "sha256": "a9d2c8f0bee55daf32b39cb7bca06898739ff93284ce8b7a0770a42fd57dccb7"
+    }
+   ],
+   "driver": "STM32N6 general-purpose timer (TIM2) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1366.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_TIM_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/tim-st.json",
+    "manifest_sha256": "78ebb8cab4a20bc591dc67cd55ae7bda48e0544ec5642ccac48e54f1fca89fe7",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:21:17.163776Z"
+   },
+   "fabro_run_id": "01M5VSQSBD0CAQBRG8XBCCPEYS",
+   "factory_revision": "648b82d58fdb8f8740cdd6116e03998360684d88",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+     "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+     "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-74b711f1fa30365c",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "ca9ab80b4c35026fc2a2b3f2e5877961e6f646e30220acfba759659fb00fd457",
+    "finalized_at": "2026-10-26T10:10:26.929074Z",
+    "gap_count": 30,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:misra_coverage_assessed",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe3_inspection",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.3",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.4",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-001:CONTRADICTION:LL_TIM_SetCounter:SWR-012",
+     "unresolved_finding:SWE.3:GATE_REWORK",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "tim",
+   "peripheral_profile_sha256": "ff86ae310295270cd9f450fecbe4856ac677e05ddd3c97f91ae717d8388d01c1",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "BLOCKED",
+     "final_reason": "rework budget exhausted (3 failed cycles)",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 2,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-TIM-ST-R3",
+   "route": "AFO",
+   "started_at": "2026-10-26T09:47:40.396434Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 417040,
+      "cache_write": 51938,
+      "calls": 2,
+      "input": 34,
+      "output": 3650
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 393600,
+      "cache_write": 0,
+      "calls": 7,
+      "input": 6420,
+      "output": 2476
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 393600,
+      "cache_write": 0,
+      "calls": 7,
+      "input": 6420,
+      "output": 2476
+     },
+     "inspector": {
+      "cache_read": 417040,
+      "cache_write": 51938,
+      "calls": 2,
+      "input": 34,
+      "output": 3650
+     }
+    }
+   },
+   "work_order": "WO-AFO-74b711f1fa30365c-a1"
+  },
+  {
+   "attempt_id": "afo-e8d55e905cc593ba-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 8
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2509.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:53:22.864748Z"
+   },
+   "fabro_run_id": "01M5VV2C6WP9D57NT0W16GFYZG",
+   "factory_revision": "df81178e2c0205d34cc2c9a536eb2a52232f38a8",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-e8d55e905cc593ba",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "04550a430b5042564a3564966c8da4bcf85a083f7adcd47f3634cd3a1193d36e",
+    "finalized_at": "2026-10-26T10:52:45.670088Z",
+    "gap_count": 28,
+    "gaps": [
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_CR1_M",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_RXNE_RXFNE",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_TXE_TXFNF",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY",
+     "unresolved_finding:escalated_defect:DEF-002:FACTORY",
+     "unresolved_finding:escalated_defect:DEF-004:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 2,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_renode:FAIL); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-26T10:10:56.296320Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1013736,
+      "cache_write": 144960,
+      "calls": 4,
+      "input": 66,
+      "output": 7535
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 816000,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 10431,
+      "output": 2898
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 816000,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 10431,
+      "output": 2898
+     },
+     "inspector": {
+      "cache_read": 1013736,
+      "cache_write": 144960,
+      "calls": 4,
+      "input": 66,
+      "output": 7535
+     }
+    }
+   },
+   "work_order": "WO-AFO-e8d55e905cc593ba-a1"
+  },
+  {
+   "attempt_id": "afo-e8d55e905cc593ba-a2",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 3,
+    "open": 20
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-005",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1647.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:53:22.864748Z"
+   },
+   "fabro_run_id": "01M5VXGQGA2YYZKQF788FCCFGS",
+   "factory_revision": "45b865e098223234ead5e99a9eba6ee0bf36a663",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-e8d55e905cc593ba",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "14129c5f8d64f38e73e2aec2cc63fc870a064e2e1ca96aebde293fe4e5cd46ad",
+    "finalized_at": "2026-10-26T11:21:10.306833Z",
+    "gap_count": 49,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:static_analysis",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-011:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-012:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-013:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-014:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-015:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-016:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-017:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-018:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-019:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-020:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-021:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-022:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:CONFORMANCE:CF-023:CONTRADICTION:LL_USART_SetBaudRate:SWR-011",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_CR1_M",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_RXNE_RXFNE",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_TXE_TXFNF",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:CODE",
+     "unresolved_finding:escalated_defect:DEF-002:FACTORY",
+     "unresolved_finding:escalated_defect:DEF-003:CODE",
+     "unresolved_finding:escalated_defect:DEF-005:CODE"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-LL-11-01, UT:SPEC_NOT_VERIFIED:USPEC-LL-11-02, UT:SPEC_); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-26T10:53:43.660701Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 579306,
+      "cache_write": 96629,
+      "calls": 3,
+      "input": 42,
+      "output": 5521
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 440704,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 5625,
+      "output": 1452
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 440704,
+      "cache_write": 0,
+      "calls": 8,
+      "input": 5625,
+      "output": 1452
+     },
+     "inspector": {
+      "cache_read": 579306,
+      "cache_write": 96629,
+      "calls": 3,
+      "input": 42,
+      "output": 5521
+     }
+    }
+   },
+   "work_order": "WO-AFO-e8d55e905cc593ba-a2"
+  },
+  {
+   "attempt_id": "afo-e8d55e905cc593ba-a3",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 4,
+    "open": 8
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 3626.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "e8717c4631e3e606a4b441efbe6035d6d07e6734",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T08:53:22.864748Z"
+   },
+   "fabro_run_id": "01M5VZ4K56YMKW2Q3AVK3QQ3QG",
+   "factory_revision": "28a4c6b9cff7b1001480d76327500e63d15a05bd",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-e8d55e905cc593ba",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "15b72cc4a19ce3b55fe654c2aebb590a87da8088e03122e7f28a90366ecf7246",
+    "finalized_at": "2026-10-26T12:22:29.053213Z",
+    "gap_count": 13,
+    "gaps": [
+     "failed_or_missing_quality_check:static_analysis",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-011:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-012:CONTRADICTION:LL_USART_SetBaudRate:SWR-012",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_CR1_M",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_RXNE_RXFNE",
+     "unresolved_finding:DELIVERED_CODE:FIELD_NOT_IN_RM:USART_ISR_TXE_TXFNF",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 2,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-26T11:22:03.286964Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1820438,
+      "cache_write": 250633,
+      "calls": 7,
+      "input": 106,
+      "output": 13219
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 866048,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 8181,
+      "output": 2896
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 866048,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 8181,
+      "output": 2896
+     },
+     "inspector": {
+      "cache_read": 1732131,
+      "cache_write": 233482,
+      "calls": 6,
+      "input": 98,
+      "output": 12647
+     },
+     "other": {
+      "cache_read": 88307,
+      "cache_write": 17151,
+      "calls": 1,
+      "input": 8,
+      "output": 572
+     }
+    }
+   },
+   "work_order": "WO-AFO-e8d55e905cc593ba-a3"
+  },
+  {
+   "attempt_id": "afo-be72d86a19f37d10-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_gpio.h",
+     "sha256": "c5a921e733e5bed5747a99daea0eefa1499936d3b33eec3409bb89395bc48350"
+    }
+   ],
+   "driver": "STM32N6 general-purpose I/O (GPIOA) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 3302.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_GPIO_LL_ST",
+    "git_revision": "df81178e2c0205d34cc2c9a536eb2a52232f38a8",
+    "input_manifest_ref": "config/factory/benchmark/afo/gpio-st.json",
+    "manifest_sha256": "c16b980de4342d468cb4937f334eb62a7b76e66f8ecbb7bf92bdc01042e38034",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T09:56:57.013969Z"
+   },
+   "fabro_run_id": "01M5W2KWCA09D1JM0YVJWT77P3",
+   "factory_revision": "28a4c6b9cff7b1001480d76327500e63d15a05bd",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch15-gpio.md",
+     "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+     "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-be72d86a19f37d10",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "356843624c3a50a3e74fcc987fe0306eb2450190729c499014e35ed7a03b8033",
+    "finalized_at": "2026-10-26T13:17:52.180025Z",
+    "gap_count": 2,
+    "gaps": [
+     "failed_or_missing_quality_check:static_analysis",
+     "unresolved_finding:escalated_defect:DEF-001:FACTORY"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "gpio",
+   "peripheral_profile_sha256": "6f358e754ec47fa6d3004853cb7091a304cb187f779bc9993222fd0fdad99c7b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 2,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-GPIO-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-26T12:22:50.470873Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1461381,
+      "cache_write": 255127,
+      "calls": 7,
+      "input": 96,
+      "output": 10212
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 833536,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 7281,
+      "output": 2265
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 833536,
+      "cache_write": 0,
+      "calls": 15,
+      "input": 7281,
+      "output": 2265
+     },
+     "inspector": {
+      "cache_read": 1371933,
+      "cache_write": 238052,
+      "calls": 6,
+      "input": 88,
+      "output": 9739
+     },
+     "other": {
+      "cache_read": 89448,
+      "cache_write": 17075,
+      "calls": 1,
+      "input": 8,
+      "output": 473
+     }
+    }
+   },
+   "work_order": "WO-AFO-be72d86a19f37d10-a1"
+  },
+  {
+   "attempt_id": "afo-c36be5a7c46d0b55-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 3
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "FACTORY",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "REQUIREMENT",
+     "status": "OPEN"
+    },
+    {
+     "id": "DEF-005",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-006",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-007",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_tim.h",
+     "sha256": "a9d2c8f0bee55daf32b39cb7bca06898739ff93284ce8b7a0770a42fd57dccb7"
+    }
+   ],
+   "driver": "STM32N6 general-purpose timer (TIM2) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2932.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261025",
+    "driver_class": "STM32N6_TIM_LL_ST",
+    "git_revision": "0fd4f4a79518addef4f8639ff8ec8e3daab63d26",
+    "input_manifest_ref": "config/factory/benchmark/afo/tim-st.json",
+    "manifest_sha256": "78ebb8cab4a20bc591dc67cd55ae7bda48e0544ec5642ccac48e54f1fca89fe7",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T10:17:35.354820Z"
+   },
+   "fabro_run_id": "01M5W5SN4MD8BZC36S6GAC9G1S",
+   "factory_revision": "427bf68350bcadc81dd3ac7238e6ef1ddfc506ff",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+     "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+     "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-c36be5a7c46d0b55",
+   "order_state": "BLOCKED",
+   "package": {
+    "archive_sha256": "cd917e04bf47bddc0cbdf5cbe4423f6bebca7d4ca2e96bab286c05440c815eb9",
+    "finalized_at": "2026-10-26T14:07:16.629091Z",
+    "gap_count": 6,
+    "gaps": [
+     "failed_or_missing_quality_check:static_analysis",
+     "unresolved_finding:CONFORMANCE:CF-001:CONTRADICTION:LL_TIM_SetCounter:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-002:CONTRADICTION:LL_TIM_SetCounter:SWR-012",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_TIM_SetCounter:SWR-012",
+     "unresolved_finding:escalated_defect:DEF-002:FACTORY",
+     "unresolved_finding:open_defect:DEF-004:REQUIREMENT:OPEN"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "tim",
+   "peripheral_profile_sha256": "ff86ae310295270cd9f450fecbe4856ac677e05ddd3c97f91ae717d8388d01c1",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-TIM-ST-R4",
+   "route": "AFO",
+   "started_at": "2026-10-26T13:18:24.633674Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1630927,
+      "cache_write": 239168,
+      "calls": 7,
+      "input": 104,
+      "output": 14044
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 571776,
+      "cache_write": 0,
+      "calls": 11,
+      "input": 7199,
+      "output": 2603
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 571776,
+      "cache_write": 0,
+      "calls": 11,
+      "input": 7199,
+      "output": 2603
+     },
+     "inspector": {
+      "cache_read": 1548359,
+      "cache_write": 224182,
+      "calls": 6,
+      "input": 96,
+      "output": 13411
+     },
+     "other": {
+      "cache_read": 82568,
+      "cache_write": 14986,
+      "calls": 1,
+      "input": 8,
+      "output": 633
+     }
+    }
+   },
+   "work_order": "WO-AFO-c36be5a7c46d0b55-a1"
+  },
+  {
+   "attempt_id": "afo-1fab3fc8b2e35f24-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2663.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261026",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "427bf68350bcadc81dd3ac7238e6ef1ddfc506ff",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T12:35:49.408964Z"
+   },
+   "fabro_run_id": "01M5W8KYWCD7AD2NMNS78GWFQH",
+   "factory_revision": "e864f07237079d6b6ef7bb7aece5018dffd4ff2a",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-1fab3fc8b2e35f24",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "2172181902b9474f176cb315ac4659e38098e149a3e21188f03a1e7dc8eb8da7",
+    "finalized_at": "2026-10-26T14:52:06.598177Z",
+    "gap_count": 24,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:CODE",
+     "unresolved_finding:escalated_defect:DEF-003:CODE",
+     "unresolved_finding:escalated_defect:DEF-004:CODE"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 3,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-LL-11-01, UT:SPEC_NOT_VERIFIED:USPEC-LL-11-02, UT:SPEC_); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R5",
+   "route": "AFO",
+   "started_at": "2026-10-26T14:07:43.966065Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 581962,
+      "cache_write": 91963,
+      "calls": 3,
+      "input": 44,
+      "output": 5065
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 713856,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 22546,
+      "output": 5159
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 713856,
+      "cache_write": 0,
+      "calls": 14,
+      "input": 22546,
+      "output": 5159
+     },
+     "inspector": {
+      "cache_read": 581962,
+      "cache_write": 91963,
+      "calls": 3,
+      "input": 44,
+      "output": 5065
+     }
+    }
+   },
+   "work_order": "WO-AFO-1fab3fc8b2e35f24-a1"
+  },
+  {
+   "attempt_id": "afo-1fab3fc8b2e35f24-a2",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 2,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_usart.h",
+     "sha256": "ac413ef16c09e2776dff6456413dd2e9dcf54d99c549fa6361a5443f9cc2b793"
+    }
+   ],
+   "driver": "STM32N6 universal synchronous/asynchronous receiver transmitter (USART1) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2820.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261026",
+    "driver_class": "STM32N6_USART_LL_ST",
+    "git_revision": "427bf68350bcadc81dd3ac7238e6ef1ddfc506ff",
+    "input_manifest_ref": "config/factory/benchmark/afo/usart-st.json",
+    "manifest_sha256": "22556bf3aec4998be1feaff0e15a80279809654600ab823d3d938cb69efb3d93",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T12:35:49.408964Z"
+   },
+   "fabro_run_id": "01M5WB6TMF3228N9D4E3HX0SNG",
+   "factory_revision": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch65-usart.md",
+     "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+     "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-1fab3fc8b2e35f24",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "f6d597993a2dc90a9aa722e45e2442b070718ffc69548e37b05900d64e6c03ae",
+    "finalized_at": "2026-10-26T15:39:59.615427Z",
+    "gap_count": 0,
+    "gaps": [],
+    "status": "READY_FOR_OFFLINE_REVIEW"
+   },
+   "peripheral": "usart",
+   "peripheral_profile_sha256": "c67da4bcc6c0076a844835714201a0910a810e3a488616c7fe8d49d710a957df",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-USART-ST-R5",
+   "route": "AFO",
+   "started_at": "2026-10-26T14:52:59.319054Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1430587,
+      "cache_write": 232498,
+      "calls": 7,
+      "input": 94,
+      "output": 10743
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 578432,
+      "cache_write": 0,
+      "calls": 11,
+      "input": 4117,
+      "output": 1755
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 578432,
+      "cache_write": 0,
+      "calls": 11,
+      "input": 4117,
+      "output": 1755
+     },
+     "inspector": {
+      "cache_read": 1348189,
+      "cache_write": 217804,
+      "calls": 6,
+      "input": 86,
+      "output": 10092
+     },
+     "other": {
+      "cache_read": 82398,
+      "cache_write": 14694,
+      "calls": 1,
+      "input": 8,
+      "output": 651
+     }
+    }
+   },
+   "work_order": "WO-AFO-1fab3fc8b2e35f24-a2"
+  },
+  {
+   "attempt_id": "afo-03122bd1dd4fb5ff-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 4,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_gpio.h",
+     "sha256": "c5a921e733e5bed5747a99daea0eefa1499936d3b33eec3409bb89395bc48350"
+    }
+   ],
+   "driver": "STM32N6 general-purpose I/O (GPIOA) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2723.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261026",
+    "driver_class": "STM32N6_GPIO_LL_ST",
+    "git_revision": "e864f07237079d6b6ef7bb7aece5018dffd4ff2a",
+    "input_manifest_ref": "config/factory/benchmark/afo/gpio-st.json",
+    "manifest_sha256": "c16b980de4342d468cb4937f334eb62a7b76e66f8ecbb7bf92bdc01042e38034",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T13:56:46.978843Z"
+   },
+   "fabro_run_id": "01M5WDXFXW6Z3E1VWVCKHE66A5",
+   "factory_revision": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch15-gpio.md",
+     "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+     "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-03122bd1dd4fb5ff",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "0d9f5889ba46c12fc97b48042d879c3cf3b48f1f89cc44548a9fdb6235c1a3ce",
+    "finalized_at": "2026-10-26T16:25:42.303634Z",
+    "gap_count": 0,
+    "gaps": [],
+    "status": "READY_FOR_OFFLINE_REVIEW"
+   },
+   "peripheral": "gpio",
+   "peripheral_profile_sha256": "6f358e754ec47fa6d3004853cb7091a304cb187f779bc9993222fd0fdad99c7b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-GPIO-ST-R5",
+   "route": "AFO",
+   "started_at": "2026-10-26T15:40:19.760970Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1415898,
+      "cache_write": 245163,
+      "calls": 7,
+      "input": 94,
+      "output": 9595
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 696960,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 8662,
+      "output": 1536
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 696960,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 8662,
+      "output": 1536
+     },
+     "inspector": {
+      "cache_read": 1330155,
+      "cache_write": 229345,
+      "calls": 6,
+      "input": 86,
+      "output": 9167
+     },
+     "other": {
+      "cache_read": 85743,
+      "cache_write": 15818,
+      "calls": 1,
+      "input": 8,
+      "output": 428
+     }
+    }
+   },
+   "work_order": "WO-AFO-03122bd1dd4fb5ff-a1"
+  },
+  {
+   "attempt_id": "afo-c2fd276494a54e7f-a1",
+   "attempt_state": "SUCCEEDED",
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 0
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_tim.h",
+     "sha256": "a9d2c8f0bee55daf32b39cb7bca06898739ff93284ce8b7a0770a42fd57dccb7"
+    }
+   ],
+   "driver": "STM32N6 general-purpose timer (TIM2) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2766.0,
+   "envelope": {
+    "authorization_ref": "AUTH-AFO-PILOT-20261026",
+    "driver_class": "STM32N6_TIM_LL_ST",
+    "git_revision": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+    "input_manifest_ref": "config/factory/benchmark/afo/tim-st.json",
+    "manifest_sha256": "78ebb8cab4a20bc591dc67cd55ae7bda48e0544ec5642ccac48e54f1fca89fe7",
+    "model_profile": "codex-claude",
+    "submitted_utc": "2026-10-26T14:15:59.905895Z"
+   },
+   "fabro_run_id": "01M5WGH6D5HDSNEEMGD49D1DS2",
+   "factory_revision": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+     "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+     "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions.md",
+     "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+     "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "order_id": "afo-c2fd276494a54e7f",
+   "order_state": "READY_FOR_OFFLINE_REVIEW",
+   "package": {
+    "archive_sha256": "995f31e322a1feb0370ecec97709424beab02c1d84102c02fae09b50113e4ad6",
+    "finalized_at": "2026-10-26T17:12:08.261004Z",
+    "gap_count": 0,
+    "gaps": [],
+    "status": "READY_FOR_OFFLINE_REVIEW"
+   },
+   "peripheral": "tim",
+   "peripheral_profile_sha256": "6cc97d1226e68435b6ae2dafe63437fd1488bdfddc296e464e8b6c1f629bbb1b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 2,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "request_id": "BENCH-TIM-ST-R5",
+   "route": "AFO",
+   "started_at": "2026-10-26T16:26:02.501579Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1601503,
+      "cache_write": 229086,
+      "calls": 7,
+      "input": 102,
+      "output": 11238
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 682368,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 8669,
+      "output": 2297
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 682368,
+      "cache_write": 0,
+      "calls": 13,
+      "input": 8669,
+      "output": 2297
+     },
+     "inspector": {
+      "cache_read": 1517109,
+      "cache_write": 213732,
+      "calls": 6,
+      "input": 94,
+      "output": 10843
+     },
+     "other": {
+      "cache_read": 84394,
+      "cache_write": 15354,
+      "calls": 1,
+      "input": 8,
+      "output": 395
+     }
+    }
+   },
+   "work_order": "WO-AFO-c2fd276494a54e7f-a1"
+  },
+  {
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 8
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-003",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-004",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    },
+    {
+     "id": "DEF-005",
+     "kind": "CODE",
+     "status": "ESCALATED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 1553.0,
+   "fabro_run_id": "01M5S5BGSFY24R0VB3JMRWS2FC",
+   "factory_revision": "356455c7774e2ff4fa07d9f6665477932a8cf653",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "item": "crc-st",
+   "launch_error": null,
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "package": {
+    "archive_sha256": "071c7ed186d3c4c875cddf0f7c5603c3bcc0d27c102359f1f25d71145e38387f",
+    "finalized_at": "2026-10-25T09:38:49.392194Z",
+    "gap_count": 45,
+    "gaps": [
+     "failed_or_missing_quality_check:integration_verification",
+     "failed_or_missing_quality_check:software_verification",
+     "failed_or_missing_quality_check:swe4_inspection",
+     "failed_or_missing_quality_check:swe5_inspection",
+     "failed_or_missing_quality_check:swe6_inspection",
+     "failed_or_missing_quality_check:target_verification",
+     "failed_or_missing_quality_check:unit_verification",
+     "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+     "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+     "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+     "missing_or_empty_section:inspection/SWE.4",
+     "missing_or_empty_section:inspection/SWE.5",
+     "missing_or_empty_section:inspection/SWE.6",
+     "missing_or_empty_section:workproducts/SWE.5",
+     "missing_or_empty_section:workproducts/SWE.6",
+     "run_not_completed:INCOMPLETE",
+     "unresolved_finding:CONFORMANCE:CF-001:CONTRADICTION:LL_CRC_ResetCRCCalculationUnit:SWR-001",
+     "unresolved_finding:CONFORMANCE:CF-002:CONTRADICTION:LL_CRC_SetPolynomialSize:SWR-002",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_CRC_SetInputDataReverseMode:SWR-003",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_CRC_SetOutputDataReverseMode:SWR-004",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_CRC_SetInitialData:SWR-005",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_CRC_SetPolynomialCoef:SWR-006",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_CRC_FeedData32:SWR-007",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_CRC_Write_IDR:SWR-009",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:181",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:197",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:284",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:317",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:347",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:377",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:411",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:449",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:497",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:510",
+     "unresolved_finding:SWE.4:GATE_REWORK",
+     "unresolved_finding:SWE.5:GATE_REWORK",
+     "unresolved_finding:SWE.6:GATE_REWORK",
+     "unresolved_finding:escalated_defect:DEF-001:CODE",
+     "unresolved_finding:escalated_defect:DEF-003:CODE",
+     "unresolved_finding:escalated_defect:DEF-004:CODE",
+     "unresolved_finding:escalated_defect:DEF-005:CODE"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "e282d7a24c8f53f9687bf597b250ba99eb9fa467a1e698881314a9c11a3e7d53",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "BLOCKED",
+     "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-LL-03-01, UT:SPEC_NOT_VERIFIED:USPEC-LL-03-02, UT:SPEC_); stopped early",
+     "inspections_failed": 0,
+     "inspections_passed": 0,
+     "reworks": 1,
+     "upstream_returns": 0
+    }
+   },
+   "route": "queue-runner",
+   "started_at": "2026-10-25T09:12:56.972886Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 496008,
+      "cache_write": 85333,
+      "calls": 3,
+      "input": 42,
+      "output": 4883
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 430976,
+      "cache_write": 0,
+      "calls": 10,
+      "input": 6756,
+      "output": 1500
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 430976,
+      "cache_write": 0,
+      "calls": 10,
+      "input": 6756,
+      "output": 1500
+     },
+     "inspector": {
+      "cache_read": 496008,
+      "cache_write": 85333,
+      "calls": 3,
+      "input": 42,
+      "output": 4883
+     }
+    }
+   },
+   "work_order": "WO-BENCH-CRC-ST-r1"
+  },
+  {
+   "code_mode": "FROZEN",
+   "conformance": {
+    "deferred": 0,
+    "open": 10
+   },
+   "defects": [
+    {
+     "id": "DEF-001",
+     "kind": "TEST",
+     "status": "DECLARED"
+    },
+    {
+     "id": "DEF-002",
+     "kind": "TEST",
+     "status": "DECLARED"
+    }
+   ],
+   "delivered_code": [
+    {
+     "path": "software/ll/stm32n6xx_ll_crc.h",
+     "sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+    }
+   ],
+   "driver": "STM32N6 CRC calculation unit (CRC) low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+   "duration_s": 2085.0,
+   "fabro_run_id": "01M5S7A9Z558CSB49XMM72TYAG",
+   "factory_revision": "a96f106bbb145ed47f73dc734127d88eedf9e477",
+   "factory_revision_dirty": false,
+   "inputs": [
+    {
+     "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+     "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+     "path": "inputs/RM0486-rev4-ch26-crc.md",
+     "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+     "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+     "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+     "path": "inputs/inputs-manifest.json",
+     "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+     "path": "inputs/hal_driver_guideline.md",
+     "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+   ],
+   "item": "crc-st",
+   "launch_error": null,
+   "models": {
+    "authors": "gpt-6.1-sol",
+    "inspectors": "claude-opus-5-5",
+    "run_model": "deepseek-flash",
+    "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+   },
+   "package": {
+    "archive_sha256": "0bdcbf4da6a0f933b2f17557d8402a1f5c83e4861c077eee924402bee13ab985",
+    "finalized_at": "2026-10-25T10:21:57.921561Z",
+    "gap_count": 22,
+    "gaps": [
+     "missing_or_empty_file:safety/software_safety_analysis.md",
+     "missing_or_empty_file:safety/tool_assurance_assessment.md",
+     "unresolved_finding:CONFORMANCE:CF-001:CONTRADICTION:LL_CRC_ResetCRCCalculationUnit:SWR-001",
+     "unresolved_finding:CONFORMANCE:CF-002:CONTRADICTION:LL_CRC_SetPolynomialSize:SWR-002",
+     "unresolved_finding:CONFORMANCE:CF-003:CONTRADICTION:LL_CRC_SetInputDataReverseMode:SWR-003",
+     "unresolved_finding:CONFORMANCE:CF-004:CONTRADICTION:LL_CRC_SetInputDataReverseMode:SWR-003",
+     "unresolved_finding:CONFORMANCE:CF-005:CONTRADICTION:LL_CRC_SetOutputDataReverseMode:SWR-004",
+     "unresolved_finding:CONFORMANCE:CF-006:CONTRADICTION:LL_CRC_SetOutputDataReverseMode:SWR-004",
+     "unresolved_finding:CONFORMANCE:CF-007:CONTRADICTION:LL_CRC_SetInitialData:SWR-005",
+     "unresolved_finding:CONFORMANCE:CF-008:CONTRADICTION:LL_CRC_SetPolynomialCoef:SWR-006",
+     "unresolved_finding:CONFORMANCE:CF-009:CONTRADICTION:LL_CRC_FeedData32:SWR-007",
+     "unresolved_finding:CONFORMANCE:CF-010:CONTRADICTION:LL_CRC_Write_IDR:SWR-009",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:181",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:197",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:284",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:317",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:347",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:377",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:411",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:449",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:497",
+     "unresolved_finding:DELIVERED_CODE:GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:510"
+    ],
+    "status": "BLOCKED"
+   },
+   "peripheral": "crc",
+   "peripheral_profile_sha256": "af4d72334174841169fb50e614af4f05e870489c5a5bc44e1898c67efaa5b32b",
+   "phases": {
+    "SWE.1": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.1-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.2": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.2-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.3": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.3-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 1,
+     "upstream_returns": 0
+    },
+    "SWE.4": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.4-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.5": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.5-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    },
+    "SWE.6": {
+     "final": "PASS",
+     "final_reason": "INS-SWE.6-001",
+     "inspections_failed": 0,
+     "inspections_passed": 1,
+     "reworks": 0,
+     "upstream_returns": 0
+    }
+   },
+   "route": "queue-runner",
+   "started_at": "2026-10-25T09:47:12.814475Z",
+   "usage": {
+    "per_model": {
+     "claude-opus-5-5": {
+      "cache_read": 1464928,
+      "cache_write": 219082,
+      "calls": 7,
+      "input": 100,
+      "output": 11941
+     },
+     "gpt-6.1-sol": {
+      "cache_read": 496384,
+      "cache_write": 0,
+      "calls": 12,
+      "input": 6243,
+      "output": 1186
+     }
+    },
+    "per_role": {
+     "author": {
+      "cache_read": 496384,
+      "cache_write": 0,
+      "calls": 12,
+      "input": 6243,
+      "output": 1186
+     },
+     "inspector": {
+      "cache_read": 1380074,
+      "cache_write": 203069,
+      "calls": 6,
+      "input": 92,
+      "output": 11406
+     },
+     "other": {
+      "cache_read": 84854,
+      "cache_write": 16013,
+      "calls": 1,
+      "input": 8,
+      "output": 535
+     }
+    }
+   },
+   "work_order": "WO-BENCH-CRC-ST-r2"
+  }
+ ],
+ "queue": "st-drivers-stm32n6",
+ "recorded_at": "2026-10-26T17:13:20.687843Z",
+ "schema": "forge-c/st-driver-benchmark-record/0.1"
+}

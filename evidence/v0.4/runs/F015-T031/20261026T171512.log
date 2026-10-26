@@ -1,0 +1,5 @@
+usart: 8 attempts recorded, 1 READY
+  BENCH-USART-ST-R5 WO-AFO-1fab3fc8b2e35f24-a2 rev 4f4e2ea gaps 0 archive sha256 verified f6d597993a2dc90a9aa722e45e2442b070718ffc69548e37b05900d64e6c03ae
+  owner review: OD-2026-10-26-03 "USART and GPIO reviewed and approved"
+
+--- stderr ---
