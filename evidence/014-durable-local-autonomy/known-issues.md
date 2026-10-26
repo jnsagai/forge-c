@@ -1,6 +1,6 @@
 # Feature 014 known issues
 
-Owner decision 2026-10-26: "95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human."
+Owner decision 2026-10-26: "95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human." Owner decision 2026-10-26 on the 17 tasks that need live evidence: "Known issues only".
 
 This register lists what the factory cannot do yet or does imperfectly, with its evidence and the human decision or fix it needs. Machine-readable copy: [known-issues.json](known-issues.json).
 
@@ -9,7 +9,7 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-001 | protocol | Five diagnosis protocol trials not run: no qualified alternative local model | ACCEPTED_BY_OWNER | Decide whether a second local model is qualified (stepwise) for diagnosis, or accept single-model diagnosis. Owner 2026-10-26: 95/100 accepted. |
 | KI-014-002 | accounting | Token usage UNKNOWN for 23 of 95 protocol trials | OPEN | Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable. |
 | KI-014-003 | inspector | Stepwise inspector: held-out false-alarm rate not yet re-measured | OPEN | Release a frozen Feature 015 batch and decide its learning/test split (recorded seed) so the refreshed held-out set can measure the fixes. |
-| KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | RESOLVED (5f6d540) | None needed to decide; implementation pending. |
+| KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | RESOLVED | None needed to decide; implementation pending. |
 | KI-014-005 | regression | Two inherited test failures | OPEN | Decide: fix in their own feature, or record a waiver. |
 | KI-014-006 | runtime | No usable parallel model serving for the inspector | OPEN | Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot. |
 | KI-014-007 | gates | Omniverse2 unit gate skips the review tests | OPEN | Decide whether the pinned engine and owner inputs may be placed on Omniverse2 (private data). |
@@ -17,6 +17,23 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-009 | offline loop | Signed dispositions and patch bundles not exercised live | OPEN | Owner: add the two allowed-signers lines and sign one disposition and one patch. |
 | KI-014-010 | promotion | Independent CRE rejects promotion of the branch | OPEN | Owner review of PR #42 (draft); merge only after acceptance. |
 | KI-014-011 | qualification | Long live campaigns not run | OPEN | Schedule dedicated Omniverse2 GPU windows for the campaigns. |
+| KI-014-012 | live evidence | DA-T004: Complete serialized prompts and packet partitioning not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials below/at/above the allowance with the manifests retained. |
+| KI-014-013 | live evidence | DA-T005: Semantic proposal negatives produced by Qwen itself not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: ~4 trials forcing absent hypothesis, wrong type, overlong field. |
+| KI-014-014 | live evidence | DA-T007: Registered vs transmitted schema and the MCP tool path not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: One schema-capture trial per boundary (MCP and constrained mode). |
+| KI-014-015 | live evidence | DA-T010: Separate request/tool/token/correction counters not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 tool-using trials up to the completion reserve. |
+| KI-014-016 | live evidence | DA-T012: Concurrent admission, late usage and overshoot not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials: concurrent admission near exhaustion, cancel with late usage. |
+| KI-014-017 | live evidence | DA-T013: Liveness after cancel failure/timeout, restart and late adoption not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 trials (cancel-ack with restart to quiescence; lost-ack with revocation before adoption). |
+| KI-014-018 | live evidence | DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run. |
+| KI-014-019 | live evidence | DA-T019: Obligation-scoped repair context not exercised on a real repair | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product repair (reg32 mask) with independent oracle before/after. |
+| KI-014-020 | live evidence | DA-T021: Independent author/inspector regression on a real repair not run | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The DA-T019 product run plus seeded critical cases and tamper attempts. |
+| KI-014-021 | live evidence | DA-T031: Per-role capability profile recorded only for diagnosis (INCOMPLETE) | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The 5 qualified-local-alternative trials (KI-014-001) and one changed-identity trial. |
+| KI-014-022 | live evidence | DA-T032: Short-horizon decomposition not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product case with ~3 obligations and the three injections. |
+| KI-014-023 | live evidence | DA-T033: Evidence-indexed memory and checkpoints only partly shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A resume-from-checkpoint trial with injected stale memory. |
+| KI-014-024 | live evidence | DA-T034: Sequential candidate selection and stall stop not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A bounded 3-candidate search inside a product repair. |
+| KI-014-025 | live evidence | DA-T035: Inspector qualification lacks author pairing and metamorphic/reference checks | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A paired author/inspector run on a refreshed held-out set. |
+| KI-014-026 | live evidence | DA-T036: Capability-limit disposition only partly shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 oversized trial ending in CAPABILITY_LIMIT or repartition. |
+| KI-014-027 | live evidence | DA-T040: Native lesson retrieval before a job not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job. |
+| KI-014-028 | live evidence | DA-T041: Independent lesson candidate qualification not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows. |
 
 ## KI-014-001: Five diagnosis protocol trials not run: no qualified alternative local model
 
@@ -44,11 +61,11 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 
 ## KI-014-004: Escalation ladder: CAPA retrieval rung not integrated
 
-- **What:** Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet.
+- **What:** Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet. Resolved 2026-10-26 (5f6d540): capa_retrieval rung records the linked CAPAs.
 - **Impact:** A gap may be registered although an open CAPA already describes its cause; the reviewer must check the CAPA registry.
 - **Evidence:** factory/python/forge_factory/inspection/gate.py (_ladder); specs/014-durable-local-autonomy/tasks.md DA-T054
-- **Human action:** None.
-- **Status:** RESOLVED 2026-10-26 (5f6d540): the capa_retrieval rung records the linked CAPAs.
+- **Human action:** None needed to decide; implementation pending.
+- **Status:** RESOLVED
 
 ## KI-014-005: Two inherited test failures
 
@@ -105,3 +122,139 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 - **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv
 - **Human action:** Schedule dedicated Omniverse2 GPU windows for the campaigns.
 - **Status:** OPEN
+
+## KI-014-012: DA-T004: Complete serialized prompts and packet partitioning not shown live
+
+- **What:** No live serialized-input manifest, admission receipt or partition/coverage manifest; every live case had one obligation.
+- **Impact:** DA-T004 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials below/at/above the allowance with the manifests retained.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-013: DA-T005: Semantic proposal negatives produced by Qwen itself not shown live
+
+- **What:** The live campaign separated PROPOSE_REPAIR/NEEDS_EVIDENCE/CLOSE_BLOCKED; its negatives were injected after the answer, and correction counts were not recorded.
+- **Impact:** DA-T005 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: ~4 trials forcing absent hypothesis, wrong type, overlong field.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-014: DA-T007: Registered vs transmitted schema and the MCP tool path not shown live
+
+- **What:** The closed-branch wire schema fix is recorded; no schema hash capture, and no live trial used MCP tools.
+- **Impact:** DA-T007 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: One schema-capture trial per boundary (MCP and constrained mode).
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-015: DA-T010: Separate request/tool/token/correction counters not shown live
+
+- **What:** Live trials used no tools; no reserve-boundary or exhaustion trial.
+- **Impact:** DA-T010 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 tool-using trials up to the completion reserve.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-016: DA-T012: Concurrent admission, late usage and overshoot not shown live
+
+- **What:** Request counts and UNKNOWN usage are recorded (KI-014-002); no concurrent admission near exhaustion, late usage, overshoot or input/cached/output split.
+- **Impact:** DA-T012 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials: concurrent admission near exhaustion, cancel with late usage.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-017: DA-T013: Liveness after cancel failure/timeout, restart and late adoption not shown live
+
+- **What:** Live cancel-ack and lost-ack rows exist; no quiescence after a supervisor restart, no revocation before adoption, no cancel failure or timeout.
+- **Impact:** DA-T013 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 trials (cancel-ack with restart to quiescence; lost-ack with revocation before adoption).
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-018: DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live
+
+- **What:** No live status or scorecard snapshot and no privacy scan.
+- **Impact:** DA-T018 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-019: DA-T019: Obligation-scoped repair context not exercised on a real repair
+
+- **What:** The live mission made no product attempt; plans were accepted but never implemented.
+- **Impact:** DA-T019 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product repair (reg32 mask) with independent oracle before/after.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-020: DA-T021: Independent author/inspector regression on a real repair not run
+
+- **What:** No live repair path, no author tampering attempt; inspector calibration missed 1/54 seeded defects.
+- **Impact:** DA-T021 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The DA-T019 product run plus seeded critical cases and tamper attempts.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-021: DA-T031: Per-role capability profile recorded only for diagnosis (INCOMPLETE)
+
+- **What:** capability-5dc2df3.json pins the identity but status INCOMPLETE, record() refused; no invalidation receipt.
+- **Impact:** DA-T031 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The 5 qualified-local-alternative trials (KI-014-001) and one changed-identity trial.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-022: DA-T032: Short-horizon decomposition not shown live
+
+- **What:** All live cases had one obligation; no injected omission/interface/global-constraint faults.
+- **Impact:** DA-T032 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product case with ~3 obligations and the three injections.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-023: DA-T033: Evidence-indexed memory and checkpoints only partly shown live
+
+- **What:** Stale/missing primary evidence handled 5/5; no checkpoint resume, stale lesson or effective-context trial.
+- **Impact:** DA-T033 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A resume-from-checkpoint trial with injected stale memory.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-024: DA-T034: Sequential candidate selection and stall stop not shown live
+
+- **What:** Reworded strategy rejected 5/5; no multi-candidate search, verifier ranking or stall stop.
+- **Impact:** DA-T034 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A bounded 3-candidate search inside a product repair.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-025: DA-T035: Inspector qualification lacks author pairing and metamorphic/reference checks
+
+- **What:** Learning sets pass; held-out calibration showed false alarms (KI-014-003); no paired author, metamorphic or reference manifests.
+- **Impact:** DA-T035 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A paired author/inspector run on a refreshed held-out set.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-026: DA-T036: Capability-limit disposition only partly shown live
+
+- **What:** Unqualified alternative refused 5/5, CLOSE_BLOCKED and NEEDS_EVIDENCE correct; no typed CAPABILITY_LIMIT or repartition trial; qualified-alternative branch blocked (KI-014-001).
+- **Impact:** DA-T036 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 oversized trial ending in CAPABILITY_LIMIT or repartition.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-027: DA-T040: Native lesson retrieval before a job not shown live
+
+- **What:** Both delivery paths and APPLICATION recording are tested deterministically; no live job used a lesson.
+- **Impact:** DA-T040 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job.
+- **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-028: DA-T041: Independent lesson candidate qualification not shown live
+
+- **What:** No live candidate curation.
+- **Impact:** DA-T041 stays unticked; its behaviour is verified only by deterministic fixtures.
+- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows.
+- **Status:** ACCEPTED_BY_OWNER

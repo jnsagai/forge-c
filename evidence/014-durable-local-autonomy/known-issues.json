@@ -113,6 +113,176 @@
    "evidence": "specs/014-durable-local-autonomy/implementation-status.csv",
    "human_action": "Schedule dedicated Omniverse2 GPU windows for the campaigns.",
    "status": "OPEN"
+  },
+  {
+   "id": "KI-014-012",
+   "title": "DA-T004: Complete serialized prompts and packet partitioning not shown live",
+   "area": "live evidence",
+   "what": "No live serialized-input manifest, admission receipt or partition/coverage manifest; every live case had one obligation.",
+   "impact": "DA-T004 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials below/at/above the allowance with the manifests retained.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-013",
+   "title": "DA-T005: Semantic proposal negatives produced by Qwen itself not shown live",
+   "area": "live evidence",
+   "what": "The live campaign separated PROPOSE_REPAIR/NEEDS_EVIDENCE/CLOSE_BLOCKED; its negatives were injected after the answer, and correction counts were not recorded.",
+   "impact": "DA-T005 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: ~4 trials forcing absent hypothesis, wrong type, overlong field.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-014",
+   "title": "DA-T007: Registered vs transmitted schema and the MCP tool path not shown live",
+   "area": "live evidence",
+   "what": "The closed-branch wire schema fix is recorded; no schema hash capture, and no live trial used MCP tools.",
+   "impact": "DA-T007 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: One schema-capture trial per boundary (MCP and constrained mode).",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-015",
+   "title": "DA-T010: Separate request/tool/token/correction counters not shown live",
+   "area": "live evidence",
+   "what": "Live trials used no tools; no reserve-boundary or exhaustion trial.",
+   "impact": "DA-T010 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 tool-using trials up to the completion reserve.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-016",
+   "title": "DA-T012: Concurrent admission, late usage and overshoot not shown live",
+   "area": "live evidence",
+   "what": "Request counts and UNKNOWN usage are recorded (KI-014-002); no concurrent admission near exhaustion, late usage, overshoot or input/cached/output split.",
+   "impact": "DA-T012 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials: concurrent admission near exhaustion, cancel with late usage.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-017",
+   "title": "DA-T013: Liveness after cancel failure/timeout, restart and late adoption not shown live",
+   "area": "live evidence",
+   "what": "Live cancel-ack and lost-ack rows exist; no quiescence after a supervisor restart, no revocation before adoption, no cancel failure or timeout.",
+   "impact": "DA-T013 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 trials (cancel-ack with restart to quiescence; lost-ack with revocation before adoption).",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-018",
+   "title": "DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live",
+   "area": "live evidence",
+   "what": "No live status or scorecard snapshot and no privacy scan.",
+   "impact": "DA-T018 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-019",
+   "title": "DA-T019: Obligation-scoped repair context not exercised on a real repair",
+   "area": "live evidence",
+   "what": "The live mission made no product attempt; plans were accepted but never implemented.",
+   "impact": "DA-T019 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product repair (reg32 mask) with independent oracle before/after.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-020",
+   "title": "DA-T021: Independent author/inspector regression on a real repair not run",
+   "area": "live evidence",
+   "what": "No live repair path, no author tampering attempt; inspector calibration missed 1/54 seeded defects.",
+   "impact": "DA-T021 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The DA-T019 product run plus seeded critical cases and tamper attempts.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-021",
+   "title": "DA-T031: Per-role capability profile recorded only for diagnosis (INCOMPLETE)",
+   "area": "live evidence",
+   "what": "capability-5dc2df3.json pins the identity but status INCOMPLETE, record() refused; no invalidation receipt.",
+   "impact": "DA-T031 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The 5 qualified-local-alternative trials (KI-014-001) and one changed-identity trial.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-022",
+   "title": "DA-T032: Short-horizon decomposition not shown live",
+   "area": "live evidence",
+   "what": "All live cases had one obligation; no injected omission/interface/global-constraint faults.",
+   "impact": "DA-T032 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product case with ~3 obligations and the three injections.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-023",
+   "title": "DA-T033: Evidence-indexed memory and checkpoints only partly shown live",
+   "area": "live evidence",
+   "what": "Stale/missing primary evidence handled 5/5; no checkpoint resume, stale lesson or effective-context trial.",
+   "impact": "DA-T033 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A resume-from-checkpoint trial with injected stale memory.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-024",
+   "title": "DA-T034: Sequential candidate selection and stall stop not shown live",
+   "area": "live evidence",
+   "what": "Reworded strategy rejected 5/5; no multi-candidate search, verifier ranking or stall stop.",
+   "impact": "DA-T034 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A bounded 3-candidate search inside a product repair.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-025",
+   "title": "DA-T035: Inspector qualification lacks author pairing and metamorphic/reference checks",
+   "area": "live evidence",
+   "what": "Learning sets pass; held-out calibration showed false alarms (KI-014-003); no paired author, metamorphic or reference manifests.",
+   "impact": "DA-T035 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A paired author/inspector run on a refreshed held-out set.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-026",
+   "title": "DA-T036: Capability-limit disposition only partly shown live",
+   "area": "live evidence",
+   "what": "Unqualified alternative refused 5/5, CLOSE_BLOCKED and NEEDS_EVIDENCE correct; no typed CAPABILITY_LIMIT or repartition trial; qualified-alternative branch blocked (KI-014-001).",
+   "impact": "DA-T036 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 oversized trial ending in CAPABILITY_LIMIT or repartition.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-027",
+   "title": "DA-T040: Native lesson retrieval before a job not shown live",
+   "area": "live evidence",
+   "what": "Both delivery paths and APPLICATION recording are tested deterministically; no live job used a lesson.",
+   "impact": "DA-T040 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-028",
+   "title": "DA-T041: Independent lesson candidate qualification not shown live",
+   "area": "live evidence",
+   "what": "No live candidate curation.",
+   "impact": "DA-T041 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows.",
+   "status": "ACCEPTED_BY_OWNER"
   }
  ]
 }
