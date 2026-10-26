@@ -616,22 +616,29 @@ def behaviour_hit(facts: dict, b: dict) -> str | None:
     """A requirement that names the behaviour's field (register, for REG.*) with an action of the same kind and, when
     the phrase has them, one of its purpose words (run 3: every IWDG key write is 'write IWDG_KR.KEY'; only 'start'
     tells the start key from the refresh key). Any one word suffices: a looser match can only refute, never reject."""
+    return next((x for x, r in sorted(facts["reqs"].items()) if states_behaviour(r["statement"], b)), None)
+
+
+def states_behaviour(statement: str, b: dict) -> bool:
     f = b["register_field"]
     name = f.split(".")[0] if WILDCARD.match(f) else f
     bare = name.split(".")[-1]
     verbs = re.compile(r"\b(?:" + "|".join(ACTIONS[b["action"]]) + r")\w*", re.I)
     purpose = purpose_words(b)
-    return next((x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or
-                 re.search(rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(r["statement"]) and
-                 (not purpose or any(re.search(rf"\b{w}", r["statement"], re.I) for w in purpose))), None)
+    return bool((name in statement or re.search(rf"\b{re.escape(bare)}\b", statement)) and verbs.search(statement)
+                and (not purpose or any(re.search(rf"\b{w}", statement, re.I) for w in purpose)))
 
 
 def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
-    if doc["answer"] != "NONE":
+    """A cited requirement must itself state the behaviour (run 3: 'enable HSI' was answered with a requirement on the
+    same field that clears it, and the omitted requirement went unnoticed); an unsupported citation counts as NONE."""
+    cited = doc["answer"]
+    if cited != "NONE" and states_behaviour((facts["reqs"].get(cited) or {}).get("statement", ""), b):
         return []
     f, act = b["register_field"], b["action"]
+    why = f"{cited} does not state it" if cited != "NONE" else doc["quote"]
     c = _claim("scope_behaviour_uncovered", "document",
-               f"scope behaviour '{b['phrase']}' ({act} {f}) has no requirement: {doc['quote']}",
+               f"scope behaviour '{b['phrase']}' ({act} {f}) has no requirement: {why}",
                f"add a requirement for {act} {f}")
     c["identity"] = identity("SWE1-05", {**c, "target_id": f"{f}:{act}"})
     hit = behaviour_hit(facts, b)

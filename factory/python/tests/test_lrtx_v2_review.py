@@ -596,3 +596,21 @@ def test_behaviours_on_one_field_are_told_apart_by_their_purpose_words(frozen):
     only_refresh = {**facts, "reqs": {"SWR-002": reqs["SWR-002"]}}
     got = RS.behaviour_claims(start, {"quote": "", "answer": "NONE"}, only_refresh)
     assert [c["decision"] for c in got] == ["STANDS"] and "IWDG_KR.KEY" in RS.render_claim(got[0])
+
+
+def test_a_cited_requirement_must_state_the_behaviour_itself(frozen):
+    """Run 3 (2026-10-26): 'enable HSI oscillator' (set RCC_CR.HSION) was answered with the requirement that clears
+    HSION; the citation is checked, so the omitted enable requirement stands while a clean baseline is refuted."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-001": {"statement": "When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.",
+                        "verification": ""},
+            "SWR-002": {"statement": "When the HSI disable function is called, the RCC LL driver shall clear RCC_CR.HSION.",
+                        "verification": ""}}
+    enable = {"phrase": "enable HSI oscillator (HSION)", "action": "set", "register_field": "RCC_CR.HSION"}
+    wrong = {"quote": "shall clear RCC_CR.HSION", "answer": "SWR-002"}
+    assert RS.behaviour_claims(enable, {"quote": "shall set RCC_CR.HSION", "answer": "SWR-001"},
+                               {**facts, "reqs": reqs}) == []
+    got = RS.behaviour_claims(enable, wrong, {**facts, "reqs": reqs})
+    assert [c["decision"] for c in got] == ["REFUTED"]  # clean: SWR-001 states it
+    got = RS.behaviour_claims(enable, wrong, {**facts, "reqs": {"SWR-002": reqs["SWR-002"]}})
+    assert [c["decision"] for c in got] == ["STANDS"] and "RCC_CR.HSION" in RS.render_claim(got[0])
