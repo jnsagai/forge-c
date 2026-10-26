@@ -166,6 +166,24 @@ For RCC/benchmark, existing Conductor intake owns execution; qualification `step
 
 Before live execution: qualify the actual installed constrained-output/MCP/native header path, per-role semantic envelopes, cancellation/late-usage behavior, namespace dependencies and approved operational recipes. Then execute the 100 protocol trials, genuine RCC recovery and all six gates, gated GPIO intake, the representative 30-product benchmark, chronological learning comparisons, and staged 24/72/168-hour campaigns. All remain NOT_RUN here.
 
+## 2026-10-26: US11 (stepwise inspector, advisory continuation, offline improvement) and regression
+
+The owner decisions of 2026-10-26 are recorded as US11 (DA-FR/T/AT-053–058, commit `7726942`). None is ticked; 22/58 tasks have their full evidence.
+
+- DA-T053: the stepwise inspector passed the learning set (learning-14 at `285d21e`: 49/49). Rows and changes: [stepwise-inspector-20261026](../../evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md).
+- DA-T054: advisory continuation after the existing bounded ladder (`ad5447a`; v1 records kept byte-identical in `674bc07`). Lesson/CAPA and diagnosis-repair rungs are not integrated.
+- DA-T055: calibration runs on the 9-baseline subset pre-registered in `1067d40`. Two gate defects of the first full-set run are recorded in the evidence README.
+- DA-T056–058: `forge_factory.offline.{export,disposition,patch}` with contracts `offline-export-manifest`, `review-disposition` and `patch-bundle` (`dc000e8`, `53a853e`, `763f356`, `a23a611`). Deterministic tests only; no live offline round trip yet. Signing a disposition or a patch is an owner act in namespaces `forge-review-disposition` and `forge-patch-bundle`.
+
+Regression on loop10 (no live Qwen; private owner inputs copied with their recorded hashes; operations directory `operations/feature014/`):
+
+| Source | Core (`run_provider_regression.py`) | Release | Whole inherited suite (`run_full_inherited.py`) |
+|---|---|---|---|
+| `b180c97` | 594 passed, 1 skipped, 0 failed | 13/13 | 198 files, 1,713 tests, 4 failed |
+| `674bc07` | 610 passed, 1 skipped, 0 failed | 13/13 | 201 files, 1,729 tests, 2 failed |
+
+On `b180c97`, two of the four failures came from `ad5447a`: `test_lrtx_compat` (the v1 structured record gained `"advisory": false`) and `test_da014_advisory` (a substring check matched a state path). Both are fixed in `674bc07`. The two remaining failures, `test_cre_d7_final` and `test_sim_renode`, fail identically on base `f6ff873`. The end-of-run dirty `docs/IMPLEMENTATION-STATUS-v0.4.md` and `evidence/v0.4/implementation-status.json` come from the inherited `test_t050_t051_docs_status` side effect.
+
 ## Static checks
 
-`python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 52 requirements/tasks/acceptance mappings, three Feature 014 schemas and 25 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.
+`python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.
