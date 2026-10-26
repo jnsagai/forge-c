@@ -36,8 +36,9 @@ def test_an_exhausted_ladder_continues_with_its_gap_and_attempts_registered(tmp_
     assert att["failed_cycles"] == 3 and att["budget"] == 3 and len(att["history"]) == 3
     assert G.step_advisory(Store(ws), "SWE.4") == 0  # the advisory node continues the run
     ladder = {r["rung"]: r for r in att["ladder"]}  # every rung says what it did; none is implied
-    assert list(ladder) == ["rework_with_findings", "progress_extension", "validated_lessons", "diagnosis_repair",
-                            "stall_detection"]
+    assert list(ladder) == ["rework_with_findings", "progress_extension", "validated_lessons", "capa_retrieval",
+                            "diagnosis_repair", "stall_detection"]
+    assert ladder["capa_retrieval"]["status"] in ("NONE_MATCHING", "UNKNOWN")  # no CAPA links this fixture's failures
     assert ladder["rework_with_findings"]["failed_cycles"] == 3 and ladder["progress_extension"]["status"] == "REFUSED"
     assert ladder["validated_lessons"]["status"] == "NONE_QUALIFIED"
     assert ladder["diagnosis_repair"]["status"] == "UNAVAILABLE"  # a plain local run has no recovery path
@@ -108,3 +109,27 @@ def test_the_package_carries_the_register_and_the_release_rule_is_unchanged(tmp_
     (ws / ".forge-run/advisory/SWE.1.jsonl").write_text(json.dumps({"phase": "SWE.1", "unresolved_findings": []}) + "\n")
     assert [e["phase"] for e in F.advisory_register(ws)] == ["SWE.1", "SWE.2"]
     assert F.advisory_register(tmp_path / "none") == []
+
+
+def test_the_capa_rung_names_the_capas_linked_to_this_phases_failure_fingerprints(tmp_path, monkeypatch):
+    from forge_factory.reliability import capa, observe
+
+    monkeypatch.setattr(observe, "from_workspace", lambda ws: [{"phase": "SWE.4", "fingerprint": "cfp1-aaa"},
+                                                               {"phase": "SWE.3", "fingerprint": "cfp1-bbb"}])
+
+    class Reg:
+        def __init__(self, *a):
+            pass
+
+        def all(self):
+            return [{"capa_id": "CAPA-070", "state": "OPEN"}, {"capa_id": "CAPA-071", "state": "CLOSED"}]
+
+        def links(self, capa_id, kind=None):
+            return {"CAPA-070": ["cfp1-aaa"], "CAPA-071": ["cfp1-bbb"]}[capa_id]
+
+    monkeypatch.setattr(capa, "CapaRegistry", Reg)
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    r = G.capa_rung(tmp_path, "SWE.4")
+    assert r == {"rung": "capa_retrieval", "status": "MATCHED", "capas": [{"capa_id": "CAPA-070", "state": "OPEN"}],
+                 "fingerprints": ["cfp1-aaa"]}
+    assert G.capa_rung(tmp_path, "SWE.1")["status"] == "NONE_MATCHING"

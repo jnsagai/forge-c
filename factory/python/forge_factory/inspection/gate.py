@@ -387,6 +387,25 @@ def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, 
     return out
 
 
+def capa_rung(ws: Path, phase: str) -> dict:
+    """The CAPA rung (DA-FR-054, KI-014-004): the CRE fingerprints of this phase's failures in this attempt and the CAPAs
+    linked to them, so a gap names a CAPA that already describes (or fixes) its cause; an unreadable store says so."""
+    try:
+        from ..reliability.capa import CapaRegistry
+        from ..reliability.observe import from_workspace
+        from ..reliability.policy import load
+        from ..reliability.store import CREStore
+
+        fps = sorted({o["fingerprint"] for o in from_workspace(ws) if o.get("phase") == phase})
+        reg = CapaRegistry(CREStore(), load())
+        linked = [{"capa_id": c["capa_id"], "state": c["state"]} for c in reg.all()
+                  if set(reg.links(c["capa_id"], "FINGERPRINT")) & set(fps)]
+    except Exception as exc:  # noqa: BLE001 - the register records an unreadable store instead of failing the gate
+        return {"rung": "capa_retrieval", "status": "UNKNOWN", "reason": type(exc).__name__}
+    return {"rung": "capa_retrieval", "status": "MATCHED" if linked else "NONE_MATCHING", "capas": linked[:10],
+            "fingerprints": fps[:10]}
+
+
 def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck) -> list[dict]:
     """Every rung of the escalation ladder (owner 2026-10-26: gaps only after best effort) with what it did, so a gap
     never implies a rung that did not run. A rung that is not integrated yet says so."""
@@ -406,6 +425,7 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
         {"rung": "progress_extension", "status": ("GRANTED" if ext.get("progress") else "REFUSED") if ext
          else "NOT_EVALUATED"},
         lesson_rung,
+        capa_rung(store.workspace, phase),
         {"rung": "diagnosis_repair", **{("status" if k == "state" else k): v
                                          for k, v in recovery_state(store.workspace, phase).items()}},
         {"rung": "stall_detection", "status": "STUCK" if stuck else "BUDGET_EXHAUSTED"},
