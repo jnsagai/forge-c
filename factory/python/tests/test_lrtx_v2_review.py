@@ -8,6 +8,7 @@ claim kept. The verdicts go through the unchanged check_inspection operation and
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 from forge_factory.lrtx import review_semantic as RS
@@ -906,3 +907,63 @@ def test_learning_set_2_a_method_and_an_observable_outcome_is_a_pass_criterion(f
                   "request.") == "REFUTED"
     assert judged("SWE.6 Robot suite using the build map; driver flash occupancy is at most 4096 bytes.") == "REFUTED"
     assert judged("SWE.6 Robot suite with reset evidence.") == "CONFIRMED"
+
+
+def test_learning_set_2_a_by_gerund_write_covers_only_the_field_it_writes(frozen):
+    """Learning set 2 (h005, rc1): 'shall start the watchdog by writing 0xCCCC to IWDG_KR.KEY' states the key write;
+    the same clause's 'before writing IWDG_PR.PR' does not make it a prescaler write."""
+    st = ("When HAL_IWDG_Init is requested, the IWDG driver shall enable register write access by writing 0x5555 to "
+          "IWDG_KR.KEY after the start key and before writing IWDG_PR.PR.")
+    assert RS.gerund_writes(st) == {("write", "IWDG_KR.KEY")}
+    facts = {**RS.baseline_facts(frozen), "reqs": {"SWR-002": {"statement": st, "verification": ""}}}
+    key = {"phrase": "register access key write", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
+    pr = {"phrase": "prescaler write", "action": "write", "register_field": "IWDG_PR.PR", "value": ""}
+    assert RS.behaviour_claims(key, {"quote": "", "answer": "SWR-002"}, facts) == []
+    assert RS.candidates(facts, pr) == []
+
+
+def test_learning_set_2_a_key_write_for_another_purpose_does_not_cover_the_omitted_one(frozen):
+    """Learning set 2 (h003 S1-OMIT): with the start-key requirement removed, the refresh requirement (the one remaining
+    IWDG_KR.KEY write) was accepted for 'start key'. A requirement writing the whole key sequence still covers each."""
+    refresh = {"statement": "When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to IWDG_KR.KEY and "
+                            "return HAL_OK.", "verification": ""}
+    seq = {"statement": "When HAL_IWDG_Init is requested, the IWDG driver shall write 0xCCCC to IWDG_KR.KEY to start the "
+                        "watchdog, then write 0x5555 to IWDG_KR.KEY before configuring IWDG_PR.PR, and finally write 0xAAAA "
+                        "to IWDG_KR.KEY.", "verification": ""}
+    base = RS.baseline_facts(frozen)
+    start = {"phrase": "start key", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
+    access = {"phrase": "register access key write to enable config", "action": "write", "register_field": "IWDG_KR.KEY",
+              "value": ""}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-004"}, {**base, "reqs": {"SWR-004": refresh}})
+    assert [c["decision"] for c in got] == ["STANDS"]
+    both = {**base, "reqs": {"SWR-002": seq, "SWR-007": refresh}}
+    assert RS.behaviour_claims(access, {"quote": "", "answer": "SWR-002"}, both) == []
+    assert RS.behaviour_claims(start, {"quote": "", "answer": "SWR-002"}, both) == []
+
+
+def test_learning_set_2_a_trace_table_with_a_source_column_traces_its_requirements(frozen):
+    """Learning set 2 (h005): '| Upstream id | Source | SWR IDs |' rows trace their requirements like two-column rows."""
+    gaps = frozen / "traceability/upstream_gaps.md"
+    text = gaps.read_text()
+    rows = [x for x in text.splitlines() if re.match(r"^\| (?!SWR-)[^|]+ \| (?:SWR-\d{3}(?:, )?)+ \|$", x)]
+    assert rows
+    for x in rows:
+        up, swrs = [c.strip() for c in x.strip("|").split("|")]
+        text = text.replace(x, f"| {up} | reference manual section | {swrs} |")
+    gaps.write_text(text)
+    facts = RS.baseline_facts(frozen)
+    assert facts["traced"] and all(s in facts["traced"] for x in rows for s in re.findall(r"SWR-\d{3}", x))
+
+
+def test_learning_set_2_a_budget_answer_must_cite_the_requirement_stating_that_bound(frozen):
+    """Learning set 2 (0008A S1-NOBUDGET): the stack budget answered with the static RAM requirement was accepted."""
+    facts = RS.baseline_facts(frozen)
+    q = next(x for x in RS.step_questions(frozen, facts) if x["id"] == "budget-stack")
+    ram = next(s for s, r in facts["reqs"].items() if re.search(r"\bstatic RAM\b", r["statement"], re.I))
+    stack = next(s for s, r in facts["reqs"].items() if re.search(r"\bstack\b", r["statement"], re.I))
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": stack}, facts) == []
+    got = RS.step_claims(frozen, q, {"quote": "", "answer": ram}, facts)
+    assert [c["decision"] for c in got] == ["REFUTED"]  # recorded as a claim, refuted because the stack bound is stated
+    no_stack = {**facts, "reqs": {k: v for k, v in facts["reqs"].items() if k != stack}}
+    got = RS.step_claims(frozen, q, {"quote": "", "answer": ram}, no_stack)
+    assert [c["decision"] for c in got] == ["STANDS"]

@@ -79,6 +79,12 @@ def baseline_facts(ws: Path) -> dict:
     # a label may carry an explanation (WO-0008C: "HSI contract (hardware/software interface)")
     gap_rows = {i: re.search(rf"^\| (?:{input_label_pattern(i)}) \| (.+?) \|", gaps, re.M) for i in INPUTS}
     up_to_sw = set(re.findall(r"^\| [^|]+ \| ((?:SWR-\d{3}(?:, )?)+) \|", gaps, re.M))
+    # learning set 2 (h005): the upstream table may carry more columns ('| Upstream id | Source | SWR IDs |'); a row whose
+    # first cell is an upstream id and whose last cell lists SWR ids traces them
+    for line in gaps.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")] if line.startswith("|") else []
+        if len(cells) >= 3 and not cells[0].startswith("SWR-") and re.fullmatch(r"SWR-\d{3}(?:,\s*SWR-\d{3})*", cells[-1]):
+            up_to_sw.add(cells[-1])
     traced_up = {s for row in up_to_sw for s in re.findall(r"SWR-\d{3}", row)}
     traced_sw = set(re.findall(r"^\| (SWR-\d{3}) \| [^|]+ \|$", gaps, re.M))
     opened = re.search(r"^## Open points\s*\n(.*?)(?=^## |\Z)", md, re.M | re.S)
@@ -648,7 +654,11 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
                    f"record the state of '{q['input']}' in traceability/upstream_gaps.md")
         return adjudicate(ws, "SWE1-05", [c], facts)
     if q["id"].startswith("budget-"):
-        covered = [a] if a != "NONE" else []
+        # learning set 2 (0008A S1-NOBUDGET): the stack budget was answered with the static RAM requirement; a cited
+        # requirement covers the budget only when it names the resource with its byte bound (like an effects entry)
+        st, row = facts["reqs"].get(a, {}).get("statement", ""), q["row"]
+        stated = re.search(rf"\b{re.escape(row['resource'])}\b", st, re.I) and row["bytes"] in _numbers(st)
+        covered = [a] if a != "NONE" and stated else []
         return entry_claims("budgets", {"entries": [{"entry": q["row"]["entry"], "covered_by": covered,
                                                      "reason": quote or "no requirement states it"}]}, [q["row"]], facts)
     e = q["row"]
@@ -737,7 +747,26 @@ def _decides(facts: dict, cands: list[str], x: str, b: dict) -> bool:
     value, st = _documented_value(b), facts["reqs"][x]["statement"]
     if value:  # stated literally, inside a stated range, or supplied by a parameterised write (any value)
         return value <= _numbers(st) or in_stated_range(st, b.get("value") or "") or bool(PARAMETER.search(st))
+    if not _sequence(st, b) and _purpose_clash(st, b):  # a key sequence covers each keyed write (run 12)
+        return False
     return len(cands) == 1 or _purposeful(st, b) or _sequence(st, b)
+
+
+# learning set 2 (h003 S1-OMIT): with the start-key requirement removed, the refresh requirement was the one remaining
+# write on IWDG_KR.KEY and was accepted for 'start key'. Key writes on one field have distinct purposes; a requirement
+# that states only another purpose does not state this behaviour (a matching or unknown purpose still decides as before)
+KEY_PURPOSES = {"start": re.compile(r"(?:\b|_)start", re.I),  # '_' too: the API name HAL_IWDG_Start
+                "refresh": re.compile(r"(?:\b|_)(?:refresh|reload(?:s|ing)? the (?:watchdog )?counter)", re.I),
+                "access": re.compile(r"\b(?:access|unlock|enabl\w* (?:\w+ )?(?:configuration|register) writ)", re.I)}
+
+
+def _purpose_clash(statement: str, b: dict) -> bool:
+    if b["action"] != "write":
+        return False
+    want = {k for k, r in KEY_PURPOSES.items() if r.search(b["phrase"])}
+    done = NOT_DONE.sub(" ", statement)
+    have = {k for k, r in KEY_PURPOSES.items() if r.search(done)}
+    return bool(want) and bool(have) and not want & have
 
 
 def _sequence(statement: str, b: dict) -> bool:
@@ -770,6 +799,19 @@ def imposed_verbs(statement: str) -> set[str]:
     return out
 
 
+# learning set 2 (h005, rc1): 'shall start the watchdog by writing 0xCCCC to IWDG_KR.KEY' imposes that write; only the
+# field the 'by ...ing' phrase writes to counts ('... before writing IWDG_PR.PR' in the same clause does not)
+BY_GERUND = re.compile(r"\bby\s+(writing|setting|clearing|loading|programming)\s+(?:[^.;]{0,40}?\s)?(?:to|in|into)\s+"
+                       r"([A-Z][A-Z0-9]*_[A-Z0-9_]+\.[A-Z][A-Z0-9_]*)", re.I)
+GERUND_ACTION = {"writing": "write", "setting": "set", "clearing": "clear", "loading": "write", "programming": "write"}
+
+
+def gerund_writes(statement: str) -> set[tuple[str, str]]:
+    """(action, REGISTER.FIELD) pairs a 'shall ... by <verb>ing ... to FIELD' phrase imposes."""
+    return {(GERUND_ACTION[g.lower()], f) for c in re.findall(r"\bshall\b(.*?)(?=\.(?:\s|$)|;|$)", statement, re.I)
+            for g, f in BY_GERUND.findall(c)}
+
+
 READ_WORDS = re.compile(r"\b(?:read|quer|return|report|check|observ|poll|wait|leave|keep|preserv|retain)\w*", re.I)
 
 
@@ -786,8 +828,12 @@ def candidates(facts: dict, b: dict) -> list[str]:
             return bool(READ_WORDS.search(NOUN_PHRASE.sub(" ", statement)))
         return any(v.startswith(kind) for v in imposed_verbs(statement))
 
-    return [x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or re.search(
-        rf"\b{re.escape(bare)}\b", r["statement"])) and acts(r["statement"])]
+    def by_gerund(statement: str) -> bool:
+        return b["action"] in ("write", "set", "clear") and any(
+            fld == f and (a == b["action"] or b["action"] == "write" or a == "write") for a, fld in gerund_writes(statement))
+
+    return [x for x, r in sorted(facts["reqs"].items()) if ((name in r["statement"] or re.search(
+        rf"\b{re.escape(bare)}\b", r["statement"])) and acts(r["statement"])) or by_gerund(r["statement"])]
 
 
 def _documented_value(b: dict) -> set[int]:
