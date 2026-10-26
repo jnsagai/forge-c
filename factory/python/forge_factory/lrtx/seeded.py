@@ -324,6 +324,8 @@ def _truth(ws: Path, p: dict) -> dict:
     schema = p["output_schema"]
     if item.startswith("step-check-"):  # a judgement check keeps the claim (conservative: never a withdrawal)
         return {"quote": "", "answer": "TRUE"}
+    if item.startswith("step-cite-"):  # a citation check keeps the claim too (conservative)
+        return {"quote": "", "answer": "FALSE"}
     if item.startswith("step-") and not item.startswith("step-behaviour-"):
         facts = RS.baseline_facts(ws)
         q = next(x for x in RS.step_questions(ws, facts) if "step-" + x["id"] == item)

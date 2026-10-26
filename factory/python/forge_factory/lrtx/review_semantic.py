@@ -766,6 +766,29 @@ def states_behaviour(facts: dict, cited: str, b: dict) -> bool:
     return cited in cands and _decides(facts, cands, cited, b)
 
 
+def relevant(b: dict) -> bool:
+    """Run 11 (IWDG-HAL rc4): 'The LL header is provided read-only ... not modified' became the behaviour 'LL header is
+    not modified' on IWDG_KR.KEY. A register behaviour's phrase shares a word with its register or field name (the
+    peripheral prefix aside): 'register access key' (KEY), 'HSI oscillator enable' (HSION), 'AHB1 clock' (AHB1ENR)."""
+    parts = [t.lower() for t in re.split(r"[._]", b["register_field"]) if t and t != "*"]
+    names = [t for t in parts[1:] if len(t) >= 2]  # without the peripheral prefix (RCC, IWDG)
+    words = re.findall(r"[a-z][a-z0-9]+", b["phrase"].lower())
+    return any(w.startswith(n) or n.startswith(w) for w in words if len(w) >= 2 for n in names)
+
+
+def cited_but_undecided(facts: dict, b: dict, doc: dict) -> bool:
+    """The cited requirement drives the field with the behaviour's kind; only its purpose words or value failed."""
+    return doc["answer"] in candidates(facts, b)
+
+
+def cite_check(qid: str, b: dict, cited: str, facts: dict) -> dict:
+    return {"id": f"cite-{qid}", "item": "SWE1-05", "source": None, "answers": ["TRUE", "FALSE"],
+            "text": f"Requirement {cited} reads: \"{facts['reqs'][cited]['statement']}\" Does it state this behaviour "
+                    f"required by the work-order scope: '{b['phrase']}' ({b['action']} {b['register_field']})? answer "
+                    "TRUE when the requirement states this behaviour, possibly in other words; FALSE when it states a "
+                    "different behaviour on the same field. Quote the decisive words."}
+
+
 def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
     """A cited requirement must itself state the behaviour (run 3: 'enable HSI' was answered with a requirement on the
     same field that clears it, and the omitted requirement went unnoticed); an unsupported citation counts as NONE."""
@@ -931,6 +954,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                 if key in asked:
                     continue
                 asked.add(key)
+                if not relevant(b):  # a non-register sentence mapped onto a field: not asked, recorded
+                    answers.append({"question": f"behaviour-{i}-{j}", "skipped": "NOT_A_REGISTER_BEHAVIOUR"})
+                    continue
                 q = behaviour_question(f"behaviour-{i}-{j}", b, swrs)
                 qrec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{q['id']}",
                                   lambda fi, pr, q=q: step_packet(ws, bl, srcs, q, model, smp, fi, pr), lambda d: [],
@@ -938,7 +964,18 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                 if qrec["status"] != "VALID":
                     issues += [f"step-{q['id']}: {e}" for e in qrec["errors"][:3]]
                     continue
-                got += behaviour_claims(b, qrec["doc"], facts)
+                claims = behaviour_claims(b, qrec["doc"], facts)
+                if claims and claims[0]["decision"] == "STANDS" and cited_but_undecided(facts, b, qrec["doc"]):
+                    # purpose words fail on synonyms ('register access key' = 'enable configuration writes'): one
+                    # closed check of the cited text decides; FALSE (a different behaviour on that field) keeps it
+                    cq = cite_check(q["id"], b, qrec["doc"]["answer"], facts)
+                    crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{cq['id']}",
+                                      lambda fi, pr, cq=cq: step_packet(ws, bl, srcs, cq, model, smp, fi, pr),
+                                      lambda d: [], budget)
+                    if crec["status"] == "VALID" and crec["doc"]["answer"] == "TRUE":
+                        claims = [{**claims[0], "decision": "WITHDRAWN", "evidence": f"closed check: "
+                                   f"{qrec['doc']['answer']} states it: {crec['doc']['quote'][:160]}"}]
+                got += claims
                 answers.append({"question": q["id"], "answer": qrec["doc"]})
             cov_claims += got
             cov_record.append({"scope": sc, "behaviours": brec["doc"]["behaviours"], "answers": answers, "claims": got})

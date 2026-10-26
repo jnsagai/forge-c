@@ -804,3 +804,24 @@ def test_a_standing_judgement_gets_one_closed_check_and_a_false_one_is_withdrawn
         assert rep["status"] == status and any(k.startswith("step-check-swe1-02-") for k in seen)
         if verdict == "FALSE":
             assert any("checks" in r for r in rec["items"]["SWE1-02"]["rounds"])
+
+
+def test_non_register_behaviours_are_not_asked_and_a_synonym_citation_gets_one_check(frozen):
+    """Run 11 (IWDG-HAL rc4): 'LL header is not modified' was mapped onto IWDG_KR.KEY, and 'register access key' was
+    cited to SWR-001 ('write 0x5555 to IWDG_KR.KEY to enable configuration writes') but failed on the purpose word."""
+    facts = RS.baseline_facts(frozen)
+    assert not RS.relevant({"phrase": "LL header is not modified", "action": "write", "register_field": "IWDG_KR.KEY"})
+    for phrase, field in (("register access key", "IWDG_KR.KEY"), ("HSI oscillator enable", "RCC_CR.HSION"),
+                          ("AHB1 peripheral clock enable", "RCC_AHB1ENR.*"), ("wait until RVU cleared", "IWDG_SR.RVU")):
+        assert RS.relevant({"phrase": phrase, "action": "set", "register_field": field}), phrase
+    reqs = {"SWR-001": {"statement": "When HAL_IWDG_Init is requested, the IWDG driver shall write 0xCCCC to IWDG_KR.KEY "
+                                     "to start the watchdog, then write 0x5555 to IWDG_KR.KEY to enable configuration "
+                                     "writes.", "verification": ""},
+            "SWR-008": {"statement": "When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to "
+                                     "IWDG_KR.KEY to refresh the counter.", "verification": ""}}
+    b = {"phrase": "register access key", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
+    doc = {"quote": "write 0x5555", "answer": "SWR-001"}
+    got = RS.behaviour_claims(b, doc, {**facts, "reqs": reqs})
+    assert [c["decision"] for c in got] == ["STANDS"] and RS.cited_but_undecided({**facts, "reqs": reqs}, b, doc)
+    q = RS.cite_check("behaviour-1-1", b, "SWR-001", {**facts, "reqs": reqs})
+    assert q["answers"] == ["TRUE", "FALSE"] and "0x5555" in q["text"]
