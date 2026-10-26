@@ -238,7 +238,8 @@ def test_dependency_wait_persisted_and_recipe_model_free(protocol):
     assert restored["healthy"] and len(observations) == 1
 
 
-def test_verifier_lost_spawn_reclaims_without_duplicating_live_worker(protocol):
+def test_verifier_lost_spawn_reclaims_without_duplicating_live_worker(protocol, monkeypatch):
+    from forge_factory.afo import verification_job
     from forge_factory.afo.verification_job import VerificationJobs
 
     p = protocol
@@ -249,7 +250,12 @@ def test_verifier_lost_spawn_reclaims_without_duplicating_live_worker(protocol):
     assert q.dispatch(p.ctx.job_id, lambda e: attempts.append(e), now=11) is None
     epoch = q.dispatch(p.ctx.job_id, lambda e: attempts.append(e), now=41)
     assert attempts == [1, 2]
+    # This in-process claimer leads its own group and session (as under systemd or a new session): that alone never
+    # makes it a dedicated, killable worker group (whole-suite run 2026-10-26: expiry SIGKILLed the test runner).
+    monkeypatch.setattr(verification_job.os, "getpgid", lambda pid: pid)
+    monkeypatch.setattr(verification_job.os, "getsid", lambda pid: pid)
     q.claim(p.ctx.job_id, epoch, now=42)
+    assert q.get(p.ctx.job_id)["record"]["managed_process_group"] is False
     # A lease timeout must not start a second process while this exact process identity is alive.
     assert q.dispatch(p.ctx.job_id, lambda e: attempts.append(e), now=1000) is None
     q.finish(p.ctx.job_id, epoch, {"status": "REJECTED", "reference": "independent-verifier-fixture"})
@@ -438,7 +444,7 @@ def test_hung_owned_verifier_group_is_killed_then_safely_reclaimed(protocol, tmp
         nonlocal process
         script = tmp_path / "worker.py"
         script.write_text(
-            "import sys,time\nfrom forge_factory.afo.queue import Store\nfrom forge_factory.afo.verification_job import VerificationJobs\nVerificationJobs(Store()).claim(sys.argv[1],int(sys.argv[2]))\ntime.sleep(60)\n"
+            "import sys,time\nfrom forge_factory.afo.queue import Store\nfrom forge_factory.afo.verification_job import VerificationJobs\nVerificationJobs(Store()).claim(sys.argv[1],int(sys.argv[2]),dedicated_group=True)\ntime.sleep(60)\n"
         )
         process = subprocess.Popen(
             [sys.executable, str(script), p.ctx.job_id, str(epoch)],

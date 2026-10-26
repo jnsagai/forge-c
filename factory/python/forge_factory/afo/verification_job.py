@@ -102,7 +102,9 @@ class VerificationJobs:
         spawn(epoch)  # lost acknowledgment is settled by worker claim or expiry + absence; no latch remains forever
         return epoch
 
-    def claim(self, job_id, epoch, *, now=None):
+    def claim(self, job_id, epoch, *, now=None, dedicated_group=False):
+        """dedicated_group: only the worker launch_review spawned in its own session asserts it. Being a group
+        leader is not proof (a service main process or a test runner can be one), and expiry kills that group."""
         now = time.time() if now is None else now
         with self.store.tx() as c:
             row = c.execute("SELECT * FROM afo_verification_jobs WHERE job_id=?", (job_id,)).fetchone()
@@ -110,7 +112,8 @@ class VerificationJobs:
                 raise Refused("VERIFIER_CLAIM_FENCED")
             rec = json.loads(row["record"])
             rec["owner"] = identity()
-            rec["managed_process_group"] = os.getpgid(os.getpid()) == os.getpid()
+            pid = os.getpid()
+            rec["managed_process_group"] = bool(dedicated_group) and os.getpgid(pid) == pid and os.getsid(pid) == pid
             c.execute(
                 "UPDATE afo_verification_jobs SET state='RUNNING',lease_until=?,record=? WHERE job_id=?",
                 (now + 60, canonical(rec).decode(), job_id),

@@ -741,7 +741,7 @@ def main(argv=None) -> int:
         from .verification_job import VerificationJobs
 
         queue = VerificationJobs(store)
-        queue.claim(args.job, args.epoch)
+        queue.claim(args.job, args.epoch, dedicated_group=True)  # launch_review spawns this worker in its own session
         with store.tx() as c:
             job = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (args.job,)).fetchone()[0])
         try:
