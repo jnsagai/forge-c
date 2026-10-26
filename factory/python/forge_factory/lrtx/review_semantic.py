@@ -710,7 +710,8 @@ def _sequence(statement: str, b: dict) -> bool:
     writing several distinct literal values covers each keyed write on the field. A single-write requirement (the
     IWDG-LL refresh key) still needs a purpose word, so an omitted start-key requirement stays detected. (A closed
     self-check of the citation was tried and withdrew that true S1-OMIT detection; it was removed.)"""
-    return b["action"] == "write" and len({int(v, 16) for v in re.findall(r"\b0x[0-9A-Fa-f]+\b", statement)}) >= 2
+    written = re.findall(r"\bwrit\w*\s+(0x[0-9A-Fa-f]+)\b", statement, re.I)  # run 13: an omitted value is not written
+    return b["action"] == "write" and len({int(v, 16) for v in written}) >= 2
 
 
 # run 6 (2026-10-26): "clear the selected oscillator enable bit" names an action noun, not the action
@@ -767,7 +768,11 @@ def _purposeful(statement: str, b: dict) -> bool:
     if b["action"] != "write":
         return True
     purpose = purpose_words(b)
-    return not purpose or any(re.search(rf"\b{w}", statement, re.I) for w in purpose)
+    done = NOT_DONE.sub(" ", statement)  # run 13: 'leaving the already started watchdog running' starts nothing
+    return not purpose or any(re.search(rf"\b{w}", done, re.I) for w in purpose)
+
+
+NOT_DONE = re.compile(r"\b(?:leav(?:e|es|ing)|omit(?:s|ting)?|without|except)\b[^,;]*?(?=,|;|\band\b|\.(?:\s|$)|$)", re.I)
 
 
 def states_behaviour(facts: dict, cited: str, b: dict) -> bool:

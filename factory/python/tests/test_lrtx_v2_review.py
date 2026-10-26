@@ -831,3 +831,21 @@ def test_non_register_behaviours_are_not_asked_and_a_synonym_citation_gets_one_c
                                    "0x00005555 to IWDG_KR.KEY.", "verification": ""}}
     got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-002"}, {**facts, "reqs": ll})
     assert [c["decision"] for c in got] == ["STANDS"]
+
+
+def test_what_a_requirement_leaves_or_omits_is_not_its_purpose(frozen):
+    """Run 13 (IWDG-HAL rc4 S1-OMIT, SWR-001 removed): the start-key behaviour fell to SWR-006 'write 0x0000 to
+    IWDG_KR.KEY to write-protect IWDG_PR and IWDG_RLR, omit the 0xAAAA refresh key and return HAL_TIMEOUT, leaving the
+    already started watchdog running'."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-006": {"statement": "If IWDG_SR.PVU is still set when the timeout has elapsed, then the IWDG driver "
+                                     "shall write 0x0000 to IWDG_KR.KEY to write-protect IWDG_PR and IWDG_RLR, omit the "
+                                     "0xAAAA refresh key and return HAL_TIMEOUT, leaving the already started watchdog "
+                                     "running.", "verification": ""},
+            "SWR-008": {"statement": "When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to "
+                                     "IWDG_KR.KEY to refresh the counter and return HAL_OK.", "verification": ""}}
+    start = {"phrase": "start key write to enable register access", "action": "write", "register_field": "IWDG_KR.KEY",
+             "value": ""}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-008"}, {**facts, "reqs": reqs})
+    assert [c["decision"] for c in got] == ["STANDS"]
+    assert not RS._sequence(reqs["SWR-006"]["statement"], start)
