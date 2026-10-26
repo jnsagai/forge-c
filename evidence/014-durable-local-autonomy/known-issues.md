@@ -9,7 +9,7 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-001 | protocol | Five diagnosis protocol trials not run: no qualified alternative local model | ACCEPTED_BY_OWNER | Decide whether a second local model is qualified (stepwise) for diagnosis, or accept single-model diagnosis. Owner 2026-10-26: 95/100 accepted. |
 | KI-014-002 | accounting | Token usage UNKNOWN for 23 of 95 protocol trials | OPEN | Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable. |
 | KI-014-003 | inspector | Stepwise inspector: held-out false-alarm rate not yet re-measured | OPEN | Release a frozen Feature 015 batch and decide its learning/test split (recorded seed) so the refreshed held-out set can measure the fixes. |
-| KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | OPEN | None needed to decide; implementation pending. |
+| KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | RESOLVED (5f6d540) | None needed to decide; implementation pending. |
 | KI-014-005 | regression | Two inherited test failures | OPEN | Decide: fix in their own feature, or record a waiver. |
 | KI-014-006 | runtime | No usable parallel model serving for the inspector | OPEN | Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot. |
 | KI-014-007 | gates | Omniverse2 unit gate skips the review tests | OPEN | Decide whether the pinned engine and owner inputs may be placed on Omniverse2 (private data). |
@@ -47,8 +47,8 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 - **What:** Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet.
 - **Impact:** A gap may be registered although an open CAPA already describes its cause; the reviewer must check the CAPA registry.
 - **Evidence:** factory/python/forge_factory/inspection/gate.py (_ladder); specs/014-durable-local-autonomy/tasks.md DA-T054
-- **Human action:** None needed to decide; implementation pending.
-- **Status:** OPEN
+- **Human action:** None.
+- **Status:** RESOLVED 2026-10-26 (5f6d540): the capa_retrieval rung records the linked CAPAs.
 
 ## KI-014-005: Two inherited test failures
 

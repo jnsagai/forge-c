@@ -24,6 +24,7 @@
     "DA-T048",
     "DA-T051",
     "DA-T053",
+    "DA-T054",
     "DA-T056",
     "DA-T057",
     "DA-T058"
@@ -730,13 +731,13 @@
     },
     {
       "acceptance_test_id": "DA-AT-054",
-      "evidence": "evidence/v0.4/runs/DA014-US11/latest.json",
-      "implementation_status": "IMPLEMENTED_PARTIAL_CAPA_RUNG_MISSING",
-      "limitation": "CAPA retrieval rung not integrated (KI-014-004)",
+      "evidence": "evidence/v0.4/runs/DA014-ladder/latest.json",
+      "implementation_status": "PASS_DETERMINISTIC",
+      "limitation": "evidence at 5f6d540; no real factory run has continued in advisory mode yet",
       "native_or_live_qualification": "NOT_RUN",
       "required_level": "deterministic",
       "requirement_id": "DA-FR-054",
-      "runtime_sources": "inspection/gate.py; afo/recovery.py; workflow/builder.py; release/finalize.py",
+      "runtime_sources": "inspection/gate.py; afo/recovery.py; workflow/builder.py; release/finalize.py; knowledge/store.py",
       "source_revision": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238",
       "task_id": "DA-T054",
       "test_sources": "factory.python.tests.test_da014_advisory; factory.python.tests.test_da014_advisory_recovery"

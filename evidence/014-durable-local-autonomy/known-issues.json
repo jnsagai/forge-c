@@ -38,11 +38,11 @@
    "id": "KI-014-004",
    "title": "Escalation ladder: CAPA retrieval rung not integrated",
    "area": "ladder",
-   "what": "Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet.",
+   "what": "Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet. Resolved 2026-10-26 (5f6d540): capa_retrieval rung records the linked CAPAs.",
    "impact": "A gap may be registered although an open CAPA already describes its cause; the reviewer must check the CAPA registry.",
    "evidence": "factory/python/forge_factory/inspection/gate.py (_ladder); specs/014-durable-local-autonomy/tasks.md DA-T054",
    "human_action": "None needed to decide; implementation pending.",
-   "status": "OPEN"
+   "status": "RESOLVED"
   },
   {
    "id": "KI-014-005",
