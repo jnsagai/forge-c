@@ -9,7 +9,7 @@
 schema_version: '1.0'
 feature_id: 005-autonomous-factory-operations
 mode: PILOT
-authorization_ref: AUTH-AFO-PILOT-20261025
+authorization_ref: AUTH-AFO-PILOT-20261026
 integration:
   reuse_002_supervisor: true
   reuse_004_cre: true
@@ -42,7 +42,7 @@ budgets:
   max_retries_per_transient_operation: 2
 engineering:
   allow_scoped_product_draft_rework: false
-  enable_recovery_planner: false
+  enable_recovery_planner: true
   allowed_model_profiles:
   - codex-claude
   preserve_independent_inspector: true
