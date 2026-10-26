@@ -86,3 +86,13 @@ rows** (`audit-a206c54.json`: per-trial facts, record and oracle hashes). With t
 `missing-dependency:2` (duplicate list item; normalized in dbcec39) and `upstream-owner:4` (genuine owner/scope
 inconsistency), 5 missing (`qualified-local-alternative`, prerequisite: an independently measured authorized local
 alternative). Status FAIL — the gate is 100/100. Still preliminary: no task ticked.
+
+### Second full matrix (dbcec39, fresh campaign, 95 trials, 23:18–00:10 UTC)
+
+Independent audit again **0 false successes / 0 duplicate effects / 0 authority escapes** (`audit-dbcec39.json`);
+official report **91/100** (duplicate-item fix held: missing-dependency 5/5). Failures: missing-primary:0/:3 cited
+SWR-001 (not a case obligation key) as missing evidence; unqualified-local-alternative:1 exposed a fault-harness defect
+(the injected model switch kept the model's upstream owner_phase, so the contract refused before the alternative check);
+upstream-owner:4 repeated the owner/scope inconsistency (temperature-0 repeats are near-deterministic). All three fixed
+in b7ce315 (obligation enum, separate strategy question with responsible-phase scope, clean switch fault); third full
+matrix running on b7ce315.
