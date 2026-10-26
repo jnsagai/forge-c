@@ -458,3 +458,15 @@ def test_adjudicated_pass_note_counts_the_verdict_round_when_fact_answers_follow
     monkeypatch.setattr(S, "call", call)
     rep = RS.visit(frozen, "SWE.1", "qwen3.6:35b-a3b")
     assert rep["status"] == "PASS" and any(i.startswith("LRTX_ADJUDICATED_PASS:SWE1-03: 1 claim") for i in rep["issues"])
+
+
+def test_an_ambiguity_quoted_from_the_open_points_is_documented(frozen):
+    """Omniverse2 stepwise smoke 2026-10-26: the clean IWDG baseline was rejected for an 'undocumented' ambiguity that
+    the claim itself quoted from the document's Open points list."""
+    facts = RS.baseline_facts(frozen)
+    assert facts["open_points"], "the frozen fixture records open points"
+    point = facts["open_points"].split(" - ")[0].lstrip("- ").rstrip(".")[:60]
+    quoted = _c("ambiguity_not_documented", "document", f"The document lists '{point}' as an open point; unresolved.")
+    other = _c("ambiguity_not_documented", "document", "The term 'nominal refresh window' is never defined anywhere.")
+    got = RS.adjudicate(frozen, "SWE1-06", [quoted, other], facts)
+    assert [c["decision"] for c in got] == ["REFUTED", "STANDS"]

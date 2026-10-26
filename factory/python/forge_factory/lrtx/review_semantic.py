@@ -75,7 +75,9 @@ def baseline_facts(ws: Path) -> dict:
     up_to_sw = set(re.findall(r"^\| [^|]+ \| ((?:SWR-\d{3}(?:, )?)+) \|", gaps, re.M))
     traced_up = {s for row in up_to_sw for s in re.findall(r"SWR-\d{3}", row)}
     traced_sw = set(re.findall(r"^\| (SWR-\d{3}) \| [^|]+ \|$", gaps, re.M))
+    opened = re.search(r"^## Open points\s*\n(.*?)(?=^## |\Z)", md, re.M | re.S)
     return {"reqs": reqs, "startup": [m.group(1) for m in STARTUP.finditer(md)],
+            "open_points": " ".join(opened.group(1).split()) if opened else "",
             "gap_rows": {i: (m.group(1) if m else None) for i, m in gap_rows.items()},
             "traced": traced_up & traced_sw, "tested": set(re.findall(r"^(SWR-\d{3}),", csv, re.M)),
             "budgets": {k: any(re.search(rf"\b{k}\b", r["statement"], re.I) and BYTES.search(r["statement"])
@@ -141,6 +143,11 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                     if "NOT_ATOMIC" in x or "NO_SHALL" in x]
             decision, why = ("CONFIRMED", "; ".join(ears)) if ears else \
                 ("REFUTED", f"{t} has exactly one 'shall' (EARS atomicity check passes)")
+        elif a == "ambiguity_not_documented" and _quoted_open_point(c["detail"], f["open_points"]):
+            # Omniverse2 2026-10-26 (stepwise smoke): the claim quoted the ambiguity from the document's own Open
+            # points list; an ambiguity quotable from that list is documented, so the claim contradicts the baseline
+            decision, why = "REFUTED", ("the document records it under Open points: "
+                                        f"'{_quoted_open_point(c['detail'], f['open_points'])[:120]}'")
         elif a == "reset_startup_missing":
             if f["startup"]:
                 decision, why = "REFUTED", f"{f['startup'][0]} specifies the reset/startup behaviour"
@@ -183,6 +190,15 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
             decision, why = "STANDS", "the work order targets an ASIL with a mandatory safety input missing"
         out.append({**c, "identity": identity(item, c), "decision": decision, "evidence": why})
     return out
+
+
+def _quoted_open_point(detail: str, open_points: str) -> str | None:
+    """A phrase the claim quotes (8+ characters) that the document's Open points section contains verbatim."""
+    for q in re.findall(r"'([^']{8,})'|\"([^\"]{8,})\"", detail):
+        text = " ".join("".join(q).split()).rstrip(".")
+        if text and text in open_points:
+            return text
+    return None
 
 
 def _mandatory_safety_missing(m: dict) -> bool:
