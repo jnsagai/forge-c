@@ -184,6 +184,20 @@ Regression on loop10 (no live Qwen; private owner inputs copied with their recor
 
 On `b180c97`, two of the four failures came from `ad5447a`: `test_lrtx_compat` (the v1 structured record gained `"advisory": false`) and `test_da014_advisory` (a substring check matched a state path). Both are fixed in `674bc07`. The two remaining failures, `test_cre_d7_final` and `test_sim_renode`, fail identically on base `f6ff873`. The end-of-run dirty `docs/IMPLEMENTATION-STATUS-v0.4.md` and `evidence/v0.4/implementation-status.json` come from the inherited `test_t050_t051_docs_status` side effect.
 
+## 2026-10-26: owner accepts 95/100; known issues reported for humans
+
+Owner decision: "95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human." The native protocol gate passes at 95/100 (campaign `5dc2df3`: 95 correct, 0 failures; the 5 qualified-local-alternative trials not run), and [DA-AT-024](acceptance-tests.md) records the amendment. Everything the factory cannot yet do, or does imperfectly, is listed with evidence and the human action it needs in the [known-issues register](../../evidence/014-durable-local-autonomy/known-issues.md) (11 entries).
+
+Evidence records and ticks (27/58 tasks; `scripts/mark_task.py`, each record PASS with exit code 0):
+
+| Task | Evidence | Revision | Scope |
+|---|---|---|---|
+| DA-T024 | `DA014-protocol-95` | `5dc2df3` | live native protocol, 95/100 owner-accepted |
+| DA-T053 | `DA014-stepwise-learning`, `DA014-US11` | `9f001ed`, `e8e7fb6` | live learning set 49/49 (preliminary), 91 deterministic tests |
+| DA-T056, DA-T057, DA-T058 | `DA014-US11` | `e8e7fb6` | deterministic (live round trip: KI-014-009) |
+
+Core regression at `e8e7fb6`: 627 passed, 1 skipped, 0 failed; release 13/13 (records `DA014-core`, `DA014-release`). The implementation-status ledger is re-baselined to 58 rows at `e8e7fb6`; `verify_handoff.py` accepts only PASS_DETERMINISTIC or the two recorded live statuses for ticked tasks, requires model capability to stay PARTIAL and product success, learning benefit and availability to stay NOT_RUN.
+
 ## Static checks
 
 `python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.

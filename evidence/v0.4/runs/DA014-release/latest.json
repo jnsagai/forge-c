@@ -5,40 +5,39 @@
     "pytest",
     "-q",
     "factory/python/tests/test_m7_governance_release.py",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-de324a3-release",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-de324a3-release.xml"
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-e8e7fb6-release",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-e8e7fb6-release.xml"
   ],
-  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/regression-de324a3",
-  "duration_s": 9.119,
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/us11-e8e7fb6",
+  "duration_s": 10.0,
   "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
   "exit_code": 0,
   "fixture_provenance": "evidence/014-durable-local-autonomy/followup/provider-fixture-provenance.json",
   "git_dirty": false,
-  "git_head": "de324a3c8686f06be566d479ea1a2d9dac48c61a",
+  "git_head": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "invocation_provenance": "evidence/014-durable-local-autonomy/followup/provider-final-invocation.json",
   "junit": {
-    "path": "evidence/v0.4/runs/DA014-release/20261026T032257.xml",
-    "sha256": "35558bb443297b6a64377e9c1db3df84c4e68a63b2f054b916a02dcc54c3553c"
+    "path": "evidence/v0.4/runs/DA014-release/20261026T172758.xml",
+    "sha256": "9f6704cc49accca0e2db0d6bdd2b968ec9114471cd5388b890cb468b67bb36f3"
   },
-  "log": "evidence/v0.4/runs/DA014-release/20261026T032257.log",
+  "log": "evidence/v0.4/runs/DA014-release/20261026T172758.log",
   "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
   "results": {
     "errors": 0,
     "failures": 0,
-    "seconds": 9.119,
+    "seconds": 10.0,
     "skipped": 0,
     "tests": 13,
-    "timestamp": "2026-10-26T03:21:54.901133+00:00"
+    "timestamp": "2026-10-26T17:27:34.044432+00:00"
   },
   "schema": "forge-c/task-evidence/0.4",
   "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
   "status": "PASS",
   "task": "DA014-release",
-  "ts_utc": "2026-10-26T03:22:57.905457+00:00",
+  "ts_utc": "2026-10-26T17:27:58.015277+00:00",
   "umask": "0022"
 }

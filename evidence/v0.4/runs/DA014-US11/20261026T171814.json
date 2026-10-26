@@ -1,0 +1,35 @@
+{
+  "command": "pytest -q -rs factory/python/tests/{test_da014_offline_export,test_da014_offline_disposition,test_da014_offline_patch,test_da014_advisory,test_da014_advisory_recovery,test_da014_lesson_delivery,test_da014_llama_server,test_lrtx_v2_review,test_lrtx_seeded}.py; validate_spec.py; validate_contracts.py",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/us11-e8e7fb6",
+  "duration_s": 123.196,
+  "environment_setup": "source scripts/forge-env.sh; FORGE_DATA_ROOT=<loop10 data root>",
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-US11/20261026T171814.xml",
+    "sha256": "f2d66a3fd3957e7e054901fa666b4d4dd4652845a5ea96c1227fd95c67ea4a67"
+  },
+  "log": "evidence/v0.4/runs/DA014-US11/20261026T171814.log",
+  "log_sha256": "a5b38784897297ab3f061d64d723a0f53ecf234c1c3c721774b0284d57c0d3b2",
+  "private_inputs": "examples/0002-arm_55_rcc_st/inputs (owner, git-ignored) copied with their recorded sha256 (provider-fixture-provenance.json)",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 123.196,
+    "skipped": 0,
+    "tests": 91,
+    "timestamp": "2026-10-26T17:15:24.867576+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "skipped_tests": 0,
+  "status": "PASS",
+  "task": "DA014-US11",
+  "ts_utc": "2026-10-26T17:18:14.731762+00:00"
+}

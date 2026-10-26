@@ -8,14 +8,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "specs/014-durable-local-autonomy"
+PASSED = {"PASS_DETERMINISTIC", "PASS_LIVE_OWNER_ACCEPTED_95_OF_100", "PASS_LIVE_LEARNING_SET_PRELIMINARY"}
 
 
 def main():
     rows = list(csv.DictReader((SPEC / "implementation-status.csv").open()))
     ledger = json.loads((ROOT / "evidence/014-durable-local-autonomy/implementation-status.json").read_text())
-    assert len(rows) == 52 and rows == ledger["rows"]
+    assert len(rows) == 58 and rows == ledger["rows"]
     for column, prefix in [("requirement_id", "DA-FR-"), ("task_id", "DA-T"), ("acceptance_test_id", "DA-AT-")]:
-        assert {r[column] for r in rows} == {f"{prefix}{i:03d}" for i in range(1, 53)}
+        assert {r[column] for r in rows} == {f"{prefix}{i:03d}" for i in range(1, 59)}
     complete = set(ledger["completed_task_ids"])
     checked = set(re.findall(r"^- \[[xX]\] \*\*(DA-T\d{3})", (SPEC / "tasks.md").read_text(), re.M))
     assert checked <= complete  # before marking, checking evidence must already be possible
@@ -26,7 +27,7 @@ def main():
             continue  # the first documentation-only check produces this record
         record = json.loads(ref.read_text())
         if row["task_id"] in complete:
-            assert row["implementation_status"] == "PASS_DETERMINISTIC"
+            assert row["implementation_status"] in PASSED  # owner 2026-10-26: 95/100 accepted
             assert record["status"] == "PASS" and record["exit_code"] == 0
         for path_key, hash_key in [("log", "log_sha256"), ("report", "report_sha256")]:
             if path_key in record:
@@ -34,8 +35,10 @@ def main():
         if "junit" in record:
             j = record["junit"]
             assert hashlib.sha256((ROOT / j["path"]).read_bytes()).hexdigest() == j["sha256"]
-    for axis in ["local_model_capability", "product_success", "learning_benefit", "operational_availability"]:
+    for axis in ["product_success", "learning_benefit", "operational_availability"]:
         assert ledger[axis] == "NOT_RUN"
+    assert ledger["local_model_capability"].startswith("PARTIAL")  # never a full capability claim
+    assert json.loads((ROOT / ledger["known_issues"]).read_text())["issues"]  # the human-facing register exists
     assert ledger["deployment"] == "NOT_ACTIVATED"
     assert ledger["rolling_30_day_slo"] == "NOT_DEMONSTRATED"
     print(json.dumps({"status": "PASS", "scope": "DOCUMENTATION_ONLY_NOT_RUNTIME",

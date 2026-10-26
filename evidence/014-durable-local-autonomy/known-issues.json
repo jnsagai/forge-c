@@ -1,0 +1,118 @@
+{
+ "schema": "forge-c/known-issues/1",
+ "feature": "014-durable-local-autonomy",
+ "updated": "2026-10-26",
+ "principle": "Owner 2026-10-26: 'a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human.'",
+ "issues": [
+  {
+   "id": "KI-014-001",
+   "title": "Five diagnosis protocol trials not run: no qualified alternative local model",
+   "area": "protocol",
+   "what": "The 20x5 protocol ran 95/100 trials (95 correct, 0 failures). The 5 'qualified-local-alternative' trials need a second, independently qualified local diagnosis model; none exists on Omniverse2 (qwen3.8:27b failed the single-response diagnosis; it was not tried stepwise).",
+   "impact": "If the only qualified diagnosis model fails or is withdrawn, there is no qualified local fallback; recovery then closes BLOCKED for a human.",
+   "evidence": "evidence/v0.4/runs/DA014-protocol-95/latest.json; evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json",
+   "human_action": "Decide whether a second local model is qualified (stepwise) for diagnosis, or accept single-model diagnosis. Owner 2026-10-26: 95/100 accepted.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-002",
+   "title": "Token usage UNKNOWN for 23 of 95 protocol trials",
+   "area": "accounting",
+   "what": "The native path did not report usage for 23 trials; the ledger keeps them as UNKNOWN (never as zero).",
+   "impact": "Mission budgets for those requests are reconciled conservatively; cost per trial is not exact.",
+   "evidence": "evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json (usage_unknown)",
+   "human_action": "Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-003",
+   "title": "Stepwise inspector: held-out false-alarm rate not yet re-measured",
+   "area": "inspector",
+   "what": "Calibration on the 9 registered held-out baselines (3 identical runs): 49/54 seeded defects caught, 5/9 clean baselines falsely rejected. Fixes were then developed on that spent subset as learning set 2 (L2 live: 59/63 after round 1; round 2 running). Their held-out effect is unmeasured.",
+   "impact": "In real runs the advisory inspector may still register false gaps for the end-of-run human review (advisory mode: it does not block).",
+   "evidence": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md; evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-runs.json",
+   "human_action": "Release a frozen Feature 015 batch and decide its learning/test split (recorded seed) so the refreshed held-out set can measure the fixes.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-004",
+   "title": "Escalation ladder: CAPA retrieval rung not integrated",
+   "area": "ladder",
+   "what": "Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet.",
+   "impact": "A gap may be registered although an open CAPA already describes its cause; the reviewer must check the CAPA registry.",
+   "evidence": "factory/python/forge_factory/inspection/gate.py (_ladder); specs/014-durable-local-autonomy/tasks.md DA-T054",
+   "human_action": "None needed to decide; implementation pending.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-005",
+   "title": "Two inherited test failures",
+   "area": "regression",
+   "what": "test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873.",
+   "impact": "The whole inherited suite is not green; the two failures predate Feature 014.",
+   "evidence": "specs/014-durable-local-autonomy/validation.md (2026-10-26 regression table)",
+   "human_action": "Decide: fix in their own feature, or record a waiver.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-006",
+   "title": "No usable parallel model serving for the inspector",
+   "area": "runtime",
+   "what": "Ollama 0.34.0 serves qwen35moe with one request slot. The experimental llama.cpp profile (-ls) serves 2 slots but gives the prefill-bound inspector ~0 speed-up, changes answers (1 learning-set result broke) and crashed twice right after stack start (cause unknown).",
+   "impact": "Inspector throughput stays one request at a time on Omniverse2.",
+   "evidence": "evidence/014-durable-local-autonomy/parallel-serving-20261026/README.md",
+   "human_action": "Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-007",
+   "title": "Omniverse2 unit gate skips the review tests",
+   "area": "gates",
+   "what": "40 of 46 review/seeded tests skip on Omniverse2 (no pinned SafeC engine or owner inputs there). Compensated: calibration requires a loop10 run of the same revision with none skipped.",
+   "impact": "A remote-only change could pass the remote gate untested.",
+   "evidence": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md (gate defects)",
+   "human_action": "Decide whether the pinned engine and owner inputs may be placed on Omniverse2 (private data).",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-008",
+   "title": "Record copier misses some evaluation records",
+   "area": "evidence",
+   "what": "The periodic copier of the seeded harness keeps inspection records for about 40 of 49 evaluations; the rest are lost when the harness deletes its scratch.",
+   "impact": "Replay-based development and audits cannot see every evaluation.",
+   "evidence": "evidence/014-durable-local-autonomy/parallel-serving-20261026/README.md",
+   "human_action": "None needed to decide; harness change pending (write records next to the result).",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-009",
+   "title": "Signed dispositions and patch bundles not exercised live",
+   "area": "offline loop",
+   "what": "Export, owner-signed dispositions and the signed patch-import gate pass their deterministic tests. A live round trip needs the owner's allowed-signers lines for namespaces forge-review-disposition and forge-patch-bundle and the owner's own signatures.",
+   "impact": "The offline improvement loop is implemented but unproven end to end.",
+   "evidence": "evidence/v0.4/runs/DA014-US11/latest.json; specs/014-durable-local-autonomy/contracts/README.md",
+   "human_action": "Owner: add the two allowed-signers lines and sign one disposition and one patch.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-010",
+   "title": "Independent CRE rejects promotion of the branch",
+   "area": "promotion",
+   "what": "Independent CRE evaluates the Feature 014 range as REJECTED / PROTECTED_PATH_CHANGE (the branch changes evidence and specification paths). No gate is waived.",
+   "impact": "No automatic promotion; merging needs the owner's review.",
+   "evidence": "evidence/014-durable-local-autonomy/cre/independent-evaluation.json",
+   "human_action": "Owner review of PR #42 (draft); merge only after acceptance.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-011",
+   "title": "Long live campaigns not run",
+   "area": "qualification",
+   "what": "Real RCC recovery, the 30-product benchmark, chronological learning benefit and the 24/72/168-hour operation campaigns are implemented with fixtures but NOT_RUN.",
+   "impact": "Production readiness, product success, learning benefit and availability are unproven.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv",
+   "human_action": "Schedule dedicated Omniverse2 GPU windows for the campaigns.",
+   "status": "OPEN"
+  }
+ ]
+}

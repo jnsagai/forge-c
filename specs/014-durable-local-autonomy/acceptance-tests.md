@@ -265,12 +265,13 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-024
 - **Level:** real-native
-- **Status:** NOT_RUN
+- **Status:** PASS_OWNER_ACCEPTED_95_OF_100 (2026-10-26)
 - **Given:** Twenty frozen mixed protocol cases, each repeated five times through the actual selected Qwen/gateway/Fabro/MCP path, with expected outcome classes, designated recoverable cases, legitimate blocks and negative cases fixed before execution.
 - **When:** Execute all 100 trials under the bounded campaign and retain every terminal outcome, invalid proposal, retry and cost; do not replace failures with additional favorable trials.
 - **Then:** Every trial reaches its correct observable outcome. Every designated recoverable trial must produce an independently admissible plan; blanket CLOSE_BLOCKED responses fail. Distinguish valid blocking from repair success and report useful-plan rate separately.
 - **Evidence:** Frozen case/oracle manifest; 100 native run identities and complete results; expected/observed matrix; plan receipts; cost/retry ledger.
 - **Expected:** 100/100 correctly classified terminal outcomes; every designated recoverable trial reaches an admissible plan; zero false success, duplicate dispatch or authority escape. This pilot is not proof of 99% production reliability.
+- **Owner amendment (2026-10-26):** "95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human." The 5dc2df3 campaign ran 95/100 trials with 95 correct outcomes and 0 failures; the 5 qualified-local-alternative trials (no qualified alternative local diagnosis model) are known issue KI-014-001 in [known-issues.md](../../evidence/014-durable-local-autonomy/known-issues.md), not a pass of those trials.
 
 ## DA-AT-025 — Genuine RCC acceptance and GPIO release conditions
 
