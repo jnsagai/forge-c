@@ -42,3 +42,18 @@ dispositions:
     approved_by: Jefferson Nascimento
     approved_at: '2026-10-25'
     reference: "owner answer 2026-10-25 to the agent's question on the 32 GL-ARG-01 findings of the CRC and SPI benchmark packages: 'All 5 LL headers (Recommended)'"
+  - id: OD-2026-10-26-01
+    examples: [0010c-st-cube-gpio]
+    # feature 015: a clang static-analyzer finding in FROZEN vendor code (owner 2026-10-26: analyzer findings in frozen
+    # vendor code are "Dispositionable")
+    delivered_finding_regex: '^STATIC_ANALYSIS:core\.BitwiseShift:software/ll/stm32n6xx_ll_gpio\.h:675$'
+    disposition: ACCEPTED_OUT_OF_CONTRACT_INPUT
+    limitation: >-
+      ST's delivered stm32n6xx_ll_gpio.h (STM32CubeN6 stm32n6xx-hal-driver v1.4.0) LL_GPIO_SetAFPin_8_15 shifts by
+      POSITION_VAL(Pin >> 8U) * 4. For a Pin below LL_GPIO_PIN_8, outside the function's documented range
+      LL_GPIO_PIN_8..LL_GPIO_PIN_15, POSITION_VAL(0) is 32 and the shift (128) is undefined behaviour in C (clang
+      core.BitwiseShift). Valid calls are correct. Pin in LL_GPIO_PIN_8..15 is a caller obligation; the code is
+      unchanged (FROZEN). Not a safety approval.
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-26'
+    reference: "owner answer 2026-10-26 to the agent's question on the clang core.BitwiseShift finding of BENCH-GPIO-ST-R4 (stm32n6xx_ll_gpio.h:675): 'Approve as drafted (Recommended)'"
