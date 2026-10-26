@@ -967,3 +967,37 @@ def test_learning_set_2_a_budget_answer_must_cite_the_requirement_stating_that_b
     no_stack = {**facts, "reqs": {k: v for k, v in facts["reqs"].items() if k != stack}}
     got = RS.step_claims(frozen, q, {"quote": "", "answer": ram}, no_stack)
     assert [c["decision"] for c in got] == ["STANDS"]
+
+
+def test_learning_set_2_round_2_the_startup_answer_must_be_a_startup_requirement(frozen):
+    """Round 2 (rc1 S1-NOSTART): with the startup requirement removed, an init requirement was cited for the startup
+    question and accepted."""
+    facts = RS.baseline_facts(frozen)
+    q = next(x for x in RS.step_questions(frozen, facts) if x["id"] == "startup")
+    start = facts["startup"][0]
+    other = next(s for s in sorted(facts["reqs"]) if s not in facts["startup"])
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": start}, facts) == []
+    assert [c["decision"] for c in RS.step_claims(frozen, q, {"quote": "", "answer": other}, facts)] == ["REFUTED"]
+    no_start = {**facts, "startup": [], "reqs": {k: v for k, v in facts["reqs"].items() if k != start}}
+    got = RS.step_claims(frozen, q, {"quote": "", "answer": other}, no_start)
+    assert len(got) == 1 and got[0]["decision"] not in ("REFUTED", "WITHDRAWN")  # the omission is detected
+
+
+def test_learning_set_2_round_2_a_reference_or_a_state_is_not_a_key_writes_purpose(frozen):
+    """Round 2 (h005 S1-OMIT): '... by writing 0x5555 ... after the start key' (access key) and '... write the
+    write-protect key 0x0000 ... with the started watchdog running' were accepted for the omitted start key."""
+    access = {"statement": "When HAL_IWDG_Init is requested, the IWDG driver shall enable register write access by "
+                           "writing 0x5555 to IWDG_KR.KEY after the start key and before configuring IWDG_PR.PR.",
+              "verification": ""}
+    protect = {"statement": "If IWDG_SR.PVU is still set when timeout_ms has elapsed, then the IWDG driver shall write the "
+                            "write-protect key 0x0000 to IWDG_KR.KEY, omit the refresh key, and return HAL_TIMEOUT with "
+                            "the started watchdog running.", "verification": ""}
+    start = {"phrase": "start key write to IWDG_KR", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
+    facts = {**RS.baseline_facts(frozen), "reqs": {"SWR-002": access, "SWR-006": protect}}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-002"}, facts)
+    assert [c["decision"] for c in got] == ["STANDS"]
+    wp = {"phrase": "write-protect key write to IWDG_KR on timeout", "action": "write", "register_field": "IWDG_KR.KEY",
+          "value": ""}
+    assert RS.behaviour_claims(wp, {"quote": "", "answer": "SWR-006"}, facts) == []
+    acc = {"phrase": "register access key write to IWDG_KR", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
+    assert RS.behaviour_claims(acc, {"quote": "", "answer": "SWR-002"}, facts) == []

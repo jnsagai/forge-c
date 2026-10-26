@@ -627,7 +627,9 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
     """The claim one fact answer implies (none when the answer finds the fact), decided like every other claim."""
     a, quote = doc["answer"], doc["quote"]
     if q["id"] == "startup":
-        if a != "NONE":
+        # learning set 2 round 2 (rc1 S1-NOSTART): with the startup requirement removed, an init requirement was cited;
+        # only a requirement that states the after-reset behaviour answers this question
+        if a != "NONE" and (a in facts["startup"] or a in startup_requirements(facts)):
             return []
         c = _claim("reset_startup_missing", "document",
                    "no requirement states the behaviour after reset (startup state): " + quote,
@@ -755,16 +757,24 @@ def _decides(facts: dict, cands: list[str], x: str, b: dict) -> bool:
 # learning set 2 (h003 S1-OMIT): with the start-key requirement removed, the refresh requirement was the one remaining
 # write on IWDG_KR.KEY and was accepted for 'start key'. Key writes on one field have distinct purposes; a requirement
 # that states only another purpose does not state this behaviour (a matching or unknown purpose still decides as before)
-KEY_PURPOSES = {"start": re.compile(r"(?:\b|_)start", re.I),  # '_' too: the API name HAL_IWDG_Start
+# '_' too: the API name HAL_IWDG_Start; not 'started' (a state: 'with the started watchdog running', h005 SWR-006)
+KEY_PURPOSES = {"start": re.compile(r"(?:\b|_)start(?!ed\b)", re.I),
                 "refresh": re.compile(r"(?:\b|_)(?:refresh|reload(?:s|ing)? the (?:watchdog )?counter)", re.I),
-                "access": re.compile(r"\b(?:access|unlock|enabl\w* (?:\w+ )?(?:configuration|register) writ)", re.I)}
+                "access": re.compile(r"\b(?:access|unlock|enabl\w* (?:\w+ )?(?:configuration|register) writ)", re.I),
+                # round 2 (h005 S1-OMIT): the write-protect key (0x0000) was accepted for 'start key'
+                "protect": re.compile(r"(?:\b|_)(?:write-protect|lock(?:s|ed|ing)?\b|no longer writable)", re.I)}
+
+
+TIME_REFERENCE = re.compile(r"\b(?:after|before|until|following|once)\s+(?:the\s+)?(?:[\w-]+\s+){0,3}?key\b", re.I)
 
 
 def _purpose_clash(statement: str, b: dict) -> bool:
     if b["action"] != "write":
         return False
     want = {k for k, r in KEY_PURPOSES.items() if r.search(b["phrase"])}
-    done = NOT_DONE.sub(" ", statement)
+    # learning set 2 round 2 (h005 S1-OMIT): '... by writing 0x5555 ... after the start key' names the start key only
+    # as a time reference; a reference ('after/before/until ... key') is not the requirement's own purpose
+    done = TIME_REFERENCE.sub(" ", NOT_DONE.sub(" ", statement))
     have = {k for k, r in KEY_PURPOSES.items() if r.search(done)}
     return bool(want) and bool(have) and not want & have
 
