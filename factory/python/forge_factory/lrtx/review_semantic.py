@@ -620,6 +620,11 @@ def behaviour_hit(facts: dict, b: dict) -> str | None:
     return next((x for x in cands if len(cands) == 1 or _purposeful(facts["reqs"][x]["statement"], b)), None)
 
 
+# run 6 (2026-10-26): "clear the selected oscillator enable bit" names an action noun, not the action
+NOUN_PHRASE = re.compile(r"\b(?:enable|disable|reset|ready|set|clear|start|update)\s+(?:bits?|flags?|fields?|registers?|"
+                         r"values?|status)\b", re.I)
+
+
 def candidates(facts: dict, b: dict) -> list[str]:
     """Requirements naming the behaviour's field (register, for REG.*) with an action of the same kind."""
     f = b["register_field"]
@@ -627,7 +632,7 @@ def candidates(facts: dict, b: dict) -> list[str]:
     bare = name.split(".")[-1]
     verbs = re.compile(r"\b(?:" + "|".join(ACTIONS[b["action"]]) + r")\w*", re.I)
     return [x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or re.search(
-        rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(r["statement"])]
+        rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(NOUN_PHRASE.sub(" ", r["statement"]))]
 
 
 def _purposeful(statement: str, b: dict) -> bool:

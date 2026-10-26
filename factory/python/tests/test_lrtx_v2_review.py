@@ -640,3 +640,16 @@ def test_a_flag_read_split_by_value_is_one_behaviour(frozen):
                                      "shall return 0U.", "verification": ""}}
     pvu = {"phrase": "query the PVU update flag in IWDG_SR", "action": "read", "register_field": "IWDG_SR.PVU"}
     assert RS.behaviour_claims(pvu, {"quote": "", "answer": "SWR-007"}, {**facts, "reqs": reqs}) == []
+
+
+def test_an_action_noun_is_not_the_action(frozen):
+    """Run 6 (2026-10-26): 'HSI oscillator enable' was answered with SWR-003, which clears 'the selected oscillator
+    enable bit, respectively RCC_CR.HSION'; the citation passed on the noun 'enable bit'."""
+    facts = RS.baseline_facts(frozen)
+    disable = {"statement": "When a valid HSI or HSE disable request is received, the RCC driver shall clear the selected "
+                            "oscillator enable bit, respectively RCC_CR.HSION or RCC_CR.HSEON.", "verification": ""}
+    enable = {"phrase": "HSI oscillator enable", "action": "set", "register_field": "RCC_CR.HSION"}
+    got = RS.behaviour_claims(enable, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": {"SWR-003": disable}})
+    assert [c["decision"] for c in got] == ["STANDS"]
+    off = {"phrase": "HSI oscillator disable", "action": "clear", "register_field": "RCC_CR.HSION"}
+    assert RS.behaviour_claims(off, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": {"SWR-003": disable}}) == []
