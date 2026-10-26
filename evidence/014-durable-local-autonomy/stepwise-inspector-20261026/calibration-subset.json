@@ -1,0 +1,89 @@
+{
+ "schema": "forge-c/feature014-calibration-subset/1",
+ "registered_before_measurement": true,
+ "owner_ruling": "2026-10-26 'Both: subset now, refresh later' (F011-T046: a disputed clean case goes to the owner)",
+ "source_testset": {
+  "path": "evidence/v0.4/runs/F011-T046/testset.json",
+  "sha256": "7042e373a880238e6dc456f5561dcc3dd9505afa5126ca4e4a766a835e51b7d0"
+ },
+ "selection_rule": "a frozen test baseline counts only if the CURRENT deterministic SWE.1 author gate freezes it at refreeze (truthful preflight, zero model calls); decided by the gate alone, never by inspector results",
+ "gate_rejected": {
+  "WO-0002A-STM32N6-RCC-LL-r168": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0002A-STM32N6-RCC-LL-r170": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008A-STM32N6-RCC-LL-b001": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008C-ST-RCC-LL-b003": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008C-ST-RCC-LL-b005": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008C-ST-RCC-LL-b006": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008B-STM32N6-RCC-HAL-b002": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0008B-STM32N6-RCC-HAL-b004": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0009A-STM32N6-IWDG-LL-i001": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0009A-STM32N6-IWDG-LL-i002": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0009A-STM32N6-IWDG-LL-i003": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0009B-STM32N6-IWDG-HAL-h001": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)",
+  "WO-0009B-STM32N6-IWDG-HAL-h002": "SWE1:STARTUP_INVARIANT_ON_HOST_TEST (startup requirement verified by a host unit test)"
+ },
+ "subset": [
+  {
+   "workorder": "WO-0008A-STM32N6-RCC-LL-rc1",
+   "tree_sha256": "9f4117bad01aeafa2c86c3fc018687b7684cc18467c0967ca5ee9f82ac07d459",
+   "peripheral": "RCC",
+   "layer": "LL"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b007",
+   "tree_sha256": "3a2550ac07201aad8108eabc99f2da693cd58500594ea58ec461a2e663fa0412",
+   "peripheral": "RCC",
+   "layer": "LL"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b008",
+   "tree_sha256": "ae6352ef91c5484681989ed809d6650f0c27859915f9defccff9cb5032eed16d",
+   "peripheral": "RCC",
+   "layer": "LL"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b009",
+   "tree_sha256": "bd0bb971c721c6ec030d32f912760dc61226438c00dacaaf72f55cb69a33e17a",
+   "peripheral": "RCC",
+   "layer": "LL"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h003",
+   "tree_sha256": "f1cc3575f018a6e257a0d1a8aeece1208c01a530685c8e0281f45377faefe2f9",
+   "peripheral": "IWDG",
+   "layer": "HAL"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h004",
+   "tree_sha256": "ab1a5ebac50dfc7a883ae44e7c238be65bf1f51f22e6b00a8638308728ca9a64",
+   "peripheral": "IWDG",
+   "layer": "HAL"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h005",
+   "tree_sha256": "697006b1523af0919defc70a64c42e35bd1071262be5bf2d94d219cee365ebf2",
+   "peripheral": "IWDG",
+   "layer": "HAL"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+   "tree_sha256": "c4f4997c8bbf15af943066d760b0642e784fb8827ef87d707b338d90f6baacda",
+   "peripheral": "IWDG",
+   "layer": "HAL"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+   "tree_sha256": "f0b5e44fac6c03e71a89095c220e54696a74f49c656420e5c963a151dbf97951",
+   "peripheral": "IWDG",
+   "layer": "HAL"
+  }
+ ],
+ "expected_from_truthful_preflight": {
+  "WO-0008C-ST-RCC-LL-b009": "FALSE_REJECTION_BY_INSPECTION even with truthful answers (recorded, not fixed: test data never tunes the inspector)",
+  "WO-0009B-STM32N6-IWDG-HAL-h005": "FALSE_REJECTION_BY_INSPECTION even with truthful answers (recorded, not fixed)"
+ },
+ "inspector_revision": "285d21ec9063bfed8e1ea884069303f99dda73f3",
+ "runs": 3,
+ "cases": "BASELINE + S1-OMIT,S1-QM,S1-EFFECT,S1-NOSTART,S1-GAPROW,S1-NOBUDGET",
+ "calibration_1_note": "calibration-1 ran all 22 before this ruling; 13 holdouts are gate-rejected, so its detections are gate-inflated and it is recorded but not used as the inspector measurement"
+}
