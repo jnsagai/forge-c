@@ -48,4 +48,4 @@ need the FR-003 parser change first. A task is checked only with run evidence (`
 
 ## M8 — Freeze
 
-- [ ] **F015-T070** Freeze the benchmark set (FR-006, SC-002) and open the PR (no merge without owner approval).
+- [X] **F015-T070** Freeze the benchmark set (FR-006, SC-002) and open the PR (no merge without owner approval). ✅ Evidence: `evidence/v0.4/runs/F015-T070-freeze/latest.json`, `evidence/v0.4/runs/F015-T070/latest.json`
