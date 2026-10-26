@@ -10,7 +10,7 @@ Start with [codex-prompt.md](codex-prompt.md), then follow [quickstart.md](quick
 
 | Document | Purpose |
 |---|---|
-| [spec.md](spec.md) | Prioritized stories, 52 requirements, boundaries and success criteria |
+| [spec.md](spec.md) | Prioritized stories, 58 requirements (DA-FR-053–058 added 2026-10-26 from owner decisions, US11), boundaries and success criteria |
 | [local-model-design.md](local-model-design.md) | Role capability, task decomposition, context/memory, correlated errors and capability fallback |
 | [continuous-learning.md](continuous-learning.md) | Learning from every job through the existing knowledge store, curator/MCP, inspector lessons, CAPA/CRE and KPI paths |
 | [continuous-operation.md](continuous-operation.md) | Required 24/7 service through existing Conductor/systemd/supervisor, durable waiting, recovery, fairness and operator control |

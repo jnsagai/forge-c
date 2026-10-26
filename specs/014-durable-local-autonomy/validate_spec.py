@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parents[1]
-COUNT = 52
+COUNT = 58
 
 
 def main() -> int:

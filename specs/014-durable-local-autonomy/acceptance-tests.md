@@ -579,3 +579,69 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Then:** Meet the deterministic/native obligations of DA-AT-045–051 during real unattended operation, retaining every fault, outage, intervention and admitted-work outcome. Eligible recovery needs no corrective operator action; the explicitly scheduled operator-control exercise is separately recorded and never disguised as autonomous recovery. After the campaign ends, supervision continues and the subsequent eligible job is processed within its bound without extending old grants or launching artificial busywork.
 - **Evidence:** Stage manifests/authorizations; frozen workload and fault schedule; independent continuous observations; native job/lease/outbox/ledger receipts; restoration, fairness and resource measurements; outage and intervention registers; operator-control records; post-campaign continuity and subsequent admission evidence.
 - **Expected:** Every stage completes its declared duration and required fault/work coverage with zero unplanned corrective intervention for in-envelope recovery, zero false READY, lost accepted effects, duplicate effective execution or ledger reset. Any required-bound violation or unexplained observation gap fails that stage. Operator shutdown is respected, enabled service persists after campaign completion, and 168 hours alone is not reported as proof of the 30-day availability SLO or guaranteed uninterrupted hardware operation.
+
+## DA-AT-053 — Stepwise local inspection on the learning set
+
+- **Requirement:** DA-FR-053
+- **Level:** deterministic + live (Omniverse2)
+- **Status:** PRELIMINARY_LEARNING_SET
+- **Given:** The Feature 011 learning set (7 holdouts, each a clean baseline plus 6 seeded SWE.1 defects), the pinned local model and profile, and the stepwise inspector revision under test.
+- **When:** Unit tests and the truthful preflight run first; then every evaluation is inspected once with temperature 0.
+- **Then:** Each seeded defect is detected on target or by the deterministic gate, and each clean baseline passes. A failing preflight or unit test stops the run before any model call.
+- **Evidence:** Per-run rows without findings text, run logs, preflight records, unit-test logs with skip counts, source revision.
+- **Expected:** A complete learning-set pass (every evaluation correct, zero empty inspections) before any held-out measurement. It is reported as preliminary, never as qualification.
+
+## DA-AT-054 — Advisory continuation only after an exhausted ladder
+
+- **Requirement:** DA-FR-054
+- **Level:** deterministic
+- **Status:** IMPLEMENTED_PARTIAL
+- **Given:** A phase with persistent findings under a profile with advisory continuation, with and without a frozen baseline and an upstream defect.
+- **When:** Every ladder step runs to exhaustion (rework budget, progress extension, lessons/CAPA, diagnosis repair, stall detection).
+- **Then:** Only an exhausted ladder with a frozen baseline and no upstream defect continues; the gap register entry holds every unresolved finding and the attempt history; without the flag or a baseline the phase stays BLOCKED; a progressing phase keeps its extension.
+- **Evidence:** `tests/test_da014_advisory.py` and ladder-rung tests; package `quality/advisory-gaps.json`.
+- **Expected:** No continuation before exhaustion, no gap without its attempt record, and an unchanged release rule (gaps keep the package BLOCKED or an offline review candidate).
+
+## DA-AT-055 — Held-out calibration with registered selection
+
+- **Requirement:** DA-FR-055
+- **Level:** live (Omniverse2)
+- **Status:** RUNNING
+- **Given:** A held-out set registered with tree hashes and a gate-only selection rule before measurement, and an inspector revision that passed the learning set.
+- **When:** Each registered run verifies set integrity, records unit-test coverage including skips, records the truthful preflight and measures every evaluation.
+- **Then:** Misses, false alarms and empty inspections are reported per run; no inspector change is made from held-out data before all registered runs end.
+- **Evidence:** Registration file and commit, per-run verify/unit/preflight logs, run rows and summary.
+- **Expected:** Complete registered runs with honest rates; any integrity failure stops the run before inference.
+
+## DA-AT-056 — Offline export bundle
+
+- **Requirement:** DA-FR-056
+- **Level:** deterministic
+- **Status:** NOT_IMPLEMENTED
+- **Given:** Finished local runs with inspection records, gate logs, a gap register and dispositions.
+- **When:** The export command runs twice without network access.
+- **Then:** Both bundles are byte-identical and hash-listed; they contain decisions, records and identities and no raw prompts, chain-of-thought, secrets or vendor documents.
+- **Evidence:** Bundle manifest and SHA256SUMS, exclusion test results.
+- **Expected:** Deterministic export with verified exclusions.
+
+## DA-AT-057 — Owner-signed review dispositions
+
+- **Requirement:** DA-FR-057
+- **Level:** deterministic
+- **Status:** NOT_IMPLEMENTED
+- **Given:** A registered gap and an owner key with an allowed-signers file.
+- **When:** The owner records a disposition and the factory verifies it; a forged or edited disposition is presented.
+- **Then:** The valid signed disposition is accepted and routed to the learning set only; forged or edited records are refused; historical packages stay unchanged.
+- **Evidence:** Signed disposition records and verification results.
+- **Expected:** No unsigned disposition is used; no disposition reaches a frozen held-out set.
+
+## DA-AT-058 — Signed patch import, preflight, regression and rollback
+
+- **Requirement:** DA-FR-058
+- **Level:** deterministic
+- **Status:** NOT_IMPLEMENTED
+- **Given:** A local factory at a base revision and patch bundles: valid, tampered, unsigned, wrong-base and a protected-path change without its CRE decision.
+- **When:** Each bundle is presented to the import gate with no network access; the valid one is then rolled back.
+- **Then:** Only the valid bundle activates, after its truthful preflight and declared regression pass; all others are refused with exact reasons; rollback restores the prior revision.
+- **Evidence:** Import records, preflight and regression logs, refusal reasons, rollback record.
+- **Expected:** Zero activation of an invalid bundle and a working one-step rollback.

@@ -132,6 +132,22 @@ Core increment through existing AFO/systemd/supervisor capabilities. Service lif
 
 - [ ] **DA-T052 [US10]** Extend the fault harness and DA-T026 campaign report with DA-AT-045–051 coverage, declared finite timing/fairness bounds, real-work exposure and post-campaign continuous-service/later-intake checks; run deterministic/systemd integration and only separately authorized live 24h/72h/168h campaigns. Preserve all faults/outages and distinct 30-day SLO status. Trace: DA-FR-052; DA-AT-052. Dependencies: DA-T045–051 implementation; DA-T026 harness; live execution additionally requires valid authority and prerequisites.
 
+## US11 — Local inspection, honest continuation and offline improvement
+
+Owner decisions of 2026-10-26: "Stepwise inspector in 014", "Advisory + calibrate" (the model tries its best first; zero error is the KPI), the deployment factory is strictly local/offline, and improvement happens in development through export and signed patch bundles. No task here is ticked before its full evidence exists (owner: "Keep unticked").
+
+- [ ] **DA-T053 [US11]** Implement the stepwise local SWE.1 inspector in `lrtx/review_semantic.py` with the seeded-defect harness `lrtx/seeded.py` (truthful preflight, empty-inspection stop), regression tests per measured failure, and learning-set runs on Omniverse2. Trace: DA-FR-053; DA-AT-053. Dependencies: Feature 011 seeded catalogue and learning set; existing adjudicator. Status: implemented through `285d21e`; learning-14 49/49 (preliminary, `evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md`).
+
+- [ ] **DA-T054 [US11]** Integrate the escalation ladder before any gap (rework, finer re-questions, validated lesson/CAPA retrieval, diagnosis repair strategy, stall detection) with advisory continuation in `inspection/gate.py`, the advisory node in `workflow/builder.py`, the attempt record and the package gap register in `release/finalize.py`. Trace: DA-FR-054; DA-AT-054. Dependencies: DA-T040/041 lesson retrieval; DA-T004 diagnosis role. Status: advisory continuation after the existing bounded rework/progress/stall ladder implemented in `ad5447a`; lesson/CAPA and diagnosis rungs not integrated.
+
+- [ ] **DA-T055 [US11]** Calibrate the inspector on the pre-registered F011-T046 subset (`calibration-subset.json`, 3 runs) with integrity and coverage gates, then freeze a refreshed held-out set with a recorded seed (including Feature 015 drivers) and repeat. Trace: DA-FR-055; DA-AT-055. Dependencies: DA-T053 learning-set pass.
+
+- [ ] **DA-T056 [US11]** Add the offline export command and a bundle contract schema reusing the existing deterministic zip/manifest/SHA256SUMS pattern (`lrtx/review_bundle.py`) and redaction (`afo/bundle.py`); test exclusion of prompts, chain-of-thought, secrets and vendor inputs, determinism and hash verification. Trace: DA-FR-056; DA-AT-056. Dependencies: DA-T054 gap register; existing inspection and gate records.
+
+- [ ] **DA-T057 [US11]** Add the owner-signed disposition record for registered gaps and findings, signed and verified with the existing `ssh-keygen -Y` authorization pattern (`afo/authz.py`), routed to the learning set only. Trace: DA-FR-057; DA-AT-057. Dependencies: DA-T056 export identities; DA-T039 lesson sources.
+
+- [ ] **DA-T058 [US11]** Add the signed patch-bundle builder (development) and the local import gate: signature, base revision, hashes, protected paths with their CRE decision, truthful preflight and declared regression before activation, one-step rollback and an import record; prove refusal of tampered, unsigned and wrong-base bundles and an offline round trip. Trace: DA-FR-058; DA-AT-058. Dependencies: DA-T056/057; existing CRE promotion gate.
+
 ## Completion evidence
 
 Use the repository evidence convention (`scripts/mark_task.py` where applicable) and cite an existing passing `evidence/v0.4/runs/.../latest.json` with tested revision, command, exit code and artifact hashes. Spec validators validate documentation/contracts only; their PASS cannot tick implementation tasks. Do not overwrite old evidence.
