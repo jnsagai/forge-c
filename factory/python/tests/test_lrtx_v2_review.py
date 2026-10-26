@@ -444,3 +444,17 @@ def test_stepwise_fact_answers_become_decided_claims(frozen, monkeypatch):
     rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
     assert rep["status"] == "REWORK" and rec["items"]["SWE1-02"]["outcome"] == "FAIL"
     assert effect["row"]["swr"] in json.dumps(rec["items"]["SWE1-02"])
+
+
+def test_adjudicated_pass_note_counts_the_verdict_round_when_fact_answers_follow(frozen, monkeypatch):
+    """Omniverse2 smoke 2026-10-26: a refuted SWE1-03 FAIL followed by a refuted fact answer appended a round without
+    claims, and the ADJUDICATED_PASS note raised KeyError instead of recording the inspection."""
+    facts = RS.baseline_facts(frozen)
+    fail = {"verdict": "FAIL", "claims": [_c("reset_startup_missing", "document")],
+            "evidence_checked": ["workproducts/SWE.1/software_requirements.md"]}
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    call, _seen = _inspector({"SWE1-03": [fail, fail],
+                              **_step_answers(frozen, facts, startup={"quote": "", "answer": "NONE"})})
+    monkeypatch.setattr(S, "call", call)
+    rep = RS.visit(frozen, "SWE.1", "qwen3.6:35b-a3b")
+    assert rep["status"] == "PASS" and any(i.startswith("LRTX_ADJUDICATED_PASS:SWE1-03: 1 claim") for i in rep["issues"])

@@ -709,8 +709,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                                                   "result": res, "items": record, "inspector": "review_semantic",
                                                   "options": opts, "coverage": cov_record,
                                                   "entries": ent_record, "steps": step_record})
-    notes = [f"LRTX_ADJUDICATED_PASS:{i}: {len(r['rounds'][-1]['claims'])} claim(s) refuted by the baseline"
-             for i, r in record.items() if r["outcome"] == "ADJUDICATED_PASS"]
+    # the last verdict round: coverage, entry and fact answers are appended as rounds without their own verdict
+    notes = [f"LRTX_ADJUDICATED_PASS:{i}: {len(next(x for x in reversed(r['rounds']) if 'claims' in x)['claims'])} "
+             "claim(s) refuted by the baseline" for i, r in record.items() if r["outcome"] == "ADJUDICATED_PASS"]
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     return R._reply(ws, "SWE.1", status, list(res.get("issues") or []) + notes, budget,
                     list(res.get("artifact_refs") or []))
