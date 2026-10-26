@@ -108,3 +108,67 @@ def test_the_knowledge_mcp_delivers_complete_lessons_or_omits_them_whole(env, mo
     assert out["metrics"]["envelope_bytes"] <= 1100 and out["metrics"]["envelope_tokens_upper_bound"] > 0
     assert experience.report(env["memory"])["exposures"] == 1  # only the delivered lesson is exposed
     os.environ.pop("FORGE_ROLE", None)
+
+
+SCHEMA = {"type": "object", "additionalProperties": False, "required": ["mapping"],
+          "properties": {"mapping": {"type": "string"}}}
+
+
+def _answer(monkeypatch, content):
+    class Resp:
+        def __init__(self, body):
+            self.lines = body.splitlines(keepends=True)
+
+        def __iter__(self):
+            return iter(self.lines)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    chunk = json.dumps({"choices": [{"delta": {"content": json.dumps(content)}, "finish_reason": "stop"}]})
+    monkeypatch.setattr(S.urllib.request, "urlopen",
+                        lambda req, timeout=None: Resp(f"data: {chunk}\n\ndata: [DONE]\n".encode()))
+
+
+def test_a_declared_lesson_becomes_application_only_when_exposed_and_the_phase_freezes(env, monkeypatch):
+    from forge_factory.knowledge import application as A
+
+    token = S.RECOVERY_WORKSPACE.set(env["ws"])
+    try:
+        plain = S.packet(phase="SWE.3", task="map", role="swe3-author", instructions="register field mapping",
+                         sources=[], criteria=[], output_schema=SCHEMA, model="m", with_skill=False, with_lessons=False)
+        p = S.packet(phase="SWE.3", task="map", role="swe3-author", instructions="register field mapping",
+                     sources=[], criteria=[], output_schema=SCHEMA, model="m", with_skill=False)
+        assert plain["output_schema"] == SCHEMA and "lessons_offered" not in plain  # no lessons: schema unchanged
+        lid = p["lessons_offered"][0]
+        assert p["output_schema"]["properties"][A.FIELD]["items"]["enum"] == [lid]
+        _answer(monkeypatch, {"mapping": "RCC_CR.HSION", A.FIELD: [lid]})
+        r = S.call(p, url="http://127.0.0.1:9/v1")
+    finally:
+        S.RECOVERY_WORKSPACE.reset(token)
+    assert r["errors"] == [] and r["doc"] == {"mapping": "RCC_CR.HSION"}  # callers see the work-product shape only
+    assert experience.report(env["memory"])["applications"] == 0  # declared, not yet verified
+    bl = {"baseline_id": "BL-SWE.3-001", "baseline_hash": "b" * 64}
+    assert A.verify_on_freeze(env["ws"], "SWE.1", bl) == []  # another phase's freeze verifies nothing
+    assert len(A.verify_on_freeze(env["ws"], "SWE.3", bl)) == 1
+    assert len(A.verify_on_freeze(env["ws"], "SWE.3", bl)) == 1 and \
+        experience.report(env["memory"])["applications"] == 1  # idempotent
+    with env["memory"]._conn() as db:
+        rec = [json.loads(x[0]) for x in db.execute("SELECT record FROM lesson_transfers WHERE kind='APPLICATION'")]
+    assert rec[0]["lesson_id"] == lid and rec[0]["evidence_refs"] == [f"packet:{p['input_hash']}",
+                                                                        f"baseline:BL-SWE.3-001:{'b' * 64}"]
+
+
+def test_a_declaration_without_matching_exposure_is_not_evidence(env):
+    from forge_factory.knowledge import application as A
+
+    p = {"input_hash": "f" * 64, "phase": "SWE.3", "role": "swe3-author", "task": "map",
+         "lessons_offered": ["lesson-0123456789ab"]}
+    doc = A.declare(env["ws"], p, {"mapping": "x", A.FIELD: ["lesson-0123456789ab", "lesson-not-offered00"]})
+    assert doc == {"mapping": "x"}
+    decl = [json.loads(x) for x in (env["ws"] / A.DECLARED).read_text().splitlines()]
+    assert decl[0]["lesson_ids"] == ["lesson-0123456789ab"]  # an id that was not offered is dropped
+    assert A.verify_on_freeze(env["ws"], "SWE.3", {"baseline_id": "BL-SWE.3-001", "baseline_hash": "b" * 64}) == []

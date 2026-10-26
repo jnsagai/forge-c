@@ -95,7 +95,7 @@ def packet(
     sampling: dict | None = None,
     with_lessons: bool = True,
 ) -> dict:
-    original_sources, original_instructions = list(sources), instructions
+    original_sources, original_instructions, original_schema = list(sources), instructions, output_schema
     ws = RECOVERY_WORKSPACE.get()
     if ws is not None:
         from ..afo.recovery_context import source as recovery_source
@@ -134,6 +134,14 @@ def packet(
                 immutable_json(ws / rel, value)
                 sources = [*sources, {"path": rel, "sha256": hashlib.sha256(raw).hexdigest(), "text": raw.decode()}]
                 exposed = found["lessons"]
+                from ..knowledge import application
+
+                offered = [x["lesson_id"] for x in exposed]
+                schema = application.augment(output_schema, offered)
+                if schema is not output_schema:  # DA-FR-040: an optional, verifiable declaration of use
+                    output_schema = schema
+                    instructions += (f"\nIf you followed one of the reference lessons, list its lesson_id in "
+                                     f"{application.FIELD}; otherwise leave it out.")
     sk = skill(role) if with_skill else None
     p = {
         "schema": PACKET_SCHEMA,
@@ -152,6 +160,8 @@ def packet(
         "repair_of": hashlib.sha256(canonical_json(previous)).hexdigest() if previous is not None else None,
         "output_reserve": output_reserve,
     }
+    if exposed:
+        p["lessons_offered"] = [x["lesson_id"] for x in exposed]
     if sampling:  # F011-T048: part of the input hash, so a checkpoint never crosses sampling settings
         p["sampling"] = {k: sampling[k] for k in ("temperature", "top_p", "seed") if sampling.get(k) is not None}
     msgs = messages(p, sk, sources, artifacts or [], previous)
@@ -194,7 +204,7 @@ def packet(
             instructions=original_instructions,
             sources=original_sources,
             criteria=criteria,
-            output_schema=output_schema,
+            output_schema=original_schema,
             artifacts=artifacts,
             findings=findings,
             previous=previous,
@@ -374,6 +384,10 @@ def call(
     text = "".join(content)
     doc, note = _parse_json(text)
     errors = [note] if doc is None else validate(doc, p["output_schema"])
+    if p.get("lessons_offered") and not errors:
+        from ..knowledge.application import declare
+
+        doc = declare(ws, p, doc)  # callers see the work-product schema only
     if finish == "length":
         errors.append("OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)")
     return {

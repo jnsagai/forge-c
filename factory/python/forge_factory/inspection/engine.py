@@ -148,6 +148,12 @@ class Store:
         with open(self.base / phase / f"{rec['baseline_id']}.json", "x", encoding="utf-8") as f:
             f.write(pretty_json(rec))
         emit("workflow", "INFO", f"{phase} baseline {rec['baseline_id']} frozen", phase=phase, agent_id=author_role)
+        try:  # DA-FR-040: declared lesson use becomes APPLICATION only now, with this baseline as evidence
+            from ..knowledge.application import verify_on_freeze
+
+            verify_on_freeze(self.workspace, phase, rec)
+        except Exception as exc:  # noqa: BLE001 - learning records never decide or break a freeze
+            emit("workflow", "WARN", f"{phase} lesson application not recorded: {type(exc).__name__}", phase=phase)
         return rec
 
     def missing_outputs(self, phase: str) -> list[str]:
