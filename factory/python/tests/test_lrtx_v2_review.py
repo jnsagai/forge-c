@@ -579,3 +579,20 @@ def test_scope_behaviours_are_asked_one_by_one_and_an_uncovered_one_names_its_fi
     less = {**facts, "reqs": {k: v for k, v in facts["reqs"].items() if e["field"] not in v["statement"]}}
     got = RS.behaviour_claims(b, {"quote": "", "answer": "NONE"}, less)
     assert [c["decision"] for c in got] == ["STANDS"] and e["field"] in RS.render_claim(got[0])
+
+
+def test_behaviours_on_one_field_are_told_apart_by_their_purpose_words(frozen):
+    """Run 3 (2026-10-26): every IWDG key write is 'write IWDG_KR.KEY'; the removed start-key requirement must not be
+    covered by the refresh-key requirement."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-001": {"statement": "When the start function is called, the IWDG LL driver shall write 0x0000CCCC to "
+                                     "IWDG_KR.KEY.", "verification": ""},
+            "SWR-002": {"statement": "When the refresh function is called, the IWDG LL driver shall write 0x0000AAAA to "
+                                     "IWDG_KR.KEY.", "verification": ""}}
+    start = {"phrase": "start the watchdog by writing documented keys to IWDG_KR", "action": "write",
+             "register_field": "IWDG_KR.KEY"}
+    assert "start" in RS.purpose_words(start) and "iwdg_kr" not in RS.purpose_words(start)
+    assert RS.behaviour_hit({**facts, "reqs": reqs}, start) == "SWR-001"
+    only_refresh = {**facts, "reqs": {"SWR-002": reqs["SWR-002"]}}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "NONE"}, only_refresh)
+    assert [c["decision"] for c in got] == ["STANDS"] and "IWDG_KR.KEY" in RS.render_claim(got[0])

@@ -598,14 +598,32 @@ def behaviour_question(qid: str, b: dict, swrs: list[str]) -> dict:
     return q
 
 
+GENERIC = {"the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "by", "with", "from", "its", "their", "into",
+           "write", "writing", "written", "read", "reading", "set", "setting", "clear", "clearing", "query", "querying",
+           "value", "values", "bit", "bits", "field", "register", "registers", "flag", "flags", "documented", "key",
+           "keys", "driver", "function", "status", "state", "via", "through", "using", "given", "requested"}
+
+
+def purpose_words(b: dict) -> set[str]:
+    """What tells this behaviour apart from others on the same field ('start' vs 'refresh' for IWDG_KR.KEY writes)."""
+    f = b["register_field"]
+    named = {t.lower() for t in re.split(r"[._*]", f) if t}
+    return {w for w in re.findall(r"[a-z][a-z0-9]{2,}", b["phrase"].lower())
+            if w not in GENERIC and w not in named and not w.startswith(tuple(named))}
+
+
 def behaviour_hit(facts: dict, b: dict) -> str | None:
-    """A requirement that names the behaviour's field (register, for REG.*) with an action of the same kind."""
+    """A requirement that names the behaviour's field (register, for REG.*) with an action of the same kind and, when
+    the phrase has them, one of its purpose words (run 3: every IWDG key write is 'write IWDG_KR.KEY'; only 'start'
+    tells the start key from the refresh key). Any one word suffices: a looser match can only refute, never reject."""
     f = b["register_field"]
     name = f.split(".")[0] if WILDCARD.match(f) else f
     bare = name.split(".")[-1]
     verbs = re.compile(r"\b(?:" + "|".join(ACTIONS[b["action"]]) + r")\w*", re.I)
+    purpose = purpose_words(b)
     return next((x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or
-                 re.search(rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(r["statement"])), None)
+                 re.search(rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(r["statement"]) and
+                 (not purpose or any(re.search(rf"\b{w}", r["statement"], re.I) for w in purpose))), None)
 
 
 def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
@@ -743,9 +761,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             if brec["status"] != "VALID":
                 issues += [f"behaviours-{i}: {e}" for e in brec["errors"][:3]]
                 continue
-            got = []
+            got, answers = [], []
             for j, b in enumerate(brec["doc"]["behaviours"]):
-                key = (b["register_field"], b["action"])
+                key = (b["register_field"], b["action"], frozenset(purpose_words(b)))
                 if key in asked:
                     continue
                 asked.add(key)
@@ -757,8 +775,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                     issues += [f"step-{q['id']}: {e}" for e in qrec["errors"][:3]]
                     continue
                 got += behaviour_claims(b, qrec["doc"], facts)
+                answers.append({"question": q["id"], "answer": qrec["doc"]})
             cov_claims += got
-            cov_record.append({"scope": sc, "behaviours": brec["doc"]["behaviours"], "claims": got})
+            cov_record.append({"scope": sc, "behaviours": brec["doc"]["behaviours"], "answers": answers, "claims": got})
     elif opts["coverage"]:  # F011-T049: one decomposed coverage question per in-scope work-order scope item
         swrs = sorted(facts["reqs"])
         for i, sc in enumerate(scope_items(ws)):
