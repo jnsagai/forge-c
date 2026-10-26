@@ -109,6 +109,15 @@ def _expected_mask(token: str, reg: str, field: str, rm: dict) -> tuple[str, int
     bit = None
     if f not in fields and re.fullmatch(r".+_\d+", f) and f.rsplit("_", 1)[0] in fields:  # one bit of a field: SYSSW_0
         f, bit = f.rsplit("_", 1)[0], int(f.rsplit("_", 1)[1])
+    if f not in fields and "_" in f:  # F015: CMSIS joins the names one bit has in the RM's alternate sections
+        known = [x for x in f.split("_") if x in fields]  # (USART_ISR_RXNE_RXFNE: RXNE FIFO disabled, RXFNE enabled)
+        if known and all(fields[x] == fields[known[0]] for x in known):
+            f = known[0]
+    if f not in fields and f"{f}0" in fields:  # F015: a field the RM splits (USART_CR1_M = M0 bit 12 | M1 bit 28)
+        parts = [fields[f"{f}{i}"] for i in range(8) if f"{f}{i}" in fields]
+        if kind == "pos":
+            return ("pos", min(lsb for _, lsb in parts))
+        return ("mask", sum(((1 << (msb - lsb + 1)) - 1) << lsb for msb, lsb in parts))
     if f not in fields:
         return None
     msb, lsb = fields[f]

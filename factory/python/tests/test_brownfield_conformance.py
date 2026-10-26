@@ -116,3 +116,39 @@ def test_api_call_none_is_no_code_and_not_a_contract_error(tmp_path):
     (ws / "workproducts/SWE.2/api_calls.json").write_text(json.dumps(calls))
     assert not any("HSE_READY_QUERY" in x for x in RC.check_calls(ws))
     assert all(c["case"] != "HSE_READY_QUERY" for c in RC.cases(ws)[0])
+
+
+def test_bound_arguments_select_the_branch_that_writes():
+    """F015 USART-R4 a3 (CF-005..CF-012): ST LL_USART_SetBaudRate writes BRR only in its last two branches; with an
+    invalid prescaler or a zero baud rate bound, the extractor still reported the BRR writes of every branch."""
+    from forge_factory.brownfield import scope as S
+
+    body = """{
+  uint32_t brrtemp;
+  if (PrescalerValue > LL_USART_PRESCALER_DIV256)
+  {
+  }
+  else if (BaudRate == 0U)
+  {
+  }
+  else if (OverSampling == LL_USART_OVERSAMPLING_8)
+  {
+    brrtemp = 1U;
+    USARTx->BRR = brrtemp;
+  }
+  else
+  {
+    USARTx->BRR = (uint16_t)(BaudRate);
+  }
+}"""
+    d = S.Definition("LL_USART_SetBaudRate", "f.h", 1, "static_inline",
+                     ["USARTx", "PeriphClk", "PrescalerValue", "OverSampling", "BaudRate"], body)
+    macros = {"LL_USART_PRESCALER_DIV256": "0x0000000BU", "LL_USART_OVERSAMPLING_8": "(0x1UL << 15U)"}
+
+    def brr(*args):
+        return [e.text for e in S.register_effects(d, macros, "cmsis", list(args), prefix="USART") if e.op != "read"]
+    assert brr("USART1", "64000000U", "12U", "0U", "115200U") == []                      # invalid prescaler
+    assert brr("USART1", "64000000U", "0U", "0U", "0U") == []                            # zero baud rate
+    assert brr("USART1", "64000000U", "0U", "LL_USART_OVERSAMPLING_8", "9600U") == ["(USART1)->BRR = brrtemp;"]
+    assert len(brr("USART1", "64000000U", "0U", "0U", "9600U")) == 1                     # oversampling 16
+    assert len(brr("USART1", "64000000U", "Prescaler", "0U", "9600U")) == 2              # undecidable: all branches

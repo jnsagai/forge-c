@@ -216,6 +216,103 @@ def evaluate(expr: str, macros: dict[str, str], depth: int = 0, intrinsics: bool
         return None
 
 
+_COND = _SAFE + (ast.Compare, ast.BoolOp, ast.And, ast.Or, ast.Not, ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt,
+                 ast.GtE)
+
+
+def condition(expr: str, macros: dict[str, str]) -> bool | None:
+    """Truth of a constant C condition (comparisons, &&, ||, !) once arguments are bound; None if undecidable.
+    Feature 015 (BENCH-USART-ST-R4): branch selection for register-effect extraction."""
+    e = re.sub(r"\(\s*(?:const\s+)?(?:volatile\s+)?u?int(?:8|16|32|64)_t\s*\)", "", expr)
+    e = re.sub(r"\b(0[xX][0-9a-fA-F]+|\d+)[uUlL]+\b", r"\1", e)
+
+    def sub(m: re.Match) -> str:
+        v = evaluate(m.group(0), macros, intrinsics=True)
+        if v is None:
+            raise KeyError(m.group(0))
+        return f"({v})"
+    try:
+        e = re.sub(rf"(?<![0-9A-Za-z_]){IDENT}", sub, e)
+        e = e.replace("&&", " and ").replace("||", " or ")
+        e = re.sub(r"!(?!=)", " not ", e)
+        tree = ast.parse(e.strip(), mode="eval")
+    except (KeyError, SyntaxError):
+        return None
+    if not all(isinstance(n, _COND) for n in ast.walk(tree)):
+        return None
+    try:
+        return bool(eval(compile(tree, "<c-cond>", "eval"), {"__builtins__": {}}, {}))  # noqa: S307 - AST checked above
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _balanced(s: str, i: int, open_: str, close: str) -> int:
+    """Index just past the bracket group that opens at s[i] (== open_), or -1."""
+    depth = 0
+    for j in range(i, len(s)):
+        depth += s[j] == open_
+        depth -= s[j] == close
+        if depth == 0:
+            return j + 1
+    return -1
+
+
+def _prune(body: str, macros: dict[str, str]) -> str:
+    """Keep only the branch a braced if / else if / else chain takes when the bound arguments decide its conditions
+    (ST LL_USART_SetBaudRate: an invalid prescaler or a zero baud rate selects an empty branch, so BRR is not written).
+    A chain stops being pruned at its first undecidable condition: from there every branch is kept (no write hidden)."""
+    out, pos = [], 0
+    for m in re.finditer(r"(?<![\w])if\s*\(", body):
+        if m.start() < pos or body[:m.start()].rstrip().endswith("else"):
+            continue  # an 'else if' continues the chain of an earlier 'if': never a chain of its own
+        branches, j, tail = [], m.start(), None
+        while True:
+            c0 = body.index("(", j)
+            c1 = _balanced(body, c0, "(", ")")
+            b0 = c1 + len(body[c1:]) - len(body[c1:].lstrip())
+            if c1 < 0 or b0 >= len(body) or body[b0] != "{":
+                branches = []
+                break
+            b1 = _balanced(body, b0, "{", "}")
+            if b1 < 0:
+                branches = []
+                break
+            branches.append((body[c0 + 1:c1 - 1], body[b0:b1]))
+            j = b1
+            nxt = re.match(r"\s*else\s+if\s*\(", body[j:])
+            if nxt:
+                j += nxt.end() - 1
+                continue
+            els = re.match(r"\s*else\s*\{", body[j:])
+            if els:
+                e0 = j + els.end() - 1
+                e1 = _balanced(body, e0, "{", "}")
+                if e1 < 0:
+                    branches = []
+                    break
+                tail, j = body[e0:e1], e1
+            break
+        if not branches:
+            continue
+        keep: list[str] | None = []
+        for cond, blk in branches:
+            v = condition(cond, macros)
+            if v is None:
+                keep = None
+                break
+            if v:
+                keep.append(blk)
+                break
+        else:
+            if tail is not None:
+                keep.append(tail)
+        if keep is None:
+            continue
+        out.append(body[pos:m.start()] + " ".join(keep))
+        pos = j
+    return "".join(out) + body[pos:]
+
+
 ALIAS = [(re.compile(r"^RCC_CSR$"), "RCC_CR", "set"), (re.compile(r"^RCC_CCR$"), "RCC_CR", "clear"),
          (re.compile(r"^(RCC_\w+EN)SR$"), r"\1R", "set"), (re.compile(r"^(RCC_\w+EN)CR$"), r"\1R", "clear"),
          (re.compile(r"^(RCC_\w+RST)SR$"), r"\1R", "set"), (re.compile(r"^(RCC_\w+RST)CR$"), r"\1R", "clear")]
@@ -276,6 +373,12 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
     body = _bind(defn.body, defn.params, args or [])
     pfx = prefix
     effects: list[Effect] = []
+    if pfx != "RCC" and args:  # feature 015: the branch the bound arguments select (RCC extraction unchanged)
+        for _ in range(8):
+            pruned = _prune(body, macros)
+            if pruned == body:
+                break
+            body = pruned
 
     if pfx != "RCC":  # CMSIS register arrays: GPIOx->AFR[0]/[1] are RM0486's GPIOx_AFRL/AFRH (others: name + index)
         body = re.sub(r"->\s*(\w+)\s*\[\s*(\d+)U?\s*\]", lambda m: "->" + ARRAY_AS.get((m.group(1), m.group(2)),
