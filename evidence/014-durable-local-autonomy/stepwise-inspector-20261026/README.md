@@ -36,8 +36,37 @@ for comparison:
 - 6/7 clean baselines passed
 
 Learning-14 (`285d21e`) is the first run with every evaluation correct, so it meets Feature 011's precondition for the
-frozen test set. The test set is measured as **calibration** (owner decision "Advisory + calibrate"): 3 runs on the
-22 held-out baselines, recorded as a result and never used to tune the inspector before all runs are done.
+frozen test set. The test set is measured as **calibration** (owner decision "Advisory + calibrate"): 3 runs,
+recorded as a result and never used to tune the inspector before all runs are done.
+
+## Calibration scope (owner ruling 2026-10-26: "Both: subset now, refresh later")
+
+Calibration-1 ran all 22 F011-T046 test baselines. Its truthful preflight showed that **13 of the 22 are rejected by
+today's deterministic SWE.1 author gate** (`STARTUP_INVARIANT_ON_HOST_TEST`: a startup requirement verified by a host
+unit test). Under the current factory they are not clean baselines, so calibration-1's detections are gate-inflated.
+It is recorded, not used as the inspector measurement.
+
+- **Now:** calibrate on the 9 baselines the current gate freezes. They were selected by the gate alone (truthful
+  preflight, zero model calls) and registered with tree hashes in
+  [calibration-subset.json](calibration-subset.json) (commit `1067d40`) before measurement. Two of the 9 (`b009`,
+  `h005`) are already rejected by an inspection rule under truthful answers. That is an expected result, not fixed
+  from test data.
+- **Later:** freeze a larger, refreshed held-out set from current-factory baselines (recorded seed), including
+  Feature 015 drivers.
+
+## Gate defects found while preparing calibration (2026-10-26)
+
+1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script
+   swallowed the verifier's arguments. The verifier failed with `IndexError`, and the redirect-only next line
+   "succeeded", so the log says `test set verified:` with nothing after it. The subset script runs the verifier with its
+   arguments, requires the `"status": "UNCHANGED"` line, and also checks each subset tree against its registered hash.
+   A local dry run on loop10 returned UNCHANGED for all 22 trees and for the subset.
+2. **The remote unit gate ran only 6 of 46 tests.** On Omniverse2, all 40 tests in `test_lrtx_v2_review.py` skip
+   because the pinned SafeC engine and owner inputs (git-ignored) are not on that host. The learning runs' remote
+   gate had the same limit. On loop10 the same 46 tests at exactly `285d21e` give **46 passed, 0 skipped**. The subset
+   script refuses to start without that loop10 record for the deployed revision, and it logs the remote skip count.
+   For earlier learning revisions, no loop10 record of a non-skipping run is kept, so for those runs the remote unit
+   gate counts as partial.
 
 ## What changed between runs
 
@@ -72,7 +101,7 @@ Each change was driven by one measured failure. Each has a regression test (`tes
 
 `q014-inspector-run.sh` runs these steps in order:
 
-1. **Unit tests** inside the stack environment.
+1. **Unit tests** inside the stack environment (on Omniverse2 the review tests skip; see gate defect 2).
 2. **Truthful preflight** (`seeded --preflight`). Every clean baseline is inspected with scripted truthful
    answers and zero model calls. If any is rejected, the script exits 2 and Qwen is never called.
 3. **The measured run.** It stops itself (exit 3) after 3 inspections that record nothing.
