@@ -492,3 +492,26 @@ def test_stepwise_coverage_offers_only_source_fields_and_register_wildcards(froz
     assert [c["decision"] for c in got] == (["REFUTED"] if named else ["STANDS"])
     assert RS.coverage_schema(["SWR-001"])["properties"]["behaviours"]["items"]["properties"]["register_field"] == {
         "type": "string", "minLength": 3, "maxLength": 60}  # the F011 (non-stepwise) question is unchanged
+
+
+def test_learning_run_patterns_are_decided_and_answers_are_closed(frozen):
+    """Omniverse2 learning run 1 (2026-10-26): claims the baseline contradicts at input/document level are refuted,
+    a reset pulse agrees with both entries it names, and stepwise evidence_checked is a closed list."""
+    facts = RS.baseline_facts(frozen)
+    got = RS.adjudicate(frozen, "SWE1-04", [_c("budget_not_measurable", "Budgets", "development targets only")], facts)
+    assert [c["decision"] for c in got] == ["REFUTED"]
+    no_stack = {**facts, "budgets": {**facts["budgets"], "stack": False}}
+    got = RS.adjudicate(frozen, "SWE1-04", [_c("budget_not_measurable", "Budgets", "development targets only")], no_stack)
+    assert [c["decision"] for c in got] == ["STANDS"]
+    gap = _c("upstream_gap_not_recorded", "document", "upstream status NOT_PROVIDED is not recorded")
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-05", [gap], facts)] == ["REFUTED"]
+    unrecorded = {**facts, "gap_rows": {**facts["gap_rows"], "Safety allocation": None}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-05", [gap], unrecorded)] == ["STANDS"]
+    effect = next(q for q in RS.step_questions(frozen, facts) if q["id"].startswith("effect-"))
+    assert "set_then_clear" in effect["answers"]
+    pulse = {"quote": "assert and then release", "answer": "set_then_clear", "value": ""}
+    expected = [] if effect["row"]["op"] in RS.OPPOSITE else ["REFUTED"]
+    assert [c["decision"] for c in RS.step_claims(frozen, effect, pulse, facts)] == expected
+    schema = RS.claim_schema("SWE1-01", ["document"], ["workproducts/SWE.1/software_requirements.md"])
+    assert schema["properties"]["evidence_checked"]["items"]["enum"] == ["workproducts/SWE.1/software_requirements.md"]
+    assert "enum" not in RS.claim_schema("SWE1-01", ["document"])["properties"]["evidence_checked"]["items"]

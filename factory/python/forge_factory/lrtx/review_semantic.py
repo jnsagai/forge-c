@@ -77,14 +77,14 @@ def baseline_facts(ws: Path) -> dict:
     traced_sw = set(re.findall(r"^\| (SWR-\d{3}) \| [^|]+ \|$", gaps, re.M))
     opened = re.search(r"^## Open points\s*\n(.*?)(?=^## |\Z)", md, re.M | re.S)
     return {"reqs": reqs, "startup": [m.group(1) for m in STARTUP.finditer(md)],
-            "open_points": " ".join(opened.group(1).split()) if opened else "",
+            "open_points": " ".join(((opened.group(1) if opened else "") + " " + gaps).split()),
             "gap_rows": {i: (m.group(1) if m else None) for i, m in gap_rows.items()},
             "traced": traced_up & traced_sw, "tested": set(re.findall(r"^(SWR-\d{3}),", csv, re.M)),
             "budgets": {k: any(re.search(rf"\b{k}\b", r["statement"], re.I) and BYTES.search(r["statement"])
                                for r in reqs.values()) for k in ("flash", "static RAM", "stack")}}
 
 
-def claim_schema(item: str, targets: list[str]) -> dict:
+def claim_schema(item: str, targets: list[str], paths: list[str] | None = None) -> dict:
     claim = {"type": "object", "additionalProperties": False,
              "required": ["assertion", "target_id", "related_ids", "detail", "remediation"],
              "properties": {"assertion": {"type": "string", "enum": ASSERTIONS[item]},
@@ -97,7 +97,9 @@ def claim_schema(item: str, targets: list[str]) -> dict:
     return {"type": "object", "additionalProperties": False, "required": ["verdict", "claims", "evidence_checked"],
             "properties": {"verdict": {"type": "string", "enum": ["PASS", "FAIL"]},
                            "claims": {"type": "array", "maxItems": 10, "items": claim},
-                           "evidence_checked": {"type": "array", "minItems": 1, "items": {"type": "string"}}}}
+                           "evidence_checked": {"type": "array", "minItems": 1,
+                                                "items": {"type": "string", "enum": paths} if paths else
+                                                {"type": "string"}}}}
 
 
 def identity(item: str, c: dict) -> str:
@@ -128,6 +130,10 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                 decision, why = "REFUTED", f"{t} states its pass criterion: '{r['verification'][:120]}'"
             else:
                 decision, why = "CONFIRMED", f"{t} has no pass criterion in its verification"
+        elif a == "budget_not_measurable" and r is None and all(f["budgets"].values()):
+            # Omniverse2 learning run: the work-order budgets called unmeasurable while each is a requirement stating
+            # its resource with a byte bound
+            decision, why = "REFUTED", "flash, static RAM and stack are each a requirement with a byte bound"
         elif a == "budget_not_measurable" and r is not None:
             bound = BOUND.search(r["statement"])
             decision, why = ("REFUTED", f"{t} states a numeric bound with its unit: '{bound.group(0)}'") if bound else \
@@ -146,7 +152,7 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
         elif a == "ambiguity_not_documented" and _quoted_open_point(c["detail"], f["open_points"]):
             # Omniverse2 2026-10-26 (stepwise smoke): the claim quoted the ambiguity from the document's own Open
             # points list; an ambiguity quotable from that list is documented, so the claim contradicts the baseline
-            decision, why = "REFUTED", ("the document records it under Open points: "
+            decision, why = "REFUTED", ("the baseline records it (Open points or upstream gaps): "
                                         f"'{_quoted_open_point(c['detail'], f['open_points'])[:120]}'")
         elif a == "reset_startup_missing":
             if f["startup"]:
@@ -169,7 +175,10 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                    "safe_state_missing": "Safety allocation"}.get(a, t)
             row = f["gap_rows"].get(inp)
             if a == "upstream_gap_not_recorded" and inp not in INPUTS:
-                decision, why = "STANDS", f"{inp} is not one of the recorded upstream inputs"
+                recorded = all(f["gap_rows"].get(i) for i in INPUTS)
+                decision, why = ("REFUTED", "traceability/upstream_gaps.md records the state of every upstream input "
+                                            f"({', '.join(INPUTS)})") if recorded else \
+                    ("STANDS", f"{inp} is not one of the recorded upstream inputs")
             elif row:
                 decision, why = "REFUTED", (f"the owner-recorded state of '{inp}' is in traceability/upstream_gaps.md "
                                             f"('{row[:100]}'); a recorded gap is the specified handling at SWE.1")
@@ -481,11 +490,12 @@ def step_questions(ws: Path, facts: dict) -> list[dict]:
                            "another resource does not count."})
     for e in effect_entries(ws, facts):
         qs.append({"id": "effect-" + e["entry"].lower(), "item": "SWE1-02", "row": e, "source": None,
-                   "answers": ["set", "clear", "write", "not_stated"], "value": True,
+                   "answers": ["set", "clear", "set_then_clear", "write", "not_stated"], "value": True,
                    "text": f"Requirement {e['swr']} reads: \"{e['statement']}\" What does this requirement state "
-                           f"for the register field {e['field']} in the case '{e['case']}'? answer set, clear or "
-                           "write (value: the written value as the requirement gives it, else \"\"), or not_stated "
-                           "when it does not state this field; quote the words that decide."})
+                           f"for the register field {e['field']} in the case '{e['case']}'? answer set, clear, "
+                           "set_then_clear (a pulse: asserted and then released) or write (value: the written "
+                           "value as the requirement gives it, else \"\"), or not_stated when it does not state this "
+                           "field; quote the words that decide."})
     return qs
 
 
@@ -522,8 +532,10 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
         return entry_claims("budgets", {"entries": [{"entry": q["row"]["entry"], "covered_by": covered,
                                                      "reason": quote or "no requirement states it"}]}, [q["row"]], facts)
     e = q["row"]
-    agrees = a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
-                               _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
+    # a pulse requirement states both the set and the clear entry it names
+    pulse = a == "set_then_clear" and e["op"] in OPPOSITE
+    agrees = pulse or a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
+                                        _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
     return entry_claims("effects", {"entries": [{"entry": e["entry"], "agrees": agrees,
                                                  "reason": f"{e['swr']} states {a} {doc.get('value') or ''}: {quote}"}]},
                         [e], facts)
@@ -563,7 +575,8 @@ def lesson_source(lessons: list[dict]) -> dict | None:
 
 
 def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[str], model: str, findings=None,
-                previous=None, lessons: list[dict] | None = None, sampling: dict | None = None) -> dict:
+                previous=None, lessons: list[dict] | None = None, sampling: dict | None = None,
+                paths: list[str] | None = None) -> dict:
     iid = item["id"]
     instr = (f"Inspect checklist item {iid} of SWE.1 on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
@@ -580,7 +593,7 @@ def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[
         srcs = [*srcs, ref]
     return S.packet(phase="SWE.1", task=f"inspect:{iid}", role="swe1-inspector", instructions=instr, sources=srcs,
                     criteria=[f"{iid}: {' '.join(str(item['criterion']).split())}"],
-                    output_schema=claim_schema(iid, targets), model=model, findings=findings, previous=previous,
+                    output_schema=claim_schema(iid, targets, paths), model=model, findings=findings, previous=previous,
                     output_reserve=2048, sampling=sampling)
 
 
@@ -688,9 +701,12 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
         les = item_lessons(ws, it["id"], srcs)
         ipaths = paths | ({LESSON_SOURCE} if les else set())
+        # F014 stepwise: evidence_checked is a closed list (Omniverse2 learning run: bare or misplaced paths made three
+        # inspections record nothing)
+        offered = sorted(ipaths) if opts["stepwise"] else None
         rec = V.run_task(ws, "SWE.1", task,
-                         lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr, les,
-                                                                    smp),
+                         lambda fi, pr, it=it, les=les, offered=offered: item_packet(ws, it, bl, srcs, targets, model,
+                                                                                     fi, pr, les, smp, offered),
                          lambda d, ipaths=ipaths: validate(d, ipaths), budget)
         if rec["status"] != "VALID":
             issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
@@ -703,8 +719,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             refut = [f"claim {c['assertion']} [{c['target_id']}] is refuted by the baseline: {c['evidence']}"
                      for c in judged]
             rec = V.run_task(ws, "SWE.1", task + ":reinspect",
-                             lambda fi, pr, it=it, les=les: item_packet(ws, it, bl, srcs, targets, model, fi, pr,
-                                                                        les, smp),
+                             lambda fi, pr, it=it, les=les, offered=offered: item_packet(ws, it, bl, srcs, targets,
+                                                                                         model, fi, pr, les, smp,
+                                                                                         offered),
                              lambda d2, ipaths=ipaths: validate(d2, ipaths), budget, refut)
             if rec["status"] == "VALID":
                 d = rec["doc"]
