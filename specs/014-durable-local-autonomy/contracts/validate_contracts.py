@@ -18,6 +18,7 @@ SCHEMAS = {
     "semantic-proposal.schema.json",
     "completion-receipt.schema.json",
     "execution-lifecycle.schema.json",
+    "offline-export-manifest.schema.json",
 }
 CHECKER = FormatChecker()
 

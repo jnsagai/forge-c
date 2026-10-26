@@ -9,6 +9,7 @@ Status: **NOT_IMPLEMENTED**. These files are design artifacts for Codex implemen
 | `semantic-proposal.schema.json` | Scoped Qwen role | Broker validates a small engineering decision. No administrative IDs, budgets, authority claims or execution flags are accepted from the model. Case/job identity is supplied by authenticated tool context. |
 | `completion-receipt.schema.json` | Deterministic broker/controller | Immutable receipt revision separating storage, admissibility and repair execution. A stored proposal cannot launch work; accepted CLOSE_BLOCKED is not a repair. |
 | `execution-lifecycle.schema.json` | Fenced controller/native reconciler | Snapshot separating task outcome, native liveness, cancellation and resource ownership. Terminal task outcomes can still require cancellation/reconciliation. |
+| `offline-export-manifest.schema.json` | Offline export command (`forge_factory.offline.export`) | Manifest of an export bundle carried to development (DA-FR-056): records in full from an allowlist, other files by hash, vendor inputs never; stripped prompt/reasoning keys and redactions counted per file. |
 | `examples/manifest.json` | Specification author | Explicit mapping of synthetic positive/negative structural fixtures to schemas and expected validity. |
 | `validate_contracts.py` | Read-only specification checker | Checks Draft 2020-12 schemas, the complete fixture inventory and expected structural acceptance/rejection. |
 

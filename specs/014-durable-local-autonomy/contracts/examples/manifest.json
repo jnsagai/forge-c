@@ -150,6 +150,30 @@
       "schema": "execution-lifecycle.schema.json",
       "expected_valid": false,
       "purpose": "No recovered outcome before native quiescence and independent semantic validation."
+    },
+    {
+      "file": "export-manifest.valid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": true,
+      "purpose": "Records exported in full, a vendor input listed by hash only."
+    },
+    {
+      "file": "export-vendor-content.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A NEVER_CONTENT vendor file cannot carry exported content."
+    },
+    {
+      "file": "export-path-escape.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A path escaping the workspace is refused."
+    },
+    {
+      "file": "export-raw-prompt.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A raw prompt field has no place in the manifest."
     }
   ]
 }
