@@ -116,6 +116,15 @@ Exact `5dc2df3` (clean dedicated worktree, private state/event roots): core **57
 as before; independent CRE `cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, not waived).
 Clean `a206c54` (570 passed) and `dbcec39` (575 passed) runs also had 0 failures.
 
+Whole inherited suite on `74ba546` (197 files, one process each with private state, two native e2e files
+excluded; [summary](../../evidence/014-durable-local-autonomy/inherited-whole-suite-74ba546.json)): 1,648 tests,
+44 skipped, 3 failures in 3 files plus one killed file. `test_cre_d7_final`, `test_lrtx_drill` and `test_sim_renode`
+fail identically on the base `f6ff873` in this environment (inherited, not waived). `test_da014_integration` was a
+Feature 014 defect: an in-process verification claim by a group/session leader was marked killable and lease
+expiry SIGKILLed the runner; fixed in `de324a3` (file passes in its own session). The run's worktree was left
+modified by the inherited `test_t050_t051_docs_status` status regeneration (timestamp/commit only). DA-T029 stays
+partial: three inherited failures and the retained CRE rejection.
+
 Retained: the `fc7e6d7` full run that exceeded 900 s was re-run: 507 passed/11 skipped in 1,007 s; one test took 328 s
 (normally ~2 s) during host memory pressure (systemd-oomd kill at 16:45:54) before a clean host shutdown at 16:50; the
 runner's final JSON lacks the release entry although its log/JUnit show 13 passed. A `cc2b39c` regression is invalid
