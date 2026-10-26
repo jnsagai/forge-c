@@ -393,9 +393,11 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
         if step == 4 and not answers.get("question_3_answer"):
             raise Refused("TWO_STEP_REPAIR_REQUIRES_STRATEGY")
         view = doc["packet"]
-        # Compact context: the established conflict replaces the full source texts, so three requests fit one job.
+        # Compact context: the established conflict replaces the full source texts, and only the findings question 1
+        # cited are repeated (b7ce315: the nine-finding late-finding case exceeded the frozen job envelope).
+        cited = set(first.get("evidence_refs") or [])
         doc = {
-            "findings": view["findings"],
+            "findings": [f for f in view["findings"] if f["ref"] in cited],
             "obligations": view["obligations"],
             "techniques": view.get("techniques") or {},
             "tests": view.get("tests") or {},

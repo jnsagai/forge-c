@@ -179,3 +179,15 @@ def test_question_grammars_offer_only_contract_legal_phases_scopes_and_verdicts(
     body, _ = request_material(job, step=1)
     verdicts = [b["properties"]["conflict"]["const"] for b in body["response_format"]["json_schema"]["schema"]["anyOf"]]
     assert verdicts == (["YES", "NO", "UNKNOWN"] if packet["complete"] else ["UNKNOWN"])
+
+
+def test_later_questions_repeat_only_the_cited_findings_and_citations_are_capped(signed):
+    """b7ce315: four requests for the nine-finding case exceeded the frozen job envelope."""
+    p = signed
+    job, packet, aliases = two_step_job(p)
+    first_wire = request_material(job, step=1)[0]["response_format"]["json_schema"]["schema"]
+    assert all(b["properties"]["evidence_refs"]["maxItems"] == 6 for b in first_wire["anyOf"])
+    cited = aliases[packet["artifacts"][0]["ref"]]  # cites an artifact, no finding
+    body, _ = request_material(job, step=2, prior={"question_1_answer": {"rationale": "r", "evidence_refs": [cited],
+                                                                         "conflict": "YES"}})
+    assert json.loads(body["messages"][1]["content"])["findings"] == []

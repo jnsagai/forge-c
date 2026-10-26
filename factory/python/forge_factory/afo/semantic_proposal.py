@@ -107,8 +107,8 @@ def two_step(job) -> bool:
     return bool(identity) and identity.get("task_class") == TWO_STEP
 
 
-def _evidence_items(aliases):
-    return {"type": "array", "items": {"enum": sorted(aliases)}, "minItems": 1, "maxItems": 16, "uniqueItems": True}
+def _evidence_items(aliases, limit=16):
+    return {"type": "array", "items": {"enum": sorted(aliases)}, "minItems": 1, "maxItems": limit, "uniqueItems": True}
 
 
 def conflict_schema(aliases, *, complete=True, obligations=None) -> dict:
@@ -120,7 +120,8 @@ def conflict_schema(aliases, *, complete=True, obligations=None) -> dict:
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
-    base = {"rationale": {"type": "string", "minLength": 1, "maxLength": 500}, "evidence_refs": _evidence_items(aliases)}
+    # At most six cited references: the requirement and the conflicting evidence; later questions repeat only these.
+    base = {"rationale": {"type": "string", "minLength": 1, "maxLength": 500}, "evidence_refs": _evidence_items(aliases, 6)}
     branches = []
     for verdict in ("YES", "NO", "UNKNOWN") if complete else ("UNKNOWN",):
         properties = {**base, "conflict": {"const": verdict}}
