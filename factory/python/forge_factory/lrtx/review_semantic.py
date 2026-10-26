@@ -71,7 +71,8 @@ def baseline_facts(ws: Path) -> dict:
     gaps_p, csv_p = ws / "traceability/upstream_gaps.md", ws / "traceability/requirements_to_tests.csv"
     gaps = gaps_p.read_text() if gaps_p.is_file() else ""
     csv = csv_p.read_text() if csv_p.is_file() else ""
-    gap_rows = {i: re.search(rf"^\| {re.escape(i)} \| (.+?) \|", gaps, re.M) for i in INPUTS}
+    # a label may carry an explanation (WO-0008C: "HSI contract (hardware/software interface)")
+    gap_rows = {i: re.search(rf"^\| {re.escape(i)}(?: \([^|]*\))? \| (.+?) \|", gaps, re.M) for i in INPUTS}
     up_to_sw = set(re.findall(r"^\| [^|]+ \| ((?:SWR-\d{3}(?:, )?)+) \|", gaps, re.M))
     traced_up = {s for row in up_to_sw for s in re.findall(r"SWR-\d{3}", row)}
     traced_sw = set(re.findall(r"^\| (SWR-\d{3}) \| [^|]+ \|$", gaps, re.M))
@@ -461,6 +462,11 @@ def gap_labels(ws: Path) -> list[str]:
     return sorted({c.strip() for c in cells if not c.strip().startswith(("SWR-", "-", ":"))})
 
 
+def input_label(labels: list[str], inp: str) -> str | None:
+    """The gaps-table row label of an upstream input: its name, optionally followed by an explanation in parentheses."""
+    return next((x for x in labels if x == inp or x.startswith(inp + " (")), None)
+
+
 def step_schema(answers: list[str], value: bool = False) -> dict:
     props = {"quote": {"type": "string", "maxLength": 240}, "answer": {"type": "string", "enum": answers}}
     if value:
@@ -521,7 +527,7 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
                    "add a requirement stating the register state after reset")
         return adjudicate(ws, "SWE1-03", [c], facts)
     if q["id"].startswith("input-"):
-        if a == q["input"]:
+        if a == input_label(q["answers"], q["input"]):
             return []
         c = _claim("upstream_gap_not_recorded", q["input"],
                    f"traceability/upstream_gaps.md records no state for the upstream input '{q['input']}'",

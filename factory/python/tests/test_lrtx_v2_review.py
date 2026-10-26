@@ -515,3 +515,20 @@ def test_learning_run_patterns_are_decided_and_answers_are_closed(frozen):
     schema = RS.claim_schema("SWE1-01", ["document"], ["workproducts/SWE.1/software_requirements.md"])
     assert schema["properties"]["evidence_checked"]["items"]["enum"] == ["workproducts/SWE.1/software_requirements.md"]
     assert "enum" not in RS.claim_schema("SWE1-01", ["document"])["properties"]["evidence_checked"]["items"]
+
+
+def test_an_input_row_label_may_carry_an_explanation(frozen):
+    """Preflight 2026-10-26 (WO-0008C): the gaps-table row 'HSI contract (hardware/software interface)' records the HSI
+    contract; the exact-label rule rejected the clean baseline even with truthful answers."""
+    gaps = frozen / "traceability/upstream_gaps.md"
+    text = gaps.read_text()
+    assert "| HSI contract |" in text
+    gaps.write_text(text.replace("| HSI contract |", "| HSI contract (hardware/software interface) |"))
+    facts = RS.baseline_facts(frozen)
+    assert facts["gap_rows"]["HSI contract"]
+    q = next(x for x in RS.step_questions(frozen, facts) if x["id"] == "input-hsi")
+    label = RS.input_label(q["answers"], "HSI contract")
+    assert label == "HSI contract (hardware/software interface)"
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": label}, facts) == []
+    got = RS.step_claims(frozen, q, {"quote": "", "answer": "NONE"}, facts)
+    assert [c["decision"] for c in got] == ["REFUTED"]

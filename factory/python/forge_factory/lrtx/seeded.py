@@ -324,7 +324,7 @@ def _truth(ws: Path, p: dict) -> dict:
         if q["id"] == "startup":
             return {"quote": "", "answer": facts["startup"][0] if facts["startup"] else "NONE"}
         if q["id"].startswith("input-"):
-            return {"quote": "", "answer": q["input"] if q["input"] in q["answers"] else "NONE"}
+            return {"quote": "", "answer": RS.input_label(q["answers"], q["input"]) or "NONE"}
         if q["id"].startswith("budget-"):
             b = q["row"]
             hit = next((x for x, r in sorted(facts["reqs"].items()) if re.search(rf"\b{b['resource']}\b", r["statement"],
