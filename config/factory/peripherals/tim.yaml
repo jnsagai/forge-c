@@ -58,6 +58,9 @@ prompt:
     sets coupled fields (DIR with CMS) and gets one entry per field; the update flag clear gets op "write" of value 0
     on TIM_SR.UIF (rc_w0). RM0486 54.5.12 splits the 32-bit TIM_CNT into CNT[30:0] and bit 31 UIFCPY_CNT (CNT[31]
     while UIFREMAP = 0, the reset state): a counter value of 2^31 or more is one entry per field (CNT and UIFCPY_CNT).
+    Say what bit 31 is in the requirement text - "bit 31, CNT[31] (the counter's most significant bit; RM field
+    UIFCPY_CNT while UIFREMAP = 0)" - never just "UIFCPY": that is the read-only UIF copy, which bit 31 holds only when
+    UIFREMAP = 1 (BENCH-TIM-ST-R4 DEF-004: an inspector read UIFCPY_CNT as the UIF copy).
     Queries and getters get op no_write with register/field.
   ll_api: >-
     the ST CubeN6 functions as delivered (each takes the TIM_TypeDef instance pointer first): LL_TIM_EnableCounter,

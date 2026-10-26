@@ -114,8 +114,8 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
             fn_ = str((calls.get(case) or {}).get("function", ""))
             for x in exps:
                 if x.get("op") != "no_write" and x.get("register"):
-                    mk = _field_mask(x["register"], x.get("field") or "", macros, pfx) or \
-                        rm_fields.get((x["register"], x.get("field") or ""))
+                    mk = rm_fields.get((x["register"], x.get("field") or "")) or \
+                        _field_mask(x["register"], x.get("field") or "", macros, pfx)
                     if mk:
                         b = swr_bits.setdefault((fn_, x.get("swr", "")), {})
                         b[x["register"]] = b.get(x["register"], 0) | mk
@@ -146,7 +146,9 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                     add("CONTRADICTION", fn, swr, f"case {case}: requirement says no write to {reg or 'any register'}; "
                         f"the code does {g.op} on {g.via or g.register} ({g.text.strip()[:80]})", x.get("source", ""))
                 continue
-            mask = _field_mask(reg or "", field or "", macros, pfx) or rm_fields.get((reg or "", field or ""))
+            # feature 015: outside RCC the requirement names RM0486 fields, so the RM's field wins over a CMSIS mask
+            # that differs (TIM_CNT_CNT_Msk is the whole register; the RM's CNT is bits 30:0, bit 31 UIFCPY_CNT)
+            mask = rm_fields.get((reg or "", field or "")) or _field_mask(reg or "", field or "", macros, pfx)
             if mask is None:
                 add("CONTRADICTION", fn, swr, f"case {case}: field {reg}.{field} has no definition in the delivered "
                     "code (cannot be checked)")
@@ -172,6 +174,10 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                                               for g in writes) or "no register write"))
                 continue
             hit = [g for g in writes if g.register == reg and g.op == op and g.mask is not None and g.mask & mask]
+            if not hit and pfx != "RCC" and op in ("set", "clear"):  # a constant whole-register write (ST TIM:
+                # WRITE_REG(TIMx->CNT, Counter) with the counter bound) sets / clears the field its value holds / omits
+                hit = [g for g in writes if g.register == reg and g.op == "write" and g.mask is not None
+                       and g.mask & mask == (mask if op == "set" else 0)]
             if not hit and pfx != "RCC" and op in ("set", "clear"):  # ST: MODIFY_REG(reg, FIELD, value) with the
                 # value bound: sets the field when the value holds it, clears it when the value leaves it 0
                 hit = [g for g in writes if g.register == reg and g.op == "modify" and g.mask is not None
@@ -196,7 +202,9 @@ def check(ws: Path, phase: str, write: bool = True) -> dict:
                 # change, to every other flag; accepted only when the requirement writes 0 to exactly those fields
                 add("CONTRADICTION", fn, swr, f"case {case}: changes {g.register} bits {hex(g.mask & ~allowed)} that "
                     "the requirement does not name")
-            if g.op == "write" and not g.via and not any(x.get("op") == "write" for x in exps):
+            whole = sum(m for (r, _f), m in rm_fields.items() if r == g.register)
+            specified = pfx != "RCC" and whole and swr_bits.get((fn, swr), {}).get(g.register, 0) & whole == whole
+            if g.op == "write" and not g.via and not specified and not any(x.get("op") == "write" for x in exps):
                 add("CONTRADICTION", fn, swr, f"case {case}: plain write to shared register {g.register} overwrites "
                     f"its other bits ({g.text.strip()[:80]})")
     allocated = _allocated_functions(ws, set(scope)) | used

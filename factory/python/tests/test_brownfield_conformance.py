@@ -152,3 +152,32 @@ def test_bound_arguments_select_the_branch_that_writes():
     assert brr("USART1", "64000000U", "0U", "LL_USART_OVERSAMPLING_8", "9600U") == ["(USART1)->BRR = brrtemp;"]
     assert len(brr("USART1", "64000000U", "0U", "0U", "9600U")) == 1                     # oversampling 16
     assert len(brr("USART1", "64000000U", "Prescaler", "0U", "9600U")) == 2              # undecidable: all branches
+
+
+TIM_R4 = __import__("forge_factory.common", fromlist=["state_dir"]).state_dir() / \
+    "workorders/WO-AFO-c36be5a7c46d0b55-a1/workspace"  # resolved at import, like the AFO tests' real workspaces
+
+
+def test_a_whole_register_write_meets_the_rm_fields_it_specifies(tmp_path):
+    """F015 BENCH-TIM-ST-R4 (CF-001..CF-003, LL_TIM_SetCounter / SWR-012): ST writes TIM_CNT whole (WRITE_REG); the
+    requirement states CNT[30:0] = 99 and bit 31 (UIFCPY_CNT, CNT[31] while UIFREMAP = 0) set for 0x80000063. The check
+    took CMSIS TIM_CNT_CNT_Msk (the whole register) for the RM's CNT[30:0], refused a plain write as a 'set', and
+    called the fully specified write an overwrite of other bits. A value without bit 31 still contradicts."""
+    import json
+    import shutil
+
+    from forge_factory.brownfield import conformance
+
+    src = TIM_R4
+    if not src.is_dir():
+        pytest.skip("BENCH-TIM-ST-R4 workspace not on this host")
+    ws = tmp_path / "ws"
+    shutil.copytree(src, ws, ignore=shutil.ignore_patterns("build", "acp"), symlinks=True)
+    open_ = lambda: [f for f in conformance.check(ws, "SWE.3", write=False)["findings"]  # noqa: E731
+                     if f["status"] == "OPEN"]
+    assert open_() == []
+    calls = ws / "workproducts/SWE.2/api_calls.json"
+    d = json.loads(calls.read_text())
+    d["calls"]["SET_COUNTER_HIGH_1"]["args"] = ["TIM2", "0x00000063U"]   # bit 31 not written
+    calls.write_text(json.dumps(d))
+    assert [(f["kind"], f["function"]) for f in open_()] == [("CONTRADICTION", "LL_TIM_SetCounter")]
