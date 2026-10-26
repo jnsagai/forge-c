@@ -19,6 +19,7 @@ SCHEMAS = {
     "completion-receipt.schema.json",
     "execution-lifecycle.schema.json",
     "offline-export-manifest.schema.json",
+    "review-disposition.schema.json",
 }
 CHECKER = FormatChecker()
 

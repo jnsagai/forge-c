@@ -174,6 +174,30 @@
       "schema": "offline-export-manifest.schema.json",
       "expected_valid": false,
       "purpose": "A raw prompt field has no place in the manifest."
+    },
+    {
+      "file": "disposition.valid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": true,
+      "purpose": "An owner disposition of one finding, routed to the learning set."
+    },
+    {
+      "file": "disposition-test-set-use.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition never feeds a held-out test set."
+    },
+    {
+      "file": "disposition-release-verdict.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition is not a release approval."
+    },
+    {
+      "file": "disposition-unsigned.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition without a signature reference is refused."
     }
   ]
 }
