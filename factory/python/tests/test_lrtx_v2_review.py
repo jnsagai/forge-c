@@ -1001,3 +1001,29 @@ def test_learning_set_2_round_2_a_reference_or_a_state_is_not_a_key_writes_purpo
     assert RS.behaviour_claims(wp, {"quote": "", "answer": "SWR-006"}, facts) == []
     acc = {"phrase": "register access key write to IWDG_KR", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
     assert RS.behaviour_claims(acc, {"quote": "", "answer": "SWR-002"}, facts) == []
+
+
+def test_learning_set_3_referenced_and_computed_writes_state_every_listed_value(frozen):
+    """Learning set 3 (Feature 015 SPI1/USART1): 'write that value to SPI_CFG1.MBR', 'write the requested
+    threshold-minus-one encoding to SPI_CFG1.FTHLV' and 'write USART_BRR.BRR calculated from the supplied kernel clock
+    ... and requested baud rate' state the documented values the effects contract lists; a fixed literal does not."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {
+        "SWR-008": {"statement": "When LL_SPI_SetBaudRatePrescaler is called with a supported encoded prescaler value "
+                                 "while SPI_CR1.SPE is 0, the SPI LL driver shall write that value to SPI_CFG1.MBR and "
+                                 "SPI_CFG1.BPASS together while preserving the other SPI_CFG1 fields.", "verification": ""},
+        "SWR-010": {"statement": "When LL_SPI_SetFIFOThreshold is called while SPI_CR1.SPE is 0, the SPI LL driver shall "
+                                 "write the requested threshold-minus-one encoding to SPI_CFG1.FTHLV.", "verification": ""},
+        "SWR-011": {"statement": "When LL_USART_SetBaudRate is called while USART_CR1.UE is 0, the USART LL driver shall "
+                                 "write USART_BRR.BRR calculated from the supplied kernel clock in Hz, prescaler, "
+                                 "oversampling and requested baud rate.", "verification": ""},
+        "SWR-012": {"statement": "When LL_SPI_Enable is called, the SPI LL driver shall write 1 to SPI_CR1.SPE.",
+                    "verification": ""}}
+    f = {**facts, "reqs": reqs}
+    for field, value, swr in (("SPI_CFG1.MBR", "2", "SWR-008"), ("SPI_CFG1.FTHLV", "3", "SWR-010"),
+                              ("USART_BRR.BRR", "278", "SWR-011")):
+        b = {"phrase": "documented write", "action": "write", "register_field": field, "value": value}
+        assert RS.behaviour_claims(b, {"quote": "", "answer": swr}, f) == [], field
+        assert RS._states_effect({"statement": reqs[swr]["statement"], "field": field, "op": "write", "value": int(value),
+                                  "args": []}), field
+    assert not RS.parameterised_write(reqs["SWR-012"]["statement"], "SPI_CR1.SPE")

@@ -470,19 +470,30 @@ def _states_effect(e: dict) -> bool:
         in_stated_range(s, v)
 
 
-PARAMETER_VALUE = re.compile(r"\b(?:requested|configured|given|supplied|selected|caller[- ]supplied)\s+"
-                             r"(?:values?|prescaler|reload|key|divider|setting)s?\b", re.I)
+PARAMETER_VALUE = re.compile(r"\b(?:requested|configured|given|supplied|selected|caller[- ]supplied)\s+(?:[\w-]+\s+){0,3}?"
+                             r"(?:values?|encodings?|arguments?|prescaler|reload|key|divider|setting|threshold)s?\b", re.I)
+# learning set 3 (Feature 015 SPI1/USART1): 'write that value to SPI_CFG1.MBR' (the supplied encoding) and 'write
+# USART_BRR.BRR calculated from the supplied kernel clock ... and requested baud rate' (a computed write)
+VALUE_REFERENCE = re.compile(r"\bwrit\w*\s+(?:that|this)\s+(?:[\w-]+\s+){0,2}?(?:value|encoding|argument)\b", re.I)
+COMPUTED_FROM = re.compile(r"\b(?:calculated|computed|derived)\s+from\s+(?:the\s+)?(?:supplied|requested|given|configured)\b",
+                           re.I)
 
 
 def parameterised_write(statement: str, field: str) -> bool:
     """Learning set 2 (2026-10-26, IWDG-HAL h003/rc1/rc3): 'shall write the configured prescaler (encoding) to
     IWDG_PR.PR' states the write of whatever value the caller configured, so every value the effects contract lists for
     that field is stated; so does 'with the configured values retained in IWDG_PR.PR' (the field holds the configured
-    value). Only the clause that names the field counts, and it must write, or keep in the field, a parameter."""
+    value). Learning set 3 adds 'write that value to FIELD' and 'write FIELD calculated from the supplied ...'. Only the
+    clause that names the field counts, and it must write, or keep in the field, a parameter."""
     f = re.escape(field)
-    return any(re.search(r"\b(?:writ(?:e|es|ing)|retain(?:s|ed)?|hold(?:s)?|contain(?:s)?)\b", c, re.I)
-               and PARAMETER_VALUE.search(c) and re.search(rf"\b{f}\b", c)
-               for c in re.split(r"[.;](?=\s|$)", statement))  # sentence ends only: REG.FIELD keeps its dot
+    for c in re.split(r"[.;](?=\s|$)", statement):  # sentence ends only: REG.FIELD keeps its dot
+        if not re.search(rf"\b{f}\b", c):
+            continue
+        if re.search(r"\b(?:writ(?:e|es|ing)|retain(?:s|ed)?|hold(?:s)?|contain(?:s)?)\b", c, re.I) and PARAMETER_VALUE.search(c):
+            return True
+        if VALUE_REFERENCE.search(c) or (re.search(r"\bwrit\w*\b", c, re.I) and COMPUTED_FROM.search(c)):
+            return True
+    return False
 
 
 def entry_claims(kind: str, doc: dict, rows: list[dict], facts: dict) -> list[dict]:
@@ -748,7 +759,8 @@ def _decides(facts: dict, cands: list[str], x: str, b: dict) -> bool:
     """A documented value always has to be stated; purpose words only choose among several candidates."""
     value, st = _documented_value(b), facts["reqs"][x]["statement"]
     if value:  # stated literally, inside a stated range, or supplied by a parameterised write (any value)
-        return value <= _numbers(st) or in_stated_range(st, b.get("value") or "") or bool(PARAMETER.search(st))
+        return value <= _numbers(st) or in_stated_range(st, b.get("value") or "") or bool(PARAMETER.search(st)) or \
+            parameterised_write(st, b["register_field"])
     if not _sequence(st, b) and _purpose_clash(st, b):  # a key sequence covers each keyed write (run 12)
         return False
     return len(cands) == 1 or _purposeful(st, b) or _sequence(st, b)
