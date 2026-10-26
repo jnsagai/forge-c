@@ -143,7 +143,15 @@ def test_the_host_core_stub_has_the_exclusive_access_intrinsics(tmp_path):
         "#define ATOMIC_SET_BIT(REG, BIT) do { uint32_t val; do { val = __LDREXW((__IO uint32_t *)&(REG)) | (BIT); }"
         " while ((__STREXW(val, (__IO uint32_t *)&(REG))) != 0U); } while (0)\n"
         "static volatile uint32_t cr1;\n"
-        "uint32_t f(void) { ATOMIC_SET_BIT(cr1, 0x4U); return cr1; }\n")
+        "uint32_t f(void) { ATOMIC_SET_BIT(cr1, 0x4U); return cr1; }\n"
+        "#define POSITION_VAL(VAL) (__CLZ(__RBIT(VAL)))\n"   # F015 GPIO-R4 DEF-001 (FACTORY): __CLZ/__RBIT missing
+        "int main(void) { return !(f() == 4U && POSITION_VAL(1U << 13) == 13U && POSITION_VAL(0x80000000U) == 31U\n"
+        "  && __CLZ(0U) == 32U && __RBIT(1U) == 0x80000000U); }\n")
     r = subprocess.run(["clang", "--analyze", "-std=c11", "-Werror", f"-I{tmp_path}", "-o", "/dev/null",
                         str(tmp_path / "t.c")], capture_output=True, text=True)
     assert r.returncode == 0 and "error" not in r.stderr, r.stderr
+    exe = tmp_path / "t"
+    b = subprocess.run(["clang", "-std=c11", "-Werror", f"-I{tmp_path}", "-o", str(exe), str(tmp_path / "t.c")],
+                       capture_output=True, text=True)
+    assert b.returncode == 0, b.stderr
+    assert subprocess.run([str(exe)]).returncode == 0        # the host semantics match the Arm instructions
