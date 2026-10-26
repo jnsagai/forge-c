@@ -75,8 +75,8 @@ def build(repo: Path, base: str, target: str, regression: list[str], cre_decisio
 
     base, target = git("rev-parse", base).decode().strip(), git("rev-parse", target).decode().strip()
     files, blobs = [], {}
-    raw = git("diff", "--name-status", "--no-renames", "-z", base, target).decode().split("\0")  # status\0path\0...
-    for status, path in zip(raw[0:-1:2], raw[1::2]):
+    raw = git("diff", "--name-status", "--no-renames", "-z", base, target).decode().split("\0")[:-1]  # status\0path\0
+    for status, path in zip(raw[0::2], raw[1::2], strict=True):
         before = _sha(git("show", f"{base}:{path}")) if status != "A" else None
         if status == "D":
             files.append({"path": path, "op": "delete", "base_sha256": before})
