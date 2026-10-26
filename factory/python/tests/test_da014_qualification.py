@@ -220,7 +220,10 @@ def test_independent_inspection_cannot_pass_unknown_or_same_model_agreement():
 def test_controlled_comparison_retains_frozen_denominator_and_no_automatic_selection(tmp_path):
     import copy
 
-    manifest = Q.freeze("protocol", tmp_path / "manifest.json", identity=identity())
+    unregistered = Q.freeze("protocol", tmp_path / "unregistered.json", identity=identity())
+    manifest = Q.freeze(
+        "protocol", tmp_path / "manifest.json", identity=identity(), baseline={"comparison_factor": "model_build"}
+    )
     baseline = {
         "manifest_sha256": digest(manifest),
         "measured": True,
@@ -231,13 +234,23 @@ def test_controlled_comparison_retains_frozen_denominator_and_no_automatic_selec
     candidate = copy.deepcopy(baseline)
     candidate["identity"]["precision"] = "Q4"
     candidate["independent_outcomes"] = [{"case_id": "frozen-case-A", "fixture_oracle": "FAIL"}]
+    # Quantization without a new digest is not a real model build.
+    with pytest.raises(Refused, match="MODEL_BUILD_IDENTITY_INCONSISTENT"):
+        Q.configuration_comparison(manifest, baseline, candidate)
+    candidate["identity"]["model_digest"] = "d" * 64
     report = Q.configuration_comparison(manifest, baseline, candidate)
-    assert report["changed_factor"] == "precision" and report["automatic_selection"] is False
+    assert report["changed_factor"] == "model_build" and report["changed_fields"] == ["model_digest", "precision"]
+    assert report["automatic_selection"] is False
     assert report["automatic_deployment"] is False and report["rcc_success_prerequisite"] is False
     candidate["case_ids"] = []
     with pytest.raises(Refused, match="COMPARISON_DENOMINATOR_OR_ORACLE_MISSING"):
         Q.configuration_comparison(manifest, baseline, candidate)
     candidate["case_ids"] = baseline["case_ids"]
-    candidate["identity"]["reasoning"] = "high"
-    with pytest.raises(Refused, match="ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED"):
-        Q.configuration_comparison(manifest, baseline, candidate)
+    for changed in ({"reasoning": "high"}, {"role": "swe3-inspector"}):
+        other = copy.deepcopy(candidate)
+        other["identity"].update(changed)
+        with pytest.raises(Refused, match="ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED"):
+            Q.configuration_comparison(manifest, baseline, other)
+    # The compared factor must be frozen in the signed manifest before execution.
+    with pytest.raises(Refused, match="COMPARISON_FACTOR_NOT_PREREGISTERED"):
+        Q.configuration_comparison(unregistered, baseline, candidate)

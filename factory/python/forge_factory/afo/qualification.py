@@ -897,20 +897,40 @@ def inspector_report(required_obligations, claims, independent_verdicts):
     }
 
 
+# Preregistered comparison factors over role-capability identity fields. A quantization change is a different model
+# build (new digest and precision together): one factor, not two. The role is never a configuration factor.
+COMPARISON_FACTORS = {
+    "model_build": ("model_digest", "precision"),
+    "reasoning": ("reasoning",),
+    "schema_mode": ("schema_mode",),
+    "adapter_revision": ("adapter_revision",),
+    "context_tokens": ("context_tokens",),
+    "sampling": ("sampling",),
+    "task_class": ("task_class",),
+}
+
+
 def configuration_comparison(manifest, baseline, candidate):
     from ..lrtx.role_capability import IDENTITY
 
+    factor = (manifest.get("baseline") or {}).get("comparison_factor")
+    if factor not in COMPARISON_FACTORS:
+        raise Refused("COMPARISON_FACTOR_NOT_PREREGISTERED")
     if baseline.get("manifest_sha256") != digest(manifest) or candidate.get("manifest_sha256") != digest(manifest):
         raise Refused("COMPARISON_CASES_CHANGED")
     if baseline.get("measured") is not True or not baseline.get("native_run_ids"):
         raise Refused("UNCHANGED_BASELINE_MEASUREMENT_REQUIRED")
     changed = [k for k in IDENTITY if baseline["identity"][k] != candidate["identity"][k]]
-    if len(changed) != 1:
+    groups = {name for name, fields in COMPARISON_FACTORS.items() if set(fields) & set(changed)}
+    if "role" in changed or groups != {factor}:
         raise Refused("ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED")
+    if changed == ["precision"]:
+        raise Refused("MODEL_BUILD_IDENTITY_INCONSISTENT", "a quantization change must change the model digest")
     if baseline["case_ids"] != candidate["case_ids"] or not candidate.get("independent_outcomes"):
         raise Refused("COMPARISON_DENOMINATOR_OR_ORACLE_MISSING")
     return {
-        "changed_factor": changed[0],
+        "changed_factor": factor,
+        "changed_fields": changed,
         "baseline_identity": baseline["identity"],
         "candidate_identity": candidate["identity"],
         "rcc_success_prerequisite": False,
@@ -970,6 +990,7 @@ def main(argv=None):
     ap.add_argument("--out", type=Path, help="capability-report: immutable report path")
     ap.add_argument("--authorization-ref")
     ap.add_argument("--model-profile")
+    ap.add_argument("--baseline", type=Path, help="freeze: preregistered comparison baseline (comparison_factor)")
     args = ap.parse_args(argv)
     if args.trial and args.command in ("freeze", "report", "capability-report"):
         ap.error("--trial scopes readiness/provisioning/stepping; freeze and report always retain the whole campaign")
@@ -986,6 +1007,7 @@ def main(argv=None):
             job_token_reservations=json.loads(args.job_token_reservations.read_text()) if args.job_token_reservations else None,
             protocol_faults=json.loads(args.protocol_faults.read_text()) if args.protocol_faults else None,
             mission=json.loads(args.mission.read_text()) if args.mission else None,
+            baseline=json.loads(args.baseline.read_text()) if args.baseline else None,
         )
         out = {"status": "FROZEN_NOT_RUN", "manifest_sha256": digest(manifest)}
     else:
