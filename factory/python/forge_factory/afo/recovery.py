@@ -89,7 +89,9 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
             "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
             "wall_seconds": round((now or time.time()) - order["created_epoch"], 1),
             "max_wall_seconds": int(eff.get("budgets.max_order_wall_seconds")),
-            "tokens": "UNKNOWN (ACP/Codex usage is not reported to the factory; never read as zero)"}
+            "tokens": "UNKNOWN (ACP/Codex usage is not reported to the factory; never read as zero)",
+            "tried_models": sorted({json.loads(order["envelope"]).get("model_profile") or "?"} | {
+                p["record"]["model_profile"] for p in ps if p["status"] == "EXECUTED" and p["record"].get("model_profile")})}
 
 
 def _base(bundle: dict, strategy: str, phase: str, rationale: str, **kw) -> dict:
@@ -153,8 +155,13 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
-    if plan["strategy"] == "SWITCH_PREAPPROVED_MODEL_PROFILE" and not m:  # F015 planner trial: a "switch" naming no
-        issues.append("MODEL_PROFILE_REQUIRED")                          # model would rerun the same one
+    if plan["strategy"] == "SWITCH_PREAPPROVED_MODEL_PROFILE":  # F015: a "switch" must name a model not used yet
+        tried = {json.loads(order["envelope"]).get("model_profile")} | {
+            p["record"].get("model_profile") for p in plans(store, order["order_id"]) if p["status"] == "EXECUTED"}
+        if not m:  # planner trial 2
+            issues.append("MODEL_PROFILE_REQUIRED")
+        elif m in tried:  # BENCH-USART-ST-R4: the planner "switched" to codex-claude, the order's own profile
+            issues.append(f"MODEL_ALREADY_TRIED:{m}")
     if m and (m not in (eff.get("engineering.allowed_model_profiles") or []) or
               (auth_models is not None and auth_models and m not in auth_models)):
         issues.append(f"MODEL_NOT_PREAPPROVED:{m}")

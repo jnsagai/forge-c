@@ -305,3 +305,14 @@ def test_transient_retries_are_numbered_backed_off_and_bounded(order, tmp_path):
     (rej,) = [p for p in recovery.plans(s, oid) if p["status"] == "REJECTED"]
     assert "BUDGET_TRANSIENT_RETRIES_EXHAUSTED" in json.loads(rej["reasons"])
     assert recovery.budget_snapshot(s, s.order(oid), eff)["variants_by_phase"]["SWE.1"] == 1  # only the CLOSE plan
+
+
+def test_a_model_switch_to_the_orders_own_profile_is_refused(order):
+    """F015 BENCH-USART-ST-R4: the planner proposed SWITCH_PREAPPROVED_MODEL_PROFILE to codex-claude, the order's own
+    profile ("untried" in its own words); the validator accepted it and the retry ran on the same model."""
+    s, o, b, _, eff = order
+    own = json.loads(o["envelope"])["model_profile"]
+    p = recovery._base(b, "SWITCH_PREAPPROVED_MODEL_PROFILE", "SWE.3", "TEST", artifact_scope=["software/hal"],
+                       model_profile=own)
+    assert f"MODEL_ALREADY_TRIED:{own}" in recovery.validate(p, b, store=s, order=o, eff=eff, auth_models=None)
+    assert recovery.budget_snapshot(s, o, eff)["tried_models"] == [own]

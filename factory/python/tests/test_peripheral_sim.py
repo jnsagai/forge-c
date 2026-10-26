@@ -85,3 +85,22 @@ def test_the_target_startup_enables_the_fpu(tmp_path, monkeypatch):
     assert ok, errs
     res, _out = sim.run_image(sim.renode_bin(), tmp_path / "fpu.elf", "default", tmp_path, ws)
     assert res == {"magic_ok": True, "passed": 1, "failed": 0, "done": True, "failed_ids": []}, res
+
+
+@pytest.mark.parametrize("ppp", ["rcc", "iwdg", "crc", "spi", "usart", "gpio", "tim"])
+def test_every_peripheral_model_loads_in_renode(ppp, tmp_path):
+    """F015 USART-R4 (WO-AFO-e8d55e905cc593ba-a1) SWE.5: every USART target test was NO_RESULT - Renode runs Python
+    peripherals under IronPython 2.7 and usart_model.py used a Python 3 literal (0x3000_0000): 'unexpected token'."""
+    import subprocess
+
+    model = tmp_path / f"{ppp}_model_default.py"
+    model.write_text((sim.SIM_DIR / f"{ppp}_model.py").read_text())
+    repl = tmp_path / "platform.repl"
+    repl.write_text((sim.SIM_DIR / f"stm32n6_{ppp}.repl").read_text().replace(f"{ppp.upper()}_MODEL_PATH", str(model)))
+    resc = tmp_path / "load.resc"
+    resc.write_text(f'mach create "stm32n6"\nmachine LoadPlatformDescription @{repl}\nquit\n')
+    out = subprocess.run([sim.renode_bin(), "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"],
+                         capture_output=True, text=True, timeout=170, cwd=tmp_path,
+                         env={**__import__("os").environ, "DOTNET_EnableWriteXorExecute": "0"})
+    log = out.stdout + out.stderr
+    assert "Error" not in log and "FatalError" not in log, log[-800:]

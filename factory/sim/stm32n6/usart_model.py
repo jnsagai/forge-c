@@ -11,7 +11,7 @@
 # registers are storage. FIFO mode, interrupts, DMA, synchronous/smartcard/IrDA/LIN/RS-485 modes, auto baud rate and
 # line errors are out of the work orders' scope and not modelled.
 SCENARIO = "default"
-CR1_LOCKED = 0x3000_0000 | (0x1F << 21) | (0x1F << 16) | (1 << 15) | 0x1E00  # FIFOEN M1 DEAT DEDT OVER8 M0 WAKE PCE PS
+CR1_LOCKED = 0x30000000 | (0x1F << 21) | (0x1F << 16) | (1 << 15) | 0x1E00  # FIFOEN M1 DEAT DEDT OVER8 M0 WAKE PCE PS
 ICR_FLAGS = {0: 0x1, 1: 0x2, 2: 0x4, 3: 0x8, 4: 0x10, 6: 0x40}
 
 
