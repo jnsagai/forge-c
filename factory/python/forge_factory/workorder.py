@@ -607,6 +607,7 @@ def run(
     recovery_plan: dict | None = None,
     fresh_recovery_from: str | None = None,
     durable_binding: dict | None = None,
+    recovery_exhausted: dict | None = None,
 ) -> dict:
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
@@ -707,6 +708,12 @@ def run(
         from .afo.product_job import install
 
         install(ws, durable_binding)
+    if (labels or {}).get("afo_attempt") or recovery_exhausted:
+        # DA-FR-054: the route gate reads here that the run executes under AFO (so a phase BLOCKs for AFO recovery
+        # first) and for which phases AFO recovery was already exhausted (advisory continuation allowed)
+        manifest["afo"] = {"attempt_id": (labels or {}).get("afo_attempt"),
+                           **({"recovery_exhausted": recovery_exhausted} if recovery_exhausted else {})}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
         manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))

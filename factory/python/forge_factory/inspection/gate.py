@@ -338,6 +338,18 @@ def advisory_enabled(ws: Path) -> bool:
     return _structured_flag(ws, "advisory_continue")
 
 
+def recovery_state(ws: Path, phase: str) -> dict:
+    """The diagnosis-repair rung (DA-FR-054). Under AFO (an attempt id or a durable binding in the run) a phase first
+    BLOCKs, so AFO recovery diagnoses and repairs it; only an attempt AFO launched after recovery for this phase was
+    exhausted may continue in advisory mode. A plain local run has no recovery path: UNAVAILABLE."""
+    m = ws / ".forge-run" / "manifest.json"
+    afo = (json.loads(m.read_text()) if m.is_file() else {}).get("afo") or {}
+    if not afo and not (ws / ".forge-run" / "durable-binding.json").is_file():
+        return {"state": "UNAVAILABLE"}
+    done = (afo.get("recovery_exhausted") or {}).get(phase)
+    return {"state": "EXHAUSTED", **done} if done else {"state": "PENDING"}
+
+
 def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, budget: int, extension, stuck) -> Path:
     """The gap register entry: what stayed unresolved and every attempt the ladder made (a gap without its attempt
     record is not a gap). Appended per continuation to .forge-run/advisory/<phase>.jsonl."""
@@ -394,7 +406,8 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
         {"rung": "progress_extension", "status": ("GRANTED" if ext.get("progress") else "REFUSED") if ext
          else "NOT_EVALUATED"},
         lesson_rung,
-        {"rung": "diagnosis_repair", "status": "NOT_INTEGRATED"},
+        {"rung": "diagnosis_repair", **{("status" if k == "state" else k): v
+                                         for k, v in recovery_state(store.workspace, phase).items()}},
         {"rung": "stall_detection", "status": "STUCK" if stuck else "BUDGET_EXHAUSTED"},
     ]
 
@@ -444,7 +457,8 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] != "PASS" and exhausted:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
-        if advisory_enabled(store.workspace) and store.latest_baseline(phase):
+        if advisory_enabled(store.workspace) and store.latest_baseline(phase) and \
+                recovery_state(store.workspace, phase)["state"] != "PENDING":
             # the ladder is exhausted (budget, progress extensions, stall detection) and nothing is upstream: register
             # the gap with its attempt record and continue; a phase without a frozen baseline cannot feed the next one
             ref = advisory_record(store, phase, since, g, cycles, budget, extension, stuck)

@@ -102,6 +102,7 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
         resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"),
         recovery_plan=manifest.get("recovery_plan"),
         durable_binding=manifest.get("durable_binding"),
+        recovery_exhausted=manifest.get("recovery_exhausted"),
     )
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")

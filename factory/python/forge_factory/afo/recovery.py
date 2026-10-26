@@ -24,6 +24,7 @@ import hashlib
 import json
 import re
 import time
+from pathlib import Path
 
 from ..common import canonical_json, sha256_bytes, utc_now
 from . import contracts
@@ -431,10 +432,54 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
         except Pending as exc:
             return {"action": "diagnosing", "bundle_id": b["bundle_id"], "job_id": str(exc)}
         prev = attempt["record"]["workspace_ref"].removeprefix("workorder:")
+        act = execute_advisory if advisory_final(d, b, ws) else execute
         return {
             "bundle_id": b["bundle_id"],
             "failure_class": b["failure_class"],
-            **execute(store, order, d, epoch=epoch, eff=eff, previous_wo=prev),
+            **act(store, order, d, epoch=epoch, eff=eff, previous_wo=prev, **({"bundle": b, "ws": ws}
+                                                                             if act is execute_advisory else {})),
         }
 
     return recover
+
+
+def _exhausted(ws) -> dict:
+    m = Path(ws) / ".forge-run/manifest.json"
+    return ((json.loads(m.read_text()) if m.is_file() else {}).get("afo") or {}).get("recovery_exhausted") or {}
+
+
+def advisory_final(decision: dict, b: dict, ws) -> bool:
+    """DA-FR-054: recovery for a product-quality phase found no further materially different strategy (or its budget
+    is spent) and the profile continues in advisory mode: instead of closing the order, one final attempt resumes
+    the phase with recovery marked exhausted, so the route gate may register the gap and continue. A factory defect
+    needing an external change, another failure class, or a phase already marked keeps the old behaviour."""
+    from ..inspection.gate import advisory_enabled
+
+    plan = decision["plan"]
+    return (decision.get("status") == "VALIDATED" and plan["strategy"] == "CLOSE_BLOCKED"
+            and plan["rationale_code"] != "FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE"
+            and b["failure_class"] == "PRODUCT_QUALITY" and advisory_enabled(Path(ws))
+            and b["phase"] not in _exhausted(ws))
+
+
+def execute_advisory(store: Store, order: dict, decision: dict, *, epoch: int, eff, previous_wo: str, bundle: dict,
+                     ws) -> dict:
+    from .checkpoints import new_attempt
+
+    plan, oid, phase = decision["plan"], order["order_id"], bundle["phase"]
+    store.transition(oid, "WAITING_RECOVERY", f"recovery exhausted for {phase}: final advisory attempt")
+    try:
+        aid = new_attempt(store, oid, plan_id=plan["plan_id"], epoch=epoch,
+                          max_attempts=int(eff.get("budgets.max_order_attempts")), source_wo=previous_wo)
+    except QueueError as e:  # no attempt left: the order stays BLOCKED, as before
+        store.transition(oid, "BLOCKED", e.code, terminal_reason=e.code)
+        return {"order_id": oid, "action": "blocked", "code": e.code}
+    marked = {**_exhausted(ws), phase: {"plan_id": plan["plan_id"], "rationale_code": plan["rationale_code"]}}
+    with store.tx() as c:
+        row = c.execute(
+            "SELECT command_id, payload FROM afo_commands_outbox WHERE idempotency_key=?", (f"launch:{aid}",)
+        ).fetchone()
+        payload = {**json.loads(row["payload"]), "resume_upto": phase, "recovery_exhausted": marked}
+        c.execute("UPDATE afo_commands_outbox SET payload=? WHERE command_id=?", (json.dumps(payload), row["command_id"]))
+        c.execute("UPDATE afo_recovery_plans SET status='EXECUTED' WHERE plan_id=?", (plan["plan_id"],))
+    return {"order_id": oid, "action": "advisory_attempt", "attempt_id": aid, "phase": phase}

@@ -40,7 +40,7 @@ def test_an_exhausted_ladder_continues_with_its_gap_and_attempts_registered(tmp_
                             "stall_detection"]
     assert ladder["rework_with_findings"]["failed_cycles"] == 3 and ladder["progress_extension"]["status"] == "REFUSED"
     assert ladder["validated_lessons"]["status"] == "NONE_QUALIFIED"
-    assert ladder["diagnosis_repair"]["status"] == "NOT_INTEGRATED"
+    assert ladder["diagnosis_repair"]["status"] == "UNAVAILABLE"  # a plain local run has no recovery path
 
 
 def test_the_lessons_rung_names_the_lessons_this_phase_was_given(tmp_path, advisory, monkeypatch):

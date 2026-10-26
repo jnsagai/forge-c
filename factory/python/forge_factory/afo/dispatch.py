@@ -134,7 +134,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
                 **manifest,
                 **{
                     k: payload[k]
-                    for k in ("resume_from", "resume_upto", "model_profile", "lesson_ids", "recovery_plan")
+                    for k in ("resume_from", "resume_upto", "model_profile", "lesson_ids", "recovery_plan",
+                              "recovery_exhausted")
                     if payload.get(k)
                 },
             }
