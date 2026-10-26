@@ -737,3 +737,70 @@ def test_a_startup_requirement_per_field_is_asked_when_startup_is_stated_per_fie
     assert RS.startup_fields({**facts, "reqs": {"SWR-013": {"statement": "While no LL function has been called after "
                                                 "reset, the IWDG LL driver shall not write any IWDG register.",
                                                 "verification": ""}}}) == []
+
+
+def test_ranged_parameter_writes_agree_and_documented_values_tell_key_writes_apart(frozen):
+    """Run 10 (IWDG-HAL rc4): PR = 0..7 effects entries against 'write the configured prescaler in the inclusive range
+    0 through 7'; and 'register access key write' (0x5555) against SWR-001, which says 'enable configuration writes'."""
+    facts = RS.baseline_facts(frozen)
+    assert RS.in_stated_range("shall write the configured prescaler in the inclusive range 0 through 7 to IWDG_PR.PR", 5)
+    assert not RS.in_stated_range("shall write the configured prescaler in the inclusive range 0 through 7", 9)
+    assert RS.in_stated_range("the configured reload value in the inclusive range 0 through 0xFFF", "0xABC")
+    keys = {"SWR-001": {"statement": "When HAL_IWDG_Init is requested, the IWDG driver shall write 0xCCCC to IWDG_KR.KEY to "
+                                     "start the watchdog, then write 0x5555 to IWDG_KR.KEY to enable configuration "
+                                     "writes.", "verification": ""},
+            "SWR-008": {"statement": "When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to "
+                                     "IWDG_KR.KEY to refresh the counter.", "verification": ""}}
+    access = {"phrase": "register access key write", "action": "write", "register_field": "IWDG_KR.KEY",
+              "value": "0x5555"}
+    assert RS.behaviour_claims(access, {"quote": "", "answer": "SWR-001"}, {**facts, "reqs": keys}) == []
+    start = {"phrase": "start the watchdog", "action": "write", "register_field": "IWDG_KR.KEY", "value": "0xCCCC"}
+    no_start = {**facts, "reqs": {"SWR-008": keys["SWR-008"]}}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-008"}, no_start)
+    assert [c["decision"] for c in got] == ["STANDS"]
+
+
+def test_a_parameterised_or_ranged_write_states_any_documented_value(frozen):
+    facts = RS.baseline_facts(frozen)
+    pr = {"SWR-005": {"statement": "When the prescaler set function is called, the IWDG LL driver shall write the "
+                                   "requested value to IWDG_PR.PR.", "verification": ""}}
+    b = {"phrase": "set prescaler", "action": "write", "register_field": "IWDG_PR.PR", "value": "6"}
+    assert RS.behaviour_claims(b, {"quote": "", "answer": "SWR-005"}, {**facts, "reqs": pr}) == []
+    rl = {"SWR-003": {"statement": "the IWDG driver shall write the configured reload value in the inclusive range 0 "
+                                   "through 0xFFF to IWDG_RLR.RL.", "verification": ""}}
+    b = {"phrase": "init reload", "action": "write", "register_field": "IWDG_RLR.RL", "value": "2748"}
+    assert RS.behaviour_claims(b, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": rl}) == []
+
+
+def test_a_standing_judgement_gets_one_closed_check_and_a_false_one_is_withdrawn(frozen, monkeypatch):
+    """Run 10 (IWDG-HAL rc4): broad judgements no rule decides rejected a clean baseline. Stepwise asks one closed check
+    per standing judgement; FALSE keeps it in the record as WITHDRAWN, TRUE keeps it standing."""
+    facts = RS.baseline_facts(frozen)
+    a, b = sorted(facts["reqs"])[:2]
+    fail = {"verdict": "FAIL", "claims": [_c("requirements_inconsistent", a, "these two requirements contradict",
+                                             related=[b])],
+            "evidence_checked": ["workproducts/SWE.1/software_requirements.md"]}
+    assert RS.adjudicate(frozen, "SWE1-02", fail["claims"], facts)[0]["decision"] == "STANDS"
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    import shutil
+
+    for verdict, status in (("FALSE", "PASS"), ("TRUE", "REWORK")):
+        shutil.rmtree(frozen / ".forge-run/lrtx", ignore_errors=True)  # no checkpoint carries the other verdict
+        answers = {"SWE1-02": [fail, fail], **_step_answers(frozen, facts)}
+        call, seen = _inspector(answers)
+
+        def scripted(p, call=call, seen=seen, verdict=verdict, **k):
+            item = p["task"].split(":")[-1]
+            if item.startswith("step-check-swe1-02-"):
+                seen[item] = seen.get(item, 0) + 1
+                doc = {"quote": "they apply to different conditions", "answer": verdict}
+                return {"doc": doc, "errors": S.validate(doc, p["output_schema"]), "usage": None, "wall_ms": 1.0,
+                        "finish_reason": "stop"}
+            return call(p, **k)
+
+        monkeypatch.setattr(S, "call", scripted)
+        rep = RS.visit(frozen, "SWE.1", "qwen3.6:35b-a3b")
+        rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+        assert rep["status"] == status and any(k.startswith("step-check-swe1-02-") for k in seen)
+        if verdict == "FALSE":
+            assert any("checks" in r for r in rec["items"]["SWE1-02"]["rounds"])

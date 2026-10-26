@@ -425,6 +425,22 @@ def validate_entries(doc: dict, ids: list[str]) -> list[str]:
     return [f"entry {i} answered {got.count(i)} times (answer each entry once)" for i in ids if got.count(i) != 1]
 
 
+PARAMETER = re.compile(r"\b(?:requested|configured|given|supplied|selected|caller[- ]supplied)\s+(?:value|prescaler|"
+                       r"reload|key|divider|setting)\b", re.I)
+RANGE = re.compile(r"\brange\s+(0x[0-9A-Fa-f]+|\d+)\s+(?:through|to|-|–)\s+(0x[0-9A-Fa-f]+|\d+)\b", re.I)
+
+
+def in_stated_range(statement: str, value) -> bool:
+    """Run 10 (IWDG-HAL rc4): 'write the configured prescaler in the inclusive range 0 through 7 to IWDG_PR.PR' states
+    every in-range write the effects contract lists (PR = 0 ... 7)."""
+    want = _numbers(value) if isinstance(value, str) else ({value} if isinstance(value, int) else set())
+    for lo, hi in RANGE.findall(statement):
+        a, b = (int(x, 16) if x.lower().startswith("0x") else int(x) for x in (lo, hi))
+        if want and all(a <= w <= b for w in want):
+            return True
+    return False
+
+
 def _states_effect(e: dict) -> bool:
     """The requirement text itself states the entry's operation on its field (the claim is then refuted)."""
     s, f = e["statement"], re.escape(e["field"])
@@ -437,7 +453,8 @@ def _states_effect(e: dict) -> bool:
     want = _numbers(v) if isinstance(v, str) else ({v} if isinstance(v, int) else set())
     if not want:
         return False
-    return want <= _numbers(s) or (bool(re.search(r"\brequested value\b", s, re.I)) and want <= set(e["args"]))
+    return want <= _numbers(s) or (bool(re.search(r"\brequested value\b", s, re.I)) and want <= set(e["args"])) or \
+        in_stated_range(s, v)
 
 
 def entry_claims(kind: str, doc: dict, rows: list[dict], facts: dict) -> list[dict]:
@@ -601,8 +618,9 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
     e = q["row"]
     # a pulse requirement states both the set and the clear entry it names
     pulse = a == "set_then_clear" and e["op"] in OPPOSITE
-    agrees = pulse or a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
-                                        _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
+    ranged = a == "write" and e["op"] == "write" and in_stated_range(e["statement"], e["value"])
+    agrees = pulse or ranged or a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
+                                                  _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
     return entry_claims("effects", {"entries": [{"entry": e["entry"], "agrees": agrees,
                                                  "reason": f"{e['swr']} states {a} {doc.get('value') or ''}: {quote}"}]},
                         [e], facts)
@@ -618,10 +636,11 @@ BEHAVIOURS: dict = {}  # question id -> behaviour of the current visit (read by 
 
 
 def behaviour_schema(fields: list[str]) -> dict:
-    row = {"type": "object", "additionalProperties": False, "required": ["phrase", "action", "register_field"],
+    row = {"type": "object", "additionalProperties": False, "required": ["phrase", "action", "register_field", "value"],
            "properties": {"phrase": {"type": "string", "minLength": 5, "maxLength": 80},
                           "action": {"type": "string", "enum": sorted(ACTIONS)},
-                          "register_field": {"type": "string", "enum": fields}}}
+                          "register_field": {"type": "string", "enum": fields},
+                          "value": {"type": "string", "maxLength": 24}}}
     return {"type": "object", "additionalProperties": False, "required": ["behaviours"],
             "properties": {"behaviours": {"type": "array", "maxItems": 16, "items": row}}}
 
@@ -636,7 +655,8 @@ def behaviour_packet(ws: Path, bl: dict, srcs: list[dict], scope: str, fields: l
              "one action on one object each: 'A and B enable/disable' is four behaviours. Derive them only from this "
              "sentence and the hardware sources; requirements are not shown and do not matter here. action: set "
              "(enable, assert, start), clear (disable, release), write (a value), read (query a flag or state); "
-             "register_field: the field the behaviour acts on, REGISTER.* for any field of one register. Leave out "
+             "register_field: the field the behaviour acts on, REGISTER.* for any field of one register; value: the "
+             "value a write uses when the hardware sources document it (for example a key), else \"\". Leave out "
              "structure, style and API-shape constraints; an empty list when the sentence names no register behaviour.")
     return S.packet(phase="SWE.1", task="inspect:behaviours", role="swe1-inspector", instructions=instr,
                     sources=sources, criteria=["SWE1-05: coverage gaps against the work-order scope"],
@@ -673,7 +693,15 @@ def behaviour_hit(facts: dict, b: dict) -> str | None:
     the phrase has them, one of its purpose words (run 3: every IWDG key write is 'write IWDG_KR.KEY'; only 'start'
     tells the start key from the refresh key). Any one word suffices: a looser match can only refute, never reject."""
     cands = candidates(facts, b)
-    return next((x for x in cands if len(cands) == 1 or _purposeful(facts["reqs"][x]["statement"], b)), None)
+    return next((x for x in cands if _decides(facts, cands, x, b)), None)
+
+
+def _decides(facts: dict, cands: list[str], x: str, b: dict) -> bool:
+    """A documented value always has to be stated; purpose words only choose among several candidates."""
+    value, st = _documented_value(b), facts["reqs"][x]["statement"]
+    if value:  # stated literally, inside a stated range, or supplied by a parameterised write (any value)
+        return value <= _numbers(st) or in_stated_range(st, b.get("value") or "") or bool(PARAMETER.search(st))
+    return len(cands) == 1 or _purposeful(facts["reqs"][x]["statement"], b)
 
 
 # run 6 (2026-10-26): "clear the selected oscillator enable bit" names an action noun, not the action
@@ -716,6 +744,12 @@ def candidates(facts: dict, b: dict) -> list[str]:
         rf"\b{re.escape(bare)}\b", r["statement"])) and acts(r["statement"])]
 
 
+def _documented_value(b: dict) -> set[int]:
+    return _numbers(b.get("value") or "") if b["action"] == "write" else set()
+
+
+# run 10 (IWDG-HAL rc4): purpose words fail on synonyms ('register access key' is 'enable configuration writes'); a
+# documented value is exact: the start key 0xCCCC is stated only by the start requirement
 def _purposeful(statement: str, b: dict) -> bool:
     # run 4 (2026-10-26): purpose words decide only between several candidates; SWR-006 'write the requested value to
     # IWDG_RLR.RL' is the one requirement on that field, although it never says 'reload'. Run 5: and only for writes
@@ -729,7 +763,7 @@ def _purposeful(statement: str, b: dict) -> bool:
 
 def states_behaviour(facts: dict, cited: str, b: dict) -> bool:
     cands = candidates(facts, b)
-    return cited in cands and (len(cands) == 1 or _purposeful(facts["reqs"][cited]["statement"], b))
+    return cited in cands and _decides(facts, cands, cited, b)
 
 
 def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
@@ -748,6 +782,25 @@ def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
     c["decision"], c["evidence"] = ("REFUTED", f"{hit} states {act} on {f}") if hit else \
         ("STANDS", "no requirement states this behaviour")
     return [c]
+
+
+def check_question(iid: str, c: dict, facts: dict) -> dict:
+    """Run 10 (IWDG-HAL rc4): a broad item's judgement no rule decides ('SWR-007 is inconsistent with SWR-002',
+    'SWR-009 is infeasible') stood and rejected a clean baseline. Stepwise: one closed check per such claim."""
+    ids = [x for x in [c["target_id"], *(c.get("related_ids") or [])] if x in facts["reqs"]]
+    texts = " ".join(f"{x}: \"{facts['reqs'][x]['statement']}\"" for x in ids)
+    return {"id": f"check-{iid.lower()}-{c['identity']}", "item": iid, "source": "workproducts/SWE.1/software_requirements.md",
+            "answers": ["TRUE", "FALSE"],
+            "text": f"A reviewer claims about checklist item {iid}: \"{render_claim(c)}\" {texts} Is this claim true of the "
+                    "baseline? answer TRUE only when the requirement texts themselves show the problem; FALSE when they do "
+                    "not (requirements for different conditions are not inconsistent; a requirement a test can check is not "
+                    "infeasible; a recorded open point is documented). Quote the decisive words."}
+
+
+def withdraw_unconfirmed(c: dict, doc: dict) -> dict:
+    if doc["answer"] == "FALSE":
+        return {**c, "decision": "WITHDRAWN", "evidence": f"closed check found it false: {doc['quote'][:160]}"}
+    return c
 
 
 def _claim(assertion: str, target: str, detail: str, remediation: str) -> dict:
@@ -833,6 +886,7 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
     extra += 4 if opts["entries"] else 0  # the effects and budget questions
     if opts["stepwise"]:  # one call and one repair per fact question, per scope sentence and per scope behaviour
         extra += 2 * len(step_questions(Path(ws), baseline_facts(Path(ws)))) + 2 * 17 * len(scope_items(Path(ws)))
+        extra += 2 * 10 * len(ASSERTIONS)  # at most ten claims per item, one closed check (and a repair) each
     budget, _f = V.open_visit(Path(ws), "SWE.1-inspect", resume, list,
                               (max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns) + extra,
                               time_budget_s)
@@ -963,13 +1017,27 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                 d = rec["doc"]
                 judged = adjudicate(ws, it["id"], d["claims"], facts)
                 rounds.append({"verdict": d["verdict"], "claims": judged})
+        if opts["stepwise"]:  # F014: every standing judgement of this item gets one closed check
+            checked = []
+            for c in judged:
+                if c["decision"] != "STANDS":
+                    checked.append(c)
+                    continue
+                q = check_question(it["id"], c, facts)
+                crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{q['id']}",
+                                  lambda fi, pr, q=q: step_packet(ws, bl, srcs, q, model, smp, fi, pr), lambda d: [],
+                                  budget)
+                checked.append(withdraw_unconfirmed(c, crec["doc"]) if crec["status"] == "VALID" else c)
+            if checked != judged:
+                rounds.append({"checks": [c for c in checked if c["decision"] == "WITHDRAWN"]})
+            judged = checked
         if it["id"] == "SWE1-05" and cov_claims:  # the coverage answers join the coverage item, decided the same way
             judged = judged + cov_claims
             rounds.append({"coverage": cov_claims})
         if ent_claims.get(it["id"]):  # the entry answers join their item, decided the same way
             judged = judged + ent_claims[it["id"]]
             rounds.append({"entries": ent_claims[it["id"]]})
-        standing = [c for c in judged if c["decision"] != "REFUTED"]
+        standing = [c for c in judged if c["decision"] not in ("REFUTED", "WITHDRAWN")]
         verdict = "FAIL" if standing else "PASS"
         outcome = "ADJUDICATED_PASS" if d["verdict"] == "FAIL" and not standing else verdict
         record[it["id"]] = {"outcome": outcome, "rounds": rounds,

@@ -322,6 +322,8 @@ def _truth(ws: Path, p: dict) -> dict:
 
     item = p["task"].split(":")[-1]
     schema = p["output_schema"]
+    if item.startswith("step-check-"):  # a judgement check keeps the claim (conservative: never a withdrawal)
+        return {"quote": "", "answer": "TRUE"}
     if item.startswith("step-") and not item.startswith("step-behaviour-"):
         facts = RS.baseline_facts(ws)
         q = next(x for x in RS.step_questions(ws, facts) if "step-" + x["id"] == item)
@@ -346,12 +348,13 @@ def _truth(ws: Path, p: dict) -> dict:
         enum = schema["properties"]["behaviours"]["items"]["properties"]["register_field"]["enum"]
         # phrases carry the effect's case so the purpose-word path is exercised (run 4 hole: bare phrases never were)
         rows = [{"phrase": f"{e['case'].lower().replace('_', ' ')}: {e['op']} {e['field']}"[:80],
-                 "action": act[e["op"]], "register_field": e["field"]}
+                 "action": act[e["op"]], "register_field": e["field"],
+                 "value": str(e["value"]) if e["op"] == "write" and e["value"] is not None else ""}
                 for e in RS.effect_entries(ws, facts) if e["field"] in enum]
         # run 5 hole: flag queries ('no_write' entries naming a field) are read behaviours and were never exercised
         raw = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text()).get("effects") or []
         rows += [{"phrase": f"{e.get('case', '').lower().replace('_', ' ')}: read {e['register']}.{e['field']}"[:80],
-                  "action": "read", "register_field": f"{e['register']}.{e['field']}"}
+                  "action": "read", "register_field": f"{e['register']}.{e['field']}", "value": ""}
                  for e in raw if e.get("op") == "no_write" and e.get("register") and e.get("field")
                  and f"{e['register']}.{e['field']}" in enum]
         return {"behaviours": rows[:16]}
