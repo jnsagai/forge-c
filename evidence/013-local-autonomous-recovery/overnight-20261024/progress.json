@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-26T14:12:02.065041+00:00",
+  "captured_utc": "2026-10-26T14:27:08.886497+00:00",
   "conductor": {
     "heartbeat_fresh": true,
     "mode": "OBSERVE_ONLY",
@@ -662,13 +662,13 @@
   ],
   "resources": {
     "cpu_load_1_5_15": [
-      0.947265625,
-      2.1259765625,
-      2.326171875
+      0.64306640625,
+      0.65234375,
+      1.240234375
     ],
-    "gpu": "0, 628, 49140, 32.17",
+    "gpu": "0, 628, 49140, 28.56",
     "memory": {
-      "MemAvailable": "105157032 kB",
+      "MemAvailable": "123349516 kB",
       "MemTotal": "131337704 kB"
     },
     "verification_workers_max": 16
