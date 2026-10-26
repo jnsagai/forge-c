@@ -632,7 +632,11 @@ def candidates(facts: dict, b: dict) -> list[str]:
 
 def _purposeful(statement: str, b: dict) -> bool:
     # run 4 (2026-10-26): purpose words decide only between several candidates; SWR-006 'write the requested value to
-    # IWDG_RLR.RL' is the one requirement on that field, although it never says 'reload'
+    # IWDG_RLR.RL' is the one requirement on that field, although it never says 'reload'. Run 5: and only for writes
+    # (different values on one field are different behaviours); reading a flag is one behaviour however many
+    # requirements split it by value ('query the PVU update flag': SWR-007/SWR-008 return 1U/0U)
+    if b["action"] != "write":
+        return True
     purpose = purpose_words(b)
     return not purpose or any(re.search(rf"\b{w}", statement, re.I) for w in purpose)
 

@@ -628,3 +628,15 @@ def test_purpose_words_decide_only_between_several_candidates(frozen):
     reload = {"phrase": "set the reload value in IWDG_RLR.RL", "action": "write", "register_field": "IWDG_RLR.RL"}
     assert RS.behaviour_claims(reload, {"quote": "", "answer": "SWR-006"}, {**facts, "reqs": reqs}) == []
     assert RS.behaviour_hit({**facts, "reqs": reqs}, reload) == "SWR-006"
+
+
+def test_a_flag_read_split_by_value_is_one_behaviour(frozen):
+    """Run 5 (2026-10-26): 'query the PVU update flag in IWDG_SR' was rejected: SWR-007/SWR-008 return 1U/0U for
+    IWDG_SR.PVU and neither says 'update'."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-007": {"statement": "When the PVU query function is called and IWDG_SR.PVU is 1, the IWDG LL driver "
+                                     "shall return 1U.", "verification": ""},
+            "SWR-008": {"statement": "When the PVU query function is called and IWDG_SR.PVU is 0, the IWDG LL driver "
+                                     "shall return 0U.", "verification": ""}}
+    pvu = {"phrase": "query the PVU update flag in IWDG_SR", "action": "read", "register_field": "IWDG_SR.PVU"}
+    assert RS.behaviour_claims(pvu, {"quote": "", "answer": "SWR-007"}, {**facts, "reqs": reqs}) == []
