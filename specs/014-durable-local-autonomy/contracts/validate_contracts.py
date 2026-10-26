@@ -20,6 +20,7 @@ SCHEMAS = {
     "execution-lifecycle.schema.json",
     "offline-export-manifest.schema.json",
     "review-disposition.schema.json",
+    "patch-bundle.schema.json",
 }
 CHECKER = FormatChecker()
 

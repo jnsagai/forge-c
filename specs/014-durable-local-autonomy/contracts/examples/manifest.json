@@ -198,6 +198,36 @@
       "schema": "review-disposition.schema.json",
       "expected_valid": false,
       "purpose": "A disposition without a signature reference is refused."
+    },
+    {
+      "file": "patch.valid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": true,
+      "purpose": "A write with its base hash and a delete of a known file, with declared regression and CRE decision."
+    },
+    {
+      "file": "patch-path-escape.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A path escaping the release tree is refused."
+    },
+    {
+      "file": "patch-blind-delete.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A delete must name the exact base content it removes."
+    },
+    {
+      "file": "patch-no-regression.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A patch without a declared regression is refused."
+    },
+    {
+      "file": "patch-git-dir.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A patch cannot write into .git."
     }
   ]
 }

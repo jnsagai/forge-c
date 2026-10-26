@@ -1,0 +1,26 @@
+{
+  "schema": "forge-c/patch-bundle/1",
+  "patch_id": "PATCH-0123456789ab-ba9876543210",
+  "base_revision": "0123456789ab0000000000000000000000000000",
+  "target_revision": "ba98765432101111111111111111111111111111",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/lrtx/review_semantic.py",
+      "op": "write",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "base_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "mode": "644"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/old.py",
+      "op": "delete",
+      "base_sha256": null
+    }
+  ],
+  "regression": [
+    "factory/python/tests/test_lrtx_v2_review.py"
+  ],
+  "cre_decision_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "approver": "Jefferson",
+  "created_utc": "2026-10-26T12:00:00Z"
+}

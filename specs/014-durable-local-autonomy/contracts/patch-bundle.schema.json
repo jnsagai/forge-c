@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:contract:patch-bundle:1",
+  "title": "Signed patch bundle manifest PATCH.json (DA-FR-058)",
+  "description": "Built in development from a git range and signed by the owner (detached ssh-keygen -Y signature, namespace forge-patch-bundle, over the canonical JSON of this manifest). The local import gate activates it only after signature, base revision, per-file hash, local drift, CRE decision and protected-path checks, a truthful local preflight and the declared regression.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "patch_id",
+    "base_revision",
+    "target_revision",
+    "files",
+    "regression",
+    "cre_decision_sha256",
+    "approver",
+    "created_utc"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/patch-bundle/1"
+    },
+    "patch_id": {
+      "type": "string",
+      "pattern": "^PATCH-[0-9a-f]{12}-[0-9a-f]{12}$"
+    },
+    "base_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "target_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "op",
+          "base_sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))(?!\\.git(/|$))[A-Za-z0-9._/+-]+$"
+          },
+          "op": {
+            "enum": [
+              "write",
+              "delete"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "base_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "mode": {
+            "enum": [
+              "644",
+              "755"
+            ]
+          }
+        },
+        "if": {
+          "properties": {
+            "op": {
+              "const": "write"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "sha256",
+            "mode"
+          ]
+        },
+        "else": {
+          "properties": {
+            "base_sha256": {
+              "type": "string"
+            }
+          },
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "sha256"
+                ]
+              },
+              {
+                "required": [
+                  "mode"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "regression": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))(?!\\.git(/|$))[A-Za-z0-9._/+-]+$"
+      }
+    },
+    "cre_decision_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

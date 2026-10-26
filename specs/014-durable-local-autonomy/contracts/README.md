@@ -11,6 +11,7 @@ Status: **NOT_IMPLEMENTED**. These files are design artifacts for Codex implemen
 | `execution-lifecycle.schema.json` | Fenced controller/native reconciler | Snapshot separating task outcome, native liveness, cancellation and resource ownership. Terminal task outcomes can still require cancellation/reconciliation. |
 | `offline-export-manifest.schema.json` | Offline export command (`forge_factory.offline.export`) | Manifest of an export bundle carried to development (DA-FR-056): records in full from an allowlist, other files by hash, vendor inputs never; stripped prompt/reasoning keys and redactions counted per file. |
 | `review-disposition.schema.json` | Owner (signed, namespace `forge-review-disposition`) | One end-of-run review decision on a registered gap or finding (DA-FR-057). Learning set only; never a release approval or a change to a package. |
+| `patch-bundle.schema.json` | Development builder, owner signature (namespace `forge-patch-bundle`) | `PATCH.json` of a signed patch bundle (DA-FR-058): base/target revisions, per-file new and base hashes, declared regression, CRE decision hash. Activated only by the local import gate. |
 | `examples/manifest.json` | Specification author | Explicit mapping of synthetic positive/negative structural fixtures to schemas and expected validity. |
 | `validate_contracts.py` | Read-only specification checker | Checks Draft 2020-12 schemas, the complete fixture inventory and expected structural acceptance/rejection. |
 

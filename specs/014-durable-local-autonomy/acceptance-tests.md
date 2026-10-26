@@ -640,7 +640,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Requirement:** DA-FR-058
 - **Level:** deterministic
 - **Status:** NOT_IMPLEMENTED
-- **Given:** A local factory at a base revision and patch bundles: valid, tampered, unsigned, wrong-base and a protected-path change without its CRE decision.
+- **Given:** A local factory at a base revision and patch bundles: valid, tampered, unsigned or foreign-signed, wrong-base, locally drifted, a protected-path change, and a missing or non-matching CRE decision.
 - **When:** Each bundle is presented to the import gate with no network access; the valid one is then rolled back.
 - **Then:** Only the valid bundle activates, after its truthful preflight and declared regression pass; all others are refused with exact reasons; rollback restores the prior revision.
 - **Evidence:** Import records, preflight and regression logs, refusal reasons, rollback record.
