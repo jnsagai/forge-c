@@ -96,3 +96,11 @@ SWR-001 (not a case obligation key) as missing evidence; unqualified-local-alter
 upstream-owner:4 repeated the owner/scope inconsistency (temperature-0 repeats are near-deterministic). All three fixed
 in b7ce315 (obligation enum, separate strategy question with responsible-phase scope, clean switch fault); third full
 matrix running on b7ce315.
+
+### Third full matrix (b7ce315, 95 trials, 00:17–01:07 UTC)
+
+All three earlier failure types fixed (missing-primary 5/5, model-switch fault 5/5, upstream-owner 5/5). Independent audit
+**0/0/0** (`audit-b7ce315.json`); official report **90/100**: all five late-finding trials were refused by the gateway
+before sending (`GATEWAY_HTTP_429:JOB_TOKEN_ENVELOPE_EXHAUSTED`, four request reservations 33,473 > 32,768 for the
+nine-finding case). 5dc2df3 repeats only cited findings in questions 2–4 and caps citations at six; a deterministic
+measurement of all frozen cases gives a worst case of 32,320 tokens. Fourth matrix running on 5dc2df3.
