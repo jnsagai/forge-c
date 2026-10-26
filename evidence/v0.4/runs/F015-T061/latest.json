@@ -5,19 +5,19 @@
     "outcome",
     "tim"
   ],
-  "duration_s": 0.034,
+  "duration_s": 0.063,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "e2065e7844234f2591eac2071731d3578e25954e",
+  "git_head": "b7233a7bd543fbe6e40d505e8cfc9b3c0d3ff0f7",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/F015-T061/20261026T171512.log",
-  "log_sha256": "47ea1f0b95eeadc9097df34aab85daa9d60820289e7c385005f978dc0db19a57",
+  "log": "evidence/v0.4/runs/F015-T061/20261026T223900.log",
+  "log_sha256": "2fa748b126151ed2ada34f844704e6e9de0bca0baadd9a7abb7af0804155038c",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "F015-T061",
-  "ts_utc": "2026-10-26T17:15:12.958641Z"
+  "ts_utc": "2026-10-26T22:39:00.440895Z"
 }
