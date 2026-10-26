@@ -1,0 +1,135 @@
+{
+ "reference": "learning-14",
+ "reference_evaluations": 49,
+ "runs": [
+  {
+   "run": "parallel-p1",
+   "N": 1,
+   "measured_seconds": 2256,
+   "exit": [
+    "0"
+   ],
+   "evaluations": 49,
+   "outcome_identical": 49,
+   "outcome_differences": [],
+   "records_compared": 40,
+   "questions": 769,
+   "answer_values_identical": 761,
+   "answers_and_quotes_identical": 689,
+   "evaluations_with_answer_differences": [
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-OMIT",
+    "WO-0008C-ST-RCC-LL-rc1/S1-GAPROW",
+    "WO-0009A-STM32N6-IWDG-LL-rc1/S1-OMIT",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/BASELINE",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-NOSTART",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-OMIT"
+   ],
+   "summary": {
+    "correct": 49
+   },
+   "gpu": {
+    "samples": 225,
+    "util_mean": 60.0,
+    "mem_peak_mib": 25462.0
+   }
+  },
+  {
+   "run": "parallel-p2",
+   "N": 2,
+   "measured_seconds": 617,
+   "exit": [
+    "143"
+   ],
+   "evaluations": 13,
+   "outcome_identical": 13,
+   "outcome_differences": [
+    "WO-0002B-STM32N6-RCC-HAL-rc1/BASELINE: none -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-EFFECT: inspection (on target) -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-GAPROW: inspection (on target) -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-NOSTART: deterministic gate -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-OMIT: inspection (on target) -> None",
+    "WO-0002B-STM32N6-RCC-HAL-rc1/S1-QM: deterministic gate -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/BASELINE: none -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-EFFECT: inspection (on target) -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-GAPROW: inspection (on target) -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-NOSTART: inspection (on target) -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-OMIT: inspection (on target) -> None",
+    "WO-0008A-STM32N6-RCC-LL-rc1b/S1-QM: deterministic gate -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/BASELINE: none -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-EFFECT: inspection (on target) -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-GAPROW: inspection (on target) -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-NOSTART: inspection (on target) -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-OMIT: inspection (on target) -> None",
+    "WO-0008B-STM32N6-RCC-HAL-rc1/S1-QM: deterministic gate -> None",
+    "WO-0008C-ST-RCC-LL-rc1/BASELINE: none -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-EFFECT: inspection (on target) -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-GAPROW: inspection (on target) -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-NOSTART: inspection (on target) -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-OMIT: inspection (on target) -> None",
+    "WO-0008C-ST-RCC-LL-rc1/S1-QM: deterministic gate -> None",
+    "WO-0009A-STM32N6-IWDG-LL-rc1/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/BASELINE: none -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-EFFECT: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-GAPROW: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-NOBUDGET: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-NOSTART: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-OMIT: inspection (on target) -> None",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-QM: deterministic gate -> None"
+   ],
+   "records_compared": 10,
+   "questions": 158,
+   "answer_values_identical": 157,
+   "answers_and_quotes_identical": 138,
+   "evaluations_with_answer_differences": [
+    "WO-0009A-STM32N6-IWDG-LL-rc1/S1-OMIT"
+   ],
+   "summary": {
+    "correct": 13
+   },
+   "gpu": {
+    "samples": 62,
+    "util_mean": 66.8,
+    "mem_peak_mib": 25460.0
+   }
+  },
+  {
+   "run": "ls-p2c",
+   "N": 2,
+   "measured_seconds": 2202,
+   "exit": [
+    "0"
+   ],
+   "evaluations": 49,
+   "outcome_identical": 48,
+   "outcome_differences": [
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/BASELINE: none -> FALSE_REJECTION_BY_INSPECTION"
+   ],
+   "records_compared": 39,
+   "questions": 750,
+   "answer_values_identical": 707,
+   "answers_and_quotes_identical": 580,
+   "evaluations_with_answer_differences": [
+    "WO-0008C-ST-RCC-LL-rc1/S1-GAPROW",
+    "WO-0009A-STM32N6-IWDG-LL-rc1/S1-NOBUDGET",
+    "WO-0009A-STM32N6-IWDG-LL-rc1/S1-OMIT",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/BASELINE",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-EFFECT",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-GAPROW",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-NOSTART",
+    "WO-0009B-STM32N6-IWDG-HAL-rc4/S1-OMIT"
+   ],
+   "summary": {
+    "correct": 48
+   },
+   "gpu": {
+    "samples": 220,
+    "util_mean": 80.4,
+    "mem_peak_mib": 24428.0
+   }
+  }
+ ]
+}
