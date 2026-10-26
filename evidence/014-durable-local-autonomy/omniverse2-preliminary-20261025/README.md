@@ -112,3 +112,11 @@ Independent audit **0 false successes / 0 duplicate effects / 0 authority escape
 report for manifest `ec0dbe75…`: 95 correct, **no failures**, status **INCOMPLETE** (expected 100, observed 95): the five
 `qualified-local-alternative` trials still need their prerequisite, an independently measured authorized local
 alternative. This is one temperature-0 matrix on one model and host, so it stays preliminary and no task is ticked.
+
+### Capability report (producer 455e1dd on the 5dc2df3 campaign)
+
+`qualification capability-report` turned the fourth campaign into the report that `role_capability.record()` consumes
+(`capability-5dc2df3.json`): status **INCOMPLETE** (follows the official report), 96 independent oracle refs (frozen
+reference harness report + 95 bound REFERENCE_HARNESS audits), envelope one obligation, `PROTOCOL_DIAGNOSIS` only.
+`record()` refused it (`CAPABILITY_NOT_INDEPENDENTLY_QUALIFIED`): no diagnosis capability receipt exists, and none
+could admit product, author, inspector or maintenance work.
