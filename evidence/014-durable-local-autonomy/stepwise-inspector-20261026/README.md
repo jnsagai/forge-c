@@ -54,6 +54,40 @@ It is recorded, not used as the inspector measurement.
 - **Later:** freeze a larger, refreshed held-out set from current-factory baselines (recorded seed), including
   Feature 015 drivers.
 
+## Calibration results (registered subset, 3 runs, `285d21e`)
+
+[calibration-runs.json](calibration-runs.json) holds every row with finding codes only (no findings text), the gate
+log lines, the recorded preflight and the sha256 of each raw result. All gates passed before each run (22 test trees
+and 9 registered subset trees UNCHANGED; loop10 unit record 46 passed, 0 skipped). The three runs agree on every
+evaluation (temperature 0, seed 1), so one run's numbers stand for all three:
+
+| Per run, 63 evaluations | Result |
+|---|---|
+| Seeded defects caught on target by the inspector | 40/54 |
+| Seeded defects caught by the deterministic gate | 9/54 (every S1-QM) |
+| Seeded defects flagged off target | 4/54 |
+| Seeded defects missed | 1/54 (b007 S1-NOBUDGET) |
+| Clean baselines falsely rejected | **5/9** (b009, h003, h005, rc1, rc3) |
+| Inspections that recorded nothing | 0 |
+
+Compared with the learning set (learning-14: 42/42 seeded, 7/7 clean), defect detection carries over to unseen
+baselines but clean-baseline acceptance does not: 4 of the 5 IWDG-HAL test baselines are rejected. The truthful
+preflight predicted 2 of the 5 (b009, h005). Classes, read only after all registered runs ended:
+
+- **Parameterised write read as a contradiction** (h003, rc1, rc3): a requirement imposing "write the configured
+  prescaler (encoding) to IWDG_PR.PR" is judged inconsistent with each concrete value (PR = 0/1/2/4) in the register
+  effects. The same findings put h003 S1-OMIT, rc1 S1-NOSTART and rc3 S1-NOBUDGET off target.
+- **Key write reported uncovered** (h005, rc1): the scope behaviour "write IWDG_KR.KEY" is reported as having no
+  requirement.
+- **Recorded upstream gap reported again** (b009): budget placeholders recorded as NOT_PROVIDED are reported as missing
+  budgets.
+- **Verifiability judgement** (h005): "no register write before an initialisation request" is judged not verifiable.
+- **Miss** (b007 S1-NOBUDGET): a deleted budget row is not noticed.
+
+Under the owner's decision "Advisory + calibrate", these are measured rates of the advisory inspector, not a blocker.
+Any change made from these classes must be developed on the learning set (or a new learning sample), and its effect
+can then only be measured on a refreshed held-out set; this subset has now been looked at.
+
 ## Gate defects found while preparing calibration (2026-10-26)
 
 1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script
