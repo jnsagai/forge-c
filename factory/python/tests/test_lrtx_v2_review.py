@@ -686,3 +686,15 @@ def test_a_register_write_states_a_set_or_clear_behaviour(frozen):
     access = {"phrase": "Enable write access to IWDG_PR with the documented key", "action": "set",
               "register_field": "IWDG_PR.*"}
     assert RS.behaviour_claims(access, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": {"SWR-003": swr}}) == []
+
+
+def test_a_read_named_anywhere_in_the_requirement_covers_a_flag_wait(frozen):
+    """Run 9 (2026-10-26): 'HSI ready flag wait' was rejected against SWR-001 'shall set RCC_CR.HSION and return HAL_OK
+    upon observing RCC_SR.HSIRDY equal to 1'."""
+    facts = RS.baseline_facts(frozen)
+    swr = {"statement": "When a valid HSI enable request is received, the RCC driver shall set RCC_CR.HSION and return "
+                        "HAL_OK upon observing RCC_SR.HSIRDY equal to 1 within the caller-supplied timeout.",
+           "verification": ""}
+    wait = {"phrase": "HSI ready flag wait", "action": "read", "register_field": "RCC_SR.HSIRDY"}
+    assert RS.behaviour_claims(wait, {"quote": "", "answer": "SWR-001"}, {**facts, "reqs": {"SWR-001": swr}}) == []
+    assert "return" in RS.imposed_verbs(swr["statement"])

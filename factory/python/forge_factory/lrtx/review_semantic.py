@@ -634,7 +634,15 @@ SHALL = re.compile(r"\bshall\s+(?:not\s+|only\s+|also\s+|then\s+|first\s+)?(\w+)
 
 
 def imposed_verbs(statement: str) -> set[str]:
-    return {v.lower() for m in SHALL.finditer(statement) for v in m.groups() if v}
+    """The verbs after 'shall' plus every 'and'/'then' verb of that clause (run 9: 'shall set RCC_CR.HSION and return
+    HAL_OK upon observing RCC_SR.HSIRDY')."""
+    out = {v.lower() for m in SHALL.finditer(statement) for v in m.groups() if v}
+    for clause in re.findall(r"\bshall\b(.*?)(?=\.(?:\s|$)|;|$)", statement, re.I):  # a field's dot ends no clause
+        out |= {v.lower() for v in re.findall(r"\b(?:and|then)\s+(?:then\s+)?(\w+)", clause, re.I)}
+    return out
+
+
+READ_WORDS = re.compile(r"\b(?:read|quer|return|report|check|observ|poll|wait|leave|keep|preserv|retain)\w*", re.I)
 
 
 def candidates(facts: dict, b: dict) -> list[str]:
@@ -645,8 +653,13 @@ def candidates(facts: dict, b: dict) -> list[str]:
     # run 8: a register write is how a bit is set or cleared ('Enable write access to IWDG_PR' is SWR-003's
     # 'shall write 0x00005555 to IWDG_KR.KEY')
     kind = ACTIONS[b["action"]] + (ACTIONS["write"] if b["action"] in ("set", "clear") else ())
+    def acts(statement: str) -> bool:
+        if b["action"] == "read":  # a read anywhere in the requirement (refuting a read claim can only cost a miss)
+            return bool(READ_WORDS.search(NOUN_PHRASE.sub(" ", statement)))
+        return any(v.startswith(kind) for v in imposed_verbs(statement))
+
     return [x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or re.search(
-        rf"\b{re.escape(bare)}\b", r["statement"])) and any(v.startswith(kind) for v in imposed_verbs(r["statement"]))]
+        rf"\b{re.escape(bare)}\b", r["statement"])) and acts(r["statement"])]
 
 
 def _purposeful(statement: str, b: dict) -> bool:
