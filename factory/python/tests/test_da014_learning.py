@@ -18,7 +18,7 @@ def memory(tmp_path, monkeypatch):
     return LessonStore()
 
 
-def candidate(store, tmp_path, *, outcome="PASS", version=1):
+def candidate(store, tmp_path, *, outcome="PASS", version=1, source_version="v1", constraints=""):
     eid = experience.capture(
         store,
         "native-job-A",
@@ -36,8 +36,8 @@ def candidate(store, tmp_path, *, outcome="PASS", version=1):
         "symptoms": "register field mapping",
         "root_cause": "named field mapping must match the reference",
         "remedy": "Use the validated field mapping. " + "x" * 140 + " EXCLUSION: does not apply to STM32H7.",
-        "constraints": "Only STM32N6 RCC fixture contract version v1, SWE.3 authors.",
-        "applicability": {"phases": ["SWE.3"], "roles": ["swe3-author"], "targets": ["STM32N6"], "source_versions": ["v1"]},
+        "constraints": "Only STM32N6 RCC fixture contract version v1, SWE.3 authors." + constraints,
+        "applicability": {"phases": ["SWE.3"], "roles": ["swe3-author"], "targets": ["STM32N6"], "source_versions": [source_version]},
         "evidence_refs": ["independent-gate:receipt-A"],
         "tool_versions": {"gcc": "14"},
         "validation_tests": [{"id": "applicable-and-adverse", "status": "PASS", "evidence_ref": "fixture:oracle"}],

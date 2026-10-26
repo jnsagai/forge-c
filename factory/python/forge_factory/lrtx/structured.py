@@ -184,14 +184,10 @@ def packet(
         p["accounting"]["fits"] = p["accounting"]["fits"] and measured["input_tokens"] + output_reserve <= CONTEXT_TOKENS
     p["input_hash"] = hashlib.sha256(canonical_json({k: v for k, v in p.items() if k != "accounting"})).hexdigest()
     p["_messages"] = msgs
-    if not p["accounting"]["fits"]:
-        raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{CONTEXT_TOKENS} (repartition)")
-    if exposed and not LessonStore().expose(
-        exposed, manifest.get("work_order", task), data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase}
-    ):
-        # An invalidation during assembly drops the entire lesson block and
-        # recomputes context. No model retry or extra engineering budget is needed.
-        return packet(
+    def without_lessons(reason: str) -> dict:
+        # Lessons are optional context: the whole block is dropped (never a partial lesson) and the context is
+        # recomputed; no model retry or extra engineering budget is needed. The omission is recorded, not silent.
+        q = packet(
             phase=phase,
             task=task,
             role=role,
@@ -208,6 +204,17 @@ def packet(
             sampling=sampling,
             with_lessons=False,
         )
+        q["lessons_omitted"] = {"count": len(exposed), "reason": reason}
+        return q
+
+    if not p["accounting"]["fits"]:
+        if exposed:  # DA-FR-040: an unfit lesson block is omitted explicitly; it never refuses the task itself
+            return without_lessons("CONTEXT_UNFIT")
+        raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{CONTEXT_TOKENS} (repartition)")
+    if exposed and not LessonStore().expose(
+        exposed, manifest.get("work_order", task), data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase}
+    ):
+        return without_lessons("INVALIDATED_DURING_ASSEMBLY")
     return p
 
 

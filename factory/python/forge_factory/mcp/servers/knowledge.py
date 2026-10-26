@@ -64,13 +64,20 @@ def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
             "forge-knowledge",
             input_obj={},
         )
+    from ...afo.diagnosis_packet import measure_request
+
     out = LessonStore().find(a.query, ctx.run_id, a.tool or None, ctx.phase, a.k, role=ctx.role, record_usage=False, **scope)
     import json
 
-    # Deliver complete meaning/constraints/provenance or explicitly omit the whole lesson; never a 120-char remedy.
+    # Deliver complete meaning/constraints or explicitly omit the whole lesson; never a 120-char remedy. The full
+    # provenance block does not fit the 2048-byte tool result beside a lesson, so it is resolved from the stored
+    # artifact (named and hash-bound in every delivered lesson) instead of being cut.
+    ref = ctx.store(json.dumps(out).encode(), "json")
     delivered = {"lessons": [], "note": out["note"]}
     for lesson in out["lessons"]:
-        candidate = {**delivered, "lessons": [*delivered["lessons"], lesson]}
+        compact = {k: lesson[k] for k in ("lesson_id", "validated_at", "symptoms", "root_cause", "remedy", "constraints")}
+        compact["provenance"] = {"ref": ref, "record_sha256": lesson["provenance"]["record_sha256"]}
+        candidate = {**delivered, "lessons": [*delivered["lessons"], compact]}
         if len(json.dumps(candidate).encode()) <= 1100:
             delivered = candidate
     encoded = json.dumps(delivered, sort_keys=True, separators=(",", ":"))
@@ -79,9 +86,10 @@ def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
         ctx,
         "PASS",
         f"{len(delivered['lessons'])} complete validated lessons; {omitted} omitted for envelope",
-        [ctx.store(json.dumps(out).encode(), "json")],
+        [ref],
         [],
-        {"data": encoded, "omitted_unfit": omitted, "tokens_estimated": out["tokens_estimated"]},
+        {"data": encoded, "omitted_unfit": omitted, "tokens_estimated": out["tokens_estimated"],
+         "envelope_bytes": len(encoded.encode()), "envelope_tokens_upper_bound": measure_request(delivered)["input_tokens"]},
         "forge-knowledge",
         input_obj=a.model_dump(),
     )
@@ -96,7 +104,8 @@ def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
             "forge-knowledge",
             input_obj={},
         )
-    if not LessonStore().expose(delivered["lessons"], ctx.run_id):
+    if not LessonStore().expose([x for x in out["lessons"] if x["lesson_id"] in {d["lesson_id"] for d in delivered["lessons"]}],
+                                ctx.run_id):
         return result(
             ctx,
             "PASS",
