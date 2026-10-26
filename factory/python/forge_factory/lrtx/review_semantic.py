@@ -216,7 +216,7 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
 
 
 RECORDED_UPSTREAM = re.compile(r"\bNOT_PROVIDED\b|\bDRAFT_TEMPLATE\b|upstream (?:status|inputs?) (?:is|are) (?:not provided|"
-                               r"missing|absent)", re.I)
+                               r"missing|absent)|\bPENDING\b", re.I)  # run 10: 0008B's recorded PENDING safety allocation
 
 
 def _quoted_open_point(detail: str, open_points: str) -> str | None:
@@ -511,6 +511,12 @@ def step_questions(ws: Path, facts: dict) -> list[dict]:
                            f"requirement states this {b['resource']} bound? answer is its SWR id, or NONE when no "
                            f"requirement states the {b['resource']} bound; quote its words. A requirement about "
                            "another resource does not count."})
+    for f in startup_fields(facts):
+        qs.append({"id": "startup-" + f.lower().replace(".", "-").replace("_", "-"), "item": "SWE1-03", "field": f,
+                   "source": req, "answers": swrs + ["NONE"],
+                   "text": f"Which requirement states the state of {f} after reset, before the driver is first called? "
+                           "answer its SWR id, or NONE when no requirement states the after-reset state of this field; "
+                           "quote its words."})
     for e in effect_entries(ws, facts):
         qs.append({"id": "effect-" + e["entry"].lower(), "item": "SWE1-02", "row": e, "source": None,
                    "answers": ["set", "clear", "set_then_clear", "write", "not_stated"], "value": True,
@@ -520,6 +526,31 @@ def step_questions(ws: Path, facts: dict) -> list[dict]:
                            "value as the requirement gives it, else \"\"), or not_stated when it does not state this "
                            "field; quote the words that decide."})
     return qs
+
+
+FIELD_TOKEN = re.compile(r"\b([A-Z][A-Z0-9]*_[A-Z0-9_]+)\.([A-Z][A-Z0-9_]*)\b")
+
+
+def startup_requirements(facts: dict) -> dict:
+    return {x: r["statement"] for x, r in facts["reqs"].items() if re.search(r"\bafter reset\b", r["statement"], re.I)}
+
+
+def startup_fields(facts: dict) -> list[str]:
+    """Run 10 (2026-10-26, 0008B): startup requirements per field (HSION, HSEON); removing one left the other answering
+    the general startup question. Only when startup requirements name fields: then every field of those registers
+    that a requirement drives (an imposed set/clear/write) is asked. A register-wide startup requirement ('shall not
+    write any IWDG register') makes no per-field question."""
+    named = {f"{a}.{b}" for st in startup_requirements(facts).values() for a, b in FIELD_TOKEN.findall(st)}
+    regs = {f.split(".")[0] for f in named}
+    driven = set()
+    for r in facts["reqs"].values():
+        if any(v.startswith(ACTIONS["set"] + ACTIONS["clear"] + ACTIONS["write"]) for v in imposed_verbs(r["statement"])):
+            driven |= {f"{a}.{b}" for a, b in FIELD_TOKEN.findall(r["statement"]) if a in regs}
+    return sorted(named | driven) if named else []
+
+
+def startup_hit(facts: dict, field: str) -> str | None:
+    return next((x for x, st in sorted(startup_requirements(facts).items()) if field in st), None)
 
 
 def step_packet(ws: Path, bl: dict, srcs: list[dict], q: dict, model: str, sampling, findings=None,
@@ -543,6 +574,19 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
                    "no requirement states the behaviour after reset (startup state): " + quote,
                    "add a requirement stating the register state after reset")
         return adjudicate(ws, "SWE1-03", [c], facts)
+    if q["id"].startswith("startup-"):
+        f = q["field"]
+        if a != "NONE" and f in startup_requirements(facts).get(a, ""):
+            return []
+        c = _claim("reset_startup_missing", "document",
+                   f"no requirement states the after-reset state of {f}"
+                   + (f" ({a} does not)" if a != "NONE" else "") + (f": {quote}" if quote else ""),
+                   f"add a requirement stating the after-reset state of {f}")
+        c["identity"] = identity("SWE1-03", {**c, "target_id": f"startup:{f}"})
+        hit = startup_hit(facts, f)
+        c["decision"], c["evidence"] = ("REFUTED", f"{hit} states the after-reset state of {f}") if hit else \
+            ("STANDS", f"no startup requirement names {f}")
+        return [c]
     if q["id"].startswith("input-"):
         if a == input_label(q["answers"], q["input"]):
             return []

@@ -711,3 +711,29 @@ def test_an_objection_to_the_recorded_upstream_status_is_refuted(frozen):
     assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-04", [claim], unrecorded)] == ["STANDS"]
     other = _c("other", "document", "SWR-004 and SWR-005 contradict each other on the enable order.")
     assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-02", [other], facts)] == ["STANDS"]
+
+
+def test_a_startup_requirement_per_field_is_asked_when_startup_is_stated_per_field(frozen):
+    """Run 10 (2026-10-26): 0008B states the after-reset state of RCC_CR.HSION and RCC_CR.HSEON in two requirements;
+    with the HSEON one removed, the general startup question was answered by the HSION one."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-001": {"statement": "When a valid HSE enable request is received, the RCC driver shall set "
+                                     "RCC_CR.HSEON and return HAL_OK.", "verification": ""},
+            "SWR-002": {"statement": "When a valid HSI enable request is received, the RCC driver shall set "
+                                     "RCC_CR.HSION and return HAL_OK.", "verification": ""},
+            "SWR-011": {"statement": "While no oscillator enable or disable has been requested after reset, the RCC "
+                                     "driver shall leave RCC_CR.HSION at its reset value 1.", "verification": ""}}
+    seeded = {**facts, "reqs": reqs}
+    assert RS.startup_fields(seeded) == ["RCC_CR.HSEON", "RCC_CR.HSION"]
+    q = {"id": "startup-rcc-cr-hseon", "item": "SWE1-03", "field": "RCC_CR.HSEON"}
+    got = RS.step_claims(frozen, q, {"quote": "", "answer": "SWR-011"}, seeded)
+    assert [c["decision"] for c in got] == ["STANDS"] and "reset_startup_missing" in RS.render_claim(got[0])
+    clean = {**seeded, "reqs": {**reqs, "SWR-010": {"statement": "While no oscillator enable or disable has been "
+                                                 "requested after reset, the RCC driver shall leave RCC_CR.HSEON at its "
+                                                 "reset value 0.", "verification": ""}}}
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": "SWR-010"}, clean) == []
+    assert [c["decision"] for c in RS.step_claims(frozen, q, {"quote": "", "answer": "NONE"}, clean)] == ["REFUTED"]
+    # a register-wide startup requirement (IWDG: 'shall not write any IWDG register') asks no per-field question
+    assert RS.startup_fields({**facts, "reqs": {"SWR-013": {"statement": "While no LL function has been called after "
+                                                "reset, the IWDG LL driver shall not write any IWDG register.",
+                                                "verification": ""}}}) == []

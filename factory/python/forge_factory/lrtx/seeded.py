@@ -327,6 +327,8 @@ def _truth(ws: Path, p: dict) -> dict:
         q = next(x for x in RS.step_questions(ws, facts) if "step-" + x["id"] == item)
         if q["id"] == "startup":
             return {"quote": "", "answer": facts["startup"][0] if facts["startup"] else "NONE"}
+        if q["id"].startswith("startup-"):
+            return {"quote": "", "answer": RS.startup_hit(facts, q["field"]) or "NONE"}
         if q["id"].startswith("input-"):
             return {"quote": "", "answer": RS.input_label(q["answers"], q["input"]) or "NONE"}
         if q["id"].startswith("budget-"):
