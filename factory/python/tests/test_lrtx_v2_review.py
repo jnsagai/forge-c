@@ -820,8 +820,14 @@ def test_non_register_behaviours_are_not_asked_and_a_synonym_citation_gets_one_c
             "SWR-008": {"statement": "When HAL_IWDG_Refresh is requested, the IWDG driver shall write 0xAAAA to "
                                      "IWDG_KR.KEY to refresh the counter.", "verification": ""}}
     b = {"phrase": "register access key", "action": "write", "register_field": "IWDG_KR.KEY", "value": ""}
-    doc = {"quote": "write 0x5555", "answer": "SWR-001"}
-    got = RS.behaviour_claims(b, doc, {**facts, "reqs": reqs})
-    assert [c["decision"] for c in got] == ["STANDS"] and RS.cited_but_undecided({**facts, "reqs": reqs}, b, doc)
-    q = RS.cite_check("behaviour-1-1", b, "SWR-001", {**facts, "reqs": reqs})
-    assert q["answers"] == ["TRUE", "FALSE"] and "0x5555" in q["text"]
+    # run 12: the cited sequence requirement (three keys) covers it; a closed self-check withdrew a true detection
+    assert RS.behaviour_claims(b, {"quote": "write 0x5555", "answer": "SWR-001"}, {**facts, "reqs": reqs}) == []
+    # the IWDG-LL S1-OMIT shape stays detected: the start key cited to the single-write refresh requirement
+    start = {"phrase": "start the watchdog by writing documented key to IWDG_KR", "action": "write",
+             "register_field": "IWDG_KR.KEY", "value": ""}
+    ll = {"SWR-002": {"statement": "When the refresh function is called, the IWDG LL driver shall write 0x0000AAAA to "
+                                   "IWDG_KR.KEY.", "verification": ""},
+          "SWR-003": {"statement": "When the write-access enable function is called, the IWDG LL driver shall write "
+                                   "0x00005555 to IWDG_KR.KEY.", "verification": ""}}
+    got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-002"}, {**facts, "reqs": ll})
+    assert [c["decision"] for c in got] == ["STANDS"]

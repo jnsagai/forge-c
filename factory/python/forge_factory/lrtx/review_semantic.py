@@ -701,7 +701,16 @@ def _decides(facts: dict, cands: list[str], x: str, b: dict) -> bool:
     value, st = _documented_value(b), facts["reqs"][x]["statement"]
     if value:  # stated literally, inside a stated range, or supplied by a parameterised write (any value)
         return value <= _numbers(st) or in_stated_range(st, b.get("value") or "") or bool(PARAMETER.search(st))
-    return len(cands) == 1 or _purposeful(facts["reqs"][x]["statement"], b)
+    return len(cands) == 1 or _purposeful(st, b) or _sequence(st, b)
+
+
+def _sequence(statement: str, b: dict) -> bool:
+    """Run 12 (IWDG-HAL rc4): SWR-001 writes 0xCCCC, then 0x5555, then 0xAAAA to IWDG_KR.KEY; purpose words cannot be
+    judged against such a sequence ('register access key' is its 'enable configuration writes' step), so a requirement
+    writing several distinct literal values covers each keyed write on the field. A single-write requirement (the
+    IWDG-LL refresh key) still needs a purpose word, so an omitted start-key requirement stays detected. (A closed
+    self-check of the citation was tried and withdrew that true S1-OMIT detection; it was removed.)"""
+    return b["action"] == "write" and len({int(v, 16) for v in re.findall(r"\b0x[0-9A-Fa-f]+\b", statement)}) >= 2
 
 
 # run 6 (2026-10-26): "clear the selected oscillator enable bit" names an action noun, not the action
@@ -774,19 +783,6 @@ def relevant(b: dict) -> bool:
     names = [t for t in parts[1:] if len(t) >= 2]  # without the peripheral prefix (RCC, IWDG)
     words = re.findall(r"[a-z][a-z0-9]+", b["phrase"].lower())
     return any(w.startswith(n) or n.startswith(w) for w in words if len(w) >= 2 for n in names)
-
-
-def cited_but_undecided(facts: dict, b: dict, doc: dict) -> bool:
-    """The cited requirement drives the field with the behaviour's kind; only its purpose words or value failed."""
-    return doc["answer"] in candidates(facts, b)
-
-
-def cite_check(qid: str, b: dict, cited: str, facts: dict) -> dict:
-    return {"id": f"cite-{qid}", "item": "SWE1-05", "source": None, "answers": ["TRUE", "FALSE"],
-            "text": f"Requirement {cited} reads: \"{facts['reqs'][cited]['statement']}\" Does it state this behaviour "
-                    f"required by the work-order scope: '{b['phrase']}' ({b['action']} {b['register_field']})? answer "
-                    "TRUE when the requirement states this behaviour, possibly in other words; FALSE when it states a "
-                    "different behaviour on the same field. Quote the decisive words."}
 
 
 def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
@@ -964,18 +960,7 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                 if qrec["status"] != "VALID":
                     issues += [f"step-{q['id']}: {e}" for e in qrec["errors"][:3]]
                     continue
-                claims = behaviour_claims(b, qrec["doc"], facts)
-                if claims and claims[0]["decision"] == "STANDS" and cited_but_undecided(facts, b, qrec["doc"]):
-                    # purpose words fail on synonyms ('register access key' = 'enable configuration writes'): one
-                    # closed check of the cited text decides; FALSE (a different behaviour on that field) keeps it
-                    cq = cite_check(q["id"], b, qrec["doc"]["answer"], facts)
-                    crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{cq['id']}",
-                                      lambda fi, pr, cq=cq: step_packet(ws, bl, srcs, cq, model, smp, fi, pr),
-                                      lambda d: [], budget)
-                    if crec["status"] == "VALID" and crec["doc"]["answer"] == "TRUE":
-                        claims = [{**claims[0], "decision": "WITHDRAWN", "evidence": f"closed check: "
-                                   f"{qrec['doc']['answer']} states it: {crec['doc']['quote'][:160]}"}]
-                got += claims
+                got += behaviour_claims(b, qrec["doc"], facts)
                 answers.append({"question": q["id"], "answer": qrec["doc"]})
             cov_claims += got
             cov_record.append({"scope": sc, "behaviours": brec["doc"]["behaviours"], "answers": answers, "claims": got})
