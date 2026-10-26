@@ -6,6 +6,7 @@ The unchanged Feature 005 validator remains an additional independent barrier.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from ..inspection.engine import PHASE_PATHS
@@ -110,7 +111,7 @@ def _evidence_items(aliases):
     return {"type": "array", "items": {"enum": sorted(aliases)}, "minItems": 1, "maxItems": 16, "uniqueItems": True}
 
 
-def conflict_schema(aliases, *, complete=True) -> dict:
+def conflict_schema(aliases, *, complete=True, obligations=None) -> dict:
     """Question 1: is there a requirement conflict? Rationale precedes the verdict in generation order.
 
     The contract admits only NEEDS_EVIDENCE for an incomplete packet, so then only UNKNOWN is offered and the
@@ -125,7 +126,10 @@ def conflict_schema(aliases, *, complete=True) -> dict:
         properties = {**base, "conflict": {"const": verdict}}
         required = ["rationale", "evidence_refs", "conflict"]
         if verdict == "UNKNOWN":
-            properties["missing_evidence"] = contract["missing_evidence"]
+            missing = json.loads(json.dumps(contract["missing_evidence"]))
+            if obligations:
+                missing["items"]["properties"]["obligation_ref"] = {"enum": sorted(obligations)}
+            properties["missing_evidence"] = missing
             required.append("missing_evidence")
         branches.append({"type": "object", "properties": properties, "required": required, "additionalProperties": False})
     return {"anyOf": branches}
@@ -145,26 +149,41 @@ def technique_choice_schema(packet) -> dict:
     }
 
 
-def repair_schema(obligations, tests=None, *, phase=None, paths=None) -> dict:
-    """Question 3 (after a catalogued technique was chosen): flat repair fields, bounds inside the contract's.
-
-    Test references are enums of the case's declared independent tests. owner_phase is always asked and kept
-    by assembly only with RETURN_TO_OWNING_UPSTREAM_PHASE (the contract forbids it otherwise); a model switch
-    is not offered here because no authorized alternative catalogue is part of this question.
-    The case phase fixes affected_phase, an upstream owner can only be that phase or an earlier one, and the
-    scope is limited to the case's artifact paths; the broker still checks owner/scope consistency.
-    """
+def strategy_schema(phase) -> dict:
+    """Question 3: strategy and owning phase only (small, flat). owner_phase is kept only for an upstream return."""
     from .durable import schema
 
     contract = schema("semantic-proposal")["properties"]
-    text = {"type": "string", "minLength": 1, "maxLength": 300}
     phases = contract["affected_phase"]["enum"]
     return {
         "type": "object",
         "properties": {
             "strategy": {"enum": [s for s in contract["strategy"]["enum"] if s != "SWITCH_PREAPPROVED_MODEL_PROFILE"]},
+            "owner_phase": {"enum": phases[: phases.index(phase) + 1]},
+        },
+        "required": ["strategy", "owner_phase"],
+        "additionalProperties": False,
+    }
+
+
+def responsible_phase(plan, phase):
+    return plan["owner_phase"] if plan["strategy"] == "RETURN_TO_OWNING_UPSTREAM_PHASE" else phase
+
+
+def repair_schema(obligations, tests=None, *, phase=None, paths=None) -> dict:
+    """Question 4: repair fields for the chosen strategy, bounds inside the contract's.
+
+    affected_phase is the case phase; artifact_scope is limited to the given paths (the caller passes the case
+    artifacts of the phase the strategy makes responsible); test references are the case's declared tests.
+    """
+    from .durable import schema
+
+    contract = schema("semantic-proposal")["properties"]
+    text = {"type": "string", "minLength": 1, "maxLength": 300}
+    return {
+        "type": "object",
+        "properties": {
             "affected_phase": {"enum": [phase]} if phase else contract["affected_phase"],
-            "owner_phase": {"enum": phases[: phases.index(phase) + 1]} if phase else contract["owner_phase"],
             "target_obligations": {"type": "array", "items": {"enum": sorted(obligations)}, "minItems": 1, "maxItems": 4},
             "artifact_scope": {
                 "type": "array",
@@ -192,14 +211,14 @@ def repair_schema(obligations, tests=None, *, phase=None, paths=None) -> dict:
             },
         },
         "required": [
-            "strategy", "affected_phase", "owner_phase", "target_obligations", "artifact_scope", "proposed_change",
-            "material_difference", "validation_expectations",
+            "affected_phase", "target_obligations", "artifact_scope", "proposed_change", "material_difference",
+            "validation_expectations",
         ],
         "additionalProperties": False,
     }
 
 
-def assemble(first: dict, choice: dict | None = None, repair: dict | None = None) -> dict:
+def assemble(first: dict, choice: dict | None = None, repair: dict | None = None, plan: dict | None = None) -> dict:
     """Deterministic semantic proposal from the answers; the broker still validates it against the contract."""
     refs = first["evidence_refs"]
     if first["conflict"] == "UNKNOWN":
@@ -218,7 +237,7 @@ def assemble(first: dict, choice: dict | None = None, repair: dict | None = None
             "blocking_reason": "NO_ALLOWED_MATERIAL_STRATEGY",
             "explanation": (choice or {}).get("reason") or first["rationale"],
         }
-    fields = dict(repair)
+    fields = {**(plan or {}), **repair}
     if fields.get("strategy") != "RETURN_TO_OWNING_UPSTREAM_PHASE":
         fields.pop("owner_phase", None)  # the contract allows owner_phase only with that strategy
     return {

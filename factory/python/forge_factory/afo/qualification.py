@@ -214,10 +214,10 @@ def validate(manifest):
 
 
 def requests_per_job(identity):
-    """The signed task class fixes how many provider requests one protocol job may make (stepwise diagnosis: 3)."""
+    """The signed task class fixes how many provider requests one protocol job may make (stepwise diagnosis: 4)."""
     from .semantic_proposal import TWO_STEP
 
-    return 3 if identity.get("task_class") == TWO_STEP else 1
+    return 4 if identity.get("task_class") == TWO_STEP else 1
 
 
 def initial_reservation(manifest, job, eff, *, store=None):

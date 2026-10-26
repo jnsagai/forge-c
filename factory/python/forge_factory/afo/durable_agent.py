@@ -358,7 +358,13 @@ def _finish(job, body, extra):
 def _two_step_material(job, packet, doc, aliases, step, prior):
     """Two small constrained questions (signed task class); deterministic code assembles the proposal."""
     from ..lrtx.structured import skill
-    from .semantic_proposal import conflict_schema, repair_schema, technique_choice_schema
+    from .semantic_proposal import (
+        conflict_schema,
+        repair_schema,
+        responsible_phase,
+        strategy_schema,
+        technique_choice_schema,
+    )
 
     common = (
         "TWO-STEP DIAGNOSIS: no tools are available; the user message contains all case evidence available to you "
@@ -375,14 +381,17 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
             "artifacts satisfy it, conflict=UNKNOWN only when a decisive fact is absent from this message "
             "(packet.missing lists known absences). Whether and how to repair is decided in the next questions, not here."
         )
-        schema_name, wire, cap = "diagnosis_conflict", conflict_schema(set(aliases.values()), complete=packet["complete"]), 2048
-    elif step in (2, 3):
+        wire = conflict_schema(set(aliases.values()), complete=packet["complete"], obligations=packet["obligations"])
+        schema_name, cap = "diagnosis_conflict", 2048
+    elif step in (2, 3, 4):
         answers = prior if isinstance(prior, dict) else {}
         first = answers.get("question_1_answer") or {}
         if first.get("conflict") != "YES":
             raise Refused("TWO_STEP_SECOND_QUESTION_REQUIRES_ESTABLISHED_CONFLICT")
-        if step == 3 and (answers.get("question_2_answer") or {}).get("technique_id") in (None, "NONE"):
+        if step >= 3 and (answers.get("question_2_answer") or {}).get("technique_id") in (None, "NONE"):
             raise Refused("TWO_STEP_REPAIR_REQUIRES_CATALOGUED_TECHNIQUE")
+        if step == 4 and not answers.get("question_3_answer"):
+            raise Refused("TWO_STEP_REPAIR_REQUIRES_STRATEGY")
         view = doc["packet"]
         # Compact context: the established conflict replaces the full source texts, so three requests fit one job.
         doc = {
@@ -395,25 +404,33 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
         }
         if step == 2:
             instructions = common + (
-                "QUESTION 2 OF 3: question_1_answer established that an artifact conflicts with the authoritative "
+                "QUESTION 2 OF 4: question_1_answer established that an artifact conflicts with the authoritative "
                 "requirement. First write the reason, then choose technique_id: the key of techniques whose "
                 "description fits the repair of this conflict, or NONE only when none of the descriptions fits."
             )
             schema_name, wire, cap = "diagnosis_technique_choice", technique_choice_schema(packet), 512
-        else:
+        elif step == 3:
             instructions = common + (
-                "QUESTION 3 OF 3: the conflict is established (question_1_answer) and the technique is chosen "
-                "(question_2_answer). Describe that repair: strategy, affected_phase, target_obligations (keys of "
-                "obligations), artifact_scope (artifact paths to change), proposed_change, material_difference and "
-                "validation_expectations (test_ref from tests with its expected_result); owner_phase names the phase "
-                "that owns the defect (used only with RETURN_TO_OWNING_UPSTREAM_PHASE)."
+                "QUESTION 3 OF 4: the conflict is established and the technique chosen. Choose the strategy: "
+                "REWORK_LOCAL when the defect is in this phase's own artifact, RETURN_TO_OWNING_UPSTREAM_PHASE when an "
+                "earlier phase's artifact owns the defect (owner_phase names that phase), "
+                "RESTART_FROM_LAST_VALID_CHECKPOINT only to restart from a valid checkpoint."
             )
-            wire = repair_schema(
-                packet["obligations"],
-                packet.get("tests"),
-                phase=packet["binding"]["phase"],
-                paths=[a["path"] for a in packet["artifacts"]],
+            schema_name, wire, cap = "diagnosis_strategy", strategy_schema(packet["binding"]["phase"]), 256
+        else:
+            from ..inspection.engine import PHASE_PATHS
+
+            plan = answers["question_3_answer"]
+            owner = responsible_phase(plan, packet["binding"]["phase"])
+            roots = PHASE_PATHS.get(owner, [])
+            paths = [a["path"] for a in packet["artifacts"] if any(a["path"].startswith(x.rstrip("/") + "/") for x in roots)]
+            instructions = common + (
+                "QUESTION 4 OF 4: conflict, technique and strategy are decided (question_1..3_answer). Describe the "
+                "repair: target_obligations (keys of obligations), artifact_scope (the artifacts of the responsible "
+                "phase to change), proposed_change, material_difference and validation_expectations (test_ref from "
+                "tests with its expected_result)."
             )
+            wire = repair_schema(packet["obligations"], packet.get("tests"), phase=packet["binding"]["phase"], paths=paths)
             schema_name, cap = "diagnosis_repair", 1024
     else:
         raise Refused("TWO_STEP_QUESTION_UNKNOWN")
@@ -498,7 +515,8 @@ def generate(store, job, eff):
 
 
 def two_step_answer(store, job, send):
-    """Question 1; question 2 only for an established conflict; question 3 only for a catalogued technique.
+    """Question 1; question 2 only for an established conflict; questions 3 (strategy) and 4 (repair) only for a
+    catalogued technique.
 
     An answer outside its question grammar goes to the broker unchanged (rejected with value-free diagnostics).
     """
@@ -538,7 +556,7 @@ def two_step_answer(store, job, send):
     first = parse(first_text, body["response_format"]["json_schema"]["schema"])
     if first is None:
         return first_text  # rejected by the broker with value-free diagnostics
-    choice = repair = None
+    choice = repair = plan = None
     if first["conflict"] == "YES":
         answers = {"question_1_answer": first}
         body, measured = request_body(store, job, step=2, prior=answers)
@@ -549,8 +567,14 @@ def two_step_answer(store, job, send):
         if choice["technique_id"] != "NONE":
             answers["question_2_answer"] = choice
             body, measured = request_body(store, job, step=3, prior=answers)
-            repair_text = content(send(body, measured, 2))
+            plan_text = content(send(body, measured, 2))
+            plan = parse(plan_text, body["response_format"]["json_schema"]["schema"])
+            if plan is None:
+                return plan_text
+            answers["question_3_answer"] = plan
+            body, measured = request_body(store, job, step=4, prior=answers)
+            repair_text = content(send(body, measured, 3))
             repair = parse(repair_text, body["response_format"]["json_schema"]["schema"])
             if repair is None:
                 return repair_text
-    return canonical(assemble(first, choice, repair)).decode()
+    return canonical(assemble(first, choice, repair, plan if repair is not None else None)).decode()

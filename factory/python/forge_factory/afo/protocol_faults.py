@@ -234,6 +234,8 @@ def apply_response(store, job, raw, eff):
                 raise Refused("QUALIFICATION_MODEL_SWITCH_FAULT_REQUIRES_REPAIR_PROPOSAL")
             value["strategy"] = "SWITCH_PREAPPROVED_MODEL_PROFILE"
             value["model_profile"] = "qualification-unqualified-model"
+            # A switch carries no upstream owner (contract); otherwise the contract, not the alternative check, refuses.
+            value.pop("owner_phase", None)
         changed = canonical(value).decode()
     evidence = {
         "schema": "forge-c/protocol-fault-observation/1",
