@@ -83,3 +83,33 @@ def test_the_paired_swe1_mutations_seed_one_named_defect_each(tmp_path):
     (ws / "workproducts/SWE.1/software_requirements.md").write_text("# Software requirements\n")
     with pytest.raises(ValueError, match="NO_MUTATION_SITE:omit_startup"):
         SD.omit_startup(ws)
+
+
+def test_preflight_passes_clean_baselines_with_truthful_answers_and_no_model_call(tmp_path, monkeypatch):
+    """F014 (owner 2026-10-26): before any inference the run script inspects every clean baseline with scripted
+    truthful answers; every question's schema must accept its true answer and the adjudication must pass."""
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    monkeypatch.setattr(S, "call", lambda *a, **k: pytest.fail("the preflight made a model call"))
+    pf = seeded.preflight([HOLDOUT], "qwen3.6:35b-a3b", tmp_path, "semantic")
+    assert pf["status"] == "PASS" and pf["model_calls"] == 0, pf
+    assert S.call is not seeded._truthful_call  # the real client is restored
+
+
+def test_preflight_fails_on_a_harness_defect_and_the_run_stops_at_the_no_inspection_limit(tmp_path, monkeypatch):
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    real = RS.step_questions
+    # a defect a scripted answer exposes: a question whose closed answers exclude the true one
+    monkeypatch.setattr(RS, "step_questions", lambda ws, f: [{**q, "answers": ["NONE"]} if q["id"] == "startup" else q
+                                                             for q in real(ws, f)])
+    pf = seeded.preflight([HOLDOUT], "qwen3.6:35b-a3b", tmp_path / "pf", "semantic")
+    assert pf["status"] == "FAIL" and pf["rows"][0]["detected_by"] != "none", pf
+    monkeypatch.setattr(RS, "step_questions", real)
+    monkeypatch.setattr(S, "call", lambda p, **_k: {"doc": None, "errors": ["NOT_JSON"], "usage": None, "wall_ms": 1.0,
+                                                     "finish_reason": "stop"})
+    s = seeded.run([HOLDOUT], "m", tmp_path / "report.json", cases=["S3-INVERT", "S4-VACUOUS"], inspector="semantic",
+                   max_no_inspection=1)
+    assert s["aborted"].startswith("NO_INSPECTION_LIMIT") and len(s["rows"]) == 2

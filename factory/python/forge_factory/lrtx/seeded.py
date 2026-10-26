@@ -284,7 +284,10 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     return rec
 
 
-def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None, inspector: str = "structured") -> dict:
+def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = None, inspector: str = "structured",
+        max_no_inspection: int | None = None) -> dict:
+    """max_no_inspection: stop early (summary `aborted`) once more inspections record nothing; repeated invalid answers
+    point at the harness, and a run should not spend hours of inference measuring that."""
     rows = []
     with tempfile.TemporaryDirectory(prefix="lrtx-seeded-", dir=out.parent) as td:
         for h in holdouts:
@@ -294,8 +297,80 @@ def run(holdouts: list[Path], model: str, out: Path, cases: list[str] | None = N
                 except ValueError as exc:  # a holdout without a site for this defect class
                     r = {"case": case["id"] if case else "BASELINE", "detected_by": f"NOT_APPLICABLE ({exc})"}
                 rows.append({"holdout": h.parent.name, **r})
-                out.write_text(pretty_json(_summary(rows, model)))
+                summary = _summary(rows, model)
+                if max_no_inspection is not None and summary["no_inspection"] > max_no_inspection:
+                    summary["aborted"] = f"NO_INSPECTION_LIMIT: {summary['no_inspection']} > {max_no_inspection}"
+                    out.write_text(pretty_json(summary))
+                    return summary
+                out.write_text(pretty_json(summary))
     return _summary(rows, model)
+
+
+# F014 (owner 2026-10-26: "place in the run script a deterministic check that, in the fail, returns an error"): before
+# any inference, every holdout's clean baseline is inspected with scripted truthful answers. Each question's schema must
+# accept its true answer and the adjudication must pass the baseline; otherwise the run is a harness defect.
+PREFLIGHT: dict = {"ws": None}
+
+
+def _truth(ws: Path, p: dict) -> dict:
+    """The true answer to one inspector question on a clean baseline, read from its frozen work products."""
+    from . import review_semantic as RS
+
+    item = p["task"].split(":")[-1]
+    schema = p["output_schema"]
+    if item.startswith("step-"):
+        facts = RS.baseline_facts(ws)
+        q = next(x for x in RS.step_questions(ws, facts) if "step-" + x["id"] == item)
+        if q["id"] == "startup":
+            return {"quote": "", "answer": facts["startup"][0] if facts["startup"] else "NONE"}
+        if q["id"].startswith("input-"):
+            return {"quote": "", "answer": q["input"] if q["input"] in q["answers"] else "NONE"}
+        if q["id"].startswith("budget-"):
+            b = q["row"]
+            hit = next((x for x, r in sorted(facts["reqs"].items()) if re.search(rf"\b{b['resource']}\b", r["statement"],
+                        re.I) and b["bytes"] in RS._numbers(r["statement"])), "NONE")
+            return {"quote": "", "answer": hit}
+        e = q["row"]
+        return {"quote": "", "answer": e["op"], "value": str(e["value"]) if e["op"] == "write" else ""}
+    if item == "coverage":
+        return {"behaviours": []}
+    if item in ("effects", "budgets"):
+        row = schema["properties"]["entries"]["items"]["properties"]
+        return {"entries": [{"entry": i, "reason": "stated by the requirement",
+                             **({"agrees": True} if item == "effects" else
+                                {"covered_by": row["covered_by"]["items"]["enum"][:1]})}
+                            for i in row["entry"]["enum"]]}
+    offered = schema["properties"]["evidence_checked"]["items"].get("enum") or [x["path"] for x in p["sources"]]
+    return {"verdict": "PASS", "claims": [], "evidence_checked": offered[:1]}
+
+
+def _truthful_call(p: dict, **_k) -> dict:
+    from . import structured as S
+
+    doc = _truth(PREFLIGHT["ws"], p)
+    return {"doc": doc, "errors": S.validate(doc, p["output_schema"]), "usage": {"prompt_tokens": 0,
+            "completion_tokens": 0}, "wall_ms": 0.0, "finish_reason": "stop"}
+
+
+def preflight(holdouts: list[Path], model: str, scratch: Path, inspector: str) -> dict:
+    """Zero model calls: each clean baseline must pass through the unchanged gate and the inspection's adjudication."""
+    from . import structured as S
+
+    rows, real = [], S.call
+    S.call = _truthful_call
+    try:
+        for h in holdouts:
+            PREFLIGHT["ws"] = scratch / h.parent.name / "BASELINE" / "workspace"
+            try:
+                r = evaluate(h, None, model, scratch / h.parent.name, inspector)
+            except Exception as exc:  # noqa: BLE001 - any crash is the harness defect this check exists to find
+                r = {"detected_by": f"HARNESS_ERROR ({type(exc).__name__}: {str(exc)[:200]})"}
+            rows.append({"holdout": h.parent.name, "detected_by": r["detected_by"],
+                         "issues": (r.get("inspection") or {}).get("issues") or (r.get("inspection") or {}).get("findings")})
+    finally:
+        S.call, PREFLIGHT["ws"] = real, None
+    return {"status": "PASS" if all(r["detected_by"] == "none" for r in rows) else "FAIL", "model_calls": 0,
+            "rows": rows}
 
 
 def _summary(rows: list[dict], model: str) -> dict:
@@ -365,6 +440,17 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="F014: one closed temperature-0 question per baseline fact (default: structured.inspector_stepwise)",
     )
+    ap.add_argument(
+        "--preflight",
+        action="store_true",
+        help="F014: inspect every clean baseline with scripted truthful answers first (no model call); exit 2 on failure",
+    )
+    ap.add_argument(
+        "--max-no-inspection",
+        type=int,
+        default=None,
+        help="F014: stop (exit 3) once more than this many inspections record nothing",
+    )
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     if a.inspector == "semantic":
@@ -389,9 +475,17 @@ def main(argv: list[str] | None = None) -> int:
                 for x in IL.load(a.lessons)
             ],
         }
-    s = run([h.resolve() for h in a.holdout], a.model, a.out, a.case, a.inspector)
+    holdouts = [h.resolve() for h in a.holdout]
+    if a.preflight:
+        with tempfile.TemporaryDirectory(prefix="lrtx-preflight-", dir=a.out.parent) as td:
+            pf = preflight(holdouts, a.model, Path(td), a.inspector)
+        (a.out.parent / (a.out.stem + "-preflight.json")).write_text(pretty_json(pf))
+        print(json.dumps({"preflight": pf["status"], "failed": [r for r in pf["rows"] if r["detected_by"] != "none"]}))
+        if pf["status"] != "PASS":
+            return 2
+    s = run(holdouts, a.model, a.out, a.case, a.inspector, a.max_no_inspection)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}))
-    return 0
+    return 3 if s.get("aborted") else 0
 
 
 if __name__ == "__main__":
