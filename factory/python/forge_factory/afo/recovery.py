@@ -16,6 +16,9 @@ Order of authority for a blocked attempt (a FailureBundle):
      phase, planner calls, wall time) left; and a plan fingerprint never used before on this order (anti-loop - a
      plan that only reworded or reseeded the same thing has the same fingerprint and is refused).
 Plans are recorded (afo_recovery_plans) with the decision; execution always opens a NEW attempt (checkpoints).
+A DEFER_TRANSIENT_DEPENDENCY retry is numbered (its own fingerprint), bounded by budgets.max_retries_per_transient_
+operation and launched only after TRANSIENT_BACKOFF_SECONDS x its number; it is not a strategy variant (F015: Codex
+refused every turn 2026-10-25 23:03 to at least 03:42; the orders were dead-lettered instead of retried).
 """
 from __future__ import annotations
 
@@ -44,6 +47,7 @@ DENY = re.compile(r"(?i)\b(disable|skip|bypass|weaken|relax|lower|raise)\b.{0,40
 # one new attempt: the factory's own per-run bounds (author max_turns, run timeout); real token use is reported by
 # DeepSeek runs and UNKNOWN for Codex/ACP runs - an estimate, never read as consumption
 ATTEMPT_ESTIMATE = {"tokens_max": 120000, "wall_seconds_max": 21600, "turns_max": 35}
+TRANSIENT_BACKOFF_SECONDS = 900
 MIGRATION = """
 CREATE TABLE IF NOT EXISTS afo_recovery_plans (
   plan_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, failure_fingerprint TEXT NOT NULL,
@@ -75,8 +79,11 @@ def plans(store: Store, order_id: str) -> list[dict]:
 def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) -> dict:
     ps = plans(store, order["order_id"])
     return {"attempts": len(store.attempts(order["order_id"])), "max_attempts": int(eff.get("budgets.max_order_attempts")),
-            "variants_by_phase": {ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED")
-                                  for ph in PHASES},
+            "variants_by_phase": {ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED"
+                                          and p["strategy"] != "DEFER_TRANSIENT_DEPENDENCY") for ph in PHASES},
+            "transient_retries": sum(1 for p in ps if p["strategy"] == "DEFER_TRANSIENT_DEPENDENCY"
+                                     and p["status"] == "EXECUTED"),
+            "max_transient_retries": int(eff.get("budgets.max_retries_per_transient_operation") or 0),
             "max_variants_per_phase": int(eff.get("budgets.max_strategy_variants_per_phase")),
             "planner_calls": sum(1 for p in ps if p["source"] == "PLANNER"),
             "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
@@ -171,8 +178,11 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
         prior = plans(store, order["order_id"])
         if any(p["plan_fingerprint"] == fp for p in prior):
             issues.append("PLAN_ALREADY_TRIED")  # anti-loop: same plan, same fingerprint, never twice
+        if plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY" and b["transient_retries"] >= b["max_transient_retries"]:
+            issues.append("BUDGET_TRANSIENT_RETRIES_EXHAUSTED")
         if any(p["failure_fingerprint"] == bundle["fingerprint"] and p["strategy"] == plan["strategy"]
-               and p["status"] == "EXECUTED" and plan["strategy"] != "SWITCH_PREAPPROVED_MODEL_PROFILE" for p in prior):
+               and p["status"] == "EXECUTED" and plan["strategy"] not in ("SWITCH_PREAPPROVED_MODEL_PROFILE",
+                                                                          "DEFER_TRANSIENT_DEPENDENCY") for p in prior):
             issues.append("SAME_FAILURE_SAME_STRATEGY_AGAIN")
     return issues
 
@@ -199,6 +209,10 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     plan = rule_plan(bundle, ws=ws, order_env=env, tried_models=tried, eff=eff,
                      attempt_started_utc=atts[-1]["created_utc"] if atts else "", allowed_models=allowed)
     source = "RULE"
+    if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
+        n = budget_snapshot(store, order, eff)["transient_retries"] + 1
+        plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
+                     material_difference_ref=f"transient_retry:{n}")
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
         plan, source = planner(bundle, budget_snapshot(store, order, eff), ws), "PLANNER"
     if plan is None:
@@ -238,6 +252,10 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
                    **({"model_profile": plan["model_profile"]} if plan.get("model_profile") else {}),
                    **({"lesson_ids": plan["lesson_ids"]} if plan.get("lesson_ids") else {})}
         c.execute("UPDATE afo_commands_outbox SET payload=? WHERE command_id=?", (json.dumps(payload), row["command_id"]))
+        if plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # give the dependency time to come back
+            n = int(plan["material_difference_ref"].rsplit(":", 1)[-1])
+            c.execute("UPDATE afo_commands_outbox SET retry_not_before_epoch=? WHERE command_id=?",
+                      (time.time() + TRANSIENT_BACKOFF_SECONDS * n, row["command_id"]))
         c.execute("UPDATE afo_recovery_plans SET status='EXECUTED' WHERE plan_id=?", (plan["plan_id"],))
     return {"order_id": oid, "action": "new_attempt", "attempt_id": aid, "strategy": plan["strategy"]}
 
@@ -249,7 +267,8 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
 
     def recover(order: dict, attempt: dict) -> dict | None:
         ws = workspace_of(attempt)
-        b = bundle.build(ws, order["order_id"], attempt["attempt_id"]) if ws.is_dir() else None
+        b = bundle.build(ws, order["order_id"], attempt["attempt_id"],
+                         run_failed=attempt["state"] == "FAILED") if ws.is_dir() else None
         if b is None:
             return None
         auth = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"), action="recover_workorder")
