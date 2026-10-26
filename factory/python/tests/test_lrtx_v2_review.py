@@ -144,7 +144,7 @@ def _inspector(verdicts):
         item = p["task"].split(":")[-1]
         n = seen.get(item, 0)
         seen[item] = n + 1
-        default = [{"behaviours": []}] if item == "coverage" else [{"verdict": "PASS", "claims": [], "evidence_checked": [
+        default = [{"behaviours": []}] if item in ("coverage", "behaviours") else [{"verdict": "PASS", "claims": [], "evidence_checked": [
             "workproducts/SWE.1/software_requirements.md"]}]  # F011-T049: coverage questions get an empty answer
         if item in ("effects", "budgets"):  # F011-T054: every entry agrees / is covered
             row = p["output_schema"]["properties"]["entries"]["items"]["properties"]
@@ -556,3 +556,26 @@ def test_a_count_bound_is_measurable(frozen):
     vague = {**facts, "reqs": {**facts["reqs"], swr: {**facts["reqs"][swr], "statement": "The driver shall be fast."}}}
     assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-04", [_c("budget_not_measurable", swr)], vague)] == [
         "CONFIRMED"]
+
+
+def test_scope_behaviours_are_asked_one_by_one_and_an_uncovered_one_names_its_field(frozen):
+    """Run 2 (2026-10-26): Qwen listed coverage behaviours by walking the requirements, so the omitted requirement never
+    appeared. Stepwise lists behaviours from the scope sentence alone (requirements hidden), then asks each."""
+    from forge_factory.lrtx import review as R
+
+    facts = RS.baseline_facts(frozen)
+    _bl, srcs = R.evidence(frozen, "SWE.1")
+    pkt = RS.behaviour_packet(frozen, {"baseline_id": "BL"}, srcs, "Start the watchdog", RS.source_fields(srcs),
+                              "qwen3.6:35b-a3b", {"temperature": 0})
+    assert all(x["path"] != "workproducts/SWE.1/software_requirements.md" for x in pkt["sources"])
+    e = RS.effect_entries(frozen, facts)[0]
+    b = {"phrase": f"{e['op']} {e['field']}", "action": e["op"], "register_field": e["field"]}
+    q = RS.behaviour_question("behaviour-0-0", b, sorted(facts["reqs"]))
+    assert q["answers"][-1] == "NONE" and RS.BEHAVIOURS["behaviour-0-0"] == b
+    assert RS.behaviour_claims(b, {"quote": "x", "answer": e["swr"]}, facts) == []
+    # NONE while the requirement still states it: refuted; with that requirement removed: stands, naming the field
+    got = RS.behaviour_claims(b, {"quote": "", "answer": "NONE"}, facts)
+    assert [c["decision"] for c in got] == ["REFUTED"]
+    less = {**facts, "reqs": {k: v for k, v in facts["reqs"].items() if e["field"] not in v["statement"]}}
+    got = RS.behaviour_claims(b, {"quote": "", "answer": "NONE"}, less)
+    assert [c["decision"] for c in got] == ["STANDS"] and e["field"] in RS.render_claim(got[0])

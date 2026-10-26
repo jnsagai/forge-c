@@ -322,7 +322,7 @@ def _truth(ws: Path, p: dict) -> dict:
 
     item = p["task"].split(":")[-1]
     schema = p["output_schema"]
-    if item.startswith("step-"):
+    if item.startswith("step-") and not item.startswith("step-behaviour-"):
         facts = RS.baseline_facts(ws)
         q = next(x for x in RS.step_questions(ws, facts) if "step-" + x["id"] == item)
         if q["id"] == "startup":
@@ -336,6 +336,14 @@ def _truth(ws: Path, p: dict) -> dict:
             return {"quote": "", "answer": hit}
         e = q["row"]
         return {"quote": "", "answer": e["op"], "value": str(e["value"]) if e["op"] == "write" else ""}
+    if item.startswith("step-behaviour-"):  # truthful: the requirement the behaviour rule finds, else NONE
+        return {"quote": "", "answer": RS.behaviour_hit(RS.baseline_facts(ws), RS.BEHAVIOURS[item[5:]]) or "NONE"}
+    if item == "behaviours":  # truthful scope behaviours of a clean baseline: its own effects entries
+        facts = RS.baseline_facts(ws)
+        act = {"set": "set", "clear": "clear", "write": "write"}
+        enum = schema["properties"]["behaviours"]["items"]["properties"]["register_field"]["enum"]
+        return {"behaviours": [{"phrase": f"{e['op']} {e['field']}", "action": act[e["op"]], "register_field": e["field"]}
+                               for e in RS.effect_entries(ws, facts) if e["field"] in enum][:16]}
     if item == "coverage":
         return {"behaviours": []}
     if item in ("effects", "budgets"):

@@ -554,6 +554,74 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
                         [e], facts)
 
 
+# F014 stepwise scope coverage (learning run 2: Qwen listed behaviours by walking the requirements, so a removed
+# requirement never appeared). Behaviours come from the scope sentence alone; each is then one closed question.
+ACTIONS = {"set": ("set", "enable", "assert", "start"), "clear": ("clear", "disable", "release", "stop"),
+           "write": ("write", "set", "load", "program"), "read": ("read", "query", "return", "report", "check")}
+BEHAVIOURS: dict = {}  # question id -> behaviour of the current visit (read by the seeded harness preflight)
+
+
+def behaviour_schema(fields: list[str]) -> dict:
+    row = {"type": "object", "additionalProperties": False, "required": ["phrase", "action", "register_field"],
+           "properties": {"phrase": {"type": "string", "minLength": 5, "maxLength": 80},
+                          "action": {"type": "string", "enum": sorted(ACTIONS)},
+                          "register_field": {"type": "string", "enum": fields}}}
+    return {"type": "object", "additionalProperties": False, "required": ["behaviours"],
+            "properties": {"behaviours": {"type": "array", "maxItems": 16, "items": row}}}
+
+
+def behaviour_packet(ws: Path, bl: dict, srcs: list[dict], scope: str, fields: list[str], model: str, sampling,
+                     findings=None, previous=None) -> dict:
+    # without the requirements and the effects contract derived from them: the scope is the reference here
+    hidden = {"workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json"}
+    sources = [x for x in srcs if R._norm_path(x["path"]) not in hidden]
+    instr = (f"Scope question on the frozen SWE.1 baseline {bl['baseline_id']}. Work-order scope item (written by the "
+             f"owner): \"{' '.join(scope.split())}\". List every separate register behaviour this sentence requires, "
+             "one action on one object each: 'A and B enable/disable' is four behaviours. Derive them only from this "
+             "sentence and the hardware sources; requirements are not shown and do not matter here. action: set "
+             "(enable, assert, start), clear (disable, release), write (a value), read (query a flag or state); "
+             "register_field: the field the behaviour acts on, REGISTER.* for any field of one register. Leave out "
+             "structure, style and API-shape constraints; an empty list when the sentence names no register behaviour.")
+    return S.packet(phase="SWE.1", task="inspect:behaviours", role="swe1-inspector", instructions=instr,
+                    sources=sources, criteria=["SWE1-05: coverage gaps against the work-order scope"],
+                    output_schema=behaviour_schema(fields), model=model, findings=findings, previous=previous,
+                    output_reserve=1024, sampling=sampling)
+
+
+def behaviour_question(qid: str, b: dict, swrs: list[str]) -> dict:
+    q = {"id": qid, "item": "SWE1-05", "behaviour": b, "source": "workproducts/SWE.1/software_requirements.md",
+         "answers": swrs + ["NONE"],
+         "text": f"The work-order scope requires this behaviour: '{b['phrase']}' ({b['action']} {b['register_field']}). "
+                 "Which requirement states it? answer its SWR id, or NONE when no requirement states this behaviour; "
+                 "quote its words."}
+    BEHAVIOURS[qid] = b
+    return q
+
+
+def behaviour_hit(facts: dict, b: dict) -> str | None:
+    """A requirement that names the behaviour's field (register, for REG.*) with an action of the same kind."""
+    f = b["register_field"]
+    name = f.split(".")[0] if WILDCARD.match(f) else f
+    bare = name.split(".")[-1]
+    verbs = re.compile(r"\b(?:" + "|".join(ACTIONS[b["action"]]) + r")\w*", re.I)
+    return next((x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or
+                 re.search(rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(r["statement"])), None)
+
+
+def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
+    if doc["answer"] != "NONE":
+        return []
+    f, act = b["register_field"], b["action"]
+    c = _claim("scope_behaviour_uncovered", "document",
+               f"scope behaviour '{b['phrase']}' ({act} {f}) has no requirement: {doc['quote']}",
+               f"add a requirement for {act} {f}")
+    c["identity"] = identity("SWE1-05", {**c, "target_id": f"{f}:{act}"})
+    hit = behaviour_hit(facts, b)
+    c["decision"], c["evidence"] = ("REFUTED", f"{hit} states {act} on {f}") if hit else \
+        ("STANDS", "no requirement states this behaviour")
+    return [c]
+
+
 def _claim(assertion: str, target: str, detail: str, remediation: str) -> dict:
     return {"assertion": assertion, "target_id": target, "related_ids": [], "detail": detail[:300],
             "remediation": remediation[:200]}
@@ -635,8 +703,8 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
     opts = inspector_options(Path(ws), model)
     extra = 2 * len(scope_items(Path(ws))) if opts["coverage"] else 0  # one call and one repair per scope item
     extra += 4 if opts["entries"] else 0  # the effects and budget questions
-    if opts["stepwise"]:  # one call and one repair per fact question
-        extra += 2 * len(step_questions(Path(ws), baseline_facts(Path(ws))))
+    if opts["stepwise"]:  # one call and one repair per fact question, per scope sentence and per scope behaviour
+        extra += 2 * len(step_questions(Path(ws), baseline_facts(Path(ws)))) + 2 * 17 * len(scope_items(Path(ws)))
     budget, _f = V.open_visit(Path(ws), "SWE.1-inspect", resume, list,
                               (max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns) + extra,
                               time_budget_s)
@@ -665,7 +733,33 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
     opts = inspector_options(ws, model)
     smp = opts["sampling"]
     cov_claims, cov_record = [], []
-    if opts["coverage"]:  # F011-T049: one decomposed coverage question per in-scope work-order scope item
+    if opts["stepwise"]:  # F014: behaviours from each scope sentence, then one closed question per behaviour
+        swrs, fields, asked = sorted(facts["reqs"]), source_fields(srcs), set()
+        BEHAVIOURS.clear()
+        for i, sc in enumerate(scope_items(ws)):
+            brec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:behaviours-{i}",
+                              lambda fi, pr, sc=sc: behaviour_packet(ws, bl, srcs, sc, fields, model, smp, fi, pr),
+                              lambda d: [], budget)
+            if brec["status"] != "VALID":
+                issues += [f"behaviours-{i}: {e}" for e in brec["errors"][:3]]
+                continue
+            got = []
+            for j, b in enumerate(brec["doc"]["behaviours"]):
+                key = (b["register_field"], b["action"])
+                if key in asked:
+                    continue
+                asked.add(key)
+                q = behaviour_question(f"behaviour-{i}-{j}", b, swrs)
+                qrec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{q['id']}",
+                                  lambda fi, pr, q=q: step_packet(ws, bl, srcs, q, model, smp, fi, pr), lambda d: [],
+                                  budget)
+                if qrec["status"] != "VALID":
+                    issues += [f"step-{q['id']}: {e}" for e in qrec["errors"][:3]]
+                    continue
+                got += behaviour_claims(b, qrec["doc"], facts)
+            cov_claims += got
+            cov_record.append({"scope": sc, "behaviours": brec["doc"]["behaviours"], "claims": got})
+    elif opts["coverage"]:  # F011-T049: one decomposed coverage question per in-scope work-order scope item
         swrs = sorted(facts["reqs"])
         for i, sc in enumerate(scope_items(ws)):
             crec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:coverage-{i}",
