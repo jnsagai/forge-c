@@ -47,6 +47,18 @@ def _defs(ws: Path, m: dict) -> dict[str, S.Definition]:
     return {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
 
 
+def _macros(ws: Path, m: dict) -> set[str]:
+    """Names the delivered code #defines (constants and function-like macros)."""
+    return {n for rel in reference_paths(m) if (ws / rel).is_file()
+            for n in re.findall(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)", (ws / rel).read_text(errors="replace"), re.M)}
+
+
+def undelivered(allocated: set[str], defs, macros: set[str]) -> list[str]:
+    """F015 GPIO-R3: SWE.2 rows name the parameter constants next to a function (SWR-012 | LL_GPIO_SetPinPull |
+    LL_GPIO_PULL_NO=0, ...); a name the delivered code #defines is delivered, not a missing function."""
+    return [f"ALLOCATED_NOT_DELIVERED:{f}" for f in sorted(allocated) if f not in defs and f not in macros]
+
+
 def _scope(ws: Path) -> list[dict]:
     p = ws / DELIVERY_DIR / "scope.json"
     return json.loads(p.read_text()).get("functions", []) if p.is_file() else []
@@ -183,7 +195,7 @@ def implementation(ws: Path, m: dict) -> dict:
         pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
         allocated = {f for fns in allocation(arch.read_text(errors="replace"), names, pfx).values() for f in fns}
     v = verify(ws, "swe3_verify")
-    findings = [f"ALLOCATED_NOT_DELIVERED:{f}" for f in sorted(allocated) if f not in defs]
+    findings = undelivered(allocated, defs, _macros(ws, m))
     return {"check": "delivered_implementation", "allocated": sorted(allocated), "delivery": v["status"],
             "fingerprint_issues": v["issues"], "findings": findings + [f"DELIVERY:{i}" for i in v["issues"]]}
 

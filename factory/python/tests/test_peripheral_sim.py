@@ -54,3 +54,34 @@ def test_iwdg_model_on_renode(tmp_path, monkeypatch):
         res, _out = sim.run_image(sim.renode_bin(), tmp_path / f"{name}.elf", scen, tmp_path, ws)
         assert res == {"magic_ok": True, "passed": 4, "failed": 0, "done": True, "failed_ids": []}, (name, res)
     assert (tmp_path / "link_iwdg.ld").read_text().count("ll_iwdg_regs = 0x56004800;") == 1
+
+
+FPU = """#include "stm32n6xx_ll_iwdg.h"
+#include "forge_target_test.h"
+FORGE_MAILBOX_DEFINE;
+int main(void) { FORGE_TEST_BEGIN();
+  volatile float a = 1.5f; volatile float b = 2.25f;
+  TCHECK(1, (uint32_t)(a * b * 4.0f) == 13U);
+  FORGE_TEST_END(); return 0; }
+"""
+
+
+def test_the_target_startup_enables_the_fpu(tmp_path, monkeypatch):
+    """F015 GPIO-R3 scn_configuration: the compiler spilled to an FP register (`vmov s15, r1`); the startup left
+    CP10/CP11 disabled, so the image took a NOCP UsageFault and 'produced no complete result on the target model'."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+    ws, _ = WO.prepare(REPO_ROOT / "examples/0009a-iwdg-ll", "WO-IWDG-FPU")
+    t = ws / "software/tests/target"
+    t.mkdir(parents=True)
+    (t / "test_fpu.c").write_text(FPU)
+    from forge_factory.inspection import regmap
+
+    (ws / "workproducts/SWE.2").mkdir(parents=True)
+    (ws / "workproducts/SWE.2/software_architecture.md").write_text(
+        "## Register table\n\n| Register | Offset |\n|---|---|\n| IWDG_KR | 0x000 |\n")
+    regmap.generate(ws)
+    ok, _log, errs = sim.build_image(ws, t / "test_fpu.c", tmp_path / "fpu.elf")
+    assert ok, errs
+    res, _out = sim.run_image(sim.renode_bin(), tmp_path / "fpu.elf", "default", tmp_path, ws)
+    assert res == {"magic_ok": True, "passed": 1, "failed": 0, "done": True, "failed_ids": []}, res

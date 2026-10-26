@@ -103,3 +103,13 @@ def test_unbuilt_probes_fail_the_item(tmp_path, monkeypatch, build):
         {"delivery": {"build": {"style": "cmsis"}}, "code_mode": "FROZEN"}))
     r = K.item(tmp_path, "delivered_register_definitions")
     assert r["verdict"] == "FAIL" and r["major_findings"] == [f"REGISTER_PROBES_NOT_{'BUILT' if build == 'FAIL' else 'RUN'}"]
+
+
+def test_an_allocated_name_the_delivered_code_defines_is_delivered():
+    """F015 GPIO-R3 (WO-AFO-c522096b86f34687-a1): the SWE.2 row 'SWR-012 | LL_GPIO_SetPinPull | LL_GPIO_PULL_NO=0,
+    LL_GPIO_PULL_UP=1, LL_GPIO_PULL_DOWN=2' made the three constants ALLOCATED_NOT_DELIVERED findings."""
+    from forge_factory.brownfield import checks
+
+    allocated = {"LL_GPIO_SetPinPull", "LL_GPIO_PULL_DOWN", "LL_GPIO_LockPin"}
+    assert checks.undelivered(allocated, {"LL_GPIO_SetPinPull": object()}, {"LL_GPIO_PULL_DOWN"}) == [
+        "ALLOCATED_NOT_DELIVERED:LL_GPIO_LockPin"]   # a missing function is still a finding
