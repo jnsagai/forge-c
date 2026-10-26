@@ -191,7 +191,7 @@ def _mandatory_safety_missing(m: dict) -> bool:
     return asil in ("A", "B", "C", "D") and bool(m.get("owner_safety_document_issues"))
 
 
-INSPECTOR = {"seed": None, "coverage": None, "entries": None}  # F011-T048/T049/T054: seeded harness overrides
+INSPECTOR = {"seed": None, "coverage": None, "entries": None, "stepwise": None}  # F011-T048/T049/T054, F014: harness
 FIELD = re.compile(r"^[A-Z][A-Z0-9_]*\.[A-Z][A-Z0-9_]*$")
 NUMBER = re.compile(r"\b0x[0-9A-Fa-f]+\b|\b\d+\b")
 
@@ -219,7 +219,12 @@ def inspector_options(ws: Path, model: str) -> dict:
         sampling["seed"] = INSPECTOR["seed"]
     coverage = INSPECTOR["coverage"] if INSPECTOR["coverage"] is not None else bool(st.get("inspector_coverage"))
     entries = INSPECTOR["entries"] if INSPECTOR["entries"] is not None else bool(st.get("inspector_entries"))
-    return {"profile": pid, "sampling": sampling or None, "coverage": coverage, "entries": entries}
+    stepwise = INSPECTOR["stepwise"] if INSPECTOR["stepwise"] is not None else bool(st.get("inspector_stepwise"))
+    if stepwise:  # F014: deterministic decoding for every question of the visit; per-fact questions replace entries
+        sampling = {"temperature": 0, **({"seed": sampling["seed"]} if "seed" in sampling else {})}
+        coverage, entries = True, False
+    return {"profile": pid, "sampling": sampling or None, "coverage": coverage, "entries": entries,
+            "stepwise": stepwise}
 
 
 def scope_items(ws: Path) -> list[str]:
@@ -407,6 +412,98 @@ def entry_claims(kind: str, doc: dict, rows: list[dict], facts: dict) -> list[di
     return out
 
 
+# F014 (owner 2026-10-26, "Stepwise inspector in 014"): the split that took local diagnosis from 0 to 95/95. One
+# small closed question per baseline fact (temperature 0), carrying only the source it needs; each answer that
+# implies a problem becomes a typed claim decided by the unchanged adjudicator. The model still decides every claim.
+def gap_labels(ws: Path) -> list[str]:
+    """First cells of the rows of traceability/upstream_gaps.md (the closed answer set of an input question)."""
+    p = Path(ws) / "traceability/upstream_gaps.md"
+    cells = re.findall(r"^\| ([^|]+?) \|", p.read_text(), re.M) if p.is_file() else []
+    return sorted({c.strip() for c in cells if not c.strip().startswith(("SWR-", "-", ":"))})
+
+
+def step_schema(answers: list[str], value: bool = False) -> dict:
+    props = {"quote": {"type": "string", "maxLength": 240}, "answer": {"type": "string", "enum": answers}}
+    if value:
+        props["value"] = {"type": "string", "maxLength": 24}
+    return {"type": "object", "additionalProperties": False, "required": list(props), "properties": props}
+
+
+def step_questions(ws: Path, facts: dict) -> list[dict]:
+    """Every fact question of the baseline: id, item, the text asked, its closed answers and the source it reads."""
+    swrs, req = sorted(facts["reqs"]), "workproducts/SWE.1/software_requirements.md"
+    qs = [{"id": "startup", "item": "SWE1-03", "source": req, "answers": swrs + ["NONE"],
+           "text": "Which requirement states the driver's behaviour after reset, before it is initialised or first "
+                   "called? answer is its SWR id, or NONE when no requirement states it; quote its words."}]
+    labels = gap_labels(ws)
+    for inp in INPUTS:
+        qs.append({"id": "input-" + inp.split()[0].lower(), "item": "SWE1-05", "input": inp,
+                   "source": "traceability/upstream_gaps.md", "answers": labels + ["NONE"],
+                   "text": f"Which row of traceability/upstream_gaps.md records the state of the upstream input "
+                           f"'{inp}'? answer is that row's first cell, or NONE when no row records this input; quote "
+                           "the row."})
+    for b in budget_entries(ws):
+        qs.append({"id": "budget-" + b["resource"].replace(" ", "-").lower(), "item": "SWE1-04", "row": b,
+                   "source": req, "answers": swrs + ["NONE"],
+                   "text": f"The owner's work order fixes a {b['resource']} budget of {b['bytes']} bytes. Which "
+                           f"requirement states this {b['resource']} bound? answer is its SWR id, or NONE when no "
+                           f"requirement states the {b['resource']} bound; quote its words. A requirement about "
+                           "another resource does not count."})
+    for e in effect_entries(ws, facts):
+        qs.append({"id": "effect-" + e["entry"].lower(), "item": "SWE1-02", "row": e, "source": None,
+                   "answers": ["set", "clear", "write", "not_stated"], "value": True,
+                   "text": f"Requirement {e['swr']} reads: \"{e['statement']}\" What does this requirement state "
+                           f"for the register field {e['field']} in the case '{e['case']}'? answer set, clear or "
+                           "write (value: the written value as the requirement gives it, else \"\"), or not_stated "
+                           "when it does not state this field; quote the words that decide."})
+    return qs
+
+
+def step_packet(ws: Path, bl: dict, srcs: list[dict], q: dict, model: str, sampling, findings=None,
+                previous=None) -> dict:
+    sources = [s for s in srcs if R._norm_path(s["path"]) == q["source"]] if q["source"] else []
+    return S.packet(phase="SWE.1", task=f"inspect:step-{q['id']}", role="swe1-inspector",
+                    instructions=f"Fact question on the frozen SWE.1 baseline {bl['baseline_id']}. {q['text']} "
+                                 "Judge only from this question" + (" and the SOURCES." if sources else "."),
+                    sources=sources, criteria=[f"{q['item']}: one baseline fact"],
+                    output_schema=step_schema(q["answers"], q.get("value", False)), model=model, findings=findings,
+                    previous=previous, output_reserve=512, sampling=sampling)
+
+
+def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
+    """The claim one fact answer implies (none when the answer finds the fact), decided like every other claim."""
+    a, quote = doc["answer"], doc["quote"]
+    if q["id"] == "startup":
+        if a != "NONE":
+            return []
+        c = _claim("reset_startup_missing", "document",
+                   "no requirement states the behaviour after reset (startup state): " + quote,
+                   "add a requirement stating the register state after reset")
+        return adjudicate(ws, "SWE1-03", [c], facts)
+    if q["id"].startswith("input-"):
+        if a == q["input"]:
+            return []
+        c = _claim("upstream_gap_not_recorded", q["input"],
+                   f"traceability/upstream_gaps.md records no state for the upstream input '{q['input']}'",
+                   f"record the state of '{q['input']}' in traceability/upstream_gaps.md")
+        return adjudicate(ws, "SWE1-05", [c], facts)
+    if q["id"].startswith("budget-"):
+        covered = [a] if a != "NONE" else []
+        return entry_claims("budgets", {"entries": [{"entry": q["row"]["entry"], "covered_by": covered,
+                                                     "reason": quote or "no requirement states it"}]}, [q["row"]], facts)
+    e = q["row"]
+    agrees = a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
+                               _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
+    return entry_claims("effects", {"entries": [{"entry": e["entry"], "agrees": agrees,
+                                                 "reason": f"{e['swr']} states {a} {doc.get('value') or ''}: {quote}"}]},
+                        [e], facts)
+
+
+def _claim(assertion: str, target: str, detail: str, remediation: str) -> dict:
+    return {"assertion": assertion, "target_id": target, "related_ids": [], "detail": detail[:300],
+            "remediation": remediation[:200]}
+
+
 def lessons_dir(ws: Path) -> Path | None:
     """The inspection lesson set for this work order: the harness setting, else the profile flag
     structured.inspection_lessons (the Codex/Claude line never reaches this inspector)."""
@@ -482,6 +579,8 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
     opts = inspector_options(Path(ws), model)
     extra = 2 * len(scope_items(Path(ws))) if opts["coverage"] else 0  # one call and one repair per scope item
     extra += 4 if opts["entries"] else 0  # the effects and budget questions
+    if opts["stepwise"]:  # one call and one repair per fact question
+        extra += 2 * len(step_questions(Path(ws), baseline_facts(Path(ws))))
     budget, _f = V.open_visit(Path(ws), "SWE.1-inspect", resume, list,
                               (max_calls or {a.id: a for a in load_agents()[0]}["swe1-inspector"].max_turns) + extra,
                               time_budget_s)
@@ -540,6 +639,17 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
             got = entry_claims(kind, erec["doc"], rows, facts)
             ent_claims[item] = ent_claims.get(item, []) + got
             ent_record.append({"kind": kind, "answers": erec["doc"]["entries"], "claims": got})
+    step_record = []
+    if opts["stepwise"]:  # F014: one closed question per baseline fact; answers join their item's claims
+        for q in step_questions(ws, facts):
+            srec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:step-{q['id']}",
+                              lambda fi, pr, q=q: step_packet(ws, bl, srcs, q, model, smp, fi, pr), lambda d: [], budget)
+            if srec["status"] != "VALID":
+                issues += [f"step-{q['id']}: {e}" for e in srec["errors"][:3]]
+                continue
+            got = step_claims(ws, q, srec["doc"], facts)
+            ent_claims[q["item"]] = ent_claims.get(q["item"], []) + got
+            step_record.append({"question": q["id"], "answer": srec["doc"], "claims": got})
     for it in items:
         if it["id"] not in ASSERTIONS:
             issues.append(f"{it['id']}: no claim catalogue for this item (LRTX_SEMANTIC_INSPECTION_ITEM_UNKNOWN)")
@@ -598,7 +708,7 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
     S.record(ws, "SWE.1/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                   "result": res, "items": record, "inspector": "review_semantic",
                                                   "options": opts, "coverage": cov_record,
-                                                  "entries": ent_record})
+                                                  "entries": ent_record, "steps": step_record})
     notes = [f"LRTX_ADJUDICATED_PASS:{i}: {len(r['rounds'][-1]['claims'])} claim(s) refuted by the baseline"
              for i, r in record.items() if r["outcome"] == "ADJUDICATED_PASS"]
     status = "PASS" if res["status"] == "PASS" else "REWORK"

@@ -359,6 +359,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="F011-T054: per-entry effects and budget questions (default: structured.inspector_entries)",
     )
+    ap.add_argument(
+        "--stepwise",
+        choices=("on", "off"),
+        default=None,
+        help="F014: one closed temperature-0 question per baseline fact (default: structured.inspector_stepwise)",
+    )
     a = ap.parse_args(argv)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     if a.inspector == "semantic":
@@ -367,6 +373,7 @@ def main(argv: list[str] | None = None) -> int:
         RS.INSPECTOR["seed"] = a.seed
         RS.INSPECTOR["coverage"] = None if a.coverage is None else a.coverage == "on"
         RS.INSPECTOR["entries"] = None if a.entries is None else a.entries == "on"
+        RS.INSPECTOR["stepwise"] = None if a.stepwise is None else a.stepwise == "on"
         OPTIONS["value"] = RS.inspector_options(a.holdout[0].resolve(), a.model)
     if a.lessons:
         from ..knowledge import inspection as IL

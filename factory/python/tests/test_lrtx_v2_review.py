@@ -372,3 +372,75 @@ def test_engine_output_reaches_the_inspector_by_hash_only(frozen):
     req = "workproducts/SWE.1/software_requirements.md"
     assert by[req]["text"] == (frozen / req).read_text()
     assert RS.validate({"verdict": "PASS", "claims": [], "evidence_checked": [engine[0]]}, {s["path"] for s in srcs}) == []
+
+
+def _step_answers(ws, facts, **override):
+    """Correct answers to every F014 fact question of a clean baseline, keyed like the scripted inspector's items."""
+    out = {}
+    for q in RS.step_questions(ws, facts):
+        if q["id"] == "startup":
+            doc = {"quote": "after reset", "answer": facts["startup"][0]}
+        elif q["id"].startswith("input-"):
+            doc = {"quote": "| row |", "answer": q["input"]}
+        elif q["id"].startswith("budget-"):
+            hit = next(s for s, r in sorted(facts["reqs"].items()) if q["row"]["resource"] in r["statement"])
+            doc = {"quote": "bound", "answer": hit}
+        else:
+            e = q["row"]
+            doc = {"quote": "stated", "answer": e["op"], "value": str(e["value"]) if e["op"] == "write" else ""}
+        out["step-" + q["id"]] = [override.get(q["id"], doc)]
+    return out
+
+
+def test_stepwise_fact_answers_become_decided_claims(frozen, monkeypatch):
+    """F014 (owner 2026-10-26, "Stepwise inspector in 014"): one closed question per baseline fact. A found fact makes
+    no claim; a NONE the baseline contradicts is refuted; a NONE the baseline proves (fact really absent) counts."""
+    facts = RS.baseline_facts(frozen)
+    qs = {q["id"]: q for q in RS.step_questions(frozen, facts)}
+    assert {"startup", "input-hsi", "input-safety", "input-budgets", "budget-stack"} <= set(qs)
+    assert all(q["answers"][-1] in ("NONE", "not_stated") for q in qs.values())
+    assert "Safety allocation" in qs["input-safety"]["answers"]
+    good = {k[5:]: v[0] for k, v in _step_answers(frozen, facts).items()}
+    assert all(RS.step_claims(frozen, q, good[i], facts) == [] for i, q in qs.items())
+    none = {"quote": "", "answer": "NONE"}
+    assert [c["decision"] for c in RS.step_claims(frozen, qs["startup"], none, facts)] == ["REFUTED"]
+    assert [c["decision"] for c in RS.step_claims(frozen, qs["startup"], none, {**facts, "startup": []})] == ["CONFIRMED"]
+    gone = {**facts, "gap_rows": {**facts["gap_rows"], "Safety allocation": None}}
+    assert [c["decision"] for c in RS.step_claims(frozen, qs["input-safety"], none, facts)] == ["REFUTED"]
+    got = RS.step_claims(frozen, qs["input-safety"], none, gone)
+    assert [c["decision"] for c in got] == ["CONFIRMED"] and "Safety allocation" in RS.render_claim(got[0])
+    stack = next(s for s, r in facts["reqs"].items() if "stack" in r["statement"])
+    less = {**facts, "reqs": {s: r for s, r in facts["reqs"].items() if s != stack}}
+    got = RS.step_claims(frozen, qs["budget-stack"], none, less)
+    assert [c["decision"] for c in got] == ["STANDS"] and "budget_missing" in RS.render_claim(got[0])
+    effect = next(q for i, q in qs.items() if i.startswith("effect-"))
+    wrong = {"quote": "x", "answer": RS.OPPOSITE.get(effect["row"]["op"], "not_stated"), "value": ""}
+    # the requirement text states the entry's own operation: the model's misreading is refuted, never a rejection
+    assert [c["decision"] for c in RS.step_claims(frozen, effect, wrong, facts)] == ["REFUTED"]
+    # through the visit: temperature 0, entries replaced by fact questions, every answer recorded
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    opts = RS.inspector_options(frozen, "qwen3.6:35b-a3b")
+    assert opts["stepwise"] and opts["sampling"]["temperature"] == 0 and opts["coverage"] and not opts["entries"]
+    call, seen = _inspector(_step_answers(frozen, facts))
+    monkeypatch.setattr(S, "call", call)
+    assert RS.visit(frozen, "SWE.1", "qwen3.6:35b-a3b")["status"] == "PASS"
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert {s["question"] for s in rec["steps"]} == set(qs) and all(not s["claims"] for s in rec["steps"])
+    assert all(seen["step-" + i] == 1 for i in qs)
+    # a contradicted effects entry (seeded S1-EFFECT shape): the model reads the requirement's own operation
+    effp = frozen / "workproducts/SWE.1/register_effects.json"
+    raw = json.loads(effp.read_text())
+    site = next(x for x in raw["effects"] if x.get("op") in ("set", "clear", "write") and x.get("swr") == effect["row"]["swr"])
+    if site["op"] == "write":
+        site["value"] = hex(int(str(site["value"]), 16) ^ 1) if str(site["value"]).startswith("0x") else site["value"] ^ 1
+    else:
+        site["op"] = RS.OPPOSITE[site["op"]]
+    effp.write_text(json.dumps(raw))
+    original = {"quote": "stated", "answer": effect["row"]["op"],
+                "value": str(effect["row"]["value"]) if effect["row"]["op"] == "write" else ""}
+    monkeypatch.setattr(S, "call", _inspector(_step_answers(frozen, RS.baseline_facts(frozen),
+                                                            **{effect["id"]: original}))[0])
+    rep = RS.visit(frozen, "SWE.1", "qwen3.6:35b-a3b")
+    rec = json.loads((frozen / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
+    assert rep["status"] == "REWORK" and rec["items"]["SWE1-02"]["outcome"] == "FAIL"
+    assert effect["row"]["swr"] in json.dumps(rec["items"]["SWE1-02"])
