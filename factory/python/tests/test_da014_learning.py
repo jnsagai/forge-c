@@ -366,3 +366,33 @@ def test_recurring_facts_link_existing_capa_reproducer_without_fabricating_incid
     assert len(routed) == 1 and routed[0]["record"]["lane"] == "CAPA_REPAIR"
     assert len(registry.links("CAPA-9001", "experience")) == 2 and len(registry.all()) == before
     assert routed[0]["record"]["authority"] == "PROPOSAL_ONLY_NO_DEPLOYMENT"
+
+
+def test_never_dispatched_orders_take_holdout_scope_from_their_intake_manifest(tmp_path, monkeypatch):
+    """The strict queue envelope cannot carry holdout fields; the hash-bound intake manifest does."""
+    import hashlib
+    from forge_factory import common
+    from forge_factory.afo.queue import Store
+    from test_afo_m2_queue import _env
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    repo = tmp_path / "repo"
+    (repo / "afo-manifests").mkdir(parents=True)
+    monkeypatch.setattr(common, "REPO_ROOT", repo)
+    store = Store()
+    ids = {}
+    for name, manifest in (("heldout", {"evaluation_holdout": True}), ("ordinary", {}), ("changed", {})):
+        path = repo / "afo-manifests" / f"{name}.json"
+        path.write_text(json.dumps(manifest))
+        env = _env(repo, rid="RCC-" + name, input_manifest_ref=f"afo-manifests/{name}.json",
+                   manifest_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+        ids[name], _ = store.submit(env, repo=repo, max_queued=10)
+        store.transition(ids[name], "BLOCKED", "never dispatched", terminal_reason="FIXTURE_NEVER_DISPATCHED")
+    (repo / "afo-manifests/changed.json").write_text(json.dumps({"evaluation_holdout": False, "edited": True}))
+    memory = LessonStore(tmp_path / "lessons.sqlite3")
+    experience.capture_controller_outcomes(store, memory)
+    with memory._conn() as db:
+        cohorts = {json.loads(r[0])["execution_id"]: json.loads(r[0])["cohort"] for r in db.execute("SELECT record FROM job_experience")}
+    scope = {name: cohorts["controller-order:" + oid].get("evaluation_holdout", False) for name, oid in ids.items()}
+    # An unverifiable (changed) manifest fails closed: excluded from distillation, never treated as ordinary data.
+    assert scope == {"heldout": True, "ordinary": False, "changed": True}

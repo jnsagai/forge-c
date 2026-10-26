@@ -297,6 +297,27 @@ def evaluation_scope(cohort, source):
     return cohort
 
 
+def intake_scope(envelope):
+    """Holdout scope from an order's hash-bound intake manifest; the strict queue envelope cannot carry it.
+
+    A manifest that cannot be verified (missing, outside the repository, changed) is treated as held out, so
+    acceptance data never reaches distillation by default.
+    """
+    import hashlib
+    from ..common import REPO_ROOT
+
+    try:
+        path = (REPO_ROOT / envelope["input_manifest_ref"]).resolve()
+        raw = path.read_bytes() if REPO_ROOT.resolve() in path.parents else None
+        verified = raw is not None and hashlib.sha256(raw).hexdigest() == envelope.get("manifest_sha256")
+        manifest = json.loads(raw) if verified else None
+    except (KeyError, OSError, TypeError, ValueError):
+        manifest = None
+    if not isinstance(manifest, dict):
+        return {"evaluation_holdout": True}
+    return {"evaluation_holdout": True} if manifest.get("evaluation_holdout") else {}
+
+
 def capture_controller_outcomes(afo_store, lessons, *, limit=32):
     """Capture non-product and never-dispatched terminal jobs without inventing native runs."""
     out = []
@@ -326,6 +347,7 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
                     if any(json.loads(a[0]).get("fabro_run_id") for a in attempts):
                         continue  # adoption aliases are covered by their unique native execution
                 source = digest(value)
+                scope_source = {**value, **intake_scope(value)} if scope == "order" else value
                 out.append(
                     capture(
                         lessons,
@@ -334,7 +356,9 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
                         outcome,
                         facts={"state_record_sha256": source, "error_code": value.get("error")},
                         source_refs=["afo-state:sha256:" + source],
-                        cohort=evaluation_scope({"model": value.get("model"), "revision": value.get("factory_revision")}, value),
+                        cohort=evaluation_scope(
+                            {"model": value.get("model"), "revision": value.get("factory_revision")}, scope_source
+                        ),
                     )
                 )
             except (ValueError, TypeError, KeyError) as exc:
