@@ -1,6 +1,6 @@
 # Implementation and qualification status
 
-Updated 2026-10-25 (Claude continuation). Exact runtime source candidate: `dddf00eb7d5b1638de6f0bc5d92fbda632ac6878` (see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
+Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb` (`dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 
 The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
 
@@ -108,6 +108,13 @@ Exact `dddf00e` (clean dedicated worktree, private state/event roots): core **55
 `9891b59` run had 1) are 8 real-workspace history cases absent from the private state root, 2 cross-UID probes without a
 0600 owner file and the disabled live-Fabro check; earlier `4f954e2`, `836ae49`, `8e1aee5`, `677d45a` clean runs also
 passed with 0 failures.
+
+Stepwise diagnosis commits `bdba4c1`..`5dc2df3` (signed task class `two-step-diagnosis`; four grammar-constrained
+questions, deterministic assembly, unchanged broker), independent auditor `afo/qualification_audit.py` (`dbcec39`).
+Exact `5dc2df3` (clean dedicated worktree, private state/event roots): core **576 passed, 11 skipped**, 0 failures
+(499.0 s); release **13/13** (9.2 s); history replay and transient-systemd semantics PASS; six prepared manifests BLOCKED
+as before; independent CRE `cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, not waived).
+Clean `a206c54` (570 passed) and `dbcec39` (575 passed) runs also had 0 failures.
 
 Retained: the `fc7e6d7` full run that exceeded 900 s was re-run: 507 passed/11 skipped in 1,007 s; one test took 328 s
 (normally ~2 s) during host memory pressure (systemd-oomd kill at 16:45:54) before a clean host shutdown at 16:50; the

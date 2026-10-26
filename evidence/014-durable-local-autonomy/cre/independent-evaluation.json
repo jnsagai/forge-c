@@ -1,20 +1,20 @@
 {
   "schema_version": "1.0",
-  "decision_id": "pd-ff8e358c2f0abeb9529c",
-  "candidate_sha256": "d86ca615842b7692717686a8cc15d066657522ee394c0429a67f7a9ad711c879",
+  "decision_id": "pd-a9dc2fe09e759f690e21",
+  "candidate_sha256": "3cae5cf18139a30ca0fb398644c4e6c96101ab30bced06312b08f66abdaf4bfe",
   "baseline_sha256": "24123c9d281632466e22618d0d48e54e8f58e044b18cedadf352c56c5e8abcb8",
   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
   "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
   "decision": "REJECTED",
   "evaluator_id": "cre-promotion-runner@918c6a4a2577",
   "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
-  "evaluated_at": "2026-10-25T21:07:13.184301Z",
+  "evaluated_at": "2026-10-26T02:23:01.795961Z",
   "hard_gates": [
     {
       "name": "protected_files",
       "result": "FAIL",
       "evidence_refs": [
-        "git-diff:918c6a4a2577..dddf00eb7d5b"
+        "git-diff:918c6a4a2577..5dc2df352adc"
       ],
       "reason_code": "PROTECTED_PATH_CHANGE"
     },
@@ -71,9 +71,9 @@
   "metrics_snapshot_ref": null,
   "reasons": [
     "protected paths changed: A:evidence/014-durable-local-autonomy/README.md, A:evidence/014-durable-local-autonomy/acceptance-evidence-map.json, A:evidence/014-durable-local-autonomy/baseline/history-0742d7a.json, A:evidence/014-durable-local-autonomy/baseline/history-17e6cbd.json, A:evidence/014-durable-local-autonomy/baseline/history-794e8d0.json",
-    "sandbox: 6412 protected paths read-only (OS) in the candidate/baseline worktrees"
+    "sandbox: 6424 protected paths read-only (OS) in the candidate/baseline worktrees"
   ],
   "allowed_auto_deployment": false,
-  "candidate_revision": "dddf00eb7d5b1638de6f0bc5d92fbda632ac6878",
+  "candidate_revision": "5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb",
   "baseline_revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238"
 }
