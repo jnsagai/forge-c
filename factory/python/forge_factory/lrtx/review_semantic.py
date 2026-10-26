@@ -202,11 +202,21 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                                             "traceability/requirements_to_tests.csv")
             else:
                 decision, why = "CONFIRMED", f"{t} is missing from a trace table or the test map"
+        if decision == "STANDS" and RECORDED_UPSTREAM.search(c["detail"]) and all(f["gap_rows"].get(i) for i in INPUTS) \
+                and not _mandatory_safety_missing(m):
+            # run 10 (2026-10-26): a judgement whose objection is the owner-recorded upstream status (NOT_PROVIDED,
+            # DRAFT_TEMPLATE) while every input's state is recorded; that record is the SWE.1 handling (F011-AT-020)
+            decision, why = "REFUTED", ("the objection is the recorded upstream status; traceability/upstream_gaps.md "
+                                        f"records the state of every upstream input ({', '.join(INPUTS)})")
         if decision == "REFUTED" and a in ("safety_allocation_missing", "safe_state_missing",
                                            "failure_handling_missing") and _mandatory_safety_missing(m):
             decision, why = "STANDS", "the work order targets an ASIL with a mandatory safety input missing"
         out.append({**c, "identity": identity(item, c), "decision": decision, "evidence": why})
     return out
+
+
+RECORDED_UPSTREAM = re.compile(r"\bNOT_PROVIDED\b|\bDRAFT_TEMPLATE\b|upstream (?:status|inputs?) (?:is|are) (?:not provided|"
+                               r"missing|absent)", re.I)
 
 
 def _quoted_open_point(detail: str, open_points: str) -> str | None:

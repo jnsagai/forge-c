@@ -698,3 +698,16 @@ def test_a_read_named_anywhere_in_the_requirement_covers_a_flag_wait(frozen):
     wait = {"phrase": "HSI ready flag wait", "action": "read", "register_field": "RCC_SR.HSIRDY"}
     assert RS.behaviour_claims(wait, {"quote": "", "answer": "SWR-001"}, {**facts, "reqs": {"SWR-001": swr}}) == []
     assert "return" in RS.imposed_verbs(swr["statement"])
+
+
+def test_an_objection_to_the_recorded_upstream_status_is_refuted(frozen):
+    """Run 10 (2026-10-26): the clean 0008B baseline was rejected by an SWE1-04 'other' claim that conceded the budgets
+    are explicit and measurable but objected that the upstream status is NOT_PROVIDED with DRAFT_TEMPLATE issues."""
+    facts = RS.baseline_facts(frozen)
+    claim = _c("other", "document", "These are explicit and measurable. However, the upstream status is NOT_PROVIDED "
+                                    "with DRAFT_TEMPLATE issues, so the budgets are not approved.")
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-04", [claim], facts)] == ["REFUTED"]
+    unrecorded = {**facts, "gap_rows": {**facts["gap_rows"], "Budgets": None}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-04", [claim], unrecorded)] == ["STANDS"]
+    other = _c("other", "document", "SWR-004 and SWR-005 contradict each other on the enable order.")
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-02", [other], facts)] == ["STANDS"]
