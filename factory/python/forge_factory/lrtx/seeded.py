@@ -265,7 +265,11 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
     rec["inspection"] = {
         "reply": rep["status"],
         "verdict": (rec_ins or {}).get("verdict"),
-        "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get("findings") or []],
+        # run 2 (2026-10-26): the record's top-level findings list is a capped display list (1 entry while SWE1-02 held
+        # the on-target claim); every item's findings are authoritative, so on-target is judged on all of them
+        "findings": [f"{f.get('id')}: {f.get('detail', '')[:240]}" for f in (rec_ins or {}).get("findings") or []]
+        + [f"{iid}: {str(x)[:240]}" for iid, item in sorted(((rec_ins or {}).get("items") or {}).items())
+           for x in item.get("findings") or []],
     }
     if rep["status"] not in ("PASS", "REWORK"):  # F011-T045 m9: why an inspection recorded nothing
         rec["inspection"]["issues"] = [str(i)[:200] for i in rep.get("issues") or []][:5]

@@ -532,3 +532,13 @@ def test_an_input_row_label_may_carry_an_explanation(frozen):
     assert RS.step_claims(frozen, q, {"quote": "", "answer": label}, facts) == []
     got = RS.step_claims(frozen, q, {"quote": "", "answer": "NONE"}, facts)
     assert [c["decision"] for c in got] == ["REFUTED"]
+
+
+def test_an_ambiguity_claim_on_a_recorded_upstream_input_is_refuted(frozen):
+    """Run 2 (2026-10-26): the clean IWDG-LL baseline was rejected because its PENDING safety allocation was called an
+    undocumented ambiguity; the input's recorded row is that documentation. Unrecorded, the claim stands."""
+    facts = RS.baseline_facts(frozen)
+    claim = _c("ambiguity_not_documented", "Safety allocation", "The safety allocation is PENDING; not resolved.")
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-06", [claim], facts)] == ["REFUTED"]
+    gone = {**facts, "gap_rows": {**facts["gap_rows"], "Safety allocation": None}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-06", [claim], gone)] == ["STANDS"]

@@ -113,3 +113,34 @@ def test_preflight_fails_on_a_harness_defect_and_the_run_stops_at_the_no_inspect
     s = seeded.run([HOLDOUT], "m", tmp_path / "report.json", cases=["S3-INVERT", "S4-VACUOUS"], inspector="semantic",
                    max_no_inspection=1)
     assert s["aborted"].startswith("NO_INSPECTION_LIMIT") and len(s["rows"]) == 2
+
+
+def test_on_target_counts_a_detection_listed_only_under_its_item(tmp_path, monkeypatch):
+    """Run 2 (2026-10-26): S1-EFFECT raised the standing SWR-001 claim, but the record's capped top-level findings showed
+    only another SWE1-02 claim and the case was scored off target."""
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    # long enough to fill the item's 200-character top-level entry on its own (engine.record_inspection)
+    other = {"assertion": "other", "target_id": "document", "related_ids": [], "detail": "an unrelated judgement " * 12,
+             "remediation": "fix it"}
+
+    def call(p, **k):
+        item = p["task"].split(":")[-1]
+        if item == "step-effect-e01":  # the requirement's own value, against the seeded (flipped) entry
+            doc = {"quote": "write 0x0000CCCC", "answer": "write", "value": "0x0000CCCC"}
+            return {"doc": doc, "errors": [], "usage": None, "wall_ms": 1.0, "finish_reason": "stop"}
+        if item == "SWE1-02":
+            doc = {"verdict": "FAIL", "claims": [other],
+                   "evidence_checked": p["output_schema"]["properties"]["evidence_checked"]["items"]["enum"][:1]}
+            return {"doc": doc, "errors": [], "usage": None, "wall_ms": 1.0, "finish_reason": "stop"}
+        return seeded._truthful_call(p, **k)
+
+    monkeypatch.setattr(S, "call", call)
+    case = next(c for c in seeded.CATALOGUE if c["id"] == "S1-EFFECT")
+    seeded.PREFLIGHT["ws"] = tmp_path / "h" / "S1-EFFECT" / "workspace"
+    try:
+        r = seeded.evaluate(HOLDOUT, case, "qwen3.6:35b-a3b", tmp_path / "h", "semantic")
+    finally:
+        seeded.PREFLIGHT["ws"] = None
+    assert r["target"] == "SWR-001" and r["detected_by"] == "inspection (on target)", r["inspection"]

@@ -150,6 +150,11 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
                     if "NOT_ATOMIC" in x or "NO_SHALL" in x]
             decision, why = ("CONFIRMED", "; ".join(ears)) if ears else \
                 ("REFUTED", f"{t} has exactly one 'shall' (EARS atomicity check passes)")
+        elif a == "ambiguity_not_documented" and t in INPUTS and f["gap_rows"].get(t):
+            # run 2 (2026-10-26): a PENDING safety allocation called an undocumented ambiguity; the owner-recorded state
+            # of the input is the documented ambiguity at SWE.1, as for the other upstream-input assertions
+            decision, why = "REFUTED", (f"the owner-recorded state of '{t}' is in traceability/upstream_gaps.md "
+                                        f"('{f['gap_rows'][t][:100]}')")
         elif a == "ambiguity_not_documented" and _quoted_open_point(c["detail"], f["open_points"]):
             # Omniverse2 2026-10-26 (stepwise smoke): the claim quoted the ambiguity from the document's own Open
             # points list; an ambiguity quotable from that list is documented, so the claim contradicts the baseline
