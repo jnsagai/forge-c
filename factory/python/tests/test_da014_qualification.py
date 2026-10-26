@@ -1,5 +1,7 @@
 """Frozen qualification tooling fixtures; these tests make no model/readiness claim."""
 
+import json
+
 import pytest
 from forge_factory.afo import qualification as Q
 from forge_factory.afo.durable import Refused, digest, immutable_json
@@ -254,3 +256,25 @@ def test_controlled_comparison_retains_frozen_denominator_and_no_automatic_selec
     # The compared factor must be frozen in the signed manifest before execution.
     with pytest.raises(Refused, match="COMPARISON_FACTOR_NOT_PREREGISTERED"):
         Q.configuration_comparison(unregistered, baseline, candidate)
+
+
+def test_a_targeted_run_has_its_own_frozen_catalogue_and_denominator(tmp_path, monkeypatch):
+    """Owner 2026-10-26 ("go with your suggestion order"): small frozen runs close specific native acceptance tests;
+    the 20x5 protocol stage keeps its 100-trial denominator."""
+    cat = tmp_path / "targeted-cases.json"
+    cat.write_text(json.dumps({"schema": "forge-c/protocol-cases/1", "cases": [
+        {"case_id": "cancel-ack-still-live", "expected": "REJECTED", "recoverable": False, "repeats": 2,
+         "source_case_required": True},
+        {"case_id": "lost-launch-ack", "expected": "PROPOSE_REPAIR", "recoverable": True, "repeats": 1,
+         "source_case_required": True}]}))
+    monkeypatch.setitem(Q.CATALOGUES, "targeted", str(cat))
+    m = Q.freeze("targeted", tmp_path / "campaign.json", identity=identity())
+    assert m["expected_trials"] == 3 and Q.frozen_trials(m["cases"]) == [
+        "cancel-ack-still-live:0", "cancel-ack-still-live:1", "lost-launch-ack:0"]
+    Q.validate(m)
+    report = Q.protocol_report(m, [])
+    assert report["status"] == "NOT_RUN" and report["expected_denominator"] == 3
+    m["cases"][0]["repeats"] = 3  # a changed catalogue no longer matches the frozen denominator
+    with pytest.raises(Refused):
+        Q.validate(m)
+    assert Q.freeze("protocol", tmp_path / "p.json", identity=identity())["expected_trials"] == 100

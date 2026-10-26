@@ -19,7 +19,24 @@ from pathlib import Path
 from ..common import REPO_ROOT, sha256_file, utc_now
 from .durable import Refused, digest, immutable_json
 
-STAGES = ("protocol", "rcc", "benchmark", "operation-24", "operation-72", "operation-168")
+STAGES = ("protocol", "targeted", "rcc", "benchmark", "operation-24", "operation-72", "operation-168")
+CATALOGUES = {"protocol": "factory/qualification/014/protocol-cases.json",
+              # owner 2026-10-26 ("go with your suggestion order"): small frozen runs that close specific native
+              # acceptance tests; their own catalogue and denominator, the 100-trial protocol stage unchanged
+              "targeted": "factory/qualification/014/targeted-cases.json"}
+
+
+def protocol_like(stage: str) -> bool:
+    """Stages whose trials are frozen recovery-planner cases (the 20x5 protocol and targeted runs)."""
+    return stage in CATALOGUES
+
+
+def frozen_trials(cases: list[dict]) -> list[str]:
+    return [f"{c['case_id']}:{i}" for c in cases for i in range(c["repeats"])]
+
+
+def expected_trial_count(stage: str, cases: list[dict]) -> int:
+    return 100 if stage == "protocol" else len(frozen_trials(cases)) if stage == "targeted" else 30 if stage == "benchmark" else 1
 FAULTS = (
     "last-job-success",
     "last-job-failure",
@@ -64,8 +81,8 @@ def freeze(
     if stage not in STAGES:
         raise Refused("UNKNOWN_CAMPAIGN_STAGE")
     key(identity)
-    template = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
-    cases = json.loads(template.read_text())["cases"] if stage == "protocol" else []
+    template = REPO_ROOT / CATALOGUES.get(stage, CATALOGUES["protocol"])
+    cases = json.loads(template.read_text())["cases"] if protocol_like(stage) else []
     from ..lrtx.seeded import CATALOGUE, catalogue_hash
 
     product_cases = []
@@ -84,7 +101,7 @@ def freeze(
                         "model": model_profile,
                     }
                 )
-    count = 100 if stage == "protocol" else 30 if stage == "benchmark" else 1
+    count = expected_trial_count(stage, cases)
     refs = []
     for raw in inputs:
         p = Path(raw)
@@ -157,14 +174,14 @@ def validate(manifest):
     if "protocol_faults" in manifest:
         from .protocol_faults import validate_catalogue
 
-        if manifest["stage"] != "protocol":
+        if not protocol_like(manifest["stage"]):
             raise Refused("QUALIFICATION_FAULT_CATALOGUE_INVALID")
         validate_catalogue(manifest["protocol_faults"], manifest["jobs"])
     if "job_token_reservations" in manifest:
         reservations = manifest["job_token_reservations"]
         expected = {binding["job_id"] for binding in manifest["jobs"].values()}
         if (
-            manifest["stage"] != "protocol"
+            not protocol_like(manifest["stage"])
             or not expected
             or not isinstance(reservations, dict)
             or set(reservations) != expected
@@ -181,7 +198,7 @@ def validate(manifest):
             raise Refused("QUALIFICATION_MISSION_INVALID")
         validate_limits(mission["limits"])
         if (
-            manifest["stage"] != "protocol"
+            not protocol_like(manifest["stage"])
             or not manifest.get("job_token_reservations")
             or any(b["mission_id"] != mission["mission_id"] for b in manifest["jobs"].values())
             or mission["limits"]["max_attempts"] != 0
@@ -192,17 +209,22 @@ def validate(manifest):
             or mission["limits"]["max_corrections"] != 0
         ):
             raise Refused("QUALIFICATION_MISSION_EXCEEDS_FROZEN_WORK")
-    if manifest["stage"] == "protocol":
+    if protocol_like(manifest["stage"]):
         if manifest["identity"]["role"] != "afo-recovery-planner":
             raise Refused("PROTOCOL_CAMPAIGN_ROLE_MISMATCH")
         cases = manifest["cases"]
-        if len(cases) != 20 or len({c["case_id"] for c in cases}) != 20 or any(c["repeats"] != 5 for c in cases):
+        if manifest["stage"] == "protocol" and (
+                len(cases) != 20 or len({c["case_id"] for c in cases}) != 20 or any(c["repeats"] != 5 for c in cases)):
             raise Refused("PROTOCOL_DENOMINATOR_CHANGED")
+        if manifest["stage"] == "targeted" and (
+                not cases or len({c["case_id"] for c in cases}) != len(cases)
+                or any(type(c["repeats"]) is not int or not 1 <= c["repeats"] <= 5 for c in cases)):
+            raise Refused("TARGETED_CATALOGUE_INVALID")
     if manifest["stage"] == "benchmark" and (
         len(manifest["product_cases"]) != 30 or len({c["trial_id"] for c in manifest["product_cases"]}) != 30
     ):
         raise Refused("FROZEN_PRODUCT_COHORT_CHANGED")
-    if manifest["expected_trials"] != (100 if manifest["stage"] == "protocol" else 30 if manifest["stage"] == "benchmark" else 1):
+    if manifest["expected_trials"] != expected_trial_count(manifest["stage"], manifest["cases"]):
         raise Refused("CAMPAIGN_DENOMINATOR_CHANGED")
     for ref in manifest["inputs"]:
         p = Path(ref["path"])
@@ -230,7 +252,7 @@ def initial_reservation(manifest, job, eff, *, store=None):
     from . import authz
 
     sha = validate(manifest)
-    if manifest["stage"] != "protocol" or manifest["source_revision"] != revision():
+    if not protocol_like(manifest["stage"]) or manifest["source_revision"] != revision():
         raise Refused("QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH")
     matches = [b for b in manifest["jobs"].values() if b["job_id"] == job["job_id"]]
     if len(matches) != 1 or any(matches[0].get(k) != job[k] for k in ("case", "case_sha256", "mission_id")):
@@ -291,7 +313,7 @@ def selected_trials(manifest, trial_ids=None):
 
 def preflight(manifest, *, live=False, authorization_ref=None, trial_ids=None):
     sha = validate(manifest)
-    if trial_ids is not None and manifest["stage"] != "protocol":
+    if trial_ids is not None and not protocol_like(manifest["stage"]):
         raise Refused("QUALIFICATION_TRIAL_SCOPE_ONLY_FOR_PROTOCOL")
     selected = selected_trials(manifest, trial_ids)
     blockers = []
@@ -301,15 +323,17 @@ def preflight(manifest, *, live=False, authorization_ref=None, trial_ids=None):
         blockers.append("EXACT_MODEL_PROFILE_NOT_PROVISIONED")
     if not manifest["inputs"]:
         blockers.append("FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED")
-    if manifest["stage"] == "protocol" and len(manifest["jobs"]) != 100:
-        blockers.append("APPROVED_100_JOB_BINDINGS_NOT_PROVISIONED")
-    elif manifest["stage"] == "protocol":
-        expected = {f"{case['case_id']}:{repeat}" for case in manifest["cases"] for repeat in range(5)}
-        if set(manifest["jobs"]) != expected or len({b["job_id"] for b in manifest["jobs"].values()}) != 100:
+    n = manifest["expected_trials"]
+    if protocol_like(manifest["stage"]) and len(manifest["jobs"]) != n:
+        blockers.append("APPROVED_100_JOB_BINDINGS_NOT_PROVISIONED" if manifest["stage"] == "protocol"
+                        else "APPROVED_TARGETED_JOB_BINDINGS_NOT_PROVISIONED")
+    elif protocol_like(manifest["stage"]):
+        expected = set(frozen_trials(manifest["cases"]))
+        if set(manifest["jobs"]) != expected or len({b["job_id"] for b in manifest["jobs"].values()}) != n:
             blockers.append("PROTOCOL_JOB_IDENTITIES_MUST_BE_UNIQUE_AND_MATCH_FROZEN_TRIALS")
     if (manifest["stage"] in ("benchmark", "rcc") or manifest["stage"].startswith("operation-")) and not manifest["jobs"]:
         blockers.append("APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED")
-    if manifest["stage"] == "protocol":
+    if protocol_like(manifest["stage"]):
         from .qualification_inputs import readiness as input_readiness
 
         for ref in manifest["inputs"]:
@@ -396,7 +420,7 @@ def provision(manifest, authorization_ref, *, store=None, limit=8, trial_ids=Non
     readiness = preflight(manifest, live=True, authorization_ref=authorization_ref, trial_ids=trial_ids)
     if readiness["blockers"]:
         return readiness
-    if manifest["stage"] != "protocol" or not 1 <= limit <= 32:
+    if not protocol_like(manifest["stage"]) or not 1 <= limit <= 32:
         raise Refused("PROTOCOL_PROVISIONING_BOUND_REQUIRED")
     from . import local_agent
     from .mission_ledger import MissionLedger
@@ -513,7 +537,7 @@ def step(manifest, authorization_ref, destination, *, store=None, trial_ids=None
         return report
     if manifest["stage"] in ("benchmark", "rcc"):
         return product_step(manifest, destination, store=store)
-    if manifest["stage"] != "protocol":
+    if not protocol_like(manifest["stage"]):
         return {**report, "status": "BLOCKED", "blockers": ["USE_EXISTING_AFO_SOAK_ENTRYPOINT_FOR_OPERATIONAL_STAGE"]}
     from . import local_agent
     from .policy import load
@@ -524,7 +548,7 @@ def step(manifest, authorization_ref, destination, *, store=None, trial_ids=None
     dest = Path(destination)
     dest.mkdir(parents=True, exist_ok=True)
     for case in manifest["cases"]:
-        for repeat in range(5):
+        for repeat in range(case["repeats"]):
             trial = f"{case['case_id']}:{repeat}"
             if trial not in selected_trials(manifest, trial_ids):
                 continue
@@ -715,7 +739,8 @@ def load_rows(directory):
 
 def protocol_report(manifest, rows):
     sha = validate(manifest)
-    expected = {f"{c['case_id']}:{i}": c for c in manifest["cases"] for i in range(5)}
+    expected = {f"{c['case_id']}:{i}": c for c in manifest["cases"] for i in range(c["repeats"])}
+    n = manifest["expected_trials"]
     ids = [r["trial_id"] for r in rows]
     if len(set(ids)) != len(ids) or any(i not in expected for i in ids):
         raise Refused("PROTOCOL_TRIAL_IDENTITY_CHANGED")
@@ -769,11 +794,11 @@ def protocol_report(manifest, rows):
         "status": "NOT_RUN"
         if not rows
         else "PASS"
-        if len(rows) == 100 and correct == 100
+        if len(rows) == n and correct == n
         else "FAIL"
-        if failures or len(rows) == 100
+        if failures or len(rows) == n
         else "INCOMPLETE",
-        "expected_denominator": 100,
+        "expected_denominator": n,
         "observed_denominator": len(rows),
         "correct_outcomes": correct,
         "useful_plan_count": useful,
@@ -1035,7 +1060,7 @@ def main(argv=None):
             out = capability_report(manifest, load_rows(args.results), args.out, reference_path=reference["path"])
         else:
             rows = load_rows(args.results) if args.results else []
-            if manifest["stage"] == "protocol":
+            if protocol_like(manifest["stage"]):
                 out = protocol_report(manifest, rows)
             elif manifest["stage"] == "benchmark":
                 out = product_report(manifest, rows)

@@ -124,8 +124,10 @@ def reference(root: Path, compiler: Path) -> dict:
     return report
 
 
-def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, profile=PROFILE, qualification_job_tokens=None):
-    """Materialize all 100 exact source cases; administrative admission remains separate."""
+def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, profile=PROFILE, qualification_job_tokens=None,
+            stage="protocol"):
+    """Materialize every exact source case of the stage's frozen catalogue (protocol: 100; targeted: its own size);
+    administrative admission remains separate."""
     from ..lrtx.profile import load as load_profile
     from ..registry.agents import load_agents
     from .durable_agent import request_material
@@ -157,7 +159,11 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO_ROOT, text=True).strip()),
     }
-    template_path = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
+    from .qualification import CATALOGUES
+
+    if stage not in CATALOGUES:
+        raise Refused("QUALIFICATION_INPUT_STAGE_INVALID")
+    template_path = REPO_ROOT / CATALOGUES[stage]
     catalogue = json.loads(template_path.read_text())["cases"]
     registry_default = next(a.max_stage_tokens for a in load_agents(include_afo=True)[0] if a.id == "afo-recovery-planner")
     reserved = registry_default if qualification_job_tokens is None else qualification_job_tokens
@@ -167,7 +173,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     counterexample = report["rows"]["seeded"]
     for scenario in catalogue:
         name = scenario["case_id"]
-        for repeat in range(5):
+        for repeat in range(scenario["repeats"]):
             trial = f"{name}:{repeat}"
             directory = root / "cases" / trial.replace(":", "-")
             ws = directory / "workspace"
@@ -385,6 +391,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
         "schema": "forge-c/protocol-inputs-014/1",
         "scope": "FROZEN_SEEDED_INPUTS_NOT_NATIVE_QUALIFICATION",
         "campaign_id": campaign_id,
+        "stage": stage,
         "mission_id": mission,
         "root": str(root),
         "template_sha256": sha256_file(template_path),
@@ -418,20 +425,24 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
 
 def readiness(inputs, *, protocol_faults=None, trial_ids=None):
     """Report actual input/recipe prerequisites; this never grants native authority."""
+    from .qualification import CATALOGUES
+
     root = Path(inputs["root"]).resolve()
-    template = REPO_ROOT / "factory/qualification/014/protocol-cases.json"
+    stage = inputs.get("stage", "protocol")  # inputs prepared before targeted runs existed are protocol inputs
+    template = REPO_ROOT / CATALOGUES[stage]
     if inputs.get("schema") != "forge-c/protocol-inputs-014/1" or inputs["template_sha256"] != sha256_file(template):
         raise Refused("QUALIFICATION_INPUT_TEMPLATE_CHANGED")
     cases = json.loads(template.read_text())["cases"]
-    expected = {f"{case['case_id']}:{i}" for case in cases for i in range(5)}
+    expected = {f"{case['case_id']}:{i}" for case in cases for i in range(case["repeats"])}
+    n = 100 if stage == "protocol" else len(expected)
     selected = expected if trial_ids is None else set(trial_ids)
     if not selected or not selected <= expected:
         raise Refused("QUALIFICATION_TRIAL_SCOPE_INVALID")
     if (
-        len(inputs["trials"]) != 100
+        len(inputs["trials"]) != n
         or {t["trial_id"] for t in inputs["trials"]} != expected
         or set(inputs["jobs"]) != expected
-        or len({j["job_id"] for j in inputs["jobs"].values()}) != 100
+        or len({j["job_id"] for j in inputs["jobs"].values()}) != n
     ):
         raise Refused("QUALIFICATION_INPUT_DENOMINATOR_CHANGED")
     oracle = inputs["reference_report"]
@@ -462,7 +473,7 @@ def readiness(inputs, *, protocol_faults=None, trial_ids=None):
     return {
         "status": "BLOCKED" if blockers else "INPUTS_PREPARED_NOT_NATIVE_QUALIFIED",
         "blockers": sorted(blockers),
-        "source_cases": 100,
+        "source_cases": n,
         "evaluated_trial_count": len(selected),
         "inference_requests": 0,
     }
@@ -479,6 +490,8 @@ def main(argv=None):
     )
     ap.add_argument("--profile", default=PROFILE, help="pinned local profile the frozen cases bind (default: %(default)s)")
     ap.add_argument("--model", default=MODEL, help="model of that profile the frozen cases bind (default: %(default)s)")
+    ap.add_argument("--stage", choices=("protocol", "targeted"), default="protocol",
+                    help="frozen case catalogue: the 20x5 protocol or the targeted runs (default: %(default)s)")
     args = ap.parse_args(argv)
     result = prepare(
         args.out,
@@ -488,6 +501,7 @@ def main(argv=None):
         qualification_job_tokens=args.qualification_job_tokens,
         profile=args.profile,
         model=args.model,
+        stage=args.stage,
     )
     print(
         json.dumps(

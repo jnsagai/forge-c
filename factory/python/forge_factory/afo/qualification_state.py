@@ -45,7 +45,7 @@ def load(job):
     binding = manifest.get("jobs", {}).get(trial) or {}
     if (
         digest(manifest) != sha
-        or manifest.get("stage") != "protocol"
+        or manifest.get("stage") not in ("protocol", "targeted")
         or manifest.get("source_revision") != (job.get("factory_revision") or {}).get("commit")
         or any(binding.get(k) != job[k] for k in ("job_id", "case_sha256", "mission_id"))
     ):

@@ -203,7 +203,7 @@ def enroll(manifest, authorization_ref, *, store=None, trial_ids=None, limit=8):
     readiness = Q.preflight(manifest, live=True, authorization_ref=authorization_ref, trial_ids=trial_ids)
     if readiness["blockers"]:
         return readiness
-    if manifest["stage"] != "protocol" or not 1 <= limit <= 32:
+    if not Q.protocol_like(manifest["stage"]) or not 1 <= limit <= 32:
         raise Refused("PROTOCOL_INTAKE_BOUND_REQUIRED")
     mission = manifest.get("mission")
     if not mission or not manifest.get("job_token_reservations"):
