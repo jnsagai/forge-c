@@ -56,6 +56,9 @@ BUDGET = re.compile(r"\bat most \d+ bytes of (?:flash|static RAM|stack)\b|\buse 
 # the 64-byte static RAM budget"; a budget is a requirement naming the resource with a byte bound, in any phrasing
 BYTES = re.compile(r"\b\d+(?:-| )bytes?\b", re.I)
 REQ_LINE = re.compile(r"^- \*\*(SWR-\d{3})\*\*\s+(.+)$")
+# a verification's criterion clause after the method: an asserted, observable outcome
+CRITERION = re.compile(r";[^;]*\b(?:is|are|equals?|occurs?|returns?|remains?|reads?|holds?|contains?|matches|stays?)\b",
+                       re.I)
 
 
 def baseline_facts(ws: Path) -> dict:
@@ -74,7 +77,7 @@ def baseline_facts(ws: Path) -> dict:
     gaps = gaps_p.read_text() if gaps_p.is_file() else ""
     csv = csv_p.read_text() if csv_p.is_file() else ""
     # a label may carry an explanation (WO-0008C: "HSI contract (hardware/software interface)")
-    gap_rows = {i: re.search(rf"^\| {re.escape(i)}(?: \([^|]*\))? \| (.+?) \|", gaps, re.M) for i in INPUTS}
+    gap_rows = {i: re.search(rf"^\| (?:{input_label_pattern(i)}) \| (.+?) \|", gaps, re.M) for i in INPUTS}
     up_to_sw = set(re.findall(r"^\| [^|]+ \| ((?:SWR-\d{3}(?:, )?)+) \|", gaps, re.M))
     traced_up = {s for row in up_to_sw for s in re.findall(r"SWR-\d{3}", row)}
     traced_sw = set(re.findall(r"^\| (SWR-\d{3}) \| [^|]+ \|$", gaps, re.M))
@@ -128,8 +131,10 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
             # policy: a requirement assertion is about a requirement; aimed at an input or the document it is mis-targeted
             decision, why = "REFUTED", f"'{a}' concerns a requirement, but the claim names '{t}', which is not one"
         elif a == "requirement_not_verifiable":
-            # the author gate's own rule (lrtx.swe1.validate_group): a verification states a pass criterion
-            if "pass" in r["verification"].lower():
+            # the author gate's own rule (lrtx.swe1.validate_group): a verification states a pass criterion; learning
+            # set 2 (h005): '<method>; <observable outcome>' states it too ('no IWDG register write ... occurs before
+            # an initialisation request')
+            if "pass" in r["verification"].lower() or CRITERION.search(r["verification"]):
                 decision, why = "REFUTED", f"{t} states its pass criterion: '{r['verification'][:120]}'"
             else:
                 decision, why = "CONFIRMED", f"{t} has no pass criterion in its verification"
@@ -449,12 +454,29 @@ def _states_effect(e: dict) -> bool:
     if e["op"] in OPPOSITE:
         return bool(re.search(rf"\b{e['op']}\b[^.;]*\b{f}\b", s, re.I)) and \
             not re.search(rf"\b{OPPOSITE[e['op']]}\b[^.;]*\b{f}\b", s, re.I)
+    if parameterised_write(s, e["field"]):
+        return True
     v = e["value"]
     want = _numbers(v) if isinstance(v, str) else ({v} if isinstance(v, int) else set())
     if not want:
         return False
     return want <= _numbers(s) or (bool(re.search(r"\brequested value\b", s, re.I)) and want <= set(e["args"])) or \
         in_stated_range(s, v)
+
+
+PARAMETER_VALUE = re.compile(r"\b(?:requested|configured|given|supplied|selected|caller[- ]supplied)\s+"
+                             r"(?:values?|prescaler|reload|key|divider|setting)s?\b", re.I)
+
+
+def parameterised_write(statement: str, field: str) -> bool:
+    """Learning set 2 (2026-10-26, IWDG-HAL h003/rc1/rc3): 'shall write the configured prescaler (encoding) to
+    IWDG_PR.PR' states the write of whatever value the caller configured, so every value the effects contract lists for
+    that field is stated; so does 'with the configured values retained in IWDG_PR.PR' (the field holds the configured
+    value). Only the clause that names the field counts, and it must write, or keep in the field, a parameter."""
+    f = re.escape(field)
+    return any(re.search(r"\b(?:writ(?:e|es|ing)|retain(?:s|ed)?|hold(?:s)?|contain(?:s)?)\b", c, re.I)
+               and PARAMETER_VALUE.search(c) and re.search(rf"\b{f}\b", c)
+               for c in re.split(r"[.;](?=\s|$)", statement))  # sentence ends only: REG.FIELD keeps its dot
 
 
 def entry_claims(kind: str, doc: dict, rows: list[dict], facts: dict) -> list[dict]:
@@ -496,9 +518,23 @@ def gap_labels(ws: Path) -> list[str]:
     return sorted({c.strip() for c in cells if not c.strip().startswith(("SWR-", "-", ":"))})
 
 
+def input_label_pattern(inp: str) -> str:
+    """A gaps-table row label that records an upstream input: its name, optionally followed by an explanation in
+    parentheses or after a colon. Learning set 2 (2026-10-26): 'Budgets: flash 4096 bytes, ...' (h005) and one row per
+    resource ('Flash budget', 'Static RAM budget', 'Stack budget'; b009) record the Budgets input too."""
+    pat = rf"{re.escape(inp)}(?: \([^|]*\)|:[^|]*)?"
+    if inp == "Budgets":
+        pat += r"|(?:Flash|Static RAM|RAM|Stack)(?: memory)? budget(?: \([^|]*\))?"
+    return pat
+
+
 def input_label(labels: list[str], inp: str) -> str | None:
-    """The gaps-table row label of an upstream input: its name, optionally followed by an explanation in parentheses."""
-    return next((x for x in labels if x == inp or x.startswith(inp + " (")), None)
+    """The first gaps-table row label that records an upstream input (see input_label_pattern)."""
+    return next((x for x in labels if input_recorded_by(x, inp)), None)
+
+
+def input_recorded_by(label: str, inp: str) -> bool:
+    return bool(re.fullmatch(input_label_pattern(inp), label.strip(), re.I if inp == "Budgets" else 0))
 
 
 def step_schema(answers: list[str], value: bool = False) -> dict:
@@ -605,7 +641,7 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
             ("STANDS", f"no startup requirement names {f}")
         return [c]
     if q["id"].startswith("input-"):
-        if a == input_label(q["answers"], q["input"]):
+        if a != "NONE" and input_recorded_by(a, q["input"]):
             return []
         c = _claim("upstream_gap_not_recorded", q["input"],
                    f"traceability/upstream_gaps.md records no state for the upstream input '{q['input']}'",

@@ -856,3 +856,53 @@ def test_what_a_requirement_leaves_or_omits_is_not_its_purpose(frozen):
     got = RS.behaviour_claims(start, {"quote": "", "answer": "SWR-008"}, {**facts, "reqs": reqs})
     assert [c["decision"] for c in got] == ["STANDS"]
     assert not RS._sequence(reqs["SWR-006"]["statement"], start)
+
+
+def test_learning_set_2_a_configured_value_write_states_every_listed_value(frozen):
+    """Learning set 2 (2026-10-26, IWDG-HAL h003/rc1/rc3): 'shall write the configured prescaler (encoding) to IWDG_PR.PR'
+    and 'with the configured values retained in IWDG_PR.PR' state each value the effects contract lists; a requirement
+    that writes a fixed value, or whose clause does not name the field, still contradicts another value."""
+    def entry(statement, value, field="IWDG_PR.PR", op="write"):
+        return {"statement": statement, "field": field, "op": op, "value": value, "args": []}
+
+    assert RS._states_effect(entry("When HAL_IWDG_Init is requested with a valid configuration, the IWDG driver shall "
+                                   "write the configured prescaler to IWDG_PR.PR after enabling register write access.", 4))
+    assert RS._states_effect(entry("the IWDG driver shall return HAL_TIMEOUT with the configured values retained in "
+                                   "IWDG_PR.PR and IWDG_RLR.RL.", 2748, field="IWDG_RLR.RL"))
+    assert not RS._states_effect(entry("the IWDG driver shall write 0x5555 to IWDG_KR.KEY. It shall write the configured "
+                                       "reload to IWDG_RLR.RL.", 4))  # the parameter clause names another field
+    assert not RS._states_effect(entry("the IWDG driver shall write 3 to IWDG_PR.PR.", 4))
+    assert not RS._states_effect(entry("the IWDG driver shall clear the configured prescaler in IWDG_PR.PR.", 1, op="set"))
+
+
+def test_learning_set_2_budgets_recorded_per_resource_or_after_a_colon(frozen):
+    """Learning set 2 (b009, h005): one row per resource ('Flash budget', ...) or 'Budgets: flash 4096 bytes, ...' records
+    the Budgets input; a row about another input does not."""
+    for label in ("Budgets", "Budgets (owner targets)", "Budgets: flash 4096 bytes, static RAM 64 bytes, stack 128 bytes",
+                  "Flash budget", "Static RAM budget", "Stack budget"):
+        assert RS.input_recorded_by(label, "Budgets"), label
+    for label in ("HSI contract", "Safety allocation", "Budget review notes"):
+        assert not RS.input_recorded_by(label, "Budgets"), label
+    gaps = frozen / "traceability/upstream_gaps.md"
+    text = gaps.read_text()
+    row = next(x for x in text.splitlines() if x.startswith("| Budgets"))
+    gaps.write_text(text.replace(row, row.replace("| Budgets", "| Flash budget", 1)))
+    facts = RS.baseline_facts(frozen)
+    assert facts["gap_rows"]["Budgets"]
+    q = next(x for x in RS.step_questions(frozen, facts) if x["id"] == "input-budgets")
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": "Flash budget"}, facts) == []
+
+
+def test_learning_set_2_a_method_and_an_observable_outcome_is_a_pass_criterion(frozen):
+    """Learning set 2 (h005 SWR-010): '<method>; <observable outcome>' states a pass criterion; a method alone does not."""
+    facts = RS.baseline_facts(frozen)
+    swr = sorted(facts["reqs"])[0]
+
+    def judged(verification):
+        f = {**facts, "reqs": {**facts["reqs"], swr: {**facts["reqs"][swr], "verification": verification}}}
+        return RS.adjudicate(frozen, "SWE1-02", [_c("requirement_not_verifiable", swr)], f)[0]["decision"]
+
+    assert judged("SWE.6 Robot suite with reset evidence; no IWDG register write occurs before an initialisation "
+                  "request.") == "REFUTED"
+    assert judged("SWE.6 Robot suite using the build map; driver flash occupancy is at most 4096 bytes.") == "REFUTED"
+    assert judged("SWE.6 Robot suite with reset evidence.") == "CONFIRMED"
