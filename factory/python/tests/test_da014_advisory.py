@@ -3,6 +3,7 @@ profile's structured.advisory_continue, a phase whose whole bounded ladder is ex
 extensions, stall detection) and that has a frozen baseline continues to the next phase; its unresolved findings and
 attempt record are registered for the end-of-run human review. The release rule is unchanged."""
 import json
+import re
 
 import pytest
 from forge_factory.inspection import gate as G
@@ -66,7 +67,8 @@ def test_the_advisory_node_is_wired_only_in_the_advisory_profile_graph():
     st = {"phases": [], "inspect_phases": [], "reinspect": False, "model": "m"}
     plain, _ = build("WO-X", layer="LL", trace=True, peripheral="iwdg", structured=st)
     g, _ = build("WO-X", layer="LL", trace=True, peripheral="iwdg", structured={**st, "advisory": True})
-    assert "_advisory" not in base and "_advisory" not in plain
+    node = re.compile(r"\bswe\d_advisory\b")  # node names only: paths in the graph may contain the test's name
+    assert not node.search(base) and not node.search(plain)
     for n in range(1, 7):
         nxt = "release_manager" if n == 6 else None
         assert f"  swe{n}_route -> swe{n}_advisory\n" in g and f"  swe{n}_route -> upstream_swe1\n" in base
