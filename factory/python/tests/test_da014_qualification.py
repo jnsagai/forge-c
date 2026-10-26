@@ -126,7 +126,7 @@ def test_role_capability_is_exact_and_independent_not_context_advertising(tmp_pa
         "status": "PASS",
         "execution_host": "omniverse2",
         "independent_oracle_refs": [{"producer": "reference", "path": str(oracle), "sha256": sha256_file(oracle)}],
-        "envelope": {"max_obligations": 1},
+        "envelope": {"max_obligations": 1, "work_classes": ["PROTOCOL_DIAGNOSIS"]},
     }
     immutable_json(r, report)
     from forge_factory.common import sha256_file
@@ -140,6 +140,29 @@ def test_role_capability_is_exact_and_independent_not_context_advertising(tmp_pa
         C.require(ref, ident, semantic_obligations=2)
     with pytest.raises(Refused):
         C.require(None, ident)
+    # A receipt measured on seeded protocol fixtures admits no product work.
+    assert C.require(ref, ident, semantic_obligations=1, work_class="PROTOCOL_DIAGNOSIS")["qualified"]
+    with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
+        C.require(ref, ident, semantic_obligations=1, work_class="PRODUCT_DIAGNOSIS")
+    unclassed = tmp_path / "unclassed.json"
+    immutable_json(unclassed, {**report, "envelope": {"max_obligations": 1}})
+    with pytest.raises(Refused, match="ROLE_CAPABILITY_WORK_CLASS_UNMEASURED"):
+        C.record(ident, report_path=unclassed, report_sha256=sha256_file(unclassed), expected_manifest_sha256="m")
+
+
+def test_every_role_needs_a_measured_objective_never_an_assumed_size():
+    planner = {"selected_obligations": ["USPEC-001"], "work_class": "PROTOCOL_DIAGNOSIS"}
+    assert C.measured_objective(planner, "afo-recovery-planner") == (1, "PROTOCOL_DIAGNOSIS")
+    assert C.measured_objective({"semantic_obligations": 3, "work_class": "PRODUCT"}, "swe3-author") == (3, "PRODUCT")
+    for job, role in [
+        ({"work_class": "PRODUCT"}, "swe3-author"),  # author/inspector size unmeasured: no implicit 1
+        ({"work_class": "MAINTENANCE"}, "afo-factory-maintainer"),
+        ({"semantic_obligations": True, "work_class": "PRODUCT"}, "swe3-inspector"),
+        ({"selected_obligations": ["USPEC-001"]}, "afo-recovery-planner"),  # work class unmeasured
+        ({"selected_obligations": ["USPEC-001"], "work_class": "ANY"}, "afo-recovery-planner"),
+    ]:
+        with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
+            C.measured_objective(job, role)
 
 
 def test_operational_campaign_cannot_pass_idle_duration_without_faults_and_later_intake(tmp_path, monkeypatch):

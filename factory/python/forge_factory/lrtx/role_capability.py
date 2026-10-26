@@ -17,6 +17,8 @@ IDENTITY = (
     "sampling",
     "task_class",
 )
+# A receipt admits only the work it was measured on: protocol fixtures never qualify product or maintenance work.
+WORK_CLASSES = ("PROTOCOL_DIAGNOSIS", "PRODUCT_DIAGNOSIS", "PRODUCT", "MAINTENANCE")
 
 
 def key(identity):
@@ -55,6 +57,9 @@ def record(identity, *, report_path, report_sha256, expected_manifest_sha256):
     envelope = report.get("envelope") or {}
     if type(envelope.get("max_obligations")) is not int or envelope["max_obligations"] < 1:
         raise Refused("ROLE_CAPABILITY_ENVELOPE_UNMEASURED")
+    classes = envelope.get("work_classes")
+    if not isinstance(classes, list) or not classes or not set(classes) <= set(WORK_CLASSES):
+        raise Refused("ROLE_CAPABILITY_WORK_CLASS_UNMEASURED")
     for ref in report["independent_oracle_refs"]:
         if (
             not isinstance(ref, dict)
@@ -77,7 +82,7 @@ def record(identity, *, report_path, report_sha256, expected_manifest_sha256):
     return {"path": str(out), "sha256": sha256_file(out)}
 
 
-def require(ref, identity, *, semantic_obligations=None):
+def require(ref, identity, *, semantic_obligations=None, work_class=None):
     if not ref:
         raise Refused("CAPABILITY_LIMIT", "role has no measured independent capability receipt")
     p = Path(ref["path"])
@@ -97,7 +102,22 @@ def require(ref, identity, *, semantic_obligations=None):
             raise Refused("ROLE_CAPABILITY_ORACLE_STALE")
     if semantic_obligations is not None and semantic_obligations > rec["envelope"]["max_obligations"]:
         raise Refused("CAPABILITY_LIMIT", "coherent objective exceeds measured semantic complexity")
+    if work_class is not None and work_class not in rec["envelope"].get("work_classes", []):
+        raise Refused("CAPABILITY_LIMIT", "work class was not measured by this capability receipt")
     return rec
+
+
+def measured_objective(job, role):
+    """Semantic size and work class of the job's coherent objective; unmeasured work is a typed limit, never 1."""
+    if role == "afo-recovery-planner" and job.get("selected_obligations"):
+        size = len(job["selected_obligations"])
+    else:
+        size = job.get("semantic_obligations")
+    if type(size) is not int or size < 1:
+        raise Refused("CAPABILITY_LIMIT", "semantic complexity of the objective is unmeasured")
+    if job.get("work_class") not in WORK_CLASSES:
+        raise Refused("CAPABILITY_LIMIT", "work class of the objective is unmeasured")
+    return size, job["work_class"]
 
 
 def admit_job(job, role, *, input_tokens, output_tokens, body=None):
@@ -138,11 +158,11 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
             raise Refused("ROLE_CAPABILITY_REASONING_OR_SCHEMA_CHANGED")
         if any(body.get(k) != v for k, v in identity["sampling"].items()):
             raise Refused("ROLE_CAPABILITY_SAMPLING_CHANGED")
-    rec = (
-        {"qualification_only": True}
-        if campaign
-        else require(entry["ref"], identity, semantic_obligations=1 if role == "afo-recovery-planner" else None)
-    )
+    if campaign:
+        rec = {"qualification_only": True}
+    else:
+        size, work_class = measured_objective(job, role)
+        rec = require(entry["ref"], identity, semantic_obligations=size, work_class=work_class)
     if input_tokens + output_tokens > identity["context_tokens"]:
         raise Refused("CAPABILITY_LIMIT", "complete serialized request exceeds qualified context allowance")
     return rec

@@ -129,3 +129,30 @@ def test_question_answers_drop_only_exact_duplicate_list_items(signed):
     proposal = json.loads(raw)
     assert proposal["decision"] == "NEEDS_EVIDENCE" and proposal["missing_evidence"] == [item]
     assert proposal["evidence_refs"] == [alias]
+
+
+def test_capability_report_follows_the_official_report_and_cannot_qualify_a_partial_campaign(signed, tmp_path):
+    from forge_factory.afo.durable import digest
+    from forge_factory.common import sha256_file
+    from forge_factory.lrtx import role_capability as C
+
+    p = signed
+    job, _, packet = bind(p, "lost-launch-ack")
+    receipt = admitted_repair(p, job, packet, "software/hal/reg32.c")
+    Executions(p.store).adopt(job["job_id"], ["typed-native-run"])
+    row = recorded(p, tmp_path, "lost-launch-ack", job, receipt)
+    oracle = reference(tmp_path)
+    audit = A.audit(p.store, p.manifest, "lost-launch-ack:0", row, reference_path=oracle)
+    out = Q.capability_report(p.manifest, [json.loads(row.read_text())], tmp_path / "capability.json", reference_path=oracle)
+    report = json.loads((tmp_path / "capability.json").read_text())
+    assert out["status"] == report["status"] != "PASS" and report["official_protocol_report"]["observed_denominator"] == 1
+    assert report["envelope"] == {"max_obligations": 1, "work_classes": ["PROTOCOL_DIAGNOSIS"]}
+    assert report["identity_sha256"] == C.key(p.manifest["identity"])
+    assert [o["sha256"] for o in report["independent_oracle_refs"]] == [sha256_file(oracle), audit["sha256"]]
+    with pytest.raises(Refused, match="CAPABILITY_NOT_INDEPENDENTLY_QUALIFIED"):
+        C.record(p.manifest["identity"], report_path=out["path"], report_sha256=out["sha256"],
+                 expected_manifest_sha256=digest(p.manifest))
+    bad = tmp_path / "model-oracle.json"
+    bad.write_text(json.dumps({"producer": "MODEL"}))
+    with pytest.raises(Refused, match="AUDIT_REFERENCE_ORACLE_INVALID"):
+        Q.capability_report(p.manifest, [json.loads(row.read_text())], tmp_path / "other.json", reference_path=bad)

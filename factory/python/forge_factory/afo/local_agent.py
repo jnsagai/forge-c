@@ -142,12 +142,16 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             if doc.get("incident", {}).get("order_id") != order["order_id"]:
                 raise QueueError("MAINTENANCE_CASE_ORDER_MISMATCH", order["order_id"])
             job["durable_native"] = "maintenance-1"
+            job["work_class"] = "MAINTENANCE"
         else:
             job["durable_protocol"] = "1.0"
             from .diagnosis_packet import load as load_packet
 
             packet = load_packet(doc["packet_ref"])
             job["selected_obligations"] = sorted(packet["obligations"])[:1]
+            fixture = doc.get("qualification_fixture") or {}
+            seeded = fixture.get("source_kind") == "SEEDED_PROTOCOL_NOT_PRODUCT"
+            job["work_class"] = "PROTOCOL_DIAGNOSIS" if seeded else "PRODUCT_DIAGNOSIS"
         job["role_capabilities"] = man.get("role_capabilities") or {}
         job["qualified_local_alternatives"] = man.get("qualified_local_alternatives") or []
         job["qualification_manifest_sha256"] = doc.get("qualification_manifest_sha256")

@@ -786,6 +786,44 @@ def protocol_report(manifest, rows):
     }
 
 
+def capability_report(manifest, rows, out, *, reference_path):
+    """Independent role-capability report consumed by role_capability.record(); grants nothing by itself.
+
+    Status follows the official protocol report (PASS needs all 100 trials). Oracle refs are the frozen reference
+    harness report and every trial's bound REFERENCE_HARNESS audit, never a model self-assessment. The envelope is
+    the measured objective: one selected obligation per job, PROTOCOL_DIAGNOSIS work only (seeded fixtures do not
+    qualify product, author, inspector or maintenance work).
+    """
+    from ..lrtx.role_capability import key
+    from .qualification_capture import independent_audit
+
+    if manifest["stage"] != "protocol":
+        raise Refused("CAPABILITY_REPORT_REQUIRES_PROTOCOL_CAMPAIGN")
+    official = protocol_report(manifest, rows)
+    reference = Path(reference_path)
+    if reference.is_symlink() or json.loads(reference.read_text()).get("producer") != "REFERENCE_HARNESS":
+        raise Refused("AUDIT_REFERENCE_ORACLE_INVALID")
+    oracles = [{"producer": "reference", "path": str(reference.resolve()), "sha256": sha256_file(reference)}]
+    for row in sorted(rows, key=lambda r: r["trial_id"]):
+        audit = independent_audit(None, manifest, row["trial_id"], row)
+        if audit:
+            oracles.append({"producer": "reference", **audit["audit_artifact"]})
+    report = {
+        "schema": "forge-c/role-capability-report/1",
+        "manifest_sha256": digest(manifest),
+        "identity": manifest["identity"],
+        "identity_sha256": key(manifest["identity"]),
+        "status": official["status"],
+        "execution_host": manifest["execution_host"],
+        "independent_oracle_refs": oracles,
+        "envelope": {"max_obligations": 1, "work_classes": ["PROTOCOL_DIAGNOSIS"]},
+        "official_protocol_report": {k: official[k] for k in ("status", "observed_denominator", "correct_outcomes",
+                                                              "failures", "missing")},
+    }
+    immutable_json(Path(out), report)
+    return {"path": str(out), "sha256": sha256_file(Path(out)), "status": report["status"]}
+
+
 def product_report(manifest, rows):
     validate(manifest)
     planned = {c["trial_id"] for c in manifest["product_cases"]}
@@ -912,7 +950,7 @@ def gpio_admission(prerequisites):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("command", choices=["freeze", "dry-run", "enroll", "provision", "step", "report"])
+    ap.add_argument("command", choices=["freeze", "dry-run", "enroll", "provision", "step", "report", "capability-report"])
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--stage", choices=STAGES, default="protocol")
     ap.add_argument("--identity", type=Path)
@@ -929,10 +967,11 @@ def main(argv=None):
         "--job-token-reservations", type=Path, help="explicit per-job initial qualification allowances, frozen before signing"
     )
     ap.add_argument("--results", type=Path)
+    ap.add_argument("--out", type=Path, help="capability-report: immutable report path")
     ap.add_argument("--authorization-ref")
     ap.add_argument("--model-profile")
     args = ap.parse_args(argv)
-    if args.trial and args.command in ("freeze", "report"):
+    if args.trial and args.command in ("freeze", "report", "capability-report"):
         ap.error("--trial scopes readiness/provisioning/stepping; freeze and report always retain the whole campaign")
     if args.command == "freeze":
         if args.identity is None:
@@ -963,6 +1002,15 @@ def main(argv=None):
             if args.results is None:
                 ap.error("--results required")
             out = step(manifest, args.authorization_ref, args.results, trial_ids=args.trial)
+        elif args.command == "capability-report":
+            if args.results is None or args.out is None:
+                ap.error("--results and --out required")
+            from .qualification_intake import authenticated_inputs
+
+            reference = authenticated_inputs(manifest)[2]["reference_report"]
+            if sha256_file(Path(reference["path"])) != reference["sha256"]:
+                raise Refused("QUALIFICATION_REFERENCE_REPORT_CHANGED")
+            out = capability_report(manifest, load_rows(args.results), args.out, reference_path=reference["path"])
         else:
             rows = load_rows(args.results) if args.results else []
             if manifest["stage"] == "protocol":

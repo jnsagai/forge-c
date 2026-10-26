@@ -47,6 +47,7 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         (a for a in manifest.get("qualified_local_alternatives") or [] if a.get("model_profile") == job["model"]), None
     )
     job["role_capabilities"] = (selected or manifest).get("role_capabilities") or {}
+    job["work_class"] = "PRODUCT"  # per-phase semantic size is not measured yet: admission refuses, never guesses
     job["profile"] = manifest.get("profile")
     if job["profile"]:
         from ..lrtx.profile import load as load_profile
