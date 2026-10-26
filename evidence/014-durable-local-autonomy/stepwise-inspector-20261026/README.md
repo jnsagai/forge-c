@@ -88,6 +88,25 @@ Under the owner's decision "Advisory + calibrate", these are measured rates of t
 Any change made from these classes must be developed on the learning set (or a new learning sample), and its effect
 can then only be measured on a refreshed held-out set; this subset has now been looked at.
 
+## Learning set 2 (the spent calibration subset) and learning set 3 (Feature 015)
+
+After calibration the 9 subset baselines became learning set 2 ([learning-set-2.json](learning-set-2.json), registered
+before development). Rules were developed by replaying the recorded answers locally (no model) and checked live on
+Omniverse2 against learning set 1 each round:
+
+| Round | Revision | Learning set 1 (49) | Learning set 2 (63) | Changes |
+|---|---|---|---|---|
+| calibration | `285d21e` | 49/49 (learning-14) | 53/63, 5/9 clean rejected | — |
+| 1 | `9f001ed` | 49/49 (learning-15) | 59/63, 1/9 clean rejected | parameterised writes, budget rows, criterion clauses |
+| 2 | `e8e7fb6` | 49/49 (learning-16) | 61/63, 0/9 clean rejected | 'by writing ... to FIELD', key-write purposes, trace columns, budget citations |
+| 3 | `8d4208e` | **49/49** (learning-17) | **63/63** (learning2-3) | startup citation, time references and states are no purpose, write-protect purpose |
+
+The four owner-approved Feature 015 ST LL drivers were split with a recorded seed before any measurement
+([f015-split.json](f015-split.json)): SPI1 and USART1 became learning set 3, GPIOA and CRC the refreshed held-out test
+set 2. All four were gate-valid but failed the truthful preflight; only learning set 3 was studied. Its rule ('write that
+value', 'calculated from the supplied ...', '`requested ... encoding`') is in `6b8976a`; learning sets 1-3 run live on
+it before test set 2 is measured.
+
 ## Gate defects found while preparing calibration (2026-10-26)
 
 1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script
