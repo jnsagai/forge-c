@@ -69,8 +69,9 @@ def read_requirement_excerpt(ctx: ToolContext, a: ReqIn) -> dict:
 
 def read_budget_snapshot(ctx: ToolContext, a: NoIn) -> dict:
     case, _ = _case()
+    # the strategy list first: a long budget snapshot is truncated at MAX_BYTES (F015 planner trial 1 lost the list)
     return result(ctx, "PASS", "remaining budget and allowed strategies", [], [json.dumps(
-        {"budget": case["budget"], "allowed_strategies": case["allowed_strategies"]})[:MAX_BYTES]], {}, "forge-afo",
+        {"allowed_strategies": case["allowed_strategies"], "budget": case["budget"]})[:MAX_BYTES]], {}, "forge-afo",
         input_obj={})
 
 

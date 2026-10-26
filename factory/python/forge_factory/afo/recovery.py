@@ -153,6 +153,8 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
+    if plan["strategy"] == "SWITCH_PREAPPROVED_MODEL_PROFILE" and not m:  # F015 planner trial: a "switch" naming no
+        issues.append("MODEL_PROFILE_REQUIRED")                          # model would rerun the same one
     if m and (m not in (eff.get("engineering.allowed_model_profiles") or []) or
               (auth_models is not None and auth_models and m not in auth_models)):
         issues.append(f"MODEL_NOT_PREAPPROVED:{m}")
@@ -214,7 +216,11 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
         plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
                      material_difference_ref=f"transient_retry:{n}")
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
-        plan, source = planner(bundle, budget_snapshot(store, order, eff), ws), "PLANNER"
+        b = budget_snapshot(store, order, eff)
+        if b["planner_calls"] < b["max_planner_calls"]:
+            plan, source = planner(bundle, b, ws), "PLANNER"
+            if plan == "PENDING":  # the planner run is asynchronous (planner_run): the Conductor polls again
+                return {"plan": None, "status": "PENDING", "source": source, "reasons": []}
     if plan is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "NO_MATERIALLY_DIFFERENT_STRATEGY")
     reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models)
@@ -260,6 +266,17 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
     return {"order_id": oid, "action": "new_attempt", "attempt_id": aid, "strategy": plan["strategy"]}
 
 
+def poll_waiting(store: Store, recover) -> list[dict]:
+    """WAITING_RECOVERY orders whose latest attempt already ended (a planner run in progress, not a prepared new
+    attempt or a transient retry in backoff): ask `recover` again; it decides once the planner has replied."""
+    out = []
+    for o in store.orders(("WAITING_RECOVERY",)):
+        att = (store.attempts(o["order_id"]) or [None])[-1]
+        if att is not None and att["state"] in ("SUCCEEDED", "FAILED", "CANCELLED"):
+            out.append({"order_id": o["order_id"], **(recover(o, att) or {"action": "no_bundle"})})
+    return out
+
+
 def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
     """Conductor hook for dispatch.reconcile_running: a terminal attempt whose SWE phase BLOCKED gets a bundle,
     a decision and its execution; an attempt that reached its package returns None (validation decides)."""
@@ -278,6 +295,9 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
             return {"action": "blocked", "code": auth.code}
         scope = json.loads((authz.AUTH_DIR / f"{eff.get('authorization_ref')}.json").read_text()).get("scope") or {}
         d = decide(store, order, b, ws=ws, eff=eff, auth_models=scope.get("models"), planner=planner)
+        if d["status"] == "PENDING":
+            store.transition(order["order_id"], "WAITING_RECOVERY", "recovery planner run in progress")
+            return {"bundle_id": b["bundle_id"], "failure_class": b["failure_class"], "action": "planner_pending"}
         epoch = store.acquire_lease("scheduler", owner, float(eff.get("queue.lease_seconds", 120)))
         if epoch is None:
             return None

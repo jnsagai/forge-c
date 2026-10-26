@@ -60,13 +60,21 @@ def parse(reply: str, case_dir: Path) -> dict | None:
     return plan
 
 
+PENDING = "PENDING"
+
+
 def make(invoke):
-    """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
-    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
-        p = case(bundle, workspace or Path("."), budget)
+    """recovery.decide planner hook: freeze the case once, run the planner (`invoke(case_path)` -> reply text, None,
+    or PENDING while an asynchronous run is still going - planner_run), parse."""
+    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | str | None:
+        p = state_dir() / "afo/cases" / bundle["bundle_id"] / "case.json"
+        if not p.is_file():  # frozen once (read-only); later conductor cycles poll the same case
+            p = case(bundle, workspace or Path("."), budget)
         try:
             reply = invoke(p)
         except Exception:  # noqa: BLE001 - a failed planner run proposes nothing
             return None
-        return parse(reply, p.parent)
+        if reply == PENDING:
+            return PENDING
+        return parse(reply, p.parent) if reply is not None else None
     return planner

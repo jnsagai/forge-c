@@ -97,6 +97,7 @@ def test_rules_upstream_defect_then_untried_model_then_nothing(order, tmp_path):
     ({"notes": "relax the coverage threshold"}, "PLAN_WEAKENS_A_GATE_OR_POLICY"),
     ({"model_profile": "qwen3:8b"}, "MODEL_NOT_PREAPPROVED"),
     ({"strategy": "DEFER_TRANSIENT_DEPENDENCY"}, "STRATEGY_NOT_LEGAL_FOR_CLASS"),
+    ({"strategy": "SWITCH_PREAPPROVED_MODEL_PROFILE"}, "MODEL_PROFILE_REQUIRED"),   # F015 planner trial 2
 ])
 def test_validator_refuses_unsafe_or_illegal_plans(order, change, code):
     s, o, b, _, eff = order
