@@ -653,3 +653,25 @@ def test_an_action_noun_is_not_the_action(frozen):
     assert [c["decision"] for c in got] == ["STANDS"]
     off = {"phrase": "HSI oscillator disable", "action": "clear", "register_field": "RCC_CR.HSION"}
     assert RS.behaviour_claims(off, {"quote": "", "answer": "SWR-003"}, {**facts, "reqs": {"SWR-003": disable}}) == []
+
+
+def test_the_imposed_verb_decides_not_any_action_word(frozen):
+    """Run 7 (2026-10-26): with the HSI enable requirement removed, SWR-007 ('for an HSI enable request ... shall clear
+    the enable bit it set, respectively RCC_CR.HSION') and SWR-010 ('While no oscillator enable ... shall leave
+    RCC_CR.HSION') still counted as stating the enable."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-007": {"statement": "If RCC_SR.HSIRDY for an HSI enable request remains 0 throughout the timeout, then "
+                                     "the RCC driver shall clear the enable bit it set, respectively RCC_CR.HSION.",
+                        "verification": ""},
+            "SWR-010": {"statement": "While no oscillator enable or disable has been requested after reset, the RCC driver "
+                                     "shall leave RCC_CR.HSION at its reset value 1.", "verification": ""}}
+    enable = {"phrase": "HSI oscillator enable", "action": "set", "register_field": "RCC_CR.HSION"}
+    got = RS.behaviour_claims(enable, {"quote": "", "answer": "SWR-007"}, {**facts, "reqs": reqs})
+    assert [c["decision"] for c in got] == ["STANDS"]
+    with_enable = {**reqs, "SWR-001": {"statement": "When a valid HSI enable request is received, the RCC driver shall "
+                                                    "set RCC_CR.HSION and return HAL_OK.", "verification": ""}}
+    assert RS.behaviour_claims(enable, {"quote": "", "answer": "SWR-001"}, {**facts, "reqs": with_enable}) == []
+    pulse = {"statement": "When a reset request is received, the driver shall assert and then release "
+                          "RCC_AHB1RSTR.ADC12RST.", "verification": ""}
+    release = {"phrase": "ADC12 reset release", "action": "clear", "register_field": "RCC_AHB1RSTR.ADC12RST"}
+    assert RS.behaviour_claims(release, {"quote": "", "answer": "SWR-006"}, {**facts, "reqs": {"SWR-006": pulse}}) == []

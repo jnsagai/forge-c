@@ -557,7 +557,9 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
 # F014 stepwise scope coverage (learning run 2: Qwen listed behaviours by walking the requirements, so a removed
 # requirement never appeared). Behaviours come from the scope sentence alone; each is then one closed question.
 ACTIONS = {"set": ("set", "enable", "assert", "start"), "clear": ("clear", "disable", "release", "stop"),
-           "write": ("write", "set", "load", "program"), "read": ("read", "query", "return", "report", "check")}
+           "write": ("write", "set", "load", "program"),
+           # a no-write behaviour (startup: 'shall leave RCC_CR.HSION at its reset value') observes like a read
+           "read": ("read", "query", "return", "report", "check", "leave", "keep", "preserve", "retain")}
 BEHAVIOURS: dict = {}  # question id -> behaviour of the current visit (read by the seeded harness preflight)
 
 
@@ -625,14 +627,24 @@ NOUN_PHRASE = re.compile(r"\b(?:enable|disable|reset|ready|set|clear|start|updat
                          r"values?|status)\b", re.I)
 
 
+# run 7 (2026-10-26): "for an HSI enable request ... shall clear the enable bit it set" and "While no oscillator enable
+# ... shall leave RCC_CR.HSION" name an action word but impose another; the imposed verbs follow "shall"
+SHALL = re.compile(r"\bshall\s+(?:not\s+|only\s+|also\s+|then\s+|first\s+)?(\w+)"
+                   r"(?:\s*,?\s*(?:and\s+)?then\s+(\w+)|\s+and\s+(\w+))?", re.I)  # 'assert then release' (0008B)
+
+
+def imposed_verbs(statement: str) -> set[str]:
+    return {v.lower() for m in SHALL.finditer(statement) for v in m.groups() if v}
+
+
 def candidates(facts: dict, b: dict) -> list[str]:
-    """Requirements naming the behaviour's field (register, for REG.*) with an action of the same kind."""
+    """Requirements naming the behaviour's field (register, for REG.*) and imposing an action of the same kind."""
     f = b["register_field"]
     name = f.split(".")[0] if WILDCARD.match(f) else f
     bare = name.split(".")[-1]
-    verbs = re.compile(r"\b(?:" + "|".join(ACTIONS[b["action"]]) + r")\w*", re.I)
+    kind = ACTIONS[b["action"]]
     return [x for x, r in sorted(facts["reqs"].items()) if (name in r["statement"] or re.search(
-        rf"\b{re.escape(bare)}\b", r["statement"])) and verbs.search(NOUN_PHRASE.sub(" ", r["statement"]))]
+        rf"\b{re.escape(bare)}\b", r["statement"])) and any(v.startswith(kind) for v in imposed_verbs(r["statement"]))]
 
 
 def _purposeful(statement: str, b: dict) -> bool:
