@@ -23,6 +23,9 @@ authority and no durable autonomy.
 | learning-2…9 | 199bf43…9aadfe8 | 4–32 each | — | stopped by the operator as soon as a defect was fixed |
 | learning-10 | 2e1af36 | 49 | **46** | 41/42 seeded defects; 5/7 clean baselines pass |
 | learning-11 | 8064062 | 49 | **48** | **42/42 seeded defects** (34 on target, 8 by the gate); 6/7 clean baselines pass |
+| learning-12 | caa2d3e | 6 | — | stopped: a closed self-check of citations withdrew a true S1-OMIT detection (removed) |
+| learning-13 | 964a8e3 | 49 | **48** | IWDG-HAL clean baseline passes; IWDG-HAL S1-OMIT missed ('leaving the already started watchdog') |
+| learning-14 | 285d21e | 49 | **49** | **first complete learning-set pass: 42/42 seeded defects, 7/7 clean baselines, 0 empty inspections** |
 
 Feature 011's best earlier learning-set trial (m9, reasoning on, `evidence/v0.4/runs/F011-T045/README.md`)
 for comparison:
@@ -32,8 +35,9 @@ for comparison:
 - S1-NOBUDGET: 2/7
 - 6/7 clean baselines passed
 
-Learning-11 caught every one of these on target. The remaining miss in learning-11 (the IWDG-HAL rc4 clean
-baseline) is addressed in `caa2d3e`; learning-12 measures that revision.
+Learning-14 (`285d21e`) is the first run with every evaluation correct, so it meets Feature 011's precondition for the
+frozen test set. The test set is measured as **calibration** (owner decision "Advisory + calibrate"): 3 runs on the
+22 held-out baselines, recorded as a result and never used to tune the inspector before all runs are done.
 
 ## What changed between runs
 

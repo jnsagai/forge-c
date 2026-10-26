@@ -1953,6 +1953,710 @@
      "outcome": "inspection (on target)"
     }
    ]
+  },
+  {
+   "run": "learning-12",
+   "started": "2026-10-26T08:15:04Z",
+   "source_revision": "caa2d3eac84123ad77b3845f7d9f4321092aa900",
+   "end": "exit=143 2026-10-26T08:21:50Z",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "evaluations": 6,
+   "correct": 5,
+   "tally": {
+    "BASELINE:none": 1,
+    "SEEDED:MISSED": 1,
+    "SEEDED:deterministic gate": 1,
+    "SEEDED:inspection (on target)": 3
+   },
+   "rows": [
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "MISSED",
+     "outcome": "MISSED"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    }
+   ]
+  },
+  {
+   "run": "learning-13",
+   "started": "2026-10-26T08:21:55Z",
+   "source_revision": "964a8e39b1e97eb08a339839111a7fd822462867",
+   "end": "exit=0 2026-10-26T09:00:22Z",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "evaluations": 49,
+   "correct": 48,
+   "tally": {
+    "BASELINE:none": 7,
+    "SEEDED:MISSED": 1,
+    "SEEDED:deterministic gate": 8,
+    "SEEDED:inspection (on target)": 33
+   },
+   "rows": [
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-OMIT",
+     "reported": "MISSED",
+     "outcome": "MISSED"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    }
+   ]
+  },
+  {
+   "run": "learning-14",
+   "started": "2026-10-26T09:00:38Z",
+   "source_revision": "285d21ec9063bfed8e1ea884069303f99dda73f3",
+   "end": "exit=0 2026-10-26T09:39:08Z",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "evaluations": 49,
+   "correct": 49,
+   "tally": {
+    "BASELINE:none": 7,
+    "SEEDED:deterministic gate": 8,
+    "SEEDED:inspection (on target)": 34
+   },
+   "rows": [
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "BASELINE",
+     "reported": "none",
+     "outcome": "none"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-OMIT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-QM",
+     "reported": "deterministic gate",
+     "outcome": "deterministic gate"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-EFFECT",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-NOSTART",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-GAPROW",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+     "case": "S1-NOBUDGET",
+     "reported": "inspection (on target)",
+     "outcome": "inspection (on target)"
+    }
+   ]
   }
  ]
 }
