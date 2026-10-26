@@ -44,7 +44,9 @@ def test_v2_refuses_cloud_acp_and_unlisted_models_before_launch(kw, issue):
 def test_v2_builds_the_same_graph_as_v1_and_names_semantic_swe1():
     s1 = workorder.local_profile_structured({"id": "local-rtx-v1"}, {"layer": "LL"}, "qwen3-coder:30b")
     s2 = workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "qwen3-coder:30b")
-    assert s1 == s2  # the runner, not the graph, selects the semantic SWE.1 author
+    # the runner, not the graph, selects the semantic SWE.1 author; the one graph difference is the owner-decided
+    # advisory continuation of v2 (2026-10-26, "Advisory + calibrate"), which v1 keeps off
+    assert s1["advisory"] is False and s2["advisory"] is True and {**s1, "advisory": True} == s2
     assert V2["structured"]["semantic_phases"] == ["SWE.1"] and "semantic_phases" not in V1["structured"]
 
 

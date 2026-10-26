@@ -530,16 +530,32 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     stage_tool_records(ws, stage)  # CAPA-064 (TAA-RCC FND-04): this run's tools and models, not a stale inventory
     operational_inventory(ws, stage, run_id, fabro_run_id)
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
+    advisory = advisory_register(ws)
+    if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
+        _w(stage, "quality/advisory-gaps.json", pretty_json({"schema": "forge-c/advisory-gap-register/1",
+                                                            "entries": advisory}))
     quality = {
         "run_status": "COMPLETED" if all_phases_pass else "INCOMPLETE",
         "checks": checks,
         "open_findings": findings,
+        "advisory_continued": sorted({e["phase"] for e in advisory}),
         "derived_from": "recorded evidence only",
         "generated_at": utc_now(),
         "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
     }
     _w(stage, "quality/final-gates.json", pretty_json(quality))
     return quality
+
+
+def advisory_register(ws: Path) -> list[dict]:
+    """Every advisory continuation of this run (.forge-run/advisory/<phase>.jsonl), in phase order. The release rule
+    is unchanged: their unresolved findings keep the package BLOCKED until an offline human accepts the deviation."""
+    out = []
+    for p in PHASES:
+        f = Path(ws) / ".forge-run" / "advisory" / f"{p}.jsonl"
+        if f.is_file():
+            out += [json.loads(x) for x in f.read_text().splitlines() if x.strip()]
+    return out
 
 
 def stage_delivered_unit(ws: Path, stage: Path) -> bool:

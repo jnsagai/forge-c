@@ -17,6 +17,13 @@ from test_lrtx_swe1 import _gate, _scripted
 from test_lrtx_v2_swe1 import SEM_ANSWERS, iwdg, pytestmark  # noqa: F401 - answers, v2 IWDG work order, skip marker
 
 
+@pytest.fixture(autouse=True)
+def f011_mode(monkeypatch):
+    """The v2 profiles turn the F014 stepwise inspector on (owner 2026-10-26); the F011 tests here exercise the
+    non-stepwise inspector, so they pin it. Stepwise tests set it explicitly (monkeypatch.setitem ... True)."""
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", False)
+
+
 @pytest.fixture()
 def frozen(iwdg, monkeypatch):  # noqa: F811
     monkeypatch.setattr(S, "call", _scripted(SEM_ANSWERS, []))

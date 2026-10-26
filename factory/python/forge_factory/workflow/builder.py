@@ -241,6 +241,22 @@ def structured_authors(dot: str, structured: dict) -> str:
                 f'  {ri} [shape=parallelogram, label="{phase} direct re-inspection check (valid, never-inspected '
                 f'baseline)", max_visits={MAX_VISITS}, script="{_q(chk)}"]',
                 f'  {ri} -> {ins} [condition="outcome=succeeded"]', f"  {ri} -> {target}"]) + dot[m.end():]
+    if structured.get("advisory"):
+        # owner decision 2026-10-26 ("Advisory + calibrate"): the route's failure edge passes an advisory node that
+        # continues to the next phase (SWE.6: the Release Manager) only after the route gate recorded
+        # ADVISORY_CONTINUE (ladder exhausted, gap registered); every other failure keeps the upstream/finalize chain
+        for phase in PHASES:
+            n = phase[-1]
+            rt, adv, ig = f"swe{n}_route", f"swe{n}_advisory", f"swe{n}_inspect_gate"
+            nxt = re.search(rf'^  {ig} -> (\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
+            edge = f"  {rt} -> upstream_swe1\n"
+            if not nxt or edge not in dot:
+                continue  # a phase outside this graph (restart / partial runs)
+            dot = dot.replace(edge, "\n".join([
+                f'  {rt} -> {adv}',
+                f'  {adv} [shape=parallelogram, label="{phase} advisory continue check (gap registered)", '
+                f'max_visits={MAX_VISITS}, script="{_q(gate_cmd(phase, "advisory"))}"]',
+                f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
     return dot
 
 

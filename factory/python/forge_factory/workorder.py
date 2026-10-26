@@ -576,11 +576,12 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "phases": phases,
         "inspect_phases": inspect,
         "reinspect": bool(st.get("reinspect_direct")),
+        "advisory": bool(st.get("advisory_continue")),
         "model": model,
         "timeout_s": st.get("timeout_s", 3600),
         "visit_time_s": st.get("visit_time_s", 1200),
     }
-    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None
+    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] or out["advisory"] else None
 
 
 def run(

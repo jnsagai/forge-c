@@ -329,6 +329,51 @@ def progressing(store: Store, phase: str, since: str) -> dict:
     return {"progress": False, "why": f"no item resolved or findings grew ({a['n']} -> {b['n']})"}
 
 
+def advisory_enabled(ws: Path) -> bool:
+    """Owner decision 2026-10-26 ("Advisory + calibrate"): with the local profile's structured.advisory_continue, a
+    phase whose whole bounded ladder is exhausted continues with its unresolved findings registered for the end-of-run
+    human review instead of stopping the run. Without the flag nothing changes."""
+    from ..lrtx.swe2 import _structured_flag
+
+    return _structured_flag(ws, "advisory_continue")
+
+
+def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, budget: int, extension, stuck) -> Path:
+    """The gap register entry: what stayed unresolved and every attempt the ladder made (a gap without its attempt
+    record is not a gap). Appended per continuation to .forge-run/advisory/<phase>.jsonl."""
+    last = next((i for i in reversed(store.inspections(phase)) if i.get("verdict") != "PASS"
+                 and i.get("recorded_at", "") >= since), None)
+    rejected = [json.loads(x) for x in _epoch_lines(store.workspace, phase, since)
+                if '"step": "author"' in x and '"REJECTED"' in x]
+    bl = store.latest_baseline(phase) or {}
+    rec = {
+        "schema": "forge-c/advisory-gap/1",
+        "at": utc_now(),
+        "phase": phase,
+        "baseline_id": bl.get("baseline_id"),
+        "baseline_hash": bl.get("baseline_hash"),
+        "gate": {k: g.get(k) for k in ("decision", "reason", "failed_inspections", "max_rework_cycles")},
+        "unresolved_findings": [{k: f.get(k) for k in ("id", "severity", "detail")}
+                                for f in (last or {}).get("findings") or [] if isinstance(f, dict)][:50],
+        "inspection_ref": (last or {}).get("inspection_id"),
+        "author_issues": [str(i)[:300] for i in ((rejected[-1].get("issues") or rejected[-1].get("errors") or [])
+                                                 if rejected else [])][:20],
+        "attempts": {
+            "failed_cycles": cycles,
+            "budget": budget,
+            "progress_extension": extension,
+            "stuck_signature": list(stuck) if stuck else None,
+            "history": [{"ts": c["ts"], "kind": c["kind"], "findings": c["n"]}
+                        for c in failed_cycles(store, phase, since)],
+        },
+    }
+    out = store.workspace / ".forge-run" / "advisory" / f"{phase}.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, sort_keys=True) + "\n")
+    return out
+
+
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
@@ -374,6 +419,12 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] != "PASS" and exhausted:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
+        if advisory_enabled(store.workspace) and store.latest_baseline(phase):
+            # the ladder is exhausted (budget, progress extensions, stall detection) and nothing is upstream: register
+            # the gap with its attempt record and continue; a phase without a frozen baseline cannot feed the next one
+            ref = advisory_record(store, phase, since, g, cycles, budget, extension, stuck)
+            g = {**g, "decision": "ADVISORY_CONTINUE", "reason": f"{g['reason']}; registered for human review",
+                 "advisory_ref": str(ref.relative_to(store.workspace))}
     elif g["decision"] == "BLOCKED" and extension is not None and extension["progress"]:
         # CAPA-068 (RPR-072): Store.gate blocks at the checklist maximum of failed INSPECTIONS; a granted progress
         # extension (same bounded rule: cycles < budget + extra) is one more rework cycle, as for author rejections
@@ -388,7 +439,17 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] == "BLOCKED":
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)
         return 1
+    if g["decision"] == "ADVISORY_CONTINUE":
+        emit("workflow", "WARN", f"{phase} ladder exhausted -> ADVISORY_CONTINUE (gap registered)", phase=phase)
+        return 1  # the failure path's advisory node continues the run
     return 0
+
+
+def step_advisory(store: Store, phase: str) -> int:
+    """Advisory node on the route's failure path: exit 0 (continue to the next phase) only right after this phase's
+    route recorded ADVISORY_CONTINUE; otherwise 1, the existing upstream/finalize chain."""
+    routes = [json.loads(x) for x in _epoch_lines(store.workspace, phase, store.budget_start()) if '"step": "route"' in x]
+    return 0 if routes and routes[-1].get("gate", {}).get("decision") == "ADVISORY_CONTINUE" else 1
 
 
 def step_upstream(store: Store, target: str) -> int:
@@ -479,7 +540,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
     ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream", "triage",
-                                                      "return"])
+                                                      "return", "advisory"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
@@ -504,6 +565,8 @@ def _run_step(store: Store, a: argparse.Namespace) -> int:
             rc = step_route(store, a.phase)
         elif a.step == "upstream":
             rc = step_upstream(store, a.phase)
+        elif a.step == "advisory":
+            rc = step_advisory(store, a.phase)
         elif a.step == "triage":
             rc = step_triage(store, a.phase)
         elif a.step == "return":
