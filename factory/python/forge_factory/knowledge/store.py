@@ -431,6 +431,13 @@ class LessonStore:
         return True
 
     # -- T033 retraction -----------------------------------------------------------------------------
+    def exposures(self, run_id: str, phase: str | None = None) -> list[str]:
+        """Lesson ids delivered to this run (optionally to one phase): the lessons rung of a gap's attempt record."""
+        with self._conn() as c:
+            recs = [json.loads(r[0]) for r in c.execute("SELECT record FROM lesson_transfers WHERE kind='EXPOSURE'")]
+        return sorted({r["lesson_id"] for r in recs if r.get("run_id") == run_id
+                       and (phase is None or (r.get("data") or {}).get("phase") == phase)})
+
     def consumers(self, lesson_id: str) -> list[str]:
         with self._conn() as c:
             return sorted({r["run_id"] for r in c.execute("SELECT run_id FROM lesson_usage WHERE lesson_id=?", (lesson_id,))})

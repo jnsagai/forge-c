@@ -367,11 +367,36 @@ def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, 
                         for c in failed_cycles(store, phase, since)],
         },
     }
+    rec["attempts"]["ladder"] = _ladder(store, phase, cycles, budget, extension, stuck)
     out = store.workspace / ".forge-run" / "advisory" / f"{phase}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec, sort_keys=True) + "\n")
     return out
+
+
+def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck) -> list[dict]:
+    """Every rung of the escalation ladder (owner 2026-10-26: gaps only after best effort) with what it did, so a gap
+    never implies a rung that did not run. A rung that is not integrated yet says so."""
+    m = store.workspace / ".forge-run" / "manifest.json"
+    run_id = (json.loads(m.read_text()) if m.is_file() else {}).get("work_order")
+    try:
+        from ..knowledge.store import LessonStore
+
+        lessons = LessonStore().exposures(run_id, phase) if run_id else []
+        lesson_rung = {"rung": "validated_lessons", "status": "EXPOSED" if lessons else "NONE_QUALIFIED",
+                       "lesson_ids": lessons[:20]}
+    except Exception as exc:  # noqa: BLE001 - the register records an unreadable store instead of failing the gate
+        lesson_rung = {"rung": "validated_lessons", "status": "UNKNOWN", "reason": type(exc).__name__}
+    ext = (extension or {}) if isinstance(extension, dict) else {}
+    return [
+        {"rung": "rework_with_findings", "status": "RAN", "failed_cycles": cycles, "budget": budget},
+        {"rung": "progress_extension", "status": ("GRANTED" if ext.get("progress") else "REFUSED") if ext
+         else "NOT_EVALUATED"},
+        lesson_rung,
+        {"rung": "diagnosis_repair", "status": "NOT_INTEGRATED"},
+        {"rung": "stall_detection", "status": "STUCK" if stuck else "BUDGET_EXHAUSTED"},
+    ]
 
 
 def step_route(store: Store, phase: str) -> int:

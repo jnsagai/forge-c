@@ -59,6 +59,9 @@ def test_an_author_packet_carries_the_complete_lesson_and_records_exposure_not_a
     with env["memory"]._conn() as db:
         rec = [json.loads(r[0]) for r in db.execute("SELECT record FROM lesson_transfers WHERE kind='EXPOSURE'")]
     assert rec[0]["data"]["packet_input_hash"] == p["input_hash"]
+    lid = json.loads(text)["lessons"][0]["lesson_id"]  # the advisory register's lessons rung reads exactly this
+    assert env["memory"].exposures("WO-B", "SWE.3") == [lid] and env["memory"].exposures("WO-B", "SWE.1") == []
+    assert env["memory"].exposures("WO-other") == []
 
 
 @pytest.mark.parametrize("role,manifest", [

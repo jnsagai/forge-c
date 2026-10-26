@@ -35,6 +35,27 @@ def test_an_exhausted_ladder_continues_with_its_gap_and_attempts_registered(tmp_
     att = rec["attempts"]
     assert att["failed_cycles"] == 3 and att["budget"] == 3 and len(att["history"]) == 3
     assert G.step_advisory(Store(ws), "SWE.4") == 0  # the advisory node continues the run
+    ladder = {r["rung"]: r for r in att["ladder"]}  # every rung says what it did; none is implied
+    assert list(ladder) == ["rework_with_findings", "progress_extension", "validated_lessons", "diagnosis_repair",
+                            "stall_detection"]
+    assert ladder["rework_with_findings"]["failed_cycles"] == 3 and ladder["progress_extension"]["status"] == "REFUSED"
+    assert ladder["validated_lessons"]["status"] == "NONE_QUALIFIED"
+    assert ladder["diagnosis_repair"]["status"] == "NOT_INTEGRATED"
+
+
+def test_the_lessons_rung_names_the_lessons_this_phase_was_given(tmp_path, advisory, monkeypatch):
+    from forge_factory.knowledge.store import LessonStore
+
+    monkeypatch.setattr(LessonStore, "exposures", lambda self, run_id, phase=None:
+                        ["lesson-0123456789ab"] if (run_id, phase) == ("WO-A", "SWE.4") else [])
+    ws = _ws(tmp_path)
+    m = json.loads((ws / ".forge-run/manifest.json").read_text())
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({**m, "work_order": "WO-A"}))
+    _exhaust(ws)
+    rc, g = _route(ws)
+    rec = [json.loads(x) for x in (ws / g["advisory_ref"]).read_text().splitlines()][-1]
+    rung = next(r for r in rec["attempts"]["ladder"] if r["rung"] == "validated_lessons")
+    assert rung == {"rung": "validated_lessons", "status": "EXPOSED", "lesson_ids": ["lesson-0123456789ab"]}
 
 
 def test_without_the_flag_or_a_frozen_baseline_the_phase_still_blocks(tmp_path, monkeypatch):
