@@ -346,6 +346,38 @@ def start(s: dict, *, recovery=False) -> dict:
     return _start(s)
 
 
+def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
+    """F014 (owner 2026-10-26: "install a new runtime on Omniverse2 to allow parallel model calls"). Ollama 0.34 serves
+    qwen35moe with one request slot ("model architecture does not currently support parallel requests"); its bundled
+    llama.cpp server serves the same model file with N slots. The model is the one the profile pins: the Ollama
+    manifest's sha256 must equal the pinned digest, and its model layer (content-addressed blob) must have the recorded
+    size. Returns (argv, env, health, models) or None when the profile has no runtime.llama_server."""
+    ls = (prof.get("runtime") or {}).get("llama_server")
+    if not ls:
+        return None
+    from ..common import sha256_file
+
+    model, mdir = ls["model"], r / "ollama-models"
+    name, tag = model.split(":", 1)
+    man = mdir / "manifests/registry.ollama.ai/library" / name / tag
+    if not man.is_file() or sha256_file(man) != prof["models"]["allowed"][model]["digest"]:
+        raise RuntimeError(f"LLAMA_SERVER_MODEL_DIGEST_MISMATCH:{model}")
+    layer = next(x for x in json.loads(man.read_text())["layers"] if x["mediaType"].endswith(".image.model"))
+    blob = mdir / "blobs" / layer["digest"].replace(":", "-")
+    if not blob.is_file() or blob.stat().st_size != layer["size"]:
+        raise RuntimeError(f"LLAMA_SERVER_MODEL_BLOB_MISSING:{layer['digest'][:19]}")
+    lib, slots = r / "ollama-0.34.0/lib/ollama", int(ls["slots"])
+    ctx, kv = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), prof["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"]
+    argv = [str(lib / "llama-server"), "--model", str(blob), "--alias", model, "--host", "127.0.0.1",
+            "--port", str(p["llama"]), "--no-webui", "--offline", "-c", str(ctx * slots), "-np", str(slots),
+            "--jinja", "--reasoning", "off", "--cache-type-k", kv, "--cache-type-v", kv, "--flash-attn", "on",
+            "-b", "2048", "-ub", "2048"]
+    if ls.get("mtp_draft"):
+        argv += ["--spec-type", "draft-mtp", "--spec-draft-n-max", str(int(ls["mtp_draft"]))]
+    penv = {**env, "LD_LIBRARY_PATH": f"{lib}:{lib}/cuda_v13", "GGML_BACKEND_PATH": f"{lib}/cuda_v13/libggml-cuda.so"}
+    return argv, penv, f"http://127.0.0.1:{p['llama']}/health", [model]
+
+
 def managed_serving() -> bool:
     return os.environ.get("FORGE_DURABLE_AUTONOMY") == "1" and bool(os.environ.get("FORGE_OPERATIONS_INTENT"))
 
@@ -530,6 +562,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10)),
         "FORGE_GATEWAY_REASONING": gateway_reasoning(prof),
     }
+    ls = llama_server_spec(r, prof, p, env)
+    if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
+        gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in ls[3]})
     specs = {
         "ollama": ([str(r / "ollama-0.34.0/bin/ollama"), "serve"], ollama_env, f"http://127.0.0.1:{p['ollama']}/api/version"),
         "gateway": (
@@ -547,6 +582,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             gw_env,
             f"http://127.0.0.1:{p['gateway']}/health",
         ),
+        **({"llama_server": ls[:3]} if ls is not None else {}),
         "fabro": (
             [
                 env["FORGE_FABRO_BIN"],
@@ -568,9 +604,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         if control_only and name != "fabro":
             continue
         old = procs.get(name)
-        if old and _alive(old["pid"], argv[1] if name != "ollama" else "ollama"):
+        if old and _alive(old["pid"], {"ollama": "ollama", "llama_server": "llama-server"}.get(name, argv[1])):
             continue
-        if managed_serving() and name in ("ollama", "gateway"):
+        if managed_serving() and name in ("ollama", "llama_server", "gateway"):
             proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r, serving=serving)
         else:
             proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)

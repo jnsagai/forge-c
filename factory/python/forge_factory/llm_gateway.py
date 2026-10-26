@@ -268,6 +268,14 @@ def create_app(
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
     client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0), transport=transport)
+    # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
+    # llama.cpp server with several request slots; that model's chat requests go there, every other model to Ollama
+    routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
+    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=httpx.Timeout(600.0, connect=10.0), transport=transport)
+              for m, u in routes.items()}
+
+    def cl(body: dict | None) -> httpx.AsyncClient:
+        return routed.get((body or {}).get("model"), client)
 
     @app.get("/health")
     async def health() -> dict:
@@ -345,8 +353,8 @@ def create_app(
             body.setdefault("stream_options", {"include_usage": True})
 
             async def attempt() -> tuple[int, list[str], dict | None, bool, dict]:
-                upstream_resp = await client.send(
-                    client.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True
+                upstream_resp = await cl(body).send(
+                    cl(body).build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True
                 )
                 lines: list[str] = []
                 usage, stripped = None, False
@@ -388,7 +396,7 @@ def create_app(
             return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
         for n in range(DROP_RETRIES + 1):
             t0 = time.monotonic()
-            r = await client.post("/v1/chat/completions", json=body, headers=headers)
+            r = await cl(body).post("/v1/chat/completions", json=body, headers=headers)
             try:
                 data = r.json()
             except ValueError:
@@ -484,8 +492,11 @@ def create_app(
             )
         try:
             ollama = upstream.removesuffix("/v1")
-            was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
-            load = await asyncio.to_thread(la.preload, ollama, model) if was_loaded is False else None
+            if model in routed:  # a resident llama.cpp server: no Ollama load state, nothing to preload
+                was_loaded, load = True, None
+            else:
+                was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
+                load = await asyncio.to_thread(la.preload, ollama, model) if was_loaded is False else None
             before = await asyncio.to_thread(la.resources, ollama)
             stream = bool(body.get("stream"))
             if stream:
@@ -506,6 +517,7 @@ def create_app(
                     "load": load if n == 0 else None,
                     **timing,
                     "resources_before": before if n == 0 else None,
+                    **({"served_by": "llama-server"} if model in routed else {}),
                 }
                 meter.record(model, usage, stripped, (time.monotonic() - t0) * 1000, {**shape, "attempt": n}, local)
                 if status != 200 or not dropped(usage, shape):
@@ -534,7 +546,7 @@ def create_app(
         t0 = time.monotonic()
         shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
         if not stream:
-            r = await client.post("/v1/chat/completions", json=body, headers=headers)
+            r = await cl(body).post("/v1/chat/completions", json=body, headers=headers)
             total = (time.monotonic() - t0) * 1000
             try:
                 data = r.json()
@@ -558,7 +570,8 @@ def create_app(
                 shape,
                 {"total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"},
             )
-        resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
+        up = cl(body)
+        resp = await up.send(up.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
         lines: list[str] = []
         usage, stripped, first, last, deltas = None, False, None, None, 0
         try:
