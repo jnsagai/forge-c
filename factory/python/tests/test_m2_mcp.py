@@ -380,3 +380,31 @@ def test_verdict_string_parsed_by_item_ids_any_separator():
     r = parse_verdict_string("SWE5-04=PASS (ok); SWE5-05=Rework finding: SWR-012 has no SWE.5 measure; SWE5-06=PASS")
     assert r["SWE5-05"]["verdict"] == "FAIL" and "SWR-012" in r["SWE5-05"]["findings"][0]
     assert parse_verdict_string("SWE5-01=Looks fine") == {}
+
+
+def test_an_analyzer_warning_in_frozen_delivered_code_is_a_dispositionable_delivered_finding(ws, monkeypatch):
+    """Owner 2026-10-26 ("Dispositionable"): BENCH-GPIO-ST-R4 - clang flags ST's LL_GPIO_SetAFPin_8_15 (shift by 128 for
+    an out-of-contract pin below 8). In FROZEN/vendor delivered code such a warning is a DELIVERED_CODE finding the
+    owner may disposition, not a failure of the factory's analysis; errors and the factory's own code still fail."""
+    from forge_factory.brownfield import package as BP
+
+    (ws / "software/src/vendor.c").write_text("int f(int *p){ if (!p) { return *p; } return 0; }\n")
+    monkeypatch.setattr(analysis, "vendor_paths", lambda w: {"software/src/vendor.c"})
+    r = call(analysis, "forge-analysis-mcp", "clang_analyze", {}, "swe3-inspector", "SWE.3")
+    assert r["status"] == "PASS" and r["metrics"]["delivered_findings"] == 1, r
+    (fid,) = BP.static_findings(ws)
+    assert fid.startswith("STATIC_ANALYSIS:core.NullDereference:software/src/vendor.c:1") and r["issues"][0].endswith(fid)
+    monkeypatch.setattr(BP, "manifest_of", lambda w: {"delivery": {"build": {"style": "cmsis"}}, "code_mode": "FROZEN"})
+    monkeypatch.setattr(BP, "is_brownfield", lambda m: True)
+    monkeypatch.setattr("forge_factory.brownfield.verify.verify", lambda w, p: {"issues": []})
+    monkeypatch.setattr("forge_factory.brownfield.conformance.check", lambda w, p: {"status": "CONFORMANT",
+                                                                                   "findings": [], "issues": []})
+    (ws / BP.DELIVERY_DIR).mkdir(parents=True, exist_ok=True)
+    (ws / BP.DELIVERY_DIR / "injection.json").write_text("{}")
+    assert [f["id"] for f in BP.findings(ws)] == [f"DELIVERED_CODE:{fid}"]           # a package gap ...
+    monkeypatch.setattr("forge_factory.inspection.defects.owner_dispositions", lambda w: [
+        {"id": "OD-T", "delivered_finding_regex": r"^STATIC_ANALYSIS:core\.NullDereference:software/src/vendor\.c:1$",
+         "disposition": "ACCEPTED", "approved_by": "o", "approved_at": "d", "limitation": "out-of-contract input"}])
+    assert BP.findings(ws) == [] and "dispositioned by OD-T" in BP.dispositioned(ws)[0]   # ... until dispositioned
+    monkeypatch.setattr(analysis, "vendor_paths", lambda w: set())
+    assert call(analysis, "forge-analysis-mcp", "clang_analyze", {}, "swe3-inspector", "SWE.3")["status"] == "FAIL"

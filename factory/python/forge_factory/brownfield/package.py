@@ -17,6 +17,22 @@ def _load(ws: Path, name: str) -> dict:
         return {}
 
 
+def static_findings(ws: Path) -> list[str]:
+    """Delivered-code findings of the latest clang_analyze run (analyzer warnings located in FROZEN/vendor code;
+    owner 2026-10-26: dispositionable like the other delivered-code findings)."""
+    from ..mcp.servers.analysis import DELIVERED_STATIC
+
+    p = Path(ws) / DELIVERED_STATIC
+    try:
+        return list(json.loads(p.read_text()).get("findings") or []) if p.is_file() else []
+    except ValueError:
+        return ["STATIC_ANALYSIS:REPORT_UNREADABLE"]
+
+
+def _vendor_findings(ws: Path) -> list[str]:
+    return list((_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []) + static_findings(ws)
+
+
 def findings(ws: Path) -> list[dict]:
     """Unresolved brownfield findings for quality/final-gates.json (each one is a package gap)."""
     ws = Path(ws)
@@ -41,7 +57,7 @@ def findings(ws: Path) -> list[dict]:
         out.append({"id": "CONFORMANCE:NOT_RUN", "severity": "major", "detail": "; ".join(cf["issues"])[:200]})
     style = (m.get("delivery") or {}).get("build", {}).get("style", "forge")
     if code_mode(m) == "FROZEN" or style != "forge":  # OD-2026-10-20-02: vendor findings are owner gaps in any mode
-        cc = (_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []
+        cc = _vendor_findings(ws)
         out += [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
                  "detail": f"delivered code check ({code_mode(m)}, {style} style)"} for x in cc
                 if disposition_of(ws, x) is None]  # OD-2026-10-20-07: an owner disposition settles the finding
@@ -64,7 +80,7 @@ def disposition_of(ws: Path, finding: str) -> dict | None:
 
 def dispositioned(ws: Path) -> list[str]:
     """Limitation lines for the delivered-code findings an owner disposition settles."""
-    cc = (_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []
+    cc = _vendor_findings(ws)
     out = []
     for x in cc:
         d = disposition_of(ws, x)
