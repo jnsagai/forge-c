@@ -276,7 +276,7 @@ and inspected.
   `write_file` under `onboarding/model/`) and `onboard-model-inspector` to `config/factory/agents.yaml`, with
   SKILL.md rendered, authz prefixes, and the onboarding-graph nodes (model author → `check_model` → inspector,
   bounded at 3).
-- [X] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
+- [ ] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and
   never authors one. When none exists, it authors one. Implement this in `ff/onboarding/__init__.py`.
 - [ ] **OB-T043** [US4] Held-out authoring (SC-007). Run onboarding for `0014c` with the hand CRC model hidden (an
   onboarding option `--hide-model crc`, test-only, recorded in the package). Expected: an authored model passes
@@ -468,3 +468,7 @@ SWE.1–SWE.6.
 - Quickstart §1 now uses the actual USART assumption identifier and derived module closure. Section §5 uses the
   implemented model-gate API and owner-confirmed clock rather than the unimplemented CLI alias. The exact command
   passes as OB-QUICKSTART-MODEL. Held-out model authoring remains explicitly open.
+
+- Evidence review reopens OB-T042: OB-T040 proves existing-model reuse/re-gating, but does not prove the second
+  clause (author a model when none exists). That depends on the still-open OB-T041/043. Historical PASS evidence
+  remains intact; the task is not claimed complete from partial coverage.
