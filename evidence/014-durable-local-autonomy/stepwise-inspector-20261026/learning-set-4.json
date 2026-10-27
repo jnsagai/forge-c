@@ -1,0 +1,27 @@
+{
+ "schema": "forge-c/feature014-learning-set-4/1",
+ "registered": "2026-10-27, after calibration-t2-1..3 ended and before any development on these baselines",
+ "rule": "F011: a set once looked at can never be test data again; the spent held-out test set 2 becomes learning data, as the spent subset became learning set 2. Fixes developed on it are measured only on a further refreshed held-out set, never on these baselines; learning sets 1-3 must keep passing.",
+ "source": {
+  "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/f015-split.json",
+  "sha256": "71987543d98664eea28269170125a84315f9563e66df8c919641aa7b9cafe22e",
+  "calibration": "calibration-t2-runs.json (9300475)"
+ },
+ "learning_sets_kept": {
+  "1": "7 Feature 011 holdouts, 49/49",
+  "2": "9 spent subset baselines, 63/63",
+  "3": "SPI1 + USART1, 14/14"
+ },
+ "learning_set_4": [
+  {
+   "workorder": "WO-AFO-03122bd1dd4fb5ff-a1",
+   "peripheral": "GPIOA",
+   "tree_sha256": "ee288671b853867167d7c4eff4507e507a0a3dbf53a1bffa6c1fe9a42fa0f7c4"
+  },
+  {
+   "workorder": "WO-AFO-efc1871950537b1a-a1",
+   "peripheral": "CRC",
+   "tree_sha256": "fc64484af18fe6a30119161e460e212b09ba8b5b56ac8cac1744ab2668816978"
+  }
+ ]
+}
