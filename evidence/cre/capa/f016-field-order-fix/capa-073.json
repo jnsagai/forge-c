@@ -1,0 +1,132 @@
+{
+  "recorded_at": "2026-10-27T12:23:35.695515Z",
+  "plan": {
+    "source": "b7516220b58e9cfeba5485f8f55352482018e566",
+    "baseline": "9fa4664798183218184a6cf1a650ab1985087ea4",
+    "candidate": "557e920daa540a47461958c1e62842ac6bb709fd",
+    "staged_manifest": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/cre-field-order-fix/manifest.yaml",
+    "capas": [
+      {
+        "capa_id": "CAPA-073",
+        "reproducer_id": "AFO-OB-DISCRETE-FIELDS"
+      },
+      {
+        "capa_id": "CAPA-073",
+        "reproducer_id": "AFO-OB-TEXT-PERSISTENCE"
+      }
+    ],
+    "gpio_initial_order": "afo-6a6875714405b8ce",
+    "gpio_initial_package_sha256": "ddea8b4c93b6d0dea365e4ce666e1c6e29655b4037ab23de9c1593761aa437f6",
+    "decision_id": "pd-29aa710d612f9cbae9e3"
+  },
+  "record": {
+    "affected_versions": [],
+    "candidate_patch_sha256": null,
+    "capa_id": "CAPA-073",
+    "created_at": "2026-10-27T12:17:52.832010Z",
+    "event_ids": [],
+    "incident_ids": [
+      "CAPA-073"
+    ],
+    "lesson_ids": [],
+    "observation_window_end": null,
+    "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+    "prevention_test_id": null,
+    "reproducer_id": null,
+    "root_cause_evidence_refs": [],
+    "root_cause_status": "HYPOTHESIS",
+    "root_cause_summary": "RM comma-separated field lists are omitted, and generated API ordering depends on dictionary insertion order after saved facts are reloaded; both are independently probed in the onboarding stage.",
+    "schema_version": "1.0",
+    "state": "TRIAGED",
+    "updated_at": "2026-10-27T12:19:19.574359Z"
+  },
+  "history": [
+    {
+      "seq": 561,
+      "capa_id": "CAPA-073",
+      "from_state": null,
+      "to_state": "OPEN",
+      "at": "2026-10-27T12:17:52.832010Z",
+      "reason": "RM parser omits comma-separated GPIO pin fields",
+      "evidence": "[\"CAPA-073\"]"
+    },
+    {
+      "seq": 562,
+      "capa_id": "CAPA-073",
+      "from_state": "OPEN",
+      "to_state": "TRIAGED",
+      "at": "2026-10-27T12:17:52.908901Z",
+      "reason": "triage by ENGINEERING",
+      "evidence": "[]"
+    },
+    {
+      "seq": 563,
+      "capa_id": "CAPA-073",
+      "from_state": "TRIAGED",
+      "to_state": "TRIAGED",
+      "at": "2026-10-27T12:19:19.574359Z",
+      "reason": "Linked the second onboarding symptom to the existing fingerprint/CAPA rather than opening a duplicate",
+      "evidence": "[]"
+    }
+  ],
+  "links": [
+    "cfp1-9bc5870b7bd9e89cda4a25d62ba763f2cdec8033",
+    "AFO-OB-DISCRETE-FIELDS",
+    "cre-f87884a4b0af5b35dbd100e6f4d8af687e42dfb7",
+    "AFO-OB-TEXT-PERSISTENCE",
+    "cre-84aaea56b5b9f3e245dc36b3b494aef8215645ab",
+    "pd-29aa710d612f9cbae9e3",
+    "557e920daa540a47461958c1e62842ac6bb709fd"
+  ],
+  "contrast": [
+    {
+      "run_id": "rr-b92e2bdbea048abe51e6",
+      "reproducer_id": "AFO-OB-DISCRETE-FIELDS",
+      "revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "RM parser omits comma-separated GPIO pin fields",
+      "log_sha256": "e310083eb00cf2c4b5812a44d6e5a8a0e99087a036298621be611e480608892e",
+      "at": "2026-10-27T12:19:21.465251Z"
+    },
+    {
+      "run_id": "rr-1ab5a2bd9e6c1214f2f4",
+      "reproducer_id": "AFO-OB-DISCRETE-FIELDS",
+      "revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-10-27T12:19:22.410064Z"
+    },
+    {
+      "run_id": "rr-9c94efb4d96d79d2115b",
+      "reproducer_id": "AFO-OB-TEXT-PERSISTENCE",
+      "revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "saved package facts change generated function order",
+      "log_sha256": "282193dc917197fd1d67889257b9b5704a00567e540c8e21e6b982f17b3d2822",
+      "at": "2026-10-27T12:19:23.347363Z"
+    },
+    {
+      "run_id": "rr-d4dbb012e5820019a9f0",
+      "reproducer_id": "AFO-OB-TEXT-PERSISTENCE",
+      "revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-10-27T12:19:24.350196Z"
+    }
+  ],
+  "fixture_sha256": {
+    "owner.json": "b6e57936719dc39eaaf16622045ca50e913927684aae886963a89730dbb6b867",
+    "package.json": "b7df849f2acc2f43ff97ca03220eb8214057786f6e1a1ca5970a507809b8b689"
+  },
+  "note": "Both symptoms share the onboarding failure fingerprint and are linked to one CAPA. Native staged-reproducer lifecycle retains TRIAGED/HYPOTHESIS; the independent promotion records verify both causal contrasts. No EFFECTIVE claim."
+}

@@ -1,0 +1,2882 @@
+{
+  "assumptions": [],
+  "authored": [
+    {
+      "attempts": 0,
+      "gate": {
+        "findings": [],
+        "invocation_id": "cceea6c03e70a061",
+        "limits": [],
+        "model": "gpio_model.py",
+        "stats": {
+          "reads": 20,
+          "registers": 18
+        },
+        "tool": "forge-onboarding model gate (renode)",
+        "verdict": "PASS",
+        "version": "Renode v1.17.0"
+      },
+      "id": "model",
+      "inspection": {
+        "findings": [],
+        "inspector_role": "onboard-model-inspector",
+        "reason": "reused factory model (feature 015): re-gated against the RM, not re-inspected",
+        "verdict": "NOT_RUN"
+      },
+      "limits": [
+        "The lock sequence (GPIO_LCKR 0x1C), TrustZone, delay and advanced configuration registers are out of the work orders' scope: storage, not modelled."
+      ],
+      "path": "factory/sim/stm32n6/gpio_model.py",
+      "reused": true,
+      "role": "onboard-model-author",
+      "status": "ACCEPTED"
+    }
+  ],
+  "created_at": "2026-10-27T11:49:42.623501Z",
+  "driver_style": "HAL_STANDALONE",
+  "factory_revision": "9fa466479818",
+  "facts": [
+    {
+      "method": "delivered_header_declarations",
+      "name": "api",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 467,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_Init"
+        },
+        {
+          "kind": "file",
+          "line": 480,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_ReadPin"
+        },
+        {
+          "kind": "file",
+          "line": 481,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_WritePin"
+        },
+        {
+          "kind": "file",
+          "line": 482,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_TogglePin"
+        },
+        {
+          "kind": "file",
+          "line": 483,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_WriteMultipleStatePin"
+        },
+        {
+          "kind": "file",
+          "line": 484,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "HAL_GPIO_LockPin"
+        },
+        {
+          "kind": "file",
+          "line": 63,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "GPIO_InitTypeDef"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {
+        "init": {
+          "fields": [
+            "Pin",
+            "Mode",
+            "Pull",
+            "Speed",
+            "Alternate"
+          ],
+          "type": "GPIO_InitTypeDef"
+        },
+        "instance_param": {
+          "name": "GPIOx",
+          "type": "GPIO_TypeDef"
+        },
+        "prototypes": {
+          "HAL_GPIO_Init": "void HAL_GPIO_Init(GPIO_TypeDef *GPIOx, const GPIO_InitTypeDef *GPIO_Init)",
+          "HAL_GPIO_LockPin": "HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)",
+          "HAL_GPIO_ReadPin": "GPIO_PinState HAL_GPIO_ReadPin(const GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)",
+          "HAL_GPIO_TogglePin": "void HAL_GPIO_TogglePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)",
+          "HAL_GPIO_WriteMultipleStatePin": "void HAL_GPIO_WriteMultipleStatePin(GPIO_TypeDef *GPIOx, uint16_t PinReset, uint16_t PinSet)",
+          "HAL_GPIO_WritePin": "void HAL_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)"
+        }
+      }
+    },
+    {
+      "method": "cmsis_base_chain+mm_table_row",
+      "name": "base_address",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 3511,
+          "ref": "cmsis-device-n6-1.4.0/Include/stm32n657xx.h",
+          "value": "0x56020000"
+        },
+        {
+          "kind": "doc",
+          "page": 176,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+          "value": "0x56020000"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "0x56020000"
+    },
+    {
+      "method": "scope_api_prefix",
+      "name": "driver_style",
+      "sources": [
+        {
+          "kind": "workorder",
+          "ref": "delivery.scope.functions",
+          "value": "HAL_GPIO_"
+        },
+        {
+          "kind": "workorder",
+          "ref": "layer / delivery.provided_ll",
+          "value": "HAL/False"
+        },
+        {
+          "kind": "file",
+          "line": 467,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "GPIO_TypeDef"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "HAL_STANDALONE"
+    },
+    {
+      "method": "build_closure",
+      "name": "file_map",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "onboarding build check (syntax, -Wall)",
+          "value": "PASS"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {
+        "dependencies": [
+          {
+            "from": "Inc/Legacy/stm32_hal_legacy.h",
+            "licence": "BSD-3-Clause",
+            "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+            "to": "inputs/vendor/include/Legacy/stm32_hal_legacy.h"
+          },
+          {
+            "from": "cmsis_compiler.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/cmsis_compiler.h"
+          },
+          {
+            "from": "cmsis_gcc.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/cmsis_gcc.h"
+          },
+          {
+            "from": "cmsis_version.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/cmsis_version.h"
+          },
+          {
+            "from": "core_cm55.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/core_cm55.h"
+          },
+          {
+            "from": "m-profile/armv7m_cachel1.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h"
+          },
+          {
+            "from": "m-profile/armv8m_mpu.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/m-profile/armv8m_mpu.h"
+          },
+          {
+            "from": "m-profile/armv8m_pmu.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/m-profile/armv8m_pmu.h"
+          },
+          {
+            "from": "m-profile/cmsis_gcc_m.h",
+            "licence": "Apache-2.0",
+            "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+            "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h"
+          },
+          {
+            "from": "Include/stm32n657xx.h",
+            "licence": "Apache-2.0",
+            "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+            "to": "inputs/vendor/include/stm32n657xx.h"
+          },
+          {
+            "from": "Include/stm32n6xx.h",
+            "licence": "Apache-2.0",
+            "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+            "to": "inputs/vendor/include/stm32n6xx.h"
+          },
+          {
+            "from": "Inc/stm32n6xx_hal.h",
+            "licence": "BSD-3-Clause",
+            "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+            "to": "inputs/vendor/include/stm32n6xx_hal.h"
+          },
+          {
+            "configure": {
+              "hal_modules": [
+                "GPIO"
+              ]
+            },
+            "from": "Inc/stm32n6xx_hal_conf_template.h",
+            "licence": "BSD-3-Clause",
+            "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+            "to": "inputs/vendor/include/stm32n6xx_hal_conf.h"
+          },
+          {
+            "from": "Inc/stm32n6xx_hal_def.h",
+            "licence": "BSD-3-Clause",
+            "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+            "to": "inputs/vendor/include/stm32n6xx_hal_def.h"
+          },
+          {
+            "from": "Include/system_stm32n6xx.h",
+            "licence": "Apache-2.0",
+            "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+            "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+            "to": "inputs/vendor/include/system_stm32n6xx.h"
+          }
+        ],
+        "files": [
+          {
+            "from": "Inc/stm32n6xx_hal_gpio.h",
+            "to": "software/hal/stm32n6xx_hal_gpio.h"
+          },
+          {
+            "from": "Inc/stm32n6xx_hal_gpio_ex.h",
+            "to": "software/hal/stm32n6xx_hal_gpio_ex.h"
+          },
+          {
+            "from": "Src/stm32n6xx_hal_gpio.c",
+            "to": "software/hal/stm32n6xx_hal_gpio.c"
+          }
+        ]
+      }
+    },
+    {
+      "method": "build_closure",
+      "name": "framework_modules",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "onboarding build check (syntax, -Wall)",
+          "value": "PASS"
+        }
+      ],
+      "status": "DERIVED",
+      "value": [
+        "GPIO"
+      ]
+    },
+    {
+      "method": "scope_common_prefix",
+      "name": "function_prefix",
+      "sources": [
+        {
+          "kind": "workorder",
+          "ref": "delivery.scope.functions",
+          "value": "6/6"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "HAL_GPIO_"
+    },
+    {
+      "method": "scope_defining_files",
+      "name": "headers",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 467,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio.h",
+          "value": "stm32n6xx_hal_gpio.h"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {
+        "header": "stm32n6xx_hal_gpio.h",
+        "source": "stm32n6xx_hal_gpio.c"
+      }
+    },
+    {
+      "method": "reached_instance_compare",
+      "name": "host_instance",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOA"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "GPIOA"
+    },
+    {
+      "method": "workorder_target_instance",
+      "name": "instance",
+      "sources": [
+        {
+          "kind": "workorder",
+          "ref": "target.instance",
+          "value": "GPIOA"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "GPIOA"
+    },
+    {
+      "method": "reached_instance_compare",
+      "name": "instance_comparisons",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOA"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOB"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOC"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOD"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOE"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOF"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOG"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOH"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPION"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOO"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOP"
+        },
+        {
+          "kind": "file",
+          "line": 240,
+          "ref": "stm32n6xx-hal-driver-1.4.0/Inc/stm32n6xx_hal_gpio_ex.h",
+          "value": "GPIOQ"
+        }
+      ],
+      "status": "DERIVED",
+      "value": [
+        "GPIOA",
+        "GPIOB",
+        "GPIOC",
+        "GPIOD",
+        "GPIOE",
+        "GPIOF",
+        "GPIOG",
+        "GPIOH",
+        "GPION",
+        "GPIOO",
+        "GPIOP",
+        "GPIOQ"
+      ]
+    },
+    {
+      "method": "rm_register_sections",
+      "name": "key_sections",
+      "sources": [
+        {
+          "kind": "doc",
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "RM0486 chapter 15"
+        }
+      ],
+      "status": "DERIVED",
+      "value": [
+        "15.4.1",
+        "15.4.2",
+        "15.4.3",
+        "15.4.4",
+        "15.4.5",
+        "15.4.6",
+        "15.4.7",
+        "15.4.8",
+        "15.4.9",
+        "15.4.10",
+        "15.4.11",
+        "15.4.12",
+        "15.4.13",
+        "15.4.14",
+        "15.4.15",
+        "15.4.16",
+        "15.4.17",
+        "15.4.18"
+      ]
+    },
+    {
+      "method": "mm_table_row",
+      "name": "mm_page",
+      "sources": [
+        {
+          "kind": "doc",
+          "page": 176,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+          "value": "GPIO A"
+        }
+      ],
+      "status": "DERIVED",
+      "value": 176
+    },
+    {
+      "method": "rm_register_sections",
+      "name": "register_index",
+      "sources": [
+        {
+          "kind": "doc",
+          "page": 799,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_AFRH"
+        },
+        {
+          "kind": "doc",
+          "page": 800,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_BRR"
+        },
+        {
+          "kind": "doc",
+          "page": 800,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_SECCFGR"
+        },
+        {
+          "kind": "doc",
+          "page": 801,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_PRIVCFGR"
+        },
+        {
+          "kind": "doc",
+          "page": 802,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_RCFGLOCKR"
+        },
+        {
+          "kind": "doc",
+          "page": 802,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_DELAYRL"
+        },
+        {
+          "kind": "doc",
+          "page": 803,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_DELAYRH"
+        },
+        {
+          "kind": "doc",
+          "page": 803,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_ADVCFGRL"
+        },
+        {
+          "kind": "doc",
+          "page": 804,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_ADVCFGRH"
+        },
+        {
+          "kind": "doc",
+          "page": 794,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_MODER"
+        },
+        {
+          "kind": "doc",
+          "page": 794,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_OTYPER"
+        },
+        {
+          "kind": "doc",
+          "page": 795,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_OSPEEDR"
+        },
+        {
+          "kind": "doc",
+          "page": 795,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_PUPDR"
+        },
+        {
+          "kind": "doc",
+          "page": 796,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_IDR"
+        },
+        {
+          "kind": "doc",
+          "page": 796,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_ODR"
+        },
+        {
+          "kind": "doc",
+          "page": 797,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_BSRR"
+        },
+        {
+          "kind": "doc",
+          "page": 798,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_LCKR"
+        },
+        {
+          "kind": "doc",
+          "page": 799,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "GPIO_AFRL"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {
+        "GPIO_ADVCFGRH": {
+          "fields": {},
+          "offset": 76,
+          "page": 804,
+          "reset": 0
+        },
+        "GPIO_ADVCFGRL": {
+          "fields": {},
+          "offset": 72,
+          "page": 803,
+          "reset": 0
+        },
+        "GPIO_AFRH": {
+          "fields": {
+            "AFSEL10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 11
+            },
+            "AFSEL11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 15
+            },
+            "AFSEL12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 19
+            },
+            "AFSEL13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 23
+            },
+            "AFSEL14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 27
+            },
+            "AFSEL15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 31
+            },
+            "AFSEL8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 3
+            },
+            "AFSEL9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 7
+            }
+          },
+          "offset": 36,
+          "page": 799,
+          "reset": 0
+        },
+        "GPIO_AFRL": {
+          "fields": {
+            "AFSEL0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 3
+            },
+            "AFSEL1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 7
+            },
+            "AFSEL2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 11
+            },
+            "AFSEL3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 15
+            },
+            "AFSEL4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 19
+            },
+            "AFSEL5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 23
+            },
+            "AFSEL6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 27
+            },
+            "AFSEL7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 31
+            }
+          },
+          "offset": 32,
+          "page": 799,
+          "reset": 0
+        },
+        "GPIO_BRR": {
+          "fields": {
+            "BR0": {
+              "access": [
+                "w"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "BR1": {
+              "access": [
+                "w"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "BR10": {
+              "access": [
+                "w"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "BR11": {
+              "access": [
+                "w"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "BR12": {
+              "access": [
+                "w"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "BR13": {
+              "access": [
+                "w"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "BR14": {
+              "access": [
+                "w"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "BR15": {
+              "access": [
+                "w"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "BR2": {
+              "access": [
+                "w"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "BR3": {
+              "access": [
+                "w"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "BR4": {
+              "access": [
+                "w"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "BR5": {
+              "access": [
+                "w"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "BR6": {
+              "access": [
+                "w"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "BR7": {
+              "access": [
+                "w"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "BR8": {
+              "access": [
+                "w"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "BR9": {
+              "access": [
+                "w"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 40,
+          "page": 800,
+          "reset": 0
+        },
+        "GPIO_BSRR": {
+          "fields": {
+            "BR0": {
+              "access": [
+                "w"
+              ],
+              "lsb": 16,
+              "msb": 16
+            },
+            "BR1": {
+              "access": [
+                "w"
+              ],
+              "lsb": 17,
+              "msb": 17
+            },
+            "BR10": {
+              "access": [
+                "w"
+              ],
+              "lsb": 26,
+              "msb": 26
+            },
+            "BR11": {
+              "access": [
+                "w"
+              ],
+              "lsb": 27,
+              "msb": 27
+            },
+            "BR12": {
+              "access": [
+                "w"
+              ],
+              "lsb": 28,
+              "msb": 28
+            },
+            "BR13": {
+              "access": [
+                "w"
+              ],
+              "lsb": 29,
+              "msb": 29
+            },
+            "BR14": {
+              "access": [
+                "w"
+              ],
+              "lsb": 30,
+              "msb": 30
+            },
+            "BR15": {
+              "access": [
+                "w"
+              ],
+              "lsb": 31,
+              "msb": 31
+            },
+            "BR2": {
+              "access": [
+                "w"
+              ],
+              "lsb": 18,
+              "msb": 18
+            },
+            "BR3": {
+              "access": [
+                "w"
+              ],
+              "lsb": 19,
+              "msb": 19
+            },
+            "BR4": {
+              "access": [
+                "w"
+              ],
+              "lsb": 20,
+              "msb": 20
+            },
+            "BR5": {
+              "access": [
+                "w"
+              ],
+              "lsb": 21,
+              "msb": 21
+            },
+            "BR6": {
+              "access": [
+                "w"
+              ],
+              "lsb": 22,
+              "msb": 22
+            },
+            "BR7": {
+              "access": [
+                "w"
+              ],
+              "lsb": 23,
+              "msb": 23
+            },
+            "BR8": {
+              "access": [
+                "w"
+              ],
+              "lsb": 24,
+              "msb": 24
+            },
+            "BR9": {
+              "access": [
+                "w"
+              ],
+              "lsb": 25,
+              "msb": 25
+            },
+            "BS0": {
+              "access": [
+                "w"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "BS1": {
+              "access": [
+                "w"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "BS10": {
+              "access": [
+                "w"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "BS11": {
+              "access": [
+                "w"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "BS12": {
+              "access": [
+                "w"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "BS13": {
+              "access": [
+                "w"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "BS14": {
+              "access": [
+                "w"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "BS15": {
+              "access": [
+                "w"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "BS2": {
+              "access": [
+                "w"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "BS3": {
+              "access": [
+                "w"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "BS4": {
+              "access": [
+                "w"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "BS5": {
+              "access": [
+                "w"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "BS6": {
+              "access": [
+                "w"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "BS7": {
+              "access": [
+                "w"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "BS8": {
+              "access": [
+                "w"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "BS9": {
+              "access": [
+                "w"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 24,
+          "page": 797,
+          "reset": 0
+        },
+        "GPIO_DELAYRH": {
+          "fields": {
+            "DLY10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 11
+            },
+            "DLY11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 15
+            },
+            "DLY12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 19
+            },
+            "DLY13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 23
+            },
+            "DLY14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 27
+            },
+            "DLY15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 31
+            },
+            "DLY8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 3
+            },
+            "DLY9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 7
+            }
+          },
+          "offset": 68,
+          "page": 803,
+          "reset": 0
+        },
+        "GPIO_DELAYRL": {
+          "fields": {
+            "DLY0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 3
+            },
+            "DLY1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 7
+            },
+            "DLY2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 11
+            },
+            "DLY3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 15
+            },
+            "DLY4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 19
+            },
+            "DLY5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 23
+            },
+            "DLY6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 27
+            },
+            "DLY7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 31
+            }
+          },
+          "offset": 64,
+          "page": 802,
+          "reset": 0
+        },
+        "GPIO_IDR": {
+          "fields": {
+            "ID0": {
+              "access": [
+                "r"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "ID1": {
+              "access": [
+                "r"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "ID10": {
+              "access": [
+                "r"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "ID11": {
+              "access": [
+                "r"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "ID12": {
+              "access": [
+                "r"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "ID13": {
+              "access": [
+                "r"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "ID14": {
+              "access": [
+                "r"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "ID15": {
+              "access": [
+                "r"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "ID2": {
+              "access": [
+                "r"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "ID3": {
+              "access": [
+                "r"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "ID4": {
+              "access": [
+                "r"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "ID5": {
+              "access": [
+                "r"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "ID6": {
+              "access": [
+                "r"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "ID7": {
+              "access": [
+                "r"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "ID8": {
+              "access": [
+                "r"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "ID9": {
+              "access": [
+                "r"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 16,
+          "page": 796,
+          "reset": null
+        },
+        "GPIO_LCKR": {
+          "fields": {
+            "LCK0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "LCK1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "LCK10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "LCK11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "LCK12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "LCK13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "LCK14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "LCK15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "LCK2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "LCK3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "LCK4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "LCK5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "LCK6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "LCK7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "LCK8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "LCK9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 9,
+              "msb": 9
+            },
+            "LCKK": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 16
+            }
+          },
+          "offset": 28,
+          "page": 798,
+          "reset": 0
+        },
+        "GPIO_MODER": {
+          "fields": {
+            "MODE0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 1
+            },
+            "MODE1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 3
+            },
+            "MODE10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 21
+            },
+            "MODE11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 22,
+              "msb": 23
+            },
+            "MODE12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 25
+            },
+            "MODE13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 26,
+              "msb": 27
+            },
+            "MODE14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 29
+            },
+            "MODE15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 30,
+              "msb": 31
+            },
+            "MODE2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 5
+            },
+            "MODE3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 7
+            },
+            "MODE4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 9
+            },
+            "MODE5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 11
+            },
+            "MODE6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 13
+            },
+            "MODE7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 15
+            },
+            "MODE8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 17
+            },
+            "MODE9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 18,
+              "msb": 19
+            }
+          },
+          "offset": 0,
+          "page": 794,
+          "reset": 2885677055
+        },
+        "GPIO_ODR": {
+          "fields": {
+            "OD0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "OD1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "OD10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "OD11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "OD12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "OD13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "OD14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "OD15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "OD2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "OD3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "OD4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "OD5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "OD6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "OD7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "OD8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "OD9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 20,
+          "page": 796,
+          "reset": 0
+        },
+        "GPIO_OSPEEDR": {
+          "fields": {
+            "OSPEED0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 1
+            },
+            "OSPEED1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 3
+            },
+            "OSPEED10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 21
+            },
+            "OSPEED11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 22,
+              "msb": 23
+            },
+            "OSPEED12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 25
+            },
+            "OSPEED13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 26,
+              "msb": 27
+            },
+            "OSPEED14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 29
+            },
+            "OSPEED15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 30,
+              "msb": 31
+            },
+            "OSPEED2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 5
+            },
+            "OSPEED3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 7
+            },
+            "OSPEED4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 9
+            },
+            "OSPEED5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 11
+            },
+            "OSPEED6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 13
+            },
+            "OSPEED7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 15
+            },
+            "OSPEED8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 17
+            },
+            "OSPEED9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 18,
+              "msb": 19
+            }
+          },
+          "offset": 8,
+          "page": 795,
+          "reset": 201326592
+        },
+        "GPIO_OTYPER": {
+          "fields": {
+            "OT0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "OT1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "OT10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "OT11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "OT12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "OT13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "OT14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "OT15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "OT2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "OT3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "OT4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "OT5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "OT6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "OT7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "OT8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "OT9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 4,
+          "page": 794,
+          "reset": 0
+        },
+        "GPIO_PRIVCFGR": {
+          "fields": {
+            "PRIV0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "PRIV1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "PRIV10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "PRIV11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "PRIV12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "PRIV13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "PRIV14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "PRIV15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "PRIV2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "PRIV3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "PRIV4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "PRIV5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "PRIV6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "PRIV7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "PRIV8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "PRIV9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 52,
+          "page": 801,
+          "reset": 65535
+        },
+        "GPIO_PUPDR": {
+          "fields": {
+            "PUPD0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 1
+            },
+            "PUPD1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 3
+            },
+            "PUPD10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 20,
+              "msb": 21
+            },
+            "PUPD11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 22,
+              "msb": 23
+            },
+            "PUPD12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 24,
+              "msb": 25
+            },
+            "PUPD13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 26,
+              "msb": 27
+            },
+            "PUPD14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 28,
+              "msb": 29
+            },
+            "PUPD15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 30,
+              "msb": 31
+            },
+            "PUPD2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 5
+            },
+            "PUPD3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 7
+            },
+            "PUPD4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 9
+            },
+            "PUPD5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 11
+            },
+            "PUPD6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 13
+            },
+            "PUPD7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 15
+            },
+            "PUPD8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 16,
+              "msb": 17
+            },
+            "PUPD9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 18,
+              "msb": 19
+            }
+          },
+          "offset": 12,
+          "page": 795,
+          "reset": 1677721600
+        },
+        "GPIO_RCFGLOCKR": {
+          "fields": {
+            "RLOCK0": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "RLOCK1": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "RLOCK10": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "RLOCK11": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "RLOCK12": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "RLOCK13": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "RLOCK14": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "RLOCK15": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "RLOCK2": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "RLOCK3": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "RLOCK4": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "RLOCK5": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "RLOCK6": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "RLOCK7": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "RLOCK8": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "RLOCK9": {
+              "access": [
+                "rs"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 56,
+          "page": 802,
+          "reset": 0
+        },
+        "GPIO_SECCFGR": {
+          "fields": {
+            "SEC0": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 0,
+              "msb": 0
+            },
+            "SEC1": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 1,
+              "msb": 1
+            },
+            "SEC10": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 10,
+              "msb": 10
+            },
+            "SEC11": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 11,
+              "msb": 11
+            },
+            "SEC12": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 12,
+              "msb": 12
+            },
+            "SEC13": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 13,
+              "msb": 13
+            },
+            "SEC14": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 14,
+              "msb": 14
+            },
+            "SEC15": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 15,
+              "msb": 15
+            },
+            "SEC2": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 2,
+              "msb": 2
+            },
+            "SEC3": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 3,
+              "msb": 3
+            },
+            "SEC4": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 4,
+              "msb": 4
+            },
+            "SEC5": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 5,
+              "msb": 5
+            },
+            "SEC6": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 6,
+              "msb": 6
+            },
+            "SEC7": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 7,
+              "msb": 7
+            },
+            "SEC8": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 8,
+              "msb": 8
+            },
+            "SEC9": {
+              "access": [
+                "rw"
+              ],
+              "lsb": 9,
+              "msb": 9
+            }
+          },
+          "offset": 48,
+          "page": 800,
+          "reset": 65535
+        }
+      }
+    },
+    {
+      "method": "instance_typedef",
+      "name": "register_prefix",
+      "sources": [
+        {
+          "kind": "file",
+          "line": 3910,
+          "ref": "cmsis-device-n6-1.4.0/Include/stm32n657xx.h",
+          "value": "GPIO"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "GPIO"
+    },
+    {
+      "method": "rm_chapter_heading",
+      "name": "rm_chapter",
+      "sources": [
+        {
+          "kind": "doc",
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+          "value": "RM0486 chapter 15"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {
+        "chapter": 15,
+        "doc": "RM0486",
+        "title": "General-purpose I/Os (GPIO)"
+      }
+    },
+    {
+      "method": "reached_time_base_call",
+      "name": "time_base",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "reached code of the scope functions",
+          "value": "no framework time base called"
+        }
+      ],
+      "status": "DERIVED",
+      "value": "NONE"
+    },
+    {
+      "method": "reached_timeout_defines",
+      "name": "timeout_constants",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "reached code of the scope functions",
+          "value": "no *TIMEOUT* constant used"
+        }
+      ],
+      "status": "DERIVED",
+      "value": {}
+    },
+    {
+      "method": "gc_link_undefined",
+      "name": "undelivered_externals",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "onboarding gc-sections link (scope functions as roots)",
+          "value": "none"
+        }
+      ],
+      "status": "DERIVED",
+      "value": []
+    },
+    {
+      "method": "reached_flag_loops",
+      "name": "waits",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "reached code of the scope functions",
+          "value": "no hardware polling loop"
+        }
+      ],
+      "status": "DERIVED",
+      "value": []
+    },
+    {
+      "method": "mm_table_row",
+      "name": "window_bytes",
+      "sources": [
+        {
+          "kind": "doc",
+          "page": 176,
+          "ref": "examples/0010-gpio-st/inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+          "value": 1024
+        }
+      ],
+      "status": "DERIVED",
+      "value": 1024
+    }
+  ],
+  "gaps": [],
+  "inputs": [
+    {
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "inputs/RM0486-rev4-ch15-gpio.md",
+      "role": "reference_manual_gpio_chapter",
+      "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+      "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+      "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "path": "inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    },
+    {
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+      "path": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+      "role": "delivered_dependency",
+      "sha256": "ae2c716ae3097e6b34ac92eeb0feeaa01c992628da1a2d3adf12710352004288"
+    },
+    {
+      "path": "inputs/vendor/include/cmsis_compiler.h",
+      "role": "delivered_dependency",
+      "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+    },
+    {
+      "path": "inputs/vendor/include/cmsis_gcc.h",
+      "role": "delivered_dependency",
+      "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+    },
+    {
+      "path": "inputs/vendor/include/cmsis_version.h",
+      "role": "delivered_dependency",
+      "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+    },
+    {
+      "path": "inputs/vendor/include/core_cm55.h",
+      "role": "delivered_dependency",
+      "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+    },
+    {
+      "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+      "role": "delivered_dependency",
+      "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+    },
+    {
+      "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+      "role": "delivered_dependency",
+      "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+    },
+    {
+      "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+      "role": "delivered_dependency",
+      "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+    },
+    {
+      "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+      "role": "delivered_dependency",
+      "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+    },
+    {
+      "path": "inputs/vendor/include/stm32n657xx.h",
+      "role": "delivered_dependency",
+      "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+    },
+    {
+      "path": "inputs/vendor/include/stm32n6xx.h",
+      "role": "delivered_dependency",
+      "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+    },
+    {
+      "path": "inputs/vendor/include/stm32n6xx_hal.h",
+      "role": "delivered_dependency",
+      "sha256": "0bc08f69f86161be2d8bbdf123cf57aef4411286471892fb7c17131cd63f2a32"
+    },
+    {
+      "path": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+      "role": "delivered_dependency",
+      "sha256": "b24eb3d5d1875a2516bff0575510dd7bf1eaac1e27286c8ea4959b340d96885f"
+    },
+    {
+      "path": "inputs/vendor/include/stm32n6xx_hal_def.h",
+      "role": "delivered_dependency",
+      "sha256": "be0b3fdcf8e5d900a5e330d9310bc23caa3c6b2bfa7ae416265205e08b63d38a"
+    },
+    {
+      "path": "inputs/vendor/include/system_stm32n6xx.h",
+      "role": "delivered_dependency",
+      "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+    },
+    {
+      "path": "software/hal/stm32n6xx_hal_gpio.c",
+      "role": "delivered_code",
+      "sha256": "bf46fc00b3435008a4fb5574769fd25363d40b429e2c41adb6b5122522080eab"
+    },
+    {
+      "path": "software/hal/stm32n6xx_hal_gpio.h",
+      "role": "delivered_code",
+      "sha256": "720e3d3c9c8a8424e3126034aecb594e8b8ede5a2db1042981749e2fe8f4ad97"
+    },
+    {
+      "path": "software/hal/stm32n6xx_hal_gpio_ex.h",
+      "role": "delivered_code",
+      "sha256": "fc0e11933cf0b8bf2fb9be6a1e1fb6f5d2fefd3ba2c57f0991d86c4eb77af7fe"
+    }
+  ],
+  "profile": {
+    "derived_from": {
+      "example": "0010e-st-cube-gpio-hal-ob",
+      "work_order": "0010e-st-cube-gpio-hal-ob"
+    }
+  },
+  "schema": "forge-c/onboarding-package/0.1",
+  "sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b",
+  "status": "READY_FOR_OWNER",
+  "texts": {
+    "prompt": {
+      "field_mask_example": {
+        "from": "template:st_hal.field_mask_example",
+        "text": "GPIO_OTYPER_OT0"
+      },
+      "ll_api": {
+        "from": "template:st_hal.ll_api",
+        "text": "the delivered functions exactly as declared in software/hal/stm32n6xx_hal_gpio.h and stm32n6xx_hal_gpio_ex.h"
+      },
+      "query_example": {
+        "from": "template:st_hal.query_example",
+        "text": "HAL_GPIO_ReadPin(GPIOA, ...)"
+      },
+      "requirement_example": {
+        "from": "template:st_hal.requirement_example",
+        "text": "When the GPIO initialisation is requested with a valid configuration, the GPIO driver shall set GPIO_OTYPER.OT0."
+      },
+      "swe1_cover": {
+        "from": "owner:scope",
+        "text": "Cover (only what the GPIO scope names, for the instance GPIOA; name the registers GPIO_<REG> as the RM0486 GPIOx_ registers of the instance): ST's classic HAL GPIO driver as delivered (STM32CubeN6 v1.4.0), used as is (FROZEN), for port A (GPIOA); Pin configuration: input, output push-pull/open-drain, alternate function and analog modes, output speed, pull-up/pull-down and alternate function selection of the selected pins; Pin data: read a pin, set or reset a pin, toggle pins, set and reset several pins at once; the pin configuration lock; Out of scope: external interrupt/event modes and callbacks, pin de-initialisation, retime/delay settings, secure/privilege attributes, other ports"
+      },
+      "swe1_effect_example": {
+        "from": "template:st_hal.swe1_effect_example",
+        "text": "{\"case\":\"INIT_OT0\",\"swr\":\"SWR-001\",\"register\":\"GPIO_OTYPER\",\"field\":\"OT0\",\"op\":\"write\",\"value\":\"0x0\"}"
+      },
+      "swe1_effect_rule": {
+        "from": "template:st_hal.swe1_effect_rule",
+        "text": "Use op \"write\" with \"value\" (an integer or \"0x...\" string) for a field the requirement writes a value to, op \"set\"/\"clear\" for a single bit; a function that writes a caller-supplied value gets one entry with a representative value and the api_calls args pass that value. Read and query functions get op no_write with register/field."
+      },
+      "swe2_dynamic_view": {
+        "from": "template:st_hal.swe2_dynamic_view",
+        "text": "participants Caller, stm32n6xx_hal_gpio, GPIOA, showing HAL_GPIO_Init, HAL_GPIO_ReadPin, HAL_GPIO_WritePin, HAL_GPIO_TogglePin, HAL_GPIO_WriteMultipleStatePin, HAL_GPIO_LockPin using the delivered HAL_GPIO_ function names"
+      },
+      "swe2_static_view": {
+        "from": "template:st_hal.swe2_static_view",
+        "text": "a Caller, the component stm32n6xx_hal_gpio (HAL, delivered, FROZEN) and the GPIOA register block (0x56020000, RM0486 p.176) and their dependency (Caller -> HAL -> registers)"
+      },
+      "target_model": {
+        "from": "model:gpio_model.py",
+        "text": "The simulated GPIOA (factory/sim/stm32n6/gpio_model.py): Behavioural GPIOA model (RM0486 rev 4 chapter 15, feature 015) with the port A reset values: GPIO_MODER (0x00) 0xABFFEFFF, GPIO_OSPEEDR (0x08) 0x0C000000, GPIO_PUPDR (0x0C) 0x64000000, GPIO_SECCFGR (0x30) and GPIO_PRIVCFGR (0x34) 0x0000FFFF (F016 model gate: RM0486 reset values), the others 0. GPIO_BSRR (0x18, write-only) sets the GPIO_ODR (0x14) bits of BSy (bits 15:0) and clears those of BRy (bits 31:16), BSy winning when both are set; GPIO_BRR (0x28, write-only) clears GPIO_ODR bits. GPIO_IDR (0x10, read-only) reads GPIO_ODR back for pins in output (MODEy = 01) or alternate function (10) mode, 1 for input pins (00) with pull-up (PUPDy = 01) and 0 otherwise (pull-down, floating, analog). GPIO_OTYPER (0x04), GPIO_AFRL (0x20) and GPIO_AFRH (0x24) are storage. The lock sequence (GPIO_LCKR 0x1C), TrustZone, delay and advanced configuration registers are out of the work orders' scope: storage, not modelled. Expected values in target checks follow this model."
+      }
+    },
+    "prompt_st_hal": {
+      "hal_api": {
+        "from": "template:st_hal.hal_api",
+        "text": "Interfaces (the delivered ST HAL API exactly as declared in software/hal/stm32n6xx_hal_gpio.h and stm32n6xx_hal_gpio_ex.h: void HAL_GPIO_Init(GPIO_TypeDef *GPIOx, const GPIO_InitTypeDef *GPIO_Init); GPIO_PinState HAL_GPIO_ReadPin(const GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin); void HAL_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState); void HAL_GPIO_TogglePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin); void HAL_GPIO_WriteMultipleStatePin(GPIO_TypeDef *GPIOx, uint16_t PinReset, uint16_t PinSet); HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin); the functions take the instance pointer GPIO_TypeDef *GPIOx (the CMSIS device structure GPIOA) and GPIO_InitTypeDef (Pin, Mode, Pull, Speed, Alternate) - describe what the delivered declarations are, never a different API)"
+      },
+      "hal_args_example": {
+        "from": "template:st_hal.hal_args_example",
+        "text": ", e.g. \"GPIOA\" and \"&(GPIO_InitTypeDef){ .Pin = <a constant of stm32n6xx_hal_gpio.h>, ... }\" (the instance is ALWAYS GPIOA; a configuration is a compound literal with the fields the case needs: the gates bind them to the delivered code); invalid cases pass the invalid value (NULL, an out-of-range constant)"
+      },
+      "hal_contract_rule": {
+        "from": "template:st_hal.hal_contract_rule",
+        "text": "HAL_GPIO_Init with a valid configuration gets op write entries for every GPIO register field it writes for that configuration (the configured or default values), status HAL_OK; an invalid configuration or NULL argument gets op no_write without register/field and status HAL_ERROR; query functions get op no_write. Every case id is unique UPPER_CASE. Never add an entry the requirement text does not state."
+      },
+      "hal_dynamic_view": {
+        "from": "template:st_hal.hal_dynamic_view",
+        "text": "showing HAL_GPIO_Init, HAL_GPIO_ReadPin, HAL_GPIO_WritePin, HAL_GPIO_TogglePin, HAL_GPIO_WriteMultipleStatePin, HAL_GPIO_LockPin with their register accesses, and an invalid argument returning HAL_ERROR without register access, using the delivered HAL_GPIO_ function names"
+      },
+      "hal_effect_example": {
+        "from": "template:st_hal.hal_effect_example",
+        "text": "{\"case\":\"INIT_OT0\",\"swr\":\"SWR-001\",\"register\":\"GPIO_OTYPER\",\"field\":\"OT0\",\"op\":\"set\",\"status\":\"HAL_OK\"}"
+      },
+      "hal_failure_responses": {
+        "from": "template:st_hal.hal_failure_responses",
+        "text": "one requirement per failure response of the scope: an invalid parameter -> no register access; an invalid configuration value -> HAL_ERROR without writing the register it configures; a busy handle -> HAL_BUSY where the delivered API declares it; and one timing requirement: no HAL_GPIO_ function waits on a GPIO flag"
+      },
+      "hal_integration": {
+        "from": "template:st_hal.integration",
+        "text": "(the scope functions in the order a caller uses them (HAL_GPIO_Init, HAL_GPIO_ReadPin, HAL_GPIO_WritePin, HAL_GPIO_TogglePin, HAL_GPIO_WriteMultipleStatePin, HAL_GPIO_LockPin) with a valid and an invalid configuration)"
+      },
+      "hal_requirement_example": {
+        "from": "template:st_hal.hal_requirement_example",
+        "text": "When the GPIO initialisation is requested with a valid configuration, the GPIO driver shall set GPIO_OTYPER.OT0."
+      },
+      "hal_reset_example": {
+        "from": "template:st_hal.hal_reset_example",
+        "text": "(e.g. '- **SWR-0nn** While no GPIO initialisation has been requested after reset, the GPIO driver shall not write any GPIO register.')"
+      },
+      "hal_target_tests": {
+        "from": "template:st_hal.target_tests",
+        "text": "write software/tests/target/test_gpio_target.c (the scope functions on the simulated GPIOA with valid configurations; every expected register value and result follows the simulator description and RM0486) and software/tests/target/test_gpio_target_errors.c (the failure responses the simulator can produce: invalid parameters return HAL_ERROR and leave the GPIO registers unchanged)"
+      },
+      "hal_ut_example": {
+        "from": "template:st_hal.ut_example",
+        "text": "static void ut_gpio_init(void)\n{\n    static GPIO_InitTypeDef cfg;\n    ut_reset_regs();\n    /* cfg.<field> = <a constant of stm32n6xx_hal_gpio.h>; - one line per field the case needs */\n    HAL_GPIO_Init(GPIOA, &cfg);\n    CHECK(\"UT-001\", (forge_host_gpio.OTYPER & GPIO_OTYPER_OT0) == GPIO_OTYPER_OT0);\n}"
+      },
+      "hal_ut_rule": {
+        "from": "template:st_hal.ut_rule",
+        "text": "Each case configures the instance GPIOA and a configuration (static, its fields assigned) and checks the HAL return value and the register values of forge_host_gpio (on the host every GPIO register is plain RAM (forge_host_gpio): a written value stays and no flag changes by itself); invalid-parameter cases check HAL_ERROR and unchanged registers; behaviour that needs the hardware is verified on the target model"
+      },
+      "integration": {
+        "from": "template:st_hal.integration",
+        "text": "the scope functions in the order a caller uses them (HAL_GPIO_Init, HAL_GPIO_ReadPin, HAL_GPIO_WritePin, HAL_GPIO_TogglePin, HAL_GPIO_WriteMultipleStatePin, HAL_GPIO_LockPin) with a valid and an invalid configuration (on the host every GPIO register is plain RAM (forge_host_gpio): a written value stays and no flag changes by itself)"
+      },
+      "query_example": {
+        "from": "template:st_hal.query_example",
+        "text": "HAL_GPIO_ReadPin(GPIOA, ...)"
+      },
+      "replace": {
+        "from": "template:st_hal.replace",
+        "text": [
+          [
+            "and one measurable timing requirement (every wait is bounded by HAL_GPIO_TIMEOUT_VALUE = 1000 polling iterations)",
+            ""
+          ],
+          [
+            "the pass criterion uses the requirement's own bound, e.g. 'at most HAL_GPIO_TIMEOUT_VALUE polling iterations', never",
+            "the pass criterion uses the requirement's own bound, never"
+          ],
+          [
+            "Register access (extern volatile uint32_t register-block array placed at the GPIO base by the linker, indexed by offset/4; no integer-to-pointer casts; host tests define the array)",
+            "Register access (the delivered design: the HAL reaches the registers through the instance pointer, with the CMSIS device structure GPIOA of stm32n6xx.h at the base 0x56020000; host tests map GPIOA to a RAM struct, forge_host_device.h)"
+          ],
+          [
+            "components named stm32n6xx_hal_gpio (HAL) and stm32n6xx_ll_gpio (LL, header-only), the GPIO register block (0x56020000) and their dependencies (HAL -> LL -> registers)",
+            "the component stm32n6xx_hal_gpio (HAL, delivered, FROZEN), the GPIOA register block (0x56020000, RM0486 p.176) and their dependency (HAL -> registers)"
+          ],
+          [
+            "participants Caller, stm32n6xx_hal_gpio, stm32n6xx_ll_gpio, GPIO,",
+            "participants Caller, stm32n6xx_hal_gpio, GPIOA,"
+          ],
+          [
+            "'SWC_HAL --> SWC_LL : IF-01 LL_GPIO_* accessors'",
+            "'Caller --> SWC_HAL : IF-02 HAL_GPIO_ API'"
+          ],
+          [
+            "using only the interface types and constants you define in Interfaces",
+            "using only the delivered types and constants (GPIO_InitTypeDef and the stm32n6xx_hal_gpio.h constants)"
+          ],
+          [
+            "SWE.3 must implement the interface so that these calls compile.",
+            "The calls must compile against the delivered headers."
+          ],
+          [
+            "'#include \"stm32n6xx_hal_gpio.h\"', '#include \"forge_target_test.h\"'",
+            "'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle or configuration is a static variable with its fields assigned - no '= {0}' initialiser: the target image has no memset)"
+          ],
+          [
+            "with conditions on HAL return values and ll_gpio_regs[LL_GPIO_<REG>_OFFSET / 4U] & LL_GPIO_<REG>_<FIELD>_MSK bits (always the _MSK macro, e.g. LL_GPIO_OTYPER_OT0_MSK; never the field name without _MSK). No printf, no stdlib, no ll_gpio_regs definition.",
+            "with conditions on HAL return values and GPIO-><REG> & GPIO_<REG>_<FIELD> bits of the vendor header (e.g. GPIO->OTYPER & GPIO_OTYPER_OT0). No printf, no stdlib."
+          ],
+          [
+            "on HAL return values and ll_gpio_regs[LL_GPIO_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_gpio_regs definition (the linker places it).",
+            "on HAL return values and GPIO-><REG> & GPIO_<REG>_<FIELD> bits of the vendor header (e.g. GPIO->OTYPER & GPIO_OTYPER_OT0). No printf, no stdlib."
+          ],
+          [
+            "the LL_GPIO_ functions to test",
+            "the HAL_GPIO_ functions to test (their declarations)"
+          ],
+          [
+            "For EACH LL_GPIO_ function group",
+            "For EACH HAL_GPIO_ function group"
+          ],
+          [
+            "on LL return values and",
+            "on HAL return values and"
+          ],
+          [
+            "LL functions return nothing: no status and no ready.",
+            "HAL functions return HAL_StatusTypeDef (or the value their declaration returns)."
+          ],
+          [
+            "software/ll/stm32n6xx_ll_gpio.h (the LL API and its exact names)",
+            "software/hal/stm32n6xx_hal_gpio.h and stm32n6xx_hal_gpio_ex.h (the delivered HAL API and its exact names)"
+          ],
+          [
+            "software/ll/stm32n6xx_ll_gpio.h (exact LL names)",
+            "software/hal/stm32n6xx_hal_gpio.h and stm32n6xx_hal_gpio_ex.h (exact HAL names)"
+          ],
+          [
+            "Read workproducts/SWE.2/software_architecture.md, software/ll/stm32n6xx_ll_gpio.h and",
+            "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_gpio.h and"
+          ],
+          [
+            "'#include \"stm32n6xx_ll_gpio.h\"', '#include \"forge_target_test.h\"'",
+            "'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle or configuration is a static variable with its fields assigned - no '= {0}' initialiser: the target image has no memset)"
+          ],
+          [
+            "exercising the LL sequences a caller will use",
+            "exercising the HAL sequences a caller will use"
+          ],
+          [
+            "exercising HAL+LL together",
+            "exercising the delivered HAL"
+          ],
+          [
+            "(e.g. GPIO->CR & GPIO_CR_<FIELD>)",
+            "(e.g. GPIO->OTYPER & GPIO_OTYPER_OT0)"
+          ],
+          [
+            "the LL and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype",
+            "the delivered HAL is exactly ONE element with the <<SWC>> stereotype"
+          ]
+        ]
+      },
+      "target_tests": {
+        "from": "template:st_hal.target_tests",
+        "text": "write software/tests/target/test_gpio_target.c (the scope functions on the simulated GPIOA with valid configurations; every expected register value and result follows the simulator description and RM0486) and software/tests/target/test_gpio_target_errors.c (the failure responses the simulator can produce: invalid parameters return HAL_ERROR and leave the GPIO registers unchanged)"
+      },
+      "ut_example": {
+        "from": "template:st_hal.ut_example",
+        "text": "static void ut_gpio_init(void)\n{\n    static GPIO_InitTypeDef cfg;\n    ut_reset_regs();\n    /* cfg.<field> = <a constant of stm32n6xx_hal_gpio.h>; - one line per field the case needs */\n    HAL_GPIO_Init(GPIOA, &cfg);\n    CHECK(\"UT-001\", (forge_host_gpio.OTYPER & GPIO_OTYPER_OT0) == GPIO_OTYPER_OT0);\n}"
+      },
+      "ut_rule": {
+        "from": "template:st_hal.ut_rule",
+        "text": "Each case configures the instance GPIOA and a configuration (static, its fields assigned) and checks the HAL return value and the register values of forge_host_gpio (on the host every GPIO register is plain RAM (forge_host_gpio): a written value stays and no flag changes by itself); invalid-parameter cases check HAL_ERROR and unchanged registers; behaviour that needs the hardware is verified on the target model"
+      }
+    }
+  },
+  "work_order": "0010e-st-cube-gpio-hal-ob"
+}
