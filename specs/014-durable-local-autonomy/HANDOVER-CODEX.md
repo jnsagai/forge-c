@@ -6,7 +6,51 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current priority — dedicated Omniverse2 production go-live within eight hours
+## Current checkpoint — owner-approved eight-hour remote continuation
+
+The owner clarified the overnight request: **"I want a brute force continuation on
+omniverse, for8 hours"**. Remote source is pinned to
+**66c3d13d38b401129023b2a20b3e0239ef844f74**. Window ends
+**2026-10-28T06:28:12Z** (UTC/Lisbon). Leave remote services running and pause the
+Codex goal to conserve credits after publishing this checkpoint.
+
+RCC trial **afo-94956895bdeb7dd7** is RUNNING, first request admitted; IWDG trial
+**afo-a136ffd2d02c46a5** follows serially through the existing AFO scheduler. The
+existing mission recorder now performs finite, pre-approved intake and commits
+sanitized progress every5minutes. It does not execute or retry jobs independently
+of the controller. Progress branch **overnight/2026-10-27-local-qwen-8h** is published
+to GitHub. Local durable Git repository on Omniverse2:
+`/mnt/data/forge-c/production-local-014/overnight-progress-20261027`.
+
+Ordinary production capability guards remain unchanged. An additional signed
+qualification grant binds exact experimental orders, source, model/profile,
+role/configuration choices and expiry. These are prospective role experiments,
+not capability-success receipts. Existing sampling/inspector configuration remains
+unchanged. Ordinary product/mission/request admission and all native gates remain.
+No promotion, merge, release or replenishment of historical failed missions.
+The earlier unused qualification plan was superseded and its grant revoked before
+any job submission; its files remain. Current trial grant ends with the8h window.
+
+Each order:120ktokens total,3attempts,4recovery jobs,32requests/32tools,1correction,
+6h maximum and the common window deadline. Initial product attempt reservations
+40k/30k/20k are immutable prospective allocations inside that same total; they do
+not reset costs. Resource exhaustion can stop engineering attempts before8h;
+model-free supervision remains running. One admitted inference request; no other
+GPU tests run concurrently. At window end no global factory shutdown is requested.
+
+Exact66c3d13 local127PASS(18.854s); focused native11PASS(0.693s). Broader native
+qualification is incomplete/failed: the isolated continuity fixture lacked its
+authoritative-volume marker; interruption also caused a transaction teardown error
+while journal waits were observed. Retain those outcomes; no broad native PASS.
+Both real source workorders were prepared with intake_only before dispatch,
+without model calls. Formal task ledger remains30/58, no new task ticked.
+
+[Runtime, commands, live evidence and remaining limits](../../evidence/014-durable-local-autonomy/overnight-66c3d13/README.md).
+On resume inspect actual queue, requests, leases, original outcomes and Git history
+before changing anything. Do not replay unused plans, reset missions, tune the
+frozen inspector or turn experimental results into benchmark/availability claims.
+
+## Previous checkpoint — dedicated Omniverse2 production go-live
 
 Owner instruction at2026-10-27T20:50:49Z: "I need to have the forge-c up and running
 in the omniverse machine for production in the next8 hours maximum, even if it not
