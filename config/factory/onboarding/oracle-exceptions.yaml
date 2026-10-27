@@ -1,0 +1,7 @@
+# Feature 016 (OB-T002/OB-T020): reviewed differences between the facts the onboarding stage derives and the values
+# that were written by hand in the existing peripheral profiles and examples (the regression oracle, FR-020).
+# An unlisted difference fails tests/test_onboarding_oracle.py. Each entry states why the difference is acceptable:
+# a hand error, or a fact the hand value expressed differently. Entries are reviewed; never added to make a test pass
+# without an explanation.
+schema: forge-c/onboarding-oracle-exceptions/0.1
+exceptions: []

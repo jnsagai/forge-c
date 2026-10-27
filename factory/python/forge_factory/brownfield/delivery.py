@@ -140,6 +140,8 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
     blank = [k for k in ("origin", "licence") if k in d and not str(d[k]).strip()]  # FR-005, named explicitly
     issues = [f"DELIVERY_{k.upper()}_MISSING" for k in blank] + \
         [e for e in validate(d) if not any(e.startswith(f"DELIVERY_SPEC_INVALID:{k}:") for k in blank)]
+    if not issues and not d.get("files"):  # F016: an onboarding delivery reaches intake only with its derived map
+        issues.append("DELIVERY_FILES_NOT_DERIVED:run the onboarding derivation first")
     if not issues and d["code_mode"] == "FIX_ALLOWED" and not d["licence_allows_modification"]:
         issues.append("DELIVERY_MODE_FORBIDDEN_BY_LICENCE:FIX_ALLOWED")
     files: dict[str, bytes] = {}
