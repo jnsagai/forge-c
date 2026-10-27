@@ -18,9 +18,36 @@ from .durable import immutable_json, strict_json
 from .queue import Store
 
 
-def run(plan_path):
+def provision_order(store, entry, eff, deadline):
     from .cli import approve
     from .mission_admin import register
+    from .mission_ledger import MissionLedger
+
+    env = entry["envelope"]
+    allowed, reason = approve(env, eff)
+    if not allowed:
+        raise ValueError("OVERNIGHT_INTAKE_NOT_AUTHORIZED:" + reason)
+    mission = dict(entry["mission"])
+    mission["limits"] = {
+        **mission["limits"],
+        "deadline": min(deadline, time.time() + float(eff.get("budgets.max_order_wall_seconds")) - 5),
+    }
+    with store.tx() as c:
+        existing = c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (mission["mission_id"],)).fetchone()
+    if existing:
+        mission["limits"] = json.loads(existing[0])["limits"]
+    # Same proven ordering as qualification_intake: an order can never become
+    # visible to the scheduler before its immutable mission binding exists.
+    register(store, {**mission, "orders": []}, eff)
+    MissionLedger(store).link(mission["mission_id"], entry["order_id"])
+    oid, _ = store.submit(
+        env, repo=REPO_ROOT, max_queued=int(eff.get("queue.max_queued_orders")), approve=lambda item: approve(item, eff)
+    )
+    if oid != entry["order_id"]:
+        raise ValueError("PREAPPROVED_ORDER_ID_CHANGED")
+
+
+def run(plan_path):
     from .operations import Intent
     from .policy import load
 
@@ -58,31 +85,7 @@ def run(plan_path):
             with Intent().lock():
                 now_intent = Intent().read()
                 if now_intent["mode"] == "RUNNING" and now_intent["epoch"] == intent["epoch"]:
-                    # Serialize QUEUED publication and mission binding against admission.
-                    env = pending["envelope"]
-                    oid, _ = store.submit(
-                        env,
-                        repo=REPO_ROOT,
-                        max_queued=int(eff.get("queue.max_queued_orders")),
-                        approve=lambda item, eff=eff: approve(item, eff),
-                    )
-                    mission = dict(pending["mission"])
-                    mission["limits"] = {
-                        **mission["limits"],
-                        "deadline": min(
-                            plan["deadline_epoch"], time.time() + float(eff.get("budgets.max_order_wall_seconds")) - 5
-                        ),
-                    }
-                    # A restart adopts existing mission bytes; it cannot refresh its deadline.
-                    with store.tx() as c:
-                        existing = c.execute(
-                            "SELECT record FROM afo_missions WHERE mission_id=?", (mission["mission_id"],)
-                        ).fetchone()
-                    if existing:
-                        mission["limits"] = json.loads(existing[0])["limits"]
-                    register(store, mission, eff)
-                    if oid != pending["order_id"]:
-                        raise ValueError("PREAPPROVED_ORDER_ID_CHANGED")
+                    provision_order(store, pending, eff, plan["deadline_epoch"])
         snapshot = {
             "captured_utc": utc_now(),
             "deadline_epoch": plan["deadline_epoch"],
