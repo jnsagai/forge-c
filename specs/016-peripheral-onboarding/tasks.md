@@ -326,10 +326,11 @@ SWE.1–SWE.6.
   it holds: revision, input and package hashes, approval id, Fabro run ids, phase verdicts, package status and gaps,
   duration, tokens. Add a checker `evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py` (inputs, outcome, SC-005:
   no gap caused by an onboarding fact).
-- [ ] **OB-T059** [US5] SC-001 audit, scripted in `ob_check.py`: `git log` over `config/factory/peripherals/` and
+- [X] **OB-T059** [US5] SC-001 audit, scripted in `ob_check.py`: `git log` over `config/factory/peripherals/` and ✅ Evidence: `evidence/v0.4/runs/OB-OWNER-REVIEW/latest.json`
   `examples/00NNe-*` shows no per-driver text added for the four drivers. Every prompt text of the four runs has
-  `from` template or authored.
-- [ ] **OB-T060** [US5] Owner review of the four release packages: the owner decides; the decisions are recorded in
+  `from` template or authored. Owner decision OD-2026-10-27-02 accepts only the existing
+  unused legacy GPIO description edit; retain the strict literal FAIL and validate the scoped exception separately.
+- [X] **OB-T060** [US5] Owner review of the four release packages: the owner decides; the decisions are recorded in ✅ Evidence: `evidence/v0.4/runs/OB-OWNER-REVIEW/latest.json`, `evidence/v0.4/runs/OB-T058/latest.json`
   owner-decision records. Close feature 015 T065 by reference to OB-T058, through `mark_task.py` with this
   evidence.
 

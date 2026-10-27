@@ -1,0 +1,22 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decided_on": "2026-10-27",
+  "recorded_at": "2026-10-27T16:36:45.030040Z",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "authority": "Explicit owner response in this session; recorded without generating a signature.",
+  "decision_id": "OD-2026-10-27-02",
+  "subject": "Specific SC-001 historical exception for unused legacy GPIO model-description correction",
+  "statement": "Accept this scoped exception; retain the raw FAIL",
+  "decision": "ACCEPT_SCOPED_HISTORICAL_EXCEPTION",
+  "owner_response_ref": "request_user_input_async call_35af58f6cd0c4fa6b3752ac71b21b57d question 1",
+  "scope": "The existing unused legacy GPIO model-description string correction only. The active-input audit passes and generation reads no hand profile.",
+  "baseline_revision": "11482e3",
+  "peripheral_profile_diff_sha256": "d2b40c88ee491015b50e23c4dc05c14812bcfed0d6f21f2bbdd7c91ab79d6715",
+  "raw_history_evidence_sha256": "2b83421efc4616baa3994dc7e163ca2344b3780737d35031573132f3cbb0c83c",
+  "active_input_evidence_sha256": "2176d3e39a046c8abd24cffb131b6c4cb5aa9879a13543f20b3908b503340a21",
+  "raw_history_status": "FAIL",
+  "limitations": [
+    "The original literal audit remains FAIL.",
+    "No additional per-driver text edit, change to the scanner/history evidence, safety approval or merge is authorized."
+  ]
+}

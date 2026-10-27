@@ -39,7 +39,7 @@ need the FR-003 parser change first. A task is checked only with run evidence (`
 
 ## M6 — ST HAL code (later, owner 2026-10-25 "LL first, HAL later")
 
-- [ ] **F015-T065** Delivery of ST HAL code with its dependencies (hal_def, hal_conf template); examples `00NNd-st-cube-<id>-hal`; queue items after the LL items.
+- [X] **F015-T065** Delivery of ST HAL code with its dependencies (hal_def, hal_conf template); examples `00NNd-st-cube-<id>-hal`; queue items after the LL items. Acceptance reference: feature 016 OB-T058 record and OD-2026-10-27-01; the four BLOCKED handovers are accepted as offline evidence with every finding open. ✅ Evidence: `evidence/v0.4/runs/OB-OWNER-REVIEW/latest.json`, `evidence/v0.4/runs/OB-T058/latest.json`
 
 ## M7 — Self-managed runs (FR-008)
 
