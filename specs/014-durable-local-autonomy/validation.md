@@ -198,6 +198,14 @@ Evidence records and ticks (27/58 tasks; `scripts/mark_task.py`, each record PAS
 
 Core regression at `e8e7fb6`: 627 passed, 1 skipped, 0 failed; release 13/13 (records `DA014-core`, `DA014-release`). The implementation-status ledger is re-baselined to 58 rows at `e8e7fb6`; `verify_handoff.py` accepts only PASS_DETERMINISTIC or the two recorded live statuses for ticked tasks, requires model capability to stay PARTIAL and product success, learning benefit and availability to stay NOT_RUN.
 
+## 2026-10-27: inspector learning sets 1-3 perfect; refreshed held-out set calibrated (DA-T055)
+
+Revision `9300475` (learning-set-3 rules: safety-scope fact question, one-bit 'write 1/0', configuration writes, field named after 'shall', waits as reads, fixed-state assumptions) was tested on loop10 first: review and seeded tests 61 passed and 0 skipped; lrtx and DA014 suites 538 passed and 2 skipped (no pinned SafeC engine, no frozen SWE.2 baseline). The truthful preflight passed on all 18 learning baselines, and a replay of the recorded answers of learning-16, learning2-2 and learning3-1 left every baseline with 0 standing claims. The racy namespace-holder drill test (`setsid` fork, orphan sleeps) was fixed in the same commit.
+
+GPU job 030 on Omniverse2 ran learning-19 (49/49), learning2-5 (63/63) and learning3-2 (14/14). Its learning gate passed, so the job started the 3 registered runs on test set 2 (GPIOA and CRC, split `48207f1`). The runs were identical: 12/12 seeded defects flagged (11 on target, 1 off target, 0 missed), 2/2 clean baselines falsely rejected, 0 empty inspections, truthful preflight FAIL on CRC. Details and the causes are in the [stepwise-inspector README](../../evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md). [KI-014-003](../../evidence/014-durable-local-autonomy/known-issues.md) stays OPEN, and test set 2 is now spent.
+
+DA-AT-055 expects complete registered runs with honest rates and sets no rate threshold. `verify_calibration.py` checks that protocol for both calibrations from the published records (47 checks PASS at `291a1ff`; a tampered copy fails). DA-T055 is ticked with record `DA014-calibration-t2` (29/58). `verify_handoff.py` now also accepts `PASS_LIVE_PROTOCOL`.
+
 ## Static checks
 
 `python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.

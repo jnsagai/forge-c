@@ -25,6 +25,7 @@
     "DA-T051",
     "DA-T053",
     "DA-T054",
+    "DA-T055",
     "DA-T056",
     "DA-T057",
     "DA-T058"
@@ -35,7 +36,7 @@
   "independent_CRE": "REJECTED_PROTECTED_PATH_CHANGE_EXTERNAL_ENGINEERING_ONLY",
   "known_issues": "evidence/014-durable-local-autonomy/known-issues.json",
   "learning_benefit": "NOT_RUN",
-  "local_model_capability": "PARTIAL: diagnosis protocol 95/100 owner-accepted; stepwise inspector learning set 49/49 (preliminary); author and maintenance NOT_RUN",
+  "local_model_capability": "PARTIAL: diagnosis protocol 95/100 owner-accepted; stepwise inspector learning sets 1-3 perfect (49/49, 63/63, 14/14 at 9300475); held-out test set 2: 12/12 seeded flagged, 2/2 clean baselines falsely rejected; author and maintenance NOT_RUN",
   "operational_availability": "NOT_RUN",
   "product_success": "NOT_RUN",
   "rolling_30_day_slo": "NOT_DEMONSTRATED",
@@ -744,16 +745,16 @@
     },
     {
       "acceptance_test_id": "DA-AT-055",
-      "evidence": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-runs.json",
-      "implementation_status": "PARTIAL_SUBSET_CALIBRATED_REFRESH_PENDING",
-      "limitation": "refreshed held-out set needs a frozen Feature 015 batch (KI-014-003)",
-      "native_or_live_qualification": "SUBSET_3_RUNS_DONE",
+      "evidence": "evidence/v0.4/runs/DA014-calibration-t2/latest.json",
+      "implementation_status": "PASS_LIVE_PROTOCOL",
+      "limitation": "honest rates, not qualification: test set 2 (9300475) 12/12 seeded flagged, 2/2 clean baselines falsely rejected (KI-014-003); test set 2 now spent",
+      "native_or_live_qualification": "SUBSET_3_RUNS_AND_TEST_SET_2_3_RUNS_DONE",
       "required_level": "live",
       "requirement_id": "DA-FR-055",
-      "runtime_sources": "q014-inspector-calibrate-subset.sh (operations)",
+      "runtime_sources": "q014-inspector-calibrate-subset.sh; q014-calibrate-t2.sh (operations)",
       "source_revision": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238",
       "task_id": "DA-T055",
-      "test_sources": "-"
+      "test_sources": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/verify_calibration.py"
     },
     {
       "acceptance_test_id": "DA-AT-056",

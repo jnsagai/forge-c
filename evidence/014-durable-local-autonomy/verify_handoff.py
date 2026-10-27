@@ -8,7 +8,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "specs/014-durable-local-autonomy"
-PASSED = {"PASS_DETERMINISTIC", "PASS_LIVE_OWNER_ACCEPTED_95_OF_100", "PASS_LIVE_LEARNING_SET_PRELIMINARY"}
+PASSED = {"PASS_DETERMINISTIC", "PASS_LIVE_OWNER_ACCEPTED_95_OF_100", "PASS_LIVE_LEARNING_SET_PRELIMINARY",
+          "PASS_LIVE_PROTOCOL"}  # DA-T055: complete registered calibration runs with honest rates
 
 
 def main():
