@@ -62,5 +62,11 @@ any model profile can work from the datasheet, the reference manual, the deliver
     header now maps.
 - **Migration:** migrating a hand-onboarded peripheral to the package-driven path is an owner choice. A driver style
   without a template set, today the register-level LL, cannot use the package-driven path until one is written.
-- **Not decided here:** the AI-authored simulation model (held-out CRC, OB-T041/OB-T043) and the onboarding run for
-  authored items. A local-model onboarding run is NOT_RUN.
+- **Model authoring:** two opt-in role and MCP overlays preserve the canonical 20-role registry. A separate graph
+  unrolls three author → deterministic model gate → independent inspector attempts, using the approved Codex/Claude
+  profile. Only the model directory is author-writable. The gate freezes the exact inspected bytes; acceptance
+  requires the inspector to cite that hash. Authored execution uses an offline filesystem/network namespace plus
+  a restricted Python request language and output/time limits. Content-addressed accepted bundles are hash-checked
+  on reuse, approval verification and target execution. Existing models retain their reuse path.
+- **Evidence limit:** deterministic implementation checks do not establish the held-out CRC result. SC-007 is
+  NOT_RUN while the approved Claude inspector is out of quota. A local-model onboarding run also remains NOT_RUN.

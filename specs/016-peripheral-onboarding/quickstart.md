@@ -89,8 +89,26 @@ PY
 **Expected**: load PASS, reset values PASS (or unmodelled registers listed as limits), access types PASS, smoke PASS
 on the delivered UART HAL image.
 
-This invokes the implemented model-gate API; the `check-model` CLI spelling is currently a NOT_IMPLEMENTED stub.
-For SC-007, held-out CRC authoring and its graph remain open (OB-T041/043). No authored-model result is claimed.
+The same gate is available as `python -m forge_factory.onboarding check-model <package-key>`.
+
+When no factory model exists, CLI `derive` uses the separate Codex author → deterministic gate → Claude inspector
+run, with at most three attempts. Use `--no-author` to derive facts without launching that run. Programmatic
+`derive` and SWE launch re-derivation are model-free by default and can reuse a previously accepted authored bundle.
+The two model roles are opt-in overlays; the existing 20-role registry and SWE graph remain intact. Authored models
+execute in an offline namespace containing the Renode distribution and scratch files, with a restricted source
+language, bounded output and a timeout. Inspectors accept an exact model hash. Accepted model/platform bundles are
+content-addressed and their bytes are checked again before target execution.
+
+For SC-007, the operator command (from the repository root) is:
+
+```bash
+python -m forge_factory.onboarding derive examples/0014c-st-cube-crc --hide-model crc
+```
+
+The hidden-model option is test-only and becomes
+part of the hashed package profile. A failed authoring case remains a named gap; it does not fall back to the hand
+model. The held-out model run is **NOT_RUN** in `evidence/v0.4/runs/OB-T043/latest.json` because the owner reported
+Claude quota exhaustion. The deterministic tests do not establish SC-007 or an independent inspection PASS.
 
 ## 6. Acceptance (US5, SC-001/005)
 
@@ -101,4 +119,6 @@ For each of `0010e`–`0013e`:
 4. The SWE run ends READY_FOR_OFFLINE_REVIEW, or BLOCKED with its gaps.
 
 The record goes to `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. A `git log` audit of
-`config/factory/peripherals/` and the four examples shows no per-driver text added for these drivers.
+`config/factory/peripherals/` and the four examples is preserved under `OB-SC001-HISTORY`. Its strict literal
+result is FAIL because an unused legacy GPIO model-description string changed; the active-input audit
+`OB-SC001-PREPARATION` passes. Owner adjudication remains pending, and the historical failure is not relabeled.

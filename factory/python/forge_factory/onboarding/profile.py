@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from ..common import REPO_ROOT
+from ..common import REPO_ROOT, sha256_file
 from .facts import value
 
 CONTRACT = REPO_ROOT / "specs/009-peripheral-generic-iwdg/contracts/peripheral-profile.schema.json"
@@ -26,7 +26,8 @@ def _need(pkg: dict, name: str):
     return v
 
 
-def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | None = None) -> dict:
+def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | None = None,
+                    model_paths: tuple[Path, Path] | None = None, *, gate_preview: bool = False) -> dict:
     style = _need(pkg, "driver_style")
     inst, prefix = _need(pkg, "instance"), _need(pkg, "register_prefix")
     pid = prefix.lower()
@@ -58,18 +59,27 @@ def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | 
             ext = next((e for e in value(pkg, "undelivered_externals") or [] if e["symbol"] == a["symbol"]), None)
             if ext and ext["prototype"] and a["id"] in confirmed:
                 prof["hal"]["clock_stub"] = {"prototype": ext["prototype"], "hz": int(confirmed[a["id"]])}
-    model, repl = SIM_DIR / f"{pid}_model.py", SIM_DIR / f"stm32n6_{pid}.repl"
+    if model_paths is None:
+        from .authoring import artifact_paths
+
+        model_paths = artifact_paths(pkg)
+        if not model_paths and (pkg.get("profile") or {}).get("model_authoring", {}).get("hide_model"):
+            raise ProfileIncomplete("PROFILE_HIDDEN_MODEL_NOT_ACCEPTED")
+    model, repl = model_paths or (SIM_DIR / f"{pid}_model.py", SIM_DIR / f"stm32n6_{pid}.repl")
     if not (model.is_file() and repl.is_file()):
         raise ProfileIncomplete(f"PROFILE_MODEL_MISSING:{pid}")  # slice J authors one; until then: a gap
-    prof["sim"] = {"model": model.name, "platform": repl.name}
+    prof["sim"] = {"model": str(model.resolve()) if model_paths else model.name,
+                   "platform": str(repl.resolve()) if model_paths else repl.name}
     if pkg.get("texts"):  # OB-T032: generated texts only - a hand profile's prompt keys are never read for it
         from .texts import plain
 
         prof.update(plain(pkg["texts"]))
-    elif style == "HAL_STANDALONE":
+    elif style == "HAL_STANDALONE" and not gate_preview:
         raise ProfileIncomplete("PROFILE_TEXTS_MISSING")
     prof["derived_from"] = {"work_order": pkg["work_order"], "package_sha256": pkg["sha256"],
                             "approval_id": (approval or {}).get("approval_id")}
+    if model_paths:
+        prof["derived_from"].update(model_sha256=sha256_file(model), platform_sha256=sha256_file(repl))
     errs = validate(prof)
     if errs:
         raise ProfileIncomplete("PROFILE_INVALID:" + " | ".join(errs[:4]))

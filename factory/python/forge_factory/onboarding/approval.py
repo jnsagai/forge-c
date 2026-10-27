@@ -126,6 +126,12 @@ def verify(root: Path, allowed_signers: Path | None = None) -> dict:
     if a["work_order"] != pkg["work_order"] or a["package_sha256"] != pkg["sha256"] or \
             F.canonical_hash(pkg) != pkg["sha256"]:
         return {"code": "APPROVAL_STALE", "reason": "the approval names another package hash", "approval": a}
+    try:
+        from .authoring import artifact_paths
+
+        artifact_paths(pkg)
+    except (OSError, ValueError, KeyError) as exc:
+        return {"code": "APPROVAL_STALE", "reason": str(exc)[:160], "approval": a}
     if a["decision"] == "REJECTED":
         return {"code": "APPROVAL_REJECTED", "reason": a.get("reason", ""), "approval": a}
     conflicts = {f["name"] for f in pkg["facts"] if f["status"] == "CONFLICT"}

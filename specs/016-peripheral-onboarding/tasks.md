@@ -272,11 +272,11 @@ and inspected.
 
 ### Slice J (model part) and slice K
 
-- [ ] **OB-T041** [US4] Add the roles `onboard-model-author` (MCP: `forge-docs-mcp` reads, `forge-sim-mcp check_model`,
+- [X] **OB-T041** [US4] Add the roles `onboard-model-author` (MCP: `forge-docs-mcp` reads, `forge-sim-mcp check_model`, ✅ Evidence: `evidence/v0.4/runs/OB-MODEL-CONTROLS/latest.json`
   `write_file` under `onboarding/model/`) and `onboard-model-inspector` to `config/factory/agents.yaml`, with
   SKILL.md rendered, authz prefixes, and the onboarding-graph nodes (model author → `check_model` → inspector,
   bounded at 3).
-- [ ] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and
+- [X] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and ✅ Evidence: `evidence/v0.4/runs/OB-MODEL-CONTROLS/latest.json`
   never authors one. When none exists, it authors one. Implement this in `ff/onboarding/__init__.py`.
 - [ ] **OB-T043** [US4] Held-out authoring (SC-007). Run onboarding for `0014c` with the hand CRC model hidden (an
   onboarding option `--hide-model crc`, test-only, recorded in the package). Expected: an authored model passes

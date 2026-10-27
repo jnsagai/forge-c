@@ -3,19 +3,19 @@
     "python",
     "tests/spec/validate_design.py"
   ],
-  "duration_s": 0.23,
+  "duration_s": 0.209,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "883a54c5fc68d57928e7ff3f493d0fe2b2eef391",
+  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/OB-DESIGN/20261027T131659.log",
-  "log_sha256": "87eadabf3af82fd1ec363d8bf68b8f8706b5585d7c4e4c4ef02d73b211858034",
+  "log": "evidence/v0.4/runs/OB-DESIGN/20261027T160205.log",
+  "log_sha256": "7989732c89547d342d28080e3e607e0d1e036977f578a41993fc12be7b9a919a",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "OB-DESIGN",
-  "ts_utc": "2026-10-27T13:16:59.317399Z"
+  "ts_utc": "2026-10-27T16:02:05.283492Z"
 }
