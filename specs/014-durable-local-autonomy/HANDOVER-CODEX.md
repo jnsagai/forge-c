@@ -6,7 +6,51 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 approved WWDG capability extension
+## Current checkpoint — 2026-10-27 explicit profile and real native intake
+
+Exact runtime **024a3fa55fe6b4cce85c61155382cf35aabf76cd**. The opt-in WWDG
+engine now has an explicit experimental profile; base model settings/admission/
+network/quality controls remain identical. The actual workorder intake preserves
+its frozen semantic marker, identity/version/path/hash. New-profile Context
+refuses missing, changed or downgraded bindings before domain/model work. Profile
+hashes bind the exact parsed byte snapshot; manifest changes before engine
+dispatch refuse. Legacy profile-record shape and frozen fixtures remain intact.
+
+Exact local232 targeted PASS (112.601s),29 release/legacy gate PASS (8.872s).
+Two unchanged expensive solver/target-oracle cases are excluded from this targeted
+cohort; no full inherited-suite claim. Omniverse2 native72 PASS/2 absent-owner-input
+SKIP; after copying existing ignored inputs, those same2 cases separately PASS.
+Frozen baseline/v1 compatibility is reproduced on both hosts. Earlier WIP failures
+and native skipped results remain retained, never relabeled.
+
+Real native workorder.run(intake_only=True) in the existing isolated network
+namespace produced **WWDG-LL-v02-002**: model identity/network/provider/isolation
+checks pass; target-compiler delivery ACCEPTED; actual semantic Context and all12
+mandatory forms pass independent contract checks.12 engine calls,0 model calls,
+10.945230s. Shared configuration/service hashes unchanged and no non-sample
+inference record in the observed append window. Factual PASS/NO_NEW_LESSON;
+no benefit or whole-private-product qualification claim.
+
+The explicit profile/configuration preparation prerequisite is satisfied.
+Candidate002 stays **NOT_ADMITTED** pending current product execution reference
+and cumulative mission binding. An existing reference was requested asynchronously;
+do not invent an answer, silently renew grants, reset allowances or dispatch.
+Historical observed minimum16 requests/49,697 input+7,757 output tokens includes
+Job050 WWDG and its recorded diagnostic response. This is a lower bound, not a
+verified ceiling. Earlier candidates/source/archives/studies remain unchanged.
+
+[Evidence and exact commands](../../evidence/014-durable-local-autonomy/wwdg-profile-024a3fa/README.md).
+Remote source/harness/output: inspector-014-b309039/wwdg-024a3fa on the data volume.
+Profile selection is preparation, not deployment. Driver READY, product-role
+qualification, self-healing, learning benefit and24/72/168-hour availability remain
+unproven. Private retained-input blocker, A2 and campaign prerequisites remain.
+Formal ledger/source and CSV remain30/58; no additional task checkbox is justified.
+Next source gap: assurance.safec_oracle/register_wp/mutation still use legacy domain
+defaults and discard profile metadata while reconstructing validated objects.
+Fix and qualify this downstream version propagation before any model dispatch.
+Additional exact-source AFO integration: 75 PASS.
+
+## Previous checkpoint — 2026-10-27 approved WWDG capability extension
 
 Owner: **“I - Approve the scoped SafeC/Forge-C extension.”** Approval satisfies
 the private AGENTS functional-change confirmation requirement. Do not ask again.

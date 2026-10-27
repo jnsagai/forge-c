@@ -837,3 +837,40 @@ available, no logs fabricated, no manifest changed or check skipped. Restore exa
 recorded bytes to unblock. Candidate's fresh domain separately passed12 native
 preflight contracts in7.460138s (12 additional engine requests,0 model calls);
 its disposition is NO_NEW_LESSON. It remains NOT_ADMITTED.
+
+## 2026-10-27 — explicit candidate profile and frozen-context binding
+
+Runtime024a3fa55fe6b4cce85c61155382cf35aabf76cd adds the experimental
+local-rtx-v2-omniverse2-wwdg-v02 profile with the previously measured c241a9a engine.
+Models/runtime/admission/isolation/quality settings remain equal to the old
+reasoning-off profile. Actual workorder intake persists the new semantic marker;
+Context checks frozen identity/version/path/hash, prevents downgrade and refuses
+manifest changes before engine dispatch. Profile loading hashes the exact parsed
+byte snapshot, closing a concurrent-edit inconsistency without legacy shape drift.
+
+Exact clean local232 targeted PASS/0 SKIP/0 failures (112.601s),29 release/legacy
+gate PASS (8.872s). The two unchanged expensive solver/target-oracle cases are
+explicitly filtered, earlier measured at a74baa9; not a full inherited rerun.
+Omniverse2 native72 PASS/2 missing-owner-input SKIP (4.098s), followed by those2
+same compatibility cases PASS (2.033s) after restoring existing git-ignored inputs.
+No vendor content is published. Initial red9cases, fixture failures and the real
+intake-projection dropped-marker regression are retained with their corrections.
+
+Actual namespace-isolated intake-only code, real model identity/network/provider/
+isolation checks, ST target compiler, Context and12 independently checked mandatory
+forms PASS: candidateWWDG-LL-v02-002,12 engine requests/0 model calls/0 product
+attempts/10.945230s. Shared configuration/service record hashes unchanged;
+bounded meter append has0 non-sample records. New factual PASS disposition is
+NO_NEW_LESSON,0 qualified lessons/benefit; consolidation overhead not separately
+timed and no comparable evaluation claimed. Explicit profile preparation is now
+satisfied; no service/default-pin/deployment activation.
+
+Candidate remains NOT_ADMITTED: current product authority and cumulative mission
+continuation are unbound. An existing execution reference was requested, not inferred.
+Known observed historical minimum16calls/57,454tokens (49,697input/7,757output)
+is not an independently established upper bound. No budget reset/grant renewal.
+All original failures, uncertainty and spent studies remain preserved. No new
+formal checkbox, role/product/self-healing/availability success. Evidence:
+wwdg-profile-024a3fa under the Feature014 evidence directory.
+
+Exact024a3fa AFO/local-autonomy integration: 75 PASS in10.413s. Downstream assurance consumer version propagation is still a known source gap; intake-only results do not qualify oracle/proof/mutation consumers.
