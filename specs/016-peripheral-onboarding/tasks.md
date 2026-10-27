@@ -479,3 +479,8 @@ SWE.1–SWE.6.
   uncovered USPECs; AFO rejected rework of escalated FROZEN defects. These CODE reports need owner adjudication,
   including BRR/BSRR hardware equivalence versus the written requirement. No missing onboarding fact was identified
   in this corrected attempt. The initial GPIO SC-005 FAIL is preserved, not replaced by R1's narrower assessment.
+
+- The literal SC-001 history audit is now frozen as OB-SC001-HISTORY **FAIL**: commit `d4bbb55` corrected the
+  unused legacy GPIO target-model reset description. The separate package-generation read audit still passes
+  with zero hand-profile reads. OB-T059 remains open for adjudication of this literal history criterion; neither
+  audit result is relabelled to erase the exception.
