@@ -4,4 +4,33 @@
 # a hand error, or a fact the hand value expressed differently. Entries are reviewed; never added to make a test pass
 # without an explanation.
 schema: forge-c/onboarding-oracle-exceptions/0.1
-exceptions: []
+exceptions:
+  - example: 0013c-st-cube-tim
+    fact: instance
+    hand_value: TIM2
+    derived_value: null
+    explanation: >-
+      The owner scope of 0013c names TIM2, TIM3, TIM4 and TIM5 (the 32-bit general-purpose timers); TIM2 was chosen
+      by the implementation engineer when the profile was written by hand (feature 015), not by the owner. Onboarding
+      correctly leaves the instance NOT_DERIVED and asks the owner (target.instance). The oracle supplies TIM2 as the
+      owner's answer and compares the remaining facts, which all match.
+    reviewed_by: implementation engineer (Claude Code), feature 016 OB-T020, 2026-10-27
+  - example: 0012d-st-cube-usart-hal
+    fact: dependencies
+    hand_value: [Inc/stm32n6xx_hal_dma.h, Inc/stm32n6xx_hal_dma_ex.h, Inc/stm32n6xx_ll_pwr.h]
+    derived_value: []
+    explanation: >-
+      Hand over-inclusion in the feature 015 example. ST's UART HAL guards every DMA use with HAL_DMA_MODULE_ENABLED
+      (stm32n6xx_hal_uart.h lines 123-127 and 243-246, stm32n6xx_hal_uart.c), DMA transfers are out of the owner
+      scope, and no header of the build includes stm32n6xx_ll_pwr.h; the derived build (UART and RCC modules) passes
+      the syntax check with -Wall. The derived map is the include closure the compiler reports.
+    reviewed_by: implementation engineer (Claude Code), feature 016 OB-T020, 2026-10-27
+  - example: 0012d-st-cube-usart-hal
+    fact: framework_modules
+    hand_value: [UART, DMA, RCC]
+    derived_value: [UART, RCC]
+    explanation: >-
+      Same cause as the dependencies entry: DMA is optional for the UART HAL (guarded by HAL_DMA_MODULE_ENABLED) and
+      out of scope; the bounded build loop adds RCC because UART_SetConfig calls HAL_RCCEx_GetPeriphCLKFreq, and no
+      other module.
+    reviewed_by: implementation engineer (Claude Code), feature 016 OB-T020, 2026-10-27

@@ -225,9 +225,11 @@ the owner's (FR-007).
 **Decision.**
 - A test derives the package facts for the existing examples:
   - `0008c` (RCC LL, ST);
-  - `0009-iwdg-st`;
   - `0010c`–`0014c` (ST LL);
-  - `0014d` (CRC HAL).
+  - `0010d`–`0014d` (ST HAL, hand-onboarded in feature 015).
+
+  There is no ST IWDG delivery (`0009-iwdg-st` holds RM inputs only), and the factory-authored examples deliver no
+  vendor code, so they are not oracle cases (correction 2026-10-27).
 - It compares them with the hand-written profiles and work orders: instance, base address, page, prefix, headers,
   prefixes, time base, clock stub, host instance, file map, modules.
 - Every known difference is listed in a reviewed exceptions file with its explanation. An unlisted difference fails.

@@ -62,7 +62,7 @@ Existing hand-onboarded peripherals keep their profiles, and serve as the regres
   - hand-onboarded work orders produce byte-identical workflows;
   - no change to protected paths (checklists, release policies, safety policies);
   - FROZEN delivered code is never written.
-- **Scale/Scope**: 4 acceptance drivers, 8 regression-oracle combinations, 1 held-out model authoring (CRC).
+- **Scale/Scope**: 4 acceptance drivers, 11 regression-oracle examples, 1 held-out model authoring (CRC).
 
 ## Constitution Check
 
@@ -89,7 +89,7 @@ Post-design re-check: PASS. The design adds no human node, no paid service and n
 | A | Package and fact model, schema, writer, deterministic hash. Work-order schema: `target.instance`, optional file map and modules, PDF RM input. | US1 | FR-001, 005, 006, 015 |
 | B | Derivation of identity facts: instance, base address with memory-map page, prefix, register index, driver style, headers, prefixes. | US1 | FR-004 |
 | C | Derivation of behaviour facts: time base, timeout constants, waits, undelivered externals via link, instance comparisons, file map and modules via the bounded build loop, assumptions proposed. | US1 | FR-004, 007 |
-| D | Regression oracle over `0008c`, `0009-iwdg-st`, `0010c`–`0014c`, `0014d`, with a reviewed exceptions file. | US1 | FR-020 |
+| D | Regression oracle over `0008c`, `0010c`–`0014c`, `0010d`–`0014d`, with a reviewed exceptions file. | US1 | FR-020 |
 | E | Derived profile, `peripheral.of_ws` preference, manifest `onboarding` block, package hash in work-product evidence. | US2, US3 | FR-014, 018, 019 |
 | F | Owner approval: summary page, approval schema, signature verification (namespace `forge-onboarding-approval`), CONFLICT and assumption rules, invalidation on hash change. | US2 | FR-016, 017 |
 | G | AFO integration: states `ONBOARDING` and `WAITING_OWNER_APPROVAL` (TTL), dispatch of the SWE run after verified approval, refusal otherwise. | US2 | FR-016, 021 |

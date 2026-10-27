@@ -65,7 +65,7 @@ These are blocking: every story writes or reads the package.
 repeatable hash.
 
 **Independent test**: `python -m forge_factory.onboarding derive examples/0012d-st-cube-usart-hal WO-OB-U --no-author`
-gives the facts listed in quickstart §1. The regression oracle passes over the eight existing combinations.
+gives the facts listed in quickstart §1. The regression oracle passes over the eleven ST delivery examples.
 
 ### Slice B: identity facts
 
@@ -130,7 +130,7 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
   `workorder.json`: instance, base_address, mm_page, register_prefix, ll/hal headers, function prefixes,
   hal.time_base, hal.clock_stub symbol, hal.host_instance, delivery.files, dependencies and configure.hal_modules.
 - [ ] **OB-T020** [US1] Write `tests/test_onboarding_oracle.py`, parametrised over `0008c-st-cube-rcc`,
-  `0009-iwdg-st`, `0010c`, `0011c`, `0012c`, `0013c`, `0014c` and `0014d`. Every difference must be listed in
+  `0010c`–`0014c` and `0010d`–`0014d` (no ST IWDG delivery exists; correction 2026-10-27). Every difference must be listed in
   `oracle-exceptions.yaml` with an explanation; an unlisted difference fails. Review and commit each exception with
   its reason.
 

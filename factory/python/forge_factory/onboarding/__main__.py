@@ -22,7 +22,19 @@ def main(argv: list[str] | None = None) -> int:
     return handler(a)
 
 
-HANDLERS: dict = {}
+def _derive(a) -> int:
+    from . import derive
+
+    if len(a.args) != 2:
+        print(json.dumps({"status": "USAGE", "usage": "derive <example> <WO>"}))
+        return 2
+    pkg = derive(a.args[0], a.args[1])
+    print(json.dumps({"status": pkg["status"], "sha256": pkg["sha256"], "facts": len(pkg["facts"]),
+                      "gaps": [f"{g['id']}:{g['kind']}:{g['ref']}" for g in pkg["gaps"]]}))
+    return 0 if pkg["status"] == "READY_FOR_OWNER" else 1
+
+
+HANDLERS: dict = {"derive": _derive}
 
 if __name__ == "__main__":
     sys.exit(main())

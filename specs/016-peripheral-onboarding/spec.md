@@ -69,8 +69,8 @@ sources disagree is marked CONFLICT, with both sources.
 **Why this priority**: These facts are what the hand-written profiles hold today. Every later stage depends on them,
 and none of them needs a model. On its own it removes most of the hand preparation and makes it reproducible.
 
-**Independent Test**: Run the derivation on the feature 015 HAL work orders and on the eight existing onboarded
-combinations (RCC LL/HAL, IWDG, and CRC, GPIO, SPI, USART and TIM LL, plus CRC HAL). Compare each derived fact with
+**Independent Test**: Run the derivation on every existing ST delivery example: RCC LL, the CRC, GPIO, SPI, USART
+and TIM LL, and the feature 015 CRC, GPIO, SPI, USART and TIM HAL work orders, eleven in all (correction 2026-10-27: there is no ST IWDG delivery - `0009-iwdg-st` holds RM inputs only - and the factory-authored RCC/IWDG examples deliver no vendor code, so the oracle is every ST delivery example: `0008c`, `0010c`-`0014c` and `0010d`-`0014d`, eleven in all). Compare each derived fact with
 the hand-written value. Expected: every hand-written derivable fact is reproduced, and every difference is a recorded
 CONFLICT or a documented hand error.
 
@@ -346,7 +346,7 @@ and the per-attempt record, in the same form as the feature 015 benchmark record
 - **SC-001**: The ST HAL drivers for GPIO, SPI, USART and TIM are onboarded from their owner inputs alone. For these
   four, there are 0 per-driver files or texts written by a person or by the implementation engineer, apart from the
   owner inputs and the owner's decisions.
-- **SC-002**: For each of the eight existing hand-onboarded combinations, re-derivation reproduces 100% of the
+- **SC-002**: For each of the eleven existing ST delivery examples, re-derivation reproduces 100% of the
   hand-written derivable facts. Every difference is recorded with its explanation.
 - **SC-003**: 100% of the facts in every package have a source location, or carry NOT_DERIVED, CONFLICT or
   owner-assumption status. An audit finds 0 guessed facts.

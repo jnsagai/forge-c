@@ -33,8 +33,8 @@ python -m forge_factory.onboarding derive ../../examples/0012e-st-cube-usart-hal
 python -m pytest -q tests/test_onboarding_oracle.py
 ```
 
-**Expected**: every derivable field of the hand-written profiles and work orders (`0008c`, `0009-iwdg-st`,
-`0010c`–`0014c`, `0014d`) is reproduced. Each difference is listed in
+**Expected**: every derivable field of the hand-written profiles and work orders (`0008c`, `0010c`–`0014c`,
+`0010d`–`0014d`) is reproduced. Each difference is listed in
 `config/factory/onboarding/oracle-exceptions.yaml` with its explanation. An unlisted difference fails.
 
 ## 3. Approval gate (US2)

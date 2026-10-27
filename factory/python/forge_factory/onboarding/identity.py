@@ -370,7 +370,9 @@ def headers(ctx: Ctx, defs: dict[str, list[S.Definition]], prefix: str) -> Fact:
         return not_derived("headers", "scope_defining_files", "No delivered header declares the scope functions.")
     h = hdr.most_common(1)[0][0]
     val = {"header": Path(h).name, **({"source": Path(src_c.most_common(1)[0][0]).name} if src_c else {})}
-    return derived("headers", val, "scope_defining_files", Source("file", h, value=val["header"]))
+    line = next((ln for n in defs for f, ln in _declared_in(ctx, n) if f == h), None) or \
+        next((d.line for ds in defs.values() for d in ds if d.file == h), None)
+    return derived("headers", val, "scope_defining_files", Source("file", h, line=line, value=val["header"]))
 
 
 def handle_type(ctx: Ctx) -> tuple[str, str] | None:
@@ -380,7 +382,7 @@ def handle_type(ctx: Ctx) -> tuple[str, str] | None:
             text = dict(_headers_text(ctx))[f][line - 1]
             m = re.search(rf"{re.escape(n)}\s*\(\s*(?:const\s+)?(\w+_HandleTypeDef)\s*\*", text)
             if m:
-                return m.group(1), f
+                return m.group(1), f, line
     return None
 
 
@@ -390,7 +392,7 @@ def instance_pointer(ctx: Ctx) -> tuple[str, str] | None:
         for f, line in _declared_in(ctx, n):
             m = re.search(rf"{re.escape(n)}\s*\(\s*(?:const\s+)?(\w+_TypeDef)\s*\*", dict(_headers_text(ctx))[f][line - 1])
             if m:
-                return m.group(1), f
+                return m.group(1), f, line
     return None
 
 
@@ -406,7 +408,7 @@ def driver_style(ctx: Ctx, prefix: str) -> Fact:
             Source("workorder", "layer / delivery.provided_ll", value=f"{layer}/{ctx.delivery.get('provided_ll')}")]
     h = (handle_type(ctx) or instance_pointer(ctx)) if style == "HAL_STANDALONE" else None
     if h:
-        srcs.append(Source("file", h[1], value=h[0]))
+        srcs.append(Source("file", h[1], line=h[2], value=h[0]))
     elif style == "HAL_STANDALONE":
         return not_derived("driver_style", "scope_api_prefix", "A HAL without LL whose functions take neither a handle nor an instance pointer: "
                            "which driver style is it?", *srcs)
