@@ -89,7 +89,7 @@ def derive(example: Path, wo: str | None = None, gate_model: bool = True) -> dic
             texts, missing = {}, [*missing, (str(e), "the prompt texts cannot be generated")]
         pkg = F.assemble(wo, inputs, _revision(), style, facts, [], asm, profile, texts, missing)
         if gate_model:  # OB-T042: an existing model is re-gated (reused), never re-authored
-            item = model_item(wo, pkg)
+            item = model_item(wo, pkg, Path(example))
             if item:
                 pkg = F.assemble(wo, inputs, _revision(), style, facts, [item], asm, profile, texts, missing)
     root = onboarding_dir(wo)
@@ -106,7 +106,7 @@ def derive(example: Path, wo: str | None = None, gate_model: bool = True) -> dic
     return pkg
 
 
-def model_item(key: str, pkg: dict) -> dict | None:
+def model_item(key: str, pkg: dict, example: Path | None = None) -> dict | None:
     """The `model` authored item of a package: the gate result of the model the derived profile names (existing
     models are reused and re-gated; an authored one comes from the onboarding run, slice J). Cached by the hashes of
     the model, its platform and the facts the gate reads, so the re-derivation at every launch is fast."""
@@ -133,7 +133,7 @@ def model_item(key: str, pkg: dict) -> dict | None:
         from .leftovers import write_preview
 
         write_preview(key, pkg)
-        rec = {"key": k, "result": check(key, pkg=pkg)}
+        rec = {"key": k, "result": check(key, pkg=pkg, example=example)}
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(rec, indent=2, sort_keys=True) + "\n")
     r = rec["result"]

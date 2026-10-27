@@ -97,17 +97,18 @@ def registers_check(pkg: dict, model: Path, repl_src: Path, renode: str) -> tupl
     return findings, limits, {"registers": len(regs), "reads": len(vals)}
 
 
-def smoke(key: str, pkg: dict, renode: str, confirmed: dict) -> list[str]:
+def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
     """Build and run the delivered code on the model through the simulator's own build/run path."""
     from ..mcp.servers import sim
 
     fm = value(pkg, "file_map") or {}
     api = value(pkg, "api") or {}
     inst = value(pkg, "instance")
+    spec = json.loads(((example or REPO_ROOT / "examples" / key) / "workorder.json").read_text())
     with tempfile.TemporaryDirectory(prefix="forge-ob-smoke-") as td:
         ws = Path(td) / "ws"
         for f in fm.get("files", []):
-            src = Path(os.path.expandvars(_source(key))) / f["from"]
+            src = Path(os.path.expandvars(spec["delivery"]["source"])) / f["from"]
             (ws / f["to"]).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src, ws / f["to"])
         for d in fm.get("dependencies", []):
@@ -119,7 +120,6 @@ def smoke(key: str, pkg: dict, renode: str, confirmed: dict) -> list[str]:
 
                 data = configure_hal_conf(data, d["configure"]["hal_modules"])
             (ws / d["to"]).write_bytes(data)
-        spec = json.loads((REPO_ROOT / "examples" / key / "workorder.json").read_text())
         (ws / ".forge-run").mkdir(parents=True)
         (ws / ".forge-run/manifest.json").write_text(json.dumps(
             {"layer": "HAL", "hal_standalone": True, "peripheral": f"onboarding-preview:{key}",
@@ -166,11 +166,7 @@ def smoke(key: str, pkg: dict, renode: str, confirmed: dict) -> list[str]:
     return []
 
 
-def _source(key: str) -> str:
-    return json.loads((REPO_ROOT / "examples" / key / "workorder.json").read_text())["delivery"]["source"]
-
-
-def check(key: str, confirmed: dict | None = None, pkg: dict | None = None) -> dict:
+def check(key: str, confirmed: dict | None = None, pkg: dict | None = None, example: Path | None = None) -> dict:
     """The gate for the model the derived profile of `key` names (an existing model is re-gated, reused)."""
     from ..mcp.servers.sim import renode_bin
     from ..mcp.sdk import tool_version
@@ -189,6 +185,6 @@ def check(key: str, confirmed: dict | None = None, pkg: dict | None = None) -> d
                 "version": tool_version(renode)}
     findings, limits, stats = registers_check(pkg, model, repl, renode)
     if not any(f.startswith("MODEL_LOAD") for f in findings):
-        findings += smoke(key, pkg, renode, confirmed or {})
+        findings += smoke(key, pkg, renode, confirmed or {}, example)
     return {"verdict": "FAIL" if findings else "PASS", "findings": findings, "limits": limits, "stats": stats,
             "model": model.name, "tool": "renode", "version": tool_version(renode)}
