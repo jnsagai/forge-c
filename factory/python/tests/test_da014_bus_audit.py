@@ -1,6 +1,7 @@
 """Native header provenance and finite bus visibility, not host qualification."""
 
 import copy
+import ctypes
 import hashlib
 import json
 import os
@@ -10,6 +11,7 @@ import sys
 import threading
 import time
 import uuid
+from types import SimpleNamespace
 
 import pytest
 from forge_factory.afo import bus_audit as B
@@ -124,6 +126,61 @@ def test_tools_absence_never_becomes_empty_host_success(monkeypatch):
 def test_query_allowlist_does_not_accept_service_commands():
     with pytest.raises(Refused, match="NOT_READ_ONLY"):
         B._query("/usr/bin/dbus-send", "user", {}, "RestartUnit")
+
+
+@pytest.mark.parametrize("name", [":1.2", ":1.ABC", ":Upper_case.part-two", ":0._", ":" + "a" * 250 + ".xyz"])
+def test_protocol_valid_unique_names_in_headers_and_native_query_replies(monkeypatch, name):
+    assert B.profile_line(line(sender=name))["sender"] == name
+    raw = (f'method return time=100.000001 sender=org.freedesktop.DBus -> destination={name} '
+           f'serial=3 reply_serial=2\n   string "{name}"\n').encode()
+
+    def run(argv, **kwargs):
+        kwargs["stdout"].write(raw)
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(B.subprocess, "run", run)
+    result = B._query("/usr/bin/dbus-send", "user", B.environment("user"), "GetNameOwner")
+    assert result["returncode"] == 0 and result["value"] == result["destination"] == name
+
+
+@pytest.mark.parametrize("name", ["1.2", ":one", ":1..two", ":1./two", ":1.\ntwo", ":" + "a" * 251 + ".xyz"])
+def test_malformed_and_oversized_unique_names_do_not_gain_visibility(name):
+    with pytest.raises(Refused):
+        B.profile_line(line(sender=name))
+
+
+def test_bus_name_hyphens_are_not_interface_name_characters():
+    assert B.profile_line(line(destination="-valid.name"))["destination"] == "-valid.name"
+    with pytest.raises(Refused):
+        B.profile_line(line(interface="invalid.hyphen-name"))
+
+
+def test_name_grammar_matches_independent_native_libdbus_oracle():
+    try:
+        lib = ctypes.CDLL("libdbus-1.so.3")
+    except OSError:
+        pytest.skip("native libdbus name oracle unavailable")
+    for function in (lib.dbus_validate_bus_name, lib.dbus_validate_interface):
+        function.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+        function.restype = ctypes.c_int
+    names = [":1.ABC", ":Upper_case.part-two", ":0._", ":1..two", ":1./two", ":one", ":" + "a" * 250 + ".xyz",
+             ":" + "a" * 251 + ".xyz", "-valid.name", "valid.Name", "invalid-name.part", "invalid.hyphen-name"]
+    for name in names:
+        assert bool(B.UNIQUE.fullmatch(name) or B.NAME.fullmatch(name)) == bool(lib.dbus_validate_bus_name(name.encode(), None))
+        assert bool(B.INTERFACE.fullmatch(name)) == bool(lib.dbus_validate_interface(name.encode(), None))
+
+
+@pytest.mark.parametrize("serial", [0, 2**32])
+def test_query_reply_serials_are_uint32_not_unbounded_text(monkeypatch, serial):
+    raw = (f'method return time=100.000001 sender=org.freedesktop.DBus -> destination=:1.2 '
+           f'serial={serial} reply_serial=2\n   string "' + "a" * 32 + '"\n').encode()
+
+    def run(argv, **kwargs):
+        kwargs["stdout"].write(raw)
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(B.subprocess, "run", run)
+    assert B._query("/usr/bin/dbus-send", "user", B.environment("user"), "GetId")["error"]
 
 
 @pytest.fixture

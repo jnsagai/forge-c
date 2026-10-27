@@ -26,8 +26,10 @@ from .durable import Refused
 BUS = "org.freedesktop.DBus"
 SYSTEMD = "org.freedesktop.systemd1"
 ROOT = "/org/freedesktop/systemd1"
-UNIQUE = re.compile(r":[0-9]{1,20}\.[0-9]{1,20}")
-NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_-]*)+")
+# D-Bus names are not limited to the numeric convention of dbus-daemon.
+UNIQUE = re.compile(r"(?=.{1,255}\Z):[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+")
+NAME = re.compile(r"(?=.{1,255}\Z)[A-Za-z_-][A-Za-z0-9_-]*(?:\.[A-Za-z_-][A-Za-z0-9_-]*)+")
+INTERFACE = re.compile(r"(?=.{1,255}\Z)[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+")
 MEMBER = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,254}")
 OBJECT = re.compile(r"/(?:[A-Za-z0-9_]+(?:/[A-Za-z0-9_]+)*)?")
 MAX_LINE = 4096
@@ -59,7 +61,7 @@ def profile_line(raw):
     result = {"kind": kind, "at": float(stamp), "serial": int(serial), "sender": sender, "destination": destination}
     if kind in ("mc", "sig"):
         if len(parts) != 8 or not OBJECT.fullmatch(parts[5]) or not (
-            NAME.fullmatch(parts[6]) or parts[6] == "<none>"
+            INTERFACE.fullmatch(parts[6]) or parts[6] == "<none>"
         ) or not MEMBER.fullmatch(parts[7]):
             raise Refused("BUS_AUDIT_PROFILE_HEADER_INVALID")
         result.update(path=parts[5], interface=parts[6], member=parts[7])
@@ -188,13 +190,16 @@ def _query(tool, scope, env, member):
     if r.returncode or len(raw) >= 8192:
         return {"returncode": r.returncode, "error": "BUS_QUERY_FAILED_OR_OVERSIZED"}
     # Reserved bus sender + unique recipient/reply identity, and one constrained value.
-    pattern = (rb'method return time=[0-9]+\.[0-9]+ sender=org\.freedesktop\.DBus -> destination=(:[0-9]+\.[0-9]+) '
-               rb'serial=([0-9]+) reply_serial=([0-9]+)\n   string "([:0-9a-f.]+)"\n')
+    pattern = (rb'method return time=[0-9]+\.[0-9]+ sender=org\.freedesktop\.DBus -> destination=([:A-Za-z0-9_.-]{1,255}) '
+               rb'serial=([0-9]{1,10}) reply_serial=([0-9]{1,10})\n   string "([:A-Za-z0-9_.-]{1,255})"\n')
     match = re.fullmatch(pattern, raw)
     if match is None:
         return {"returncode": r.returncode, "error": "BUS_QUERY_FORMAT_UNKNOWN"}
     destination, serial, reply_serial, value = (v.decode("ascii") for v in match.groups())
-    if not (UNIQUE.fullmatch(value) if member == "GetNameOwner" else re.fullmatch(r"[0-9a-f]{32}", value)):
+    if (
+        not UNIQUE.fullmatch(destination) or not 1 <= int(serial) <= 2**32 - 1 or not 1 <= int(reply_serial) <= 2**32 - 1
+        or not (UNIQUE.fullmatch(value) if member == "GetNameOwner" else re.fullmatch(r"[0-9a-f]{32}", value))
+    ):
         return {"returncode": r.returncode, "error": "BUS_QUERY_VALUE_UNKNOWN"}
     return {"returncode": 0, "destination": destination, "serial": int(serial), "reply_serial": int(reply_serial),
             "value": value, "reply_sha256": hashlib.sha256(raw).hexdigest()}
