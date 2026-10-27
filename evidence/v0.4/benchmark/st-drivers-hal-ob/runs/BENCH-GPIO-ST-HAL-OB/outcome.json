@@ -1,0 +1,1492 @@
+{
+  "schema": "forge-c/st-hal-onboarding-acceptance/0.1",
+  "recorded_at": "2026-10-27T12:07:48.507895Z",
+  "packages": {
+    "gpio": {
+      "key": "0010e-st-cube-gpio-hal-ob",
+      "sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b",
+      "canonical_hash_ok": true,
+      "inputs": [
+        {
+          "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "role": "datasheet",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "inputs/RM0486-rev4-ch15-gpio.md",
+          "role": "reference_manual_gpio_chapter",
+          "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+        },
+        {
+          "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+          "role": "reference_manual_memory_map",
+          "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions.md",
+          "role": "reference_manual_register_conventions",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "inputs/hal_driver_guideline.md",
+          "role": "development_guideline",
+          "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+        },
+        {
+          "path": "inputs/inputs-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+        },
+        {
+          "path": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+          "role": "delivered_dependency",
+          "sha256": "ae2c716ae3097e6b34ac92eeb0feeaa01c992628da1a2d3adf12710352004288"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_compiler.h",
+          "role": "delivered_dependency",
+          "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_gcc.h",
+          "role": "delivered_dependency",
+          "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_version.h",
+          "role": "delivered_dependency",
+          "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+        },
+        {
+          "path": "inputs/vendor/include/core_cm55.h",
+          "role": "delivered_dependency",
+          "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+          "role": "delivered_dependency",
+          "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+          "role": "delivered_dependency",
+          "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+          "role": "delivered_dependency",
+          "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+          "role": "delivered_dependency",
+          "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n657xx.h",
+          "role": "delivered_dependency",
+          "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal.h",
+          "role": "delivered_dependency",
+          "sha256": "0bc08f69f86161be2d8bbdf123cf57aef4411286471892fb7c17131cd63f2a32"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+          "role": "delivered_dependency",
+          "sha256": "b24eb3d5d1875a2516bff0575510dd7bf1eaac1e27286c8ea4959b340d96885f"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_def.h",
+          "role": "delivered_dependency",
+          "sha256": "be0b3fdcf8e5d900a5e330d9310bc23caa3c6b2bfa7ae416265205e08b63d38a"
+        },
+        {
+          "path": "inputs/vendor/include/system_stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_gpio.c",
+          "role": "delivered_code",
+          "sha256": "bf46fc00b3435008a4fb5574769fd25363d40b429e2c41adb6b5122522080eab"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_gpio.h",
+          "role": "delivered_code",
+          "sha256": "720e3d3c9c8a8424e3126034aecb594e8b8ede5a2db1042981749e2fe8f4ad97"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_gpio_ex.h",
+          "role": "delivered_code",
+          "sha256": "fc0e11933cf0b8bf2fb9be6a1e1fb6f5d2fefd3ba2c57f0991d86c4eb77af7fe"
+        }
+      ],
+      "approval_code": "APPROVAL_OK",
+      "approval": {
+        "accepted_gaps": [],
+        "approval_id": "OA-2026-10-27-01",
+        "assumption_confirmations": [],
+        "conflict_resolutions": [],
+        "decided_by": "jnsagai",
+        "decided_on": "2026-10-27",
+        "decision": "APPROVED",
+        "package_sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b",
+        "schema": "forge-c/onboarding-approval/0.1",
+        "work_order": "0010e-st-cube-gpio-hal-ob"
+      },
+      "approval_sha256": "d0492e61fe16a2ea30190ba93f96bc475e1a8c9097648b8e8599cf63228b9082",
+      "signature_sha256": "8a5b7a4ad843e9ecb727a3942337e2e8a291712429cb411f232332451df8e44c",
+      "prompt_origins": [
+        {
+          "section": "prompt",
+          "key": "field_mask_example",
+          "from": "template:st_hal.field_mask_example"
+        },
+        {
+          "section": "prompt",
+          "key": "ll_api",
+          "from": "template:st_hal.ll_api"
+        },
+        {
+          "section": "prompt",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt",
+          "key": "requirement_example",
+          "from": "template:st_hal.requirement_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_cover",
+          "from": "owner:scope"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_example",
+          "from": "template:st_hal.swe1_effect_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_rule",
+          "from": "template:st_hal.swe1_effect_rule"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_dynamic_view",
+          "from": "template:st_hal.swe2_dynamic_view"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_static_view",
+          "from": "template:st_hal.swe2_static_view"
+        },
+        {
+          "section": "prompt",
+          "key": "target_model",
+          "from": "model:gpio_model.py"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_api",
+          "from": "template:st_hal.hal_api"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_args_example",
+          "from": "template:st_hal.hal_args_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_contract_rule",
+          "from": "template:st_hal.hal_contract_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_dynamic_view",
+          "from": "template:st_hal.hal_dynamic_view"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_effect_example",
+          "from": "template:st_hal.hal_effect_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_failure_responses",
+          "from": "template:st_hal.hal_failure_responses"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_requirement_example",
+          "from": "template:st_hal.hal_requirement_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_reset_example",
+          "from": "template:st_hal.hal_reset_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_rule",
+          "from": "template:st_hal.ut_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "replace",
+          "from": "template:st_hal.replace"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_rule",
+          "from": "template:st_hal.ut_rule"
+        }
+      ]
+    },
+    "spi": {
+      "key": "0011e-st-cube-spi-hal-ob",
+      "sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523",
+      "canonical_hash_ok": true,
+      "inputs": [
+        {
+          "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "role": "datasheet",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "inputs/RM0486-rev4-ch67-spi.md",
+          "role": "reference_manual_spi_chapter",
+          "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+        },
+        {
+          "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+          "role": "reference_manual_memory_map",
+          "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions.md",
+          "role": "reference_manual_register_conventions",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "inputs/hal_driver_guideline.md",
+          "role": "development_guideline",
+          "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+        },
+        {
+          "path": "inputs/inputs-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+        },
+        {
+          "path": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+          "role": "delivered_dependency",
+          "sha256": "ae2c716ae3097e6b34ac92eeb0feeaa01c992628da1a2d3adf12710352004288"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_compiler.h",
+          "role": "delivered_dependency",
+          "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_gcc.h",
+          "role": "delivered_dependency",
+          "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_version.h",
+          "role": "delivered_dependency",
+          "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+        },
+        {
+          "path": "inputs/vendor/include/core_cm55.h",
+          "role": "delivered_dependency",
+          "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+          "role": "delivered_dependency",
+          "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+          "role": "delivered_dependency",
+          "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+          "role": "delivered_dependency",
+          "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+          "role": "delivered_dependency",
+          "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n657xx.h",
+          "role": "delivered_dependency",
+          "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal.h",
+          "role": "delivered_dependency",
+          "sha256": "0bc08f69f86161be2d8bbdf123cf57aef4411286471892fb7c17131cd63f2a32"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+          "role": "delivered_dependency",
+          "sha256": "b24eb3d5d1875a2516bff0575510dd7bf1eaac1e27286c8ea4959b340d96885f"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_def.h",
+          "role": "delivered_dependency",
+          "sha256": "be0b3fdcf8e5d900a5e330d9310bc23caa3c6b2bfa7ae416265205e08b63d38a"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_dma.h",
+          "role": "delivered_dependency",
+          "sha256": "be3243ca93dc2eedec4f23aeed7d193d882c545d55582fc4d71fc314013d0d86"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_dma_ex.h",
+          "role": "delivered_dependency",
+          "sha256": "7c47cef00fb1fdaa44028c9e7fd4300804b8245a977c700e15007642af1deae9"
+        },
+        {
+          "path": "inputs/vendor/include/system_stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_spi.c",
+          "role": "delivered_code",
+          "sha256": "cb50534dbd3635a003604cba95b9528297fb523830b953bd712c2564791f3bea"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_spi.h",
+          "role": "delivered_code",
+          "sha256": "6c70e5df10ae75519d9de76f79269ecaf48902d3c635629235e27b0807f62f34"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_spi_ex.c",
+          "role": "delivered_code",
+          "sha256": "979c7681a5e59df0ccc9bbcefde3bf63dcae3239e5f58fa4f57d67d725c86429"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_spi_ex.h",
+          "role": "delivered_code",
+          "sha256": "ea02f058a1a27d85a306290dd9cc6b0706f3e86d3f02ea6d5cda4f8abd6d1b4b"
+        }
+      ],
+      "approval_code": "APPROVAL_OK",
+      "approval": {
+        "accepted_gaps": [],
+        "approval_id": "OA-2026-10-27-02",
+        "assumption_confirmations": [],
+        "conflict_resolutions": [],
+        "decided_by": "jnsagai",
+        "decided_on": "2026-10-27",
+        "decision": "APPROVED",
+        "package_sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523",
+        "schema": "forge-c/onboarding-approval/0.1",
+        "work_order": "0011e-st-cube-spi-hal-ob"
+      },
+      "approval_sha256": "7e3e6e401c62134b25ec37b2931a9d708188327cdcf2e2392e7691176cabd5c3",
+      "signature_sha256": "bd1b28ebc55b19e92a280c9e5779a1c34b62396baebcb450e3d6eeca049c887e",
+      "prompt_origins": [
+        {
+          "section": "prompt",
+          "key": "field_mask_example",
+          "from": "template:st_hal.field_mask_example"
+        },
+        {
+          "section": "prompt",
+          "key": "ll_api",
+          "from": "template:st_hal.ll_api"
+        },
+        {
+          "section": "prompt",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt",
+          "key": "requirement_example",
+          "from": "template:st_hal.requirement_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_cover",
+          "from": "owner:scope"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_example",
+          "from": "template:st_hal.swe1_effect_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_rule",
+          "from": "template:st_hal.swe1_effect_rule"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_dynamic_view",
+          "from": "template:st_hal.swe2_dynamic_view"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_static_view",
+          "from": "template:st_hal.swe2_static_view"
+        },
+        {
+          "section": "prompt",
+          "key": "target_model",
+          "from": "model:spi_model.py"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_api",
+          "from": "template:st_hal.hal_api"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_args_example",
+          "from": "template:st_hal.hal_args_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_contract_rule",
+          "from": "template:st_hal.hal_contract_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_dynamic_view",
+          "from": "template:st_hal.hal_dynamic_view"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_effect_example",
+          "from": "template:st_hal.hal_effect_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_failure_responses",
+          "from": "template:st_hal.hal_failure_responses"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_requirement_example",
+          "from": "template:st_hal.hal_requirement_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_reset_example",
+          "from": "template:st_hal.hal_reset_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_rule",
+          "from": "template:st_hal.ut_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "replace",
+          "from": "template:st_hal.replace"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_rule",
+          "from": "template:st_hal.ut_rule"
+        }
+      ]
+    },
+    "usart": {
+      "key": "0012e-st-cube-usart-hal-ob",
+      "sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9",
+      "canonical_hash_ok": true,
+      "inputs": [
+        {
+          "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "role": "datasheet",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "inputs/RM0486-rev4-ch65-usart.md",
+          "role": "reference_manual_usart_chapter",
+          "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+        },
+        {
+          "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+          "role": "reference_manual_memory_map",
+          "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions.md",
+          "role": "reference_manual_register_conventions",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "inputs/hal_driver_guideline.md",
+          "role": "development_guideline",
+          "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+        },
+        {
+          "path": "inputs/inputs-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+        },
+        {
+          "path": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+          "role": "delivered_dependency",
+          "sha256": "ae2c716ae3097e6b34ac92eeb0feeaa01c992628da1a2d3adf12710352004288"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_compiler.h",
+          "role": "delivered_dependency",
+          "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_gcc.h",
+          "role": "delivered_dependency",
+          "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_version.h",
+          "role": "delivered_dependency",
+          "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+        },
+        {
+          "path": "inputs/vendor/include/core_cm55.h",
+          "role": "delivered_dependency",
+          "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+          "role": "delivered_dependency",
+          "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+          "role": "delivered_dependency",
+          "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+          "role": "delivered_dependency",
+          "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+          "role": "delivered_dependency",
+          "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n657xx.h",
+          "role": "delivered_dependency",
+          "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal.h",
+          "role": "delivered_dependency",
+          "sha256": "0bc08f69f86161be2d8bbdf123cf57aef4411286471892fb7c17131cd63f2a32"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+          "role": "delivered_dependency",
+          "sha256": "b24eb3d5d1875a2516bff0575510dd7bf1eaac1e27286c8ea4959b340d96885f"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_def.h",
+          "role": "delivered_dependency",
+          "sha256": "be0b3fdcf8e5d900a5e330d9310bc23caa3c6b2bfa7ae416265205e08b63d38a"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_rcc.h",
+          "role": "delivered_dependency",
+          "sha256": "a8b12df9bd695a8c9c8ff2b13f7d510ee44ead82260b635190d9436523ff67c6"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_rcc_ex.h",
+          "role": "delivered_dependency",
+          "sha256": "a235478c4947c9ed38015cd723d1f3a84556ad7ca8a9b847ff6ca25fc2ee6048"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_ll_bus.h",
+          "role": "delivered_dependency",
+          "sha256": "5531f55470d517b40420aa7b81f492120e291e413b4309f9bdec0d590b8fb39d"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_ll_rcc.h",
+          "role": "delivered_dependency",
+          "sha256": "266f62d888a25022f7015c6694219a6f1e9dca671b6eb5578e2ba33166dc647e"
+        },
+        {
+          "path": "inputs/vendor/include/system_stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_uart.c",
+          "role": "delivered_code",
+          "sha256": "5efa043ec1b581d44e3948e5b63fb5e5755d8de7953eee8e2d7c4185bb4a8ae0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_uart.h",
+          "role": "delivered_code",
+          "sha256": "9ea297ce153359bdf1dcfbc4f252c36b52bec797515317bef69736d372b2458b"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_uart_ex.c",
+          "role": "delivered_code",
+          "sha256": "fae82cd45096bbb5cca6d30c1f686091e602ccae58cde7c7e04f395f22f54d50"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_uart_ex.h",
+          "role": "delivered_code",
+          "sha256": "50793749fdae2dc4db5f58369d9f670813558f95ad265c522b6e81436ea6f5bd"
+        }
+      ],
+      "approval_code": "APPROVAL_OK",
+      "approval": {
+        "accepted_gaps": [],
+        "approval_id": "OA-2026-10-27-03",
+        "assumption_confirmations": [
+          {
+            "id": "ASM-HAL-RCCEX-GETPERIPHCLKFREQ",
+            "value": 64000000
+          }
+        ],
+        "conflict_resolutions": [],
+        "decided_by": "jnsagai",
+        "decided_on": "2026-10-27",
+        "decision": "APPROVED",
+        "package_sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9",
+        "schema": "forge-c/onboarding-approval/0.1",
+        "work_order": "0012e-st-cube-usart-hal-ob"
+      },
+      "approval_sha256": "9a8ac03636d5a598a91e4bde572d4ee48008b26e9272d9df0e4d0d184d32af67",
+      "signature_sha256": "063bb1c33e830cc35e9376a3391135ee51525cdf139d288bf0044bdc3ead5dc7",
+      "prompt_origins": [
+        {
+          "section": "prompt",
+          "key": "field_mask_example",
+          "from": "template:st_hal.field_mask_example"
+        },
+        {
+          "section": "prompt",
+          "key": "ll_api",
+          "from": "template:st_hal.ll_api"
+        },
+        {
+          "section": "prompt",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt",
+          "key": "requirement_example",
+          "from": "template:st_hal.requirement_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_cover",
+          "from": "owner:scope"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_example",
+          "from": "template:st_hal.swe1_effect_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_rule",
+          "from": "template:st_hal.swe1_effect_rule"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_dynamic_view",
+          "from": "template:st_hal.swe2_dynamic_view"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_static_view",
+          "from": "template:st_hal.swe2_static_view"
+        },
+        {
+          "section": "prompt",
+          "key": "target_model",
+          "from": "model:usart_model.py"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_api",
+          "from": "template:st_hal.hal_api"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_args_example",
+          "from": "template:st_hal.hal_args_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_contract_rule",
+          "from": "template:st_hal.hal_contract_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_dynamic_view",
+          "from": "template:st_hal.hal_dynamic_view"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_effect_example",
+          "from": "template:st_hal.hal_effect_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_failure_responses",
+          "from": "template:st_hal.hal_failure_responses"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_requirement_example",
+          "from": "template:st_hal.hal_requirement_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_reset_example",
+          "from": "template:st_hal.hal_reset_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_rule",
+          "from": "template:st_hal.ut_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "replace",
+          "from": "template:st_hal.replace"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_rule",
+          "from": "template:st_hal.ut_rule"
+        }
+      ]
+    },
+    "tim": {
+      "key": "0013e-st-cube-tim-hal-ob",
+      "sha256": "cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804",
+      "canonical_hash_ok": true,
+      "inputs": [
+        {
+          "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "role": "datasheet",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "inputs/RM0486-rev4-ch54-tim2-5.md",
+          "role": "reference_manual_tim_chapter",
+          "sha256": "a80a15ddb276841ee3818c8c31d5f3accde4fd7086b53aa6840005e6f55f5a57"
+        },
+        {
+          "path": "inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+          "role": "reference_manual_memory_map",
+          "sha256": "22db96be094b2109df88c0bbb41cd9aa021c2eda36ceebd1a4c892aa97869fc4"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+        },
+        {
+          "path": "inputs/RM0486-rev4-register-conventions.md",
+          "role": "reference_manual_register_conventions",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "inputs/hal_driver_guideline.md",
+          "role": "development_guideline",
+          "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+        },
+        {
+          "path": "inputs/inputs-manifest.json",
+          "role": "conversion_provenance",
+          "sha256": "a549684573a2e87ff3de7ae1136c9aaaaaa26636f240b183ccd3409259b3f105"
+        },
+        {
+          "path": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+          "role": "delivered_dependency",
+          "sha256": "ae2c716ae3097e6b34ac92eeb0feeaa01c992628da1a2d3adf12710352004288"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_compiler.h",
+          "role": "delivered_dependency",
+          "sha256": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_gcc.h",
+          "role": "delivered_dependency",
+          "sha256": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405"
+        },
+        {
+          "path": "inputs/vendor/include/cmsis_version.h",
+          "role": "delivered_dependency",
+          "sha256": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e"
+        },
+        {
+          "path": "inputs/vendor/include/core_cm55.h",
+          "role": "delivered_dependency",
+          "sha256": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+          "role": "delivered_dependency",
+          "sha256": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+          "role": "delivered_dependency",
+          "sha256": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+          "role": "delivered_dependency",
+          "sha256": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32"
+        },
+        {
+          "path": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+          "role": "delivered_dependency",
+          "sha256": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n657xx.h",
+          "role": "delivered_dependency",
+          "sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal.h",
+          "role": "delivered_dependency",
+          "sha256": "0bc08f69f86161be2d8bbdf123cf57aef4411286471892fb7c17131cd63f2a32"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+          "role": "delivered_dependency",
+          "sha256": "b24eb3d5d1875a2516bff0575510dd7bf1eaac1e27286c8ea4959b340d96885f"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_def.h",
+          "role": "delivered_dependency",
+          "sha256": "be0b3fdcf8e5d900a5e330d9310bc23caa3c6b2bfa7ae416265205e08b63d38a"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_dma.h",
+          "role": "delivered_dependency",
+          "sha256": "be3243ca93dc2eedec4f23aeed7d193d882c545d55582fc4d71fc314013d0d86"
+        },
+        {
+          "path": "inputs/vendor/include/stm32n6xx_hal_dma_ex.h",
+          "role": "delivered_dependency",
+          "sha256": "7c47cef00fb1fdaa44028c9e7fd4300804b8245a977c700e15007642af1deae9"
+        },
+        {
+          "path": "inputs/vendor/include/system_stm32n6xx.h",
+          "role": "delivered_dependency",
+          "sha256": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_tim.c",
+          "role": "delivered_code",
+          "sha256": "def969007c1d57d8345f0d4ff1ea64e4117f0e0fd8c6a2efeabf3f805c6bd4c8"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_tim.h",
+          "role": "delivered_code",
+          "sha256": "3046f45c1283812287c23fe5a1373ff98dcbefbf60567a810fb00fd01e8a3fff"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_tim_ex.c",
+          "role": "delivered_code",
+          "sha256": "3464c5c770e9076ed234d2c73f6e16bbaff8edcad7da719725179d2731c83fe0"
+        },
+        {
+          "path": "software/hal/stm32n6xx_hal_tim_ex.h",
+          "role": "delivered_code",
+          "sha256": "f5ab59add786fd2a26ed26ff9464c434db723a90774f4eed4c8e90f2603d214b"
+        }
+      ],
+      "approval_code": "APPROVAL_OK",
+      "approval": {
+        "accepted_gaps": [],
+        "approval_id": "OA-2026-10-27-04",
+        "assumption_confirmations": [],
+        "conflict_resolutions": [],
+        "decided_by": "jnsagai",
+        "decided_on": "2026-10-27",
+        "decision": "APPROVED",
+        "package_sha256": "cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804",
+        "schema": "forge-c/onboarding-approval/0.1",
+        "work_order": "0013e-st-cube-tim-hal-ob"
+      },
+      "approval_sha256": "a241740805d7b19cd58b3765af8790f3364f2ccadacb277d4d12e01bba62d3a7",
+      "signature_sha256": "9fd41550ea15b2b0a6152ea589e50531feb1c498b642d5aa51fbe826934b2c11",
+      "prompt_origins": [
+        {
+          "section": "prompt",
+          "key": "field_mask_example",
+          "from": "template:st_hal.field_mask_example"
+        },
+        {
+          "section": "prompt",
+          "key": "ll_api",
+          "from": "template:st_hal.ll_api"
+        },
+        {
+          "section": "prompt",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt",
+          "key": "requirement_example",
+          "from": "template:st_hal.requirement_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_cover",
+          "from": "owner:scope"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_example",
+          "from": "template:st_hal.swe1_effect_example"
+        },
+        {
+          "section": "prompt",
+          "key": "swe1_effect_rule",
+          "from": "template:st_hal.swe1_effect_rule"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_dynamic_view",
+          "from": "template:st_hal.swe2_dynamic_view"
+        },
+        {
+          "section": "prompt",
+          "key": "swe2_static_view",
+          "from": "template:st_hal.swe2_static_view"
+        },
+        {
+          "section": "prompt",
+          "key": "target_model",
+          "from": "model:tim_model.py"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_api",
+          "from": "template:st_hal.hal_api"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_args_example",
+          "from": "template:st_hal.hal_args_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_contract_rule",
+          "from": "template:st_hal.hal_contract_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_dynamic_view",
+          "from": "template:st_hal.hal_dynamic_view"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_effect_example",
+          "from": "template:st_hal.hal_effect_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_failure_responses",
+          "from": "template:st_hal.hal_failure_responses"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_requirement_example",
+          "from": "template:st_hal.hal_requirement_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_reset_example",
+          "from": "template:st_hal.hal_reset_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "hal_ut_rule",
+          "from": "template:st_hal.ut_rule"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "integration",
+          "from": "template:st_hal.integration"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "query_example",
+          "from": "template:st_hal.query_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "replace",
+          "from": "template:st_hal.replace"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "target_tests",
+          "from": "template:st_hal.target_tests"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_example",
+          "from": "template:st_hal.ut_example"
+        },
+        {
+          "section": "prompt_st_hal",
+          "key": "ut_rule",
+          "from": "template:st_hal.ut_rule"
+        }
+      ]
+    }
+  },
+  "orders": [
+    {
+      "order_id": "afo-6a6875714405b8ce",
+      "request_id": "BENCH-GPIO-ST-HAL-OB",
+      "state": "BLOCKED",
+      "envelope": {
+        "driver_class": "STM32N6_GPIO_HAL_ST",
+        "model_profile": "codex-claude",
+        "git_revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+        "manifest_sha256": "862a7279b3d7d0ba9fbad1a807a6bd09ac6f6bd2c3cf1fdb3e318d5fa226fd7b",
+        "input_manifest_ref": "config/factory/benchmark/afo/gpio-st-hal-ob.json",
+        "authorization_ref": "AUTH-AFO-PILOT-20261027",
+        "submitted_utc": "2026-10-27T11:48:07.968417Z"
+      },
+      "attempts": [
+        {
+          "attempt_id": "afo-6a6875714405b8ce-a1",
+          "state": "SUCCEEDED",
+          "work_order": "WO-AFO-6a6875714405b8ce-a1",
+          "peripheral": "onboarded:0010e-st-cube-gpio-hal-ob",
+          "code_mode": "FROZEN",
+          "driver": "STM32N6 general-purpose I/O (GPIOA) hardware abstraction layer (HAL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+          "fabro_run_id": "01M5YK3Z4XR0ANW069WPHZZQ0K",
+          "factory_revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+          "factory_revision_dirty": false,
+          "peripheral_profile_sha256": "47718916023e54d4150503d52371500ee4a07b96a6a0f4b34772bb7bf8544a4a",
+          "inputs": [
+            {
+              "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+              "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+            },
+            {
+              "path": "inputs/RM0486-rev4-ch15-gpio.md",
+              "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+            },
+            {
+              "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+              "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+            },
+            {
+              "path": "inputs/RM0486-rev4-register-conventions.md",
+              "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+            },
+            {
+              "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+              "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+            },
+            {
+              "path": "inputs/inputs-manifest.json",
+              "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+            },
+            {
+              "path": "inputs/hal_driver_guideline.md",
+              "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+            }
+          ],
+          "delivered_code": [
+            {
+              "path": "software/hal/stm32n6xx_hal_gpio.h",
+              "sha256": "720e3d3c9c8a8424e3126034aecb594e8b8ede5a2db1042981749e2fe8f4ad97"
+            },
+            {
+              "path": "software/hal/stm32n6xx_hal_gpio_ex.h",
+              "sha256": "fc0e11933cf0b8bf2fb9be6a1e1fb6f5d2fefd3ba2c57f0991d86c4eb77af7fe"
+            },
+            {
+              "path": "software/hal/stm32n6xx_hal_gpio.c",
+              "sha256": "bf46fc00b3435008a4fb5574769fd25363d40b429e2c41adb6b5122522080eab"
+            }
+          ],
+          "models": {
+            "authors": "gpt-6.1-sol",
+            "inspectors": "claude-opus-5-5",
+            "run_model": "deepseek-flash",
+            "run_model_note": "deepseek-flash (deepseek) is suspended (OD-2026-10-20-03); it serves no agent node in this run"
+          },
+          "phases": {
+            "SWE.1": {
+              "inspections_passed": 0,
+              "inspections_failed": 0,
+              "reworks": 3,
+              "upstream_returns": 0,
+              "final": "BLOCKED",
+              "final_reason": "STUCK: identical deterministic rejection twice (CONTRACT_CASE_ID:workproducts/SWE.1/register_effects.json:READ_MASK_32768_IDR_32768_NO_WRITE_GPIO_RCFGLOCKR (unique UPPE); stopped early"
+            },
+            "SWE.2": {
+              "inspections_passed": 0,
+              "inspections_failed": 0,
+              "reworks": 0,
+              "upstream_returns": 0,
+              "final": "INCOMPLETE",
+              "final_reason": null
+            },
+            "SWE.3": {
+              "inspections_passed": 0,
+              "inspections_failed": 0,
+              "reworks": 0,
+              "upstream_returns": 0,
+              "final": "INCOMPLETE",
+              "final_reason": null
+            }
+          },
+          "package": {
+            "status": "BLOCKED",
+            "gap_count": 52,
+            "gaps": [
+              "failed_or_missing_quality_check:integration_verification",
+              "failed_or_missing_quality_check:misra_coverage_assessed",
+              "failed_or_missing_quality_check:resource_budgets",
+              "failed_or_missing_quality_check:software_verification",
+              "failed_or_missing_quality_check:static_analysis",
+              "failed_or_missing_quality_check:swe1_inspection",
+              "failed_or_missing_quality_check:swe2_inspection",
+              "failed_or_missing_quality_check:swe3_inspection",
+              "failed_or_missing_quality_check:swe4_inspection",
+              "failed_or_missing_quality_check:swe5_inspection",
+              "failed_or_missing_quality_check:swe6_inspection",
+              "failed_or_missing_quality_check:target_verification",
+              "failed_or_missing_quality_check:unit_verification",
+              "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+              "missing_or_empty_file:safety/software_safety_analysis.md",
+              "missing_or_empty_file:safety/tool_assurance_assessment.md",
+              "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+              "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+              "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+              "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+              "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+              "missing_or_empty_section:inspection/SWE.1",
+              "missing_or_empty_section:inspection/SWE.2",
+              "missing_or_empty_section:inspection/SWE.3",
+              "missing_or_empty_section:inspection/SWE.4",
+              "missing_or_empty_section:inspection/SWE.5",
+              "missing_or_empty_section:inspection/SWE.6",
+              "missing_or_empty_section:software/build",
+              "missing_or_empty_section:software/include",
+              "missing_or_empty_section:software/src",
+              "missing_or_empty_section:workproducts/SWE.2",
+              "missing_or_empty_section:workproducts/SWE.3",
+              "missing_or_empty_section:workproducts/SWE.4",
+              "missing_or_empty_section:workproducts/SWE.5",
+              "missing_or_empty_section:workproducts/SWE.6",
+              "missing_required_pattern:software/build/*.elf",
+              "missing_required_pattern:software/build/*.map",
+              "missing_required_pattern:software/include/*.h",
+              "missing_required_pattern:software/src/*.c",
+              "run_not_completed:INCOMPLETE",
+              "unresolved_finding:DELIVERY:NOT_INJECTED",
+              "unresolved_finding:SWE.1:GATE_REWORK",
+              "unresolved_finding:SWE.2:GATE_REWORK",
+              "unresolved_finding:SWE.3:GATE_REWORK",
+              "unresolved_finding:SWE.4:GATE_REWORK",
+              "unresolved_finding:SWE.5:GATE_REWORK",
+              "unresolved_finding:SWE.6:GATE_REWORK"
+            ],
+            "archive_sha256": "ddea8b4c93b6d0dea365e4ce666e1c6e29655b4037ab23de9c1593761aa437f6",
+            "finalized_at": "2026-10-27T12:02:24.106262Z"
+          },
+          "conformance": {
+            "open": 0,
+            "deferred": 0
+          },
+          "defects": [],
+          "started_at": "2026-10-27T11:49:42.883494Z",
+          "duration_s": 762.0,
+          "usage": {
+            "per_model": {
+              "gpt-6.1-sol": {
+                "calls": 4,
+                "input": 2398,
+                "output": 975,
+                "cache_read": 237184,
+                "cache_write": 0
+              }
+            },
+            "per_role": {
+              "author": {
+                "calls": 4,
+                "input": 2398,
+                "output": 975,
+                "cache_read": 237184,
+                "cache_write": 0
+              }
+            }
+          },
+          "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-6a6875714405b8ce-a1/workspace",
+          "onboarding": {
+            "approval_id": "OA-2026-10-27-01",
+            "key": "0010e-st-cube-gpio-hal-ob",
+            "package": "state/onboarding/0010e-st-cube-gpio-hal-ob/onboarding/package.json",
+            "profile_sha256": "47718916023e54d4150503d52371500ee4a07b96a6a0f4b34772bb7bf8544a4a",
+            "sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b"
+          },
+          "baselines": [],
+          "package_record": {
+            "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-6a6875714405b8ce-a1/forge-c-WO-AFO-6a6875714405b8ce-a1-review.zip",
+            "archive_ref": "archive:sha256:ddea8b4c93b6d0dea365e4ce666e1c6e29655b4037ab23de9c1593761aa437f6",
+            "archive_sha256": "ddea8b4c93b6d0dea365e4ce666e1c6e29655b4037ab23de9c1593761aa437f6",
+            "finalized_at": "2026-10-27T12:02:24.106262Z",
+            "gap_count": 52,
+            "gaps": [
+              "failed_or_missing_quality_check:integration_verification",
+              "failed_or_missing_quality_check:misra_coverage_assessed",
+              "failed_or_missing_quality_check:resource_budgets",
+              "failed_or_missing_quality_check:software_verification",
+              "failed_or_missing_quality_check:static_analysis",
+              "failed_or_missing_quality_check:swe1_inspection",
+              "failed_or_missing_quality_check:swe2_inspection",
+              "failed_or_missing_quality_check:swe3_inspection",
+              "failed_or_missing_quality_check:swe4_inspection",
+              "failed_or_missing_quality_check:swe5_inspection",
+              "failed_or_missing_quality_check:swe6_inspection",
+              "failed_or_missing_quality_check:target_verification",
+              "failed_or_missing_quality_check:unit_verification",
+              "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+              "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+              "missing_or_empty_file:safety/software_safety_analysis.md",
+              "missing_or_empty_file:safety/tool_assurance_assessment.md",
+              "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+              "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+              "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+              "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+              "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+              "missing_or_empty_section:inspection/SWE.1",
+              "missing_or_empty_section:inspection/SWE.2",
+              "missing_or_empty_section:inspection/SWE.3",
+              "missing_or_empty_section:inspection/SWE.4",
+              "missing_or_empty_section:inspection/SWE.5",
+              "missing_or_empty_section:inspection/SWE.6",
+              "missing_or_empty_section:software/build",
+              "missing_or_empty_section:software/include",
+              "missing_or_empty_section:software/src",
+              "missing_or_empty_section:workproducts/SWE.2",
+              "missing_or_empty_section:workproducts/SWE.3",
+              "missing_or_empty_section:workproducts/SWE.4",
+              "missing_or_empty_section:workproducts/SWE.5",
+              "missing_or_empty_section:workproducts/SWE.6",
+              "missing_required_pattern:software/build/*.elf",
+              "missing_required_pattern:software/build/*.map",
+              "missing_required_pattern:software/include/*.h",
+              "missing_required_pattern:software/src/*.c",
+              "run_not_completed:INCOMPLETE",
+              "unresolved_finding:DELIVERY:NOT_INJECTED",
+              "unresolved_finding:SWE.1:GATE_REWORK",
+              "unresolved_finding:SWE.2:GATE_REWORK",
+              "unresolved_finding:SWE.3:GATE_REWORK",
+              "unresolved_finding:SWE.4:GATE_REWORK",
+              "unresolved_finding:SWE.5:GATE_REWORK",
+              "unresolved_finding:SWE.6:GATE_REWORK"
+            ],
+            "package_status": "BLOCKED",
+            "policy": "factory/release-manager/policies/release-package-policy-v0.5.json",
+            "quality_run_status": "INCOMPLETE",
+            "run_id": "WO-AFO-6a6875714405b8ce-a1",
+            "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED"
+          },
+          "package_record_sha256": "64df223291f74b7cc3bc1686c889235f3641b85ee859563d65f221ce957baa53"
+        }
+      ],
+      "peripheral": "gpio"
+    }
+  ]
+}

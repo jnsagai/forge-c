@@ -1,0 +1,7 @@
+
+--- stderr ---
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/v0.4/benchmark/st-drivers-hal-ob/audit_inputs.py", line 26, in <module>
+    assert owner["scope"] == json.loads((old / "workorder.json").read_text())["scope"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -44,8 +44,10 @@ def collect():
         packages[peripheral] = {
             "key": key, "sha256": package["sha256"], "canonical_hash_ok": facts.canonical_hash(package) == package["sha256"],
             "inputs": package["inputs"], "approval_code": decision["code"], "approval": decision["approval"],
-            "approval_sha256": digest(root / "onboarding/approval.json"),
-            "signature_sha256": digest(root / "onboarding/approval.json.sig"),
+            "approval_sha256": digest(root / "onboarding/approval.json")
+            if (root / "onboarding/approval.json").is_file() else None,
+            "signature_sha256": digest(root / "onboarding/approval.json.sig")
+            if (root / "onboarding/approval.json.sig").is_file() else None,
             "prompt_origins": [{"section": section, "key": name, "from": entry["from"]}
                                for section, entries in package["texts"].items() for name, entry in entries.items()],
         }

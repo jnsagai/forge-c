@@ -308,7 +308,7 @@ SWE.1–SWE.6.
   or approves `approval.json` (conflicts, assumptions, accepted gaps), and signs it in their own terminal. The
   implementation engineer verifies with `onboarding verify` and commits the signed copy to
   `evidence/easa/owner-decisions/` in an owner-decision commit.
-- [ ] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix
+- [X] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix ✅ Evidence: `evidence/v0.4/runs/OB-T048/latest.json`
   any factory defect through the CRE process (registry → CAPA → reproducer → promotion) and retry with new request
   ids `-R<n>`.
 - [X] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
@@ -420,3 +420,25 @@ SWE.1–SWE.6.
 - `BENCH-GPIO-ST-HAL-OB`, order `afo-6a6875714405b8ce`, is running on that revision with the approved package.
   Its Fabro run is `01M5YK3Z4XR0ANW069WPHZZQ0K`. SPI, USART and TIM have not been submitted yet (one at a time).
   No acceptance-run completion or READY result is claimed.
+
+
+## Field-index correction and sequential acceptance (2026-10-27)
+
+- GPIO's initial run finished BLOCKED with 52 named gaps; its sealed archive (`ddea8b4c93b6…`) verifies intact.
+  OB-T048 records the actual terminal package, not a READY claim or an SC-005 pass. Its SC-005 result is FAIL:
+  the RM parser omitted the comma-separated fields of GPIO_ADVCFGRL/H. CAPA-073 preserves that finding.
+- The parser now derives all 64 fields from the supplied RM. A second audit finding, saved API mappings changing
+  generated function order after JSON serialization, is fixed by retaining the owner's function sequence.
+  The namespace and package facts stay unchanged for SPI, USART and TIM.
+- Runtime `557e920` passed CRE `pd-29aa710d612f9cbae9e3` against `9fa4664`, including independent baseline/candidate
+  contrasts for both findings, and is deployed with the cloud gateway disabled. Targeted register/identity tests
+  (35) and prompt persistence tests (9) pass; a fresh full suite is running in a separate clean worktree.
+- Corrected GPIO hash: `e7eeec3c04d48ad30d4b6ef2d178bee17131299a7e4bff094d8caaab9edb9891`. Its original approval
+  is preserved in void history and owner-decision evidence; the owner must sign OA-2026-10-27-05 before GPIO R1.
+  The review delta and terminal signing aid are in state/onboarding/REVIEW-GPIO-R1.md and sign-GPIO-R1.sh.
+- SPI is running as order `afo-cbde5111bd5eeaf6`, Fabro `01M5YN8RVQVAK9SZM8G5FBE1RP`, with its original valid
+  approval and hash. USART and TIM have not been submitted. Only one acceptance order runs at a time.
+- SC-001 preparation evidence passes by regenerating package texts while tracing reads: no hand-profile text is
+  read, and the exact acceptance scope is bound into the package. The acceptance scopes simplify the legacy text
+  (they are not verbatim copies of it); the audit reports that difference and the unused legacy GPIO reset-description
+  correction explicitly. Final run audit and owner review remain open.
