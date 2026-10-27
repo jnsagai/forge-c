@@ -1,0 +1,72 @@
+{
+  "recorded_at": "2026-10-27T13:59:15.729838Z",
+  "request_id": "BENCH-SPI-ST-HAL-OB-R1",
+  "order_id": "afo-d5622d4914a0ac9d",
+  "attempt": {
+    "attempt_id": "afo-d5622d4914a0ac9d-a1",
+    "order_id": "afo-d5622d4914a0ac9d",
+    "seq": 1,
+    "state": "RUNNING",
+    "record": "{\"schema_version\": \"1.0\", \"order_id\": \"afo-d5622d4914a0ac9d\", \"attempt_id\": \"afo-d5622d4914a0ac9d-a1\", \"attempt_seq\": 1, \"state\": \"RUNNING\", \"workspace_ref\": \"workorder:WO-AFO-d5622d4914a0ac9d-a1\", \"factory_revision\": \"9dd5b713dd5e8fc92b86b1055cb3d52295f578cc\", \"created_utc\": \"2026-10-27T13:57:06.087350Z\", \"fabro_run_id\": \"01M5YTDC70DYH2CMJSMQ45CD2F\", \"fabro_server\": null, \"recovery_plan_id\": null, \"exit_status\": null, \"terminal_package_status\": null, \"checkpoint_refs\": [], \"evidence_refs\": [\"nonce:a044072678df2950\", \"dispatched_epoch:1793109426\"], \"finished_utc\": null}",
+    "created_utc": "2026-10-27T13:57:06.087350Z",
+    "finished_utc": null
+  },
+  "onboarding": {
+    "approval_id": "OA-2026-10-27-02",
+    "key": "0011e-st-cube-spi-hal-ob",
+    "package": "state/onboarding/0011e-st-cube-spi-hal-ob/onboarding/package.json",
+    "profile_sha256": "9d164b9c05dcc560430bf150e418b7b945a67e5b811f611bb2b9d52707a7b6cc",
+    "sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523"
+  },
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+    "dirty": false
+  },
+  "inputs": [
+    {
+      "bytes": 1056393,
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "bytes": 317648,
+      "path": "inputs/RM0486-rev4-ch67-spi.md",
+      "role": "reference_manual_spi_chapter",
+      "sha256": "0a2c65a4394de1588b7a6ae82ed57ead5862cd2d24163d5ad3387efb8db22adb"
+    },
+    {
+      "bytes": 4465,
+      "path": "inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "122870106a7df862e4f2ed8b194c55dfeeb021d606c7c84ac53ec5d3ad15cbdf"
+    },
+    {
+      "bytes": 3358,
+      "path": "inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "bytes": 697,
+      "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "bytes": 1362,
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "baeb3f30487053b9ff7f3ee2ce75e4e95ef8a9b268249067520f2d463646c9f0"
+    },
+    {
+      "bytes": 455865,
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+  ],
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace"
+}
