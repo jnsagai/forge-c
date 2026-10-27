@@ -301,7 +301,7 @@ SWE.1–SWE.6.
   (model profile codex-claude), with the driver classes covered by the owner's authorization
   AUTH-AFO-PILOT-20261027. If a new class is needed, prepare an UNSIGNED authorization for the owner to sign.
   Never sign it.
-- [ ] **OB-T046** [US5] Deploy (deploy pattern; cloud gateway disabled). Derive the GPIO package
+- [X] **OB-T046** [US5] Deploy (deploy pattern; cloud gateway disabled). Derive the GPIO package ✅ Evidence: `evidence/v0.4/runs/OB-T046/latest.json`, `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   (`python -m forge_factory.onboarding derive examples/0010e-st-cube-gpio-hal-ob`) and write its `summary`; hand the
   owner `summary.md` and the signing command.
 - [ ] **OB-T047** [US5] **Owner approval, GPIO**: the owner reviews `summary.md` for `0010e-st-cube-gpio-hal-ob`, writes
@@ -392,3 +392,15 @@ SWE.1–SWE.6.
   `pd-80b9072120a93edf011e`. Its non-evidence tree matches feature source `bb7a04a867ec` exactly; its evidence tree
   matches deployed baseline `11482e3`. The feature-head rejection and source-equivalence proof are preserved in
   `evidence/cre/decisions/`. No gate or protected policy was changed.
+
+- Final runtime `5fb0a8673944c7e919ceffc78daaf6f3b782d71e` passed CRE
+  `pd-fcc8a2759b12bdd516ac` and was deployed after the full-suite comparison passed. The conductor process uses that
+  worktree and import path; the cloud gateway is inactive and disabled. Unit files and the conductor database were
+  backed up. See `evidence/v0.4/benchmark/st-drivers-hal-ob/deployment.json`.
+- Full suite at `02bcb49`: 1399 passed, 27 skipped, 3 failed in 2440.02 seconds. The three failures are exactly the
+  recorded baseline set (local Qwen terminal evidence, KPI T012/T020); raw FAIL results and the separate PASS
+  failure-set comparison are frozen under `OB-FULL-SUITE` and `OB-NO-REGRESSIONS`. No new failure was found. The
+  subsequent acceptance-manifest/check-script additions have their own passing evidence; application code is unchanged.
+- OB-T064 remains open: a draft PR is prepared for review, but signed acceptance runs, their frozen record, the
+  held-out authoring check and owner release-package review have not completed. No merge or final feature completion
+  is claimed. The owner-only signing aid is `$FORGE_STATE_DIR/onboarding/sign-F016.sh` (not executed by Codex).

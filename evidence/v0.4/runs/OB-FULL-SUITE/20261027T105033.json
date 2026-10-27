@@ -1,0 +1,31 @@
+{
+  "schema": "forge-c/task-evidence/0.4",
+  "task": "OB-FULL-SUITE",
+  "status": "FAIL",
+  "exit_code": 1,
+  "ts_utc": "2026-10-27T11:31:25.285010Z",
+  "duration_s": 2440.02,
+  "git_head": "02bcb49e90cd6480f39057d849ef3da9a52c4c86",
+  "git_dirty_at_start": false,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-codex-full",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-02bcb49-full-tests.xml"
+  ],
+  "host": {
+    "python": "3.13.13",
+    "node": "master"
+  },
+  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.log",
+  "log_sha256": "4512fa80560738ecf36f3ac6459047a513045a55cbefaa15e2df725e28ce2e2c",
+  "junit": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.xml",
+  "junit_sha256": "9c583dc2ec67391ab1a8aa955a7dc2e01367021a54bd7b2420c6f8bccc53dc99",
+  "passed": 1399,
+  "skipped": 27,
+  "failed": 3,
+  "note": "Exactly the three baseline failures listed in HANDOFF-codex.md. Raw suite remains FAIL; see OB-NO-REGRESSIONS for the independent failure-set comparison. Added acceptance manifests/check script are covered by OB-T045 and OB-ACCEPTANCE-PREPARATION; application code matches the gated runtime."
+}

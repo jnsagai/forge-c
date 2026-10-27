@@ -1,0 +1,6 @@
+PASS 0010e-st-cube-gpio-hal-ob sha256 1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b duration_s 3.377
+PASS 0011e-st-cube-spi-hal-ob sha256 dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523 duration_s 6.14
+PASS 0012e-st-cube-usart-hal-ob sha256 ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9 duration_s 4.789
+PASS 0013e-st-cube-tim-hal-ob sha256 cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804 duration_s 7.497
+
+--- stderr ---
