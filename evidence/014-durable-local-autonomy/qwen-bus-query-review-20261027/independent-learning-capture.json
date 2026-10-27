@@ -1,0 +1,26 @@
+{
+  "experience_ids": [
+    "experience-2224216fac0e6340b21cebc5",
+    "experience-b8d4cee4893992963697a574"
+  ],
+  "dispositions": [
+    {
+      "experience_id": "experience-2224216fac0e6340b21cebc5",
+      "at": "2026-10-27T12:28:25.521042Z",
+      "inference_tokens": 0,
+      "pattern": null,
+      "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+      "state": "DEFERRED_BUDGET"
+    },
+    {
+      "experience_id": "experience-b8d4cee4893992963697a574",
+      "at": "2026-10-27T12:28:25.521166Z",
+      "inference_tokens": 0,
+      "pattern": null,
+      "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+      "state": "DEFERRED_BUDGET"
+    }
+  ],
+  "qualified_lessons_added": 0,
+  "benefit": "NOT_MEASURED"
+}

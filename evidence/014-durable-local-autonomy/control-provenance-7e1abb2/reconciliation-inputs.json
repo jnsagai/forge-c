@@ -1,0 +1,40 @@
+{
+  "tested_revision": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "base": "initial-core.xml",
+  "base_invocation": "initial-invocation.json",
+  "overlays": [
+    {
+      "xml": "brownfield-retry.xml",
+      "invocation": "brownfield-invocation.json"
+    },
+    {
+      "xml": "permissions.xml",
+      "invocation": "permissions-invocation.json"
+    }
+  ],
+  "source_scope": "tracked source exactly at revision; brownfield retry had only prepared untracked public evidence",
+  "inputs": {
+    "initial-invocation.json": "51b3e4f287c837241068b45c8f5a9fdde037ee1ce79c2136a1f273c83f6e09df",
+    "reproduce-old-control-race.py": "a0e5bb5e5cf1e5c849e4465b89144fb979581e09b963c0dd7de40823acd1e7c2",
+    "systemd.json": "d8434e956d8bfee10363287b6343f9d17960c6f936f39f1ce18e60978ed5848d",
+    "native-invocation.json": "a8f1cff5dfd34c96219d69bfc8fbbe31d0a0a1ee5841c8f90f12bbf6583e8df8",
+    "native-user-bus.log": "320dd845de3db04562638457ee1a3c82d533da31bdf35185dd7c424da3b81e78",
+    "native-user-bus.json": "bfbc6af2415a18e22201a86b42a0553220ee22138d91bc916554718ee4e2c4a9",
+    "native-native-tests.log": "de0615cf37b5c81f3262e96c1af6d39e3e1ed022fb623f364a1d3c083a4e551f",
+    "permissions.log": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "brownfield-invocation.json": "f9285850ed6beba872b4d48c6679825516f2c508ccac7e680d076567eec30959",
+    "independent-cre.json": "1a55ad3fc945f0dc7c20d2c3e32b221e1ef4274e92f02b79972e5d03e7907b76",
+    "permissions.xml": "f8b1c6c95b92e9ccf36581e9f0ff16e278f957c81db523ee6c75b42e484074af",
+    "native-native-tests.xml": "abb542451972835ce500668681ad48876300a909a294e3b0944c4d0a8188ae95",
+    "verified-input-hashes.json": "4089cd78c7abde789e3d2ae4d1fa4eb74aa46ed8204d92bcf934880a59ffce38",
+    "history.json": "71bca2d89dc092e58ac5dead4bdab938c2e33190553588f0fe190ecf74984426",
+    "brownfield-retry.log": "b2c6720453f06d35157bf6fc9703ffce184bf1d11bc189b38e5a9b17338d728b",
+    "release.xml": "10497d05ab8b2f497a831affe61119ed2539ff5b0032cd9a56785a41316da7b3",
+    "old-control-race.json": "8c98b419fc23c838701765c3f8f76178ab8f176a2ba4aac8481a3710a62f1d28",
+    "permissions-invocation.json": "d91cecfb82844ca417477d6f4f6bb5f9e6adefc036da45e94769ef558c1446fd",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "initial-core.log": "9217c7a5782831e3c970c3b8d0b5bc5517951c8e79336b1dba295e6d72909772",
+    "initial-core.xml": "382b49164875ad0ce6ae9246ef065377ff7398d5816c05ab1c569bd58fa2ddc0",
+    "brownfield-retry.xml": "74e46254f889bcaa381c5c21f57735aa356728db3dc868d5a60e0550602c5b13"
+  }
+}

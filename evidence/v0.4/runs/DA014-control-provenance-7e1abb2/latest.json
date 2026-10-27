@@ -1,0 +1,19 @@
+{
+  "git_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "scope": "CONTROL_ORDERING_PROVENANCE_AND_NORMATIVE_BUS_PARSING_NOT_COMPLETE_HOST_AUDIT",
+  "status": "PASS_DETERMINISTIC_RECONCILED",
+  "exit_code": 0,
+  "command": "python evidence/014-durable-local-autonomy/control-provenance-7e1abb2/reconcile-cases.py",
+  "initial_full_core_exit_code": 1,
+  "reconciled_unique_cases": 899,
+  "reconciled_results": {
+    "ERROR": 0,
+    "FAILURE": 0,
+    "PASS": 890,
+    "SKIPPED": 9
+  },
+  "evidence": "evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json",
+  "evidence_sha256": "1383a767b2c99e68cd8d4baa8c940104a9598cb811db968e5436d5a72036fc1f",
+  "new_task_checkboxes": [],
+  "native_qualification": "NOT_QUALIFIED_BY_UNIT_TESTS"
+}

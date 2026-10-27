@@ -327,3 +327,58 @@ bus privilege and the approved host fault window remain unavailable, but do not
 block independent software work. Product oracle production and elapsed native
 campaigns remain required. Preserve all earlier owner freezes, finite/exhausted
 missions, signing boundaries and the CRE veto; no automatic deployment or merge.
+
+
+## Codex follow-up — 2026-10-27 control provenance and remote Qwen help
+
+Latest tested source **`7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1`**; source commits
+`818ab90`, `91f5ef4`, `7e1abb2`. Evidence/docs commit follows. Original owner main
+and Feature 015 work remain untouched.
+
+- Added sanitized caller/process/namespace/UID-map context to existing Intent and
+  lifecycle/action records. CLI OS-owner and HTTP bearer decisions contribute
+  provenance; token bytes never enter context. Application receipts do not become
+  independent host authentication/intervention evidence by themselves.
+- Fixed a real ordering defect: older resume database effects could contradict
+  newer STOPPED intent. One control transaction now runs under the existing intent
+  lock. A pinned-old-function counterexample and fixed concurrent/rollback cases
+  pass; durable STOP still fences starts if the database fails. KI-014-031 resolved
+  deterministically. No inference, counter/authority reset or promotion effect.
+- Corrected nonnumeric unique bus-name parsing using primary D-Bus rules plus
+  native-library examples. Keep malformed/length/interface constraints; libdbus
+  overaccepts some degenerate unique names and is not the sole correctness oracle.
+- The broad core invocation **exited 1**: 846 PASS, 11 SKIP, 42 brownfield setup
+  errors from missing ignored ST docs in `$FC014_OPS/codex-resume-20261027`.
+  Preserve it. The corrected source-identical regression tree
+  `$B/repos/forge-c-014-regress-7e1abb2` has 22 verified documents and passed all
+  45 brownfield cases; two permission skips passed separately with a private
+  fixture. `control-provenance-7e1abb2/reconcile-cases.py` verifies hashes, source
+  revisions and exact test identities: **890 PASS / 9 SKIP / zero open failures
+  across 899 unique cases**, explicitly not one green full invocation. Release
+  13 PASS; native Omniverse2 62 PASS + finite user bus PASS; history and seven local
+  isolated systemd cases PASS. CRE REJECTED/PROTECTED_PATH_CHANGE. Static checks
+  pass separately. Full inherited 1,840-test cohort remains at 20650af.
+- New owner-requested **separate** external bus-query-helper study (GPU jobs
+  070/071, reviewed source fbd8bc8): one upstream request, 1,819 input+793 output,
+  9.4334 s. Initial harness failed with zero calls because it compared UIDs across
+  user namespaces; the same ledger and max_calls=1 were preserved on continuation.
+  Proposal reference FAIL is retained. Independent checks rejected one claim and
+  confirmed a related nonnumeric-name compatibility gap, externally fixed above.
+  Four actual experiences: 3 DEFERRED_BUDGET, 1 NO_NEW_LESSON; zero qualified lessons
+  or measured benefit. Complete context/hash replay PASS without inference.
+  This review's one-call budget is now **exhausted**. Do not re-dispatch it or the
+  earlier three-call ST3 study as another mission. Public `qwen-bus-query-review-20261027/`;
+  private `$FC014_OPS/qwen-bus-review-native-7e1abb2/`, remote `$Q/runs/qwen-bus-query-review-20261027`.
+- Remote clean qualification clone `$Q/host-control-7e1abb2/repo`, artifacts alongside.
+  It runs no model or persistent service. Original shared profile/repo/services
+  stay unchanged. Formal **30/58**, no new tick/ledger rebaseline.
+
+Next independent software: ingest the new context/event records into the external
+observer with frozen source and privacy checks, then native actor/control/write
+correlation, continuous segmented/rotation-safe sources and all-channel replay.
+Current global intervention count remains UNKNOWN. Product correctness oracle
+production and authorized external host fixtures/campaigns remain required. Kernel
+and system-bus host prerequisites are still unavailable; do not blame those for
+unfinished software or fabricate coverage. Keep all earlier signing, inspector,
+seventeen omitted live cases, finite mission and protected CRE boundaries. Native
+product success, measured learning benefit and 24/7 availability remain unproven.

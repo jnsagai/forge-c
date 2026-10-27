@@ -449,3 +449,62 @@ rotation-safe sources, authenticated-control/actor correlation and complete
 source-derived intervention verification. Genuine product oracle production,
 the approved host fault window and elapsed 24/72/168-hour campaigns remain unrun;
 product success, learning benefit and operational availability are unproven.
+
+
+## 2026-10-27: caller/control provenance, transactional intent effects and useful bounded Qwen assistance
+
+Latest exact source **`7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1`** (bus-name
+fix `818ab90`, oracle-test clarification `91f5ef4`, control source `7e1abb2`).
+The original 899-case core invocation had **846 PASS / 11 SKIP / 42 setup errors**,
+exit 1; all 42 errors were missing ignored ST documents in its worktree. No source
+assertion failed. A worktree with all 22 document hashes verified then passed the
+complete **45-case brownfield** file; the **two permission cases** also passed with
+an explicit private canary. The source-bound JUnit identity reconciliation is
+**890 PASS / 9 SKIP / zero open failures/errors across 899 unique cases**, not a
+single green full invocation. Both failed and successful invocations remain in
+Git. [Commands, artifacts and executable reconciliation](../../evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json).
+
+Release **13 PASS**; real Omniverse2 isolated control/bus tests **62 PASS** and
+finite user-bus visibility **PASS/exit 0**. History replay and all **seven isolated
+local systemd cases PASS** at this source. Current CRE remains
+**REJECTED/PROTECTED_PATH_CHANGE**. Spec/contracts, 14 design checks, handoff and
+changed-source/test Ruff PASS separately; full 1,840-test inherited cohort was
+not rerun here. Remaining skips are unavailable historical workspaces and the
+explicitly disabled live-Fabro validation.
+
+The existing CLI/dashboard authentication boundary now contributes a sanitized
+context to Intent and the existing lifecycle/action ledger. It binds epoch/mode,
+request/source hashes, process boot/start/namespace facts, UID mapping and bearer
+fingerprint without credentials, actor/reason text or arbitrary caller fields.
+The same intent lock spans one database transaction for both controls and all
+receipt/action rows. A pinned-old-function counterexample demonstrates stale
+resume effects contradicting a newer stop; the fixed concurrency case passes.
+Existing admission already honored STOPPED intent, so no unsafe service restart
+is inferred. SQL failure retains durable stop fencing; missing process metadata
+stays UNKNOWN and cannot prevent stop. Legacy control callers remain compatible.
+KI-014-031 is resolved deterministically; KI-014-030 retains incomplete independent
+audit ingestion/correlation and source coverage.
+
+The requested [external Qwen helper study](../../evidence/014-durable-local-autonomy/qwen-bus-query-review-20261027/summary.json)
+used the existing GPU queue and single-inflight gateway on Omniverse2: **one client
+and upstream request**, 1,819 input + 793 output tokens, 9.4334 s request wall.
+Total study wall 249.612356 s includes an initial zero-call UID-namespace preflight
+failure and its corrected continuation; the same one-call accounting was kept.
+The response was schema-valid but failed literal source references. A ceiling
+complaint was unsupported. A nonnumeric-name lead was independently checked
+against the primary D-Bus contract/native library, reproduced and externally
+fixed. Native library permissiveness on degenerate names is retained as an oracle
+limit; normative negative fixtures remain authoritative. Exact serialized-context
+hash replay passes without another inference call. Four factual experiences have
+three DEFERRED_BUDGET and one NO_NEW_LESSON dispositions, zero qualified lessons.
+No measured learning benefit, role competence or autonomous repair is claimed.
+The study's call budget is spent; do not retry it under a new name.
+
+Formal progress remains **30/58**, no task tick or ledger/CRLF rebaseline. Complete
+observer ingestion, native actor/control correlation, continuous/rotation-safe
+capture and full source-derived intervention verification remain software work.
+Kernel/system-bus prerequisites, genuine product oracle evidence, the approved
+external fault window and elapsed 24/72/168-hour campaigns remain unrun. No
+persistent deployment, promotion, inspector tuning, owner safety signature or
+merge occurred. Product success/learning benefit/availability remain separate and
+unproven.

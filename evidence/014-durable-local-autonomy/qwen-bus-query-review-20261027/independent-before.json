@@ -1,0 +1,74 @@
+{
+  "scope": "INDEPENDENT_NATIVE_LIBRARY_AND_CONTROLLED_SUBPROCESS_FIXTURES_NOT_PRODUCT_OR_NATIVE_CAMPAIGN",
+  "source_revision": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "source_sha256": "6f4f9e1841d09e06a12d7d8d2672a0bf0578b225084bbb054f5e6974b49aadb4",
+  "oracle": "libdbus-1.so.3.dbus_validate_bus_name",
+  "oracle_version": "1.12.20",
+  "primary_contract": "https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-names-bus",
+  "checks": [
+    {
+      "case": "numeric",
+      "member": "GetNameOwner",
+      "input_sha256": "16d4a4688eee04b0c659b0cfbfc4f6a56d82c1a5662956c24728fe3843ed88f9",
+      "input_bytes": 119,
+      "native_bus_name_oracle": true,
+      "result": {
+        "returncode": 0,
+        "destination": ":1.3",
+        "serial": 3,
+        "reply_serial": 2,
+        "value": ":1.2",
+        "reply_sha256": "16d4a4688eee04b0c659b0cfbfc4f6a56d82c1a5662956c24728fe3843ed88f9"
+      }
+    },
+    {
+      "case": "uppercase",
+      "member": "GetNameOwner",
+      "input_sha256": "602224108e07a2fcf2fc315f2a04961b923687003029df302d5cbd590c8b01eb",
+      "input_bytes": 121,
+      "native_bus_name_oracle": true,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_FORMAT_UNKNOWN"
+      }
+    },
+    {
+      "case": "mixed",
+      "member": "GetNameOwner",
+      "input_sha256": "ec5b305cb15c453ef1b49779323ae3f66339c0740e77888fb4c9f5aa06ba3455",
+      "input_bytes": 135,
+      "native_bus_name_oracle": true,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_FORMAT_UNKNOWN"
+      }
+    },
+    {
+      "case": "get-id",
+      "member": "GetId",
+      "input_sha256": "e80b8e1b5d861c17419fa1460bdff8976a5791d8903b4b1bcc8dabab335451fd",
+      "input_bytes": 147,
+      "native_bus_name_oracle": null,
+      "result": {
+        "returncode": 0,
+        "destination": ":1.3",
+        "serial": 3,
+        "reply_serial": 2,
+        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reply_sha256": "e80b8e1b5d861c17419fa1460bdff8976a5791d8903b4b1bcc8dabab335451fd"
+      }
+    },
+    {
+      "case": "output-bound",
+      "member": "GetId",
+      "input_sha256": "18f8d2eb4a387bbc1e37ec099a7326805739bc9c99ecf0f14b808a5bcb65bf49",
+      "input_bytes": 8192,
+      "native_bus_name_oracle": null,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_FAILED_OR_OVERSIZED"
+      }
+    }
+  ],
+  "conclusion": "8KiB refusal is the intended bound; valid nonnumeric unique names reveal an independently reproduced compatibility defect. Model second source quote was not literal; proposal reference validation remains FAIL."
+}

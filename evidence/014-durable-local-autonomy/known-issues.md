@@ -284,8 +284,16 @@ mapping; it is not a repaired driver, autonomous recovery or qualified lesson.
 
 ## KI-014-030: Full host-audit coverage is unavailable
 
-- **What:** At clean fbd8bc8, finite user-bus visibility passes with both exact harmless probe/reply pairs. System-bus BecomeMonitor and boundary visibility are denied (native fallback diagnostics retained as byte counts only); kernel audit status remains unavailable. Software continuous/rotation accounting, authenticated-control/actor correlation and full intervention replay are still incomplete.
+- **What:** At fbd8bc8 the finite user-bus probe passes, while system-bus BecomeMonitor/boundary visibility is not proven (diagnostic/fallback) and kernel audit status is unavailable. At 7e1abb2 user-bus visibility and 62 isolated remote control/bus tests pass. Application control provenance and transactional effects now exist, but observer ingestion, native actor correlation, continuous/rotation accounting and full intervention replay remain incomplete.
 - **Impact:** Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.
-- **Evidence:** evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json
+- **Evidence:** evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json
 - **Human action:** Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.
 - **Status:** OPEN
+
+## KI-014-031: Stale resume database effects after newer stop
+
+- **What:** The pinned prior synchronize function reproduced STOPPED intent with paused=0/draining=0 after a concurrent older resume. Source 7e1abb2 commits all database controls/action/event rows transactionally under the existing intent lock and retains caller/process provenance. Concurrency, rollback, CLI/HTTP and privacy tests pass locally and on Omniverse2.
+- **Impact:** The misleading/stale database effects are corrected. Existing admission already honored durable STOPPED intent; no actual service restart is inferred from the counterexample.
+- **Evidence:** evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json
+- **Human action:** Review the source and exact receipts in draft PR #42. Native campaigns and independent host audit remain separate unrun work.
+- **Status:** RESOLVED_DETERMINISTIC
