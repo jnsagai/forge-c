@@ -304,6 +304,9 @@ python -m forge_factory.afo.fault_observer work \
 Work verification replays the existing independent audit, checks frozen identities
 against independently captured order/latest-attempt/mission/native/nonce facts,
 and requires captured native/request quiescence and released capacity. READY also
+requires the bound request-ID set to match capture: a genuine zero-request native
+outcome is distinct from missing request telemetry. Capture checks its read
+deadline again before publishing. READY
 requires exactly the six native SWE gates and the sealed READY package result.
 Missing audit stays INCOMPLETE; contradictory READY is FAIL. A known BLOCKED
 outcome can count as real work when its independent audit verifies complete

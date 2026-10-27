@@ -89,6 +89,7 @@ def capture_product(manifest, plan_ref, trial, destination):
                     if len(z.infolist()) > frozen["max_rows"] or z.getinfo("manifest.json").file_size > observer.MAX_BYTES:
                         raise Refused("OPERATIONAL_ARCHIVE_BOUND_EXCEEDED")
         row = product_row(store, manifest, trial, binding)
+        store.connect()  # enforce the snapshot deadline before publishing a late result
     immutable_json(observer.artifact(frozen, destination), row)
     return row
 
@@ -105,6 +106,12 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
     if not isinstance(native, str) or not native or row.get("order_state") not in TERMINAL:
         raise Refused("OPERATIONAL_WORK_NOT_NATIVE_TERMINAL")
     order_id = binding["order_id"]
+    request_ids = row.get("request_ids")
+    requests_bound = (
+        isinstance(request_ids, list)
+        and all(isinstance(i, str) and i for i in request_ids)
+        and len(set(request_ids)) == len(request_ids)
+    )
     matches = []
     for sample in samples:
         ledger = sample["ledger"]
@@ -129,7 +136,8 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
             and execution["launch_nonce"] == row["execution"].get("launch_nonce")
             and execution["execution_liveness"] == "QUIESCENT"
             and execution["resource_lease"] == "RELEASED"
-            and requests
+            and requests_bound
+            and {r["request_id"] for r in requests} == set(request_ids)
             and all(r["state"] == "QUIESCENT" and r["mission_id"] == binding["mission_id"] for r in requests)
         ):
             matches.append(sample)
@@ -166,6 +174,7 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
         "job_id": binding["job_id"],
         "mission_id": binding["mission_id"],
         "native_run_id": native,
+        "model_request_count": len(request_ids) if requests_bound else None,
         "order_state": row["order_state"],
         "observed_from": samples[0]["wall"],
         "observed_until": samples[-1]["wall"],

@@ -118,6 +118,7 @@ def product_observation(store, manifest, trial, binding):
         "package_verdict": verdict,
         "gates": gates,
         "requests_sha256": digest(requests),
+        "request_ids": sorted(r["request_id"] for r in requests),
         "request_metadata_sha256": digest(metadata),
         "complete_prompt_tokens": sum(measured[r["request_id"]]["measurement"]["input_tokens"] for r in requests)
         if complete

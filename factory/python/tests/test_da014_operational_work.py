@@ -64,6 +64,7 @@ def work(setup):  # noqa: F811
         "package_sha256": "a" * 64,
         "package_verdict": {"verdict": "READY_FOR_OFFLINE_REVIEW", "archive_sha256": "b" * 64},
         "gates": {f"SWE.{i}": "PASS" for i in range(1, 7)},
+        "request_ids": ["request-fixture"],
     }
     p.samples = []
     for n, wall in enumerate((100, 130)):
@@ -324,6 +325,34 @@ def test_product_capture_uses_read_only_store_without_a_native_or_service_effect
     assert O.read_json(output) == result
     assert result["qualification_status"] == "INCOMPLETE_INDEPENDENT_AUDIT"
     assert sha256_file(p.db) == before
+
+
+def test_model_free_native_outcome_requires_bound_zero_requests_not_missing_capture(work):
+    p = work
+    p.observation["request_ids"] = []
+    ref, _, _ = audited(p)
+    samples = []
+    for i, source in enumerate(p.samples):
+        row = O.bound_json(source)
+        row["ledger"]["afo_request_ledger"] = []
+        samples.append(put(p.tmp / ("zero-request-" + str(i) + ".json"), row))
+    p.samples = samples
+    result = evaluate(p, ref)
+    assert result["status"] == "VERIFIED" and result["model_request_count"] == 0
+
+
+def test_product_capture_cannot_publish_after_its_read_deadline(work, monkeypatch):
+    p = work
+    install_capture_fixture(p)
+
+    def late(store, *args):
+        store.deadline = 0
+        return C.audited_product_row(p.manifest, p.observation)
+
+    monkeypatch.setattr(C, "product_row", late)
+    with pytest.raises(queue.QueueError, match="NOT_CURRENT"):
+        W.capture_product(p.manifest, p.ref, p.trial, p.tmp / "late-result.json")
+    assert not (p.tmp / "late-result.json").exists()
 
 
 @pytest.mark.parametrize("change", ["held", "running", "fifo", "symlink", "outside-archive"])
