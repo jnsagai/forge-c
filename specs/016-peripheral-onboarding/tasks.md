@@ -348,9 +348,10 @@ SWE.1–SWE.6.
 - [X] **OB-T063** [P] Write an ADR, `docs/adr/ADR-00NN-peripheral-onboarding-stage.md`: the two-run design and ✅ Evidence: `evidence/v0.4/runs/OB-T063/latest.json`
   owner gate (Constitution III), the derived profile, the template generator versus the legacy hand texts, and the
   migration policy for hand-onboarded peripherals (owner choice, FR-019).
-- [ ] **OB-T064** Run the full suite, `tests/spec/validate_design.py`, the provenance scan, `safec_bridge.static_check`
+- [X] **OB-T064** Run the full suite, `tests/spec/validate_design.py`, the provenance scan, `safec_bridge.static_check` ✅ Evidence: `evidence/v0.4/runs/OB-T064/latest.json`, `evidence/v0.4/runs/OB-NO-REGRESSIONS/latest.json`
   and quickstart §1–§6 with evidence. Then open the PR to `main`. Do not merge without the owner's acceptance; use
-  merge commits only.
+  merge commits only. Quickstart §5 existing-model checks are complete; the separate held-out
+  SC-007 qualification remains NOT_RUN under OB-T043 while Claude is unavailable.
 
 ## Dependencies and execution order
 

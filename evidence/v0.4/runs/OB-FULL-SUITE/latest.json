@@ -3,9 +3,9 @@
   "task": "OB-FULL-SUITE",
   "status": "FAIL",
   "exit_code": 1,
-  "ts_utc": "2026-10-27T16:43:53.047768Z",
-  "duration_s": 2372.895,
-  "git_head": "b68bdbb608d66cb6c5ebe9bc714afa928d0c8aad",
+  "ts_utc": "2026-10-27T17:22:28.569773Z",
+  "duration_s": 2422.042,
+  "git_head": "4f4442baadd474617ad5acc07ab34442d6ae605c",
   "git_dirty_at_start": false,
   "command": [
     "python",
@@ -13,26 +13,24 @@
     "pytest",
     "-p",
     "no:cacheprovider",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-b68bdbb-full",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-b68bdbb-full-tests.xml"
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-4f4442ba-full",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-4f4442ba-full-tests.xml"
   ],
   "host": {
     "python": "3.13.13",
     "node": "master"
   },
-  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T164353.log",
-  "log_sha256": "b75367494e8ba4962742e3c82fb752293ab9114244bff5f8c0ec7b775ed9fdf0",
-  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-b68bdbb-full-tests.xml",
-  "junit_sha256": "e2ae0728b053902a102cd3f92afefa474aa08daf219cfb4480047a62fe943e21",
-  "passed": 1445,
+  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T172228.log",
+  "log_sha256": "d5e1f547db37d0cf3a2859a4900fc3c26e4d9abed7e5b31c7210c5a26ea8777e",
+  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-4f4442ba-full-tests.xml",
+  "junit_sha256": "b397633f2f4965539760c31b90462bad8e1b24c157835c183544a2b39cb3848d",
+  "passed": 1452,
   "skipped": 27,
-  "failed": 5,
+  "failed": 3,
   "failed_cases": [
     "factory.python.tests.test_cre_d7_e2e.test_latest_local_qwen_work_order_has_real_terminal_evidence",
     "factory.python.tests.test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege",
-    "factory.python.tests.test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence",
-    "factory.python.tests.test_m2_mcp.test_t010_catalog_all_ops_implemented_and_mandatory_available",
-    "factory.python.tests.test_onboarding_model_sandbox.test_filesystem_view_excludes_host_hand_model_and_home"
+    "factory.python.tests.test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence"
   ],
   "note": "Exact committed source in a newly created isolated test worktree; all 16 converted owner-input manifest hashes checked. Any subsequent source changes require their own validation; this record refers only to the exact tested snapshot. Raw suite retains its actual result. Independent failure-set comparison is separate. Full raw JUnit retained externally with its hash; public summary omits passing parameterized fixture strings."
 }

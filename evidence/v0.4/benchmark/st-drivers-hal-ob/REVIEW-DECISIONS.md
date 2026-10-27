@@ -16,8 +16,9 @@ Per-defect dispositions, requirement adequacy, TIM's unverified coverage-tool ca
 remain open. The current four packages remain BLOCKED with 709 / 310 / 711 / 230 named gaps respectively.
 
 Source `4f4442ba` adds measured author-cycle counts for interrupted runs and retains every declared model limit.
-Its focused MCP/model check has 60 passed and 1 skipped; its data-volume sandbox/model check has 42 passed. A fresh
-full suite is running in a clean isolated worktree. The preceding `b68bdbb` full suite is preserved as FAIL:
+Its focused MCP/model check has 60 passed and 1 skipped; its data-volume sandbox/model check has 42 passed. The clean full suite on that exact source finished with **1,452 passed, 27 skipped and the same three known
+baseline failures** (2,422.042 seconds). The raw result remains FAIL; `OB-NO-REGRESSIONS` independently passes the exact
+failure-set comparison. The USART model-gate CLI also passes using the signed 64 MHz clock assumption. The preceding `b68bdbb` full suite is preserved as FAIL:
 1,445 passed, 27 skipped, three baseline failures and two corrected test assumptions (catalog count and mount
 ancestor existence). No result was relabeled.
 
@@ -27,5 +28,4 @@ and preserves the deployed evidence tree. CRE `pd-35e5ddd7ce46a2941d3c` is eligi
 Production remains on `9dd5b71`.
 
 SC-007 / OB-T043 remains NOT_RUN because the approved Claude inspector is out of quota. No held-out authoring model
-call or substitute inspection was started. Text-author roles remain open as allowed by the handoff. Final completion
-OB-T064 remains open while the remaining verification is pending. The PR stays draft; no merge is authorized.
+call or substitute inspection was started. Text-author roles remain open as allowed by the handoff. OB-T064 delivery checks pass and the PR is updated; held-out SC-007 remains separately open under OB-T043. The PR stays draft; no merge is authorized.
