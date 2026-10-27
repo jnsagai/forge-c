@@ -42,6 +42,8 @@ for o in r["orders"]:
     if review:
         lines += [f"Cited cause review: {len(review['onboarding_fact_causes_identified'])} onboarding-fact causes "
                   f"identified among {review['gap_count']} named gaps. {review['assessment']}", ""]
+        if review.get("interpretation_limit"):
+            lines += ["Review limitation: " + review["interpretation_limit"], ""]
     for a in o["attempts"]:
         b = a.get("onboarding") or {}
         p = a.get("package_record") or {}
@@ -65,7 +67,7 @@ lines += [
     "",
     "All packages are for offline review. Cited cause reviews are retained in the JSON snapshot; their coverage and "
     "bindings are checked separately from terminal outcomes. Owner dispositions remain pending. "
-    "Held-out model authoring and the optional author graph remain open. "
+    "Held-out model authoring remains NOT_RUN while the approved Claude inspector is out of quota. "
     "No merge or safety approval is implied.",
     "",
 ]

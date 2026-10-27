@@ -1,0 +1,80 @@
+{
+  "schema": "forge-c/onboarding-gap-review/0.1",
+  "recorded_at": "2026-10-27T15:55:37.444690Z",
+  "status": "REVIEWED",
+  "reviewer": "Codex implementation review, source-cited; owner adjudication pending",
+  "request_id": "BENCH-TIM-ST-HAL-OB",
+  "attempt_id": "afo-a06f0cfbf6e556cc-a1",
+  "archive_sha256": "ae6059eaac1475bab029d74918423b61a6cecb591053a13b64328d2e42c75749",
+  "gap_count": 230,
+  "gap_list_sha256": "7f0a512e045fe84ce3972b31824e256a7a58d0e31e42c63f2fb6071a6b60e6e6",
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding:CONFORMANCE": 192,
+    "unresolved_finding:DELIVERED_CODE": 5,
+    "unresolved_finding:SWE.4": 1,
+    "unresolved_finding:SWE.5": 1,
+    "unresolved_finding:SWE.6": 1,
+    "unresolved_finding:escalated_defect": 8
+  },
+  "onboarding_fact_causes_identified": [],
+  "assessment": "TIM passed SWE.1/2/3 inspection. SWE.4 stopped on failed runtime unit checks and two uncovered rejection USPECs. CODE reports concern NULL handles, invalid configuration/event values, and intermediate URS writes. The package also retains FACTORY DEF-008: COV_PARSE, truncated LLVM coverage data, with no coverage metrics. The remaining gaps include conformance findings, uncompleted verification and safety artifacts. No wrong or missing onboarding fact was identified in these blockers.",
+  "interpretation_limit": "The owner must adjudicate the generated requirements, especially the demand to preserve URS on every intermediate CR1 write: the delivery temporarily sets URS while generating an update, then restores CR1. Do not infer a silicon defect from the final RAM tests or assume every generated CODE diagnosis is valid. Coverage failure remains unresolved factory work. SWE.4 inspection was not reached; no substitute inspector was used after the owner reported Claude quota exhaustion. This is not safety acceptance.",
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "23ad53eabca4058d9e743b85bbd4d73a63310f766e7833d0cb4877aa4ae5a0aa"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/package.json",
+      "sha256": "f9009fb62b6792c11596d1c26393c9ca39ff23e2692b6838b4ebf6d57dbb9d37"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "d895a6edafca3d8bd201bf301f61bfc875a6a2db0c95cb833671779b0b06abff"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "db257c87e43f7b53ebb319a3b5c00ff39b795fe7e16d29d4a4a88bbc1696f491"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "5dfe5bb14c1bdcfb40a86f6ad51d9805c59f91ac538c5732be80c8cc7f277f31"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b0077229594b6b5a412151746ebce4a9d7de79a39ffd28a5fd43801f74aaba31"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "0fc3c406c444712a7bd00390ef0be334271a7e22cd8691156a7aacfffb97d6c5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "2b0960fe64d36478e889b81710a57579b1ce6282f18257e3b25f514255f9eedd"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "64388069295dbe05605c1690a2cf5c9af0088f673859698ee1ad0f74c74f9904"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "4da3102b5c1e2d9a993e977fad5ab9f280ccd4478a8804225cdbf09de6cbca3b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-009.json",
+      "sha256": "3997a83626f9b32d211de2627957a58925e02b7b9c06a68f5b577eafbae69937"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-010.json",
+      "sha256": "f0b0a048b7d90702a5cb58cdb551e1345caf9d366a24232675981d4a9f2f020a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/workproducts/SWE.4/unit_verification_report.md",
+      "sha256": "9d2d87fd4fd250186859b0f784a8398126ae83c24d8984ab5067198836495532"
+    }
+  ]
+}
