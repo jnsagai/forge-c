@@ -6,7 +6,41 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 collector and comparison reporting
+## Current checkpoint — 2026-10-27 focus on an actual driver unblock
+
+The owner asked whether work was progressing. The agent acknowledged that supporting
+infrastructure advances had not changed the main outcomes (30/58, 0/3 READY, no proven
+self-healing/availability). Further observer expansion was parked, not promoted.
+`codex-resume-20261027` retains uncommitted `audit_segments.py`/`host_audit.py` window
+WIP, backed up as `parked-audit-window-after-ea77ed3.patch`; **unverified, do not apply**.
+The clean active evidence worktree is `development-safety-20261027`.
+
+Read `wwdg-safec-unblock.md` next. On Omniverse2, twelve minimal *required* WWDG
+operation forms against the frozen domain yield **9 UNSUPPORTED / 3 PASS**. The
+three passing ordinary reads also passed independent Python contract derivation.
+Both `rs` and `rc_w0` are unsupported in the pinned register-io-0.1 profile, and writes
+beside rs fail the RMW check. This establishes a required engine capability limit,
+not a diagnosis inferred from model opinions. Full-scope phase 14.055950 s; initial
+four-intent phase 2.243598 s. **16 total engine invocations, zero model requests**.
+All raw source/engine outputs stay private; sanitized evidence is
+`wwdg-required-capability-20261027/`. Factual learning dispositions retained, no
+qualified lesson or measured benefit. Original runs, failures, budgets and schemas
+are unchanged; no new product attempt or engine/profile update occurred.
+
+A narrowly versioned rs/rc_w0 semantic extension plus compatible independent bridge
+checks is the concrete proposed way to attempt the unchanged full WWDG scope.
+Private SafeC `AGENTS.md` says "Functional changes require confirmation." No such
+new scope has yet been confirmed. Prepare/review that explicit owner decision before
+changing private SafeC verification semantics or reopening parked DA-T036. Do not
+turn this diagnosis into permission to waive gates, normalize special access to rw,
+repeat a spent study, tune the inspector, renew grants or activate deployment.
+
+Published runtime remains d9d70e1, prior source/evidence head ea77ed3. All collector,
+comparison and Qwen commands from the previous checkpoint are terminal. A1, A3 report
+tooling and A4 are done; A2/full host coverage and all measured goal outcomes remain
+open. Formal ledger and CSV stay 30/58 at their historical source revision.
+
+## Previous checkpoint — 2026-10-27 collector and comparison reporting
 
 - Exact latest tested runtime **`d9d70e16523f1b928fd2d5f9ff265594e8f266f8`**:
   affected **541 PASS / 1 SKIP / 0 failures/errors**, 49.069 s; release **13 PASS**,

@@ -264,10 +264,10 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 
 ## KI-014-029: Three new ST LL pilots fail before release prerequisites
 
-- **What:** Job 050 ran WWDG, RNG and LPTIM1 at clean `9a88fbc`: 0/3 READY, all BLOCKED at SWE.1 with 59 gaps. Repeated deterministic rejection includes absent register effects and traceability outputs.
-- **Impact:** Full local ST LL authoring remains unproven; the pending owner safety signatures do not repair these earlier failures. Runtime-locality/package-sealing checks passed, which does not establish product correctness.
+- **What:** Job 050 ran WWDG, RNG and LPTIM1 at clean `9a88fbc`: 0/3 READY, all BLOCKED at SWE.1 with 59 gaps. Repeated deterministic rejection includes absent register effects and traceability outputs. Independent required-intent checks on Omniverse2 now establish a specific WWDG capability ceiling: nine of twelve required operation forms return UNSUPPORTED under the pinned profile; three ordinary reads pass the engine and the independent Python contract check. Both rs and rc_w0 access are absent from the profile, and RMW beside rs is unsupported. Sixteen total engine invocations across initial/full-scope checks, zero model calls. Another Qwen answer cannot supply missing engine semantics for this unchanged scope.
+- **Impact:** Full local ST LL authoring remains unproven; development signature deferral does not repair these earlier failures. Runtime-locality/package-sealing checks passed, which does not establish product correctness.
 - **Evidence:** [ST3 pilot results](st3-driver-runs/summary.json).
-- **Human action:** Review author/output failures and scoped remediation before a new bounded pilot. Inspector development remains frozen; no retry or owner signature was performed during collection.
+- **Human action:** Approve a narrowly versioned and independently qualified rs/rc_w0 SafeC/Forge-C extension, or explicitly change the product scope. Concrete proposal: specs/014-durable-local-autonomy/wwdg-safec-unblock.md. Private SafeC AGENTS requires confirmation for functional changes; no source semantic change or parked-task reopening has occurred.
 - **Status:** OPEN
 
 KI-014-029 triage: [recorded diagnostic codes](st3-driver-runs/author-diagnostics.json)
@@ -283,6 +283,8 @@ which does not satisfy the original clearing requirement. This narrows the next
 engineering work to source-grounded semantic-profile changes and correct intent
 mapping; it is not a repaired driver, autonomous recovery or qualified lesson.
 
+
+Required-scope native evidence: [twelve operation checks](wwdg-required-capability-20261027/summary.json); [proposed narrow unblock](../../specs/014-durable-local-autonomy/wwdg-safec-unblock.md). No SafeC implementation source or vendor text is published.
 
 ## KI-014-030: Full host-audit coverage is unavailable
 

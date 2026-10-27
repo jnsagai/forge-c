@@ -750,3 +750,28 @@ Feature014 evidence directory. Static checks are documentation/contract validati
 separate from runtime tests and native qualification. No formal task tick (30/58),
 ledger-source change, live comparison, product/learning/availability success,
 protected-source promotion, grant renewal, merge or deployment is claimed.
+
+
+## 2026-10-27 — WWDG required SafeC capability limit, zero model cost
+
+After the owner questioned outcome progress, further uncommitted observer-window
+work was parked. The unchanged full WWDG scope was checked directly against the
+pinned native SafeC engine on Omniverse2. Twelve minimal required operation forms:
+9 UNSUPPORTED, 3 ordinary reads PASS plus independent Python contract derivation.
+The profile cannot represent rs or rc_w0 access, nor RMW beside rs. This is a
+specific verification-capability ceiling; no conclusion that every model answer
+was correct is drawn. Another model response cannot add missing engine semantics.
+
+Full-scope phase 14.055950 s; initial four-intent phase 2.243598 s; 16 engine
+invocations total, zero Qwen requests and no new product attempt. SDK source
+75d4bdc, unchanged pinned engine cf3b01b/binary hash in the evidence. Existing
+request/domain hashes bind the original source. Raw vendor domains, engine outputs
+and private source stay private. Sanitized checks/accounting and factual learning
+dispositions are published in wwdg-required-capability-20261027. No qualified
+lesson, measured benefit, semantic change, gate waiver or budget reset.
+
+Concrete proposed next scope: a versioned rs/rc_w0 SafeC extension with compatible
+Forge-C independent contract checks, legacy regressions and actual formal checks,
+then one new bounded WWDG attempt under valid authority. The private SafeC AGENTS
+requires confirmation for functional changes; the proposal does not authorize them
+or reopen parked DA-T036. See wwdg-safec-unblock.md. Formal 30/58 unchanged.
