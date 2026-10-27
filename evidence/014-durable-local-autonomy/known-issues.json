@@ -48,11 +48,11 @@
    "id": "KI-014-005",
    "title": "Two inherited test failures",
    "area": "regression",
-   "what": "test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873.",
+   "what": "test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873. Resolved 2026-10-27: both failed only under run_full_inherited.py's private empty FORGE_STATE_DIR (test-isolation artifacts, not factory defects); fixed in 1e2fd46; whole suite at 20650af: 0 failures.",
    "impact": "The whole inherited suite is not green; the two failures predate Feature 014.",
    "evidence": "specs/014-durable-local-autonomy/validation.md (2026-10-26 regression table)",
-   "human_action": "Decide: fix in their own feature, or record a waiver.",
-   "status": "OPEN"
+   "human_action": "None: both were hermetic-harness artifacts, fixed in 1e2fd46 (test-only); DA-T029 ticked at 20650af.",
+   "status": "RESOLVED"
   },
   {
    "id": "KI-014-006",

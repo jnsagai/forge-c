@@ -321,7 +321,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-029
 - **Level:** deterministic
-- **Status:** NOT_RUN
+- **Status:** PASS_DETERMINISTIC (2026-10-27) — exact `20650af`: whole inherited suite 215 files / 1,840 tests / 0 failures; core 645 passed; release 13/13; history and systemd PASS; independent CRE REJECTED / PROTECTED_PATH_CHANGE retained (KI-014-010)
 - **Given:** The repository's required regression suites, legacy product workspace behavior, persisted pre-feature records and supported recovery-plan encodings.
 - **When:** Run relevant existing suites plus compatibility cases for old state adoption, product role defaults, authoritative plan validation, scope/authority enforcement and ambiguous legacy/new encodings.
 - **Then:** Preserve existing supported behavior and negative protections. New diagnosis-role scoping does not alter unrelated product defaults. Reject ambiguous encodings; do not reinterpret old success receipts as verified product acceptance.

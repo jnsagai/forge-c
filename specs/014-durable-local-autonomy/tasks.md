@@ -88,7 +88,7 @@ Task IDs map one-to-one to requirement/test IDs in `traceability.csv`; dependenc
 
 ## US7/US5 — Compatibility and honest handoff
 
-- [ ] **DA-T029 [US7]** Run inherited provider/native/ACP/AFO/brownfield/local-profile/package regressions, static design/provenance checks and independent CRE on the exact candidate; preserve unavailable live checks as NOT_RUN. Trace: DA-FR-029; DA-AT-029. Dependencies: per increment; final core changes complete.
+- [X] **DA-T029 [US7]** Run inherited provider/native/ACP/AFO/brownfield/local-profile/package regressions, static design/provenance checks and independent CRE on the exact candidate; preserve unavailable live checks as NOT_RUN. Trace: DA-FR-029; DA-AT-029. Dependencies: per increment; final core changes complete. ✅ Evidence: `evidence/v0.4/runs/DA014-regression/latest.json`
 
 - [X] **DA-T030 [US5]** Maintain readiness/evidence ledgers and document future-worker-promotion as proposal-only; update `docs/afo/LOCAL-SELF-HEALING.md` and this feature's `validation.md` without adding an auto-promote switch. Trace: DA-FR-030; DA-AT-030. Dependencies: independent documentation; final status after relevant tests. ✅ Evidence: `evidence/v0.4/runs/DA014-docs/latest.json`
 

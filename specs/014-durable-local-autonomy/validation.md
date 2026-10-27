@@ -206,6 +206,12 @@ GPU job 030 on Omniverse2 ran learning-19 (49/49), learning2-5 (63/63) and learn
 
 DA-AT-055 expects complete registered runs with honest rates and sets no rate threshold. `verify_calibration.py` checks that protocol for both calibrations from the published records (47 checks PASS at `291a1ff`; a tampered copy fails). DA-T055 is ticked with record `DA014-calibration-t2` (29/58). `verify_handoff.py` now also accepts `PASS_LIVE_PROTOCOL`.
 
+## 2026-10-27: main merged into feat/014; DA-T029 at the merged candidate
+
+`247562c` merges main `38e2740` (Feature 015 ST driver benchmark, 54 commits) into the feature branch. The 16 conflict hunks in 10 AFO and policy files were resolved so both features keep their behaviour; the merge commit lists each one, and one behaviour change is for the owner's review: AFO recovery of delivered code now resumes its validated phases (Feature 012), where main started a fresh work order. The two inherited failures (KI-014-005) failed only under `run_full_inherited.py`'s private empty state and were fixed test-only in `1e2fd46`. The auxiliary run then found a raw crash when freezing the uncatalogued `targeted` stage, so `20650af` makes it refuse with a reason.
+
+Exact `20650af`, clean dedicated worktree: whole inherited suite **215 files, 1,840 tests, 0 failures, 0 errors**, 49 skipped with their reasons (the runner reports PARTIAL only because `test_t050_t051_docs_status` rewrites a generated timestamp); core **645 passed**, 1 skipped; release **13/13**; history replay and transient-systemd semantics PASS; every stage dry-run blocked as designed; independent CRE **REJECTED / PROTECTED_PATH_CHANGE** (retained, KI-014-010). DA-T029 is ticked with record `DA014-regression` (30/58); KI-014-005 is RESOLVED.
+
 ## Static checks
 
 `python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.

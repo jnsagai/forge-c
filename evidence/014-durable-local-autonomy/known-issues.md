@@ -10,7 +10,7 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-002 | accounting | Token usage UNKNOWN for 23 of 95 protocol trials | OPEN | Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable. |
 | KI-014-003 | inspector | Stepwise inspector: clean held-out baselines still falsely rejected | OPEN | Test set 2 is now spent (it may become learning set 4). Release another frozen batch of current-factory baselines (e.g. after the TIM review or new Feature 015 drivers) so a refreshed held-out set can measure further fixes. |
 | KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | RESOLVED | None needed to decide; implementation pending. |
-| KI-014-005 | regression | Two inherited test failures | OPEN | Decide: fix in their own feature, or record a waiver. |
+| KI-014-005 | regression | Two inherited test failures | RESOLVED | None: both were hermetic-harness artifacts, fixed in 1e2fd46 (test-only); DA-T029 ticked at 20650af. |
 | KI-014-006 | runtime | No usable parallel model serving for the inspector | OPEN | Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot. |
 | KI-014-007 | gates | Omniverse2 unit gate skips the review tests | OPEN | Decide whether the pinned engine and owner inputs may be placed on Omniverse2 (private data). |
 | KI-014-008 | evidence | Record copier misses some evaluation records | OPEN | None needed to decide; harness change pending (write records next to the result). |
@@ -69,11 +69,11 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 
 ## KI-014-005: Two inherited test failures
 
-- **What:** test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873.
+- **What:** test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873. Resolved 2026-10-27: both failed only under run_full_inherited.py's private empty FORGE_STATE_DIR (test-isolation artifacts, not factory defects); fixed in 1e2fd46; whole suite at 20650af: 0 failures.
 - **Impact:** The whole inherited suite is not green; the two failures predate Feature 014.
-- **Evidence:** specs/014-durable-local-autonomy/validation.md (2026-10-26 regression table)
-- **Human action:** Decide: fix in their own feature, or record a waiver.
-- **Status:** OPEN
+- **Evidence:** specs/014-durable-local-autonomy/validation.md (2026-10-26 regression table); evidence/v0.4/runs/DA014-regression/latest.json
+- **Human action:** None: both were hermetic-harness artifacts, fixed in 1e2fd46 (test-only); DA-T029 ticked at 20650af.
+- **Status:** RESOLVED
 
 ## KI-014-006: No usable parallel model serving for the inspector
 
