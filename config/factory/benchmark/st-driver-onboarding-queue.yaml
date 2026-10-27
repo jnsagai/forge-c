@@ -1,0 +1,12 @@
+# Feature 016 acceptance order. Each package needs its owner signature before submission.
+# Submit one item at a time through AFO using BENCH-<P>-ST-HAL-OB; retries use -R<n>.
+schema: forge-c/benchmark-queue/0.1
+id: st-drivers-stm32n6-hal-onboarding
+target: STM32N6 (RM0486 Rev 4, DS14791 Rev 9)
+line: {acp_authors: codex, acp_inspectors: claude}
+work_order_prefix: WO-BENCH-OB
+items:
+  - {id: gpio-st-hal-ob, example: examples/0010e-st-cube-gpio-hal-ob, layer: HAL}
+  - {id: spi-st-hal-ob, example: examples/0011e-st-cube-spi-hal-ob, layer: HAL}
+  - {id: usart-st-hal-ob, example: examples/0012e-st-cube-usart-hal-ob, layer: HAL}
+  - {id: tim-st-hal-ob, example: examples/0013e-st-cube-tim-hal-ob, layer: HAL}
