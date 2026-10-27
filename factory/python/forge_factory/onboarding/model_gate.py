@@ -34,15 +34,22 @@ def model_limits(model_text: str) -> list[str]:
         return []
 
 
-def _monitor(renode: str, wd: Path, repl: Path, cmds: list[str]) -> tuple[list[int], str]:
+def _monitor(renode: str, wd: Path, repl: Path, cmds: list[str], isolated: bool = False) -> tuple[list[int], str]:
     from ..mcp.sdk import run_argv
 
     resc = wd / "gate.resc"
     resc.write_text(f'mach create "stm32n6"\nmachine LoadPlatformDescription @{repl}\n' + "\n".join(cmds) + "\nquit\n")
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000"}
-    r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
-                 {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
+    args = ["--disable-gui", "--console", "--plain", "-e", f"include @{resc}"]
+    if isolated:
+        from .model_sandbox import run
+
+        r = run(Path(renode), wd, args)
+    else:
+        r = run_argv([renode, *args], wd, 170, {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
     out = r.stdout.decode(errors="replace")
+    if isolated and r.exit_code:
+        return [], f"MODEL_SANDBOX_EXIT:{r.exit_code}\n" + out + r.stderr.decode(errors="replace")
     return [int(x, 16) for x in HEX.findall(out)], out + r.stderr.decode(errors="replace")
 
 
@@ -54,11 +61,19 @@ def _platform(wd: Path, model: Path, repl_src: Path, prefix: str) -> Path:
     return repl
 
 
-def registers_check(pkg: dict, model: Path, repl_src: Path, renode: str) -> tuple[list[str], list[str], dict]:
+def registers_check(pkg: dict, model: Path, repl_src: Path, renode: str,
+                    isolated: bool = False) -> tuple[list[str], list[str], dict]:
     """(findings, limits, stats) of the load, reset and access checks."""
     P, base = value(pkg, "register_prefix"), int(value(pkg, "base_address"), 16)
     idx = value(pkg, "register_index") or {}
-    limits_decl = model_limits(model.read_text())
+    source = model.read_text()
+    if isolated:
+        from .model_sandbox import source_issues
+
+        issues = source_issues(source)
+        if issues:
+            return issues, [], {}
+    limits_decl = model_limits(source)
     regs = sorted(idx.items(), key=lambda kv: kv[1]["offset"])
     cmds, plan = [], []
     for name, d in regs:
@@ -76,7 +91,7 @@ def registers_check(pkg: dict, model: Path, repl_src: Path, renode: str) -> tupl
                      f"sysbus ReadDoubleWord {base + d['offset']:#x}"]
             plan.append(("rc_w0", name, 0xFFFFFFFF))
     with tempfile.TemporaryDirectory(prefix="forge-ob-gate-") as td:
-        vals, log = _monitor(renode, Path(td), _platform(Path(td), model, repl_src, P), cmds)
+        vals, log = _monitor(renode, Path(td), _platform(Path(td), model, repl_src, P), cmds, isolated=isolated)
     if len(vals) != len(plan):
         return [f"MODEL_LOAD:{len(vals)}/{len(plan)} register reads answered ({(log.strip().splitlines() or [''])[-1][:160]})"], \
             [], {"reads": len(vals)}
@@ -97,7 +112,8 @@ def registers_check(pkg: dict, model: Path, repl_src: Path, renode: str) -> tupl
     return findings, limits, {"registers": len(regs), "reads": len(vals)}
 
 
-def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
+def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None,
+          model_paths: tuple[Path, Path] | None = None) -> list[str]:
     """Build and run the delivered code on the model through the simulator's own build/run path."""
     from ..mcp.servers import sim
 
@@ -141,6 +157,10 @@ def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | Non
         fns = list(api.get("prototypes") or {})
         if not fns:  # register-level LL (header-only static inlines): no smoke image template yet
             return []
+        if model_paths:
+            from .leftovers import write_preview
+
+            write_preview(key, pkg, model_paths=model_paths)
         init = next((f for f in fns if f.endswith("_Init")), fns[0])
         query = next((f for f in fns if re.search(r"GetState|Read|Get|Is", f)), None)
         if api.get("handle"):
@@ -168,25 +188,34 @@ def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | Non
     return []
 
 
-def check(key: str, confirmed: dict | None = None, pkg: dict | None = None, example: Path | None = None) -> dict:
+def check(key: str, confirmed: dict | None = None, pkg: dict | None = None, example: Path | None = None,
+          model_paths: tuple[Path, Path] | None = None, isolated: bool = False) -> dict:
     """The gate for the model the derived profile of `key` names (an existing model is re-gated, reused)."""
-    from ..mcp.servers.sim import renode_bin
     from ..mcp.sdk import tool_version
+    from ..mcp.servers.sim import renode_bin
     from . import facts as F
     from . import onboarding_dir
 
     renode = renode_bin()
     pkg = pkg or F.read_package(onboarding_dir(key))
     pid = value(pkg, "register_prefix").lower()
-    model, repl = SIM_DIR / f"{pid}_model.py", SIM_DIR / f"stm32n6_{pid}.repl"
+    if model_paths is None:
+        from .authoring import artifact_paths
+
+        model_paths = artifact_paths(pkg)
+        isolated = isolated or model_paths is not None
+        if not model_paths and (pkg.get("profile") or {}).get("model_authoring", {}).get("hide_model"):
+            return {"verdict": "FAIL", "findings": ["MODEL_HIDDEN_NO_ACCEPTED_CANDIDATE"], "limits": [],
+                    "tool": "renode", "version": "none"}
+    model, repl = model_paths or (SIM_DIR / f"{pid}_model.py", SIM_DIR / f"stm32n6_{pid}.repl")
     if not renode:
         return {"verdict": "FAIL", "findings": ["MODEL_GATE_NOT_RUN:no Renode"], "limits": [], "tool": "renode",
                 "version": "none"}
     if not (model.is_file() and repl.is_file()):
         return {"verdict": "FAIL", "findings": [f"MODEL_MISSING:{pid}"], "limits": [], "tool": "renode",
                 "version": tool_version(renode)}
-    findings, limits, stats = registers_check(pkg, model, repl, renode)
-    if not any(f.startswith("MODEL_LOAD") for f in findings):
-        findings += smoke(key, pkg, renode, confirmed or {}, example)
+    findings, limits, stats = registers_check(pkg, model, repl, renode, isolated=isolated)
+    if not any(f.startswith(("MODEL_LOAD", "MODEL_SOURCE")) for f in findings):
+        findings += smoke(key, pkg, renode, confirmed or {}, example, model_paths=model_paths)
     return {"verdict": "FAIL" if findings else "PASS", "findings": findings, "limits": limits, "stats": stats,
             "model": model.name, "tool": "renode", "version": tool_version(renode)}

@@ -382,3 +382,10 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
 
 def binding_for(work_order: str, workspace: str, nodes: dict) -> Binding:
     return Binding(work_order, workspace, nodes)
+
+
+def build_onboarding(workspace):
+    """Separate opt-in model graph; SWE workflows and their canonical roles remain unchanged."""
+    from ..onboarding.authoring import graph
+
+    return graph(workspace)

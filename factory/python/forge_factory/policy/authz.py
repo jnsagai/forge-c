@@ -39,6 +39,7 @@ PRODUCT_PATHS = ["software/**", "workproducts/**", "safety/**", "traceability/**
                  "drivers/**", "inspection/**"]
 
 ROLE_WRITE_PREFIXES: dict[str, list[str]] = {
+    "onboard-model-author": ["onboarding/model/"],
     "swe1-author": ["workproducts/SWE.1/", "safety/software_safety_requirements.md", "traceability/"],
     "swe2-author": ["workproducts/SWE.2/"],
     "swe3-author": ["workproducts/SWE.3/", "software/src/", "software/include/", "software/hal/", "software/ll/"],
@@ -102,7 +103,9 @@ class Authorizer:
         # Feature 005 overlay roles (afo-*) and their MCP servers exist only for a binding that binds one of them
         # (the afo-recovery-planner's single-node run); SWE work-order bindings see the base registry, unchanged
         afo = any(str(n.get("role", "")).startswith("afo-") for n in binding.nodes.values())
-        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo)[0])}
+        onboarding = any(n.get("role") in ("onboard-model-author", "onboard-model-inspector")
+                         for n in binding.nodes.values())
+        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo, include_onboarding=onboarding)[0])}
         self.registry = load_registry(include_afo=afo)
         self.protected = list(ALWAYS_PROTECTED)
         # Supervisor protected paths (incl. workproducts/**, evidence/**) bind infrastructure-repair roles;

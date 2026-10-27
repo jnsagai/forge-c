@@ -69,6 +69,7 @@ class McpRegistry(BaseModel):
 
 
 OVERLAY = CONFIG_DIR / "mcp-registry.v0.5-kpi.yaml"
+ONBOARDING_OVERLAY = CONFIG_DIR / "mcp-registry.onboarding.yaml"
 
 
 def apply_overlay(data: dict, overlay: Path = OVERLAY) -> dict:
@@ -112,6 +113,7 @@ def load_registry(path: Path | None = None, include_afo: bool = False) -> McpReg
     data = yaml.safe_load((path or CONFIG_DIR / "mcp-registry.yaml").read_text(encoding="utf-8"))
     if path is None:
         data = apply_overlay(data)
+        data = apply_overlay(data, ONBOARDING_OVERLAY)
         if include_afo:
             data = apply_afo_overlay(data)
     reg = McpRegistry.model_validate(data)

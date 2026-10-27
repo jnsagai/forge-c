@@ -6,8 +6,10 @@
     python -m forge_factory.onboarding prompts <WO> --check                  # generated instructions + leftovers
     python -m forge_factory.onboarding check-model <peripheral>              # simulation model gate
 
-The derivation makes no model call (FR-022); unknowns are NOT_DERIVED, disagreements CONFLICT (FR-005)."""
+Fact extraction makes no model call (FR-022); optional missing-model authoring uses a separate run.
+Unknowns are NOT_DERIVED, disagreements CONFLICT (FR-005)."""
 from __future__ import annotations
+
 import subprocess
 from pathlib import Path
 
@@ -46,10 +48,11 @@ def _revision() -> str:
         return "0000000"
 
 
-def derive(example: Path, wo: str | None = None, gate_model: bool = True) -> dict:
+def derive(example: Path, wo: str | None = None, gate_model: bool = True, *,
+           author_missing: bool = False, hide_model: str | None = None) -> dict:
     """OB-T017: the deterministic part of onboarding - identity and behaviour facts, assumptions, gaps - written as
-    `state/workorders/<wo>/onboarding/package.json`. No model is called (FR-022); profile and texts are added by
-    the later slices from these facts."""
+    `state/onboarding/<wo>/onboarding/package.json`. Fact extraction makes no model call (FR-022).
+    Only explicit `author_missing` may launch the separate missing-model authoring graph."""
     from . import behaviour as B
     from . import facts as F
     from . import identity as I
@@ -79,16 +82,43 @@ def derive(example: Path, wo: str | None = None, gate_model: bool = True) -> dic
 
         facts.append(api(ctx, style))
     profile = {"derived_from": {"work_order": wo, "example": Path(example).name}}
+    if hide_model:
+        profile["model_authoring"] = {"hide_model": hide_model, "test_only": True}
     pkg = F.assemble(wo, inputs, _revision(), style or "LL", facts, [], asm, profile, {}, missing)
-    if style and not missing:  # OB-T031: the prompt texts from facts, owner scope and the model description
+    authored, model_path = [], None
+    from .model_gate import SIM_DIR
+
+    pid = (F.value(pkg, "register_prefix") or "").lower()
+    if hide_model and hide_model != pid:
+        raise ValueError("MODEL_HIDE_PREFIX_MISMATCH")
+    absent = hide_model or not ((SIM_DIR / f"{pid}_model.py").is_file() and
+                               (SIM_DIR / f"stm32n6_{pid}.repl").is_file())
+    if gate_model and style and not missing and absent:
+        from .authoring import artifact_paths, author, cached
+
+        item = cached(wo, pkg, hide_model)
+        if item is None and author_missing:
+            item = author(Path(example), wo, pkg, hide_model)
+        if item is None:
+            missing.append(("model", "no existing model or accepted authored model; authoring was not requested"))
+        else:
+            authored = [item]
+            if item["status"] == "ACCEPTED":
+                model_path, _ = artifact_paths({**pkg, "authored": authored})
+            else:
+                missing.append(("model", "model authoring did not produce a gated, independently accepted model"))
+    if authored or missing:
+        pkg = F.assemble(wo, inputs, _revision(), style, facts, authored, asm, profile, {}, missing)
+    # OB-T031: texts use the accepted model header; a hidden hand model is never read.
+    if style and not missing and (not absent or model_path):
         from .texts import TextsUnavailable, generate
 
         try:
-            texts = generate(ctx, pkg)
+            texts = generate(ctx, pkg, model_path=model_path)
         except TextsUnavailable as e:
             texts, missing = {}, [*missing, (str(e), "the prompt texts cannot be generated")]
-        pkg = F.assemble(wo, inputs, _revision(), style, facts, [], asm, profile, texts, missing)
-        if gate_model:  # OB-T042: an existing model is re-gated (reused), never re-authored
+        pkg = F.assemble(wo, inputs, _revision(), style, facts, authored, asm, profile, texts, missing)
+        if gate_model and not absent:  # OB-T042: an existing model is re-gated (reused), never re-authored
             item = model_item(wo, pkg, Path(example))
             if item:
                 pkg = F.assemble(wo, inputs, _revision(), style, facts, [item], asm, profile, texts, missing)
