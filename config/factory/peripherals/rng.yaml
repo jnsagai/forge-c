@@ -1,0 +1,113 @@
+# Peripheral profile (feature 014 operation-24 campaign, owner 2026-10-27 "RNG, LPTIM, WWDG"): true random number
+# generator, RM0486 Rev 4 chapter 47 (pp. 2286-2302); secure base 0x54020000, 1 KB (RM0486 p.177, Table 3).
+schema: forge-c/peripheral-profile/0.1
+id: rng
+name: True random number generator (RNG)
+register_prefix: RNG
+base_address: "0x54020000"
+mm_page: 177
+window_bytes: 1024
+system_name: RNG LL driver
+rm:
+  doc: RM0486
+  chapter: 47
+  key_sections: ["47.7.1", "47.7.2", "47.7.3"]
+ll:
+  header: stm32n6xx_ll_rng.h
+  compile_unit: stm32n6xx_ll_rng.c
+  function_prefix: LL_RNG_
+  register_block: ll_rng_regs
+  register_count: 256
+  void_signatures: false   # every LL_RNG_ function takes the RNG_TypeDef instance pointer
+hal:
+  header: stm32n6xx_hal_rng.h
+  source: stm32n6xx_hal_rng.c
+  function_prefix: HAL_RNG_
+sim:
+  model: rng_model.py
+  platform: stm32n6_rng.repl
+# Prompt texts that replace the RCC domain content of the generic LL prompts (feature 009 mechanism). They describe the
+# RNG work-order scope; hardware facts stay in the RM0486 chapter 47 inputs (cite RM0486 p.N).
+prompt:
+  swe1_cover: >-
+    Cover (only what the RNG scope names): enabling and disabling the generator (set/clear RNG_CR.RNGEN) and the enable
+    query (return 1U when RNG_CR.RNGEN is set, else 0U); enabling and disabling the clock error detection (RNG_CR.CED
+    is 0 when the detection is enabled and 1 when it is disabled; RM0486 47.7.1 takes a CED write into account only
+    with RNG_CR.CONDRST set in the same access, so the function writes CED together with CONDRST = 1, then clears
+    RNG_CR.CONDRST) and its query (return 1U when RNG_CR.CED is clear, else 0U); enabling and disabling the interrupt
+    (set/clear RNG_CR.IE) and its query; the data ready, clock error current status, seed error current status, clock
+    error interrupt status and seed error interrupt status queries (return 1U when RNG_SR.DRDY, RNG_SR.CECS,
+    RNG_SR.SECS, RNG_SR.CEIS or RNG_SR.SEIS is set, else 0U); the clock error and seed error interrupt status clears
+    (RNG_SR.CEIS and RNG_SR.SEIS are rc_w0, cleared by writing 0, writing 1 has no effect: write 0 to the flag and 1
+    to the other RNG_SR bits); reading the 32-bit random data (return RNG_DR); each set/clear preserving the other
+    RNG_CR fields; one requirement per function and value, naming the register field (e.g. RNG_CR.IE); then a
+    reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after reset, the RNG LL driver
+    shall not write any RNG register.'). The conditioning soft reset as a function of its own (RNG_CR.CONDRST), the
+    configuration lock (RNG_CR.CONFIGLOCK), the NIST, RNG_CONFIG1/2/3, clock divider and auto-reset configuration,
+    the noise source (RNG_NSCR) and health test (RNG_HTCR) registers, the seed error recovery sequence, the RNG kernel
+    clock enable (RCC), the LL init/deinit functions of stm32n6xx_ll_rng.c and the HAL are out of scope.
+  swe1_effect_example: '{"case":"ENABLE_IT","swr":"SWR-007","register":"RNG_CR","field":"IE","op":"set"}'
+  swe1_effect_rule: >-
+    Use op "set"/"clear" for single bits (RNG_CR.RNGEN, RNG_CR.IE, RNG_CR.CED: enabling the clock error detection is
+    op "clear" of CED, disabling it op "set" of CED); the clock error detection functions also pulse RNG_CR.CONDRST
+    (set in the CED access, then cleared): the final register state has CONDRST = 0, so give one entry for CED and one
+    op "clear" entry for CONDRST; the flag clears get op "write" of value 0 on RNG_SR.CEIS or RNG_SR.SEIS (rc_w0).
+    Queries and the random data read get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the RNG_TypeDef instance pointer first): LL_RNG_Enable,
+    LL_RNG_Disable, LL_RNG_IsEnabled, LL_RNG_EnableClkErrorDetect, LL_RNG_DisableClkErrorDetect,
+    LL_RNG_IsEnabledClkErrorDetect, LL_RNG_EnableIT, LL_RNG_DisableIT, LL_RNG_IsEnabledIT, LL_RNG_IsActiveFlag_DRDY,
+    LL_RNG_IsActiveFlag_CECS, LL_RNG_IsActiveFlag_SECS, LL_RNG_IsActiveFlag_CEIS, LL_RNG_IsActiveFlag_SEIS,
+    LL_RNG_ClearFlag_CEIS, LL_RNG_ClearFlag_SEIS and LL_RNG_ReadRandData32; list in Interfaces exactly the functions of
+    the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_rng (LL, header-only) and the RNG register block (0x54020000, RM0486 p.177)
+    and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_rng, RNG, showing the clock error detection enabled while the generator is
+    disabled, the generator enabled, the caller polling the data ready flag (the caller bounds the loop) and checking the
+    seed and clock error status, the random data read, and the generator disabled, using the allocated LL_RNG_ function
+    names
+  ut_example: |-
+    static void ut_rng_it(void)
+    {
+        ut_reset_regs();
+        forge_host_rng.CR = RNG_CR_RNGEN;
+        LL_RNG_EnableIT(RNG);
+        CHECK("UT-001", (forge_host_rng.CR & RNG_CR_IE) == RNG_CR_IE);
+        CHECK("UT-002", (forge_host_rng.CR & RNG_CR_RNGEN) == RNG_CR_RNGEN);
+        forge_host_rng.SR = RNG_SR_DRDY;
+        CHECK("UT-003", LL_RNG_IsActiveFlag_DRDY(RNG) == 1U);
+        forge_host_rng.SR = 0U;
+        CHECK("UT-004", LL_RNG_IsActiveFlag_DRDY(RNG) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests pass the generated host instance RNG (forge_host_device.h maps it to the RAM struct forge_host_rng;
+    0x54020000 is the device address and is used on the target only). Set/clear functions check the written bit and
+    that a preset unrelated field of the same register is preserved (RNG_CR.RNGEN across an interrupt enable;
+    RNG_CR.IE across a clock error detection change); the clock error detection functions check CED and that
+    RNG_CR.CONDRST is 0 after the call; the flag clears check that the flag is written 0 and the other RNG_SR bits 1;
+    queries get a set and a clear case; the random data read returns a preset RNG_DR value.
+  target_model: >-
+    The simulated RNG (factory/sim/stm32n6/rng_model.py) is behavioural: RNG_CR resets to 0x00800D00, RNG_SR and
+    RNG_DR to 0, RNG_NSCR to 0x0003FFFF and RNG_HTCR to 0x000072AC; a write of RNG_CR.CED is taken into account only
+    with RNG_CR.CONDRST set in the same access, and a write with CONDRST = 1 clears RNG_SR and the data. While
+    RNG_CR.RNGEN is set and CONDRST is 0, RNG_SR.DRDY is set and each read of RNG_DR returns the next value of a fixed
+    deterministic sequence (32-bit xorshift seeded with 0x2545F491, never 0); with RNGEN clear or no data, RNG_DR reads
+    0 and DRDY reads 0. RNG_SR.CEIS and RNG_SR.SEIS are rc_w0 (cleared by writing 0, unchanged by writing 1); the
+    clock and seed errors are not produced by the model (CECS, SECS, CEIS and SEIS stay 0 unless a test scenario sets
+    them). Expected values in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_rng_target.c (after reset the generator is disabled, the data ready flag is clear
+    and RNG_DR reads 0; with the clock error detection enabled and the generator enabled, polling the data ready flag
+    sets it, two consecutive random data reads give 0xE124B63A then 0x8B9A74AB (the model's sequence), both different
+    from 0; disabling the generator clears the data ready flag) and software/tests/target/test_rng_target_flags.c (the
+    interrupt enable and the clock error detection settings reach RNG_CR with RNG_CR.CONDRST read back 0; the seed and
+    clock error status queries return 0; the flag clears leave RNG_SR at 0)
+  field_mask_example: RNG_CR_IE
+  query_example: LL_RNG_IsActiveFlag_DRDY(RNG)
+  integration: >-
+    the clock error detection enabled and the interrupt disabled while the generator is disabled, the generator enabled,
+    the data ready flag polled and the random data read with the error statuses checked, then the generator disabled
+    (on the host the registers keep the written values; RNG_DR returns a preset value)
+  requirement_example: When LL_RNG_EnableIT is called, the RNG LL driver shall set RNG_CR.IE.
