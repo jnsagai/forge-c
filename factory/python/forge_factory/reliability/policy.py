@@ -14,9 +14,12 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+import yaml
 
 from ..common import CONFIG_DIR, REPO_ROOT, canonical_json, load_yaml, sha256_bytes
 
@@ -185,9 +188,16 @@ class Policy:
         return self.mode == "ACTIVE" and action in set(self.get("promotion.allowed_automatic_operational_actions"))
 
 
+def selected_path(path: Path | None = None) -> Path:
+    return Path(path or os.environ.get("FORGE_CRE_POLICY") or POLICY_PATH)
+
+
 def load(path: Path | None = None, supervisor_policy: dict | None = None) -> Policy:
-    p = path or POLICY_PATH
-    data = load_yaml(p)
+    p = selected_path(path)
+    try:
+        data = load_yaml(p)
+    except yaml.YAMLError as exc:
+        raise PolicyInvalid(["POLICY_UNREADABLE:" + type(exc).__name__]) from exc
     errs = issues_of(data, supervisor_policy)
     if errs:
         raise PolicyInvalid(errs)
@@ -198,7 +208,7 @@ class PolicyHolder:
     """Live reload by mtime; an invalid edit is rejected (audit event) and the last good policy stays active."""
 
     def __init__(self, path: Path | None = None):
-        self.path = path or POLICY_PATH
+        self.path = selected_path(path)
         self.policy = load(self.path)
         self.mtime = self.path.stat().st_mtime
         self.rejections: list[list[str]] = []
