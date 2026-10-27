@@ -1,0 +1,93 @@
+{
+  "recorded_at": "2026-10-27T11:50:40.850760Z",
+  "request_id": "BENCH-GPIO-ST-HAL-OB",
+  "order_id": "afo-6a6875714405b8ce",
+  "attempt": {
+    "attempt_id": "afo-6a6875714405b8ce-a1",
+    "order_id": "afo-6a6875714405b8ce",
+    "seq": 1,
+    "state": "RUNNING",
+    "record": {
+      "schema_version": "1.0",
+      "order_id": "afo-6a6875714405b8ce",
+      "attempt_id": "afo-6a6875714405b8ce-a1",
+      "attempt_seq": 1,
+      "state": "RUNNING",
+      "workspace_ref": "workorder:WO-AFO-6a6875714405b8ce-a1",
+      "factory_revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+      "created_utc": "2026-10-27T11:49:40.037136Z",
+      "fabro_run_id": "01M5YK3Z4XR0ANW069WPHZZQ0K",
+      "fabro_server": null,
+      "recovery_plan_id": null,
+      "exit_status": null,
+      "terminal_package_status": null,
+      "checkpoint_refs": [],
+      "evidence_refs": [
+        "nonce:c32568deff774e64",
+        "dispatched_epoch:1793101780"
+      ],
+      "finished_utc": null
+    },
+    "created_utc": "2026-10-27T11:49:40.037136Z",
+    "finished_utc": null
+  },
+  "onboarding": {
+    "approval_id": "OA-2026-10-27-01",
+    "key": "0010e-st-cube-gpio-hal-ob",
+    "package": "state/onboarding/0010e-st-cube-gpio-hal-ob/onboarding/package.json",
+    "profile_sha256": "47718916023e54d4150503d52371500ee4a07b96a6a0f4b34772bb7bf8544a4a",
+    "sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b"
+  },
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9fa4664798183218184a6cf1a650ab1985087ea4",
+    "dirty": false
+  },
+  "inputs": [
+    {
+      "bytes": 1056393,
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "bytes": 172639,
+      "path": "inputs/RM0486-rev4-ch15-gpio.md",
+      "role": "reference_manual_gpio_chapter",
+      "sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a"
+    },
+    {
+      "bytes": 3456,
+      "path": "inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5"
+    },
+    {
+      "bytes": 3358,
+      "path": "inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "bytes": 697,
+      "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "bytes": 1362,
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "70767e40a2b8e7436c6fea3ed64bc5f75b3bc26521e672fceb05f7c1a36fbf16"
+    },
+    {
+      "bytes": 455865,
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+  ],
+  "manifest_sha256": "862a7279b3d7d0ba9fbad1a807a6bd09ac6f6bd2c3cf1fdb3e318d5fa226fd7b",
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-6a6875714405b8ce-a1/workspace"
+}

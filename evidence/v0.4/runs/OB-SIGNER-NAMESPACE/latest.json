@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_onboarding_approval.py",
+    "factory/python/tests/test_afo_m0_policy_authz.py"
+  ],
+  "duration_s": 0.997,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "26e13238e85a7787fc15b2e541dd2d275d0797ca",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-SIGNER-NAMESPACE/20261027T114146.log",
+  "log_sha256": "723e199d999c8d7e122efce40e157141de453ad64c1855e35cdbdbdb68ed6c9a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-SIGNER-NAMESPACE",
+  "ts_utc": "2026-10-27T11:41:46.382021Z"
+}
