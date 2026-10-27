@@ -552,3 +552,44 @@ fixtures/campaigns remain required. No new Qwen request, grant renewal, factory
 source activation, inspector change, merge or task checkbox. Formal **30/58** and
 ledger source_revision/CRLF remain unchanged. Product success, learning benefit,
 24/72/168-hour operation and the 30-day SLO remain unproven.
+
+
+## 2026-10-27: protected audit segments and executable byte-prefix replay
+
+Exact tested source `c38158cd687ac974056296662aa48b46e2fcdeca`: **434 affected
+PASS / 1 historical HAL-r154 SKIP / zero failures or errors**, 38.832 s; **13
+release PASS**, 9.124 s. Isolated Omniverse2 segment/kernel/bus source tests:
+**152 PASS**, 46.871 s. [Commands, raw JUnit/logs and hashes](../../evidence/014-durable-local-autonomy/audit-segments-c38158c/summary.json).
+
+`host_audit capture --previous-ref` and `verify-segments --segment-refs` extend the
+existing frozen observer/host plans and immutable qualification evidence. They
+provide bounded capture/resume and adjacent-prefix replay with retained-file
+identity/hashes, rolling anchors, parent/sequence bindings and descriptor-derived
+single-rotation handoff checks. Failed observations do not advance the cursor or
+erase history. Negative cases cover gaps, reordering, duplicates, malformed
+references, changed/truncated/deleted history, late retired writes, false writer
+handoffs, daemon PID mismatch, metadata/source budgets and privacy. See the
+[executable usage and limits](audit-source-capture.md).
+
+Ownership/UID protection is deliberately synthetic in deterministic fixtures;
+actual child-process descriptors and file IO are tested. A replayed byte prefix
+is not a complete compound-event/time/boot/host observation. Missed multiple
+rotations, missing retained history or aggregate bounds refuse. Batched continuous
+replay and complete compound-event replay remain unfinished. No global
+intervention count is inferred; it stays UNKNOWN.
+
+The same-revision **actual Omniverse2 preflight BLOCKED / exit 2** records
+`AUDITCTL_UNAVAILABLE`, `KERNEL_AUDIT_STATUS_UNAVAILABLE`,
+`SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED`, `AUTHENTICATED_CONTROL_CORRELATION_REQUIRED`.
+These host prerequisites and incomplete correlation are separate from the source
+tests. No rule, privilege, daemon, shared service or persistent deployment changed.
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**. Static spec/contracts,
+fourteen design checks, handover and Ruff pass separately; no runtime qualification
+is inferred from static validation.
+
+Formal acceptance stays **30/58**, no new checkbox or ledger rebaseline. Prior
+broader reconciled 899-case core/systemd/history checks stay at 7e1abb2 and the
+full inherited 1840-test cohort at 20650af. No new model requests; spent studies
+remain spent. Product success, learning benefit, 24/72/168-hour operational campaigns
+and the thirty-day SLO remain unproven. Inspector freeze/owner signing boundaries
+and the seventeen known-issues-only omissions remain unchanged.

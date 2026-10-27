@@ -424,3 +424,48 @@ elapsed campaigns are still required. Kernel/system-bus prerequisites were block
 in prior native probes; keep actual host prerequisites separate from software still
 unfinished. Preserve earlier owner boundaries and all uncertainty. No completion,
 product-success, learning-benefit or 24/7 claim is justified.
+
+
+## Codex continuation — 2026-10-27 protected audit segments and byte-chain replay
+
+- Exact tested source **`c38158cd687ac974056296662aa48b46e2fcdeca`**. The optional
+  frozen `segments` host-plan input extends existing qualification artifacts, not
+  a new store/scheduler/audit authority. Read-only capture retains source inode,
+  byte range/hash, cursor/anchor, sequence and successful-parent reference.
+- Rotation drains the retained old file and requires stable native descriptor
+  observations of the kernel-status daemon PID before handoff. Replay rechecks
+  metadata bindings and retained contents across adjacent ranges; gaps, repeats,
+  truncation, missing history, fabricated handoffs and late writes refuse.
+  Failed observations remain immutable and can resume the last successful cursor.
+- CLI: `python -m forge_factory.afo.host_audit verify-segments ...`. The executable
+  usage, frozen inputs, prerequisites, resource limits and scope are in
+  [audit-source-capture.md](audit-source-capture.md). The verdict covers a captured
+  byte prefix only. Compound events can span boundaries; no event/host completeness
+  or global zero follows. Multiple missed rotations and absent retained sources
+  block. Bounded replay has no batched continuation yet.
+- Exact clean local source: **434 affected PASS / one historical HAL-r154 SKIP /
+  zero errors or failures**, 38.832 s; release **13 PASS**, 9.124 s. Actual isolated
+  Omniverse2 source tests: **152 PASS**, 46.871 s. Ownership/UID protection is
+  explicitly synthetic in fixtures; real child-process descriptor/file IO is
+  exercised. These tests do not qualify native root auditing. Static checks pass
+  separately (58 mappings, six schemas/38 fixtures, fourteen design checks,
+  handover and changed-source/new-test Ruff).
+- Actual Omniverse2 preflight at this source: **BLOCKED / exit 2**, auditctl absent,
+  `KERNEL_AUDIT_STATUS_UNAVAILABLE`, `SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED`,
+  `AUTHENTICATED_CONTROL_CORRELATION_REQUIRED`. Independent CRE remains
+  **REJECTED / PROTECTED_PATH_CHANGE**. Intervention count remains UNKNOWN.
+- Public evidence: `evidence/014-durable-local-autonomy/audit-segments-c38158c/`;
+  task-style receipt `evidence/v0.4/runs/DA014-audit-segments-c38158c/latest.json`.
+  Private local `$FC014_OPS/audit-segments-native-c38158c/`; remote isolated clean
+  clone `$Q/audit-segments-c38158c/repo`, artifacts alongside. All test commands
+  terminal. No new model request, shared-service mutation, grant/mission reset,
+  persistent deployment, promotion or merge. Both prior Qwen studies remain spent.
+- Formal **30/58** unchanged; ledger source_revision/CRLF unchanged. Broader
+  reconciled 899-case core/systemd/history remain at 7e1abb2; full inherited
+  1840-test cohort at 20650af. No campaign or product/learning benefit claim.
+
+Next software work: complete bounded compound-event replay across ranges, add a
+qualified batched/continuous replay path, then native actor/control/write/service
+correlation and full all-channel verification. Host privileges/fault windows are
+real prerequisites, distinct from that unfinished software. Genuine independent
+product oracle evidence and elapsed workload/fault campaigns remain required.
