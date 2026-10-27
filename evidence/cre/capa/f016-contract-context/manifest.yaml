@@ -1,0 +1,8 @@
+reproducers:
+- id: AFO-OB-CONTRACT-CONTEXT
+  script: probe.py
+  sha256: 1d89b0d951aa79a41ef9fe21c6757d389efbee8abac6af87a1a955323eb6a814
+  symptom_signature: contract probe omits configured HAL dependency types
+  observed_in: SPI F016 acceptance DEF-008 / afo-cbde5111bd5eeaf6
+  baseline_revision: 557e920daa540a47461958c1e62842ac6bb709fd
+  fix_revision: 9dd5b713dd5e8fc92b86b1055cb3d52295f578cc
