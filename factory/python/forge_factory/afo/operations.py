@@ -8,6 +8,7 @@ No policy, job budget or source deployment authority is granted here.
 from __future__ import annotations
 
 import fcntl
+import hashlib
 import json
 import os
 import subprocess
@@ -17,7 +18,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import utc_now
-from .durable import Refused, canonical, strict_json
+from .durable import Refused, canonical, digest, strict_json
 
 MODES = {"RUNNING", "PAUSED", "DRAINING", "STOPPED"}
 # Fixed approved operational recipe: Conductor only; no recursive supervisor restarts.
@@ -84,7 +85,7 @@ class Intent:
             if os.path.exists(tmp):
                 os.unlink(tmp)
 
-    def set(self, mode, *, actor, reason, initialize=False, settle=None):
+    def set(self, mode, *, actor, reason, initialize=False, settle=None, apply=None, authentication=None):
         if mode not in MODES or not actor or not reason.strip():
             raise Refused("AUTHENTICATED_INTENT_AND_REASON_REQUIRED")
         with self.lock():
@@ -104,8 +105,13 @@ class Intent:
                 "pending_start": old.get("pending_start", False),
                 "last_recovery": old.get("last_recovery"),
             }
+            rec["control_context"] = control_context(self.path, rec, authentication=authentication)
             # Commit STOPPED before bounded cancellation/stop; all start actors share this lock.
             self._write(rec)
+            # Keep database controls under the same intent fence. An older
+            # resume must not overwrite a newer stop after dropping this lock.
+            if apply is not None:
+                apply(rec)
             if mode == "STOPPED" and settle is not None:
                 result = settle()
                 rec["stop_settlement"] = result
@@ -177,12 +183,58 @@ def observed_unit():
     return dict(line.split("=", 1) for line in r.stdout.splitlines() if "=" in line)
 
 
-def synchronize(store, action, actor, reason):
+def control_context(location, record, *, authentication=None):
+    """Facts from the existing caller/OS boundary, never an intervention verdict.
+
+    Failure to observe a process must not prevent an authenticated operator stop.
+    Unknown process facts remain explicit for independent audit reconciliation.
+    """
+    from ..lrtx.provider_process import identity
+
+    try:
+        process = identity(os.getpid())
+        user_namespace = os.readlink("/proc/self/ns/user")
+        uid_map = [list(map(int, row.split())) for row in Path("/proc/self/uid_map").read_text().splitlines()]
+    except (OSError, ValueError):
+        process, user_namespace, uid_map = None, None, None
+    try:
+        producer_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    except OSError:
+        producer_sha = None
+    # All exported authentication fields are allowlisted. Credentials/reason/
+    # actor text cannot enter the factual receipt through arbitrary caller data.
+    auth = {"method": "PRIVATE_INTENT_DIRECTORY_OWNER", "uid": os.getuid()}
+    if isinstance(authentication, dict) and authentication.get("method") in (
+        "OS_STATE_DIRECTORY_OWNER", "DASHBOARD_OPERATOR_BEARER",
+    ):
+        import re
+
+        auth["method"] = authentication["method"]
+        for key in ("credential_sha256", "source_sha256"):
+            value = authentication.get(key)
+            if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value):
+                auth[key] = value
+    body = {
+        "schema": "forge-c/control-source-context/1", "intent_epoch": record["epoch"], "mode": record["mode"],
+        "intent_path_sha256": hashlib.sha256(str(location.absolute()).encode()).hexdigest(),
+        "intent_request_sha256": digest({k: record[k] for k in ("epoch", "mode", "actor", "reason", "changed_at")}),
+        "producer_source_sha256": producer_sha,
+        "at": time.time(), "mono": time.monotonic(), "pid": os.getpid(), "process": process,
+        "user_namespace": user_namespace, "uid_map": uid_map, "authentication": auth,
+        "scope": "CALLER_AND_OS_SOURCE_FACTS_NOT_INDEPENDENT_HOST_AUDIT",
+    }
+    return {**body, "control_id": "control-" + digest(body)}
+
+
+def synchronize(store, action, actor, reason, *, authentication=None):
     """Shared CLI/dashboard control path; the caller authenticates before entering."""
     mode = {"pause": "PAUSED", "drain": "DRAINING", "resume": "RUNNING", "shutdown": "STOPPED"}[action]
-    rec = Intent().set(mode, actor=actor, reason=reason)
-    store.set_control("paused", "0" if action == "resume" else "1", actor, reason)
-    store.set_control("draining", "1" if action in ("drain", "shutdown") else "0", actor, reason)
+    def apply(rec):
+        store.set_controls({"paused": "0" if action == "resume" else "1",
+                            "draining": "1" if action in ("drain", "shutdown") else "0"},
+                           actor, reason, context=rec["control_context"])
+
+    rec = Intent().set(mode, actor=actor, reason=reason, apply=apply, authentication=authentication)
     return rec
 
 
@@ -214,8 +266,8 @@ def recover_profile(store, *, external=False):
     profile = os.environ.get("FORGE_OPERATIONS_PROFILE")
     if not configured() or not profile:
         return {"action": "NOT_ENABLED"}
-    from .dependency_wait import probe
     from ..lrtx import stack
+    from .dependency_wait import probe
 
     # Kernel identities are captured by the external observer. The Conductor
     # runs inside the profile's user namespace and cannot safely adopt them.
@@ -261,7 +313,7 @@ def recover_profile(store, *, external=False):
                 expired = time.time() >= MissionLedger(store).snapshot(live["mission_id"])["limits"]["deadline"]
                 table = "afo_product_jobs" if owner.startswith("afo-product-") else "afo_local_agent_jobs"
                 with store.tx() as c:
-                    job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (owner,)).fetchone()
+                    job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (owner,)).fetchone()  # noqa: S608 - two fixed tables
                 if job:
                     deadline = json.loads(job[0]).get("deadline_epoch")
                     expired = expired or (isinstance(deadline, (int, float)) and time.time() >= deadline)

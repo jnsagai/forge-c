@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import getpass
+import hashlib
 import json
 import os
 import sys
@@ -123,8 +124,8 @@ def main(argv: list[str] | None = None) -> int:
         return 3
     actor = getpass.getuser()
     if a.cmd == "mission-register":
-        from .mission_admin import register
         from .durable import Refused
+        from .mission_admin import register
 
         try:
             result = register(store, json.loads(Path(a.arg).read_text()), load())
@@ -192,7 +193,14 @@ def main(argv: list[str] | None = None) -> int:
     from .operations import configured, synchronize
 
     if a.cmd in ("pause", "drain", "resume", "shutdown") and configured():
-        print(json.dumps({"operations": synchronize(store, a.cmd, actor, a.reason), "control": store.control()}))
+        try:
+            source_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        except OSError:
+            source_sha = None
+        authentication = {"method": "OS_STATE_DIRECTORY_OWNER",
+                          "source_sha256": source_sha}
+        print(json.dumps({"operations": synchronize(store, a.cmd, actor, a.reason, authentication=authentication),
+                          "control": store.control()}))
         return 0
     if a.cmd == "shutdown":
         raise SystemExit("durable operations intent must be configured for shutdown")

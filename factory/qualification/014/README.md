@@ -428,3 +428,33 @@ intervention verification, and does not clear global audit prerequisites.
 Protocol references: [D-Bus monitoring](https://dbus.freedesktop.org/doc/dbus-specification.html#bus-messages-become-monitor),
 [native monitor/profile implementation](https://github.com/d-bus/dbus/blob/master/tools/dbus-monitor.c),
 and [systemd manager and unit interfaces](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).
+
+Bus-name parsing follows the normative ASCII/element/length rules, including
+nonnumeric unique names; interface names have their separate grammar. Tests also
+check representative names against native libdbus. That library is additional
+evidence: older versions accept degenerate unique names such as `:`, so the
+normative constraints and malformed-name fixtures remain authoritative.
+
+### Application control provenance and ordering
+
+The existing Intent and Store paths now bind accepted control effects with one
+`control_context` and an `afo.operator_control` event in the existing lifecycle
+ledger. The context includes the intent epoch/mode, request and source hashes,
+process boot/start/namespace facts and UID mapping, and the caller's authentication
+boundary. The CLI records its existing OS-state-owner check; the HTTP endpoint
+binds its existing bearer decision to the same token bytes via a fingerprint.
+No token, arbitrary caller metadata, actor text or reason enters the new context.
+Actor/reason fields in the existing private action history remain available.
+
+Both database control keys and their action/event rows commit in one SQLite
+transaction while the existing intent lock remains held. An older resume cannot
+overwrite database effects after a newer stop. Database failure rolls back all
+its control effects while retaining the previously committed stop intent/fence.
+Unavailable process/source metadata is UNKNOWN and cannot prevent an operator
+stop. Legacy single-key control calls remain compatible.
+
+These are application source facts, not an independent authentication authority
+or complete host audit. The external observer still needs source-bound ingestion,
+native actor/write/service-event correlation and continuous coverage. Application
+receipts alone do not establish zero unexpected interventions or clear the host
+audit prerequisites.

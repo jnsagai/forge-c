@@ -435,16 +435,29 @@ class Store:
 
     # -- control (pause/drain) and operator actions (T023) --------------------------------------------------------
     def set_control(self, key: str, value: str, actor: str, reason: str) -> None:
+        self.set_controls({key: value}, actor, reason)
+
+    def set_controls(self, values: dict, actor: str, reason: str, *, context=None) -> None:
+        """One control transaction; optional provenance uses the existing event ledger.
+
+        This records a caller's context, not a new authentication decision. Legacy
+        single-key callers retain their action rows and do not acquire authority.
+        """
         with self.tx() as c:
-            c.execute(
-                "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,"
-                " updated_utc=excluded.updated_utc, actor=excluded.actor",
-                (key, value, utc_now(), actor),
-            )
-            c.execute(
-                "INSERT INTO afo_operator_actions (action, actor, reason, utc) VALUES (?,?,?,?)",
-                (f"{key}={value}", actor, reason, utc_now()),
-            )
+            applied = []
+            for key, value in values.items():
+                c.execute(
+                    "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,"
+                    " updated_utc=excluded.updated_utc, actor=excluded.actor",
+                    (key, value, utc_now(), actor),
+                )
+                row = c.execute(
+                    "INSERT INTO afo_operator_actions (action, actor, reason, utc) VALUES (?,?,?,?)",
+                    (f"{key}={value}", actor, reason, utc_now()),
+                )
+                applied.append({"action_seq": row.lastrowid, "action": f"{key}={value}"})
+            if context is not None:
+                self._event(c, "operator_control", "afo-control", payload={"context": context, "applied": applied})
 
     def control(self) -> dict:
         with self.tx() as c:
