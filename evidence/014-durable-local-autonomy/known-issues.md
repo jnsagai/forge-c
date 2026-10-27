@@ -34,6 +34,7 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-026 | live evidence | DA-T036: Capability-limit disposition only partly shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 oversized trial ending in CAPABILITY_LIMIT or repartition. |
 | KI-014-027 | live evidence | DA-T040: Native lesson retrieval before a job not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job. |
 | KI-014-028 | live evidence | DA-T041: Independent lesson candidate qualification not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows. |
+| KI-014-029 | local-author | Three ST LL pilots BLOCKED at SWE.1; required outputs missing | OPEN | Review author/output failures before a bounded retry; inspector freeze remains. |
 
 ## KI-014-001: Five diagnosis protocol trials not run: no qualified alternative local model
 
@@ -258,3 +259,11 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 - **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
 - **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows.
 - **Status:** ACCEPTED_BY_OWNER
+
+## KI-014-029: Three new ST LL pilots fail before release prerequisites
+
+- **What:** Job 050 ran WWDG, RNG and LPTIM1 at clean `9a88fbc`: 0/3 READY, all BLOCKED at SWE.1 with 59 gaps. Repeated deterministic rejection includes absent register effects and traceability outputs.
+- **Impact:** Full local ST LL authoring remains unproven; the pending owner safety signatures do not repair these earlier failures. Runtime-locality/package-sealing checks passed, which does not establish product correctness.
+- **Evidence:** [ST3 pilot results](st3-driver-runs/summary.json).
+- **Human action:** Review author/output failures and scoped remediation before a new bounded pilot. Inspector development remains frozen; no retry or owner signature was performed during collection.
+- **Status:** OPEN

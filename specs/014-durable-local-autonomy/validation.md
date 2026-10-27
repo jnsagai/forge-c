@@ -224,3 +224,14 @@ peripheral tests 12 passed); its results are collected by the next engineer (`HA
 ## Static checks
 
 `python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.
+
+## 2026-10-27: Codex resumes; job 050 collected
+
+The completed remote job 050 (08:13:13–08:19:24 UTC) ran all three frozen ST LL
+cases at clean `9a88fbc5b28864e45917cdc77f7e6ab9c9f59825`: **0/3 READY, 3/3 BLOCKED
+at SWE.1**, 59 gaps each. Repeated deterministic output rejection is recorded as
+KI-014-029. Local-provider/digest/isolation/package-sealing verification passed;
+that does not imply product acceptance. [Sanitized results](../../evidence/014-durable-local-autonomy/st3-driver-runs/summary.json)
+retain native IDs, case denominator, request/token/energy measurements and package
+hashes. Collection is read-only, no new inference or retry. No task was ticked.
+Inspector development stays frozen; safety drafts remain unsigned/unregistered.
