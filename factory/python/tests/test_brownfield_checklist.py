@@ -103,3 +103,55 @@ def test_unbuilt_probes_fail_the_item(tmp_path, monkeypatch, build):
         {"delivery": {"build": {"style": "cmsis"}}, "code_mode": "FROZEN"}))
     r = K.item(tmp_path, "delivered_register_definitions")
     assert r["verdict"] == "FAIL" and r["major_findings"] == [f"REGISTER_PROBES_NOT_{'BUILT' if build == 'FAIL' else 'RUN'}"]
+
+
+def test_an_allocated_name_the_delivered_code_defines_is_delivered():
+    """F015 GPIO-R3 (WO-AFO-c522096b86f34687-a1): the SWE.2 row 'SWR-012 | LL_GPIO_SetPinPull | LL_GPIO_PULL_NO=0,
+    LL_GPIO_PULL_UP=1, LL_GPIO_PULL_DOWN=2' made the three constants ALLOCATED_NOT_DELIVERED findings."""
+    from forge_factory.brownfield import checks
+
+    allocated = {"LL_GPIO_SetPinPull", "LL_GPIO_PULL_DOWN", "LL_GPIO_LockPin"}
+    assert checks.undelivered(allocated, {"LL_GPIO_SetPinPull": object()}, {"LL_GPIO_PULL_DOWN"}) == [
+        "ALLOCATED_NOT_DELIVERED:LL_GPIO_LockPin"]   # a missing function is still a finding
+
+
+def test_cmsis_joined_and_split_field_names_resolve_to_the_rm_fields():
+    """F015 USART-R4 a3: USART_ISR_RXNE_RXFNE / USART_ISR_TXE_TXFNF (one bit, FIFO-disabled and FIFO-enabled names)
+    and USART_CR1_M (M0 bit 12 | M1 bit 28) were FIELD_NOT_IN_RM; they are probed against the RM instead."""
+    from forge_factory.brownfield.checks import _expected_mask
+
+    rm = {"USART_ISR": {"fields": {"RXFNE": (5, 5), "TXFNF": (7, 7)}},
+          "USART_CR1": {"fields": {"M0": (12, 12), "M1": (28, 28)}}}
+    assert _expected_mask("USART_ISR_RXNE_RXFNE", "USART_ISR", "RXNE_RXFNE", rm) == ("mask", 0x20)
+    assert _expected_mask("USART_ISR_TXE_TXFNF_Pos", "USART_ISR", "TXE_TXFNF_Pos", rm) == ("pos", 7)
+    assert _expected_mask("USART_CR1_M_Msk", "USART_CR1", "M_Msk", rm) == ("mask", 0x10001000)
+    assert _expected_mask("USART_CR1_M_Pos", "USART_CR1", "M_Pos", rm) == ("pos", 12)
+    assert _expected_mask("USART_ISR_FOO_BAR", "USART_ISR", "FOO_BAR", rm) is None   # unknown stays a finding
+
+
+@pytest.mark.skipif(not __import__("shutil").which("clang"), reason="clang not installed")
+def test_the_host_core_stub_has_the_exclusive_access_intrinsics(tmp_path):
+    """F015 USART-R4 a3: clang_analyze FAILED (19 diagnostics) on 'call to undeclared function __LDREXW/__STREXW' -
+    ST's ATOMIC_* macros (stm32n6xx.h) in the USART LL; the host core stub had barriers but no exclusive access."""
+    import subprocess
+
+    from forge_factory.brownfield.cmsis import CORE_STUB
+
+    (tmp_path / "core_cm55.h").write_text(CORE_STUB)
+    (tmp_path / "t.c").write_text(
+        '#include "core_cm55.h"\n'
+        "#define ATOMIC_SET_BIT(REG, BIT) do { uint32_t val; do { val = __LDREXW((__IO uint32_t *)&(REG)) | (BIT); }"
+        " while ((__STREXW(val, (__IO uint32_t *)&(REG))) != 0U); } while (0)\n"
+        "static volatile uint32_t cr1;\n"
+        "uint32_t f(void) { ATOMIC_SET_BIT(cr1, 0x4U); return cr1; }\n"
+        "#define POSITION_VAL(VAL) (__CLZ(__RBIT(VAL)))\n"   # F015 GPIO-R4 DEF-001 (FACTORY): __CLZ/__RBIT missing
+        "int main(void) { return !(f() == 4U && POSITION_VAL(1U << 13) == 13U && POSITION_VAL(0x80000000U) == 31U\n"
+        "  && __CLZ(0U) == 32U && __RBIT(1U) == 0x80000000U); }\n")
+    r = subprocess.run(["clang", "--analyze", "-std=c11", "-Werror", f"-I{tmp_path}", "-o", "/dev/null",
+                        str(tmp_path / "t.c")], capture_output=True, text=True)
+    assert r.returncode == 0 and "error" not in r.stderr, r.stderr
+    exe = tmp_path / "t"
+    b = subprocess.run(["clang", "-std=c11", "-Werror", f"-I{tmp_path}", "-o", str(exe), str(tmp_path / "t.c")],
+                       capture_output=True, text=True)
+    assert b.returncode == 0, b.stderr
+    assert subprocess.run([str(exe)]).returncode == 0        # the host semantics match the Arm instructions

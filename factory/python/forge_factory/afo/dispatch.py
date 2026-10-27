@@ -85,6 +85,9 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
                 _set_cmd(store, cmd["command_id"], "QUARANTINED")
                 out.append(item_failure(store, cmd["order_id"], ValueError("STALE_OPERATIONS_COMMAND"), "outbox_epoch"))
                 continue
+        if (cmd.get("retry_not_before_epoch") or 0) > (now or time.time()):  # a transient retry's backoff
+            out.append({"command_id": cmd["command_id"], "action": "backoff"})
+            continue
         order = store.order(cmd["order_id"])
         env = json.loads(order["envelope"])
         d = decide({"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]})

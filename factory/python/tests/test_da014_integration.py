@@ -734,7 +734,9 @@ def test_refused_queue_head_defers_and_independent_order_meets_next_cycle_bound(
     a, _ = store.submit(_env(repo, rid="AA", name="a"), repo=repo, max_queued=10)
     b, _ = store.submit(_env(repo, rid="BB", name="b"), repo=repo, max_queued=10)
     eff = policy.load()
-    eff = policy.Effective("PILOT", "PILOT", eff.sha256, copy.deepcopy(eff.policy))
+    pol = copy.deepcopy(eff.policy)
+    pol.setdefault("engineering", {})["allowed_model_profiles"] = ["deepseek-flash"]  # the fixture order's profile
+    eff = policy.Effective("PILOT", "PILOT", eff.sha256, pol)
 
     def decide(action, request, **kwargs):
         return type("FixtureDecision", (), {"allow": request["order_id"] != "AA", "code": "AUTH_REFUSED_A"})()

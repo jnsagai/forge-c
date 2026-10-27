@@ -16,6 +16,9 @@ Order of authority for a blocked attempt (a FailureBundle):
      phase, planner calls, wall time) left; and a plan fingerprint never used before on this order (anti-loop - a
      plan that only reworded or reseeded the same thing has the same fingerprint and is refused).
 Plans are recorded (afo_recovery_plans) with the decision; execution always opens a NEW attempt (checkpoints).
+A DEFER_TRANSIENT_DEPENDENCY retry is numbered (its own fingerprint), bounded by budgets.max_retries_per_transient_
+operation and launched only after TRANSIENT_BACKOFF_SECONDS x its number; it is not a strategy variant (F015: Codex
+refused every turn 2026-10-25 23:03 to at least 03:42; the orders were dead-lettered instead of retried).
 """
 
 from __future__ import annotations
@@ -57,6 +60,7 @@ DENY = re.compile(
 # one new attempt: the factory's own per-run bounds (author max_turns, run timeout); real token use is reported by
 # DeepSeek runs and UNKNOWN for Codex/ACP runs - an estimate, never read as consumption
 ATTEMPT_ESTIMATE = {"tokens_max": 120000, "wall_seconds_max": 21600, "turns_max": 35}
+TRANSIENT_BACKOFF_SECONDS = 900
 MIGRATION = """
 CREATE TABLE IF NOT EXISTS afo_recovery_plans (
   plan_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, failure_fingerprint TEXT NOT NULL,
@@ -101,8 +105,12 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
         "attempts": len(store.attempts(order["order_id"])),
         "max_attempts": int(eff.get("budgets.max_order_attempts")),
         "variants_by_phase": {
-            ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED") for ph in PHASES
+            ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED"
+                    and p["strategy"] != "DEFER_TRANSIENT_DEPENDENCY") for ph in PHASES
         },
+        "transient_retries": sum(1 for p in ps if p["strategy"] == "DEFER_TRANSIENT_DEPENDENCY"
+                                 and p["status"] == "EXECUTED"),
+        "max_transient_retries": int(eff.get("budgets.max_retries_per_transient_operation") or 0),
         "max_variants_per_phase": int(eff.get("budgets.max_strategy_variants_per_phase")),
         "planner_calls": len(calls),
         "max_planner_calls": int(eff.get("budgets.max_recovery_model_calls_per_order")),
@@ -110,6 +118,8 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
         "max_wall_seconds": int(eff.get("budgets.max_order_wall_seconds")),
         "local_agent_reserved_tokens": sum(j["reserved_tokens"] for j in jobs),
         "tokens": "UNKNOWN (unreported usage is never read as zero; local diagnosis capacity is reserved)",
+        "tried_models": sorted({json.loads(order["envelope"]).get("model_profile") or "?"} | {
+            p["record"]["model_profile"] for p in ps if p["status"] == "EXECUTED" and p["record"].get("model_profile")}),
     }
 
 
@@ -228,10 +238,15 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
-    if m and (
-        m not in (eff.get("engineering.allowed_model_profiles") or [])
-        or (auth_models is not None and auth_models and m not in auth_models)
-    ):
+    if plan["strategy"] == "SWITCH_PREAPPROVED_MODEL_PROFILE":  # F015: a "switch" must name a model not used yet
+        tried = {json.loads(order["envelope"]).get("model_profile")} | {
+            p["record"].get("model_profile") for p in plans(store, order["order_id"]) if p["status"] == "EXECUTED"}
+        if not m:  # planner trial 2
+            issues.append("MODEL_PROFILE_REQUIRED")
+        elif m in tried:  # BENCH-USART-ST-R4: the planner "switched" to codex-claude, the order's own profile
+            issues.append(f"MODEL_ALREADY_TRIED:{m}")
+    if m and (m not in (eff.get("engineering.allowed_model_profiles") or []) or
+              (auth_models is not None and auth_models and m not in auth_models)):
         issues.append(f"MODEL_NOT_PREAPPROVED:{m}")
     owner = plan.get("owner_phase") or plan["affected_phase"]
     allowed = _phase_paths(owner)
@@ -255,13 +270,11 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
         prior = plans(store, order["order_id"])
         if any(p["plan_fingerprint"] == fp for p in prior):
             issues.append("PLAN_ALREADY_TRIED")  # anti-loop: same plan, same fingerprint, never twice
-        if any(
-            p["failure_fingerprint"] == bundle["fingerprint"]
-            and p["strategy"] == plan["strategy"]
-            and p["status"] == "EXECUTED"
-            and plan["strategy"] != "SWITCH_PREAPPROVED_MODEL_PROFILE"
-            for p in prior
-        ):
+        if plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY" and b["transient_retries"] >= b["max_transient_retries"]:
+            issues.append("BUDGET_TRANSIENT_RETRIES_EXHAUSTED")
+        if any(p["failure_fingerprint"] == bundle["fingerprint"] and p["strategy"] == plan["strategy"]
+               and p["status"] == "EXECUTED" and plan["strategy"] not in ("SWITCH_PREAPPROVED_MODEL_PROFILE",
+                                                                          "DEFER_TRANSIENT_DEPENDENCY") for p in prior):
             issues.append("SAME_FAILURE_SAME_STRATEGY_AGAIN")
     return issues
 
@@ -325,14 +338,21 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
         allowed_models=allowed,
     )
     source = "RULE"
+    if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
+        n = budget_snapshot(store, order, eff)["transient_retries"] + 1
+        plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
+                     material_difference_ref=f"transient_retry:{n}")
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
         from .planner import Failed
 
-        try:
-            budget = {**budget_snapshot(store, order, eff), "allowed_model_profiles": allowed}
-            plan, source = planner(bundle, budget, ws), "PLANNER"
-        except Failed as exc:
-            plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], f"LOCAL_DIAGNOSIS_FAILED:{str(exc)[:100]}")
+        b = budget_snapshot(store, order, eff)
+        if b["planner_calls"] < b["max_planner_calls"]:
+            try:
+                plan, source = planner(bundle, {**b, "allowed_model_profiles": allowed}, ws), "PLANNER"
+            except Failed as exc:
+                plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], f"LOCAL_DIAGNOSIS_FAILED:{str(exc)[:100]}")
+            if plan == "PENDING":  # the planner run is asynchronous (planner_run): the Conductor polls again
+                return {"plan": None, "status": "PENDING", "source": source, "reasons": []}
     if plan is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "NO_MATERIALLY_DIFFERENT_STRATEGY")
     reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models)
@@ -389,10 +409,25 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
             **({"lesson_ids": plan["lesson_ids"]} if plan.get("lesson_ids") else {}),
         }
         c.execute("UPDATE afo_commands_outbox SET payload=? WHERE command_id=?", (json.dumps(payload), row["command_id"]))
+        if plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # give the dependency time to come back
+            n = int(plan["material_difference_ref"].rsplit(":", 1)[-1])
+            c.execute("UPDATE afo_commands_outbox SET retry_not_before_epoch=? WHERE command_id=?",
+                      (time.time() + TRANSIENT_BACKOFF_SECONDS * n, row["command_id"]))
         c.execute("UPDATE afo_recovery_plans SET status='EXECUTED' WHERE plan_id=?", (plan["plan_id"],))
     if receipt:
         applying(store, receipt["receipt_id"], aid)
     return {"order_id": oid, "action": "new_attempt", "attempt_id": aid, "strategy": plan["strategy"]}
+
+
+def poll_waiting(store: Store, recover) -> list[dict]:
+    """WAITING_RECOVERY orders whose latest attempt already ended (a planner run in progress, not a prepared new
+    attempt or a transient retry in backoff): ask `recover` again; it decides once the planner has replied."""
+    out = []
+    for o in store.orders(("WAITING_RECOVERY",)):
+        att = (store.attempts(o["order_id"]) or [None])[-1]
+        if att is not None and att["state"] in ("SUCCEEDED", "FAILED", "CANCELLED"):
+            out.append({"order_id": o["order_id"], **(recover(o, att) or {"action": "no_bundle"})})
+    return out
 
 
 def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
@@ -402,7 +437,8 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
 
     def recover(order: dict, attempt: dict) -> dict | None:
         ws = workspace_of(attempt)
-        b = bundle.build(ws, order["order_id"], attempt["attempt_id"]) if ws.is_dir() else None
+        b = bundle.build(ws, order["order_id"], attempt["attempt_id"],
+                         run_failed=attempt["state"] == "FAILED") if ws.is_dir() else None
         if b is None:
             return None
         env = json.loads(order["envelope"])
@@ -429,8 +465,11 @@ def make_recover(store: Store, eff, owner: str, workspace_of, planner=None):
             return {"action": "recovery_lease_busy"}
         try:
             d = decide(store, order, b, ws=ws, eff=eff, auth_models=scope.get("models"), planner=planner)
-        except Pending as exc:
+        except Pending as exc:  # Feature 014 local agent: its durable job is still running
             return {"action": "diagnosing", "bundle_id": b["bundle_id"], "job_id": str(exc)}
+        if d["status"] == "PENDING":  # Feature 015 planner_run: an asynchronous Fabro run; poll_waiting asks again
+            store.transition(order["order_id"], "WAITING_RECOVERY", "recovery planner run in progress")
+            return {"bundle_id": b["bundle_id"], "failure_class": b["failure_class"], "action": "planner_pending"}
         prev = attempt["record"]["workspace_ref"].removeprefix("workorder:")
         act = execute_advisory if advisory_final(d, b, ws) else execute
         return {

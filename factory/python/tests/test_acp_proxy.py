@@ -237,3 +237,21 @@ def test_cr_t027_usage_is_recorded_per_prompt_result_without_content(tmp_path, m
         ("claude-opus-5-5", 6, 434, 10368), ("claude-opus-5-5", 3, 5, 7)]
     assert "SECRET" not in log and all(set(r) <= {"ts", "event", "model", "input", "output", "cache_read", "cache_write"}
                                        for r in rows)
+
+
+def test_a_prompt_that_ends_in_an_error_is_logged_redacted(tmp_path, monkeypatch):
+    """F015 (2026-10-25 23:03): Codex refused every turn at sign-in ('ACP turn failed'); the workspace kept only
+    'session' lines, so AFO read the stopped phase as a product finding. The error is now logged, redacted."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ws = tmp_path / "WO" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    p = P.Proxy.__new__(P.Proxy)
+    p.ws, p.node, p.kind, p.prompts = ws, "swe1_author", "codex", set()
+    p.to_client = lambda m: None
+    p.from_client({"jsonrpc": "2.0", "id": 3, "method": "session/prompt", "params": {"sessionId": "S", "prompt": []}})
+    p.from_agent({"jsonrpc": "2.0", "id": 3, "error": {"code": -32000, "message": "Authentication required: "
+                                                       "token=abc.def " + "x" * 300}})
+    p.from_agent({"jsonrpc": "2.0", "id": 4, "error": {"code": -32601, "message": "not a prompt"}})
+    (r,) = [json.loads(x) for x in (ws / ".forge-run/acp/swe1_author.proxy.jsonl").read_text().splitlines()]
+    assert (r["event"], r["code"]) == ("prompt_error", -32000) and "abc" not in r["message"]
+    assert r["message"].startswith("Authentication required: [REDACTED]") and len(r["message"]) == 160

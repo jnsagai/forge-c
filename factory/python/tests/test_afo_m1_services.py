@@ -3,7 +3,7 @@ preflight, Conductor heartbeat only after completed cycles, external watchdog al
 import json
 
 import pytest
-from forge_factory.afo import conductor, host, services, watchdog
+from forge_factory.afo import conductor, host, policy, services, watchdog
 
 VOL = {"target": "/media/x/vol", "source": "/dev/loop10", "fstype": "ext4", "uuid": "U-1"}
 ROOTFS = {"target": "/", "source": "/dev/nvme0n1p6", "fstype": "ext4", "uuid": "R-1"}
@@ -48,11 +48,27 @@ def test_rendered_units_are_complete_bounded_and_preflighted():
     assert services.verify(units)["ok"]
 
 
+def test_units_put_the_forge_llvm_toolchain_first_on_path(tmp_path, monkeypatch):
+    """Feature 015: AFO runs inherit the Conductor's PATH; without the toolchain forge-env.sh adds, the host clang 12
+    rejected -fcoverage-mcdc (WO-AFO-707cd2711fc865be-a1 DEF-003, coverage BLOCKED)."""
+    llvm = tmp_path / "llvm/bin"
+    llvm.mkdir(parents=True)
+    (llvm / "clang").write_text("#!/bin/sh\n")
+    (llvm / "clang").chmod(0o755)
+    monkeypatch.setenv("FORGE_LLVM_BIN", str(llvm))
+    path = services.values()["@PATH@"].split(":")
+    assert path[1] == str(llvm) and path.index(str(llvm)) < path.index("/usr/local/bin")
+    assert f"Environment=PATH={':'.join(path)}" in services.render()["forge-conductor.service"]
+    monkeypatch.setenv("FORGE_LLVM_BIN", str(tmp_path / "absent"))
+    assert services.values()["@PATH@"].split(":")[1] == "/usr/local/bin"  # no toolchain: the host PATH as before
+
+
 def test_conductor_heartbeat_follows_completed_cycles(tmp_path, monkeypatch):
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     assert conductor.Conductor(0.1, max_cycles=2).run() == 0
     hb = json.loads(conductor.heartbeat_path().read_text())
-    assert hb["cycle"] == 1 and hb["ok"] and hb["mode"] == "OBSERVE_ONLY"
+    assert hb["cycle"] == 1 and hb["ok"] and hb["mode"] == policy.load().mode  # the effective mode (PILOT while the
+    # shipped owner authorization is valid, OBSERVE_ONLY otherwise)
     monkeypatch.setattr(conductor, "cycle", lambda n: (_ for _ in ()).throw(RuntimeError("db locked")))
     conductor.Conductor(0.1, max_cycles=1).run()
     hb = json.loads(conductor.heartbeat_path().read_text())

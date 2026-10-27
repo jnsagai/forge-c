@@ -1,0 +1,5 @@
+spi: 4 attempts recorded, 1 READY
+  BENCH-SPI-ST-R4 WO-AFO-125b96c419d7bc90-a1 rev e8717c4 gaps 0 archive sha256 verified ebfd17e8e4de709b22e3c56b3a0872f6c2c1b57b76a2a0550ef33cfc8b77e717
+  owner review: OD-2026-10-26-02 "CRC, SPI reviewed and approved"
+
+--- stderr ---

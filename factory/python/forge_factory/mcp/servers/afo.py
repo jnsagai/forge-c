@@ -131,7 +131,9 @@ def read_requirement_excerpt(ctx: ToolContext, a: ReqIn) -> dict:
 
 def read_budget_snapshot(ctx: ToolContext, a: NoIn) -> dict:
     case, _ = _case()
-    return payload(ctx, {"budget": case["budget"], "allowed_strategies": case["allowed_strategies"],
+    # the strategy list first: a long budget snapshot spills onto later pages (F015 planner trial 1 lost the list
+    # when one result was truncated at MAX_BYTES)
+    return payload(ctx, {"allowed_strategies": case["allowed_strategies"], "budget": case["budget"],
                          "required_plan_fields": PLAN_SCHEMA["required"],
                          "budget_estimate_fields": ["tokens_max", "wall_seconds_max", "turns_max"]},
                    a.offset, summary="Remaining budget, allowed strategies and plan contract")

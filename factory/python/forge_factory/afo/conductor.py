@@ -92,13 +92,21 @@ def cycle(n: int) -> tuple[str, bool, str]:
         dispatch.reconcile_inflight(store, runtime.fabro_view)
         from . import recovery
 
-        dispatch.reconcile_running(
-            store,
-            runtime.fabro_view,
-            recover=recovery.make_recover(
-                store, eff, f"conductor-{os.getpid()}", runtime.workspace_of, planner=local_agent.make_planner(store, eff)
-            ),
-        )
+        planner = None
+        if eff.get("engineering.enable_recovery_planner"):  # owner-signed policy, as in both features
+            from . import planner as afo_planner
+            from . import planner_run
+
+            local, fabro = local_agent.make_planner(store, eff), afo_planner.make(planner_run.invoke)
+
+            def planner(bundle, budget, workspace=None):
+                # the order's own engine diagnoses it: a local-profile work order (Feature 014) uses the local agent,
+                # any other (the codex-claude production line, Feature 015) the Fabro planner run on the Claude login
+                return (local if local_agent.local_order(workspace) else fabro)(bundle, budget, workspace)
+
+        recover = recovery.make_recover(store, eff, f"conductor-{os.getpid()}", runtime.workspace_of, planner=planner)
+        dispatch.reconcile_running(store, runtime.fabro_view, recover=recover)
+        recovery.poll_waiting(store, recover)
         for o in store.orders(("RUNNING", "VALIDATING")):
             try:
                 att = store.attempts(o["order_id"])[-1]

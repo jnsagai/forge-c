@@ -93,17 +93,33 @@ def parse(reply: str, case_dir: Path) -> dict | None:
     return plan
 
 
-def make(invoke, *, freeze=case):
-    """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
+PENDING = "PENDING"
 
-    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
+
+def make(invoke, *, freeze=None):
+    """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path)` -> reply text, None, or
+    PENDING while an asynchronous Fabro run is still going - planner_run), parse.
+
+    Pending and Failed are explicit outcomes and always propagate (Feature 014 local agent). Without `freeze` the case
+    is frozen once and later conductor cycles poll the same case (Feature 015 planner_run), and a failed run proposes
+    nothing; with the local agent's `freeze`, any other error is an explicit failed diagnosis, never a fabricated plan."""
+
+    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | str | None:
         try:
-            p = freeze(bundle, workspace or Path("."), budget)
+            if freeze is not None:
+                p = freeze(bundle, workspace or Path("."), budget)
+            else:
+                p = state_dir() / "afo/cases" / bundle["bundle_id"] / "case.json"
+                if not p.is_file():  # frozen once (read-only)
+                    p = case(bundle, workspace or Path("."), budget)
             reply = invoke(p)
         except (Pending, Failed):
             raise
-        except Exception as exc:  # noqa: BLE001 - an explicit failed diagnosis, never a fabricated plan
-            raise Failed(str(getattr(exc, "code", type(exc).__name__))) from exc
-        return parse(reply, p.parent)
-
+        except Exception as exc:  # noqa: BLE001
+            if freeze is not None:
+                raise Failed(str(getattr(exc, "code", type(exc).__name__))) from exc
+            return None
+        if reply == PENDING:
+            return PENDING
+        return parse(reply, p.parent) if reply is not None else None
     return planner

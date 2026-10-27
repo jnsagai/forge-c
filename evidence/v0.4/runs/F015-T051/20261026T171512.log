@@ -1,0 +1,5 @@
+gpio: 5 attempts recorded, 1 READY
+  BENCH-GPIO-ST-R5 WO-AFO-03122bd1dd4fb5ff-a1 rev 4f4e2ea gaps 0 archive sha256 verified 0d9f5889ba46c12fc97b48042d879c3cf3b48f1f89cc44548a9fdb6235c1a3ce
+  owner review: OD-2026-10-26-03 "USART and GPIO reviewed and approved"
+
+--- stderr ---

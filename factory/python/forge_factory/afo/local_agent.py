@@ -73,6 +73,16 @@ def authorized(order: dict, eff, model: str | None = None) -> bool:
     return authority.decide("recover_workorder", request, afo=eff).allow
 
 
+def local_order(ws) -> bool:
+    """A work order the local profile authors (its manifest names a local profile); only these are diagnosed by the
+    local agent (prepare refuses the others with LOCAL_RECOVERY_PROFILE_REQUIRED)."""
+    m = Path(ws or ".") / ".forge-run/manifest.json"
+    try:
+        return bool((json.loads(m.read_text()).get("local_profile") or {}).get("id"))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def enabled(role: str, eff) -> bool:
     flag = "engineering.enable_recovery_planner" if role == "afo-recovery-planner" else "maintenance.enable_factory_maintainer"
     return role in ROLES and eff.mode in ("PILOT", "ACTIVE") and bool(eff.get(flag))

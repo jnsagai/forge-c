@@ -1,0 +1,5 @@
+AFO policy: mode PILOT, authorization AUTH-AFO-PILOT-20261026, issues []
+forge-conductor: active
+AFO benchmark attempts recorded: 26; with a package: 24; READY: 5
+
+--- stderr ---

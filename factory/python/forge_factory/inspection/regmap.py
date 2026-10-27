@@ -21,6 +21,9 @@ LL_HEADER = "software/ll/stm32n6xx_ll_rcc.h"
 GUARD = "STM32N6XX_LL_RCC_H"
 FUNCTIONS_MARKER = "// LL_RCC access functions (SWE.3 LL author)"  # line comment: a dropped '*/' cannot hide code
 _BIT = re.compile(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[\d+(?::\d+)?\])?\s*:", re.M)
+# feature 015: one line for all pins of a port, field y of width (msb-lsb+1)/pins (GPIO MODEy, BSy, BRy, AFSELy)
+_PIN = re.compile(r"^\s*Bits?\s+(\d+):(\d+)\s+([A-Z][A-Z0-9_]*?)y(?:\[\d+(?::\d+)?\])?\s*:.*?\(y\s*=\s*(\d+)\s+to\s+(\d+)\)",
+                  re.M)
 # CAPA-050 (LL r166): a table row may name the register alone (RCC_CR) or with its field (RCC_CR.HSION, RCC_CR[HSION],
 # `RCC_CR`); the register is the leading RCC_ name. A '_' joined name (RCC_CR_HSION) stays one name: NOT_IN_RM.
 _REG_CELL = re.compile(r"`?(RCC_[A-Z0-9_]+)`?(?:$|[\s.\[(:/,])")
@@ -42,12 +45,28 @@ def functions_marker(ws: Path | None = None) -> str:
     return _ident(ws)["marker"]
 
 
-def parse_section(text: str, prefix: str = "RCC") -> dict | None:
+def _register_name(text: str, prefix: str) -> str | None:
     name = re.search(rf"^#+ .*\(({prefix}_[A-Z0-9_]+)\)\s*$", text, re.M)
+    if name or prefix == "RCC":  # RCC results unchanged (its wrapped headings stay unparsed, as the pilots saw them)
+        return name.group(1) if name else None
+    # feature 015 (F015-T040): a multi-instance register is named by its placeholder (GPIOx_MODER, TIMx_CR1), maybe
+    # with its instances "(x = A to H, N to Q)" / "(x = 2 to 5)", and the name may wrap onto the first lines after the
+    # heading; it is normalised to the CMSIS form (GPIO_MODER, TIM_CR1)
+    head = "\n".join(text.splitlines()[:6])
+    m = re.search(rf"^(?:#+ .*|[ \t]*)\(({prefix})x?(_[A-Z0-9_]+)\)\s*(?:\(\s*x\s*=[^)]*\)\s*)?$", head, re.M)
+    return m.group(1) + m.group(2) if m else None
+
+
+def parse_section(text: str, prefix: str = "RCC") -> dict | None:
+    name = _register_name(text, prefix)
     off = re.search(r"Address offset:\s*(0x[0-9a-fA-F]+)", text)
     if not (name and off):
         return None
     reset = re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text)
+    if prefix != "RCC":  # feature 015: per-port values (GPIO: Port A's, the benchmark instance GPIOA, comes first)
+        # and 16-bit registers (TIMx_CR1 'Reset value: 0x0000')
+        reset = re.search(r"Reset value:\s*Port [A-Z]:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text) or reset or \
+            re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4})\s*$", text, re.M)
     fields: dict[str, tuple[int, int]] = {}
     for m in _BIT.finditer(text):
         msb = int(m.group(1))
@@ -55,7 +74,15 @@ def parse_section(text: str, prefix: str = "RCC") -> dict | None:
         if msb < lsb or msb > 31:
             continue
         fields.setdefault(m.group(3), (msb, lsb))
-    return {"name": name.group(1), "offset": int(off.group(1), 16),
+    for m in _PIN.finditer(text):  # 'Bits 31:0 MODEy[1:0]: ... pin y (y = 15 to 0)': MODE0..MODE15, 2 bits each
+        msb, lsb, base = int(m.group(1)), int(m.group(2)), m.group(3)
+        n = abs(int(m.group(4)) - int(m.group(5))) + 1
+        y0 = min(int(m.group(4)), int(m.group(5)))  # GPIOx_AFRH: AFSELy (y = 15 to 8) starts at pin 8
+        width = (msb - lsb + 1) // n if msb >= lsb else 0
+        if width and width * n == msb - lsb + 1:
+            for y in range(n):
+                fields.setdefault(f"{base}{y0 + y}", (lsb + (y + 1) * width - 1, lsb + y * width))
+    return {"name": name, "offset": int(off.group(1), 16),
             "reset": reset.group(1).replace(" ", "") if reset else None, "fields": fields}
 
 
