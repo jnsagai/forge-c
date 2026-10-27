@@ -978,9 +978,23 @@ COMPARISON_FACTORS = {
 }
 
 
-def configuration_comparison(manifest, baseline, candidate):
-    from ..lrtx.role_capability import IDENTITY
+def comparison_identity(factor, baseline_identity, candidate_identity):
+    from ..lrtx.role_capability import IDENTITY, key
 
+    if factor not in COMPARISON_FACTORS:
+        raise Refused("COMPARISON_FACTOR_NOT_PREREGISTERED")
+    key(baseline_identity)
+    key(candidate_identity)
+    changed = [k for k in IDENTITY if baseline_identity[k] != candidate_identity[k]]
+    groups = {name for name, fields in COMPARISON_FACTORS.items() if set(fields) & set(changed)}
+    if "role" in changed or groups != {factor}:
+        raise Refused("ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED")
+    if changed == ["precision"]:
+        raise Refused("MODEL_BUILD_IDENTITY_INCONSISTENT", "a quantization change must change the model digest")
+    return changed
+
+
+def configuration_comparison(manifest, baseline, candidate):
     factor = (manifest.get("baseline") or {}).get("comparison_factor")
     if factor not in COMPARISON_FACTORS:
         raise Refused("COMPARISON_FACTOR_NOT_PREREGISTERED")
@@ -988,12 +1002,7 @@ def configuration_comparison(manifest, baseline, candidate):
         raise Refused("COMPARISON_CASES_CHANGED")
     if baseline.get("measured") is not True or not baseline.get("native_run_ids"):
         raise Refused("UNCHANGED_BASELINE_MEASUREMENT_REQUIRED")
-    changed = [k for k in IDENTITY if baseline["identity"][k] != candidate["identity"][k]]
-    groups = {name for name, fields in COMPARISON_FACTORS.items() if set(fields) & set(changed)}
-    if "role" in changed or groups != {factor}:
-        raise Refused("ONE_CONTROLLED_CONFIGURATION_FACTOR_REQUIRED")
-    if changed == ["precision"]:
-        raise Refused("MODEL_BUILD_IDENTITY_INCONSISTENT", "a quantization change must change the model digest")
+    changed = comparison_identity(factor, baseline["identity"], candidate["identity"])
     if baseline["case_ids"] != candidate["case_ids"] or not candidate.get("independent_outcomes"):
         raise Refused("COMPARISON_DENOMINATOR_OR_ORACLE_MISSING")
     return {
