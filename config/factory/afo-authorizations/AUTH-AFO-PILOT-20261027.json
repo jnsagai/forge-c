@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "authorization_id": "AUTH-AFO-PILOT-20261027",
  "approver": "jnsagai",
- "approval_evidence_ref": "owner 2026-10-27: \"do the same work done for LL, do it now for HAL\" (the five ST HAL driver classes added; models, actions, mode, recovery-planner policy and expiry unchanged from AUTH-AFO-PILOT-20261026)",
+ "approval_evidence_ref": "owner 2026-10-27: \"do the same work done for LL, do it now for HAL\" (ST HAL classes added)",
  "issued_utc": "2026-10-27T00:00:00Z",
  "expires_utc": "2026-11-24T00:00:00Z",
  "policy_sha256": "364259f2bed727da3dceae78f3000d9f41261bafece11a4cc56ed0389b488fc1",
