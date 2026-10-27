@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
-from ..common import REPO_ROOT, sha256_file
+from ..common import REPO_ROOT, sha256_bytes
 
 PROFILE_DIR = REPO_ROOT / "config/factory/profiles"
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
@@ -35,11 +35,12 @@ def load(profile_id: str, directory: Path | None = None) -> dict:
     p = (directory or PROFILE_DIR) / f"{profile_id}.yaml"
     if not p.is_file():
         raise ProfileRefused([f"PROFILE_UNKNOWN:{profile_id}"])
-    data = yaml.safe_load(p.read_text())
+    raw = p.read_bytes()
+    data = yaml.safe_load(raw.decode("utf-8"))
     if data.get("schema") != "forge-c/local-profile/1" or data.get("id") != profile_id:
         raise ProfileRefused([f"PROFILE_INVALID:{profile_id}"])
     return {**data, "_path": str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p),
-            "_sha256": sha256_file(p)}
+            "_sha256": sha256_bytes(raw)}
 
 
 def selection_issues(prof: dict, *, model: str, provider: str, code_model: str | None, acp_authors: str | None,
@@ -196,7 +197,7 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
     if issues:
         raise ProfileRefused(issues)
-    return {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],
+    record = {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],
             "config_sha256": prof["_sha256"], "local_only": True, "provider": prof["provider"], "models": models,
             "runtime": runtime_record(env), "admission": prof["admission"],
             "timeout_scale": prof["runtime"]["timeout_scale"],
@@ -206,3 +207,8 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
                                      "name alone is not enforcement"},
             "roots": {k: str(Path(env[k]).resolve()) for k in prof["deployment"]["writable_env"]},
             "qualification": "NOT_QUALIFIED (feature 010 acceptance pending)"}
+    semantic = ((prof.get("safec") or {}).get("engine") or {}).get("semantic_profile")
+    if semantic == "register-io-0.2":
+        # The frozen marker makes a later profile downgrade detectable too.
+        record["semantic_profile"] = semantic
+    return record

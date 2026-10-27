@@ -65,16 +65,29 @@ class Context:
         from .profile import load
 
         self.ws = Path(ws)
-        m = V1._manifest(ws)
-        prof = load((m.get("local_profile") or {}).get("id", "local-rtx-v2"))
+        self.manifest_raw = (self.ws / ".forge-run/manifest.json").read_bytes()
+        m = json.loads(self.manifest_raw)
+        local = m.get("local_profile") or {}
+        if not isinstance(local, dict):
+            raise EngineFault("PROFILE_BINDING_INVALID")
+        prof = load(local.get("id", "local-rtx-v2"))
         e = prof["safec"]["engine"]
+        if (e["semantic_profile"] == "register-io-0.2" or "semantic_profile" in local) and (
+                local.get("id") != prof["id"]
+                or local.get("semantic_profile") != e["semantic_profile"]
+                or type(local.get("version")) is not int or local["version"] != prof["version"]
+                or local.get("config") != prof["_path"]
+                or local.get("config_sha256") != prof["_sha256"]):
+            raise EngineFault("PROFILE_BINDING_CHANGED_OR_MISSING")
         self.pin = CL.EnginePin(Path(e["binary"]), e["binary_sha256"], e["source_commit_sha"], e["semantic_profile"])
         self.limits = CL.Limits(timeout_s=float(prof["safec"].get("timeout_s", 60)))
         self.domain, self.domain_raw = D.build(ws, semantic_profile=self.pin.semantic_profile)
         S.record(ws, "SWE.1/domain.json", self.domain)
-        man = (self.ws / ".forge-run/manifest.json").read_bytes()
+        if self.pin.semantic_profile == "register-io-0.2" and (
+                self.ws / ".forge-run/manifest.json").read_bytes() != self.manifest_raw:
+            raise EngineFault("WORKORDER_BINDING_CHANGED")
         self.binding = {"workorder_id": str(m.get("work_order") or self.ws.parent.name)[:128],
-                        "workorder_sha256": sha256_bytes(man),
+                        "workorder_sha256": sha256_bytes(self.manifest_raw),
                         "source_manifest_sha256": sha256_bytes(self.domain_raw),
                         "policy_sha256": prof["_sha256"]}
         self.facts = _facts(self.domain)
@@ -83,6 +96,9 @@ class Context:
 
     def validate(self, intents: list[dict], tag: str, operation: str = "validate_intents") -> \
             tuple[CL.Outcome, dict, Path]:
+        if self.pin.semantic_profile == "register-io-0.2" and (
+                self.ws / ".forge-run/manifest.json").read_bytes() != self.manifest_raw:
+            raise EngineFault("WORKORDER_BINDING_CHANGED")
         self.calls += 1
         req, raw = C.build_request(request_id=f"{tag}-{self.calls}"[:128], operation=operation,
                                    engine=self.pin.expected(), binding=self.binding, intents=intents)
