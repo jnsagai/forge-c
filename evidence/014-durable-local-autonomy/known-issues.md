@@ -8,7 +8,7 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 |---|---|---|---|---|
 | KI-014-001 | protocol | Five diagnosis protocol trials not run: no qualified alternative local model | ACCEPTED_BY_OWNER | Decide whether a second local model is qualified (stepwise) for diagnosis, or accept single-model diagnosis. Owner 2026-10-26: 95/100 accepted. |
 | KI-014-002 | accounting | Token usage UNKNOWN for 23 of 95 protocol trials | OPEN | Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable. |
-| KI-014-003 | inspector | Stepwise inspector: held-out false-alarm rate not yet re-measured | OPEN | Release a frozen Feature 015 batch and decide its learning/test split (recorded seed) so the refreshed held-out set can measure the fixes. |
+| KI-014-003 | inspector | Stepwise inspector: clean held-out baselines still falsely rejected | OPEN | Test set 2 is now spent (it may become learning set 4). Release another frozen batch of current-factory baselines (e.g. after the TIM review or new Feature 015 drivers) so a refreshed held-out set can measure further fixes. |
 | KI-014-004 | ladder | Escalation ladder: CAPA retrieval rung not integrated | RESOLVED | None needed to decide; implementation pending. |
 | KI-014-005 | regression | Two inherited test failures | OPEN | Decide: fix in their own feature, or record a waiver. |
 | KI-014-006 | runtime | No usable parallel model serving for the inspector | OPEN | Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot. |
@@ -51,12 +51,12 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 - **Human action:** Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable.
 - **Status:** OPEN
 
-## KI-014-003: Stepwise inspector: held-out false-alarm rate not yet re-measured
+## KI-014-003: Stepwise inspector: clean held-out baselines still falsely rejected
 
-- **What:** Calibration on the 9 registered held-out baselines (3 identical runs): 49/54 seeded defects caught, 5/9 clean baselines falsely rejected. Fixes were then developed on that spent subset as learning set 2 (L2 live: 59/63 after round 1; round 2 running). Their held-out effect is unmeasured.
-- **Impact:** In real runs the advisory inspector may still register false gaps for the end-of-run human review (advisory mode: it does not block).
-- **Evidence:** evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md; evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-runs.json
-- **Human action:** Release a frozen Feature 015 batch and decide its learning/test split (recorded seed) so the refreshed held-out set can measure the fixes.
+- **What:** Re-measured 2026-10-27 at 9300475 after learning sets 1-3 passed live (49/49, 63/63, 14/14): on the refreshed held-out test set 2 (Feature 015 GPIOA and CRC, registered 48207f1), 3 identical runs: 12/12 seeded defects flagged (11 on target, 1 off target, 0 missed), but 2/2 clean baselines falsely rejected, so the seeded-case detections partly ride on baseline noise (10/12 add a finding code their clean baseline lacks). GPIOA: a model error on the effects step (the BSRR toggle write answered 'not_stated'). CRC: rule gaps the truthful preflight already shows (CRC_CR.REV_IN/RTYPE_IN/REV_OUT/RTYPE_OUT and CRC_DR.DR writes not matched to their requirements; the Budgets gap row not recognised). Earlier subset calibration (285d21e): 49/54 caught, 5/9 clean baselines rejected.
+- **Impact:** On unseen drivers the advisory inspector registers false gaps for the end-of-run human review (advisory mode: it does not block). Detection carries over; clean-baseline acceptance does not yet.
+- **Evidence:** evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md; evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-t2-runs.json; evidence/v0.4/runs/DA014-calibration-t2/latest.json
+- **Human action:** Test set 2 is now spent (it may become learning set 4). Release another frozen batch of current-factory baselines (e.g. after the TIM review or new Feature 015 drivers) so a refreshed held-out set can measure further fixes.
 - **Status:** OPEN
 
 ## KI-014-004: Escalation ladder: CAPA retrieval rung not integrated

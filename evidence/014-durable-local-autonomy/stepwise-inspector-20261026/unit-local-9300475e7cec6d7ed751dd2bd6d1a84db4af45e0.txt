@@ -1,0 +1,2 @@
+loop10 2026-10-27T02:21:43Z rev=9300475e7cec6d7ed751dd2bd6d1a84db4af45e0 (tested at 00762ea, identical factory/config) venv=Python 3.13.13 tests=test_lrtx_v2_review.py+test_lrtx_seeded.py skipped=0
+61 passed in 160.50s (0:02:40)

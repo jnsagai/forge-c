@@ -107,6 +107,54 @@ set 2. All four were gate-valid but failed the truthful preflight; only learning
 value', 'calculated from the supplied ...', '`requested ... encoding`') is in `6b8976a`; learning sets 1-3 run live on
 it before test set 2 is measured.
 
+## Learning set 3 rounds and the held-out test set 2 calibration (2026-10-27)
+
+| Round | Revision | Learning set 1 (49) | Learning set 2 (63) | Learning set 3 (14) | Changes |
+|---|---|---|---|---|---|
+| L3-1 | `6b8976a` | 49/49 (learning-18) | 63/63 (learning2-4) | 10/14: 2/2 clean rejected, S1-OMIT and S1-QM off target | 'write that value', computed writes, requested encodings |
+| L3-2 | `9300475` | **49/49** (learning-19) | **63/63** (learning2-5) | **14/14** (learning3-2) | safety-scope question, one-bit 'write 1/0', configuration writes, field named after 'shall', waits as reads, fixed-state assumptions |
+
+[learning-round-9300475.json](learning-round-9300475.json) holds the three learning runs (finding codes only).
+
+The S1-QM cases of Feature 015 were caught by no gate: the deterministic safety-scope check knows only the scopes
+registered on this revision (`config/factory/safety-scope.yaml`, a protected file left unchanged). The inspector now
+asks the fact itself in ASIL work orders and confirms a QM answer only when the safety document states a QM scope.
+
+With every learning set passing at `9300475`, the registered held-out **test set 2** (GPIOA
+`WO-AFO-03122bd1dd4fb5ff-a1`, CRC `WO-AFO-efc1871950537b1a-a1`; [f015-split.json](f015-split.json), commit `48207f1`)
+was measured in 3 runs by the same GPU job (`q014-calibrate-t2.sh`). Before inference, each run verified the 22
+F011-T046 trees and both test-set-2 trees UNCHANGED, recorded the remote unit tests (55 skipped there, see gate defect 2)
+and the loop10 record ([unit-local-9300475….txt](unit-local-9300475e7cec6d7ed751dd2bd6d1a84db4af45e0.txt): 61 passed, 0
+skipped), and recorded the truthful preflight. [calibration-t2-runs.json](calibration-t2-runs.json) holds every row with
+finding codes only. The three runs agree on every evaluation:
+
+| Per run, 14 evaluations | Result |
+|---|---|
+| Seeded defects flagged on target by the inspector | 11/12 |
+| Seeded defects flagged off target | 1/12 (GPIOA S1-OMIT) |
+| Seeded defects missed | 0/12 |
+| Clean baselines falsely rejected | **2/2** |
+| Inspections that recorded nothing | 0 |
+| Truthful preflight (zero model calls) | FAIL on CRC |
+
+**Read this with the false rejections.** Both clean baselines fail, so every seeded copy carries the same baseline
+findings, and "on target" only means the target is named among them. Counting only seeded cases that add a finding
+code their clean baseline lacks gives 10/12. Detection carries over to unseen drivers; clean-baseline acceptance does
+not. Classes, read only after all registered runs ended:
+
+- **GPIOA (model):** the effects step answered `not_stated` for SWR-021's BSRR toggle write
+  (`TOGGLE_MIXED_PIN6_SET`), giving a `requirements_inconsistent` claim. The truthful preflight passes, so the rules
+  decide this baseline correctly when the answer is right.
+- **CRC (rules):** the truthful preflight already rejects it. The REV_IN/RTYPE_IN/REV_OUT/RTYPE_OUT and DR writes of
+  the scope are not matched to the requirements stating them, and the Budgets row of the gaps table is not recognised.
+  The model added `requirement_not_verifiable` claims.
+
+`verify_calibration.py` checks the protocol of both calibrations from these records (registration before measurement,
+integrity, unit and preflight records, learning-set precondition, complete rows, summaries equal to row counts) and
+never judges the rates. It is the DA-T055 evidence (`evidence/v0.4/runs/DA014-calibration-t2`). Test set 2 is now
+spent: fixes for these classes belong to a learning set, and only a further refreshed held-out set can measure them
+(known issue KI-014-003).
+
 ## Gate defects found while preparing calibration (2026-10-26)
 
 1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script

@@ -607,7 +607,7 @@ Evidence must identify the requirement, case, tested source revision, effective 
 
 - **Requirement:** DA-FR-055
 - **Level:** live (Omniverse2)
-- **Status:** RUNNING
+- **Status:** PASS_LIVE_PROTOCOL (2026-10-27) — subset 3 runs (`285d21e`) and refreshed test set 2 3 runs (`9300475`) complete; honest rates published (test set 2: 12/12 seeded flagged, 2/2 clean baselines falsely rejected, KI-014-003); `verify_calibration.py`
 - **Given:** A held-out set registered with tree hashes and a gate-only selection rule before measurement, and an inspector revision that passed the learning set.
 - **When:** Each registered run verifies set integrity, records unit-test coverage including skips, records the truthful preflight and measures every evaluation.
 - **Then:** Misses, false alarms and empty inspections are reported per run; no inspector change is made from held-out data before all registered runs end.
