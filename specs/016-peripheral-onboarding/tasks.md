@@ -499,3 +499,11 @@ SWE.1–SWE.6.
   them verbatim. Their exact text is in the signed package subject (OA-2026-10-27-02/03/04/05), which the owner
   approved in this session and signed. That explicit acceptance supersedes the original verbatim-copy clause.
   The task now cites the exact-scope/read-trace proof and signature proof, rather than the unrelated text-test run.
+
+- SPI R1 (`afo-d5622d4914a0ac9d`) finished BLOCKED with 310 named gaps. SWE.1/2/3 inspections passed on `9dd5b71`,
+  so the previous DMA-type contract-probe failure is resolved in the real run. SWE.4 stopped on repeated failed
+  unit checks and uncovered USPECs, and AFO refused rework of escalated FROZEN CODE findings. Archive
+  `858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458` integrity and fact/input/baseline bindings
+  PASS (OB-SPI-R1); the cited cause review identifies no missing onboarding fact in this corrected attempt.
+- USART request `BENCH-USART-ST-HAL-OB` launched as `afo-91b7e28a3bab37e5` on `9dd5b71`, with the signed
+  OA-2026-10-27-03 clock confirmation of 64,000,000 Hz. TIM remains prepared for sequential submission.
