@@ -177,22 +177,20 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
 
 ### Slice G: AFO integration
 
-- [ ] **OB-T027** [US2] In `ff/afo/queue.py`, add the states `ONBOARDING` (counted in `ACTIVE_STATES`) and
-  `WAITING_OWNER_APPROVAL` (not active; TTL from `afo-policy.yaml` `onboarding.approval_ttl_s`, default 7 days). TTL
-  expiry finalizes `BLOCKED: WAITING_OWNER_APPROVAL_TTL` with the onboarding package as the gap package. Follow the
-  `WAITING_EXTERNAL_CHANGE` pattern.
-- [ ] **OB-T028** [US2] In `ff/afo/dispatch.py` and `ff/afo/conductor.py`:
-  - an order whose work order has `onboarding: true` runs `derive` (and the onboarding Fabro run when
-    `package.authored` needs it);
-  - on READY_FOR_OWNER it moves to `WAITING_OWNER_APPROVAL`;
-  - each tick runs `approval.verify`. On `APPROVAL_OK` the SWE run is admitted; on REJECTED the order is BLOCKED
-    with the reason; on an input change it goes back to ONBOARDING.
+- [ ] **OB-T027** [US2] (amended 2026-10-27, research R1 amendment: no new queue states) Packages are keyed by the
+  onboarding work order's example name (`state/onboarding/<key>/`), so every request and attempt (`-a1`, `-a2`) of
+  that work order uses the same approved package, and the factory revision is recorded but not part of the approval
+  subject. Implement `onboarding.intake_check` and call it from `ff/afo/queue.py` `submit`: an onboarding work order
+  whose package has no verified approval is refused at intake with `INTAKE_ONBOARDING_NOT_APPROVED:<code>:<key>`.
+- [ ] **OB-T028** [US2] (amended 2026-10-27) `ff/workorder.py` `prepare` re-derives the package at every launch
+  (deterministic, seconds); a changed input voids the approval before admission is checked (FR-017). The owner
+  approves before submission; the AFO queue state machine (feature 005 `queue-fsm.yaml`) is unchanged.
 - [ ] **OB-T029** [US2] In `ff/workorder.py` and `ff/workflow/builder.py`, refuse to build or launch an SWE run for an
   onboarding work order without `APPROVAL_OK`, with the code `ONBOARDING_NOT_APPROVED`. The refusal is enforced
   outside AFO too (direct CLI runs). (FR-021)
-- [ ] **OB-T030** [P] [US2] Write `tests/test_onboarding_afo.py`. These are state-machine tests with a fake launcher:
-  ONBOARDING → WAITING_OWNER_APPROVAL → admitted after a verified approval; REJECTED → BLOCKED; TTL → BLOCKED;
-  input change → ONBOARDING; `max_concurrent_runs` counts ONBOARDING; a direct launch without approval is refused.
+- [ ] **OB-T030** [P] [US2] (amended 2026-10-27) Tests in `tests/test_onboarding_profile.py`: prepare derives, then
+  refuses without approval; AFO `intake_check` refuses before and admits after a verified approval, and ignores
+  hand-onboarded work orders; an input change voids the approval; a direct launch without approval is refused.
 
 **Checkpoint (US2 done)**: full suite, CRE gate. The deploy waits until US3 and US4 are ready for the acceptance.
 
@@ -303,26 +301,27 @@ SWE.1–SWE.6.
   (model profile codex-claude), with the driver classes covered by the owner's authorization
   AUTH-AFO-PILOT-20261027. If a new class is needed, prepare an UNSIGNED authorization for the owner to sign.
   Never sign it.
-- [ ] **OB-T046** [US5] Deploy (deploy pattern; cloud gateway disabled). Submit `BENCH-GPIO-ST-HAL-OB` and let it
-  reach `WAITING_OWNER_APPROVAL`. Hand the owner `summary.md` and the signing command.
-- [ ] **OB-T047** [US5] **Owner approval, GPIO**: the owner reviews `summary.md` for `BENCH-GPIO-ST-HAL-OB`, writes
+- [ ] **OB-T046** [US5] Deploy (deploy pattern; cloud gateway disabled). Derive the GPIO package
+  (`python -m forge_factory.onboarding derive examples/0010e-st-cube-gpio-hal-ob`) and write its `summary`; hand the
+  owner `summary.md` and the signing command.
+- [ ] **OB-T047** [US5] **Owner approval, GPIO**: the owner reviews `summary.md` for `0010e-st-cube-gpio-hal-ob`, writes
   or approves `approval.json` (conflicts, assumptions, accepted gaps), and signs it in their own terminal. The
   implementation engineer verifies with `onboarding verify` and commits the signed copy to
   `evidence/easa/owner-decisions/` in an owner-decision commit.
-- [ ] **OB-T048** [US5] Run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix
+- [ ] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix
   any factory defect through the CRE process (registry → CAPA → reproducer → promotion) and retry with new request
   ids `-R<n>`.
-- [ ] **OB-T049** [US5] Submit `BENCH-SPI-ST-HAL-OB` to `WAITING_OWNER_APPROVAL`.
+- [ ] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`).
 - [ ] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs).
-- [ ] **OB-T051** [US5] Run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
-- [ ] **OB-T052** [US5] Submit `BENCH-USART-ST-HAL-OB` to `WAITING_OWNER_APPROVAL`. Expected assumption:
+- [ ] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
+- [ ] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption:
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [ ] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047;
   the owner signs).
-- [ ] **OB-T054** [US5] Run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
-- [ ] **OB-T055** [US5] Submit `BENCH-TIM-ST-HAL-OB` to `WAITING_OWNER_APPROVAL`.
+- [ ] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
+- [ ] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`).
 - [ ] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs).
-- [ ] **OB-T057** [US5] Run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
+- [ ] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
 - [ ] **OB-T058** [US5] Freeze the record `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. Per attempt
   it holds: revision, input and package hashes, approval id, Fabro run ids, phase verdicts, package status and gaps,
   duration, tokens. Add a checker `evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py` (inputs, outcome, SC-005:
@@ -359,7 +358,7 @@ SWE.1–SWE.6.
   file map). US3 and US4 can proceed in parallel.
 - **US5** needs US1–US3 and US4 slice I (OB-T038–OB-T040, OB-T042). It does not need the held-out authoring
   (OB-T043).
-- Per driver in US5: submit → owner approval → run. The four drivers go in sequence (one run at a time on loop10,
+- Per driver in US5: derive → owner approval → submit and run. The four drivers go in sequence (one run at a time on loop10,
   `max_concurrent_runs = 1`).
 - **OB-T061** is independent and can land any time after Phase 2. It should land before US5, because recovery
   plans happen in those runs.
@@ -368,7 +367,7 @@ SWE.1–SWE.6.
 
 - US1: OB-T011, OB-T016 and OB-T018 (tests) can be written in parallel once OB-T004 exists. OB-T008–OB-T010
   (identity) and OB-T012–OB-T015 (behaviour) touch different files.
-- US2: OB-T023, OB-T026 and OB-T030 (tests) are parallel. OB-T024 (approval) and OB-T027 (AFO states) are in
+- US2: OB-T023, OB-T026 and OB-T030 (tests) are parallel. OB-T024 (approval) and OB-T027 (AFO intake check) are in
   different modules.
 - US3 and US4: OB-T031–OB-T034 (texts) run in parallel with OB-T038–OB-T040 (model gate).
 

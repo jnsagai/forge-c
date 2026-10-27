@@ -202,6 +202,10 @@
           }
         }
       }
+    },
+    "derived_from": {
+      "type": "object",
+      "description": "Feature 016: the profile was derived by the onboarding stage (package hash, approval id, work order); absent for hand-written profiles"
     }
   }
 }

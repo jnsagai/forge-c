@@ -106,16 +106,16 @@ and the post-approval profile records `approval_id`.
 `onboarding: {package: "onboarding/package.json", sha256, approval_id}`. Present only on approved package-driven
 work orders. Every phase gate copies `sha256` into its evidence record (FR-018).
 
-## AFO order states
+## AFO integration (amended 2026-10-27: no new queue states)
 
-```text
-ADMITTED --(onboarding work order)--> ONBOARDING --package READY_FOR_OWNER--> WAITING_OWNER_APPROVAL
-ONBOARDING --package BLOCKED--> BLOCKED (gap package = onboarding package)
-WAITING_OWNER_APPROVAL --verified APPROVED, hash current--> ADMITTED(SWE run) --> RUNNING --> ...
-WAITING_OWNER_APPROVAL --verified REJECTED--> BLOCKED (reason)
-WAITING_OWNER_APPROVAL --TTL--> BLOCKED (WAITING_OWNER_APPROVAL_TTL)
-WAITING_OWNER_APPROVAL --input hash changed--> ONBOARDING (approval void)
-```
+The owner approves a package **before** its work order is submitted; the feature 005 queue state machine is
+unchanged.
 
-- `ONBOARDING` counts as an active state, against `max_concurrent_runs`.
-- `WAITING_OWNER_APPROVAL` does not count.
+- Packages are keyed by the onboarding work order's example name: `$FORGE_STATE_DIR/onboarding/<key>/onboarding/`.
+  Every request and attempt of that work order uses the same approved package.
+- AFO intake (`queue.submit`) refuses an onboarding work order without a verified approval:
+  `INTAKE_ONBOARDING_NOT_APPROVED:<code>:<key>`.
+- `workorder.prepare` re-derives the package at every launch. A changed input changes the package hash, which voids
+  the approval (moved to `onboarding/void/` with the reason), and the launch is refused `ONBOARDING_NOT_APPROVED`.
+- The factory revision is recorded in the package but is not part of the approval subject: a factory update that
+  derives the same facts keeps the approval; one that derives different facts voids it.

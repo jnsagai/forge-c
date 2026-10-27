@@ -14,11 +14,11 @@ The package and approval formats are in [contracts/](contracts/), and the entiti
 
 ```bash
 cd factory/python
-python -m forge_factory.onboarding derive ../../examples/0012e-st-cube-usart-hal-ob WO-OB-USART --no-author
+python -m forge_factory.onboarding derive ../../examples/0012e-st-cube-usart-hal-ob
 ```
 
 **Expected**
-- `$FORGE_STATE_DIR/workorders/WO-OB-USART/onboarding/package.json` validates against
+- `$FORGE_STATE_DIR/onboarding/0012e-st-cube-usart-hal-ob/onboarding/package.json` validates against
   `contracts/onboarding-package.schema.json`.
 - The facts include `instance=USART1`, `base_address=0x52001000`, `time_base=HAL_GetTick`, an
   `undelivered_externals` entry `HAL_RCCEx_GetPeriphCLKFreq` feeding `USART_BRR`, and `host_instance=USART1`, plus
@@ -39,12 +39,12 @@ python -m pytest -q tests/test_onboarding_oracle.py
 
 ## 3. Approval gate (US2)
 
-1. Run `python -m forge_factory.onboarding summary WO-OB-USART`. It writes `onboarding/summary.md`, the owner
+1. Run `python -m forge_factory.onboarding summary 0012e-st-cube-usart-hal-ob`. It writes `onboarding/summary.md`, the owner
    review page.
 2. The owner writes `approval.json` (see `contracts/onboarding-approval.example.json`) and signs it in their own
    terminal:
    `ssh-keygen -Y sign -f ~/.ssh/id_ed25519 -n forge-onboarding-approval onboarding/approval.json`.
-3. Run `python -m forge_factory.onboarding verify WO-OB-USART`.
+3. Run `python -m forge_factory.onboarding verify 0012e-st-cube-usart-hal-ob`.
 
 **Expected**
 - `APPROVAL_OK` with the package hash.
@@ -55,7 +55,7 @@ python -m pytest -q tests/test_onboarding_oracle.py
 ## 4. Generated instructions (US3, SC-006)
 
 ```bash
-python -m forge_factory.onboarding prompts WO-OB-USART --check
+python -m forge_factory.onboarding prompts 0012e-st-cube-usart-hal-ob --check
 ```
 
 **Expected**: every SWE.1–SWE.6 node's built instruction passes the leftover check with 0 findings. No text comes
@@ -76,9 +76,9 @@ from the author. The existing `0014c` target tests then pass on the authored mod
 ## 6. Acceptance (US5, SC-001/005)
 
 For each of `0010e`–`0013e`:
-1. AFO submit with request id `BENCH-<P>-ST-HAL-OB`.
-2. The order reaches `WAITING_OWNER_APPROVAL`.
-3. The owner signs.
+1. Derive the package and its summary (`derive`, `summary`).
+2. The owner signs the approval.
+3. AFO submit with request id `BENCH-<P>-ST-HAL-OB` (intake refuses it without a verified approval).
 4. The SWE run ends READY_FOR_OFFLINE_REVIEW, or BLOCKED with its gaps.
 
 The record goes to `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. A `git log` audit of

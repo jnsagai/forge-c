@@ -115,7 +115,9 @@ def gaps_from(facts: list[dict], authored: list[dict], assumptions: list[dict],
 
 
 def canonical_hash(package: dict) -> str:
-    body = {k: v for k, v in package.items() if k not in ("sha256", "created_at")}
+    """The approval subject: inputs, facts, items, assumptions, gaps, profile, texts. The factory revision and the
+    creation time are recorded but not part of it - a factory update that derives the same facts keeps the approval."""
+    body = {k: v for k, v in package.items() if k not in ("sha256", "created_at", "factory_revision")}
     return sha256_bytes(canonical_json(body))
 
 

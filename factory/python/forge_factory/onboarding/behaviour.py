@@ -132,7 +132,7 @@ def file_map_and_modules(ctx: Ctx, defs: dict[str, list[S.Definition]], style: s
             names = _missing_names(log)
             if rc == 0 and not names:
                 break
-            added = []
+            added, missing = [], []  # only what the last round still cannot resolve is missing
             for n in names:
                 h = _declaring_header(inc, n) if inc else None
                 m = _module_of_header(h, cmap) if h else None
@@ -150,6 +150,7 @@ def file_map_and_modules(ctx: Ctx, defs: dict[str, list[S.Definition]], style: s
             return [not_derived("file_map", "build_closure", q), not_derived("framework_modules", "build_closure", q)], \
                 {"missing": sorted(set(missing))}
         deps = _include_closure(ctx, units, [td, *incs])
+    missing = []  # the build passed: every name is resolved
     files = [{"from": _from(ctx, p), "to": f"{dest}/{p.name}"} for p in code]
     dmap = []
     for p in deps:
@@ -160,12 +161,13 @@ def file_map_and_modules(ctx: Ctx, defs: dict[str, list[S.Definition]], style: s
             continue
         dmap.append({"from": p.resolve().relative_to(Path(pkg["root"]).resolve()).as_posix(),
                      "to": f"inputs/vendor/include/{p.resolve().relative_to(root.resolve()).as_posix()}",
-                     "origin": pkg["origin"], "licence": pkg["licence"], "package": str(pkg["root"])})
+                     "origin": pkg["origin"], "licence": pkg["licence"], "source": pkg["source"],
+                     "package": str(pkg["root"])})
     if hal and inc:
         pkg, _ = _package_of(ctx, inc / CONF_TEMPLATE)
         dmap.append({"from": (inc / CONF_TEMPLATE).resolve().relative_to(Path(pkg["root"]).resolve()).as_posix(),
                      "to": f"inputs/vendor/include/{CONF}", "origin": pkg["origin"], "licence": pkg["licence"],
-                     "package": str(pkg["root"]), "configure": {"hal_modules": mods}})
+                     "source": pkg["source"], "package": str(pkg["root"]), "configure": {"hal_modules": mods}})
     dmap.sort(key=lambda x: x["to"])
     srcs = [Source("log", "onboarding build check (syntax, -Wall)", value="PASS"), *srcs]
     facts = [derived("file_map", {"files": files, "dependencies": [{k: v for k, v in d.items() if k != "package"}

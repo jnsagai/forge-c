@@ -19,10 +19,25 @@ class ProfileError(ValueError):
     pass
 
 
+ONBOARDED = "onboarded:"  # feature 016: "onboarded:<WO>" names the approved derived profile of that work order
+
+
 @functools.lru_cache(maxsize=16)
 def load(pid: str = DEFAULT) -> dict:
     import jsonschema
 
+    if pid.startswith(ONBOARDED):
+        from .common import state_dir
+
+        p = state_dir() / "onboarding" / pid[len(ONBOARDED):] / "onboarding/profile.json"
+        if not p.is_file():
+            raise ProfileError(f"PERIPHERAL_PROFILE_MISSING:{pid}")
+        prof = json.loads(p.read_text())
+        errs = [e.message[:120] for e in
+                jsonschema.Draft202012Validator(json.loads(CONTRACT.read_text())).iter_errors(prof)]
+        if errs or not prof.get("derived_from"):
+            raise ProfileError(f"PERIPHERAL_PROFILE_INVALID:{pid}:{errs[:3] or 'not a derived profile'}")
+        return {**prof, "sha256": sha256_file(p)}
     p = DIR / f"{pid}.yaml"
     if not p.is_file():
         raise ProfileError(f"PERIPHERAL_PROFILE_MISSING:{pid}")

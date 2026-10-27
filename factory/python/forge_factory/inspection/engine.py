@@ -144,6 +144,12 @@ class Store:
         rec = {"schema": "forge-c/baseline/0.4", "baseline_id": f"BL-{phase}-{n:03d}", "phase": phase,
                "author_role": author_role, "baseline_hash": bhash, "files": files, "upstream": upstream,
                "frozen_at": utc_now()}
+        try:  # feature 016 (FR-018): the onboarding package this work product was produced from
+            ob = json.loads((self.workspace / ".forge-run/manifest.json").read_text()).get("onboarding")
+        except (OSError, ValueError):
+            ob = None
+        if ob:
+            rec["onboarding_sha256"] = ob["sha256"]
         (self.base / phase).mkdir(parents=True, exist_ok=True)
         with open(self.base / phase / f"{rec['baseline_id']}.json", "x", encoding="utf-8") as f:
             f.write(pretty_json(rec))

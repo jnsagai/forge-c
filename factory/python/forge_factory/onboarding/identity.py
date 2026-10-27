@@ -79,8 +79,10 @@ def context(example: Path) -> Ctx:
         if root.resolve() in seen:
             continue
         seen.add(root.resolve())
-        pkgs.append({"root": root, "include_root": include_root(root), "origin": p["origin"], "licence": p["licence"]})
-    pkgs.insert(0, {"root": src, "include_root": include_root(src), "origin": d.get("origin"), "licence": d.get("licence")})
+        pkgs.append({"root": root, "include_root": include_root(root), "origin": p["origin"], "licence": p["licence"],
+                     "source": p["source"]})
+    pkgs.insert(0, {"root": src, "include_root": include_root(src), "origin": d.get("origin"),
+                    "licence": d.get("licence"), "source": d["source"]})
     chapter = mm = None
     for item in spec.get("inputs") or []:
         p = (example / item["path"]).resolve()
@@ -209,7 +211,7 @@ def instance(ctx: Ctx, module_headers: list[Path]) -> Fact:
 
 
 # ---- base address and memory map -------------------------------------------------------------------------------
-MM_ROW = re.compile(r"^\s*(0x[0-9A-Fa-f]{8})\s*-\s*0x[0-9A-Fa-f]{8}\s+(0x[0-9A-Fa-f]{8})\s*-\s*0x[0-9A-Fa-f]{8}\s+(.+?)\s{2,}\d")
+MM_ROW = re.compile(r"^\s*(0x[0-9A-Fa-f]{8})\s*-\s*(0x[0-9A-Fa-f]{8})\s+(0x[0-9A-Fa-f]{8})\s*-\s*0x[0-9A-Fa-f]{8}\s+(.+?)\s{2,}\d")
 
 
 def _names_instance(desc: str, inst: str) -> bool:
@@ -227,8 +229,8 @@ def _names_instance(desc: str, inst: str) -> bool:
     return False
 
 
-def memory_map_row(ctx: Ctx, inst: str) -> tuple[int, int, int, str] | None:
-    """(secure start, non-secure start, page, description) of the instance's Table 3 row, or None."""
+def memory_map_row(ctx: Ctx, inst: str) -> tuple[int, int, int, str, int] | None:
+    """(secure start, non-secure start, page, description, window bytes) of the instance's Table 3 row, or None."""
     if not ctx.rm_memory_map or not ctx.rm_memory_map.is_file():
         return None
     page = None
@@ -237,8 +239,9 @@ def memory_map_row(ctx: Ctx, inst: str) -> tuple[int, int, int, str] | None:
         if pm:
             page = int(pm.group(1))
         m = MM_ROW.match(line)
-        if m and _names_instance(m.group(3), inst):
-            return int(m.group(1), 16), int(m.group(2), 16), page, m.group(3).strip()
+        if m and _names_instance(m.group(4), inst):
+            return (int(m.group(1), 16), int(m.group(3), 16), page, m.group(4).strip(),
+                    int(m.group(2), 16) - int(m.group(1), 16) + 1)
     return None
 
 
@@ -267,6 +270,8 @@ def base_address(ctx: Ctx, inst: str) -> list[Fact]:
     if row and row[2]:
         out.append(derived("mm_page", row[2], "mm_table_row",
                            Source("doc", ctx.rel(ctx.rm_memory_map), page=row[2], value=row[3])))
+        out.append(derived("window_bytes", row[4], "mm_table_row",
+                           Source("doc", ctx.rel(ctx.rm_memory_map), page=row[2], value=row[4])))
     else:
         out.append(not_derived("mm_page", "mm_table_row", f"No RM page of the {inst} memory-map row in the inputs."))
     return out
@@ -314,6 +319,34 @@ def register_index(ctx: Ctx, prefix: str) -> Fact:
         return not_derived("register_index", "rm_register_sections",
                            f"The RM chapter has no register section with the prefix {prefix}_.")
     return derived("register_index", {k: regs[k] for k in sorted(regs)}, "rm_register_sections", *srcs)
+
+
+def rm_chapter(ctx: Ctx, prefix: str) -> list[Fact]:
+    """The RM document, chapter number and title (the chapter's first numbered heading), and the register-description
+    sections (the sections that hold a <PREFIX>_ register)."""
+    from ..assurance.hardware import parse_section
+
+    if not ctx.rm_chapter or not ctx.rm_chapter.is_file():
+        return [not_derived("rm_chapter", "rm_chapter_heading", "The RM chapter input is missing.")]
+    text = ctx.rm_chapter.read_text(errors="replace")
+    m = re.search(r"^##\s+(\d+)\s+(.+)$", text, re.M)
+    doc = re.search(r"^#\s+(\w+)", text, re.M)
+    if not m:
+        return [not_derived("rm_chapter", "rm_chapter_heading", "The RM chapter has no numbered chapter heading.")]
+    val = {"doc": doc.group(1) if doc else ctx.rm_chapter.stem.split("-")[0], "chapter": int(m.group(1)),
+           "title": m.group(2).strip()}
+    src = Source("doc", ctx.rel(ctx.rm_chapter), page=None, value=f"{val['doc']} chapter {val['chapter']}")
+    keys = []
+    for name, (sec, page) in sorted(_sections(ctx).items()):
+        if parse_section(sec, prefix):
+            num = re.match(r"inputs/sections/[^/]+/([\d.]+)_", name)
+            if num and num.group(1) not in keys:
+                keys.append(num.group(1))
+    keys.sort(key=lambda k: [int(x) for x in k.split(".")])
+    out = [derived("rm_chapter", val, "rm_chapter_heading", src)]
+    out.append(derived("key_sections", keys, "rm_register_sections", src) if keys else
+               not_derived("key_sections", "rm_register_sections", "No register section in the RM chapter."))
+    return out
 
 
 # ---- scope functions, style, headers -----------------------------------------------------------------------------
@@ -439,6 +472,7 @@ def derive(ctx: Ctx) -> tuple[list[Fact], dict]:
     ctxv["prefix"] = pfx.value
     if pfx.value:
         facts.append(register_index(ctx, pfx.value))
+        facts += rm_chapter(ctx, pfx.value)
     return facts, ctxv
 
 

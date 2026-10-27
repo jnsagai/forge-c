@@ -193,7 +193,10 @@
             "instance_comparisons",
             "host_instance",
             "file_map",
-            "framework_modules"
+            "framework_modules",
+            "rm_chapter",
+            "window_bytes",
+            "key_sections"
           ]
         },
         "value": {},

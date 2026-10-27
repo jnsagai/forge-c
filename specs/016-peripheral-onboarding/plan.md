@@ -70,10 +70,10 @@ Existing hand-onboarded peripherals keep their profiles, and serve as the regres
 |---|---|---|
 | I. Safety and correctness | Hardware facts come from the RM and the vendor headers with sources. Authored models are gated against the RM reset values and access types. Unknowns are NOT_DERIVED, never defaulted. | PASS |
 | II. Evidence | Each fact records its method and source. Gates record tool invocations and hashes. Approval binds the package hash. Every SWE work product records the package hash. | PASS |
-| III. Unattended run, external authority | No human node inside any Fabro run. The owner gate sits between the onboarding run and the SWE run, signed by the owner. AFO bounds the wait with a TTL and finalizes BLOCKED. | PASS |
+| III. Unattended run, external authority | No human node inside any Fabro run. The owner gate sits between the onboarding run and the SWE run, signed by the owner; AFO intake refuses an unapproved onboarding work order. | PASS |
 | IV. Versioned skills | Four new roles (model author/inspector, text author/inspector) in `agents.yaml`, each with a rendered SKILL.md. Authors and inspectors are distinct identities. | PASS |
 | V. MCP only | Authored items use `forge-docs-mcp` and `forge-sim-mcp` (new `check_model` op) and `write_file` restricted by authz prefixes. Derivation is a non-AI factory step (native APIs allowed). | PASS |
-| VI. Model-free supervision | No supervisor change. The new AFO states are deterministic and TTL-bounded. | PASS |
+| VI. Model-free supervision | No supervisor change; no new AFO states (the intake check is deterministic). | PASS |
 | VII. Evidence-based knowledge | Not affected: no lessons are created from onboarding. | PASS |
 | VIII. Traces | The stage emits factory events in the existing schema. Raw prompts stay OFF. | PASS |
 | IX. Minimal model cost | Derivation is model-free. Authoring runs only for items that cannot be derived, with role budgets. | PASS |
@@ -92,7 +92,7 @@ Post-design re-check: PASS. The design adds no human node, no paid service and n
 | D | Regression oracle over `0008c`, `0010c`–`0014c`, `0010d`–`0014d`, with a reviewed exceptions file. | US1 | FR-020 |
 | E | Derived profile, `peripheral.of_ws` preference, manifest `onboarding` block, package hash in work-product evidence. | US2, US3 | FR-014, 018, 019 |
 | F | Owner approval: summary page, approval schema, signature verification (namespace `forge-onboarding-approval`), CONFLICT and assumption rules, invalidation on hash change. | US2 | FR-016, 017 |
-| G | AFO integration: states `ONBOARDING` and `WAITING_OWNER_APPROVAL` (TTL), dispatch of the SWE run after verified approval, refusal otherwise. | US2 | FR-016, 021 |
+| G | AFO integration (amended): approval before submission, AFO intake refusal without a verified approval, re-derivation at every launch; no new queue states. | US2 | FR-016, 021 |
 | H | Text generator per driver style, authored-text slots, package-only `peripheralize` path, leftover check. | US3 | FR-010, 012, 013 |
 | I | Model gate (`forge-sim-mcp check_model`): load, reset values, access types, smoke. Run on the existing models; their results recorded. | US4 | FR-011 |
 | J | Onboarding Fabro run: graph, four role skills, authz prefixes, bounded loops, gaps. | US3, US4 | FR-008, 009, 022 |
@@ -142,7 +142,7 @@ factory/python/forge_factory/
 ├── workflow/prompts.py            # package-only key source for package-driven work orders
 ├── mcp/servers/sim.py             # check_model operation
 ├── policy/authz.py                # onboard-* role write prefixes
-├── afo/queue.py, dispatch.py, conductor.py   # ONBOARDING / WAITING_OWNER_APPROVAL
+├── afo/queue.py                   # intake refuses an unapproved onboarding work order
 └── assurance/hardware.py          # simulator limitation from the model gate result when present
 config/factory/agents.yaml         # onboard-model-author|inspector, onboard-text-author|inspector (SKILL.md rendered
                                    # into .fabro/skills by registry.skillgen)

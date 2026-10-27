@@ -13,9 +13,12 @@ feature 015, d9da03e) and in what the hand onboarding of feature 015 actually ne
 3. **Owner gate, between the two runs.** The owner signs an approval of the package hash. The SWE.1–SWE.6 run is
    launched only after that.
 
-In AFO, the order gets two new states: `ONBOARDING` (active) and `WAITING_OWNER_APPROVAL`. The second is bounded by a
-TTL in the same way as `WAITING_EXTERNAL_CHANGE`. Expiry finalizes the order as BLOCKED with the onboarding package
-as its gap package.
+**Amendment (2026-10-27, during implementation).** AFO gets no new states. The owner approves the package before
+the work order is submitted, and AFO intake refuses an onboarding work order without a verified approval. Packages
+are keyed by the work order's example, so every attempt of an order shares the approval, and `prepare` re-derives the
+package at every launch, so a changed input voids it. This keeps the feature 005 queue state machine unchanged (the
+`ADMITTED` state has no edge to a waiting state, and the maintainer opens cases for `WAITING_EXTERNAL_CHANGE` orders,
+which an approval wait must not trigger).
 
 **Rationale.**
 - Constitution III forbids a human approval gate inside a normal Fabro run. A gate between two runs is the same
