@@ -145,16 +145,43 @@ PARTIAL, product/learning/availability stay NOT_RUN, deployment NOT_ACTIVATED.
 4. Feature 015 TIM review (frees TIM for a refreshed inspector held-out set); further frozen baselines (>= 4) before
    any new inspector measurement.
 
-## Next implementation work (in order)
+## Prioritized backlog (small increments first)
 
-1. Collect and publish job 050 (above). Do not tick anything from it unless an acceptance test's exact evidence
-   exists (likely none: these are pilot product runs).
-2. Independent fault observer for `operation-24` (DA-T052 scope): records per FAULTS class (`afo/qualification.py`) with
-   `independently_restored`, `restoration_seconds`, `unexpected_interventions`, `ledger_reset`, `duplicate_effects`,
-   `false_ready`, bound to the manifest sha (see `afo/operational_campaign.report`). Then a signed operation-24
-   manifest with the three drivers as product job bindings, and the campaign when the owner gives the window.
-3. Keep `known-issues.{md,json}`, `validation.md`, the ledger and PR #42's body (`gh api --method PATCH
-   repos/jnsagai/forge-c/pulls/42 --input <json>`; newest section on top) current after every milestone.
+Work top-down; each item ends with published evidence, a `validation.md` entry, updated known issues and PR #42 body.
+Tick a task only when its acceptance test's exact evidence exists. Effort is wall-clock for one engineer plus GPU time.
+
+### Tier A — no owner action needed, start immediately
+
+| # | Item | Tasks served | Effort | Done when |
+|---|---|---|---|---|
+| A1 | Collect and publish GPU job 050 (st3 driver runs): package status, gaps, first failing phase per driver; sanitized summary under `evidence/014-durable-local-autonomy/st3-driver-runs/`. While it still runs, capture status/scorecard snapshots and a privacy scan (KI-014-018's close condition is "any live run"). | groundwork DA-T027; DA-T018 (KI) | hours | summary committed; KI-014-018 re-checked against the snapshots |
+| A2 | Independent fault observer for `operation-24`: one record per `FAULTS` class (`afo/qualification.py`) with `independently_restored`, `restoration_seconds`, `unexpected_interventions`, `ledger_reset`, `duplicate_effects`, `false_ready`, bound to the manifest sha (`afo/operational_campaign.report`); deterministic tests; then the operation-24 manifest with the three drivers as product job bindings. | prerequisite of DA-T016/017/026/046/049/052 | ~1 day | observer + manifest tested locally; nothing ticked yet |
+| A3 | DA-T028 comparison report on frozen cases and recorded configuration identities (no RCC dependency); use already-recorded runs where they qualify, record NOT_RUN for any live comparison still missing. | DA-T028 (partial) | ~0.5 day | report generator tested; live part listed as missing |
+| A4 | Housekeeping: remove the clean leftover worktrees `repos/forge-c-014-regress-1e2fd46`, `-regress-20650af`, `-onboard-rng`, `-onboard-lptim` (`git -C $FC014_REPO worktree remove ...`); check loop10 free space. | — | minutes | worktrees gone |
+
+### Tier B — one small owner act, then GPU time
+
+| # | Owner act | Then | Tasks served |
+|---|---|---|---|
+| B1 | Sign SSA-STC-001 / TAA-STC-001 (answer Q-07 RNG relevance, Q-04 model per role) | register them in an "Owner decision" commit; re-run the st3 drivers for READY packages; with the Feature 015 TIM review this gives >= 4 fresh held-out baselines for one new inspector measurement (the only route to closing KI-014-003) | DA-T027 groundwork; KI-014-003; DA-T035 (KI: "paired author/inspector run on a refreshed held-out set") |
+| B2 | Review PR #42 (brownfield-resume behaviour change; CRE REJECTED/PROTECTED_PATH_CHANGE) | address review comments; keep the PR mergeable against main | KI-014-010 |
+| B3 | Add the two allowed-signers lines and sign one disposition and one patch bundle | run the offline round trip live | KI-014-009 (DA-T056–058 are already ticked deterministically) |
+
+### Tier C — owner authorization and a GPU/host window
+
+| # | Item | Tasks served | Needs |
+|---|---|---|---|
+| C1 | `operation-24` campaign with A2's observer, the three drivers as work, including reboot and authoritative-mount loss | DA-T016, DA-T017, DA-T046, DA-T049, DA-T050 (operator-stop-resume class); partial DA-T026/052; re-check KI tasks DA-T012, 013, 033 (cancel/restart/resume evidence) | host admin for reboot/mount on Omniverse2; signed manifest; GPU queue paused (`touch $Q/gpuq/STOP`) |
+| C2 | DA-T025 RCC qualification through every native phase to sealed READY | DA-T025; re-check KI tasks DA-T019, 021, 032, 034 (product repair, decomposition, candidate selection) | explicit owner authorization (task says "only when authorized") |
+| C3 | DA-T027 product benchmark (30 frozen products) and the live part of DA-T028 | DA-T027, DA-T028 | several GPU days |
+| C4 | DA-T042 chronological job-A-to-B learning benefit | DA-T042; re-check KI tasks DA-T040, 041 | frozen memory-enabled/baseline comparison window |
+| C5 | `operation-72` and `operation-168` | complete DA-T026, DA-T052 | multi-day windows |
+
+KI tasks not covered above (DA-T004, 005, 007, 010, 031, 036) need small targeted native trials or a second qualified
+local diagnosis model (KI-014-001); they stay parked under the owner's "Known issues only" unless the owner reopens them.
+
+Keep `known-issues.{md,json}`, `validation.md`, the ledger and PR #42's body (`gh api --method PATCH
+repos/jnsagai/forge-c/pulls/42 --input <json>`; newest section on top) current after every item.
 
 ## Gotchas learned this session
 
