@@ -130,3 +130,24 @@ def test_missing_unbound_or_fact_caused_reviews_cannot_claim_sc005(record, failu
     order["cause_review_sha256"] = checker.digest(path)
     with pytest.raises(AssertionError):
         checker.check_causes(record, ("gpio",))
+
+
+def test_corrected_latest_review_cannot_erase_a_historical_fact_failure(record):
+    original = record["orders"][0]
+    original["cause_review"]["onboarding_fact_causes_identified"] = ["omitted RM field"]
+    path = checker.RUNS / original["request_id"] / "sc005-review.json"
+    path.write_text(json.dumps(original["cause_review"]))
+    original["cause_review_sha256"] = checker.digest(path)
+    corrected = copy.deepcopy(original)
+    corrected["request_id"] += "-R1"
+    corrected["attempts"][0]["attempt_id"] = "fixture-r1"
+    corrected["cause_review"]["attempt_id"] = "fixture-r1"
+    corrected["cause_review"]["onboarding_fact_causes_identified"] = []
+    path = checker.RUNS / corrected["request_id"] / "sc005-review.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(corrected["cause_review"]))
+    corrected["cause_review_sha256"] = checker.digest(path)
+    record["orders"].append(corrected)
+    checker.check_causes(record, ("gpio",))
+    with pytest.raises(AssertionError, match="omitted RM field"):
+        checker.check_causes(record, ("gpio",), history=True)
