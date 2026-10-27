@@ -459,3 +459,12 @@ SWE.1–SWE.6.
   failures. Raw suite remains FAIL; OB-NO-REGRESSIONS independently verifies the unchanged failure set.
 - Corrected GPIO request `BENCH-GPIO-ST-HAL-OB-R1` launched as `afo-3043541c6afd38b1`, on `557e920` with
   owner-signed OA-2026-10-27-05. Its live workspace is not modified by implementation work.
+
+- The SPI probe-context correction is isolated in runtime candidate `9dd5b71` (source `883a54c`). CRE
+  `pd-8fdefc372c5e6a0f2943` passes the staged causal contrast and all seven hard gates; oracle commit `61020fa`
+  precedes deployment. The generic SWE.3 failure fingerprint already belongs to CAPA-028, so the new reproducer
+  is linked there rather than opening a duplicate. CAPA-028's prior VERIFIED status concerns its older tool-budget
+  cause; it is not a claim that this new symptom completed that lifecycle. The new probe contrast is recorded separately.
+- Quickstart §1 now uses the actual USART assumption identifier and derived module closure. Section §5 uses the
+  implemented model-gate API and owner-confirmed clock rather than the unimplemented CLI alias. The exact command
+  passes as OB-QUICKSTART-MODEL. Held-out model authoring remains explicitly open.

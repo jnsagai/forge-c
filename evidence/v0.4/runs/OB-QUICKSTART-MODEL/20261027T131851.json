@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/quickstart_model_check.py"
+  ],
+  "duration_s": 5.831,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "61020fa65054f7a13405b968e89a6c1ab6ea5b8b",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-QUICKSTART-MODEL/20261027T131851.log",
+  "log_sha256": "07639cc89e4f2994c8267bf4334b693866d6e5b5175973cda827494fb1892468",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-QUICKSTART-MODEL",
+  "ts_utc": "2026-10-27T13:18:51.776928Z"
+}

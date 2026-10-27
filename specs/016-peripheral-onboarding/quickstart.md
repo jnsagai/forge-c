@@ -22,8 +22,10 @@ python -m forge_factory.onboarding derive ../../examples/0012e-st-cube-usart-hal
   `contracts/onboarding-package.schema.json`.
 - The facts include `instance=USART1`, `base_address=0x52001000`, `time_base=HAL_GetTick`, an
   `undelivered_externals` entry `HAL_RCCEx_GetPeriphCLKFreq` feeding `USART_BRR`, and `host_instance=USART1`, plus
-  `framework_modules` ⊇ {UART, DMA, RCC}. Each has sources.
-- The assumption `ASM-CLOCK-USART1` is unconfirmed, and a blocking gap `ASSUMPTION_UNCONFIRMED` exists.
+  `framework_modules` includes UART and RCC. Modules come from the required header closure; an unused DMA module
+  is not added. Each fact has sources.
+- Before owner approval, `ASM-HAL-RCCEX-GETPERIPHCLKFREQ` is unconfirmed and a blocking
+  `ASSUMPTION_UNCONFIRMED` gap exists. The acceptance owner subsequently confirmed 64,000,000 Hz in OA-2026-10-27-03.
 - The run takes under 10 minutes. The factory event log shows 0 model calls for the work order.
 - Running again gives an identical `sha256`.
 
@@ -64,14 +66,31 @@ from `config/factory/peripherals/usart.yaml` `prompt*` keys. Each text's `from` 
 ## 5. Model gate (US4)
 
 ```bash
-python -m forge_factory.onboarding check-model usart     # existing model, re-gated
+python - <<'PY'
+import json
+from forge_factory.onboarding import onboarding_dir
+from forge_factory.onboarding.approval import verify
+from forge_factory.onboarding.facts import read_package
+from forge_factory.onboarding.model_gate import check
+
+key = "0012e-st-cube-usart-hal-ob"
+root = onboarding_dir(key)
+decision = verify(root)
+assert decision["code"] == "APPROVAL_OK", decision["code"]
+package = read_package(root)
+confirmed = {item["id"]: item["value"] for item in decision["approval"]["assumption_confirmations"]}
+values = {item["symbol"]: confirmed[item["id"]] for item in package["assumptions"]}
+result = check(key, confirmed=values, pkg=package)
+print(json.dumps(result, indent=2))
+assert result["verdict"] == "PASS"
+PY
 ```
 
 **Expected**: load PASS, reset values PASS (or unmodelled registers listed as limits), access types PASS, smoke PASS
 on the delivered UART HAL image.
 
-For SC-007, the held-out authoring of the CRC model runs through the onboarding Fabro run with the hand model hidden
-from the author. The existing `0014c` target tests then pass on the authored model.
+This invokes the implemented model-gate API; the `check-model` CLI spelling is currently a NOT_IMPLEMENTED stub.
+For SC-007, held-out CRC authoring and its graph remain open (OB-T041/043). No authored-model result is claimed.
 
 ## 6. Acceptance (US5, SC-001/005)
 
