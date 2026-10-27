@@ -1,7 +1,8 @@
 # WWDG unblock: engine capability, then one complete driver
 
-Status: proposed external engineering scope; no SafeC implementation or policy
-change is authorized by this document. This is not a safety signature request.
+Status: APPROVED by the owner on 2026-10-27: “I - Approve the scoped
+SafeC/Forge-C extension.” This records authority for the scoped implementation and
+qualification below. It is not a safety signature or a deployment authorization.
 
 The owner asked whether progress matched the actual autonomy objective. Observer
 and comparison increments are published, but 30/58 tasks, 0/3 READY and unproven
@@ -73,5 +74,7 @@ The private SafeC checkout's `AGENTS.md` says: "Functional changes require
 confirmation." It also requires isolated work, active feature instructions and real
 formal checks for semantic changes. Feature014 qualification approval and development
 SSA/TAA deferral are already recorded; neither specifically authorized this newly
-identified change to SafeC's verification semantics. Confirm the narrow scope above
-before modifying that implementation. Preserve its private/public source boundary.
+identified change to SafeC's verification semantics. The owner's explicit approval
+above now satisfies that requirement and reopens only the corresponding scoped
+mandatory-operation preflight portion of DA-T036. Preserve the private/public source
+boundary, historical allowances and current execution-authority requirement.

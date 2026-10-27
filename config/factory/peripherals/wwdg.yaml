@@ -101,3 +101,19 @@ prompt:
     watchdog activated, then the early wake-up flag queried and cleared and the counter refreshed (on the host the
     registers keep the written values; there is no countdown)
   requirement_example: When LL_WWDG_SetWindow is called with a window value, the WWDG LL driver shall write the window value to WWDG_CFR.W.
+
+# Source-bound mandatory forms; preflight uses the actual engine, before inference.
+# This does not replace authored requirements, full coverage or any quality gate.
+semantic_required_operations:
+  - {register: WWDG_CR, field: WDGA, action: set_field}
+  - {register: WWDG_CR, field: WDGA, action: read_field}
+  - {register: WWDG_CR, field: T, action: write_field, logical_value: "127"}
+  - {register: WWDG_CR, field: T, action: read_field}
+  - {register: WWDG_CFR, field: WDGTB, action: write_field, logical_value: "0"}
+  - {register: WWDG_CFR, field: WDGTB, action: read_field}
+  - {register: WWDG_CFR, field: W, action: write_field, logical_value: "80"}
+  - {register: WWDG_CFR, field: W, action: read_field}
+  - {register: WWDG_CFR, field: EWI, action: set_field}
+  - {register: WWDG_CFR, field: EWI, action: read_field}
+  - {register: WWDG_SR, field: EWIF, action: write_field, logical_value: "0"}
+  - {register: WWDG_SR, field: EWIF, action: read_field}

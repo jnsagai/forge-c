@@ -328,6 +328,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
         manifest["peripheral"] = prof["id"]
         manifest["peripheral_profile_sha256"] = prof["sha256"]
+        if "semantic_required_operations" in prof:
+            manifest["semantic_required_operations"] = prof["semantic_required_operations"]
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 
