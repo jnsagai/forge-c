@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev2/r",
+    "factory/python/tests/test_afo_planner_frozen.py"
+  ],
+  "duration_s": 0.346,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "64d6d61b83c2e7b6954825391799841db25f7db7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T061/20261027T100154.log",
+  "log_sha256": "2db3e64e8ba5294aa8e63983d68d24f7b653ef019dc2f013ef31595571239605",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-T061",
+  "ts_utc": "2026-10-27T10:01:54.001185Z"
+}

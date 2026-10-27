@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/c",
+    "factory/python/tests/test_onboarding_contracts.py"
+  ],
+  "duration_s": 0.435,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "64d6d61b83c2e7b6954825391799841db25f7db7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T003/20261027T095503.log",
+  "log_sha256": "9a115371047ef69b026dd4214503347ff19adbc58755f1aebee61b2e638b3b35",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-T003",
+  "ts_utc": "2026-10-27T09:55:03.512136Z"
+}

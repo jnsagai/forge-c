@@ -19,13 +19,13 @@ open dependency).
 
 ## Phase 1: Setup
 
-- [ ] **OB-T001** Create the package skeleton `ff/onboarding/__init__.py` with an argparse CLI
+- [X] **OB-T001** Create the package skeleton `ff/onboarding/__init__.py` with an argparse CLI ✅ Evidence: `evidence/v0.4/runs/OB-T001/latest.json`
   `python -m forge_factory.onboarding {derive,summary,verify,prompts,check-model}`. Each subcommand exits 2 with
   `NOT_IMPLEMENTED` until its slice lands.
-- [ ] **OB-T002** [P] Create `config/factory/onboarding/oracle-exceptions.yaml` (schema header, empty `exceptions:`
+- [X] **OB-T002** [P] Create `config/factory/onboarding/oracle-exceptions.yaml` (schema header, empty `exceptions:` ✅ Evidence: `evidence/v0.4/runs/OB-T020/latest.json`
   list, each entry `{example, fact, hand_value, derived_value, explanation, reviewed_by}`) and a loader in
   `ff/onboarding/oracle.py`.
-- [ ] **OB-T003** [P] Add a contract test, `tests/test_onboarding_contracts.py`. It validates
+- [X] **OB-T003** [P] Add a contract test, `tests/test_onboarding_contracts.py`. It validates ✅ Evidence: `evidence/v0.4/runs/OB-T003/latest.json`
   `specs/016-peripheral-onboarding/contracts/*.example.json` against their schemas (Draft 2020-12), and checks that
   the four invalid cases are rejected: DERIVED without a source, NOT_DERIVED with a value, CONFLICT without an owner
   question, 4 attempts.
@@ -34,18 +34,18 @@ open dependency).
 
 These are blocking: every story writes or reads the package.
 
-- [ ] **OB-T004** Implement `ff/onboarding/facts.py`:
+- [X] **OB-T004** Implement `ff/onboarding/facts.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T005/latest.json`
   - `Fact`, `Source`, `AuthoredItem`, `Assumption` and `Gap` dataclasses following `data-model.md`;
   - `gaps_from(facts, items, assumptions)` (deterministic ids `GAP-OB-nnn` in fact-name order);
   - `canonical_hash(package)` (sorted keys, compact separators, excluding `sha256` and `created_at`);
   - `write_package(ws, package)` (validates against `contracts/onboarding-package.schema.json` before writing
     `onboarding/package.json`). (FR-005, FR-015)
-- [ ] **OB-T005** [P] Write `tests/test_onboarding_facts.py`:
+- [X] **OB-T005** [P] Write `tests/test_onboarding_facts.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T005/latest.json`
   - status/value/source rules;
   - gap derivation, including `blocks_approval` for CONFLICT, ASSUMPTION_UNCONFIRMED and MISSING_INPUT;
   - the hash is stable under key order and changes on any fact change;
   - writing an invalid package raises.
-- [ ] **OB-T006** Extend `specs/008-brownfield-work-orders/contracts/brownfield-workorder.schema.json` and the work
+- [X] **OB-T006** Extend `specs/008-brownfield-work-orders/contracts/brownfield-workorder.schema.json` and the work ✅ Evidence: `evidence/v0.4/runs/OB-T007/latest.json`
   order loader in `ff/workorder.py`:
   - `target.instance`;
   - top-level `onboarding: true`;
@@ -53,7 +53,7 @@ These are blocking: every story writes or reads the package.
   - an RM PDF input `{path, role: reference_manual, chapter, memory_map_pages}`.
 
   Work orders without `onboarding` must validate and prepare exactly as before.
-- [ ] **OB-T007** [P] Write `tests/test_onboarding_workorder.py`. Every existing example under `examples/` still
+- [X] **OB-T007** [P] Write `tests/test_onboarding_workorder.py`. Every existing example under `examples/` still ✅ Evidence: `evidence/v0.4/runs/OB-T007/latest.json`
   validates. A minimal onboarding work order (owner inputs only) validates. `onboarding: true` without
   `target.instance` validates, with the instance left NOT_DERIVED later.
 
@@ -69,67 +69,67 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
 
 ### Slice B: identity facts
 
-- [ ] **OB-T008** [US1] In `ff/onboarding/identity.py`, implement `instance(wo)` from `target.instance`. When it is
+- [X] **OB-T008** [US1] In `ff/onboarding/identity.py`, implement `instance(wo)` from `target.instance`. When it is ✅ Evidence: `evidence/v0.4/runs/OB-T011/latest.json`
   absent, scan the scope text for one instance token of the device header. None or several gives NOT_DERIVED with an
   owner question; a field that disagrees with the scope text gives CONFLICT.
-- [ ] **OB-T009** [US1] In `ff/onboarding/identity.py`, implement `base_address(ws, instance)`:
+- [X] **OB-T009** [US1] In `ff/onboarding/identity.py`, implement `base_address(ws, instance)`: ✅ Evidence: `evidence/v0.4/runs/OB-T011/latest.json`
   - evaluate the CMSIS `#define` chain (`<INST>_BASE_S`/`_NS` from the build's secure define, via
     `brownfield.cmsis` build settings) with file:line;
   - read the RM memory-map row for the instance with its page;
   - two values that differ give CONFLICT, and a missing page gives `mm_page` NOT_DERIVED.
-- [ ] **OB-T010** [US1] In `ff/onboarding/identity.py`, implement:
+- [X] **OB-T010** [US1] In `ff/onboarding/identity.py`, implement: ✅ Evidence: `evidence/v0.4/runs/OB-T011/latest.json`
   - `register_prefix` (the `<P>_TypeDef` the instance casts to, checked against the RM heading prefix);
   - `register_index`, reusing `assurance.hardware.index` with reset values and access types per field;
   - `driver_style` (LL / HAL_ON_LL / HAL_STANDALONE from the delivered files and the handle parameter);
   - `headers` and `function_prefix`, from the scope functions and their declaring headers.
-- [ ] **OB-T011** [P] [US1] Write `tests/test_onboarding_identity.py`. On the real ST inputs (skip when absent):
+- [X] **OB-T011** [P] [US1] Write `tests/test_onboarding_identity.py`. On the real ST inputs (skip when absent): ✅ Evidence: `evidence/v0.4/runs/OB-T011/latest.json`
   USART1 0x52001000 p.180, GPIOA 0x56020000 p.176, SPI1 0x52003000 p.180, TIM2 0x50000000 p.181, CRC 0x56024C00
   p.176. On synthetic headers: CONFLICT and NOT_DERIVED cases, and driver-style classification for `0008c`, `0009b`
   and `0014d`.
 
 ### Slice C: behaviour facts
 
-- [ ] **OB-T012** [US1] In `ff/onboarding/behaviour.py`, implement on the `brownfield.scope` call graph of the scope
+- [X] **OB-T012** [US1] In `ff/onboarding/behaviour.py`, implement on the `brownfield.scope` call graph of the scope ✅ Evidence: `evidence/v0.4/runs/OB-T016/latest.json`
   functions:
   - `time_base` (reached calls to a framework `uint32_t f(void)` compared against a `Timeout` parameter);
   - `timeout_constants`;
   - `waits` (flag-polling loops, each classified as bounded by time base, by constant, or unbounded).
-- [ ] **OB-T013** [US1] In `ff/onboarding/behaviour.py`, implement `undelivered_externals(ws)`. Compile the delivered
+- [X] **OB-T013** [US1] In `ff/onboarding/behaviour.py`, implement `undelivered_externals(ws)`. Compile the delivered ✅ Evidence: `evidence/v0.4/runs/OB-T016/latest.json`
   sources and link them with an empty `main` on host (LLVM) and target (Arm GNU) using the existing `mcp/servers`
   build flags. Parse the undefined references, drop libc and compiler runtime, and attach each symbol's declaration
   (file:line) and call sites. Then mark `feeds` (the registers its result reaches by data flow inside the reached
   function), which propose an `Assumption`. (FR-007)
-- [ ] **OB-T014** [US1] In `ff/onboarding/behaviour.py`, implement `instance_comparisons` (`Instance ==/!= X` and the
+- [X] **OB-T014** [US1] In `ff/onboarding/behaviour.py`, implement `instance_comparisons` (`Instance ==/!= X` and the ✅ Evidence: `evidence/v0.4/runs/OB-T016/latest.json`
   macros that expand to them, in reached code) and `host_instance`: the scope instance when it is compared, else
   absent.
-- [ ] **OB-T015** [US1] In `ff/onboarding/behaviour.py`, implement `file_map_and_modules(ws)`:
+- [X] **OB-T015** [US1] In `ff/onboarding/behaviour.py`, implement `file_map_and_modules(ws)`: ✅ Evidence: `evidence/v0.4/runs/OB-T016/latest.json`
   - start from the scope module's `.c`/`.h` plus the framework headers;
   - iterate the existing intake build check (`brownfield.delivery`, `configure_hal_conf`) for at most 8 rounds,
     mapping each unknown type or implicit declaration to the vendor header that declares it, and that header to its
     `hal_conf` module;
   - result: `file_map` and `framework_modules`. A name that no vendor file declares gives MISSING_INPUT.
-- [ ] **OB-T016** [P] [US1] Write `tests/test_onboarding_behaviour.py`:
+- [X] **OB-T016** [P] [US1] Write `tests/test_onboarding_behaviour.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T016/latest.json`
   - USART HAL: time base `HAL_GetTick`, external `HAL_RCCEx_GetPeriphCLKFreq` feeding `USART_BRR`, host instance
     USART1, modules ⊇ {UART, DMA, RCC};
   - CRC HAL: no time base, no externals, modules {CRC};
   - TIM HAL: modules ⊇ {TIM, DMA};
   - a synthetic unbounded wait is classified unbounded;
   - an injected missing header gives MISSING_INPUT.
-- [ ] **OB-T017** [US1] Wire `derive` in `ff/onboarding/__init__.py`. It runs after `workorder.prepare`'s intake (no
+- [X] **OB-T017** [US1] Wire `derive` in `ff/onboarding/__init__.py`. It runs after `workorder.prepare`'s intake (no ✅ Evidence: `evidence/v0.4/runs/OB-T001/latest.json`
   intake check weakened, FR-002), converts PDF RM inputs with `docs.pdf2md` and writes their hash manifests (FR-003),
   assembles facts, assumptions and gaps, and writes `onboarding/package.json` with status READY_FOR_OWNER or BLOCKED.
   It emits factory events and asserts 0 model calls for the work order. (FR-002, FR-003, FR-022)
-- [ ] **OB-T018** [P] [US1] Write `tests/test_onboarding_derive.py`. A second `derive` on the same inputs gives an
+- [X] **OB-T018** [P] [US1] Write `tests/test_onboarding_derive.py`. A second `derive` on the same inputs gives an ✅ Evidence: `evidence/v0.4/runs/OB-T018/latest.json`
   identical `sha256`. Editing one delivered byte changes `inputs[].sha256` and the package hash. The event log of the
   derive has no model-call events. A timing assertion is recorded (not gating) for SC-004. (FR-006)
 
 ### Slice D: regression oracle
 
-- [ ] **OB-T019** [US1] Implement `ff/onboarding/oracle.py` `compare(example)`. It derives the package for an
+- [X] **OB-T019** [US1] Implement `ff/onboarding/oracle.py` `compare(example)`. It derives the package for an ✅ Evidence: `evidence/v0.4/runs/OB-T020/latest.json`
   existing example and compares, field by field, with `config/factory/peripherals/<id>.yaml` and the example's
   `workorder.json`: instance, base_address, mm_page, register_prefix, ll/hal headers, function prefixes,
   hal.time_base, hal.clock_stub symbol, hal.host_instance, delivery.files, dependencies and configure.hal_modules.
-- [ ] **OB-T020** [US1] Write `tests/test_onboarding_oracle.py`, parametrised over `0008c-st-cube-rcc`,
+- [X] **OB-T020** [US1] Write `tests/test_onboarding_oracle.py`, parametrised over `0008c-st-cube-rcc`, ✅ Evidence: `evidence/v0.4/runs/OB-T020/latest.json`
   `0010c`–`0014c` and `0010d`–`0014d` (no ST IWDG delivery exists; correction 2026-10-27). Every difference must be listed in
   `oracle-exceptions.yaml` with an explanation; an unlisted difference fails. Review and commit each exception with
   its reason.
@@ -144,14 +144,14 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
 
 ### Slice E: derived profile and package-driven work orders
 
-- [ ] **OB-T021** [US2] Implement `ff/onboarding/profile.py` `derived_profile(package, approval)`. It maps facts to
+- [X] **OB-T021** [US2] Implement `ff/onboarding/profile.py` `derived_profile(package, approval)`. It maps facts to ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   the feature 009 profile fields (plus `derived_from {package, sha256, approval_id}`), adds `hal.clock_stub` and
   `hal.time_base` from confirmed assumptions and facts, and validates against
   `specs/009-peripheral-generic-iwdg/contracts/peripheral-profile.schema.json` (extended with `derived_from`).
-- [ ] **OB-T022** [US2] In `ff/peripheral.py`, make `of_ws(ws)` return the approved package profile when the manifest
+- [X] **OB-T022** [US2] In `ff/peripheral.py`, make `of_ws(ws)` return the approved package profile when the manifest ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   has `onboarding.sha256` and `approval_id`. In `ff/workorder.py`, write the manifest `onboarding` block. Every phase
   gate record (`ff/inspection/engine.py` gate log) copies `onboarding.sha256` (FR-018).
-- [ ] **OB-T023** [P] [US2] Write `tests/test_onboarding_profile.py`:
+- [X] **OB-T023** [P] [US2] Write `tests/test_onboarding_profile.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   - the derived USART profile validates;
   - `of_ws` prefers it only when it is approved;
   - a work order without `onboarding` gets the hand profile, and its built workflow is byte-identical to before
@@ -160,7 +160,7 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
 
 ### Slice F: approval
 
-- [ ] **OB-T024** [US2] Implement `ff/onboarding/approval.py`:
+- [X] **OB-T024** [US2] Implement `ff/onboarding/approval.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T026/latest.json`
   - `summary(ws)` writes `onboarding/summary.md`: facts table with sources, authored items with verdicts,
     assumptions to confirm, gaps, and the exact signing command;
   - `verify(ws)` runs `ssh-keygen -Y verify -n forge-onboarding-approval` with `config/factory/afo-allowed-signers`
@@ -169,26 +169,26 @@ gives the facts listed in quickstart §1. The regression oracle passes over the 
     unlisted non-blocking gap, or REJECTED without a reason.
 
   Codes: `APPROVAL_OK`, `APPROVAL_STALE`, `APPROVAL_INCOMPLETE:<what>`, `APPROVAL_BAD_SIGNATURE`.
-- [ ] **OB-T025** [US2] Implement invalidation: any input hash change on re-derive voids the approval
+- [X] **OB-T025** [US2] Implement invalidation: any input hash change on re-derive voids the approval ✅ Evidence: `evidence/v0.4/runs/OB-T026/latest.json`
   (`approval.json` moved to `onboarding/void/` with the reason), and the manifest block is removed. (FR-017)
-- [ ] **OB-T026** [P] [US2] Write `tests/test_onboarding_approval.py` with a throwaway test key and a test
+- [X] **OB-T026** [P] [US2] Write `tests/test_onboarding_approval.py` with a throwaway test key and a test ✅ Evidence: `evidence/v0.4/runs/OB-T026/latest.json`
   allowed-signers file (never the owner's key): signature OK, wrong namespace, wrong principal, stale hash, an open
   CONFLICT, an unconfirmed assumption, an unlisted gap, invalidation after an input edit.
 
 ### Slice G: AFO integration
 
-- [ ] **OB-T027** [US2] (amended 2026-10-27, research R1 amendment: no new queue states) Packages are keyed by the
+- [X] **OB-T027** [US2] (amended 2026-10-27, research R1 amendment: no new queue states) Packages are keyed by the ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   onboarding work order's example name (`state/onboarding/<key>/`), so every request and attempt (`-a1`, `-a2`) of
   that work order uses the same approved package, and the factory revision is recorded but not part of the approval
   subject. Implement `onboarding.intake_check` and call it from `ff/afo/queue.py` `submit`: an onboarding work order
   whose package has no verified approval is refused at intake with `INTAKE_ONBOARDING_NOT_APPROVED:<code>:<key>`.
-- [ ] **OB-T028** [US2] (amended 2026-10-27) `ff/workorder.py` `prepare` re-derives the package at every launch
+- [X] **OB-T028** [US2] (amended 2026-10-27) `ff/workorder.py` `prepare` re-derives the package at every launch ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   (deterministic, seconds); a changed input voids the approval before admission is checked (FR-017). The owner
   approves before submission; the AFO queue state machine (feature 005 `queue-fsm.yaml`) is unchanged.
-- [ ] **OB-T029** [US2] In `ff/workorder.py` and `ff/workflow/builder.py`, refuse to build or launch an SWE run for an
+- [X] **OB-T029** [US2] In `ff/workorder.py` and `ff/workflow/builder.py`, refuse to build or launch an SWE run for an ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   onboarding work order without `APPROVAL_OK`, with the code `ONBOARDING_NOT_APPROVED`. The refusal is enforced
   outside AFO too (direct CLI runs). (FR-021)
-- [ ] **OB-T030** [P] [US2] (amended 2026-10-27) Tests in `tests/test_onboarding_profile.py`: prepare derives, then
+- [X] **OB-T030** [P] [US2] (amended 2026-10-27) Tests in `tests/test_onboarding_profile.py`: prepare derives, then ✅ Evidence: `evidence/v0.4/runs/OB-T023/latest.json`
   refuses without approval; AFO `intake_check` refuses before and admits after a verified approval, and ignores
   hand-onboarded work orders; an input change voids the approval; a direct launch without approval is refused.
 
@@ -203,7 +203,7 @@ and inspected.
 
 ### Slice H: generator and leftover check
 
-- [ ] **OB-T031** [US3] Implement `ff/onboarding/texts.py`:
+- [X] **OB-T031** [US3] Implement `ff/onboarding/texts.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
   - template sets `ll` and `st_hal`, holding the generic CRC entries of `config/factory/peripherals/crc.yaml`
     (`prompt_st_hal`) as templates with placeholders;
   - fill from facts: names, headers, handle type and `Init` fields from the delivered header, instance, base,
@@ -211,10 +211,10 @@ and inspected.
   - authored slots: `requirement_example`, `failure_responses`, `contract_rule`, `dynamic_view`, `args_example`,
     `ut_example`, `ut_rule`, `integration`, `target_tests`, `target_model`, `query_example`;
   - every value carries `from: template:<id>|authored:<item>`.
-- [ ] **OB-T032** [US3] In `ff/workflow/prompts.py` `peripheralize`, for a package-driven work order, take `t` only
+- [X] **OB-T032** [US3] In `ff/workflow/prompts.py` `peripheralize`, for a package-driven work order, take `t` only ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
   from `package.texts` and never from the profile's `prompt`/`prompt_st_hal`. Hand-onboarded work orders keep
   today's path unchanged. (FR-012)
-- [ ] **OB-T033** [US3] Implement `ff/onboarding/leftovers.py` `check(ws)`. It builds every SWE.1–SWE.6 node's
+- [X] **OB-T033** [US3] Implement `ff/onboarding/leftovers.py` `check(ws)`. It builds every SWE.1–SWE.6 node's ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
   instruction with `workflow.builder` (the full node set, not a regex over the dot text) and flags:
   - identifiers of another registered peripheral prefix;
   - another layer's identifiers (`LL_`, `ll_*_regs`, `stm32n6xx_ll_` for HAL_STANDALONE);
@@ -222,7 +222,7 @@ and inspected.
   - functions and types absent from the delivered headers.
 
   Codes `LEFTOVER:<node>:<token>`.
-- [ ] **OB-T034** [P] [US3] Write `tests/test_onboarding_texts.py`:
+- [X] **OB-T034** [P] [US3] Write `tests/test_onboarding_texts.py`: ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
   - the generated CRC HAL texts with authored slots stubbed from the existing CRC overlay pass the leftover check;
   - a planted `LL_USART_` in a USART HAL text is flagged;
   - a planted `CRC_CR` in a GPIO text is flagged;
@@ -253,7 +253,7 @@ and inspected.
 
 ### Slice I: model gate
 
-- [ ] **OB-T038** [US4] Add a `check_model` operation to `ff/mcp/servers/sim.py`. It runs four checks:
+- [X] **OB-T038** [US4] Add a `check_model` operation to `ff/mcp/servers/sim.py`. It runs four checks: ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
   - load (platform plus model);
   - reset values (Renode monitor reads of every `register_index` offset after reset, compared with the RM reset);
   - access types (r / rc_w1 / rc_w0 fields only);
@@ -262,10 +262,10 @@ and inspected.
 
   Fields listed in the model's `MODEL_LIMITS` are reported as limits, not failures. The result is
   `{verdict, findings, limits, tool, version, invocation_id}`.
-- [ ] **OB-T039** [US4] In `ff/assurance/hardware.py` / `ff/assurance/target.py`, use the `check_model` result as the
+- [X] **OB-T039** [US4] In `ff/assurance/hardware.py` / `ff/assurance/target.py`, use the `check_model` result as the ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
   simulator limitation when a package exists, instead of `SIMULATOR_MODEL_NOT_COMPARABLE`. RCC's existing comparison
   is unchanged.
-- [ ] **OB-T040** [P] [US4] Write `tests/test_onboarding_model_gate.py`. Run `check_model` on the existing GPIO, SPI,
+- [X] **OB-T040** [P] [US4] Write `tests/test_onboarding_model_gate.py`. Run `check_model` on the existing GPIO, SPI, ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
   USART, TIM and CRC models (skip without Renode) and record the results. Any real mismatch found becomes either a
   model fix (its own CRE decision) or a declared `MODEL_LIMITS` entry, reviewed. A deliberately broken reset value is
   caught, and the IronPython-2.7-incompatible syntax of feature 015 is caught at load.
@@ -276,7 +276,7 @@ and inspected.
   `write_file` under `onboarding/model/`) and `onboard-model-inspector` to `config/factory/agents.yaml`, with
   SKILL.md rendered, authz prefixes, and the onboarding-graph nodes (model author → `check_model` → inspector,
   bounded at 3).
-- [ ] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and
+- [X] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
   never authors one. When none exists, it authors one. Implement this in `ff/onboarding/__init__.py`.
 - [ ] **OB-T043** [US4] Held-out authoring (SC-007). Run onboarding for `0014c` with the hand CRC model hidden (an
   onboarding option `--hide-model crc`, test-only, recorded in the package). Expected: an authored model passes
@@ -292,7 +292,7 @@ SWE.1–SWE.6.
 
 **Independent test**: the frozen record with packages, approvals, run ids and release packages; the SC-001 audit.
 
-- [ ] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`,
+- [X] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`, ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
   `0011e-st-cube-spi-hal-ob`, `0012e-st-cube-usart-hal-ob` and `0013e-st-cube-tim-hal-ob`. They hold owner inputs
   only: driver, target with `target.instance`, the RM chapter and memory-map inputs, delivery source, provenance and
   licence, FROZEN, scope (copied verbatim from the `00NNd` scope statements, which are owner scope text), budgets and
@@ -335,7 +335,7 @@ SWE.1–SWE.6.
 
 ## Phase 8: Polish and cross-cutting
 
-- [ ] **OB-T061** AFO planner validator (follow-up from the CRC HAL run, `afo-plan-97c64dc37304a1b2`). In
+- [X] **OB-T061** AFO planner validator (follow-up from the CRC HAL run, `afo-plan-97c64dc37304a1b2`). In ✅ Evidence: `evidence/v0.4/runs/OB-T061/latest.json`
   `ff/afo/planner.py` (plan validation), reject any plan whose `artifact_scope` or remedy creates or edits files
   under a FROZEN delivery's code directories (`software/ll/`, `software/hal/`, `software/src/`,
   `software/include/`). Also reject a plan whose stated remedy is to produce an output that a gate demands but the
