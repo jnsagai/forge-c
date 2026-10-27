@@ -267,3 +267,26 @@ No task checkbox changed (30/58); no source deployment, new Qwen request, pilot
 retry, owner signature or inspector development was performed. The three recorded
 pilot author diagnostics identify unsupported register-I/O effects and invalid
 proposals; no correctness gate was relaxed to emit partial artifacts as accepted.
+
+## 2026-10-27: bounded remote engineering diagnosis while local regression runs
+
+At the owner's request, Omniverse2's existing serial GPU queue ran a separate
+read-only ST3 engineering study on the clean remote source `9a88fbc`. It made
+**3 requests**, 15,803 prompt and 3,498 output tokens. A complete-context preflight
+refused the second packet before inference; coherent register-group repartition
+resumed the same study with prior expenditure and the three-call limit retained.
+The initial failed queue invocation remains evidence. Total elapsed wall was
+144.122 seconds; actual request wall was 24.004 seconds.
+
+Two proposals had valid references. LPTIM's invented diagnostic ID failed the
+reference check. Pinned SafeC checks independently rejected three selected
+WWDG/RNG suggestions as UNSUPPORTED; an isolated LPTIM read passed without
+establishing the original clearing requirement or a complete driver. Existing
+LessonStore APIs durably captured eight real phase outcomes and dispositions
+(seven DEFERRED_BUDGET, one NO_NEW_LESSON); no lessons were qualified/promoted,
+no repair incident invented and no benefit measured. [Sanitized study evidence](../../evidence/014-durable-local-autonomy/st3-diagnosis-study/summary.json)
+retains source/packet/proposal hashes, complete-context accounting and engine
+verdicts. Raw model prose and vendor data remain private. This study is not native
+AFO recovery qualification, a driver retry, a new held-out cohort or inspector
+calibration. Inspector development and all original failed pilot evidence remain
+unchanged. No task was ticked.

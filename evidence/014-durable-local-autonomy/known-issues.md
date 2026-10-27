@@ -272,3 +272,11 @@ KI-014-029 triage: [recorded diagnostic codes](st3-driver-runs/author-diagnostic
 identify unsupported register-I/O semantics and some invalid model proposals. The
 assembler refuses incomplete/invalid task results; missing files do not establish
 an empty model response. No gate/domain rule was relaxed and no retry was run.
+
+KI-014-029 follow-up: the owner-requested [bounded remote diagnosis](st3-diagnosis-study/README.md)
+made three Qwen calls. Two responses passed reference checks; the third cited an
+invented check ID. The independent pinned engine still rejects the selected WWDG
+and RNG suggestions (unsupported access/RMW). One isolated LPTIM read passes,
+which does not satisfy the original clearing requirement. This narrows the next
+engineering work to source-grounded semantic-profile changes and correct intent
+mapping; it is not a repaired driver, autonomous recovery or qualified lesson.
