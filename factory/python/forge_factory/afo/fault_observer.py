@@ -90,6 +90,10 @@ def plan(manifest, ref):
         from .control_observation import configuration
 
         configuration(d["control_sources"])
+    if "collection" in d:
+        from .operational_collection import configuration
+
+        configuration(d["collection"])
     if any(Path(d["data_root"]).resolve() not in Path(d[k]).resolve().parents for k in ("database", "heartbeat")):
         raise Refused("OBSERVER_DATABASE_OUTSIDE_DATA_ROOT")
     if not isinstance(d.get("mount_uuid"), str) or not re.fullmatch(r"[0-9a-fA-F-]{8,64}", d["mount_uuid"]):
@@ -450,6 +454,32 @@ def invariants(samples):
     }
 
 
+def load_sample(manifest, plan_ref, ref, *, frozen=None, limit=MAX_BYTES):
+    """Replay one captured source, shared by finite and continuous collectors."""
+    frozen = plan(manifest, plan_ref) if frozen is None else frozen
+    raw = read_bytes(artifact(frozen, ref["path"]), min(MAX_BYTES, limit))
+    if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
+        raise Refused("OBSERVER_SAMPLE_UNBOUND")
+    row = strict_json(raw, MAX_BYTES)
+    if (
+        not isinstance(row, dict) or row.get("schema") != SCHEMA
+        or row.get("manifest_sha256") != digest(manifest) or row.get("plan_ref") != plan_ref
+    ):
+        raise Refused("OBSERVER_SAMPLE_UNBOUND")
+    if row.get("observer_source_sha256") != sha256_file(Path(__file__)):
+        raise Refused("OBSERVER_SAMPLE_SOURCE_CHANGED")
+    if any(type(row.get(k)) not in (float, int) or not math.isfinite(row[k]) for k in ("wall", "mono")):
+        raise Refused("OBSERVER_SAMPLE_CLOCK_INVALID")
+    if frozen.get("control_sources") and row.get("ledger") is not None and row.get("intent") is not None:
+        from .control_observation import verify_sources
+
+        if not isinstance(row["intent"], dict):
+            raise Refused("CONTROL_SOURCE_SNAPSHOT_INVALID")
+        verify_sources(row["ledger"], {**row["intent"], "control_source": row.get("intent_control_source")},
+                       frozen["control_sources"])
+    return row, len(raw)
+
+
 def load_samples(manifest, plan_ref, refs):
     frozen = plan(manifest, plan_ref)
     rows = []
@@ -457,27 +487,12 @@ def load_samples(manifest, plan_ref, refs):
         raise Refused("OBSERVER_SAMPLE_COUNT_INVALID")
     byte_budget = MAX_TRACE_BYTES
     for ref in refs:
-        p = artifact(frozen, ref["path"])
         if byte_budget <= 0:
             raise Refused("OBSERVER_TRACE_BYTE_BOUND_EXCEEDED")
-        raw = read_bytes(p, min(MAX_BYTES, byte_budget))
-        byte_budget -= len(raw)
+        row, size = load_sample(manifest, plan_ref, ref, frozen=frozen, limit=byte_budget)
+        byte_budget -= size
         if byte_budget < 0:
             raise Refused("OBSERVER_TRACE_BYTE_BOUND_EXCEEDED")
-        if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
-            raise Refused("OBSERVER_SAMPLE_UNBOUND")
-        row = strict_json(raw, MAX_BYTES)
-        if row.get("schema") != SCHEMA or row.get("manifest_sha256") != digest(manifest) or row.get("plan_ref") != plan_ref:
-            raise Refused("OBSERVER_SAMPLE_UNBOUND")
-        if any(type(row.get(k)) not in (float, int) or not math.isfinite(row[k]) for k in ("wall", "mono")):
-            raise Refused("OBSERVER_SAMPLE_CLOCK_INVALID")
-        if frozen.get("control_sources") and row.get("ledger") is not None and row.get("intent") is not None:
-            from .control_observation import verify_sources
-
-            if not isinstance(row["intent"], dict):
-                raise Refused("CONTROL_SOURCE_SNAPSHOT_INVALID")
-            verify_sources(row["ledger"], {**row["intent"], "control_source": row.get("intent_control_source")},
-                           frozen["control_sources"])
         rows.append(row)
     if len({r["host"] for r in rows}) != 1 or any(r.get("observer_source_sha256") != sha256_file(Path(__file__)) for r in rows):
         raise Refused("OBSERVER_SAMPLE_SOURCE_CHANGED")

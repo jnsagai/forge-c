@@ -12,11 +12,14 @@ NOT_DEMONSTRATED. A soak never changes the AFO mode.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import re
+import stat
 import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import state_dir, utc_now
@@ -31,11 +34,57 @@ def path(soak_id: str) -> Path:
     return state_dir() / "afo/soak" / f"{soak_id}.jsonl"
 
 
-def _append(p: Path, rec: dict) -> None:
+@contextmanager
+def locked(p: Path):
+    """Serialize writers/resume on the existing soak, without service authority."""
+    from .durable import Refused
+
     p.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(p, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
-    with os.fdopen(fd, "a") as f:
-        f.write(json.dumps(rec, sort_keys=True) + "\n")
+    fd = os.open(p.with_suffix(".lock"), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        s = os.fstat(fd)
+        if not stat.S_ISREG(s.st_mode) or s.st_uid != os.getuid() or s.st_mode & 0o022:
+            raise Refused("SOAK_LOCK_NOT_PROTECTED")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise Refused("SOAK_WRITER_BUSY") from exc
+        yield
+    finally:
+        os.close(fd)
+
+
+def _append_locked(p: Path, rec: dict) -> None:
+    """Caller owns locked(p). Publish one bounded line and fsync before return."""
+    from .durable import Refused
+
+    raw = (json.dumps(rec, sort_keys=True, allow_nan=False) + "\n").encode()
+    if len(raw) > 65536:
+        raise Refused("SOAK_SAMPLE_BYTE_BOUND_EXCEEDED")
+    fd = os.open(p, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        s = os.fstat(fd)
+        if not stat.S_ISREG(s.st_mode) or s.st_uid != os.getuid() or s.st_mode & 0o022:
+            raise Refused("SOAK_LOG_NOT_PROTECTED")
+        count = 0
+        while count < len(raw):
+            written = os.write(fd, raw[count:])
+            if written <= 0:
+                raise Refused("SOAK_APPEND_INCOMPLETE")
+            count += written
+        os.fsync(fd)
+        parent = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        os.close(fd)
+
+
+def _append(p: Path, rec: dict) -> None:
+    with locked(p):
+        _append_locked(p, rec)
 
 
 def live_probes() -> dict:
@@ -70,7 +119,10 @@ def start(soak_id: str, target_h: int, interval_s: float, authorization_ref: str
         "mono": time.monotonic(),
         "boot_id": _boot_id(),
     }
-    _append(p, head)
+    with locked(p):
+        if p.exists():
+            raise ValueError("soak exists (append samples with `sample`, never restart a soak id)")
+        _append_locked(p, head)
     return head
 
 
@@ -102,15 +154,17 @@ def sample(soak_id: str, probes: dict | None = None) -> dict:
     return rec
 
 
-def run(soak_id: str, probes: dict | None = None, max_samples: int | None = None) -> int:
+def run(soak_id: str, probes: dict | None = None, max_samples: int | None = None, *, sampler=None,
+        stop_at_target=True) -> int:
     head = json.loads(path(soak_id).read_text().splitlines()[0])
     n = 0
     while max_samples is None or n < max_samples:
-        sample(soak_id, probes)
+        (sampler or sample)(soak_id, probes=probes)
         n += 1
-        if report(soak_id)["status"] == "DEMONSTRATED":
+        if stop_at_target and report(soak_id)["status"] == "DEMONSTRATED":
             break
-        time.sleep(head["interval_s"])
+        if max_samples is None or n < max_samples:
+            time.sleep(head["interval_s"])
     return n
 
 

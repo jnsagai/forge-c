@@ -22,21 +22,40 @@ from .durable import Refused, digest, immutable_json
 SIGNALS = {"clean-exit": "TERM", "crash": "KILL", "hang": "STOP"}
 
 
-def start(manifest, soak_id, authorization_ref):
+def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_plan_ref=None):
     result = qualification.preflight(manifest, live=True, authorization_ref=authorization_ref)
     if result["blockers"]:
         return result
     if not manifest["stage"].startswith("operation-"):
         raise Refused("OPERATIONAL_STAGE_REQUIRED")
     hours = int(manifest["stage"].split("-")[1])
-    head = soak.start(soak_id, hours, 30, authorization_ref)
+    interval = 30
+    if host_plan_ref is not None and observer_plan_ref is None:
+        raise Refused("OPERATIONAL_COLLECTION_OBSERVER_PLAN_REQUIRED")
+    if observer_plan_ref is not None:
+        from .operational_collection import Collector
+
+        interval = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref).config["interval_seconds"]
     immutable_json(soak.path(soak_id).with_suffix(".manifest.json"), manifest)
+    head = soak.start(soak_id, hours, interval, authorization_ref)
     return {"status": "STARTED_OBSERVATION_ONLY", "soak_id": soak_id, "head": head, "service_stop_at_end": False}
 
 
 def sample(soak_id, *, probes=None):
     """Model-free observation remains possible after engineering authority expires."""
     return soak.sample(soak_id, probes)
+
+
+def collect(manifest, soak_id, observer_plan_ref, *, host_plan_ref=None, max_samples=None):
+    """Resume bounded model-free collection; no authority renewal or factory stop."""
+    from .operational_collection import Collector
+
+    collector = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref)
+    allowance = collector.config["max_samples"]
+    if max_samples is not None and (type(max_samples) is not int or not 1 <= max_samples <= allowance):
+        raise Refused("OPERATIONAL_COLLECTION_SAMPLE_ALLOWANCE_INVALID")
+    count = soak.run(soak_id, max_samples=max_samples or allowance, sampler=collector, stop_at_target=False)
+    return {"status": "COLLECTION_INVOCATION_ENDED", "samples": count, "service_stop_at_end": False}
 
 
 def fault(manifest, case, authorization_ref, destination):
@@ -78,7 +97,8 @@ def fault(manifest, case, authorization_ref, destination):
     return record
 
 
-def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()):
+def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=(),
+           observer_plan_ref=None, host_plan_ref=None):
     from . import fault_observer as observer
     from . import operational_work
     from .continuous_metrics import timeline
@@ -105,6 +125,13 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         raise Refused("OPERATIONAL_OBSERVATION_WINDOW_INVALID")
     manifest_path = soak.path(soak_id).with_suffix(".manifest.json")
     manifest_bound = manifest_path.is_file() and digest(observer.read_json(manifest_path)) == sha
+    collection = None
+    if observer_plan_ref is not None or any("collection_ref" in row for row in samples):
+        from .operational_collection import Collector
+
+        if observer_plan_ref is None:
+            raise Refused("OPERATIONAL_COLLECTION_REPORT_PLAN_REQUIRED")
+        collection = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref).verify()
     if not samples:
         return {"status": "NOT_RUN", "target_hours": target_hours, "manifest_bound": manifest_bound}
     expected_end = head["wall"] + target_hours * 3600
@@ -233,6 +260,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "rolling_30_day_slo": "NOT_DEMONSTRATED",
         "service_intent_unchanged": None,  # requires the independent intent timeline; never assume it from a report call
         "native_model_capability": "SEPARATE_QUALIFICATION",
+        "collection": collection,
     }
 
 
@@ -271,25 +299,42 @@ def continuity_verdict(manifest, records, work, expected_end):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("command", choices=["start", "sample", "fault", "report"])
+    ap.add_argument("command", choices=["start", "sample", "collect", "fault", "report"])
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--soak-id", required=True)
     ap.add_argument("--authorization-ref")
     ap.add_argument("--fault", choices=list(SIGNALS))
     ap.add_argument("--out", type=Path)
+    ap.add_argument("--observer-plan", type=Path, help="Existing frozen observer plan, never an authority grant")
+    ap.add_argument("--host-plan", type=Path, help="Existing frozen segmented host plan")
+    ap.add_argument("--max-samples", type=int, help="Finite samples for this collector invocation")
     ap.add_argument("--evidence", type=Path, help="JSON object containing hash-bound fault_refs/work_refs/continuity_refs")
     a = ap.parse_args(argv)
     manifest = json.loads(a.manifest.read_text())
+    from .operational_collection import reference
+
+    refs = {"observer_plan_ref": reference(a.observer_plan.resolve()) if a.observer_plan else None,
+            "host_plan_ref": reference(a.host_plan.resolve()) if a.host_plan else None}
     if a.command == "start":
-        out = start(manifest, a.soak_id, a.authorization_ref)
+        out = start(manifest, a.soak_id, a.authorization_ref, **refs)
     elif a.command == "sample":
-        out = sample(a.soak_id)
+        if refs["observer_plan_ref"] is None:
+            out = sample(a.soak_id)
+        else:
+            from .operational_collection import Collector
+
+            out = Collector(manifest, a.soak_id, refs["observer_plan_ref"], refs["host_plan_ref"])(a.soak_id)
+    elif a.command == "collect":
+        if refs["observer_plan_ref"] is None:
+            ap.error("--observer-plan required for collect")
+        out = collect(manifest, a.soak_id, **refs, max_samples=a.max_samples)
     elif a.command == "fault":
         if not a.out or not a.fault:
             ap.error("--fault and --out required")
         out = fault(manifest, a.fault, a.authorization_ref, a.out)
     else:
-        out = report(manifest, a.soak_id, **(json.loads(a.evidence.read_text()) if a.evidence else {}))
+        evidence = json.loads(a.evidence.read_text()) if a.evidence else {}
+        out = report(manifest, a.soak_id, **{**evidence, **{k: v for k, v in refs.items() if v is not None}})
     print(json.dumps(out, indent=2))
     return 2 if out.get("status") in ("FAIL", "BLOCKED") else 0
 
