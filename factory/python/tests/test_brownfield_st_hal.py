@@ -211,3 +211,15 @@ def test_standalone_hal_views_need_no_ll_component_and_no_timeout_path_without_w
         (ws / views.DYNAMIC).write_text("@startuml\nparticipant Caller\nCaller -> SWC_HAL : HAL_OK\n@enduml\n")
     assert not [f for f in views.check_views(crc)["major_findings"] if "MISSING_COMPONENT" in f or "TIMEOUT" in f]
     assert "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH" in views.check_views(usart)["major_findings"]  # UART waits (HAL_GetTick)
+
+
+def test_standalone_hal_swe3_requires_no_ll_header(tmp_path):
+    """CRC HAL run 01M5Y54GSR8VTVN2TXP787ECRM went STUCK at SWE.3 on MISSING_REQUIRED_OUTPUT:software/ll/*.h; the
+    FROZEN guard (BROWNFIELD_NEW_CODE_FILE) rightly refused the planner's rework that would have created one."""
+    from forge_factory.inspection.engine import Store
+
+    ws = _manifest_ws(tmp_path / "s", "crc")
+    assert "MISSING_REQUIRED_OUTPUT:software/ll/*.h" not in Store(ws).missing_outputs("SWE.3")
+    assert "MISSING_REQUIRED_OUTPUT:software/hal/*.c" in Store(ws).missing_outputs("SWE.3")
+    factory_hal = _manifest_ws(tmp_path / "f", "crc", standalone=False)
+    assert "MISSING_REQUIRED_OUTPUT:software/ll/*.h" in Store(factory_hal).missing_outputs("SWE.3")
