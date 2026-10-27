@@ -691,3 +691,62 @@ benefit and actual 24/72/168-hour campaigns remain unproven. Continue backlog A2
 independent observer, A3 comparison tooling, then A4 clean-worktree housekeeping.
 Owner-signature deferral is specific to development SSA/TAA; the remaining signing,
 authority, inspector-freeze and parked-case decisions remain in force.
+
+
+## 2026-10-27 — crash-replayable collection, Qwen authoring and controlled reports
+
+Runtime increments: collector `75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632`, controlled
+reporting `d9d70e16523f1b928fd2d5f9ff265594e8f266f8`. Existing soak, frozen observer,
+host segment reader, qualification identities and independent audit producer reused.
+No scheduler, memory store, inference authority or production activation introduced.
+
+Exact clean collector checks: 521 PASS / 1 SKIP affected (41.437 s), release 13 PASS
+(9.319 s); isolated Omniverse2 194 PASS (386.299 s). Native preflight exits 2/BLOCKED:
+KERNEL_AUDIT_STATUS_UNAVAILABLE, SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED,
+AUTHENTICATED_CONTROL_CORRELATION_REQUIRED. Global interventions remain unknown.
+Latest exact clean d9d70e1 affected 541 PASS / 1 SKIP (49.069 s), release 13 PASS
+(9.047 s). Skip is the deliberately disabled live Fabro fixture. Exact commands,
+clean revisions, raw XML/logs and hashes are in the two increment folders' invocation
+and summary JSON. Initial WIP observer failure (changed refusal code) and comparison
+fixture failure (stale expected /99 after reducing fixture to two cases) are retained;
+fixes preserve inherited contracts and do not weaken gates.
+
+The collector serializes existing soak writers, records bounded immutable attempts,
+reuses captures/receipts after crashes, rejects partial/mixed histories, retains
+host failure/cursor chains and replays original sources in reports. Test clocks and
+probe fixtures are synthetic. Host-wide control/write/service correlation, native
+full-window evidence and batched continuation beyond 128 MiB remain unfinished.
+Read-only preparation confirms no durable AFO product binding exists for any Job050
+workspace. Those failed normal workorders are not relabeled as campaign jobs; no
+operation manifest or grants were created/renewed. Host-admin and fault-window
+prerequisites are recorded exactly. A2 remains IN_PROGRESS.
+
+A3's controlled report generator is tested. It requires one declared factor,
+unchanged source/cases/prompts/oracles/workload/admission/measurement/quality gates,
+frozen candidate registration, actual observed settings and independently audited
+outcomes/costs. All failed attempts and learning overhead count. Missing totals are
+null; no model self-assessment qualifies. Recorded-run suitability assessment found
+no qualifying pair; live DA-AT-028 remains NOT_RUN. RCC success is no prerequisite.
+
+New external Qwen authoring job 081 ran only on Omniverse2 through the existing
+one-admitted gateway, versioned role and structured packet: one client/upstream call,
+996 input + 579 output tokens, 7513 ms. Complete serialized context accounting,
+actual meter delta, terminal queue status and learning dispositions retained. Raw
+validator candidate accepted integer subclasses, contrary to the strict contract;
+manual independent adaptation corrected numeric types and explicitly checked hash
+strings before integration/testing. Raw candidate contract FAIL is retained, not
+claimed as self-healing or role qualification. Two factual learning dispositions are
+DEFERRED_BUDGET, zero qualified lessons and no measured benefit. One-call budget is
+SPENT; previous studies remain SPENT. No new inspector tuning, driver retry or
+baseline exposure occurred.
+
+A4 removed exactly the four owner-listed detached clean worktrees after no-live-use
+checks and verified backups of all ignored files. Private backups remain on loop10;
+public cleanup record reports 35.9 GiB available at that time.
+
+Evidence: `operational-collection-75d4bdc/`, `configuration-comparison-d9d70e1/`,
+`qwen-collection-validator-008c3e8/`, `worktree-cleanup-20261027.json` under the
+Feature014 evidence directory. Static checks are documentation/contract validation,
+separate from runtime tests and native qualification. No formal task tick (30/58),
+ledger-source change, live comparison, product/learning/availability success,
+protected-source promotion, grant renewal, merge or deployment is claimed.

@@ -1,0 +1,96 @@
+...................................................................F.... [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 77%]
+.............................................................            [100%]
+=================================== FAILURES ===================================
+_____ test_observer_preserves_observation_and_operator_uncertainty[source] _____
+
+setup = namespace(root=PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collecti...a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collection-pytest-regression/test_observer_preserves_observ4'))
+change = 'source'
+
+    @pytest.mark.parametrize("change", ["gap", "clock-jump", "missing-health", "operator-stop", "source"])
+    def test_observer_preserves_observation_and_operator_uncertainty(setup, change):
+        p = setup
+        fault, refs = fixture_evaluation(p)
+        row = json.loads(Path(refs[1]["path"]).read_text())
+        if change == "gap":
+            row.update(wall=1000, mono=1000)
+        elif change == "clock-jump":
+            row["mono"] += 40
+        elif change == "missing-health":
+            row["health"] = {}
+        elif change == "operator-stop":
+            row["intent"] = {"mode": "STOPPED", "epoch": 4}
+        else:
+            row["observer_source_sha256"] = "0" * 64
+        path = p.tmp / "changed-observation.json"
+        immutable_json(path, row)
+        refs[1] = {"path": str(path), "sha256": sha256_file(path)}
+        if change == "source":
+            with pytest.raises(Refused, match="SOURCE_CHANGED"):
+>               O.evaluate(p.manifest, p.ref, fault, refs, None)
+
+factory/python/tests/test_da014_fault_observer.py:323: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/fault_observer.py:515: in evaluate
+    rows = load_samples(manifest, plan_ref, sample_refs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/fault_observer.py:491: in load_samples
+    row, size = load_sample(manifest, plan_ref, ref, frozen=frozen, limit=byte_budget)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+manifest = {'authorization_ref': None, 'baseline': None, 'bounds': {'batch_items': 32, 'control_cycle_seconds': 120, 'eligible_queue_seconds': 600, 'immediate_start_burst': 5, ...}, 'cases': [], ...}
+plan_ref = {'path': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collection-pytest-regres...st_observer_preserves_observ4/plan.json', 'sha256': '0c18809a08a18587e04c5c7be79cff73f9b75936e6d3fcb59084c7f69aa1ff1a'}
+ref = {'path': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collection-pytest-regres...serves_observ4/changed-observation.json', 'sha256': '486ca5e0d2506cd61f3409c060ce09faeda4f1b3583db9c2b0db3539014eba16'}
+
+    def load_sample(manifest, plan_ref, ref, *, frozen=None, limit=MAX_BYTES):
+        """Replay one captured source, shared by finite and continuous collectors."""
+        frozen = plan(manifest, plan_ref) if frozen is None else frozen
+        raw = read_bytes(artifact(frozen, ref["path"]), min(MAX_BYTES, limit))
+        if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
+            raise Refused("OBSERVER_SAMPLE_UNBOUND")
+        row = strict_json(raw, MAX_BYTES)
+        if (
+            not isinstance(row, dict) or row.get("schema") != SCHEMA
+            or row.get("manifest_sha256") != digest(manifest) or row.get("plan_ref") != plan_ref
+            or row.get("observer_source_sha256") != sha256_file(Path(__file__))
+        ):
+>           raise Refused("OBSERVER_SAMPLE_UNBOUND")
+E           forge_factory.afo.durable.Refused: OBSERVER_SAMPLE_UNBOUND:
+
+factory/python/forge_factory/afo/fault_observer.py:469: Refused
+
+During handling of the above exception, another exception occurred:
+
+setup = namespace(root=PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collecti...a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/collection-pytest-regression/test_observer_preserves_observ4'))
+change = 'source'
+
+    @pytest.mark.parametrize("change", ["gap", "clock-jump", "missing-health", "operator-stop", "source"])
+    def test_observer_preserves_observation_and_operator_uncertainty(setup, change):
+        p = setup
+        fault, refs = fixture_evaluation(p)
+        row = json.loads(Path(refs[1]["path"]).read_text())
+        if change == "gap":
+            row.update(wall=1000, mono=1000)
+        elif change == "clock-jump":
+            row["mono"] += 40
+        elif change == "missing-health":
+            row["health"] = {}
+        elif change == "operator-stop":
+            row["intent"] = {"mode": "STOPPED", "epoch": 4}
+        else:
+            row["observer_source_sha256"] = "0" * 64
+        path = p.tmp / "changed-observation.json"
+        immutable_json(path, row)
+        refs[1] = {"path": str(path), "sha256": sha256_file(path)}
+        if change == "source":
+>           with pytest.raises(Refused, match="SOURCE_CHANGED"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Regex pattern did not match.
+E             Expected regex: 'SOURCE_CHANGED'
+E             Actual message: 'OBSERVER_SAMPLE_UNBOUND:'
+
+factory/python/tests/test_da014_fault_observer.py:322: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_fault_observer.py::test_observer_preserves_observation_and_operator_uncertainty[source]

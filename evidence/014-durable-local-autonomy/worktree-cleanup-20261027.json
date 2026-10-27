@@ -1,0 +1,46 @@
+{
+  "schema": "forge-c/014-backlog-worktree-cleanup/1",
+  "at": 1793119118.9502082,
+  "status": "PASS",
+  "scope": "EXACT_FOUR_OWNER_LISTED_WORKTREES",
+  "rows": [
+    {
+      "name": "forge-c-014-regress-1e2fd46",
+      "head": "1e2fd463add842d03bd83faa5c3a7dbf78323bdf",
+      "tracked_untracked_clean": true,
+      "live_references": 0,
+      "ignored_files_preserved": 532,
+      "backup_sha256": "b8fb215fc4935821639a0abc264d9bddb5c7bee98a8a51f1691b5c6dd19b27fc",
+      "backup_bytes": 15759360
+    },
+    {
+      "name": "forge-c-014-regress-20650af",
+      "head": "20650af67953220737166062e857e06b1a48081f",
+      "tracked_untracked_clean": true,
+      "live_references": 0,
+      "ignored_files_preserved": 559,
+      "backup_sha256": "7271cb88e5a2553883b3ccbec4c9f0602102237bea17b5abaeeb5e665cd0288e",
+      "backup_bytes": 17592320
+    },
+    {
+      "name": "forge-c-014-onboard-rng",
+      "head": "02918eafe9f3485e7a06f26d35f1a07a66fced74",
+      "tracked_untracked_clean": true,
+      "live_references": 0,
+      "ignored_files_preserved": 40,
+      "backup_sha256": "9a40eafaa37d82e773f7d5891895545a314d347ae4124cc1b7ca9f4413a00395",
+      "backup_bytes": 5089280
+    },
+    {
+      "name": "forge-c-014-onboard-lptim",
+      "head": "e3776133383ab562dbd4bd86b79a06b3f1b55070",
+      "tracked_untracked_clean": true,
+      "live_references": 0,
+      "ignored_files_preserved": 49,
+      "backup_sha256": "93a0bf7b686e6a9aa53abb079f20d0671e9064e6c7925f3155fd4d822daada0c",
+      "backup_bytes": 5468160
+    }
+  ],
+  "remaining_loop10_free_bytes": 38519607296,
+  "ignored_backups": "private loop10 operations/feature014/A4-worktree-backups-20261027"
+}

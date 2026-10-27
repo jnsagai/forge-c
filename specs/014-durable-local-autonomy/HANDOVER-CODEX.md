@@ -6,7 +6,58 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 development policy and backlog A1
+## Current checkpoint — 2026-10-27 collector and comparison reporting
+
+- Exact latest tested runtime **`d9d70e16523f1b928fd2d5f9ff265594e8f266f8`**:
+  affected **541 PASS / 1 SKIP / 0 failures/errors**, 49.069 s; release **13 PASS**,
+  9.047 s. Clean start/end recorded. Collector source **`75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632`**
+  separately passed 521/1 affected and 13 release, then **194 PASS on Omniverse2**,
+  386.299 s. The skip is disabled live Fabro. These are deterministic implementation
+  tests, not operational or role qualification. Initial WIP failures are retained.
+- **A2 progressed:** new `afo/operational_collection.py` extends existing soak cadence
+  with source/configuration-bound immutable attempts/receipts, crash replay,
+  cumulative finite allowance, writer locking, retained failed host captures/cursors,
+  bounded disk reserve and original-source report replay. No service authority,
+  scheduler, model client, deployment or global stop. See `operational-collector.md`.
+  Native preflight still BLOCKED (kernel status, continuous system-bus coverage,
+  authenticated control correlation); interventions UNKNOWN. All-channel correlation,
+  native windows and bounded continuation beyond full replay's 128 MiB remain open.
+- Read-only three-driver preparation found **no durable AFO product binding** in any
+  Job050 workspace. They are historical normal workorders, all BLOCKED. Do not invent
+  order/job/mission IDs or re-label these as campaign work. No operation manifest was
+  frozen/activated. `operational-collection-75d4bdc/operation-bindings-blocker.json`
+  records this and missing host/fault prerequisites. A2 remains **IN_PROGRESS**.
+- **A3 reporting increment complete, live DA-AT-028 NOT_RUN:** new
+  `afo/configuration_comparison.py` reuses existing comparison identity/audit rules;
+  validates one factor, actual frozen cases/controls/gates/source, candidate
+  preregistration, observed effective settings and independent cost/outcome oracles.
+  Failed attempts and learning overhead remain in cost; missing totals remain null.
+  Recorded-run assessment found **zero qualifying pairs**; historical observations
+  are preserved without retrospective qualification. See `configuration-comparisons.md`.
+  No RCC dependency, model selection, deployment or inference. DA-T028 remains unticked.
+- **Qwen job 081 SPENT:** distinct new validator authoring obligation, one remote
+  call, **996 input + 579 output tokens / 7513 ms**. Raw candidate failed strict
+  integer-subclass rejection. Manual deterministic adaptation/test required; no
+  automatic application. Both factual learning dispositions DEFERRED_BUDGET, zero
+  qualified lessons or benefit. No role/self-healing qualification. Public
+  `qwen-collection-validator-008c3e8/`. Do not redispatch this or older spent studies.
+- **A4 complete:** exactly the four listed clean detached worktrees removed after
+  checking no live references and preserving/hash-verifying all ignored files in
+  private loop10 `A4-worktree-backups-20261027`. Public cleanup record retained;
+  remaining space at cleanup 38,519,607,296 bytes (35.9 GiB).
+- Formal **30/58**, no task checkbox or ledger-source change. SSA/TAA development
+  deferral remains in force; formal safety stays strict. Product success, learning
+  benefit and 24/72/168-hour availability remain NOT_RUN. CRE remains rejected for
+  protected changes; no promotion, grant renewal, PR merge or deployment.
+
+Next source work is A2's all-channel host/control correlation and bounded verification
+continuation; then real three-driver product bindings under an existing valid campaign
+runbook and native windows. Do not reopen the six parked tasks or tune the frozen
+inspector. A1/A3(report tooling)/A4 are done; live comparison/campaign work remains
+separately bounded. Runtime source/worktree is `codex-resume-20261027`; evidence/docs
+were staged in `development-safety-20261027` to preserve clean exact-revision checks.
+
+## Previous checkpoint — 2026-10-27 development policy and backlog A1
 
 - Tested runtime source **`1b32534eecfaa0481d4eb00ebf30fe478b42cb01`**: new DEVELOPMENT
   work orders defer SSA/TAA signatures under owner decision OD-2026-10-27-02.
@@ -203,9 +254,9 @@ Tick a task only when its acceptance test's exact evidence exists. Effort is wal
 | # | Item | Tasks served | Effort | Done when |
 |---|---|---|---|---|
 | A1 | **DONE/revalidated 2026-10-27; DA-T018 remains unticked.** Collect and publish GPU job 050 (st3 driver runs): package status, gaps, first failing phase per driver; sanitized summary under `evidence/014-durable-local-autonomy/st3-driver-runs/`. While it still runs, capture status/scorecard snapshots and a privacy scan (KI-014-018's close condition is "any live run"). | groundwork DA-T027; DA-T018 (KI) | hours | summary committed; KI-014-018 re-checked against the snapshots |
-| A2 | Independent fault observer for `operation-24`: one record per `FAULTS` class (`afo/qualification.py`) with `independently_restored`, `restoration_seconds`, `unexpected_interventions`, `ledger_reset`, `duplicate_effects`, `false_ready`, bound to the manifest sha (`afo/operational_campaign.report`); deterministic tests; then the operation-24 manifest with the three drivers as product job bindings. | prerequisite of DA-T016/017/026/046/049/052 | ~1 day | observer + manifest tested locally; nothing ticked yet |
-| A3 | DA-T028 comparison report on frozen cases and recorded configuration identities (no RCC dependency); use already-recorded runs where they qualify, record NOT_RUN for any live comparison still missing. | DA-T028 (partial) | ~0.5 day | report generator tested; live part listed as missing |
-| A4 | Housekeeping: remove the clean leftover worktrees `repos/forge-c-014-regress-1e2fd46`, `-regress-20650af`, `-onboard-rng`, `-onboard-lptim` (`git -C $FC014_REPO worktree remove ...`); check loop10 free space. | — | minutes | worktrees gone |
+| A2 | **IN_PROGRESS; collector/replay tested, host-wide correlation and actual product bindings still missing.** Independent fault observer for `operation-24`: one record per `FAULTS` class (`afo/qualification.py`) with `independently_restored`, `restoration_seconds`, `unexpected_interventions`, `ledger_reset`, `duplicate_effects`, `false_ready`, bound to the manifest sha (`afo/operational_campaign.report`); deterministic tests; then the operation-24 manifest with the three drivers as product job bindings. | prerequisite of DA-T016/017/026/046/049/052 | ~1 day | observer + manifest tested locally; nothing ticked yet |
+| A3 | **REPORT TOOLING DONE at d9d70e1; live part NOT_RUN, no task tick.** DA-T028 comparison report on frozen cases and recorded configuration identities (no RCC dependency); use already-recorded runs where they qualify, record NOT_RUN for any live comparison still missing. | DA-T028 (partial) | ~0.5 day | report generator tested; live part listed as missing |
+| A4 | **DONE 2026-10-27; ignored files preserved/hash-verified before removal.** Housekeeping: remove the clean leftover worktrees `repos/forge-c-014-regress-1e2fd46`, `-regress-20650af`, `-onboard-rng`, `-onboard-lptim` (`git -C $FC014_REPO worktree remove ...`); check loop10 free space. | — | minutes | worktrees gone |
 
 ### Tier B — one small owner act, then GPU time
 

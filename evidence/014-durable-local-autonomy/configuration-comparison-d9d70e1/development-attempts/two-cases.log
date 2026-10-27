@@ -1,0 +1,21 @@
+.F................                                                       [100%]
+=================================== FAILURES ===================================
+________ test_measured_report_counts_failed_attempt_costs_and_learning _________
+
+data = ({'baseline_identity': {'adapter_revision': 'candidate', 'context_tokens': 8192, 'model_digest': 'fixture-digest', 'pr...42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/comparison-two-cases/test_measured_report_counts_fa0'))
+
+    def test_measured_report_counts_failed_attempt_costs_and_learning(data):
+        plan, a, b, _ = data
+        r = C.report(plan, a, b)
+        assert r["status"] == "MEASURED" and r["recommendation"] == "REVIEW_MEASURED_RESULTS"
+        for lane in ("baseline", "candidate"):
+            row = r[lane]
+            assert row["recorded"] == 2 and row["metrics"]["failed_or_blocked"] == 1
+            assert row["metrics"]["accepted_work_orders"] == 1
+            assert row["total_tokens"] == 60 and row["total_wall_seconds"] == 6
+>           assert row["tokens_per_accepted_work_order"] == 60 / 99
+E           assert 60.0 == (60 / 99)
+
+factory/python/tests/test_da014_configuration_comparison.py:121: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_configuration_comparison.py::test_measured_report_counts_failed_attempt_costs_and_learning
