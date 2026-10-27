@@ -292,10 +292,10 @@ SWE.1–SWE.6.
 
 **Independent test**: the frozen record with packages, approvals, run ids and release packages; the SC-001 audit.
 
-- [X] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`, ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
+- [X] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`, ✅ Evidence: `evidence/v0.4/runs/OB-SC001-PREPARATION/latest.json`, `evidence/v0.4/runs/OB-CORRECTED-APPROVALS/latest.json`
   `0011e-st-cube-spi-hal-ob`, `0012e-st-cube-usart-hal-ob` and `0013e-st-cube-tim-hal-ob`. They hold owner inputs
   only: driver, target with `target.instance`, the RM chapter and memory-map inputs, delivery source, provenance and
-  licence, FROZEN, scope (copied verbatim from the `00NNd` scope statements, which are owner scope text), budgets and
+  licence, FROZEN, scope (the exact acceptance text bound by the signed owner approvals; see amendment below), budgets and
   `onboarding: true`. No `files`, `dependencies` or `configure`.
 - [X] **OB-T045** [US5] Add queue items and AFO launch manifests `config/factory/benchmark/afo/<p>-st-hal-ob.json` ✅ Evidence: `evidence/v0.4/runs/OB-T045/latest.json`
   (model profile codex-claude), with the driver classes covered by the owner's authorization
@@ -494,3 +494,8 @@ SWE.1–SWE.6.
   inactive and disabled. All four current package signatures remain APPROVAL_OK; no facts changed.
 - Submitted fresh request `BENCH-SPI-ST-HAL-OB-R1` as `afo-d5622d4914a0ac9d` on this runtime. GPIO's terminal
   artifacts are retained; USART and TIM remain prepared for sequential submission.
+
+- OB-T044 scope amendment: the four acceptance scopes simplify the legacy `00NNd` scopes rather than copying
+  them verbatim. Their exact text is in the signed package subject (OA-2026-10-27-02/03/04/05), which the owner
+  approved in this session and signed. That explicit acceptance supersedes the original verbatim-copy clause.
+  The task now cites the exact-scope/read-trace proof and signature proof, rather than the unrelated text-test run.
