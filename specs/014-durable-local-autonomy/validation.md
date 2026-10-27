@@ -508,3 +508,47 @@ external fault window and elapsed 24/72/168-hour campaigns remain unrun. No
 persistent deployment, promotion, inspector tuning, owner safety signature or
 merge occurred. Product success/learning benefit/availability remain separate and
 unproven.
+
+
+## 2026-10-27: frozen application-control source ingestion and replay
+
+Exact clean source **`2246a58b0a36ed4627e44462e4ca3b9fb0bb8097`**:
+**380 affected PASS / one historical HAL-r154 workspace SKIP / zero errors or
+failures** (34.483 s), **13 release PASS** (9.214 s). Actual isolated Omniverse2
+control/observer tests **83 PASS**, zero skips/errors (123.011 s). [Exact commands,
+clean revision receipts, JUnit and hashes](../../evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json).
+Current independent CRE still **REJECTED/PROTECTED_PATH_CHANGE**. Static spec and
+contracts (58 mappings, six schemas, 38 fixtures), 14 design checks, handoff and
+new-source/test Ruff PASS separately. The broader reconciled 899-case cohort,
+history and seven systemd cases remain at `7e1abb2`; unchanged runtime service
+paths were not rerun for this observer-only increment. Full inherited 1,840-test
+cohort remains at `20650af`, not claimed on this source.
+
+`afo/control_observation.py` is now integrated into the existing external observer.
+An optional frozen `control_sources` object binds the reader and expected intent/
+CLI/dashboard source hashes. Legacy plans can omit it. The reader validates exact
+record/context fields and hashes before exporting event JSON and binds applied
+controls to real action rows in the same SQLite read transaction. Actual writes
+during observation, missing/mutated/duplicated rows, source mismatch, arbitrary
+fields, credentials, bad UID maps, malformed values, replayed flags and publication
+bounds are tested. Unsupported/corrupt sources preserve their hashes and UNKNOWN
+reason without leaking arbitrary source text. Historical producers can remain
+explicitly unmatched, not reclassified as authenticated.
+
+UID mapping is relative to the parent namespace; no host-principal inference is
+made. Provenance is exported as `intent_control_source`, separate from semantic
+mode/epoch/stop fields. A tested recovery-counter update changes source bytes
+without changing operator intent or breaking existing restoration comparisons.
+Custom action text is hashed; invalid paused/draining or stop-boolean values are
+not exported. Complete serialized observation size is bounded before publication.
+Loading captured samples recomputes context/source/action facts rather than
+trusting supplied match flags.
+
+This completes application-source ingestion only. Native actor/control/write/
+service correlation, continuous segmented/rotation-safe sources and full
+all-channel intervention verification remain software work; intervention count
+stays UNKNOWN. Genuine product oracle evidence and authorized external host
+fixtures/campaigns remain required. No new Qwen request, grant renewal, factory
+source activation, inspector change, merge or task checkbox. Formal **30/58** and
+ledger source_revision/CRLF remain unchanged. Product success, learning benefit,
+24/72/168-hour operation and the 30-day SLO remain unproven.

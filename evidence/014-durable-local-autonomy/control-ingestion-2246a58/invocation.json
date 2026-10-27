@@ -1,0 +1,54 @@
+{
+  "git_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027",
+  "started_at": "2026-10-27T13:29:57.366824+00:00",
+  "start_dirty": "",
+  "results": [
+    {
+      "label": "affected",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_control_context.py",
+        "factory/python/tests/test_da014_control_observation.py",
+        "factory/python/tests/test_da014_bus_audit.py",
+        "factory/python/tests/test_da014_host_audit.py",
+        "factory/python/tests/test_da014_operational_work.py",
+        "factory/python/tests/test_da014_operational_report.py",
+        "factory/python/tests/test_da014_read_snapshot.py",
+        "factory/python/tests/test_da014_fault_observer.py",
+        "factory/python/tests/test_da014_operational_facts.py",
+        "factory/python/tests/test_da014_qualification.py",
+        "factory/python/tests/test_da014_qualification_audit.py",
+        "factory/python/tests/test_da014_qualification_state.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_afo_m2_queue.py",
+        "factory/python/tests/test_afo_m3_reconcile.py",
+        "factory/python/tests/test_afo_m6_operations.py",
+        "factory/python/tests/test_afo_m8_acceptance.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2246a58-affected",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2246a58-affected.xml"
+      ],
+      "exit_code": 0,
+      "ended_at": "2026-10-27T13:30:32.428486+00:00"
+    },
+    {
+      "label": "release",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_m7_governance_release.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2246a58-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2246a58-release.xml"
+      ],
+      "exit_code": 0,
+      "ended_at": "2026-10-27T13:30:41.931400+00:00"
+    }
+  ],
+  "end_dirty": "",
+  "end_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097"
+}

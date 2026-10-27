@@ -1,0 +1,57 @@
+{
+  "tested_revision": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "scope": "FROZEN_APPLICATION_CONTROL_SOURCE_INGESTION_AND_REPLAY_NOT_INDEPENDENT_HOST_AUDIT",
+  "results": {
+    "affected": {
+      "tests": 381,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 380,
+      "seconds": 34.483
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.214
+    },
+    "omniverse2": {
+      "tests": 83,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 83,
+      "seconds": 123.011
+    }
+  },
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "formal_progress": "30/58; no new checkbox",
+  "host_intervention_count": null,
+  "new_model_requests": 0,
+  "deployment": "NOT_ACTIVATED",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "remaining_software": [
+    "native actor/control/write/service correlation",
+    "continuous segmented and rotation-safe sources",
+    "full all-channel source-derived intervention verification",
+    "genuine product oracle production"
+  ],
+  "broader_checks": "899-case reconciled cohort (890 PASS/9 SKIP), 7 systemd/history cases last 7e1abb2; full inherited 1840-test cohort last 20650af, not rerun for observer-only change",
+  "artifacts": {
+    "native-invocation.json": "d8e029d6cbd78cf40a617c1452f8cc41a6b2a237e5721b4effd0dd6d2c63b217",
+    "native-tests.xml": "846701a4fe0298d2b8323c9bbffcf0c89fcf96fb7e17540dd46e3ebd4e86661a",
+    "independent-cre.json": "343dc44bc9da315282a5996022b79f789ffa6e3e3286ee0d878f1bcaa4c7544d",
+    "invocation.json": "1e14810c477496dd251c23dcbfae2bc210636274366011eaf08bd54b4c4a4770",
+    "release.xml": "a086a7c92cf5221154d5b3f1ce4b52ef71050405f37aefade6003a145087ce56",
+    "affected.xml": "585b2947d95ba931d86f100f45e5bf0202054bf18936b4da064eab48b129fb11",
+    "affected.log": "9a0ea6d5748b9d60a149eb4c9d2181f61eddaf980f30efba66c68db9f4a9ade4",
+    "native-tests.log": "3f384efc38ce43974978e9aced983f1fdf98684d494c5d09e5a1df12f4658741",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9"
+  }
+}

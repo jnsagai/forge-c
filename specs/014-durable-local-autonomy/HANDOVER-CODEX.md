@@ -382,3 +382,45 @@ and system-bus host prerequisites are still unavailable; do not blame those for
 unfinished software or fabricate coverage. Keep all earlier signing, inspector,
 seventeen omitted live cases, finite mission and protected CRE boundaries. Native
 product success, measured learning benefit and 24/7 availability remain unproven.
+
+
+## Codex follow-up — 2026-10-27 application-control source reader
+
+Latest tested source **`2246a58b0a36ed4627e44462e4ca3b9fb0bb8097`**. Source increment
+adds `afo/control_observation.py` and extends existing `fault_observer`; documentation
+and evidence commit follows. `$FC014_OPS/codex-resume-20261027` has all 22 ignored
+ST input documents hash-verified now; do not repeat the earlier missing-input run.
+
+- Frozen opt-in `control_sources` binds reader, intent and CLI/dashboard hashes.
+  Safe exact event JSON is exported only after strict schema/hash/privacy checks
+  and actual SQL action-row matching in the same read transaction. Source match
+  flags are replayed when loading samples; unsupported/historical sources retain
+  UNKNOWN or unmatched facts, not an invented authentication success.
+- Namespace UID maps are parent-relative; no host-identity assumption. Provenance
+  stays in `intent_control_source`, separate from mode/epoch/stop. Counter changes
+  during recovery do not masquerade as new operator intent. Custom action text,
+  arbitrary metadata and credential bytes are not exported. Row/aggregate/output
+  bounds preserve incomplete/UNKNOWN rather than emitting oversized evidence.
+- **380 affected PASS / 1 historical HAL-r154 SKIP / zero failures; release 13
+  PASS**. Isolated Omniverse2 tests **83 PASS**, zero skips/errors. Real concurrent
+  SQL commits, malformed/bad bindings, privacy, source replay and recovery-counter
+  separation pass. Spec/contracts/design/handoff/Ruff PASS separately. Current
+  CRE REJECTED/PROTECTED_PATH_CHANGE. Prior 899-case reconciled cohort/systemd/
+  history remain at 7e1abb2; full inherited 1840 cohort remains at 20650af.
+- Public `control-ingestion-2246a58/`, task-style record
+  `evidence/v0.4/runs/DA014-control-ingestion-2246a58/latest.json`. Private local
+  `$FC014_OPS/control-ingestion-native-2246a58/`; remote clean qualification clone
+  `$Q/control-ingestion-2246a58/repo`, artifacts alongside. No model, shared-service
+  mutation, grant/mission reset, promotion or deployment. All tests terminal.
+- Formal **30/58**, no new checkbox/ledger rebaseline. Both previous Qwen studies
+  remain exhausted; no new inference request was made in this increment.
+
+Next independent software: native actor/control/write/service correlation and
+continuous segmented/rotation-safe source capture, then all-channel replay that
+can independently determine intervention facts. Do not treat application receipts
+or source-hash matches as host authentication or global coverage; intervention
+count remains UNKNOWN. Genuine product oracle production and host fault fixtures/
+elapsed campaigns are still required. Kernel/system-bus prerequisites were blocked
+in prior native probes; keep actual host prerequisites separate from software still
+unfinished. Preserve earlier owner boundaries and all uncertainty. No completion,
+product-success, learning-benefit or 24/7 claim is justified.

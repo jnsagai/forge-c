@@ -298,9 +298,9 @@
    "id": "KI-014-030",
    "area": "operational-qualification",
    "title": "Complete independent host audit remains unavailable on Omniverse2",
-   "what": "At fbd8bc8 the finite user-bus probe passes, while system-bus BecomeMonitor/boundary visibility is not proven (diagnostic/fallback) and kernel audit status is unavailable. At 7e1abb2 user-bus visibility and 62 isolated remote control/bus tests pass. Application control provenance and transactional effects now exist, but observer ingestion, native actor correlation, continuous/rotation accounting and full intervention replay remain incomplete.",
+   "what": "Native probes at fbd8bc8 found kernel audit status unavailable and system-bus monitor/boundary visibility unproven (diagnostic/fallback). At 7e1abb2 user-bus visibility and 62 remote control/bus tests passed. Source 2246a58 adds frozen, privacy-checked application control ingestion/replay with 83 remote deterministic passes, but native actor/control/write/service correlation, continuous/rotation-safe sources and full all-channel intervention verification remain incomplete.",
    "impact": "Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.",
-   "evidence": "evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
+   "evidence": "evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
    "human_action": "Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.",
    "status": "OPEN"
   },
