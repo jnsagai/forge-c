@@ -332,6 +332,17 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
         or not Path(plan["kernel_log"]).is_absolute()
     ):
         raise Refused("HOST_AUDIT_PLAN_INVALID")
+    from . import bus_audit
+
+    scopes = plan.get("bus_scopes", [])
+    if (
+        not isinstance(scopes, list) or len(scopes) > 2
+        or any(not isinstance(s, str) or s not in ("user", "system") for s in scopes)
+        or len(scopes) != len(set(scopes))
+    ):
+        raise Refused("HOST_AUDIT_BUS_SCOPES_INVALID")
+    if scopes and plan.get("bus_source_sha256") != hashlib.sha256(Path(bus_audit.__file__).read_bytes()).hexdigest():
+        raise Refused("HOST_AUDIT_BUS_SOURCE_NOT_FROZEN")
     result = preflight()
     result.update(
         schema="forge-c/host-audit-source-capture/1",
@@ -339,6 +350,9 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
         observer_plan_ref=observer_plan_ref,
         host_plan_ref=host_plan_ref,
     )
+    # A finite visibility probe adds factual sources; it cannot clear the
+    # continuous-coverage or authenticated-control prerequisites by itself.
+    result["bus_sources"] = [bus_audit.source(scope) for scope in scopes]
     log = Path(plan["kernel_log"])
     if log.is_symlink() or not log.is_file():
         result["blockers"].append("KERNEL_AUDIT_LOG_UNAVAILABLE")
@@ -373,7 +387,9 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("command", choices=("preflight", "capture"))
+    p.add_argument("command", choices=("preflight", "capture", "bus-preflight"))
+    p.add_argument("--bus", choices=("user", "system"), default="user")
+    p.add_argument("--seconds", type=float, default=1)
     p.add_argument("--manifest", type=Path)
     p.add_argument("--observer-plan-ref", type=Path)
     p.add_argument("--host-plan-ref", type=Path)
@@ -381,6 +397,11 @@ def main(argv=None):
     args = p.parse_args(argv)
     if args.command == "preflight":
         result = preflight()
+        immutable_json(args.out, result)
+    elif args.command == "bus-preflight":
+        from . import bus_audit
+
+        result = bus_audit.source(args.bus, args.seconds)
         immutable_json(args.out, result)
     else:
         if not all((args.manifest, args.observer_plan_ref, args.host_plan_ref)):

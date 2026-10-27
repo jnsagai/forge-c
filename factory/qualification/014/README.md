@@ -390,3 +390,41 @@ inactive, noninteractive sudo listing exit 1; native preflight BLOCKED/exit 2.
 The isolated qualification checkout ran no model or shared-service action. See
 `evidence/014-durable-local-autonomy/host-audit-2928a93/summary.json`. No privileged
 setup or source deployment was activated, and no task checkbox changed.
+
+### Finite native systemd-bus source and visibility probe
+
+The same module provides a read-only probe for each distinct bus:
+
+```bash
+python -m forge_factory.afo.host_audit bus-preflight --bus user --seconds 1 \
+  --out <observer-dir>/user-bus-source.json
+python -m forge_factory.afo.host_audit bus-preflight --bus system --seconds 1 \
+  --out <observer-dir>/system-bus-source.json
+```
+
+`bus_audit` uses installed `dbus-monitor --profile` and two harmless `GetId`
+queries on separate connections. It checks that the monitor lost its acquired
+unique name (native `BecomeMonitor`, not an eavesdrop fallback), and sees both
+query/reply identities. `GetNameOwner` binds the systemd service owner before and
+after capture; matching owner-change signals, disconnects, backwards clocks,
+unexpected clean exits, diagnostics, missing utilities and bounds block the probe.
+The queries address the existing bus daemon, never activate or control a service.
+
+Only header fields are collected. The classic monitor format is deliberately
+excluded: its unescaped string bodies could impersonate headers. The bounded
+header-only profile is retained with its exact hash for source replay; malformed
+or truncated profiles are withheld. Body text, method arguments, environment,
+credentials and raw diagnostics are absent. Duration is 0.1–30 seconds, with finite
+message, byte, line, child CPU, memory and query-time bounds and child cleanup.
+
+An operation host plan can opt into `bus_scopes: [user, system]`; it must also
+freeze `bus_source_sha256` to `bus_audit.py`. This adds measured source records to
+`host_audit capture`, preserving old plans. `BUS_VISIBILITY_AND_HEADERS_CAPTURED`
+means only the finite probe succeeded. Actor identity, manager-call unit
+arguments and effects remain UNKNOWN. It is not continuous loss accounting,
+authenticated-control correlation, PID1 private-socket coverage or complete host
+intervention verification, and does not clear global audit prerequisites.
+
+Protocol references: [D-Bus monitoring](https://dbus.freedesktop.org/doc/dbus-specification.html#bus-messages-become-monitor),
+[native monitor/profile implementation](https://github.com/d-bus/dbus/blob/master/tools/dbus-monitor.c),
+and [systemd manager and unit interfaces](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).

@@ -247,3 +247,65 @@ def test_fixed_probe_transport_and_output_encoding_failures_are_facts():
     assert H._command(["/must-not-exist-forge-c-auditctl"])["returncode"] is None
     result = H._command([sys.executable, "-c", "import os; os.write(1,b'\\xff')"])
     assert result["error"] == "OUTPUT_ENCODING"
+
+
+@pytest.mark.parametrize("scopes", [None, "user", ["other"], ["user", "user"], [["user"]], [1]])
+def test_unqualified_bus_scopes_refused_before_any_host_probe(setup, monkeypatch, scopes):
+    p = setup
+    plan_path = p.tmp / "host-bus-plan.json"
+    immutable_json(plan_path, {
+        "schema": "forge-c/host-audit-plan/1", "observer_plan_ref": p.ref,
+        "source_sha256": sha256_file(Path(H.__file__)), "host": H.socket.gethostname(),
+        "keys": KEYS, "kernel_log": "/does-not-exist", "bus_scopes": scopes,
+    })
+    ref = {"path": str(plan_path), "sha256": sha256_file(plan_path)}
+    manifest = Q.freeze("operation-24", p.tmp / "bus-manifest.json", identity=identity(), inputs=[p.path, plan_path])
+    monkeypatch.setattr(H, "preflight", lambda: pytest.fail("invalid scope must refuse before probing"))
+    with pytest.raises(Refused, match="BUS_SCOPES_INVALID"):
+        H.capture(manifest, p.ref, ref, p.tmp / "out.json")
+
+
+@pytest.mark.parametrize("frozen", [False, True])
+def test_bus_capture_source_is_frozen_and_never_clears_full_audit_prerequisites(setup, monkeypatch, frozen):
+    from forge_factory.afo import bus_audit as B
+
+    p = setup
+    plan_path = p.tmp / "host-bus-plan.json"
+    immutable_json(plan_path, {
+        "schema": "forge-c/host-audit-plan/1", "observer_plan_ref": p.ref,
+        "source_sha256": sha256_file(Path(H.__file__)), "host": H.socket.gethostname(),
+        "keys": KEYS, "kernel_log": "/does-not-exist", "bus_scopes": ["user", "system"],
+        "bus_source_sha256": sha256_file(Path(B.__file__)) if frozen else "0" * 64,
+    })
+    ref = {"path": str(plan_path), "sha256": sha256_file(plan_path)}
+    manifest = Q.freeze("operation-24", p.tmp / "bus-manifest.json", identity=identity(), inputs=[p.path, plan_path])
+    seen = []
+
+    def source(scope):
+        seen.append(scope)
+        return {"bus": scope, "status": "BUS_VISIBILITY_AND_HEADERS_CAPTURED", "unexpected_interventions": None}
+
+    monkeypatch.setattr(B, "source", source)
+    monkeypatch.setattr(H.shutil, "which", lambda *a, **k: None)
+    if not frozen:
+        with pytest.raises(Refused, match="BUS_SOURCE_NOT_FROZEN"):
+            H.capture(manifest, p.ref, ref, p.tmp / "out.json")
+        assert not seen
+    else:
+        rec = H.capture(manifest, p.ref, ref, p.tmp / "out.json")
+        assert seen == ["user", "system"] and len(rec["bus_sources"]) == 2
+        assert rec["unexpected_interventions"] is None and rec["status"] == "INCOMPLETE_SOURCE_COVERAGE"
+        assert "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED" in rec["blockers"]
+
+
+def test_bus_preflight_cli_publishes_explicit_blocker_and_nonzero_exit(setup, monkeypatch, capsys):
+    from forge_factory.afo import bus_audit as B
+
+    monkeypatch.setattr(B, "source", lambda *args: {
+        "schema": "forge-c/systemd-bus-source/1", "status": "BLOCKED", "blockers": ["MISSING_SOURCE"],
+        "unexpected_interventions": None,
+    })
+    out = setup.tmp / "bus-preflight.json"
+    assert H.main(["bus-preflight", "--bus", "system", "--seconds", "0.1", "--out", str(out)]) == 2
+    assert json.loads(out.read_bytes())["unexpected_interventions"] is None
+    assert json.loads(capsys.readouterr().out)["status"] == "BLOCKED"
