@@ -38,6 +38,10 @@ for o in r["orders"]:
     operations = o.get("operational") or {}
     if operations.get("terminal_reason"):
         lines += [f"Terminal reason: `{operations['terminal_reason']}`.", ""]
+    review = o.get("cause_review")
+    if review:
+        lines += [f"Cited cause review: {len(review['onboarding_fact_causes_identified'])} onboarding-fact causes "
+                  f"identified among {review['gap_count']} named gaps. {review['assessment']}", ""]
     for a in o["attempts"]:
         b = a.get("onboarding") or {}
         p = a.get("package_record") or {}
@@ -59,8 +63,9 @@ for o in r["orders"]:
 lines += [
     "## Review status",
     "",
-    "All packages are for offline review. SC-005 cause review and owner dispositions are recorded separately; terminal "
-    "binding checks alone do not prove SC-005. Held-out model authoring and the optional author graph remain open. "
+    "All packages are for offline review. Cited cause reviews are retained in the JSON snapshot; their coverage and "
+    "bindings are checked separately from terminal outcomes. Owner dispositions remain pending. "
+    "Held-out model authoring and the optional author graph remain open. "
     "No merge or safety approval is implied.",
     "",
 ]
