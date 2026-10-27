@@ -62,6 +62,12 @@ def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | 
     if not (model.is_file() and repl.is_file()):
         raise ProfileIncomplete(f"PROFILE_MODEL_MISSING:{pid}")  # slice J authors one; until then: a gap
     prof["sim"] = {"model": model.name, "platform": repl.name}
+    if pkg.get("texts"):  # OB-T032: generated texts only - a hand profile's prompt keys are never read for it
+        from .texts import plain
+
+        prof.update(plain(pkg["texts"]))
+    elif style == "HAL_STANDALONE":
+        raise ProfileIncomplete("PROFILE_TEXTS_MISSING")
     prof["derived_from"] = {"work_order": pkg["work_order"], "package_sha256": pkg["sha256"],
                             "approval_id": (approval or {}).get("approval_id")}
     errs = validate(prof)

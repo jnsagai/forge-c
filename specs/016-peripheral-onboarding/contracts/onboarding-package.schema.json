@@ -97,7 +97,7 @@
     },
     "texts": {
       "type": "object",
-      "description": "generated prompt keys; each value is {text, from} with from = template:<id> or authored:<item id>",
+      "description": "generated prompt keys; each value is {text, from} with from = template:<id>, owner:scope, model:<file> or authored:<item id>; text is a string, or the [old, new] pairs of a replace list",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": {
@@ -108,11 +108,14 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "type": [
+                "string",
+                "array"
+              ]
             },
             "from": {
               "type": "string",
-              "pattern": "^(template|authored):"
+              "pattern": "^(template|authored|owner|model):"
             }
           }
         }
@@ -196,7 +199,8 @@
             "framework_modules",
             "rm_chapter",
             "window_bytes",
-            "key_sections"
+            "key_sections",
+            "api"
           ]
         },
         "value": {},
@@ -310,7 +314,7 @@
         },
         "path": {
           "type": "string",
-          "pattern": "^onboarding/"
+          "pattern": "^(onboarding/|factory/sim/)"
         },
         "attempts": {
           "type": "integer",
@@ -344,6 +348,18 @@
             },
             "invocation_id": {
               "type": "string"
+            },
+            "limits": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stats": {
+              "type": "object"
+            },
+            "model": {
+              "type": "string"
             }
           }
         },
@@ -357,7 +373,8 @@
             "verdict": {
               "enum": [
                 "PASS",
-                "FAIL"
+                "FAIL",
+                "NOT_RUN"
               ]
             },
             "findings": {
@@ -371,6 +388,9 @@
                 "onboard-model-inspector",
                 "onboard-text-inspector"
               ]
+            },
+            "reason": {
+              "type": "string"
             }
           }
         },
@@ -389,7 +409,62 @@
         "reused": {
           "type": "boolean"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ACCEPTED"
+              },
+              "reused": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "inspection": {
+                "properties": {
+                  "verdict": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "gate": {
+                "properties": {
+                  "verdict": {
+                    "const": "PASS"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ACCEPTED"
+              },
+              "reused": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "gate": {
+                "properties": {
+                  "verdict": {
+                    "const": "PASS"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "assumption": {
       "type": "object",

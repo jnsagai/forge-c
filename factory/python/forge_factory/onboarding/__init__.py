@@ -46,7 +46,7 @@ def _revision() -> str:
         return "0000000"
 
 
-def derive(example: Path, wo: str | None = None) -> dict:
+def derive(example: Path, wo: str | None = None, gate_model: bool = True) -> dict:
     """OB-T017: the deterministic part of onboarding - identity and behaviour facts, assumptions, gaps - written as
     `state/workorders/<wo>/onboarding/package.json`. No model is called (FR-022); profile and texts are added by
     the later slices from these facts."""
@@ -74,8 +74,24 @@ def derive(example: Path, wo: str | None = None) -> dict:
     for d in dmap.get("dependencies") or []:
         inputs.append({"path": d["to"], "role": "delivered_dependency",
                        "sha256": sha256_bytes((Path(d["package"]) / d["from"]).read_bytes())})
+    if style:
+        from .api import api
+
+        facts.append(api(ctx, style))
     profile = {"derived_from": {"work_order": wo, "example": Path(example).name}}
     pkg = F.assemble(wo, inputs, _revision(), style or "LL", facts, [], asm, profile, {}, missing)
+    if style and not missing:  # OB-T031: the prompt texts from facts, owner scope and the model description
+        from .texts import TextsUnavailable, generate
+
+        try:
+            texts = generate(ctx, pkg)
+        except TextsUnavailable as e:
+            texts, missing = {}, [*missing, (str(e), "the prompt texts cannot be generated")]
+        pkg = F.assemble(wo, inputs, _revision(), style, facts, [], asm, profile, texts, missing)
+        if gate_model:  # OB-T042: an existing model is re-gated (reused), never re-authored
+            item = model_item(wo, pkg)
+            if item:
+                pkg = F.assemble(wo, inputs, _revision(), style, facts, [item], asm, profile, texts, missing)
     root = onboarding_dir(wo)
     old = F.read_package(root)
     if old is not None and old["sha256"] != pkg["sha256"]:  # FR-017: a changed input or fact voids the approval
@@ -88,6 +104,56 @@ def derive(example: Path, wo: str | None = None) -> dict:
                          f"{', '.join(changed[:20]) or 'none (facts or factory revision)'}")
     F.write_package(root, pkg)
     return pkg
+
+
+def model_item(key: str, pkg: dict) -> dict | None:
+    """The `model` authored item of a package: the gate result of the model the derived profile names (existing
+    models are reused and re-gated; an authored one comes from the onboarding run, slice J). Cached by the hashes of
+    the model, its platform and the facts the gate reads, so the re-derivation at every launch is fast."""
+    import json
+
+    from ..common import canonical_json, sha256_bytes
+    from .facts import value
+    from .model_gate import SIM_DIR, check
+
+    pid = (value(pkg, "register_prefix") or "").lower()
+    model, repl = SIM_DIR / f"{pid}_model.py", SIM_DIR / f"stm32n6_{pid}.repl"
+    if not (pid and model.is_file() and repl.is_file()):
+        return None
+    subject = {"model": sha256_bytes(model.read_bytes()), "repl": sha256_bytes(repl.read_bytes()),
+               "facts": [f for f in pkg["facts"] if f["name"] in ("register_index", "base_address", "file_map", "api",
+                                                                  "undelivered_externals", "instance")]}
+    cache = onboarding_dir(key) / "onboarding/model_gate.json"
+    k = sha256_bytes(canonical_json(subject))
+    try:
+        rec = json.loads(cache.read_text()) if cache.is_file() else None
+    except ValueError:
+        rec = None
+    if not rec or rec.get("key") != k:
+        from .leftovers import write_preview
+
+        write_preview(key, pkg)
+        rec = {"key": k, "result": check(key, pkg=pkg)}
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(rec, indent=2, sort_keys=True) + "\n")
+    r = rec["result"]
+    return {"id": "model", "role": "onboard-model-author", "path": f"factory/sim/stm32n6/{pid}_model.py",
+            "attempts": 0, "gate": {"verdict": r["verdict"], "findings": r["findings"], "limits": r.get("limits", []),
+                                    "tool": f"forge-onboarding model gate ({r.get('tool')})",
+                                    "version": str(r.get("version")), "invocation_id": k[:16],
+                                    "stats": r.get("stats", {}), "model": r.get("model", model.name)},
+            "inspection": {"verdict": "NOT_RUN", "findings": [], "inspector_role": "onboard-model-inspector",
+                           "reason": "reused factory model (feature 015): re-gated against the RM, not re-inspected"},
+            "limits": r.get("limits", []) + [_model_limits_note(model)], "reused": True,
+            "status": "ACCEPTED" if r["verdict"] == "PASS" else "GAP"}
+
+
+def _model_limits_note(model: Path) -> str:
+    from .texts import model_description
+
+    d = model_description(model.stem.replace("_model", "")) or ""
+    m = __import__("re").search(r"([^.]*(?:out of the work orders' scope|not modelled)[^.]*\.)", d)
+    return m.group(1).strip() if m else "behaviour not stated in the model description is not modelled"
 
 
 class OnboardingNotApproved(ValueError):

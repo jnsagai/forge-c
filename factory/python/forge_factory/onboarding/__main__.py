@@ -51,7 +51,15 @@ def _verify(a) -> int:
     return 0 if r["code"] == "APPROVAL_OK" else 1
 
 
-HANDLERS: dict = {"derive": _derive, "summary": _summary, "verify": _verify}
+def _prompts(a) -> int:
+    from .leftovers import run
+
+    found = run(a.args[0])
+    print(json.dumps({"leftovers": found, "status": "PASS" if not found else "FAIL"}))
+    return 0 if not found else 1
+
+
+HANDLERS: dict = {"derive": _derive, "summary": _summary, "verify": _verify, "prompts": _prompts}
 
 if __name__ == "__main__":
     sys.exit(main())
