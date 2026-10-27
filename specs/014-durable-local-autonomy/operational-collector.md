@@ -63,7 +63,9 @@ binds that prefix's canonical history hash. The campaign reporter refuses a
 different window. An interrupted verifier starts from zero on its next invocation;
 there is no durable trusted checkpoint or fresh allowance. This is collection
 metadata/source replay, not a continuation proof for kernel compound events.
-The latter still has its independent 128 MiB bound and remains unfinished.
+The later opt-in [kernel-event replay](kernel-event-replay.md) adds bounded external
+grouping beyond that limit, while default legacy event replay keeps its bound.
+Native full-record/window and all-channel intervention qualification remain open.
 
 Qwen job 081 authored a pure configuration-validator candidate on Omniverse2. The
 candidate accepted integer subclasses; independent review corrected strict integer

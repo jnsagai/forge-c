@@ -6,7 +6,36 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 collection replay through bounded batches
+## Current checkpoint — 2026-10-27 bounded kernel-event replay and crash-safe scratch
+
+Exact runtime **b321a8766947fa5f5174bbb4f61f5d05720b22d6**. The existing
+host-audit verify-segments command now supports a frozen continuous_replay object.
+It rechecks original capture sequence zero through the end, groups selected facts
+in bounded disposable scratch, retains late/duplicate/unfinished event records,
+and reconstructs each event through existing parser rules. Paged facts bind the
+full source/ref/plan chain. No new runtime store, scheduler or authority.
+
+Exact local **521 PASS** (39.908s), release **29 PASS** (10.150s), native **81 PASS**
+(28.073s), all clean-source, no skips/failures. Generated native source134,224,080
+bytes spans17 ranges; one compound event survives the whole prefix, no pending
+event/line or uncaptured bytes. Legacy limits remain. Hard-kill fixtures qualify
+working scratch unlink and locked init-slot reclamation, not Conductor recovery.
+The descriptor-path prototype's real failure and subsequent assertion failures
+remain retained alongside initial c4b601c qualification; never relabel them.
+
+[Evidence, commands and limits](../../evidence/014-durable-local-autonomy/kernel-continuation-b321a87/README.md)
+and [frozen-plan/CLI contract](kernel-event-replay.md). Actual read-only host
+preflight remains BLOCKED: kernel-audit status unavailable, continuous system-bus
+coverage and authenticated-control correlation required. Native complete-record,
+loss/window/boot qualification and actor/control/write/service attribution across
+all channels remain unfinished. Intervention count UNKNOWN; A2 is IN_PROGRESS.
+
+Formal ledger **30/58** unchanged; no task closure or native campaign. No Qwen or
+product attempt. Existing WWDG HSI/model, execution-authority/cumulative mission,
+missing private inputs, inspector freeze and parked-task decisions remain.
+No signature, grant renewal, budget reset, deployment, promotion or merge.
+
+## Previous checkpoint — 2026-10-27 collection replay through bounded batches
 
 Exact runtime **bf05e59b968f01abc6bc8ba60f8d369237e1c804**. Existing collector
 verification now replays every original sample in bounded batches, without the

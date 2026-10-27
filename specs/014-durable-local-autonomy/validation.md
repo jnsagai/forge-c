@@ -942,3 +942,32 @@ This does not implement kernel-event continuation beyond its 128 MiB bound,
 native all-channel correlation or actual fault/work campaigns. Interventions
 UNKNOWN; formal tasks remain 30/58. No readiness, self-healing, learning-benefit or
 availability claim, signature, grant renewal, allowance reset, deployment or merge.
+
+## 2026-10-27 bounded kernel-event replay and crash storage (A2 increment)
+
+Exact runtime b321a8766947fa5f5174bbb4f61f5d05720b22d6: 521 local affected/AFO
+PASS (39.908s), 29 release/legacy PASS (10.150s), 81 native PASS (28.073s), no skips
+or failures. The exact source is clean at each qualified lane's start/end.
+
+The existing host-audit command opts into frozen, bounded external event grouping.
+Every original capture is rechecked; no external trusted checkpoint. Selected facts
+and counted integrity checks preserve late/duplicate records across the whole input.
+Output pages bind manifest/plan/ref digests. Defaults/legacy schemas/limits remain.
+Actual serialized metadata bytes, including whitespace, are charged to the bound.
+
+Generated local/native sources134,224,064 /134,224,080 bytes span17 ranges and retain
+one compound event across the prefix; five unique records,2,095 duplicates, no
+pending event/line or uncaptured final bytes. These are native-format synthetic
+fixtures and real retained IO, not qualification of actual kernel record coverage.
+Owned-child hard-kill fixtures cover init-slot reclamation and unlinked working
+storage. They preserve unowned/live/hard-linked/symlinked/exposed files. No service,
+Conductor, reboot or mount fault. Initial c4b601c qualification and failed anonymous
+descriptor-path prototype/cleanup assertions remain retained; not relabeled PASS.
+
+Actual host preflight is BLOCKED: kernel visibility, continuous system-bus coverage
+and authenticated-control correlation. Full native record/loss/window/boot and
+all-channel actor/control/write/service attribution remain incomplete. Interventions
+UNKNOWN;0 model/product attempts; no qualified lessons or measured benefit.
+Evidence and commands: kernel-continuation-b321a87 in the Feature014 evidence tree.
+Formal30/58 unchanged; no role/product/self-healing/availability qualification,
+grant renewal, mission reset, deployment, promotion or merge.
