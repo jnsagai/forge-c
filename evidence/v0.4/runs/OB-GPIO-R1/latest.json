@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py",
+    "check",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/runs/BENCH-GPIO-ST-HAL-OB-R1/outcome.json",
+    "--peripheral",
+    "gpio"
+  ],
+  "duration_s": 0.084,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a5d969389bdd4615bab7f6591a4ba97c8bd0f2a0",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-GPIO-R1/20261027T135033.log",
+  "log_sha256": "543a31757c6df709cc02874ab4aad88af350c600c671ea2049e47d7f2a1f9b75",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-GPIO-R1",
+  "ts_utc": "2026-10-27T13:50:33.548216Z"
+}

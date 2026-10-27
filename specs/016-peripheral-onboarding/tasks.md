@@ -472,3 +472,10 @@ SWE.1–SWE.6.
 - Evidence review reopens OB-T042: OB-T040 proves existing-model reuse/re-gating, but does not prove the second
   clause (author a model when none exists). That depends on the still-open OB-T041/043. Historical PASS evidence
   remains intact; the task is not claimed complete from partial coverage.
+
+- Corrected GPIO R1 finished BLOCKED (`afo-3043541c6afd38b1`), after SWE.1/2/3 inspection PASS. Its sealed archive
+  is `9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b`, with 709 named gaps; archive integrity and
+  schema-0.2 signed-fact/input/baseline bindings PASS (OB-GPIO-R1). SWE.4 stopped on repeated unit failures plus
+  uncovered USPECs; AFO rejected rework of escalated FROZEN defects. These CODE reports need owner adjudication,
+  including BRR/BSRR hardware equivalence versus the written requirement. No missing onboarding fact was identified
+  in this corrected attempt. The initial GPIO SC-005 FAIL is preserved, not replaced by R1's narrower assessment.
