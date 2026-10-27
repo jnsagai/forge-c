@@ -7,12 +7,14 @@ and are counted missing until its evidence is imported; no arbitrary shell recip
 """
 
 from __future__ import annotations
+
 import argparse
 import json
 import socket
 import subprocess
 import time
 from pathlib import Path
+
 from ..common import sha256_file
 from . import qualification, soak
 from .durable import Refused, digest, immutable_json
@@ -44,8 +46,8 @@ def fault(manifest, case, authorization_ref, destination):
     if result["blockers"]:
         return result
     from . import authz
-    from .policy import load
     from .operations import UNIT, Intent
+    from .policy import load
 
     eff = load()
     action = "qualification-fault:" + case + ":" + UNIT
@@ -116,14 +118,25 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         return out
 
     faults = read(fault_refs)
+    # Legacy declarations remain readable evidence but cannot establish independent
+    # recovery. New observer verdicts are recomputed from their original sources.
+    from .fault_observer import verify as verify_observation
+
+    verified = set()
+    for row in faults:
+        if row.get("schema") == "forge-c/independent-operational-fault/1":
+            verify_observation(manifest, row)
+            verified.add(digest(row))
     work = read(work_refs)
     continuity = read(continuity_refs)
     missing = sorted(set(manifest["faults"]) - {r["fault"] for r in faults})
     failed = [
         r["fault"]
         for r in faults
-        if r.get("independently_restored") is not True
-        or r.get("restoration_seconds", float("inf")) > manifest["bounds"]["restore_seconds"]
+        if digest(r) not in verified
+        or r.get("independently_restored") is not True
+        or type(r.get("restoration_seconds")) not in (int, float)
+        or not 0 <= r["restoration_seconds"] <= manifest["bounds"]["restore_seconds"]
         or r.get("unexpected_interventions") != 0
     ]
     duration_ok = samples[-1]["wall"] >= expected_end
@@ -156,7 +169,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "real_work_exposures": len(work),
         "post_campaign_continuity": later,
         "rolling_30_day_slo": "NOT_DEMONSTRATED",
-        "service_intent_unchanged": True,
+        "service_intent_unchanged": None,  # requires the independent intent timeline; never assume it from a report call
         "native_model_capability": "SEPARATE_QUALIFICATION",
     }
 

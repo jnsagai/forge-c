@@ -133,3 +133,67 @@ ledger retains dispatch intent, a hash-bound non-dispatch proof, and the origina
 job reservation. A timeout or any error after invoking that subprocess remains
 possibly live and follows native nonce reconciliation; a terminal job alone never
 releases capacity. Non-dispatch proof publication is recoverable after restart.
+
+### Independent operational observation
+
+`python -m forge_factory.afo.fault_observer capture|evaluate` captures evidence
+outside the Conductor process and control group. It does not inject faults,
+restart services, admit jobs, migrate SQLite, contact a model or renew authority.
+Its plan must be an exact hash-bound input of the frozen operation manifest:
+
+```json
+{
+  "schema": "forge-c/operational-observer-plan/1",
+  "unit": "forge-conductor.service",
+  "observer_source_sha256": "<sha256 of afo/fault_observer.py>",
+  "data_root": "<absolute isolated factory root>",
+  "database": "<data_root>/state/conductor/conductor.sqlite3",
+  "heartbeat": "<data_root>/state/afo/conductor.heartbeat",
+  "intent": "<operator-provisioned durable intent path>",
+  "evidence_root": "<operator-provisioned observer directory outside factory state>",
+  "mount_uuid": "<authoritative mount UUID>",
+  "max_rows": 10000,
+  "health_urls": {
+    "fabro": "http://127.0.0.1:<isolated-port>/health",
+    "gateway": "http://127.0.0.1:<isolated-port>/health"
+  }
+}
+```
+
+The plan, source hash, paths, ports and mount identity must be frozen before the
+campaign is signed; placeholders are not executable configuration. Provision the
+observer directory with owner-only access outside product workspaces. For a
+mount-loss/reboot campaign, independently provision observation and durable storage
+outside the affected fault domain; a directory on the same failed mount is not
+continuous external observation.
+
+```bash
+python -m forge_factory.afo.fault_observer capture \
+  --manifest operation.json --plan-ref plan-reference.json --out <observer-dir>/before.json
+# Execute only the separately authorized existing fault recipe/host fixture.
+python -m forge_factory.afo.fault_observer capture \
+  --manifest operation.json --plan-ref plan-reference.json --out <observer-dir>/after.json
+python -m forge_factory.afo.fault_observer evaluate \
+  --manifest operation.json --plan-ref plan-reference.json \
+  --evidence fault-and-sample-references.json --out <observer-dir>/observation.json
+```
+
+`plan-reference.json` is `{ "path": "<plan>", "sha256": "<hash>" }` and must occur
+in manifest inputs. The evaluation input contains `injection_ref` and chronologically
+ordered `sample_refs`, each with path and SHA256. Capture enough samples for the
+frozen probe/detection bounds; two examples are not a 24-hour campaign.
+
+The observer correlates the three existing signal receipts with actual unit/PID,
+health and intent observations, preserves missing/corrupt/truncated accounting as
+UNKNOWN, and detects lost/decreased mission accounting or duplicate native identity
+observations. HTTP probes are loopback-only, ignore proxy variables and refuse
+redirects. Campaign reporting recomputes observer records from their source refs;
+legacy handwritten booleans cannot pass the independent recovery gate.
+
+This increment is **partial qualification tooling**. Host-level intervention audit
+is still required; authenticated AFO actions alone do not prove no manual host
+intervention. READY packages require the independent package oracle. Unsupported
+fault exposures (including reboot and mount loss) remain missing, and unknown
+fields cannot pass campaign reporting. No service, model, campaign or deployment is
+activated by these commands. Full DA-T026/046/049/050/052 remain unqualified until
+actual authorized host fixtures, complete observation and wall-clock campaigns exist.
