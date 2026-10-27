@@ -458,3 +458,46 @@ or complete host audit. The external observer still needs source-bound ingestion
 native actor/write/service-event correlation and continuous coverage. Application
 receipts alone do not establish zero unexpected interventions or clear the host
 audit prerequisites.
+
+### Frozen control-source ingestion
+
+The external observer can opt into application control-source capture by adding
+this object to its existing frozen plan (the plan remains a manifest input):
+
+```json
+{
+  "control_sources": {
+    "reader_sha256": "<SHA256 of afo/control_observation.py>",
+    "intent_source_sha256": "<approved operations.py SHA256>",
+    "authentication_sources": {
+      "OS_STATE_DIRECTORY_OWNER": "<approved cli.py SHA256>",
+      "DASHBOARD_OPERATOR_BEARER": "<approved dashboard_api.py SHA256>"
+    }
+  }
+}
+```
+
+Use approved immutable source hashes. Matching bytes are source facts, not a
+grant, signer identity or independent authentication decision. The reader's own
+hash must match the frozen value before capture. Old plans can omit this object.
+
+`ledger.control_source.events` preserves exact event JSON only after strict
+field/type/hash/privacy validation and links its two applied controls to actual
+action rows from the same SQLite read transaction. Invalid, unsupported or
+historical sources remain UNKNOWN or explicitly unmatched, with their source
+hashes; they cannot become successful intervention evidence. Bearer fingerprints
+are permitted, token bytes and arbitrary fields are excluded. Legacy/custom
+action text is represented by its hash. Captured values and replayed source-match
+facts are checked again when loading samples.
+
+`intent_control_source` is separate from the existing mode/epoch/stop view, so
+automatic recovery-accounting changes do not impersonate new operator intent or
+prevent restoration recognition. UID maps describe their parent namespace; the
+reader does not silently treat that as the host namespace. Unknown process
+identity remains explicit. Existing row and aggregate byte limits apply, and
+publication also bounds the complete serialized observation. An oversized ledger
+becomes an explicit incomplete observation, not an oversized or healthy artifact.
+
+This completes application-source ingestion, not native actor/write/service
+correlation or continuous host-audit verification. Global intervention count
+remains UNKNOWN until those independent channels and their coverage are verified.

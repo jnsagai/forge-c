@@ -25,7 +25,7 @@ from urllib.parse import urlsplit
 
 from ..common import sha256_file
 from . import qualification, soak
-from .durable import Refused, digest, immutable_json, strict_json
+from .durable import Refused, canonical, digest, immutable_json, strict_json
 
 SCHEMA = "forge-c/independent-operational-observation/1"
 FIELDS = {
@@ -86,6 +86,10 @@ def plan(manifest, ref):
         )
     ):
         raise Refused("OBSERVER_PLAN_INVALID")
+    if "control_sources" in d:
+        from .control_observation import configuration
+
+        configuration(d["control_sources"])
     if any(Path(d["data_root"]).resolve() not in Path(d[k]).resolve().parents for k in ("database", "heartbeat")):
         raise Refused("OBSERVER_DATABASE_OUTSIDE_DATA_ROOT")
     if not isinstance(d.get("mount_uuid"), str) or not re.fullmatch(r"[0-9a-fA-F-]{8,64}", d["mount_uuid"]):
@@ -122,7 +126,16 @@ def artifact(frozen, path):
     return scoped_path(root, str(relative))
 
 
-def ledger(path, limit):
+def _action(row):
+    value = row["action"]
+    if type(row["seq"]) is not int or not 1 <= row["seq"] <= 2**63 - 1 or not isinstance(value, str):
+        raise Refused("CONTROL_SOURCE_ACTION_INVALID")
+    known = re.fullmatch(r"(?:paused|draining)=[01]|denied:(?:pause|drain|resume|shutdown)", value) is not None
+    return {"seq": row["seq"], "action": value if known else None,
+            **({"action_sha256": hashlib.sha256(value.encode()).hexdigest()} if not known else {})}
+
+
+def ledger(path, limit, *, control_sources=None):
     """Snapshot authoritative tables in one read transaction; never call Store/migrate."""
     p = Path(path)
     if p.is_symlink() or not p.is_file():
@@ -183,6 +196,25 @@ def ledger(path, limit):
         if max(len(orders), len(commands), len(actions), len(attempts)) > limit:
             raise Refused("OBSERVER_LEDGER_ROW_BOUND_EXCEEDED")
         from . import contracts
+        source = None
+        if control_sources is not None:
+            from . import control_observation as control
+
+            control.configuration(control_sources)
+            event_rows = take(
+                "SELECT seq,event_id,occurred_utc,record FROM afo_lifecycle_events "
+                "WHERE type='afo.operator_control' ORDER BY seq LIMIT ?", (limit + 1,),
+            )
+            if len(event_rows) > limit:
+                raise Refused("OBSERVER_CONTROL_ROW_BOUND_EXCEEDED")
+            action_map = {r["seq"]: r["action"] for r in actions}
+            source = {
+                "reader_sha256": control_sources["reader_sha256"],
+                "events": [control.event(dict(row), action_map, control_sources) for row in event_rows],
+                "scope": "APPLICATION_CONTROL_SOURCES_NOT_HOST_INTERVENTION_VERIFICATION",
+            }
+        if any(row["value"] not in ("0", "1") for row in controls):
+            raise Refused("OBSERVER_CONTROL_VALUE_INVALID")
 
         clean_orders = []
         for r in orders:
@@ -199,7 +231,7 @@ def ledger(path, limit):
         result.update(
             orders=clean_orders,
             commands=[dict(r) for r in commands],
-            actions=[dict(r) for r in actions],
+            actions=[_action(dict(r)) for r in actions],
             controls={r["key"]: r["value"] for r in controls},
             attempts=[
                 project(
@@ -210,6 +242,8 @@ def ledger(path, limit):
                 for r in attempts
             ],
         )
+        if control_sources is not None:
+            result["control_source"] = source
         return result
 
 
@@ -259,15 +293,24 @@ def health(frozen, bound):
     return checks
 
 
-def _intent(path):
-    record = read_json(path, 65536)
+def _intent(path, *, control_sources=None):
+    raw = read_bytes(path, 65536)
+    record = strict_json(raw, 65536)
     if (
-        record.get("mode") not in ("RUNNING", "PAUSED", "DRAINING", "STOPPED")
+        not isinstance(record, dict)
+        or record.get("mode") not in ("RUNNING", "PAUSED", "DRAINING", "STOPPED")
         or type(record.get("epoch")) is not int
         or record["epoch"] < 0
+        or ("effective_stop" in record and type(record["effective_stop"]) is not bool)
     ):
         raise Refused("OBSERVER_OPERATIONS_INTENT_UNKNOWN")
-    return {k: record.get(k) for k in ("mode", "epoch", "effective_stop")}
+    result = {k: record.get(k) for k in ("mode", "epoch", "effective_stop")}
+    if control_sources is not None:
+        from . import control_observation as control
+
+        control.configuration(control_sources)
+        result["control_source"] = control.intent(record, raw, control_sources)
+    return result
 
 
 def heartbeat(path):
@@ -312,8 +355,8 @@ def capture(manifest, plan_ref, destination):
         "errors": {},
     }
     probes = {
-        "ledger": lambda: ledger(frozen["database"], frozen["max_rows"]),
-        "intent": lambda: _intent(frozen["intent"]),
+        "ledger": lambda: ledger(frozen["database"], frozen["max_rows"], control_sources=frozen.get("control_sources")),
+        "intent": lambda: _intent(frozen["intent"], control_sources=frozen.get("control_sources")),
         "unit": lambda: unit_status(frozen["unit"]),
         "health": lambda: health(frozen, manifest["bounds"]["control_cycle_seconds"]),
         "heartbeat": lambda: heartbeat(frozen["heartbeat"]),
@@ -327,6 +370,10 @@ def capture(manifest, plan_ref, destination):
             # No exception messages (which can contain private data), no artificial healthy defaults.
             out[name] = None
             out["errors"][name] = getattr(exc, "code", type(exc).__name__)
+    if frozen.get("control_sources") and out.get("intent") is not None:
+        # Provenance may change when recovery counters change; that is not new
+        # operator intent. Preserve the existing mode/epoch/stop comparison API.
+        out["intent_control_source"] = out["intent"].pop("control_source")
     if out.get("health") is not None:
         hb, unit = out.get("heartbeat") or {}, out.get("unit") or {}
         out["health"]["conductor"] = (
@@ -341,6 +388,10 @@ def capture(manifest, plan_ref, destination):
     out["complete"] = (
         not out["errors"] and out["independent_process"] and out["capture_seconds"] <= manifest["bounds"]["control_cycle_seconds"]
     )
+    if len(canonical(out)) > MAX_BYTES:
+        out["ledger"] = None
+        out["errors"]["ledger"] = "OBSERVER_OUTPUT_BYTE_BOUND_EXCEEDED"
+        out["complete"] = False
     immutable_json(artifact(frozen, destination), out)
     return out
 
@@ -420,6 +471,13 @@ def load_samples(manifest, plan_ref, refs):
             raise Refused("OBSERVER_SAMPLE_UNBOUND")
         if any(type(row.get(k)) not in (float, int) or not math.isfinite(row[k]) for k in ("wall", "mono")):
             raise Refused("OBSERVER_SAMPLE_CLOCK_INVALID")
+        if frozen.get("control_sources") and row.get("ledger") is not None and row.get("intent") is not None:
+            from .control_observation import verify_sources
+
+            if not isinstance(row["intent"], dict):
+                raise Refused("CONTROL_SOURCE_SNAPSHOT_INVALID")
+            verify_sources(row["ledger"], {**row["intent"], "control_source": row.get("intent_control_source")},
+                           frozen["control_sources"])
         rows.append(row)
     if len({r["host"] for r in rows}) != 1 or any(r.get("observer_source_sha256") != sha256_file(Path(__file__)) for r in rows):
         raise Refused("OBSERVER_SAMPLE_SOURCE_CHANGED")
