@@ -11,6 +11,8 @@ import argparse
 import hashlib
 import json
 import re
+import sqlite3
+from datetime import datetime
 from pathlib import Path
 
 from forge_factory.benchmark.queue import load
@@ -30,6 +32,33 @@ def read(path):
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def operational(order_id):
+    """Read terminal reasons, attempt timing and recovery budgets; UNKNOWN tokens stay UNKNOWN."""
+    db = state_dir() / "conductor/conductor.sqlite3"
+    with sqlite3.connect(f"file:{db}?mode=ro", uri=True) as connection:
+        connection.row_factory = sqlite3.Row
+        row = connection.execute("SELECT created_utc,admitted_utc,terminal_reason,authorization_id "
+                                 "FROM afo_work_orders WHERE order_id=?", (order_id,)).fetchone()
+        timing = {}
+        for attempt in connection.execute("SELECT attempt_id,created_utc,finished_utc FROM afo_attempts WHERE order_id=?",
+                                          (order_id,)):
+            duration = ((datetime.fromisoformat(attempt["finished_utc"]) -
+                         datetime.fromisoformat(attempt["created_utc"])).total_seconds()
+                        if attempt["finished_utc"] else None)
+            timing[attempt["attempt_id"]] = {"started_at": attempt["created_utc"], "finished_at": attempt["finished_utc"],
+                                            "full_attempt_duration_s": duration}
+        plans = []
+        for plan in connection.execute("SELECT plan_id,attempt_id,strategy,source,status,reasons,budget_snapshot,decided_utc "
+                                       "FROM afo_recovery_plans WHERE order_id=? ORDER BY decided_utc", (order_id,)):
+            data = dict(plan)
+            for key in ("reasons", "budget_snapshot"):
+                data[key] = json.loads(data[key])
+            plans.append(data)
+    return {**dict(row), "attempt_timing": timing, "recovery_plans": plans,
+            "usage_note": "Phase ACP counters are in each attempt. Recovery budget tokens remain native UNKNOWN; "
+                          "not zero and not estimated from a budget ceiling."}
 
 
 def collect():
@@ -57,7 +86,7 @@ def collect():
         match = REQUEST.fullmatch(order["request_id"])
         if match is None:
             continue
-        entry = {**order, "peripheral": match[1].lower(), "attempts": []}
+        entry = {**order, "peripheral": match[1].lower(), "attempts": [], "operational": operational(order["order_id"])}
         for attempt in order["attempts"]:
             ws = state_dir() / "workorders" / ("WO-AFO-" + attempt["attempt_id"].removeprefix("afo-")) / "workspace"
             manifest = read(ws / ".forge-run/manifest.json")

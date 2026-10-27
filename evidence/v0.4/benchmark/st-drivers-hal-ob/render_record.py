@@ -24,6 +24,8 @@ lines += [
     "The initial GPIO package was superseded after omitted RM fields were found. Its failed attempt and original archive "
     "remain in this record; OA-2026-10-27-05 approves the corrected package. The first SPI attempt also remains visible "
     "with its factory probe defect. Terminal package status is not safety acceptance.",
+    "Phase ACP token counters are retained per model and role, including separate cache counters. Recovery budget "
+    "tokens remain the native UNKNOWN; they are not reported as zero or estimated from budget ceilings.",
     "",
 ]
 entries = []
@@ -33,6 +35,9 @@ for o in r["orders"]:
 lines += [markdown({"queue": "st-hal-onboarding", "schema": r["schema"], "recorded_at": r["recorded_at"], "entries": entries})]
 for o in r["orders"]:
     lines += [f"## {o['request_id']}", "", f"Order `{o['order_id']}`: **{o['state']}**.", ""]
+    operations = o.get("operational") or {}
+    if operations.get("terminal_reason"):
+        lines += [f"Terminal reason: `{operations['terminal_reason']}`.", ""]
     for a in o["attempts"]:
         b = a.get("onboarding") or {}
         p = a.get("package_record") or {}
@@ -44,6 +49,13 @@ for o in r["orders"]:
             "(full list in JSON and sealed archive).",
             "",
         ]
+        timing = (operations.get("attempt_timing") or {}).get(a["attempt_id"])
+        if timing:
+            lines += [f"Full attempt duration: {timing['full_attempt_duration_s']} s "
+                      f"({timing['started_at']} to {timing['finished_at']}).", ""]
+    for plan in operations.get("recovery_plans") or []:
+        lines += [f"Recovery `{plan['plan_id']}`: {plan['source']} / {plan['strategy']} / {plan['status']}. "
+                  f"Token budget observation: {plan['budget_snapshot'].get('tokens', 'UNKNOWN')}.", ""]
 lines += [
     "## Review status",
     "",
