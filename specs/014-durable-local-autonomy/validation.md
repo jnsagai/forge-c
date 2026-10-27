@@ -212,6 +212,15 @@ DA-AT-055 expects complete registered runs with honest rates and sets no rate th
 
 Exact `20650af`, clean dedicated worktree: whole inherited suite **215 files, 1,840 tests, 0 failures, 0 errors**, 49 skipped with their reasons (the runner reports PARTIAL only because `test_t050_t051_docs_status` rewrites a generated timestamp); core **645 passed**, 1 skipped; release **13/13**; history replay and transient-systemd semantics PASS; every stage dry-run blocked as designed; independent CRE **REJECTED / PROTECTED_PATH_CHANGE** (retained, KI-014-010). DA-T029 is ticked with record `DA014-regression` (30/58); KI-014-005 is RESOLVED.
 
+## 2026-10-27: learning set 4, new ST LL drivers, handover to Codex
+
+GPU job 040 on `e0c020d`: learning sets 1–3 49/49, 63/63, 14/14; learning set 4 (the spent held-out pair) 13/14 with
+both clean baselines accepted (learning data; KI-014-003 stays OPEN). The owner froze inspector development. WWDG,
+RNG and LPTIM1 ST LL drivers were onboarded (`74c3aa4`, `60fccfd`, `4b71e6f`; Renode models smoke-tested in real
+Renode), the owner set ASIL B (OD-2026-10-27-01, `de54734`), and unsigned SSA-STC-001/TAA-STC-001 v0.1 drafts were
+committed (`9a88fbc`). GPU job 050 started the frozen st3 driver runs on Omniverse2 at 08:13 UTC (inputs verified,
+peripheral tests 12 passed); its results are collected by the next engineer (`HANDOVER-CODEX.md`).
+
 ## Static checks
 
 `python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.

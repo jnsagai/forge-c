@@ -155,6 +155,26 @@ never judges the rates. It is the DA-T055 evidence (`evidence/v0.4/runs/DA014-ca
 spent: fixes for these classes belong to a learning set, and only a further refreshed held-out set can measure them
 (known issue KI-014-003).
 
+## Learning set 4 and the inspector freeze (2026-10-27)
+
+After all registered test-set-2 runs ended, the spent GPIOA/CRC pair was registered as learning set 4
+([learning-set-4.json](learning-set-4.json), `41e12e0`) before any development. Its rules (`e0c020d`: indexed field
+families such as `GPIO_BSRR.BSy`, 'write the requested <noun>' and argument writes, 'Flash budget: N bytes' rows,
+'<method>: <outcome>' pass criteria) made the truthful preflight pass on all 20 learning baselines. GPU job 040
+([learning-round-e0c020d.json](learning-round-e0c020d.json)):
+
+| Set | Evaluations | Result |
+|---|---|---|
+| Learning set 1 (learning-20) | 49 | 49/49 |
+| Learning set 2 (learning2-6) | 63 | 63/63 |
+| Learning set 3 (learning3-3) | 14 | 14/14 |
+| Learning set 4 (learning4-1) | 14 | 13/14: both clean baselines accepted; GPIOA S1-OMIT flagged off target |
+
+These are learning-data results; they do not re-measure the held-out rate (KI-014-003 stays OPEN). GPIOA S1-OMIT
+removes one MODER value while other requirements still cover the field; catching it needs an encoding-completeness
+check against the RM, not built because of its false-rejection risk. Owner 2026-10-27: inspector development is frozen
+here; the next measurement needs at least four new frozen held-out baselines.
+
 ## Gate defects found while preparing calibration (2026-10-26)
 
 1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script
