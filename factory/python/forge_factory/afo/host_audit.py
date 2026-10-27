@@ -19,11 +19,12 @@ import socket
 import subprocess
 import tempfile
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from . import fault_observer as observer
 from . import soak
-from .durable import Refused, digest, immutable_json
+from .durable import Refused, canonical, digest, immutable_json
 
 CHANNELS = ("KERNEL_AUDIT", "SYSTEMD_BUS", "AUTHENTICATED_CONTROLS")
 HEADER = re.compile(
@@ -239,8 +240,9 @@ def preflight():
     }
 
 
-def read_protected_log(path):
-    """Read a root-protected regular source and bind its exact prefix on one fd."""
+@contextmanager
+def protected_log(path):
+    """Open one protected source; root ownership does not imply audit coverage."""
     import stat
 
     path = Path(path).absolute()
@@ -249,13 +251,23 @@ def read_protected_log(path):
         if parent.is_symlink() or s.st_uid != 0 or s.st_mode & 0o022:
             raise Refused("KERNEL_AUDIT_LOG_ANCESTRY_NOT_PROTECTED")
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-    with os.fdopen(fd, "rb") as f:
-        s = os.fstat(f.fileno())
+    try:
+        s = os.fstat(fd)
         if not stat.S_ISREG(s.st_mode) or s.st_uid != 0 or s.st_mode & 0o022:
             raise Refused("KERNEL_AUDIT_LOG_NOT_PROTECTED")
+        yield fd
+    finally:
+        os.close(fd)
+
+
+def read_protected_log(path):
+    """Read a root-protected regular source and bind its exact prefix on one fd."""
+    path = Path(path).absolute()
+    with protected_log(path) as fd:
+        s = os.fstat(fd)
         if s.st_size > observer.MAX_BYTES:
             raise Refused("KERNEL_AUDIT_LOG_BOUND_EXCEEDED")
-        raw = f.read(s.st_size)
+        raw = os.pread(fd, s.st_size, 0)
         if len(raw) != s.st_size:
             raise Refused("KERNEL_AUDIT_LOG_TRUNCATED_DURING_READ")
     return raw, {
@@ -314,7 +326,7 @@ def kernel_window(before, after):
     }
 
 
-def capture(manifest, observer_plan_ref, host_plan_ref, destination):
+def _plans(manifest, observer_plan_ref, host_plan_ref):
     frozen = observer.plan(manifest, observer_plan_ref)
     if host_plan_ref not in manifest["inputs"]:
         raise Refused("HOST_AUDIT_PLAN_NOT_FROZEN")
@@ -343,6 +355,54 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
         raise Refused("HOST_AUDIT_BUS_SCOPES_INVALID")
     if scopes and plan.get("bus_source_sha256") != hashlib.sha256(Path(bus_audit.__file__).read_bytes()).hexdigest():
         raise Refused("HOST_AUDIT_BUS_SOURCE_NOT_FROZEN")
+    segments = plan.get("segments")
+    if segments is not None:
+        from . import audit_segments
+
+        audit_segments.configuration(segments, plan["kernel_log"])
+    return frozen, plan
+
+
+def _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref):
+    if (
+        not isinstance(ref, dict) or set(ref) != {"path", "sha256"}
+        or not isinstance(ref["path"], str) or not isinstance(ref["sha256"], str)
+        or not re.fullmatch(r"[0-9a-f]{64}", ref["sha256"])
+    ):
+        raise Refused("HOST_AUDIT_CAPTURE_REFERENCE_INVALID")
+    record = observer.bound_json(ref, path=observer.artifact(frozen, ref["path"]))
+    if (
+        not isinstance(record, dict) or record.get("schema") != "forge-c/host-audit-source-capture/1"
+        or record.get("manifest_sha256") != digest(manifest)
+        or record.get("host_plan_ref") != host_plan_ref or record.get("observer_plan_ref") != observer_plan_ref
+        or record.get("source_sha256") != plan["source_sha256"] or record.get("host") != plan["host"]
+    ):
+        raise Refused("HOST_AUDIT_PREVIOUS_CAPTURE_UNBOUND")
+    return record
+
+
+def capture(manifest, observer_plan_ref, host_plan_ref, destination, *, previous_ref=None):
+    frozen, plan = _plans(manifest, observer_plan_ref, host_plan_ref)
+    from . import audit_segments, bus_audit
+
+    segments = plan.get("segments")
+    if segments is None and previous_ref is not None:
+        raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_RESUME")
+    previous, resume_ref = None, None
+    if previous_ref is not None:
+        prior = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, previous_ref)
+        if "kernel_segment" in prior:
+            previous, resume_ref = prior, previous_ref
+        elif prior.get("resume_ref") is not None:
+            resume_ref = prior["resume_ref"]
+            previous = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, resume_ref)
+            if "kernel_segment" not in previous:
+                raise Refused("HOST_AUDIT_RESUME_CURSOR_UNAVAILABLE")
+        if previous is not None:
+            audit_segments.validate(previous["kernel_segment"], segments)
+            sequence = previous["kernel_segment"].get("sequence")
+            if type(sequence) is not int or not 0 <= sequence < 2**63 - 1:
+                raise Refused("HOST_AUDIT_SEGMENT_SEQUENCE_INVALID")
     result = preflight()
     result.update(
         schema="forge-c/host-audit-source-capture/1",
@@ -352,9 +412,25 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
     )
     # A finite visibility probe adds factual sources; it cannot clear the
     # continuous-coverage or authenticated-control prerequisites by itself.
-    result["bus_sources"] = [bus_audit.source(scope) for scope in scopes]
+    result["bus_sources"] = [bus_audit.source(scope) for scope in plan.get("bus_scopes", [])]
     log = Path(plan["kernel_log"])
-    if log.is_symlink() or not log.is_file():
+    if segments is not None:
+        result["previous_capture_ref"] = previous_ref
+        result["resume_ref"] = resume_ref
+        try:
+            _, segment = audit_segments.read(
+                segments, previous["kernel_segment"]["cursor"] if previous else None,
+                daemon_pid=(result.get("kernel_status") or {}).get("pid"),
+            )
+            segment.update(sequence=previous["kernel_segment"]["sequence"] + 1 if previous else 0,
+                           previous_segment_ref=resume_ref)
+            result["kernel_segment"] = segment
+            # Byte ranges may split records/events. Do not pretend each range is
+            # a complete compound event, or discard trailing source bytes.
+            result["blockers"].append("KERNEL_SEGMENT_COMPOUND_EVENT_REPLAY_REQUIRED")
+        except (OSError, ValueError) as exc:
+            result["blockers"].append(getattr(exc, "code", type(exc).__name__))
+    elif log.is_symlink() or not log.is_file():
         result["blockers"].append("KERNEL_AUDIT_LOG_UNAVAILABLE")
     else:
         try:
@@ -385,14 +461,63 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination):
     return result
 
 
+def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destination):
+    """Replay an explicitly bounded, hash-bound successful-capture chain.
+
+    Failed captures remain separate immutable history. They cannot advance the
+    byte cursor or be represented as a successfully observed time window.
+    """
+    from . import audit_segments
+
+    frozen, plan = _plans(manifest, observer_plan_ref, host_plan_ref)
+    if plan.get("segments") is None:
+        raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_REPLAY")
+    if not isinstance(refs, list) or not 1 <= len(refs) <= audit_segments.MAX_SEGMENTS:
+        raise Refused("HOST_AUDIT_SEGMENT_REFERENCES_INVALID")
+    segments, previous_ref, budget = [], None, observer.MAX_BYTES
+    for sequence, ref in enumerate(refs):
+        record = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref)
+        budget -= len(canonical(record))
+        if budget < 0:
+            raise Refused("HOST_AUDIT_SEGMENT_METADATA_BOUND_EXCEEDED")
+        segment = record.get("kernel_segment")
+        audit_segments.validate(segment, plan["segments"])
+        if (type(segment.get("sequence")) is not int or segment["sequence"] != sequence
+                or segment.get("previous_segment_ref") != previous_ref):
+            raise Refused("HOST_AUDIT_SEGMENT_CAPTURE_CHAIN_DISCONTINUITY")
+        rotation = segment.get("rotation")
+        if rotation is not None:
+            if not isinstance(rotation, dict) or not isinstance(rotation.get("observation"), dict):
+                raise Refused("HOST_AUDIT_SEGMENT_ROTATION_INVALID")
+            status = record.get("kernel_status")
+            if (not isinstance(status, dict) or type(status.get("pid")) is not int
+                    or rotation["observation"].get("pid") != status["pid"]):
+                raise Refused("HOST_AUDIT_SEGMENT_DAEMON_BINDING_UNKNOWN")
+        segments.append(segment)
+        previous_ref = ref
+    byte_chain = audit_segments.verify_chain(plan["segments"], segments)
+    result = {"schema": "forge-c/host-audit-segment-replay/1",
+              "manifest_sha256": digest(manifest), "observer_plan_ref": observer_plan_ref,
+              "host_plan_ref": host_plan_ref, "capture_refs_sha256": digest(refs),
+              "first_capture_ref": refs[0], "last_capture_ref": refs[-1], "byte_chain": byte_chain,
+              "status": "INCOMPLETE_SOURCE_COVERAGE", "unexpected_interventions": None,
+              "blockers": ["KERNEL_SEGMENT_COMPOUND_EVENT_REPLAY_REQUIRED",
+                           "HOST_AUDIT_ALL_CHANNEL_CONTINUOUS_COVERAGE_REQUIRED"],
+              "scope": "CAPTURED_BYTE_PREFIX_NOT_HOST_INTERVENTION_VERIFICATION"}
+    immutable_json(observer.artifact(frozen, destination), result)
+    return result
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("command", choices=("preflight", "capture", "bus-preflight"))
+    p.add_argument("command", choices=("preflight", "capture", "verify-segments", "bus-preflight"))
     p.add_argument("--bus", choices=("user", "system"), default="user")
     p.add_argument("--seconds", type=float, default=1)
     p.add_argument("--manifest", type=Path)
     p.add_argument("--observer-plan-ref", type=Path)
     p.add_argument("--host-plan-ref", type=Path)
+    p.add_argument("--previous-ref", type=Path)
+    p.add_argument("--segment-refs", type=Path)
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
     if args.command == "preflight":
@@ -405,13 +530,18 @@ def main(argv=None):
         immutable_json(args.out, result)
     else:
         if not all((args.manifest, args.observer_plan_ref, args.host_plan_ref)):
-            p.error("capture requires manifest, observer-plan-ref and host-plan-ref")
-        result = capture(
-            observer.read_json(args.manifest),
-            observer.read_json(args.observer_plan_ref),
-            observer.read_json(args.host_plan_ref),
-            args.out,
-        )
+            p.error("capture/verify-segments requires manifest, observer-plan-ref and host-plan-ref")
+        shared = (observer.read_json(args.manifest), observer.read_json(args.observer_plan_ref),
+                  observer.read_json(args.host_plan_ref))
+        if args.command == "verify-segments":
+            if not args.segment_refs or args.previous_ref:
+                p.error("verify-segments requires segment-refs and no previous-ref")
+            result = verify_segments(*shared, observer.read_json(args.segment_refs), args.out)
+        else:
+            if args.segment_refs:
+                p.error("segment-refs is only valid for verify-segments")
+            result = capture(*shared, args.out,
+                             previous_ref=observer.read_json(args.previous_ref) if args.previous_ref else None)
     print(json.dumps({k: result[k] for k in ("schema", "status", "blockers")}, sort_keys=True))
     return 2 if result["blockers"] else 0
 
