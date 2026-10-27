@@ -488,3 +488,9 @@ SWE.1–SWE.6.
 - The clean full suite on exact candidate `9dd5b71` completed: 1410 passed, 27 skipped, the same three known
   baseline failures, in 2358.09 s. Raw OB-FULL-SUITE stays FAIL; OB-NO-REGRESSIONS passes the independent
   failure-set comparison. No source change followed this suite.
+
+- Runtime `9dd5b71` deployed after the completed clean suite and frozen CRE oracle, with no live orders or pending
+  commands and unit/SQLite backups. Process cwd and service directory match that exact commit; cloud gateway is
+  inactive and disabled. All four current package signatures remain APPROVAL_OK; no facts changed.
+- Submitted fresh request `BENCH-SPI-ST-HAL-OB-R1` as `afo-d5622d4914a0ac9d` on this runtime. GPIO's terminal
+  artifacts are retained; USART and TIM remain prepared for sequential submission.
