@@ -6,8 +6,10 @@ verification tooling. Unknown observations remain incomplete.
 """
 
 from __future__ import annotations
+
 import json
 from pathlib import Path
+
 from ..common import sha256_file, state_dir
 from .durable import Refused, digest
 
@@ -15,6 +17,8 @@ PRODUCERS = {"CRE_VERIFIER", "REFERENCE_HARNESS", "METAMORPHIC_HARNESS", "MUTANT
 
 
 def independent_audit(ref, manifest, trial, observation, *, workspace=None):
+    from .fault_observer import MAX_TRACE_BYTES, bound_json, read_bytes
+
     root = (state_dir() / "lrtx/qualification-audits").resolve()
     if not ref:
         candidate = root / digest(manifest) / (trial.replace(":", "-") + ".json")
@@ -26,10 +30,12 @@ def independent_audit(ref, manifest, trial, observation, *, workspace=None):
         path.is_symlink()
         or root not in path.resolve().parents
         or (workspace and Path(workspace).resolve() in path.resolve().parents)
-        or sha256_file(path) != ref["sha256"]
     ):
         raise Refused("QUALIFICATION_AUDIT_REFERENCE_INVALID")
-    record = json.loads(path.read_text())
+    try:
+        record = bound_json(ref)
+    except (OSError, ValueError) as exc:
+        raise Refused("QUALIFICATION_AUDIT_REFERENCE_INVALID") from exc
     if (
         record.get("schema") != "forge-c/independent-qualification-audit/1"
         or record.get("producer") not in PRODUCERS
@@ -40,18 +46,28 @@ def independent_audit(ref, manifest, trial, observation, *, workspace=None):
         or not record.get("oracle_refs")
     ):
         raise Refused("INDEPENDENT_QUALIFICATION_AUDIT_MISMATCH")
+    if not isinstance(record["oracle_refs"], list) or len(record["oracle_refs"]) > 10000:
+        raise Refused("INDEPENDENT_ORACLE_BOUND_EXCEEDED")
+    remaining = MAX_TRACE_BYTES
     for oracle in record["oracle_refs"]:
         p = Path(oracle["path"])
-        if p.is_symlink() or sha256_file(p) != oracle["sha256"]:
+        import hashlib
+
+        try:
+            raw = read_bytes(p, remaining)
+        except (OSError, ValueError) as exc:
+            raise Refused("INDEPENDENT_ORACLE_CHANGED") from exc
+        remaining -= len(raw)
+        if hashlib.sha256(raw).hexdigest() != oracle["sha256"]:
             raise Refused("INDEPENDENT_ORACLE_CHANGED")
     return {**record, "audit_artifact": ref}
 
 
 def product_observation(store, manifest, trial, binding):
-    from .runtime import workspace_of
-    from .dispatch import package_verdict
     from ..inspection.engine import Store as InspectionStore
+    from .dispatch import package_verdict
     from .execution_lifecycle import Executions
+    from .runtime import workspace_of
 
     order = store.order(binding["order_id"])
     if not order:
@@ -115,17 +131,59 @@ def product_observation(store, manifest, trial, binding):
 
 def product_row(store, manifest, trial, binding):
     observation, ws = product_observation(store, manifest, trial, binding)
-    audit = independent_audit(binding.get("independent_audit"), manifest, trial, observation, workspace=ws)
+    return audited_product_row(manifest, observation, binding.get("independent_audit"), workspace=ws)
+
+
+def audited_product_row(manifest, observation, audit_ref=None, *, workspace=None):
+    """Replay the existing independent audit against an exact native observation.
+
+    This performs no dispatch or state mutation. Consumers must additionally bind
+    the observation to the campaign's job and independently captured native facts.
+    """
+    audit = independent_audit(audit_ref, manifest, observation["trial_id"], observation, workspace=workspace)
     facts = audit.get("observations", {}) if audit else {}
     return {
         **observation,
         "observation_sha256": digest(observation),
         "sealed_ready": observation["package_verdict"].get("verdict") == "READY_FOR_OFFLINE_REVIEW",
-        "native_all_six_gates": all(v == "PASS" for v in observation["gates"].values()) and bool(observation["native_run_id"]),
+        "native_all_six_gates": (
+            set(observation["gates"]) == {f"SWE.{i}" for i in range(1, 7)}
+            and all(v == "PASS" for v in observation["gates"].values())
+            and bool(observation["native_run_id"])
+        ),
         "critical_defects": facts.get("critical_defects", []),
         "invalid_structured": facts.get("invalid_structured"),
         "false_ready": facts.get("false_ready"),
         "required_evidence_complete": facts.get("required_evidence_complete"),
         "independent_audit": audit["audit_artifact"] if audit else None,
         "qualification_status": "AUDITED" if audit else "INCOMPLETE_INDEPENDENT_AUDIT",
+        **({"native_outcome_verified": facts["native_outcome_verified"]} if "native_outcome_verified" in facts else {}),
     }
+
+
+PRODUCT_DERIVED_FIELDS = {
+    "observation_sha256", "sealed_ready", "native_all_six_gates", "critical_defects",
+    "invalid_structured", "false_ready", "required_evidence_complete", "independent_audit", "qualification_status",
+    "native_outcome_verified",
+}
+
+
+def replay_product_row(manifest, row):
+    """Never accept copied success flags in place of the bound independent audit."""
+    observation = {k: v for k, v in row.items() if k not in PRODUCT_DERIVED_FIELDS}
+    if observation.get("manifest_sha256") != digest(manifest) or digest(observation) != row.get("observation_sha256"):
+        raise Refused("PRODUCT_OBSERVATION_CHANGED")
+    binding = manifest.get("jobs", {}).get(observation.get("trial_id"))
+    if (
+        not isinstance(binding, dict)
+        or any(observation.get(k) != binding.get(k) for k in ("job_id", "attempt_id"))
+        or not binding.get("order_id")
+        or not binding.get("mission_id")
+        or (observation.get("execution") or {}).get("mission_id") != binding["mission_id"]
+        or (observation.get("execution") or {}).get("job_id") != binding["job_id"]
+    ):
+        raise Refused("PRODUCT_OBSERVATION_BINDING_CHANGED")
+    actual = audited_product_row(manifest, observation, row.get("independent_audit"))
+    if actual != row:
+        raise Refused("PRODUCT_AUDIT_VERDICT_CHANGED")
+    return actual, binding

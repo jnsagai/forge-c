@@ -147,6 +147,9 @@ Its plan must be an exact hash-bound input of the frozen operation manifest:
   "unit": "forge-conductor.service",
   "observer_source_sha256": "<sha256 of afo/fault_observer.py>",
   "fact_evaluator_sha256": "<sha256 of afo/operational_facts.py>",
+  "work_verifier_sha256": "<sha256 of afo/operational_work.py>",
+  "product_observer_sha256": "<sha256 of afo/qualification_capture.py>",
+  "queue_reader_sha256": "<sha256 of afo/queue.py>",
   "data_root": "<absolute isolated factory root>",
   "database": "<data_root>/state/conductor/conductor.sqlite3",
   "heartbeat": "<data_root>/state/afo/conductor.heartbeat",
@@ -250,6 +253,77 @@ stopped PID-0/empty-cgroup unit is known downtime, not missing independence.
 
 Predicate tests use synthetic timelines and real private SQLite/HTTP fixtures. They
 are not live fault exposure or elapsed-time qualification. Host intervention audit,
-independent READY verification, complete live workload/fault coverage and a genuine
+actual independent READY-oracle evidence, complete live workload/fault coverage and a genuine
 reboot/mount window remain required. No observer command activates a service or
 performs any of the external actions above.
+
+### Independent native work and READY audit integration
+
+The three additional source hashes above are mandatory for `product` and `work`.
+Freeze normal product bindings in the operation manifest's existing `jobs` map:
+trial ID → `order_id`, `attempt_id`, `job_id`, `mission_id`. This does not enroll,
+authorize or launch work. The ordinary intake, governor and Conductor retain those
+decisions. Use the existing native work identities; do not manufacture a repair or
+replace an exhausted mission.
+
+After terminal execution has actually become QUIESCENT and released capacity,
+export the existing product observation with the read-only capture command:
+
+```bash
+# product-selection.json: {"trial": "<frozen trial ID>"}
+python -m forge_factory.afo.fault_observer product \
+  --manifest operation.json --plan-ref plan-reference.json \
+  --evidence product-selection.json --out <observer-dir>/product-observation.json
+```
+
+This uses `queue.ReadSnapshot`, a bounded read-only view of the existing Store:
+one consistent SQLite transaction, no migrations, database creation or SQL writes.
+It bounds fetched rows/bytes/time, workspace entries/bytes and archive metadata;
+rejects FIFOs/symlinks and paths outside the isolated data root; and performs no
+model, compiler, dispatch, service effect or capacity release. Unknown/capability
+limits remain explicit refusals. The export reuses `qualification_capture` and
+the existing native gate/package readers; it does not invent an independent
+correctness oracle.
+
+Provide an actual existing independently produced qualification audit, bound to
+the exact native observation and source revision, under the normal protected
+`lrtx/qualification-audits` root. The supported CRE/reference/metamorphic/mutant
+producer rules remain unchanged. Audit/oracle hashes are reread with finite byte
+bounds; copied success fields and same-model opinions are not substitutes. Export
+again to a new immutable path after the independent audit is available. Preserve
+the earlier incomplete observation.
+
+```bash
+# work-inputs.json: {"product_row_ref": {"path": "...", "sha256": "..."},
+#                    "sample_refs": [{"path": "...", "sha256": "..."}, ...]}
+python -m forge_factory.afo.fault_observer work \
+  --manifest operation.json --plan-ref plan-reference.json \
+  --evidence work-inputs.json --out <observer-dir>/verified-work.json
+```
+
+Work verification replays the existing independent audit, checks frozen identities
+against independently captured order/latest-attempt/mission/native/nonce facts,
+and requires captured native/request quiescence and released capacity. READY also
+requires exactly the six native SWE gates and the sealed READY package result.
+Missing audit stays INCOMPLETE; contradictory READY is FAIL. A known BLOCKED
+outcome can count as real work when its independent audit verifies complete
+outcome evidence (`native_outcome_verified: true`); it is never product success.
+This optional audit observation does not relax any product benchmark criterion.
+
+Supply the resulting path/hash records as campaign `work_refs` and as the optional
+`work_refs` in fault-evaluation input. The latter lets the fault observer recompute
+false-READY checks; a verified earlier attempt cannot clear a different later
+READY claim. No host intervention audit is inferred from the work result.
+
+Campaign reporting replays work and fault records, checks the actual frozen
+manifest and full stage duration, excludes work outside the observed window, and
+derives post-campaign continuity/later processing from the corresponding verified
+fault timelines and native work. Legacy `independently_verified` and
+`later_authorized_job_admitted` booleans alone do not count. Missing or contradictory
+clock/probe observations remain UNKNOWN and unavailable in the gross denominator.
+
+These commands complete source binding and audit consumption, not live product
+qualification or a host audit producer. Genuine independently produced product
+oracle evidence, host intervention audit integration, authorized external fault
+fixtures and elapsed campaigns remain required. A partial or missing audit cannot
+make a campaign PASS.

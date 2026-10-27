@@ -32,7 +32,7 @@ FIELDS = {
     "afo_missions": ("mission_id", "lineage", "limits", "authorization_ref"),
     "afo_mission_executions": ("identity", "mission_id", "kind", "reserved_tokens", "charge", "reported_tokens"),
     "afo_request_ledger": ("request_id", "mission_id", "job_id", "charge", "state"),
-    "afo_execution_liveness": ("job_id", "launch_nonce", "native_run_ids", "resource_lease", "execution_liveness"),
+    "afo_execution_liveness": ("job_id", "mission_id", "launch_nonce", "native_run_ids", "resource_lease", "execution_liveness"),
 }
 MAX_BYTES = 16 * 1024 * 1024
 MAX_TRACE_BYTES = 128 * 1024 * 1024
@@ -428,7 +428,7 @@ def load_samples(manifest, plan_ref, refs):
     return rows
 
 
-def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
+def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, work_refs=()):
     """Correlate objective signal-fault restoration; no hand-entered success flags."""
     frozen = plan(manifest, plan_ref)
     receipt = bound_json(injection_ref, path=artifact(frozen, injection_ref["path"]))
@@ -499,6 +499,16 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
         for a, b in zip(rows, rows[1:], strict=False)
     )
     facts = invariants(rows)
+    from . import operational_work
+
+    work = []
+    if len(work_refs) > frozen["max_rows"]:
+        raise Refused("OBSERVER_WORK_COUNT_BOUND_EXCEEDED")
+    for ref in work_refs:
+        record = bound_json(ref, path=artifact(frozen, ref["path"]))
+        work.append(operational_work.verify(manifest, record))
+    if all(s.get("complete") is True for s in rows):
+        facts["false_ready"] = operational_work.ready_verdict(rows, work)
     record = {
         "schema": "forge-c/independent-operational-fault/1",
         "producer": "INDEPENDENT_OPERATIONAL_OBSERVER",
@@ -507,6 +517,7 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
         "fault": fault,
         "injection_ref": injection_ref,
         "sample_refs": sample_refs,
+        "work_refs": list(work_refs),
         "fault_exposed": exposure,
         "independently_restored": bool(exposure and restored and not gaps),
         "restoration_seconds": (0 if fault == "post-campaign-continuity" else restored["wall"] - receipt["at"])
@@ -530,7 +541,10 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
 def verify(manifest, record):
     if record.get("schema") != "forge-c/independent-operational-fault/1":
         raise Refused("INDEPENDENT_OPERATIONAL_OBSERVER_REQUIRED")
-    actual = evaluate(manifest, record["plan_ref"], record["injection_ref"], record["sample_refs"], None)
+    actual = evaluate(
+        manifest, record["plan_ref"], record["injection_ref"], record["sample_refs"], None,
+        work_refs=record.get("work_refs", ()),
+    )
     if actual != record:
         raise Refused("OPERATIONAL_OBSERVER_VERDICT_CHANGED")
     return actual
@@ -538,7 +552,7 @@ def verify(manifest, record):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("command", choices=("capture", "evaluate"))
+    ap.add_argument("command", choices=("capture", "evaluate", "work", "product"))
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--plan-ref", type=Path, required=True, help="JSON path+sha256 reference already frozen in manifest inputs")
     ap.add_argument("--evidence", type=Path, help="JSON with injection_ref and sample_refs")
@@ -550,8 +564,18 @@ def main(argv=None):
     else:
         if not args.evidence:
             ap.error("--evidence required for evaluate")
-        result = evaluate(m, ref, **read_json(args.evidence), destination=args.out)
-    print(json.dumps({k: result[k] for k in ("schema", "manifest_sha256")}, sort_keys=True))
+        if args.command == "product":
+            from .operational_work import capture_product
+
+            result = capture_product(m, ref, **read_json(args.evidence), destination=args.out)
+        elif args.command == "work":
+            from .operational_work import evaluate as evaluate_work
+
+            result = evaluate_work(m, ref, **read_json(args.evidence), destination=args.out)
+        else:
+            result = evaluate(m, ref, **read_json(args.evidence), destination=args.out)
+    print(json.dumps({"schema": result.get("schema", "forge-c/product-qualification-row/1"),
+                      "manifest_sha256": result["manifest_sha256"]}, sort_keys=True))
     return 0
 
 

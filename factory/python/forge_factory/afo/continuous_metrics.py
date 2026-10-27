@@ -19,11 +19,11 @@ def timeline(samples, start, end, *, stale_after=120):
     )
     intervals = []
     healthy = worker = 0.0
-    for a, b in zip(points, points[1:]):
+    for a, b in zip(points, points[1:], strict=False):
         if b <= a:
             continue
         prior = next((r for r in reversed(rows) if r["at"] <= a), None)
-        known = prior is not None and a - prior["at"] < stale_after
+        known = prior is not None and a - prior["at"] < stale_after and prior.get("telemetry_known", True) is True
         control = known and prior.get("control_plane") is True
         ready = known and prior.get("worker_ready") is True
         healthy += (b - a) if control else 0
@@ -35,7 +35,9 @@ def timeline(samples, start, end, *, stale_after=120):
                 "seconds": b - a,
                 "control_plane": "AVAILABLE" if control else "UNAVAILABLE" if known else "UNKNOWN",
                 "worker": "READY" if ready else "UNREADY" if known else "UNKNOWN",
-                "cause": prior.get("cause", "OBSERVED") if known else "MISSING_OR_STALE_TELEMETRY",
+                "cause": prior.get("cause", "OBSERVED")
+                if known or (prior is not None and prior.get("telemetry_known") is False)
+                else "MISSING_OR_STALE_TELEMETRY",
                 "desired_mode": prior.get("desired_mode", "UNKNOWN") if known else "UNKNOWN",
                 "product_progress": prior.get("product_progress", "UNKNOWN") if known else "UNKNOWN",
             }

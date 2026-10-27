@@ -679,3 +679,67 @@ class Store:
         target.write_bytes(backup.read_bytes())
         target.chmod(0o600)
         return {"restored": str(target), "integrity": ok}
+
+
+class ReadSnapshot(Store):
+    """Bounded read-only view of the same Store for independent observation.
+
+    Opens one consistent transaction, runs no migrations and creates no database.
+    Existing read methods are reused; SQLite refuses every inherited mutation.
+    """
+
+    def __init__(self, path, *, max_rows=10000, max_bytes=16 * 1024 * 1024, timeout_s=120):
+        import math
+
+        self.path = Path(path)
+        if self.path.is_symlink() or not self.path.is_file():
+            raise QueueError("OBSERVATION_DATABASE_UNAVAILABLE")
+        if (
+            type(max_rows) is not int or not 1 <= max_rows <= 10000
+            or type(max_bytes) is not int or not 1 <= max_bytes <= 16 * 1024 * 1024
+            or type(timeout_s) not in (int, float) or not math.isfinite(timeout_s) or not 0 < timeout_s <= 120
+        ):
+            raise QueueError("OBSERVATION_BOUND_INVALID")
+        self.remaining_rows, self.remaining_bytes = max_rows, max_bytes
+        self.timeout_s = timeout_s
+        self.reader = None
+
+    def __enter__(self):
+        if self.reader is not None:
+            raise QueueError("OBSERVATION_SNAPSHOT_ALREADY_OPEN")
+        self.deadline = time.monotonic() + self.timeout_s
+        c = sqlite3.connect(self.path.resolve().as_uri() + "?mode=ro", uri=True, timeout=2, isolation_level=None)
+
+        def bounded_row(cursor, row):
+            self.remaining_rows -= 1
+            self.remaining_bytes -= sum(
+                len(v.encode("utf-8")) if isinstance(v, str) else len(v) if isinstance(v, bytes) else 32 for v in row
+            )
+            if self.remaining_rows < 0 or self.remaining_bytes < 0:
+                raise QueueError("OBSERVATION_SNAPSHOT_BOUND_EXCEEDED")
+            return sqlite3.Row(cursor, row)
+
+        c.row_factory = bounded_row
+        c.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, self.remaining_bytes)
+        c.set_progress_handler(lambda: int(time.monotonic() > self.deadline), 1000)
+        try:
+            c.execute("PRAGMA query_only=ON")
+            c.execute("BEGIN")
+        except BaseException:
+            c.close()
+            raise
+        self.reader = c
+        return self
+
+    def __exit__(self, *exc):
+        self.reader.close()
+        self.reader = None
+
+    def connect(self):
+        if self.reader is None or time.monotonic() > self.deadline:
+            raise QueueError("OBSERVATION_SNAPSHOT_NOT_CURRENT")
+        return self.reader
+
+    @contextmanager
+    def tx(self):
+        yield self.connect()
