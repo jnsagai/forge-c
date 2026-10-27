@@ -46,18 +46,30 @@ def record(tmp_path, monkeypatch):
     (workspace / ".forge-run/manifest.json").write_text(json.dumps({"inputs": inputs, "delivered": []}))
     baseline = workspace / "baseline.json"
     baseline.write_text(json.dumps({"onboarding_sha256": package_hash}))
-    attempt = {"fabro_run_id": "fixture", "factory_revision": "f" * 40, "workspace": str(workspace),
+    attempt = {"attempt_id": "fixture-a1", "fabro_run_id": "fixture", "factory_revision": "f" * 40,
+               "workspace": str(workspace),
                "onboarding": {"sha256": package_hash, "approval_id": "OA-fixture"},
                "inputs": inputs, "delivered_code": [],
                "baselines": [{"onboarding_sha256": package_hash, "path": str(baseline),
                               "sha256": checker.digest(baseline)}], "package_record": outcome,
                "package_record_sha256": checker.digest(marker)}
+    runs = tmp_path / "runs"
+    monkeypatch.setattr(checker, "RUNS", runs)
+    review_file = runs / "BENCH-GPIO-ST-HAL-OB/sc005-review.json"
+    review_file.parent.mkdir(parents=True)
+    review = {"status": "REVIEWED", "attempt_id": "fixture-a1", "archive_sha256": outcome["archive_sha256"],
+              "gap_count": 1, "gap_groups": checker.gap_groups(outcome["gaps"]),
+              "gap_list_sha256": checker.hashlib.sha256(json.dumps(outcome["gaps"], separators=(',', ':')).encode()).hexdigest(),
+              "source_refs": [{"path": str(marker), "sha256": checker.digest(marker)}],
+              "onboarding_fact_causes_identified": []}
+    review_file.write_text(json.dumps(review))
     return {"schema": "forge-c/st-hal-onboarding-acceptance/0.2", "packages": {"gpio": {
         "canonical_hash_ok": True, "approval_code": "APPROVAL_OK", "sha256": package_hash, "approval": approval,
         "package_snapshot": snapshot, "inputs": inputs,
         "approval_sha256": checker.digest(signed), "signature_sha256": checker.digest(Path(str(signed) + ".sig")),
         "prompt_origins": [{"section": "prompt", "key": "cover", "from": "template:fixture"}]}},
-        "orders": [{"peripheral": "gpio", "state": "BLOCKED", "attempts": [attempt]}]}
+        "orders": [{"request_id": "BENCH-GPIO-ST-HAL-OB", "peripheral": "gpio", "state": "BLOCKED", "attempts": [attempt],
+                    "cause_review": review, "cause_review_sha256": checker.digest(review_file)}]}
 
 
 def test_terminal_blocked_fixture_is_reported_without_a_ready_or_sc005_claim(record, capsys):
@@ -93,3 +105,28 @@ def test_incomplete_tampered_or_wrongly_bound_records_are_refused(record, failur
         record["packages"]["gpio"]["prompt_origins"][0]["from"] = "template:wrong"
     with pytest.raises(AssertionError):
         checker.check(record, ("gpio",))
+
+
+def test_cited_cause_review_covers_the_exact_gap_list(record):
+    checker.check_causes(record, ("gpio",))
+
+
+@pytest.mark.parametrize("failure", ["missing", "source", "archive", "gaps", "fact_cause"])
+def test_missing_unbound_or_fact_caused_reviews_cannot_claim_sc005(record, failure):
+    order = record["orders"][0]
+    review = order["cause_review"]
+    path = checker.RUNS / order["request_id"] / "sc005-review.json"
+    if failure == "missing":
+        order["cause_review"] = None
+    elif failure == "source":
+        review["source_refs"][0]["sha256"] = "b" * 64
+    elif failure == "archive":
+        review["archive_sha256"] = "b" * 64
+    elif failure == "gaps":
+        review["gap_list_sha256"] = "b" * 64
+    else:
+        review["onboarding_fact_causes_identified"] = ["omitted RM field"]
+    path.write_text(json.dumps(order["cause_review"]))
+    order["cause_review_sha256"] = checker.digest(path)
+    with pytest.raises(AssertionError):
+        checker.check_causes(record, ("gpio",))

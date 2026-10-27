@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import sqlite3
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -24,6 +25,7 @@ from forge_factory.onboarding.approval import ALLOWED_SIGNERS, signature_valid, 
 PERIPHERALS = ("gpio", "spi", "usart", "tim")
 REQUEST = re.compile(r"BENCH-(GPIO|SPI|USART|TIM)-ST-HAL-OB(?:-R[0-9]+)?$")
 DECISIONS = REPO_ROOT / "evidence/easa/owner-decisions/onboarding"
+RUNS = Path(__file__).parent / "runs"
 
 
 def read(path):
@@ -86,7 +88,10 @@ def collect():
         match = REQUEST.fullmatch(order["request_id"])
         if match is None:
             continue
-        entry = {**order, "peripheral": match[1].lower(), "attempts": [], "operational": operational(order["order_id"])}
+        review_path = RUNS / order["request_id"] / "sc005-review.json"
+        entry = {**order, "peripheral": match[1].lower(), "attempts": [], "operational": operational(order["order_id"]),
+                 "cause_review": read(review_path) or None,
+                 "cause_review_sha256": digest(review_path) if review_path.is_file() else None}
         for attempt in order["attempts"]:
             ws = state_dir() / "workorders" / ("WO-AFO-" + attempt["attempt_id"].removeprefix("afo-")) / "workspace"
             manifest = read(ws / ".forge-run/manifest.json")
@@ -166,6 +171,47 @@ def check(record, selected=PERIPHERALS):
         print("Historical schema 0.1: input metadata retained; full signed facts and live byte checks require schema 0.2")
 
 
+def gap_groups(gaps):
+    return dict(Counter(':'.join(g.split(':')[:2]) if g.startswith('unresolved_finding:') else g.split(':')[0]
+                        for g in gaps))
+
+
+def check_causes(record, selected=PERIPHERALS, history=False):
+    """Validate cited review coverage, not an automatic inference of causality from BLOCKED."""
+    orders = []
+    for peripheral in selected:
+        mine = [o for o in record["orders"] if o["peripheral"] == peripheral]
+        assert mine, f"{peripheral}: NOT_RUN"
+        orders.extend(mine if history else mine[-1:])
+    causes = []
+    for order in orders:
+        if history:
+            assert len(order["attempts"]) == 1, "multiple attempts require individual historical cause reviews"
+        assert order["state"] in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW"), order["request_id"]
+        attempt = order["attempts"][-1]
+        package = attempt["package_record"]
+        review = order.get("cause_review")
+        assert review and review["status"] == "REVIEWED", f"{order['request_id']}: cause review missing"
+        path = RUNS / order["request_id"] / "sc005-review.json"
+        assert digest(path) == order["cause_review_sha256"] and read(path) == review, "review bytes"
+        assert review["attempt_id"] == attempt["attempt_id"], "review attempt binding"
+        assert review["archive_sha256"] == package["archive_sha256"], "review archive binding"
+        gaps = package["gaps"]
+        assert review["gap_count"] == len(gaps) == package["gap_count"], "review gap count"
+        assert review["gap_list_sha256"] == hashlib.sha256(json.dumps(gaps, separators=(',', ':')).encode()).hexdigest(), \
+            "review gap list"
+        assert review["gap_groups"] == gap_groups(gaps), "review group coverage"
+        assert review["source_refs"] and all(digest(Path(r["path"])) == r["sha256"] for r in review["source_refs"]), \
+            "review cited source bytes"
+        identified = review["onboarding_fact_causes_identified"]
+        print(order["request_id"], "onboarding-fact causes identified:", len(identified), "named gaps:", len(gaps))
+        causes.extend((order["request_id"], cause) for cause in identified)
+    assert not causes, f"SC-005 onboarding-fact causes retained: {causes}"
+    print("PASS cited reviews identify zero onboarding-fact causes in " +
+          ("all recorded requests" if history else "the latest terminal package of each selected driver") +
+          "; this validates review coverage and binding, not owner acceptance")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -174,6 +220,9 @@ def main():
     verify_parser = sub.add_parser("check")
     verify_parser.add_argument("record", type=Path)
     verify_parser.add_argument("--peripheral", choices=PERIPHERALS)
+    causes_parser = sub.add_parser("sc005")
+    causes_parser.add_argument("record", type=Path)
+    causes_parser.add_argument("--history", action="store_true", help="retain the initial failed attempts in the verdict")
     args = parser.parse_args()
     if args.command == "collect":
         record = collect()
@@ -182,8 +231,10 @@ def main():
             json.dump(record, stream, indent=2)
             stream.write("\n")
         print("Recorded", len(record["orders"]), "orders at", args.out)
-    else:
+    elif args.command == "check":
         check(read(args.record), (args.peripheral,) if args.peripheral else PERIPHERALS)
+    else:
+        check_causes(read(args.record), history=args.history)
 
 
 if __name__ == "__main__":
