@@ -1,9 +1,11 @@
 """Product executions share the mission ledger and native-liveness reconciler."""
 
 from __future__ import annotations
+
 import json
 import time
 from pathlib import Path
+
 from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
@@ -22,7 +24,7 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         "order_id": order["order_id"],
         "attempt_id": attempt["attempt_id"],
     }
-    from .operations import configured, Intent
+    from .operations import Intent, configured
 
     if configured():
         intent = Intent().read()
@@ -37,9 +39,17 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         "binding": str(ws / ".forge-run/durable-binding.json"),
         "model": manifest.get("model_profile") or manifest.get("model"),
         "policy_sha256": eff.sha256,
-        "deadline_epoch": order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds")),
+        "deadline_epoch": min(order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds")),
+                              MissionLedger(store).snapshot(mission)["limits"]["deadline"]),
         "reserved_tokens": int(eff.get("budgets.max_model_tokens_per_order")),
     }
+    allocations = manifest.get("product_attempt_token_reservations")
+    if allocations is not None:
+        if (not isinstance(allocations, list) or not allocations
+                or any(type(n) is not int or not 0 < n <= job["reserved_tokens"] for n in allocations)
+                or not 1 <= attempt["seq"] <= len(allocations)):
+            raise Refused("PRODUCT_ATTEMPT_RESERVATION_INVALID")
+        job["reserved_tokens"] = allocations[attempt["seq"] - 1]
     from ..workorder import factory_revision
 
     job["factory_revision"] = factory_revision()
@@ -55,6 +65,9 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         model_identity = load_profile(job["profile"])["models"]["allowed"][job["model"]]
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
+    from .product_role_trial import bind as bind_trial
+
+    bind_trial(manifest.get("product_role_trial"), job, eff)
     MissionLedger(store).execution(mission, job_id, "PRODUCT", reserved_tokens=job["reserved_tokens"])
     with store.tx() as c:
         old = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (job_id,)).fetchone()
@@ -95,6 +108,7 @@ def from_native(store, native_id, *, client=None):
     matches = [json.loads(r[0]) for r in rows if native_id in json.loads(r[0])["native_run_ids"]]
     if not matches:
         import re
+
         from ..fabro.client import FabroClient, FabroUnavailable, load_token
 
         if not isinstance(native_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", native_id):

@@ -191,6 +191,14 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             raise QueueError("OPERATIONS_ADMISSION_REFUSED", intent["mode"])
         job["operations_epoch"] = intent["epoch"]
     job["factory_revision"] = factory_revision()
+    if job.get("durable_protocol") or job.get("durable_native"):
+        from .product_role_trial import bind as bind_trial
+
+        launch_path = REPO_ROOT / order["input_manifest_ref"]
+        if launch_path.is_file():
+            if sha256_file(launch_path) != order["manifest_sha256"]:
+                raise QueueError("LAUNCH_MANIFEST_HASH_CHANGED")
+            bind_trial(json.loads(launch_path.read_text()).get("product_role_trial"), job, eff)
     job["fabro_url"] = os.environ.get("FORGE_FABRO_URL")
     job["fabro_storage"] = os.environ.get("FORGE_FABRO_STORAGE")
     with store.tx() as c:

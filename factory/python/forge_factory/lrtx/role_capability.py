@@ -1,10 +1,12 @@
 """Pinned per-role capability envelopes; diagnosis is not author/inspector qualification."""
 
 from __future__ import annotations
+
 import json
 from pathlib import Path
+
 from ..afo.durable import Refused, digest, immutable_json
-from ..common import state_dir, sha256_file
+from ..common import sha256_file, state_dir
 
 IDENTITY = (
     "role",
@@ -127,7 +129,12 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
 
     eff = load()
     campaign = job.get("qualification_manifest_sha256")
-    if campaign:
+    product_trial = job.get("product_role_trial")
+    if product_trial:
+        from ..afo.product_role_trial import identity as trial_identity
+
+        entry = {"identity": trial_identity(job, role, body, eff)}
+    elif campaign:
         grant = authz.find(eff.mode, eff.sha256 or "", ref=eff.get("authorization_ref"), action="recover_workorder")
         if not grant.allow:
             raise Refused(grant.code)
@@ -158,8 +165,8 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
             raise Refused("ROLE_CAPABILITY_REASONING_OR_SCHEMA_CHANGED")
         if any(body.get(k) != v for k, v in identity["sampling"].items()):
             raise Refused("ROLE_CAPABILITY_SAMPLING_CHANGED")
-    if campaign:
-        rec = {"qualification_only": True}
+    if campaign or product_trial:
+        rec = {"qualification_only": True, "qualified": False}
     else:
         size, work_class = measured_objective(job, role)
         rec = require(entry["ref"], identity, semantic_obligations=size, work_class=work_class)

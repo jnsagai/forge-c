@@ -324,6 +324,36 @@ def test_receipt_identity_and_fake_independent_verifier_are_rejected(protocol):
     assert b.latest(r["receipt_id"]) == r
 
 
+@pytest.mark.parametrize("allocation", [[0], [True], [32001], [], "8192"])
+def test_product_attempt_allocation_cannot_expand_policy_or_use_invalid_counts(protocol, allocation):
+    from forge_factory.afo import product_job
+
+    p = protocol
+    eff = SimpleNamespace(sha256=p.eff.sha256,
+                          get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a))
+    with pytest.raises(Refused, match="PRODUCT_ATTEMPT_RESERVATION_INVALID"):
+        product_job.prepare(p.store, p.order, p.store.attempts(p.order["order_id"])[0], "c" * 32,
+                            {"model": "qwen-fixture", "product_attempt_token_reservations": allocation}, eff)
+
+
+def test_product_attempt_allocation_preserves_cumulative_charge_and_cannot_be_rebound(protocol):
+    from forge_factory.afo import product_job
+
+    p = protocol
+    eff = SimpleNamespace(sha256=p.eff.sha256,
+                          get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a))
+    attempt = p.store.attempts(p.order["order_id"])[0]
+    manifest = {"model": "qwen-fixture", "product_attempt_token_reservations": [8192, 4096]}
+    before = p.ledger.snapshot("mission-test")["charged_tokens"]
+    job = product_job.prepare(p.store, p.order, attempt, "c" * 32, manifest, eff)
+    assert job["reserved_tokens"] == 8192
+    assert p.ledger.snapshot("mission-test")["charged_tokens"] == before + 8192
+    assert product_job.prepare(p.store, p.order, attempt, "c" * 32, manifest, eff) == job
+    with pytest.raises(Refused, match="EXECUTION_RESERVATION_REBOUND"):
+        product_job.prepare(p.store, p.order, attempt, "c" * 32,
+                            {**manifest, "product_attempt_token_reservations": [16384]}, eff)
+
+
 def test_product_and_diagnosis_share_single_ledger_and_native_ownership(protocol, monkeypatch):
     from forge_factory.afo import product_job
     from forge_factory.afo.request_admission import reserve
