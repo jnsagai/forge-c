@@ -1,6 +1,5 @@
 """Feature 016 OB-T011: identity facts from the real ST inputs, and the CONFLICT / NOT_DERIVED cases."""
 import pytest
-
 from forge_factory.common import REPO_ROOT
 from forge_factory.onboarding import identity as I
 from onboarding_util import example_copy, need_inputs
@@ -64,3 +63,13 @@ def test_hal_with_a_provided_ll_is_the_factory_hal_style(tmp_path):
     need_inputs()
     ex = example_copy(tmp_path, "0014d-st-cube-crc-hal", lambda s: s["delivery"].update(provided_ll=True))
     assert _facts(ex)["driver_style"].value == "HAL_ON_LL"
+
+
+def test_gpio_retime_fields_are_derived_from_the_real_rm_lists():
+    need_inputs()
+    registers = _facts(REPO_ROOT / "examples/0010e-st-cube-gpio-hal-ob")["register_index"].value
+    for register, first in (("GPIO_ADVCFGRL", 0), ("GPIO_ADVCFGRH", 8)):
+        fields = registers[register]["fields"]
+        assert len(fields) == 32
+        assert fields[f"RET{first}"] == {"msb": 3, "lsb": 3, "access": ["rw"]}
+        assert fields[f"DLYPATH{first + 7}"] == {"msb": 28, "lsb": 28, "access": ["rw"]}

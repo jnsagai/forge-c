@@ -62,6 +62,23 @@ def parse_section(text: str, prefix: str = "RCC") -> dict | None:
             for y in range(n):
                 fields.setdefault(f"{m.group(3)}{y0 + y}", {"msb": lsb + (y + 1) * width - 1, "lsb": lsb + y * width,
                                                             "access": set()})
+    # Repeated single-bit fields can list strided positions rather than a contiguous range. The GPIO advanced
+    # configuration tables wrap the low four positions onto the following line (RETy: 31,27,...,7,3).
+    for m in re.finditer(r"^[ \t]*Bits?[ \t]+((?:\d+[ \t]*,[ \t]*)+\d+[ \t]*,?)[ \t]+"
+                         r"([A-Z][A-Z0-9_]*?)y[ \t]*:[^\n]*?\(y\s*=\s*(\d+)\s+to\s+(\d+)\)", text, re.M):
+        positions = [int(bit) for bit in re.findall(r"\d+", m.group(1))]
+        first, last = int(m.group(3)), int(m.group(4))
+        count = abs(first - last) + 1
+        end = text.find("\n", m.end())
+        if len(positions) < count and end >= 0:
+            continuation = re.match(r"[ \t]*(\d+(?:[ \t]*,[ \t]*\d+)+)\b", text[end + 1:])
+            if continuation:
+                positions += [int(bit) for bit in re.findall(r"\d+", continuation.group(1))]
+        if len(positions) != count or len(set(positions)) != count or any(bit > 31 for bit in positions):
+            continue  # incomplete/ambiguous declarations remain unknown; never fill a guessed stride
+        step = 1 if last >= first else -1
+        for pin, bit in zip(range(first, last + step, step), positions, strict=True):
+            fields.setdefault(f"{m.group(2)}{pin}", {"msb": bit, "lsb": bit, "access": set()})
     access_by_bit: dict[int, str] = {}
     lines = text.splitlines()
     cols = None

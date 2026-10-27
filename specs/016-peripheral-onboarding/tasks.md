@@ -304,7 +304,7 @@ SWE.1–SWE.6.
 - [X] **OB-T046** [US5] Deploy (deploy pattern; cloud gateway disabled). Derive the GPIO package ✅ Evidence: `evidence/v0.4/runs/OB-T046/latest.json`, `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   (`python -m forge_factory.onboarding derive examples/0010e-st-cube-gpio-hal-ob`) and write its `summary`; hand the
   owner `summary.md` and the signing command.
-- [ ] **OB-T047** [US5] **Owner approval, GPIO**: the owner reviews `summary.md` for `0010e-st-cube-gpio-hal-ob`, writes
+- [X] **OB-T047** [US5] **Owner approval, GPIO**: the owner reviews `summary.md` for `0010e-st-cube-gpio-hal-ob`, writes ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
   or approves `approval.json` (conflicts, assumptions, accepted gaps), and signs it in their own terminal. The
   implementation engineer verifies with `onboarding verify` and commits the signed copy to
   `evidence/easa/owner-decisions/` in an owner-decision commit.
@@ -312,15 +312,15 @@ SWE.1–SWE.6.
   any factory defect through the CRE process (registry → CAPA → reproducer → promotion) and retry with new request
   ids `-R<n>`.
 - [X] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
-- [ ] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs).
+- [X] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
 - [ ] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
 - [X] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption: ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
-- [ ] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047;
+- [X] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047; ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
   the owner signs).
 - [ ] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
 - [X] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
-- [ ] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs).
+- [X] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
 - [ ] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
 - [ ] **OB-T058** [US5] Freeze the record `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. Per attempt
   it holds: revision, input and package hashes, approval id, Fabro run ids, phase verdicts, package status and gaps,
@@ -404,3 +404,19 @@ SWE.1–SWE.6.
 - OB-T064 remains open: a draft PR is prepared for review, but signed acceptance runs, their frozen record, the
   held-out authoring check and owner release-package review have not completed. No merge or final feature completion
   is claimed. The owner-only signing aid is `$FORGE_STATE_DIR/onboarding/sign-F016.sh` (not executed by Codex).
+
+
+## Signed acceptance continuation (2026-10-27)
+
+- All four owner approvals have valid SSH signatures; signed copies are frozen in the owner-decision commit
+  `2d62b57` under `evidence/easa/owner-decisions/onboarding/`. USART confirms 64,000,000 Hz. The approval tasks are
+  ticked only through `mark_task.py` with `OB-APPROVALS` evidence.
+- CAPA-072 records the signer-namespace configuration defect: the existing owner key was scoped only to
+  `forge-afo-authorization`. The fix adds only `forge-onboarding-approval`, retains the same key and principal,
+  and rejects unrelated namespaces. The regression and authorization tests pass (21 tests).
+- CRE `pd-7a8a64cfe226c1e41adb` independently reproduced the symptom on `5fb0a86` and its absence on `9fa4664`,
+  then passed prevention, quality, golden and holdout gates. The decision was committed before deployment.
+  Runtime `9fa4664` is deployed and verified; the cloud gateway remains inactive and disabled.
+- `BENCH-GPIO-ST-HAL-OB`, order `afo-6a6875714405b8ce`, is running on that revision with the approved package.
+  Its Fabro run is `01M5YK3Z4XR0ANW069WPHZZQ0K`. SPI, USART and TIM have not been submitted yet (one at a time).
+  No acceptance-run completion or READY result is claimed.

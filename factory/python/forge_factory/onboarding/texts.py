@@ -55,7 +55,7 @@ def _example_field(pkg: dict, device_macros: set[str]) -> tuple[str, str]:
     raise TextsUnavailable("TEXTS_NO_EXAMPLE_FIELD")
 
 
-def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str]) -> dict:
+def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str], function_order: list[str]) -> dict:
     """`prompt` + `prompt_st_hal` for ST's classic HAL (driver style HAL_STANDALONE)."""
     P, inst = value(pkg, "register_prefix"), value(pkg, "instance")
     pid = P.lower()
@@ -71,7 +71,8 @@ def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str
     headers = " and ".join([halh, *exh])
     llstem = f"stm32n6xx_ll_{pid}"
     block = f"ll_{pid}_regs"
-    fns = list(api["prototypes"])
+    # JSON canonicalization sorts mapping keys; the owner-provided function list is the stable sequence.
+    fns = [name for name in function_order if name in api["prototypes"]]
     init_fn = next((f for f in fns if f.endswith("_Init")), fns[0])
     query = next((f for f in fns if "GetState" in f), None) or next((f for f in fns if re.search(r"Read|Get|Is", f)),
                                                                     fns[-1])
@@ -87,8 +88,6 @@ def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str
     if model is None:
         raise TextsUnavailable(f"TEXTS_MODEL_DESCRIPTION_MISSING:{pid}")
     protos = "; ".join(api["prototypes"][f] for f in fns)
-    waits_note = (f"; the HAL's waits are bounded by the caller's timeout in ms of the time base {tb}" if tb else
-                  f"; no {fp} function waits on a {P} flag")
     if handle:
         api_txt = (f"Interfaces (the delivered ST HAL API exactly as declared in software/hal/{headers}: {protos}; the "
                    f"handle {handle} (Instance = {inst}, Init = {init.get('type')} with {', '.join(init.get('fields', []))}"
@@ -209,7 +208,7 @@ def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str
         "query_example": _t(query_ex, "template:st_hal.query_example"),
     }
     vendor = f"{P}-><REG> & {P}_<REG>_<FIELD> bits of the vendor header (e.g. {P}->{reg} & {mask})"
-    hal_inc = (f"'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle or configuration is a "
+    hal_inc = ("'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle or configuration is a "
                "static variable with its fields assigned - no '= {0}' initialiser: the target image has no memset)")
     replace = [
         [f"and one measurable timing requirement (every wait is bounded by {fp}TIMEOUT_VALUE = 1000 polling iterations)",
@@ -218,8 +217,8 @@ def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str
          "never", "the pass criterion uses the requirement's own bound, never"],
         [f"Register access (extern volatile uint32_t register-block array placed at the {P} base by the linker, indexed "
          "by offset/4; no integer-to-pointer casts; host tests define the array)",
-         f"Register access (the delivered design: the HAL reaches the registers through "
-         + (f"its handle, h->Instance->REG, with Instance" if handle else "the instance pointer, with")
+         "Register access (the delivered design: the HAL reaches the registers through "
+         + ("its handle, h->Instance->REG, with Instance" if handle else "the instance pointer, with")
          + f" the CMSIS device structure {inst} of stm32n6xx.h at the base {base}; host tests map {inst} to a RAM "
            "struct, forge_host_device.h)"],
         [f"components named {halstem} (HAL) and {llstem} (LL, header-only), the {P} register block ({base}) and their "
@@ -275,7 +274,8 @@ def generate(ctx, pkg: dict) -> dict:
         return {}
     scope = ctx.spec.get("scope") if isinstance(ctx.spec.get("scope"), list) else []
     # the base instructions name the system '<P> driver' (EARS check); the examples use the same name
-    return st_hal(pkg, scope, f"{value(pkg, 'register_prefix')} driver", device_macros(ctx))
+    return st_hal(pkg, scope, f"{value(pkg, 'register_prefix')} driver", device_macros(ctx),
+                  ctx.delivery["scope"]["functions"])
 
 
 def plain(texts: dict) -> dict:
