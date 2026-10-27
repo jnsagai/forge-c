@@ -593,3 +593,45 @@ full inherited 1840-test cohort at 20650af. No new model requests; spent studies
 remain spent. Product success, learning benefit, 24/72/168-hour operational campaigns
 and the thirty-day SLO remain unproven. Inspector freeze/owner signing boundaries
 and the seventeen known-issues-only omissions remain unchanged.
+
+
+## 2026-10-27: incremental selected-event replay on verified source segments
+
+Exact clean source `6b4166832ace78e791a5cb14c0a2ec8fc675648d`: **465 affected
+PASS / 1 historical HAL-r154 SKIP / zero failures/errors**, 38.570 s; **13 release
+PASS**, 9.086 s. Actual isolated Omniverse2 event/segment/kernel/bus source tests:
+**183 PASS**, 59.782 s. [Commands, JUnit/logs, preflight and hashes](../../evidence/014-durable-local-autonomy/event-replay-6b41668/summary.json).
+
+One bounded kernel-fact parser now handles legacy buffers and incremental ranges.
+Verified bytes are fed once; no second source pass or new persistence authority.
+Interleaved identities, partial UTF-8/line bytes and compound records survive
+capture and retained rotation boundaries. The new output binds input byte/hash
+and parser source, selected whitelisted fields, integrity records and duplicates.
+A native ENRICHED compatibility defect is fixed: Python `splitlines()` previously
+split 0x1D enrichment into invalid separate records. Private bodies remain excluded.
+
+Selected events need PATH index coverage and an observed PROCTITLE/EOE boundary;
+EOF does not force completion. Pending compound records, orphan groups and partial
+lines stay explicit. Malformed input or changed/unbound recorded boot produces
+blocked event facts (`null`), independently of retained byte-prefix replay. Byte,
+line, group, unique-record and final serialized-output bounds preserve uncertainty.
+Deterministic tests include independent expected record hashes, every-byte UTF-8
+splits, interleaving/duplicates, native separators, pending records, malformed
+sources, cumulative bounds, boot change, single-pass feed and retained rotation.
+Root/UID protection is synthetic; actual child-process/file IO is tested.
+
+[Tool usage and scope](audit-source-capture.md): this is selected-record replay,
+not full native payload completeness, independent host authentication or continuous
+window/boot/loss coverage. Native timeout inference and qualified batched continuous
+verification remain unfinished, alongside actor/control/write/service correlation.
+Global interventions stay UNKNOWN. Same-source actual remote preflight remains
+**BLOCKED / exit 2**, `AUDITCTL_UNAVAILABLE`, kernel status unavailable, continuous
+bus coverage and authenticated-control correlation required.
+
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**. Static spec/contracts,
+fourteen design checks, handover and Ruff pass separately, with no runtime claim.
+Formal **30/58** stays unchanged; no new task or ledger baseline. Broader reconciled
+899-case core/systemd/history remain at 7e1abb2; full inherited 1840 at 20650af. No
+new model request, deployment, shared-service mutation, grant/mission reset or merge.
+Product success, learning benefit, operational campaigns and the thirty-day SLO
+remain unproven. Existing owner omissions/freeze/signing decisions stay in force.

@@ -469,3 +469,49 @@ qualified batched/continuous replay path, then native actor/control/write/servic
 correlation and full all-channel verification. Host privileges/fault windows are
 real prerequisites, distinct from that unfinished software. Genuine independent
 product oracle evidence and elapsed workload/fault campaigns remain required.
+
+
+## Codex continuation — 2026-10-27 incremental selected-event replay
+
+- Exact tested source **`6b4166832ace78e791a5cb14c0a2ec8fc675648d`**. The existing
+  kernel fact parser now shares one implementation between legacy buffer parsing
+  and ephemeral incremental assembly. `verify-segments` feeds each verified range
+  once, preserving interleaved node/time/serial groups, partial UTF-8/lines and
+  compound records across retained rotations. Input byte/hash and parser source
+  bindings remain distinct from selected sanitized event facts.
+- PATH item coverage plus observed PROCTITLE/EOE are scoped boundary checks.
+  Missing items/boundaries, partial lines and recognized orphan groups remain
+  pending/incomplete. EOF never forces completion. Full native record/payload,
+  loss/time-window and all-channel qualification remain separate unfinished work.
+  Native timeout inference is not implemented. Malformed input or missing/changed
+  recorded boot produces `facts=null`, not an empty valid event log.
+- Fixed native ENRICHED record handling: LF separates records while 0x1D remains
+  an enrichment delimiter inside the same hashed record. Private commands, paths,
+  accounts, raw partial lines and encoded command strings are not exported.
+  Existing group/record/line bounds and serialized-output limits are enforced.
+- Exact clean local qualification: **465 affected PASS / one historical HAL-r154
+  SKIP / zero failures or errors**, 38.570 s; **13 release PASS**, 9.086 s. Actual
+  isolated Omniverse2 source qualification: **183 PASS**, 59.782 s. Tests include
+  every byte split through UTF-8, interleaving, duplicates, pending/orphan records,
+  malformed data, cumulative bounds, boot changes, single-pass replay and retained
+  rotation inside a record. Root protection/UID remain explicitly synthetic;
+  actual child-process descriptor and file IO is exercised. No root audit proof.
+- Five static commands PASS separately (58 mappings, six schemas/38 fixtures,
+  fourteen design checks, handover and Ruff). Independent CRE retains
+  **REJECTED / PROTECTED_PATH_CHANGE**. Same-source actual Omniverse2 preflight
+  **BLOCKED / exit 2**, auditctl absent, continuous system-bus and authenticated
+  control correlation required. Intervention count stays UNKNOWN.
+- Public evidence `evidence/014-durable-local-autonomy/event-replay-6b41668/`;
+  task-style receipt `evidence/v0.4/runs/DA014-event-replay-6b41668/latest.json`.
+  Private local `$FC014_OPS/event-replay-native-6b41668/`; isolated remote clone
+  `$Q/event-replay-6b41668/repo`, artifacts alongside. All test commands terminal.
+- Formal **30/58** unchanged, no checkbox/ledger rebaseline. Broader 899-case
+  reconciled core/systemd/history remain at 7e1abb2; inherited 1840 at 20650af.
+  Both previous Qwen studies remain spent. No new inference, deployment, shared
+  service mutation, grant/mission reset, owner signature, promotion or merge.
+
+Next source work: qualified batched continuous chain/event verification; native
+full-record/loss/time-window qualification; native actor/control/write/service
+correlation and all-channel intervention verification. Product oracles and real
+workload/fault campaigns remain required. Keep host prerequisites distinct from
+unfinished software; retain owner omissions/freeze/signing/authority boundaries.
