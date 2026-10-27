@@ -278,3 +278,13 @@ def test_a_targeted_run_has_its_own_frozen_catalogue_and_denominator(tmp_path, m
     with pytest.raises(Refused):
         Q.validate(m)
     assert Q.freeze("protocol", tmp_path / "p.json", identity=identity())["expected_trials"] == 100
+
+
+def test_a_stage_without_its_authored_catalogue_refuses_to_freeze(tmp_path, monkeypatch):
+    """DA-T029 auxiliary run at 1e2fd46: freezing 'targeted' raised FileNotFoundError because its catalogue is authored
+    only with a planned targeted run; it now refuses with a reason and the protocol stage is unaffected."""
+    from forge_factory.afo import qualification as Q
+
+    monkeypatch.setitem(Q.CATALOGUES, "targeted", "factory/qualification/014/absent-targeted-cases.json")
+    with pytest.raises(Refused, match="STAGE_CATALOGUE_NOT_AUTHORED"):
+        Q.freeze("targeted", tmp_path / "t.json", identity=identity())

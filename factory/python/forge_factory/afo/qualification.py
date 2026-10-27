@@ -82,6 +82,10 @@ def freeze(
         raise Refused("UNKNOWN_CAMPAIGN_STAGE")
     key(identity)
     template = REPO_ROOT / CATALOGUES.get(stage, CATALOGUES["protocol"])
+    if protocol_like(stage) and not template.is_file():
+        # 'targeted' (a4ca94a): its frozen catalogue is authored with a planned targeted run; until then the stage
+        # cannot be frozen (owner 2026-10-26 'Known issues only': none planned)
+        raise Refused("STAGE_CATALOGUE_NOT_AUTHORED", stage)
     cases = json.loads(template.read_text())["cases"] if protocol_like(stage) else []
     from ..lrtx.seeded import CATALOGUE, catalogue_hash
 
