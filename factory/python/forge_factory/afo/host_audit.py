@@ -17,6 +17,7 @@ import shlex
 import shutil
 import socket
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -164,21 +165,37 @@ def events(raw, *, host, keys):
 
 def _command(argv):
     """Fixed read-only utility; timeout and output bounds, no stderr content retained."""
+    import resource
+
+    def limits():
+        resource.setrlimit(resource.RLIMIT_FSIZE, (observer.MAX_BYTES, observer.MAX_BYTES))
+        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+        resource.setrlimit(resource.RLIMIT_CPU, (3, 4))
+        resource.setrlimit(resource.RLIMIT_AS, (256 * 1024**2, 256 * 1024**2))
+
     try:
-        p = subprocess.run(
-            argv,
-            capture_output=True,
-            timeout=3,
-            check=False,
-            stdin=subprocess.DEVNULL,
-            env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"},
-        )
+        with tempfile.TemporaryFile() as output:
+            p = subprocess.run(
+                argv,
+                stdout=output,
+                stderr=subprocess.DEVNULL,
+                timeout=3,
+                check=False,
+                stdin=subprocess.DEVNULL,
+                preexec_fn=limits,
+                start_new_session=True,
+                env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"},
+            )
+            if output.tell() >= observer.MAX_BYTES:
+                return {"returncode": p.returncode, "error": "OUTPUT_BOUND_EXCEEDED"}
+            output.seek(0)
+            raw = output.read(observer.MAX_BYTES + 1)
     except (OSError, subprocess.SubprocessError) as exc:
         return {"returncode": None, "error": type(exc).__name__}
-    if len(p.stdout) > observer.MAX_BYTES or len(p.stderr) > MAX_LINE:
+    if len(raw) > observer.MAX_BYTES:
         return {"returncode": p.returncode, "error": "OUTPUT_BOUND_EXCEEDED"}
     try:
-        return {"returncode": p.returncode, "stdout": p.stdout.decode("utf-8", errors="strict")}
+        return {"returncode": p.returncode, "stdout": raw.decode("utf-8", errors="strict")}
     except UnicodeError:
         return {"returncode": p.returncode, "error": "OUTPUT_ENCODING"}
 

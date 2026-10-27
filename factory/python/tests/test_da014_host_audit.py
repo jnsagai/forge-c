@@ -3,6 +3,7 @@
 
 import copy
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -233,3 +234,16 @@ def test_user_owned_or_symlink_sources_are_not_trusted(setup):
     source.write_bytes(raw_event())
     with pytest.raises(Refused, match="NOT_PROTECTED"):
         H.read_protected_log(source)
+
+
+def test_fixed_probe_stdout_is_bounded_and_stderr_is_not_retained(monkeypatch):
+    monkeypatch.setattr(H.observer, "MAX_BYTES", 4096)
+    result = H._command([sys.executable, "-c", "import os; os.write(2,b'PRIVATE-ERROR'); os.write(1,b'x'*8192)"])
+    assert result["error"] == "OUTPUT_BOUND_EXCEEDED"
+    assert "PRIVATE-ERROR" not in json.dumps(result)
+
+
+def test_fixed_probe_transport_and_output_encoding_failures_are_facts():
+    assert H._command(["/must-not-exist-forge-c-auditctl"])["returncode"] is None
+    result = H._command([sys.executable, "-c", "import os; os.write(1,b'\\xff')"])
+    assert result["error"] == "OUTPUT_ENCODING"
