@@ -1,31 +1,37 @@
-# Feature 014 implementation evidence
+# Feature 014 evidence — current status 2026-10-27
 
-Current observer implementation source: `c72992ad1fe7a16fdbaa4850af5f6ccc66653994`.
-The feature remains **30/58 tasks evidenced**, with model capability PARTIAL,
-required product/learning/availability qualification NOT_RUN and deployment NOT_ACTIVATED.
-The ledger's historical source pin `e8e7fb6` is preserved; individual evidence records
-carry the actual tested revision. All 58 requirement/task/acceptance rows retain traceability.
+Formal completion remains **30/58**; no additional task was ticked in this increment.
 
-- [Observer increment](operational-observer-c72992a/summary.json): exact clean source,
-  662 core passes / 11 reasoned skips, release 13/13, separate private-fixture kernel
-  checks 2/2, history replay and seven isolated local systemd cases PASS. Independent
-  CRE remains REJECTED / PROTECTED_PATH_CHANGE. The full 1,840-test inherited suite
-  remains pinned to its previous passing candidate `20650af`; it was not repeated here.
-- [Three new ST LL pilot outcomes](st3-driver-runs/summary.json): 0/3 READY, all BLOCKED
-  at SWE.1 at `9a88fbc`, not a passing benchmark. [Recorded diagnostic codes](st3-driver-runs/author-diagnostics.json)
-  distinguish unsupported register-I/O semantics and invalid model proposals from
-  the downstream missing-output symptom. No additional inference/retry was launched.
-- [Known issues](known-issues.md) retain the owner-accepted omissions and all remaining
-  limitations. The owner accepts 95/100 diagnosis protocol trials; the five unavailable
-  alternative-model trials remain explicit, and inspector development remains frozen.
-- Independent operational observation tooling is partial. It does not activate any
-  service or campaign. Host intervention audit, remaining external fault fixtures,
-  READY-oracle evidence, host-admin reboot/mount windows and real 24/72/168-hour
-  observation remain prerequisites. Short local systemd checks are not those campaigns.
+- Latest tested source **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**:
+  [exact commands, JUnit, skips and artifact hashes](operational-observer-c86d577/summary.json).
+  Core **712 PASS / 11 SKIP / 0 failures**; release **13/13 PASS**. The two skipped
+  permission checks also passed with a private nonsecret 0600 sentinel. History
+  replay and seven isolated local systemd checks PASS; independent CRE remains
+  **REJECTED / PROTECTED_PATH_CHANGE**. The full inherited 1,840-test suite remains
+  at its prior passing revision `20650af`; it was not repeated on this increment.
+- Operational observer predicates now cover all sixteen declared fault classes,
+  with frozen fixtures and bounded read-only capture. This is partial tooling,
+  not measured live exposure. Host intervention audit, independent READY oracle,
+  actual reboot/mount-loss fixtures and elapsed 24/72/168-hour campaigns remain
+  pending. No source deployment or activation occurred.
+- [Original ST3 pilots](st3-driver-runs/summary.json): 0/3 READY, three SWE.1 BLOCKED
+  outcomes at `9a88fbc`. [Diagnostic codes](st3-driver-runs/author-diagnostics.json)
+  identify unsupported semantics and invalid proposals. Failures are preserved.
+- [Owner-requested remote engineering study](st3-diagnosis-study/README.md): three
+  Qwen calls, two reference checks PASS and one FAIL. Independent engine checks
+  rejected three selected suggestions; one isolated read PASS is not product
+  success. Eight factual experience/disposition records; zero qualified lessons
+  or measured benefit. Inspector development remains frozen.
+- [Known issues](known-issues.md) retain all owner-accepted omissions. Diagnosis
+  protocol remains owner-accepted at 95/100; the missing qualified alternative
+  remains explicit. Source implementation, model capability, product success,
+  learning benefit and operational availability are separate statuses.
 
 See [validation](../../specs/014-durable-local-autonomy/validation.md) and
-[Codex handover](../../specs/014-durable-local-autonomy/HANDOVER-CODEX.md).
-No raw model prompts, hidden reasoning, vendor source or credentials are published.
+[updated Codex handover](../../specs/014-durable-local-autonomy/HANDOVER-CODEX.md).
+No raw model prose/prompts, hidden reasoning, vendor source or credentials are
+published. Earlier [observer evidence](operational-observer-c72992a/summary.json)
+remains historical and intact.
 
 <details><summary>Historical evidence index as of 2026-10-25 (superseded status)</summary>
 

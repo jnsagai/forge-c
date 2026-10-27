@@ -169,3 +169,47 @@ PARTIAL, product/learning/availability stay NOT_RUN, deployment NOT_ACTIVATED.
   parsing change must be made in both.
 - Inspector work: replay recorded answers locally (`$FC014_OPS/q014-replay-all.py`, `q014-replay-items.py`) and run the
   truthful preflight (`q014-local-preflight.py`) on every learning baseline before spending GPU time.
+
+
+## Codex follow-up — 2026-10-27 09:47 UTC
+
+This section supplements the original transfer; owner decisions above still apply.
+Latest source commit: **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**. Follow-up
+evidence/docs are later commits on the same branch; fetch it before continuing.
+
+- Worktree: `$FC014_OPS/codex-resume-20261027`; original owner/main tree preserved.
+- Exact clean regression tree: `$B/repos/forge-c-014-regress-c86d577`.
+- New bounded capture/full-catalogue observer code: `afo/fault_observer.py`, new
+  `afo/operational_facts.py`, strict operation manifest checks in qualification.py.
+  Core 712 PASS / 11 SKIP / zero failures; release 13 PASS. Two skipped kernel
+  permission checks separately PASS with private nonsecret sentinel. History and
+  seven local isolated systemd cases PASS. Independent CRE still rejects protected
+  paths. Source not deployed. Full inherited 1,840-test suite not repeated.
+- Public evidence: `evidence/014-durable-local-autonomy/operational-observer-c86d577/`;
+  task-style record `evidence/v0.4/runs/DA014-operational-observer-c86d577/latest.json`.
+- Job 050 finished: 0/3 READY, all three BLOCKED at SWE.1; unsupported semantics and
+  invalid model intents, not merely unsigned safety documents. KI-014-029 remains
+  open. Public evidence `st3-driver-runs/`.
+- Owner asked to use idle remote Qwen to advance work. GPU queue jobs 060/061 ran
+  one external read-only engineering study, **three requests total** (original
+  expenditure retained across context repartition). Two reference checks PASS;
+  LPTIM invented a check ID and fails reference checking. Independent pinned
+  SafeC rejects three selected WWDG/RNG suggestions; one isolated LPTIM read PASS
+  does not establish driver correctness. Eight factual experiences/dispositions
+  retained through existing LessonStore APIs, zero qualified lessons or measured
+  benefit. No inspector tuning or native recovery qualification. Public evidence
+  `st3-diagnosis-study/`; private scripts/results on both loop10 and Omniverse2
+  `runs/qwen-st3-diagnosis-20261027`. Study's three-call budget is exhausted.
+- Formal progress remains **30/58**, ledger source_revision/CRLF unchanged.
+
+Next independent implementation: finish host-intervention audit integration and
+independent READY/work/post-campaign verification. Current UNKNOWN fields must not
+be replaced by handwritten success flags. Campaign reporting still requires that
+independent evidence. Prepare authorized host fixtures after the admin window is
+available; do not silently renew any grant or activate deployment. Full 24/72/168
+campaigns, product success, learning benefit and 30-day SLO remain unproven.
+
+For KI-014-029, independently reproduce unsupported access/RMW effects against the
+frozen RM/domain and propose a scoped semantic-profile extension through its
+external engineering boundary. Do not rerun a pilot simply with the rejected
+suggestions or remove requirements. Keep inspector frozen and original failures.

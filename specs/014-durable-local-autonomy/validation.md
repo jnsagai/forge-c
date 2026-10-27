@@ -290,3 +290,38 @@ verdicts. Raw model prose and vendor data remain private. This study is not nati
 AFO recovery qualification, a driver retry, a new held-out cohort or inspector
 calibration. Inspector development and all original failed pilot evidence remain
 unchanged. No task was ticked.
+
+
+## 2026-10-27: complete fault-catalogue observer predicates and bounded capture
+
+Exact source **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**, clean start/end:
+**712 core PASS, 11 SKIP, zero failures/errors** (673.428 s), release **13/13 PASS**
+(11.194 s). The two missing 0600 permission fixtures were separately exercised
+with a private nonsecret sentinel: **2/2 PASS**. Other skips: eight unavailable
+historical workspaces and one disabled optional live-Fabro test. [Exact commands,
+JUnit and hashes](../../evidence/014-durable-local-autonomy/operational-observer-c86d577/summary.json).
+
+The observer now derives exposure/restoration for thirteen external fixture
+classes alongside the three existing signal recipes, covering the full sixteen
+case catalogue. Predicates require actual queue/order/attempt, boot, unit, intent,
+dependency and heartbeat transitions. Later terminal status cannot replace native
+liveness; shutdown settles before effective stop, then rejects new identities.
+The manifest must contain the complete fault catalogue and finite declared
+resource/timing bounds. Single-read hash/parse binding, cumulative read-only SQLite
+byte bounds, typed accounting and trace limits preserve UNKNOWN on incomplete
+facts. Tests include positive/negative fault timelines, real private SQLite/HTTP
+fixtures, stale/contradictory facts and reduced-manifest refusals.
+
+Exact-source history replay and seven isolated local systemd checks PASS.
+Independent CRE **REJECTED/PROTECTED_PATH_CHANGE**, preserved without waiver.
+Static validation passes separately: 58 requirement/task/acceptance mappings,
+six schemas/38 fixtures, 14 design tests, handoff 30/58, and selected changed-module
+Ruff checks. These are not native or elapsed-time qualification. Full inherited
+1,840-test regression was not repeated here; its prior `20650af` record remains.
+
+DA-T026/046/049/050/052 remain unchecked. Host intervention audit is still not
+implemented/integrated; an independent READY package oracle is not integrated.
+Omniverse2 also lacks the approved host-admin reboot/authoritative-mount-loss
+fixture window; actual work/fault campaigns and their 24/72/168 hours were not run.
+The current observer deliberately returns UNKNOWN for missing audit/oracle facts,
+so it cannot silently pass a campaign. No deployment or automatic merge occurred.
