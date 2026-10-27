@@ -3,9 +3,9 @@
   "task": "OB-FULL-SUITE",
   "status": "FAIL",
   "exit_code": 1,
-  "ts_utc": "2026-10-27T13:12:35.626436Z",
-  "duration_s": 2317.39,
-  "git_head": "557e920daa540a47461958c1e62842ac6bb709fd",
+  "ts_utc": "2026-10-27T13:54:54.124539Z",
+  "duration_s": 2358.04,
+  "git_head": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
   "git_dirty_at_start": false,
   "command": [
     "python",
@@ -13,17 +13,18 @@
     "pytest",
     "-p",
     "no:cacheprovider",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml"
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-9dd5b71-full",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-9dd5b71-full-tests.xml"
   ],
   "host": {
     "python": "3.13.13",
     "node": "master"
   },
-  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T122641.log",
-  "log_sha256": "446dd23daa4e738ca29e60932155663591caf912444f544c214adde58ee270e7",
-  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml",
-  "junit_sha256": "bcf71f01cc947492b73f6cc789fadb5a7b8c946ec31c2f5329cff2d8ed2921de",
-  "passed": 1406,
+  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T131523.log",
+  "log_sha256": "d0199924293530d8a3c966baeb9ef64cc46eb04acb34561949574a3eefe15ac8",
+  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-9dd5b71-full-tests.xml",
+  "junit_sha256": "5b040dc561a671130185ad449b7a3a98e66c5a46eb58f61c98c22075fa8029a6",
+  "passed": 1410,
   "skipped": 27,
   "failed": 3,
   "failed_cases": [
@@ -31,5 +32,5 @@
     "factory.python.tests.test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege",
     "factory.python.tests.test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence"
   ],
-  "note": "Exact deployed runtime, clean isolated test worktree. Raw suite FAIL; independent failure-set comparison checks only the three recorded baseline failures. Full raw JUnit retained externally with hash; public summary omits passing parameterized fixture strings."
+  "note": "Exact candidate source in clean isolated test worktree. Raw suite keeps its actual outcome; OB-NO-REGRESSIONS checks the independent known-failure set. Full raw JUnit retained externally with hash; public summary omits passing parameterized fixture strings."
 }

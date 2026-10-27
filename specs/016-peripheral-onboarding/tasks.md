@@ -484,3 +484,7 @@ SWE.1–SWE.6.
   unused legacy GPIO target-model reset description. The separate package-generation read audit still passes
   with zero hand-profile reads. OB-T059 remains open for adjudication of this literal history criterion; neither
   audit result is relabelled to erase the exception.
+
+- The clean full suite on exact candidate `9dd5b71` completed: 1410 passed, 27 skipped, the same three known
+  baseline failures, in 2358.09 s. Raw OB-FULL-SUITE stays FAIL; OB-NO-REGRESSIONS passes the independent
+  failure-set comparison. No source change followed this suite.
