@@ -112,6 +112,7 @@ def product_observation(store, manifest, trial, binding):
         "job_id": job["job_id"],
         "order_state": order["state"],
         "attempt_id": attempt["attempt_id"],
+        "attempt_created_utc": attempt["record"].get("created_utc"),
         "native_run_id": attempt["record"].get("fabro_run_id"),
         "execution": execution,
         "package_sha256": sha256_file(p) if p.is_file() else None,

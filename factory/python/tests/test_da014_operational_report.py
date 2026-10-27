@@ -163,6 +163,7 @@ def continuity(p, *, intake_at=86500, continued_at=86500, last=87700, order="lat
     evidence = [
         {"plan_ref": p.ref, "independently_verified": True, "order_id": order, "native_terminal_observed_at": intake_at + 30}
     ]
+    evidence[0].update(attempt_created_at=intake_at + 1, observed_until=intake_at + 30, native_active_observed_at=[])
     return records, evidence
 
 

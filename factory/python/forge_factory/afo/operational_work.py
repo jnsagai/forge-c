@@ -6,6 +6,7 @@ owns the independent oracle; the external observer owns captured liveness facts.
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 from ..common import sha256_file
@@ -17,6 +18,27 @@ from .qualification_capture import replay_product_row
 SCHEMA = "forge-c/independent-operational-work/1"
 PHASES = {f"SWE.{i}" for i in range(1, 7)}
 TERMINAL = {"READY_FOR_OFFLINE_REVIEW", "BLOCKED", "CANCELLED", "FAILED"}
+
+
+def epoch(value):
+    try:
+        t = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return t.timestamp() if t.tzinfo is not None else None
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return None
+
+
+def work_in_window(record, start, end):
+    terminal = record.get("native_terminal_observed_at")
+    created = record.get("attempt_created_at")
+    return (
+        terminal is not None
+        and start <= terminal <= end
+        and (
+            (created is not None and start <= created <= terminal)
+            or any(start <= at <= terminal for at in record.get("native_active_observed_at", []))
+        )
+    )
 
 
 def work_plan(manifest, plan_ref):
@@ -113,6 +135,8 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
         and len(set(request_ids)) == len(request_ids)
     )
     matches = []
+    activity = []
+    created = epoch(row.get("attempt_created_utc"))
     for sample in samples:
         ledger = sample["ledger"]
         orders = [r for r in ledger["orders"] if r["order_id"] == order_id]
@@ -125,8 +149,29 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
         latest = max(attempts, key=lambda r: r["attempt_seq"])
         execution = executions[0]
         requests = [r for r in ledger["afo_request_ledger"] if r["job_id"] == binding["job_id"]]
+        identity = (
+            latest["attempt_id"] == binding["attempt_id"]
+            and latest["fabro_run_id"] == native
+            and execution["mission_id"] == binding["mission_id"]
+            and execution["native_run_ids"] == [native]
+            and execution["launch_nonce"] == row["execution"].get("launch_nonce")
+        )
+        reconciled = epoch(execution.get("last_reconciled_at"))
+        if (
+            identity
+            and orders[0]["state"] in {"ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING"}
+            and latest["state"] == "RUNNING"
+            and execution["execution_liveness"] == "RUNNING"
+            and execution["resource_lease"] == "HELD"
+            and reconciled is not None
+            and 0 <= sample["wall"] - reconciled <= manifest["bounds"]["control_cycle_seconds"]
+            and all((sample.get("health") or {}).get(k) is True for k in ("conductor", "fabro", "data_volume"))
+        ):
+            activity.append(sample["wall"])
         if (
             orders[0]["state"] == row["order_state"]
+            and latest.get("created_utc") == row.get("attempt_created_utc")
+            and (created is None or created <= sample["wall"])
             and orders[0].get("authorization_id")
             and latest["attempt_id"] == binding["attempt_id"]
             and latest["fabro_run_id"] == native
@@ -174,6 +219,8 @@ def evaluate(manifest, plan_ref, product_row_ref, sample_refs, destination=None)
         "job_id": binding["job_id"],
         "mission_id": binding["mission_id"],
         "native_run_id": native,
+        "attempt_created_at": created,
+        "native_active_observed_at": activity,
         "model_request_count": len(request_ids) if requests_bound else None,
         "order_state": row["order_state"],
         "observed_from": samples[0]["wall"],

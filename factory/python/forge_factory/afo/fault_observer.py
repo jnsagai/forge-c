@@ -32,7 +32,9 @@ FIELDS = {
     "afo_missions": ("mission_id", "lineage", "limits", "authorization_ref"),
     "afo_mission_executions": ("identity", "mission_id", "kind", "reserved_tokens", "charge", "reported_tokens"),
     "afo_request_ledger": ("request_id", "mission_id", "job_id", "charge", "state"),
-    "afo_execution_liveness": ("job_id", "mission_id", "launch_nonce", "native_run_ids", "resource_lease", "execution_liveness"),
+    "afo_execution_liveness": (
+        "job_id", "mission_id", "launch_nonce", "native_run_ids", "resource_lease", "execution_liveness", "last_reconciled_at"
+    ),
 }
 MAX_BYTES = 16 * 1024 * 1024
 MAX_TRACE_BYTES = 128 * 1024 * 1024
@@ -202,7 +204,8 @@ def ledger(path, limit):
             attempts=[
                 project(
                     r[0],
-                    ("attempt_id", "attempt_seq", "order_id", "state", "fabro_run_id", "exit_status", "terminal_package_status"),
+                    ("attempt_id", "attempt_seq", "order_id", "state", "fabro_run_id", "exit_status",
+                     "terminal_package_status", "created_utc"),
                 )
                 for r in attempts
             ],

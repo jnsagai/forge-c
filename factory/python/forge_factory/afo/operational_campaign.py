@@ -185,8 +185,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
             verified_work.append(operational_work.verify(manifest, row))
     window_work = [
         r for r in verified_work
-        if r["native_terminal_observed_at"] is not None
-        and head["wall"] <= r["native_terminal_observed_at"] <= samples[-1]["wall"]
+        if operational_work.work_in_window(r, head["wall"], samples[-1]["wall"])
     ]
     missing = sorted(set(manifest["faults"]) - {r["fault"] for r in faults})
     failed = [
@@ -240,6 +239,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
 def continuity_verdict(manifest, records, work, expected_end):
     """Derive post-campaign service and later work from verified source records."""
     from .fault_observer import bound_json
+    from .operational_work import work_in_window
 
     eligible = [r for r in records if r.get("independently_restored") is True and r.get("observation_gaps") is False]
     post = [r for r in eligible if r.get("fault") == "post-campaign-continuity"]
@@ -262,6 +262,7 @@ def continuity_verdict(manifest, records, work, expected_end):
                 and w["plan_ref"] == continued["plan_ref"]
                 and w["order_id"] == oid
                 and w["native_terminal_observed_at"] >= intake["at"]
+                and work_in_window(w, intake["at"], w["observed_until"])
                 for w in work
             ):
                 return True

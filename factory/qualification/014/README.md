@@ -303,11 +303,11 @@ python -m forge_factory.afo.fault_observer work \
 
 Work verification replays the existing independent audit, checks frozen identities
 against independently captured order/latest-attempt/mission/native/nonce facts,
-and requires captured native/request quiescence and released capacity. READY also
-requires the bound request-ID set to match capture: a genuine zero-request native
-outcome is distinct from missing request telemetry. Capture checks its read
-deadline again before publishing. READY
-requires exactly the six native SWE gates and the sealed READY package result.
+and requires captured native/request quiescence and released capacity. The bound
+request-ID set must match capture: a genuine zero-request native outcome is
+distinct from missing request telemetry. Capture checks its read deadline again
+before publishing. READY requires exactly the six native SWE gates and the sealed
+READY package result.
 Missing audit stays INCOMPLETE; contradictory READY is FAIL. A known BLOCKED
 outcome can count as real work when its independent audit verifies complete
 outcome evidence (`native_outcome_verified: true`); it is never product success.
@@ -320,6 +320,11 @@ READY claim. No host intervention audit is inferred from the work result.
 
 Campaign reporting replays work and fault records, checks the actual frozen
 manifest and full stage duration, excludes work outside the observed window, and
+counts work exposure only for an attempt created in that window or native activity
+observed there with a fresh reconciliation record. Re-reading an old terminal job
+does not make it new campaign work. Historical outcome proof remains usable for
+READY auditing without inflating the work counter. Missing timestamps remain unknown.
+The report
 derives post-campaign continuity/later processing from the corresponding verified
 fault timelines and native work. Legacy `independently_verified` and
 `later_authorized_job_admitted` booleans alone do not count. Missing or contradictory

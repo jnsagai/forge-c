@@ -65,6 +65,7 @@ def work(setup):  # noqa: F811
         "package_verdict": {"verdict": "READY_FOR_OFFLINE_REVIEW", "archive_sha256": "b" * 64},
         "gates": {f"SWE.{i}": "PASS" for i in range(1, 7)},
         "request_ids": ["request-fixture"],
+        "attempt_created_utc": "1970-01-01T00:01:41Z",
     }
     p.samples = []
     for n, wall in enumerate((100, 130)):
@@ -74,7 +75,15 @@ def work(setup):  # noqa: F811
         ledger["orders"] = [
             {"order_id": p.binding["order_id"], "state": p.observation["order_state"], "authorization_id": "fixture-auth"}
         ]
-        ledger["attempts"] = [{**p.binding, "attempt_seq": 1, "fabro_run_id": "native-fixture", "state": "SUCCEEDED"}]
+        ledger["attempts"] = [
+            {
+                **p.binding,
+                "attempt_seq": 1,
+                "fabro_run_id": "native-fixture",
+                "state": "SUCCEEDED",
+                "created_utc": p.observation["attempt_created_utc"],
+            }
+        ]
         ledger["afo_execution_liveness"] = [p.observation["execution"]]
         ledger["afo_request_ledger"] = [
             {
@@ -353,6 +362,30 @@ def test_product_capture_cannot_publish_after_its_read_deadline(work, monkeypatc
     with pytest.raises(queue.QueueError, match="NOT_CURRENT"):
         W.capture_product(p.manifest, p.ref, p.trial, p.tmp / "late-result.json")
     assert not (p.tmp / "late-result.json").exists()
+
+
+@pytest.mark.parametrize("activity", ["none", "fresh", "stale"])
+def test_historical_terminal_recapture_is_not_fresh_work_but_observed_live_work_counts(work, activity):
+    p = work
+    p.observation["attempt_created_utc"] = "1970-01-01T00:00:10Z"
+    sources = []
+    for i, ref in enumerate(p.samples):
+        row = O.bound_json(ref)
+        row["ledger"]["attempts"][0]["created_utc"] = p.observation["attempt_created_utc"]
+        if i == 0 and activity != "none":
+            row["ledger"]["orders"][0]["state"] = "RUNNING"
+            row["ledger"]["attempts"][0]["state"] = "RUNNING"
+            row["ledger"]["afo_execution_liveness"][0].update(
+                resource_lease="HELD",
+                execution_liveness="RUNNING",
+                last_reconciled_at="1970-01-01T00:01:40Z" if activity == "fresh" else "1969-12-31T23:59:00Z",
+            )
+        sources.append(put(p.tmp / ("history-" + str(i) + ".json"), row))
+    p.samples = sources
+    ref, _, _ = audited(p)
+    result = evaluate(p, ref)
+    assert result["status"] == "VERIFIED"
+    assert W.work_in_window(result, 90, 130) is (activity == "fresh")
 
 
 @pytest.mark.parametrize("change", ["held", "running", "fifo", "symlink", "outside-archive"])
