@@ -58,7 +58,9 @@ BUDGET = re.compile(r"\bat most \d+ bytes of (?:flash|static RAM|stack)\b|\buse 
 BYTES = re.compile(r"\b\d+(?:-| )bytes?\b", re.I)
 REQ_LINE = re.compile(r"^- \*\*(SWR-\d{3})\*\*\s+(.+)$")
 # a verification's criterion clause after the method: an asserted, observable outcome
-CRITERION = re.compile(r";[^;]*\b(?:is|are|equals?|occurs?|returns?|remains?|reads?|holds?|contains?|matches|stays?)\b",
+# '<method>; <observable outcome>' (learning set 2) or '<method>: <observable outcome>' (learning set 4, CRC: 'SWE.6 Robot
+# size-tool check: the target image flash contribution ... is at most 4096 bytes')
+CRITERION = re.compile(r"[;:][^;]*\b(?:is|are|equals?|occurs?|returns?|remains?|reads?|holds?|contains?|matches|stays?)\b",
                        re.I)
 
 
@@ -456,9 +458,19 @@ def in_stated_range(statement: str, value) -> bool:
     return False
 
 
+def family_named(statement: str, field: str) -> str:
+    """Learning set 4 (Feature 015 GPIOA SWR-021): 'GPIO_BSRR.BSy for selected pins' names every indexed field of that
+    family (BS6 too). The statement with the family name read as the entry's field; unchanged when the field itself is
+    named or it has no index."""
+    m = re.fullmatch(r"([A-Z][A-Z0-9_]*\.[A-Z_]*[A-Z])(\d+)", field)
+    if not m or re.search(rf"\b{re.escape(field)}\b", statement):
+        return statement
+    return re.sub(rf"\b{re.escape(m.group(1))}[xyn]\b", field, statement)
+
+
 def _states_effect(e: dict) -> bool:
     """The requirement text itself states the entry's operation on its field (the claim is then refuted)."""
-    s, f = e["statement"], re.escape(e["field"])
+    s, f = family_named(e["statement"], e["field"]), re.escape(e["field"])
     if not re.search(rf"\b{f}\b", s):
         return False
     if e["op"] in OPPOSITE:
@@ -494,6 +506,13 @@ def bit_written(statement: str, field: str, op: str) -> bool:
                                    for c in re.split(r"[.;](?=\s|$)", statement))
 
 
+# learning set 4 (Feature 015 CRC): 'write the requested reversal to CRC_CR.REV_IN' writes a caller-chosen value whatever
+# its noun; 'write the word to CRC_DR.DR' writes the call's argument when the trigger names it ('called with a ... word')
+WRITE_REQUESTED = re.compile(r"\bwrit\w*\s+the\s+(?:requested|supplied|given|configured|selected|caller[- ]supplied)\s+"
+                             r"(?:[\w-]+\s+){0,3}?(?:to|into)\b", re.I)
+WRITE_THE = re.compile(r"\bwrit\w*\s+the\s+([a-z][\w-]*)\s+(?:to|into)\b", re.I)
+
+
 def parameterised_write(statement: str, field: str) -> bool:
     """Learning set 2 (2026-10-26, IWDG-HAL h003/rc1/rc3): 'shall write the configured prescaler (encoding) to
     IWDG_PR.PR' states the write of whatever value the caller configured, so every value the effects contract lists for
@@ -507,6 +526,11 @@ def parameterised_write(statement: str, field: str) -> bool:
         if re.search(r"\b(?:writ(?:e|es|ing)|retain(?:s|ed)?|hold(?:s)?|contain(?:s)?)\b", c, re.I) and PARAMETER_VALUE.search(c):
             return True
         if VALUE_REFERENCE.search(c) or (re.search(r"\bwrit\w*\b", c, re.I) and COMPUTED_FROM.search(c)):
+            return True
+        if WRITE_REQUESTED.search(c):
+            return True
+        arg = WRITE_THE.search(c)  # learning set 4 (CRC): 'called with a 32-bit data word ... shall write the word to'
+        if arg and re.search(rf"\bwith\s+(?:a|an|the)\s+(?:[\w-]+\s+){{0,4}}?{re.escape(arg.group(1))}\b", statement, re.I):
             return True
     return False
 
@@ -561,10 +585,11 @@ def fixed_state_fields(text: str) -> set[str]:
 def input_label_pattern(inp: str) -> str:
     """A gaps-table row label that records an upstream input: its name, optionally followed by an explanation in
     parentheses or after a colon. Learning set 2 (2026-10-26): 'Budgets: flash 4096 bytes, ...' (h005) and one row per
-    resource ('Flash budget', 'Static RAM budget', 'Stack budget'; b009) record the Budgets input too."""
+    resource ('Flash budget', 'Static RAM budget', 'Stack budget'; b009) record the Budgets input too; learning set 4
+    (CRC) gives the bound after a colon ('Flash budget: 4096 bytes')."""
     pat = rf"{re.escape(inp)}(?: \([^|]*\)|:[^|]*)?"
     if inp == "Budgets":
-        pat += r"|(?:Flash|Static RAM|RAM|Stack)(?: memory)? budget(?: \([^|]*\))?"
+        pat += r"|(?:Flash|Static RAM|RAM|Stack)(?: memory)? budget(?: \([^|]*\)|:[^|]*)?"
     return pat
 
 

@@ -1107,3 +1107,60 @@ def test_learning_set_3_a_flag_wait_is_stated_where_the_flag_is_a_condition(froz
     assert RS.behaviour_claims(wait, {"quote": "", "answer": "NONE"}, f)[0]["decision"] == "REFUTED"
     assert RS.candidates(f, {**wait, "phrase": "clear the PVU flag"}) == []
     assert RS.candidates(f, {**wait, "phrase": "PVU clear with update-flag wait"}) == []  # 0008B S1-OMIT stays caught
+
+
+def test_learning_set_4_a_requested_or_argument_write_states_every_documented_value(frozen):
+    """Learning set 4 (Feature 015 CRC, the spent test set 2): 'write the requested reversal to CRC_CR.REV_IN and its
+    reversal type to CRC_CR.RTYPE_IN' and 'called with a 32-bit data word ... write the word to CRC_DR.DR' write the
+    caller's value; a fixed literal, or a noun the trigger does not supply, does not."""
+    rev = ("When LL_CRC_SetInputDataReverseMode is called with an input reversal mode value, the CRC LL driver shall "
+           "write the requested reversal to CRC_CR.REV_IN and its reversal type to CRC_CR.RTYPE_IN from that single mode "
+           "value while preserving the other CRC_CR fields.")
+    feed = "When LL_CRC_FeedData32 is called with a 32-bit data word, the CRC LL driver shall write the word to CRC_DR.DR."
+    assert RS.parameterised_write(rev, "CRC_CR.REV_IN") and RS.parameterised_write(rev, "CRC_CR.RTYPE_IN")
+    assert RS.parameterised_write(feed, "CRC_DR.DR")
+    assert not RS.parameterised_write("When LL_CRC_ResetData is called, the CRC LL driver shall write the reset value to "
+                                      "CRC_DR.DR.", "CRC_DR.DR")
+    assert not RS.parameterised_write("When LL_CRC_Enable is called, the driver shall write 1 to CRC_CR.RESET.",
+                                      "CRC_CR.RESET")
+    facts = {**RS.baseline_facts(frozen), "reqs": {"SWR-003": {"statement": rev, "verification": ""},
+                                                     "SWR-007": {"statement": feed, "verification": ""}}}
+    for fld, v in (("CRC_CR.REV_IN", "2"), ("CRC_CR.RTYPE_IN", "1"), ("CRC_DR.DR", "0x89ABCDEF")):
+        b = {"phrase": "documented write", "action": "write", "register_field": fld, "value": v}
+        assert RS.behaviour_hit(facts, b), fld
+
+
+def test_learning_set_4_a_budget_row_may_give_its_bound_after_a_colon(frozen):
+    """Learning set 4 (CRC): one gaps-table row per resource with the bound after a colon records the Budgets input."""
+    labels = ["HSI contract", "Safety allocation", "Flash budget: 4096 bytes", "Static RAM budget: 64 bytes"]
+    assert RS.input_label(labels, "Budgets") == "Flash budget: 4096 bytes"
+    assert RS.input_recorded_by("Stack budget: 128 bytes", "Budgets")
+    assert not RS.input_recorded_by("Flash usage: 4096 bytes", "Budgets")
+
+
+def test_learning_set_4_an_indexed_field_family_names_each_member(frozen):
+    """Learning set 4 (GPIOA): SWR-021 states '1 in GPIO_BSRR.BSy for selected pins clear in GPIO_ODR' with BS5 as its
+    example; the effects entry writing BS6 = 1 is stated (the model answered not_stated). Another family is not."""
+    st = ("When LL_GPIO_TogglePin is called for a mask of available GPIOA pins, the GPIO LL driver shall write to GPIO_BSRR "
+          "the value containing 1 in GPIO_BSRR.BRy for selected pins set in GPIO_ODR and 1 in GPIO_BSRR.BSy for selected "
+          "pins clear in GPIO_ODR (GPIO_BSRR.BR5 with GPIO_ODR.OD5 set and GPIO_BSRR.BS5 with GPIO_ODR.OD5 clear).")
+    e = {"statement": st, "field": "GPIO_BSRR.BS6", "op": "write", "value": 1, "args": []}
+    assert RS._states_effect(e)
+    assert not RS._states_effect({**e, "field": "GPIO_ODR.OD6"})
+    assert RS.family_named(st, "GPIO_BSRR.BS5") == st  # named itself: unchanged
+    assert RS.family_named("write 1 to GPIO_BSRR.BSy", "GPIO_BSRR.BRR6") == "write 1 to GPIO_BSRR.BSy"
+
+
+def test_learning_set_4_a_method_then_colon_and_an_observable_outcome_is_a_pass_criterion(frozen):
+    """Learning set 4 (CRC SWR-012/014): 'SWE.6 Robot size-tool check: the target image flash contribution ... is at most
+    4096 bytes' states its pass criterion; a method alone does not."""
+    facts = RS.baseline_facts(frozen)
+    swr = {"statement": "The CRC LL driver shall occupy at most 4096 bytes of flash in the target build.",
+           "verification": "SWE.6 Robot size-tool check: the target image flash contribution attributable to the in-scope "
+                           "driver is at most 4096 bytes."}
+    claim = {"assertion": "requirement_not_verifiable", "target_id": "SWR-012", "related_ids": [], "detail": "d",
+             "remediation": "r"}
+    f = {**facts, "reqs": {"SWR-012": swr}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-02", [claim], f)] == ["REFUTED"]
+    f = {**facts, "reqs": {"SWR-012": {**swr, "verification": "SWE.6 Robot size-tool check of the target image."}}}
+    assert [c["decision"] for c in RS.adjudicate(frozen, "SWE1-02", [claim], f)] == ["CONFIRMED"]
