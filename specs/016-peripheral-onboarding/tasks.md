@@ -341,7 +341,7 @@ SWE.1–SWE.6.
   `software/include/`). Also reject a plan whose stated remedy is to produce an output that a gate demands but the
   driver style does not have. Reason codes `PLAN_REJECTED:FROZEN_CODE_SCOPE` and `PLAN_REJECTED:STYLE_OUTPUT`. Also: in a FROZEN delivery, a phase STUCK on failing checks that are all reproduced by ESCALATED CODE defects (CRC HAL R2, `WO-AFO-071ffed673bf5df5-a1`: DEF-002/003/004 in ST's CRC HAL, e.g. the polynomial scan never tests bit 31) is not reworkable: reject REWORK plans with `PLAN_REJECTED:FROZEN_DEFECTS_NEED_OWNER` and finalize the order BLOCKED with the defects as gaps for the owner's disposition. Test
   it in `tests/test_afo_planner_frozen.py` with the recorded plan as a fixture. CRE gate.
-- [ ] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no
+- [X] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no ✅ Evidence: `evidence/v0.4/runs/OB-T062-RECORD/latest.json`
   qualified local profile; see feature 014). If a profile is qualified later, run quickstart §1–§4 on omniverse2 and
   replace the record.
 - [X] **OB-T063** [P] Write an ADR, `docs/adr/ADR-00NN-peripheral-onboarding-stage.md`: the two-run design and ✅ Evidence: `evidence/v0.4/runs/OB-T063/latest.json`
@@ -442,3 +442,7 @@ SWE.1–SWE.6.
   read, and the exact acceptance scope is bound into the package. The acceptance scopes simplify the legacy text
   (they are not verbatim copies of it); the audit reports that difference and the unused legacy GPIO reset-description
   correction explicitly. Final run audit and owner review remain open.
+
+- OB-T062's documentation task is now verified and ticked with `OB-T062-RECORD`: the underlying local-model
+  execution record remains explicitly NOT_RUN, with no command, no exit code and zero model calls. Passing the
+  record-presence check does not claim a local-model run or profile qualification.
