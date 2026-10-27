@@ -16,12 +16,13 @@ import shutil
 import socket
 import subprocess
 import sys
-
+from dataclasses import replace
 from pathlib import Path
 
 from forge_factory.assurance import mutation, register_wp
 from forge_factory.assurance import safec_oracle as SO
 from forge_factory.brownfield import cmsis
+from forge_factory.common import sha256_file
 from forge_factory.knowledge import experience as E
 from forge_factory.knowledge.store import LessonStore
 from forge_factory.lrtx import swe1_semantic as S
@@ -58,6 +59,7 @@ assert not ws.exists()
 shutil.copytree(src, ws)
 manifest = json.loads((ws / ".forge-run/manifest.json").read_bytes())
 ctx = S.Context(ws)
+ctx.limits = replace(ctx.limits, timeout_s=20, cpu_s=20)
 intents = []
 for n, row in enumerate(manifest["semantic_required_operations"]):
     f = next(
@@ -228,6 +230,9 @@ summary = {
     "obligation_reverification": "PASS",
     "mutation_operators": len(operators),
     "native_compilation": "PASS",
+    "compiler_sha256": sha256_file(Path(compiler)),
+    "engine_limits": {"timeout_s": 20, "cpu_s": 20},
+    "host_run_limits": {"cpu_s": 5, "address_space_bytes": 268435456, "wall_seconds": 10},
     "model_cases": len(cases),
     "cases_matching_model": len(cases) - len(bad),
     "cases_mismatching_model": len(bad),

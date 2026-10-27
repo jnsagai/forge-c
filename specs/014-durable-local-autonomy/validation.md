@@ -874,3 +874,43 @@ formal checkbox, role/product/self-healing/availability success. Evidence:
 wwdg-profile-024a3fa under the Feature014 evidence directory.
 
 Exact024a3fa AFO/local-autonomy integration: 75 PASS in10.413s. Downstream assurance consumer version propagation is still a known source gap; intake-only results do not qualify oracle/proof/mutation consumers.
+
+## 2026-10-27 — downstream version propagation and independent native model mismatch
+
+Exact runtime466d87bef4688af6209937433ef056baa4a5d51f fixes oracle/proof/mutation
+consumers which rebuilt legacy domains and discarded profile metadata. Existing
+profile authority is reused; frozen engine/profile/hash checks precede independent
+domain/artifact verification. Three native positive tests first failed on that
+source defect; corrected positives and stale/mixed/rehashed negatives now pass.
+
+Exact clean219 affected/AFO PASS (45.525s),29 release/legacy PASS (11.061s),
+Omniverse2 native42 PASS (33.253s), changed legacy readers2checks PASS against
+actual old-engine records. Two unchanged expensive solver/target-oracle cases
+are explicitly excluded from this targeted rerun; no full inherited-suite claim.
+
+The full12-form WWDG set jointly passes all3 engine operations and all production
+consumers;7 source-derived mutation operators are generated. Real fingerprinted
+frozen ST functions compile through the existing CMSIS host adapter. Of44
+register-image comparisons,40 match and4 mismatch: GetPrescaler returns14336
+versus logical7 (2cases); ClearFlag_EWKUP host word0xfffffffe versus0 (2cases).
+These are API/access-model incompatibilities, not evidence of hardware
+incorrectness. No Qwen or product execution occurred, no phase PASS fabricated.
+
+Committed frozen reproducer factory/qualification/014/reproduce_wwdg_verification_model.py
+has measured source hashff68416dda948acac080352512f274ad3c384412bea392b94da60b38ab366b25.
+It imports the exact clean466 SDK, requires unchanged candidate002 inputs, writes a
+fresh isolated destination, caps engine CPU/wall20s and native host CPU5s/wall10s/
+address space256MiB. Original/private, first committed and final bounded trials
+all retain40/44 versus4/44,3engine requests each,0model/product requests, exit2.
+Overwrite refusal returns1 and preserves the previous summary hash. Compiler
+identity and source/input hashes retained. BLOCKED factual dispositions are
+DEFERRED_BUDGET,0 inference tokens/qualified lessons; no learning benefit claim.
+
+Full frozen-driver model qualification remains blocked before Qwen dispatch.
+Independent HSI/access-model evidence or an explicitly approved scoped alternative
+is required; no normalization, frozen-code edit or gate weakening. Current product
+authority and cumulative mission continuation also remain unbound. All prior costs,
+uncertainty, raw failures and candidates remain. Private broader replay still needs
+16 missing original inputs. Formal30/58 unchanged; operational campaigns and
+product/role/self-healing/learning-benefit qualification remain unproven.
+Evidence: wwdg-consumers-466d87b in the Feature014 evidence directory.

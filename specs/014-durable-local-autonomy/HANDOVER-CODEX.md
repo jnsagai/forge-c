@@ -6,7 +6,52 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 explicit profile and real native intake
+## Current checkpoint — 2026-10-27 downstream consumers fixed; native ST/model mismatch
+
+Exact latest runtime **466d87bef4688af6209937433ef056baa4a5d51f**.
+Oracle/proof/mutation consumers now preserve the frozen semantic profile through
+domain rebuild and independent checks. Three positive real-engine cases first
+reproduced the legacy-default/profile-metadata-loss defects. New bindings and
+mixed/rehashed negatives now pass. No extra scheduler, memory authority, model
+permission, gate waiver or default change.
+
+Exact clean local219 affected/AFO integration PASS (45.525s),29 release/legacy gate
+PASS (11.061s), Omniverse2 native42 PASS (33.253s). Targeted lane excludes two
+unchanged expensive solver/target-oracle cases; no full inherited-suite claim.
+Both changed legacy readers separately PASS against actual old-engine artifacts.
+
+Actual WWDG source: all12 mandatory forms also PASS jointly across validation,
+oracle and obligation derivation; production consumers reverify them and7 mutation
+operators are generated. The unchanged fingerprinted ST functions were compiled
+through the existing CMSIS host adapter: **40/44 cases match,4 mismatch**.
+GetPrescaler returns14336 where the logical-field model expects7 (two cases);
+ClearFlag_EWKUP leaves host word0xfffffffe where the plain-memory oracle expects0
+(two cases). This is an API representation/access-model incompatibility, not proof
+of a hardware defect or Qwen failure. All model calls/product attempts remain0.
+
+A full frozen-driver run cannot qualify that current model yet. Baseline/qualify
+the needed HSI representation/hardware-access assumptions or obtain an explicit
+scoped alternative before Qwen dispatch. Do not change frozen code, silently
+normalize observations, weaken gates or fabricate a repair. Current product
+authorization and cumulative mission continuation also remain unbound; the
+asynchronous reference request is unanswered. No grant was renewed or budget reset.
+
+A committed frozen native reproducer is at
+factory/qualification/014/reproduce_wwdg_verification_model.py.
+Final source hashff68416d…b366b25, same result on Omniverse2, exit2; it refuses
+existing output directories and has finite engine/host resource bounds. Initial,
+first-reproducer and final-bounded results remain, each3 engine calls/0 model calls.
+Factual BLOCKED dispositions are DEFERRED_BUDGET,0 qualified lessons or benefit.
+
+[Evidence, exact commands, limits and failure scope](../../evidence/014-durable-local-autonomy/wwdg-consumers-466d87b/README.md).
+Original candidate002, archives, private engine c241a9a and prior states remain
+untouched. Private whole-workspace regression still lacks16 original raw inputs.
+Formal ledger/source/CSV remain30/58, all role/product/learning/availability axes
+separate and unproven. A2 independent observation/campaign prerequisites remain
+unfinished; further independent implementation may proceed without Qwen authority.
+No deployment, promotion, PR merge or global autonomy completion.
+
+## Previous checkpoint — 2026-10-27 explicit profile and real native intake
 
 Exact runtime **024a3fa55fe6b4cce85c61155382cf35aabf76cd**. The opt-in WWDG
 engine now has an explicit experimental profile; base model settings/admission/
