@@ -129,8 +129,10 @@ def test_stop_waits_for_the_namespace_holder_and_forgets_it(tmp_path):
     s = _settings(tmp_path)
     (s["root"] / "run").mkdir()
     pidf = s["root"] / "run/holder.pid"
-    subprocess.run(["bash", "-c", f"setsid sleep infinity >/dev/null 2>&1 < /dev/null & echo $! > {pidf}"], check=True)
-    pid = int(pidf.read_text())
+    # the holder itself in a new session (a backgrounded `setsid` may fork, leaving $! naming the exiting setsid)
+    pid = subprocess.Popen(["sleep", "infinity"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL, start_new_session=True).pid
+    pidf.write_text(str(pid))
     assert stack._holder(s) == pid
     assert "netns-holder" in stack.stop(s)["stopped"]
     assert not pidf.exists() and stack._holder(s) is None

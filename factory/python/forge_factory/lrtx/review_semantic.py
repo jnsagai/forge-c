@@ -43,6 +43,7 @@ ASSERTIONS = {
     "SWE1-06": ["requirement_not_verifiable", "ambiguity_not_documented", "other"],
 }
 INPUTS = ["HSI contract", "Safety allocation", "Budgets"]
+SAFETY_DOC = "safety/software_safety_requirements.md"
 LESSONS = {"dir": None, "include_proposed": False}  # F011-T044: seeded harness (--lessons [--lessons-trial]);
 # otherwise the profile flag decides (VALIDATED lessons only)
 LESSON_SOURCE = "reference/inspection-lessons.md"
@@ -91,6 +92,9 @@ def baseline_facts(ws: Path) -> dict:
     return {"reqs": reqs, "startup": [m.group(1) for m in STARTUP.finditer(md)],
             "open_points": " ".join(((opened.group(1) if opened else "") + " " + gaps).split()),
             "gap_rows": {i: (m.group(1) if m else None) for i, m in gap_rows.items()},
+            # learning set 3 (USART1): 'USART_CR1.FIFOEN is 0 throughout verification', '(USART_CR1.FIFOEN = 0, reset
+            # state)': fields the baseline or work-order scope fix as an environment state, not a driver obligation
+            "fixed_state": fixed_state_fields(md + " " + " ".join(scope_items(ws))),
             "traced": traced_up & traced_sw, "tested": set(re.findall(r"^(SWR-\d{3}),", csv, re.M)),
             "budgets": {k: any(re.search(rf"\b{k}\b", r["statement"], re.I) and BYTES.search(r["statement"])
                                for r in reqs.values()) for k in ("flash", "static RAM", "stack")}}
@@ -459,7 +463,7 @@ def _states_effect(e: dict) -> bool:
         return False
     if e["op"] in OPPOSITE:
         return bool(re.search(rf"\b{e['op']}\b[^.;]*\b{f}\b", s, re.I)) and \
-            not re.search(rf"\b{OPPOSITE[e['op']]}\b[^.;]*\b{f}\b", s, re.I)
+            not re.search(rf"\b{OPPOSITE[e['op']]}\b[^.;]*\b{f}\b", s, re.I) or bit_written(s, e["field"], e["op"])
     if parameterised_write(s, e["field"]):
         return True
     v = e["value"]
@@ -471,12 +475,23 @@ def _states_effect(e: dict) -> bool:
 
 
 PARAMETER_VALUE = re.compile(r"\b(?:requested|configured|given|supplied|selected|caller[- ]supplied)\s+(?:[\w-]+\s+){0,3}?"
-                             r"(?:values?|encodings?|arguments?|prescaler|reload|key|divider|setting|threshold)s?\b", re.I)
+                             r"(?:values?|encodings?|arguments?|prescaler|reload|key|divider|setting|threshold|modes?|counts?|"
+                             r"size|width|length|level|direction|order|polarity|phase|rate|selection|frame|data|byte|word)s?\b",
+                             re.I)  # SPI1 'requested mode', 'requested frame'
 # learning set 3 (Feature 015 SPI1/USART1): 'write that value to SPI_CFG1.MBR' (the supplied encoding) and 'write
 # USART_BRR.BRR calculated from the supplied kernel clock ... and requested baud rate' (a computed write)
 VALUE_REFERENCE = re.compile(r"\bwrit\w*\s+(?:that|this)\s+(?:[\w-]+\s+){0,2}?(?:value|encoding|argument)\b", re.I)
 COMPUTED_FROM = re.compile(r"\b(?:calculated|computed|derived)\s+from\s+(?:the\s+)?(?:supplied|requested|given|configured)\b",
                            re.I)
+
+
+def bit_written(statement: str, field: str, op: str) -> bool:
+    """Learning set 3 (Feature 015 SPI1): 'shall write the requested master value 1 or slave value 0 to
+    SPI_CFG2.MASTER' states both the set (1) and the clear (0) of that one-bit field. Only the clause naming the field."""
+    bit = {"set": 1, "clear": 0}.get(op)
+    f = re.escape(field)
+    return bit is not None and any(re.search(rf"\b{f}\b", c) and re.search(r"\bwrit\w*\b", c, re.I) and bit in _numbers(c)
+                                   for c in re.split(r"[.;](?=\s|$)", statement))
 
 
 def parameterised_write(statement: str, field: str) -> bool:
@@ -535,6 +550,14 @@ def gap_labels(ws: Path) -> list[str]:
     return sorted({c.strip() for c in cells if not c.strip().startswith(("SWR-", "-", ":"))})
 
 
+FIXED_STATE = re.compile(r"\b([A-Z][A-Z0-9]*_[A-Z0-9_]+\.[A-Z][A-Z0-9_]*)\s*(?:=|is|stays|remains)\s*(?:0|1|set|clear|cleared)"
+                         r"(?:\s+throughout\b|\s*,\s*reset state\b|\s+\(reset state\))", re.I)
+
+
+def fixed_state_fields(text: str) -> set[str]:
+    return {m.group(1) for m in FIXED_STATE.finditer(text)}
+
+
 def input_label_pattern(inp: str) -> str:
     """A gaps-table row label that records an upstream input: its name, optionally followed by an explanation in
     parentheses or after a colon. Learning set 2 (2026-10-26): 'Budgets: flash 4096 bytes, ...' (h005) and one row per
@@ -567,6 +590,15 @@ def step_questions(ws: Path, facts: dict) -> list[dict]:
     qs = [{"id": "startup", "item": "SWE1-03", "source": req, "answers": swrs + ["NONE"],
            "text": "Which requirement states the driver's behaviour after reset, before it is initialised or first "
                    "called? answer is its SWR id, or NONE when no requirement states it; quote its words."}]
+    asil = str(json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("safety_target") or "").upper()
+    if asil in ("A", "B", "C", "D"):
+        # learning set 3: the seeded QM scope claim was caught only by the gate's safety-scope check, which knows only
+        # the scopes registered on this factory revision; the inspector now asks this fact itself
+        qs.append({"id": "safety-scope", "item": "SWE1-01", "source": SAFETY_DOC, "asil": asil,
+                   "answers": ["ASIL_TARGET_KEPT", "QM_CLAIMED"],
+                   "text": f"The work order targets ASIL {asil}. Does {SAFETY_DOC} keep that ASIL target (software safety "
+                           "allocation pending or allocated), or claim a QM development scope with no software safety "
+                           "requirements? answer ASIL_TARGET_KEPT or QM_CLAIMED; quote the words that decide."})
     labels = gap_labels(ws)
     for inp in INPUTS:
         qs.append({"id": "input-" + inp.split()[0].lower(), "item": "SWE1-05", "input": inp,
@@ -659,6 +691,20 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
         c["decision"], c["evidence"] = ("REFUTED", f"{hit} states the after-reset state of {f}") if hit else \
             ("STANDS", f"no startup requirement names {f}")
         return [c]
+    if q["id"] == "safety-scope":
+        if a != "QM_CLAIMED":
+            return []
+        from ..assurance.scope import QM_CLAIM
+
+        c = _claim("safety_allocation_missing", "Safety allocation",
+                   f"{SAFETY_DOC} claims a QM development scope in an ASIL {q['asil']} work order: {quote}",
+                   f"keep the ASIL {q['asil']} target in {SAFETY_DOC} (record the pending allocation, not a QM scope)")
+        c["identity"] = identity("SWE1-01", {**c, "target_id": "safety-scope"})
+        doc = Path(ws) / SAFETY_DOC
+        claimed = doc.is_file() and QM_CLAIM.search(doc.read_text())
+        c["decision"], c["evidence"] = ("CONFIRMED", f"{SAFETY_DOC} states a QM scope") if claimed else \
+            ("REFUTED", f"{SAFETY_DOC} states no QM scope")
+        return [c]
     if q["id"].startswith("input-"):
         if a != "NONE" and input_recorded_by(a, q["input"]):
             return []
@@ -678,8 +724,12 @@ def step_claims(ws: Path, q: dict, doc: dict, facts: dict) -> list[dict]:
     # a pulse requirement states both the set and the clear entry it names
     pulse = a == "set_then_clear" and e["op"] in OPPOSITE
     ranged = a == "write" and e["op"] == "write" and in_stated_range(e["statement"], e["value"])
-    agrees = pulse or ranged or a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
-                                                  _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
+    # learning set 3 (SPI1): a one-bit set/clear answered as 'write 1'/'write 0' (or as the requested value)
+    bit = a == "write" and e["op"] in OPPOSITE and (
+        _numbers(doc.get("value") or "") == {1 if e["op"] == "set" else 0}
+        or (not _numbers(doc.get("value") or "") and parameterised_write(e["statement"], e["field"])))
+    agrees = pulse or ranged or bit or a == e["op"] and (a != "write" or bool(_numbers(doc.get("value") or "")) and
+                                                         _numbers(doc.get("value") or "") == _numbers(str(e["value"])))
     return entry_claims("effects", {"entries": [{"entry": e["entry"], "agrees": agrees,
                                                  "reason": f"{e['swr']} states {a} {doc.get('value') or ''}: {quote}"}]},
                         [e], facts)
@@ -837,14 +887,26 @@ def gerund_writes(statement: str) -> set[tuple[str, str]]:
 READ_WORDS = re.compile(r"\b(?:read|quer|return|report|check|observ|poll|wait|leave|keep|preserv|retain)\w*", re.I)
 
 
+WAIT = re.compile(r"^\s*(?:wait|poll)\w*\b", re.I)  # the behaviour is the wait ('HSI enable with ready-flag wait' is not)
+CONFIGURE = re.compile(r"\b(?:configur\w*|select\w*|choos\w*|word length|data width)\b", re.I)
+
+
 def candidates(facts: dict, b: dict) -> list[str]:
     """Requirements naming the behaviour's field (register, for REG.*) and imposing an action of the same kind."""
     f = b["register_field"]
     name = f.split(".")[0] if WILDCARD.match(f) else f
     bare = name.split(".")[-1]
+    if b["action"] in ("set", "clear") and WAIT.search(b["phrase"]):
+        # replay of learning set 1 (rc4 'wait until PVU is cleared', answered as clear): a wait observes the flag the
+        # hardware changes; it is stated where the requirement names the flag as a condition, like any read
+        b = {**b, "action": "read"}
     # run 8: a register write is how a bit is set or cleared ('Enable write access to IWDG_PR' is SWR-003's
     # 'shall write 0x00005555 to IWDG_KR.KEY')
     kind = ACTIONS[b["action"]] + (ACTIONS["write"] if b["action"] in ("set", "clear") else ())
+    # learning set 3 (USART1): 'Configure word length M0' is a configuration write whatever action the answer names, and
+    # a configuration write is stated by a requirement that sets, clears or writes the field ('clear ... M0 ... to 0')
+    if b["action"] in ("write", "set", "clear") and CONFIGURE.search(b["phrase"]):
+        kind = ACTIONS["write"] + ("set", "clear")
     def acts(statement: str) -> bool:
         if b["action"] == "read":  # a read anywhere in the requirement (refuting a read claim can only cost a miss)
             return bool(READ_WORDS.search(NOUN_PHRASE.sub(" ", statement)))
@@ -854,8 +916,15 @@ def candidates(facts: dict, b: dict) -> list[str]:
         return b["action"] in ("write", "set", "clear") and any(
             fld == f and (a == b["action"] or b["action"] == "write" or a == "write") for a, fld in gerund_writes(statement))
 
-    return [x for x, r in sorted(facts["reqs"].items()) if ((name in r["statement"] or re.search(
-        rf"\b{re.escape(bare)}\b", r["statement"])) and acts(r["statement"])) or by_gerund(r["statement"])]
+    def names(statement: str) -> bool:
+        # learning set 3 (SPI1/USART1 S1-OMIT): 'while SPI_CR1.SPE is 0, ... shall write ... to SPI_CFG2.MASTER' names SPE
+        # only as a precondition; a set/clear/write must name the field in what the requirement imposes (after 'shall')
+        text = statement if b["action"] == "read" else statement[statement.lower().find("shall"):] \
+            if "shall" in statement.lower() else statement
+        return name in text or bool(re.search(rf"\b{re.escape(bare)}\b", text))
+
+    return [x for x, r in sorted(facts["reqs"].items()) if (names(r["statement"]) and acts(r["statement"]))
+            or by_gerund(r["statement"])]
 
 
 def _documented_value(b: dict) -> set[int]:
@@ -909,6 +978,8 @@ def behaviour_claims(b: dict, doc: dict, facts: dict) -> list[dict]:
     hit = behaviour_hit(facts, b)
     c["decision"], c["evidence"] = ("REFUTED", f"{hit} states {act} on {f}") if hit else \
         ("STANDS", "no requirement states this behaviour")
+    if not hit and f in facts.get("fixed_state", ()):  # learning set 3 (USART1 FIFOEN): an assumption, not a write
+        c["decision"], c["evidence"] = "REFUTED", f"the baseline records {f} as a fixed state assumption"
     return [c]
 
 

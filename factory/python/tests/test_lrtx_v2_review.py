@@ -388,6 +388,8 @@ def _step_answers(ws, facts, **override):
     for q in RS.step_questions(ws, facts):
         if q["id"] == "startup":
             doc = {"quote": "after reset", "answer": facts["startup"][0]}
+        elif q["id"] == "safety-scope":
+            doc = {"quote": "allocation pending", "answer": "ASIL_TARGET_KEPT"}
         elif q["id"].startswith("input-"):
             doc = {"quote": "| row |", "answer": q["input"]}
         elif q["id"].startswith("budget-"):
@@ -406,7 +408,7 @@ def test_stepwise_fact_answers_become_decided_claims(frozen, monkeypatch):
     facts = RS.baseline_facts(frozen)
     qs = {q["id"]: q for q in RS.step_questions(frozen, facts)}
     assert {"startup", "input-hsi", "input-safety", "input-budgets", "budget-stack"} <= set(qs)
-    assert all(q["answers"][-1] in ("NONE", "not_stated") for q in qs.values())
+    assert all(q["answers"][-1] in ("NONE", "not_stated", "QM_CLAIMED") for q in qs.values())
     assert "Safety allocation" in qs["input-safety"]["answers"]
     good = {k[5:]: v[0] for k, v in _step_answers(frozen, facts).items()}
     assert all(RS.step_claims(frozen, q, good[i], facts) == [] for i, q in qs.items())
@@ -1027,3 +1029,81 @@ def test_learning_set_3_referenced_and_computed_writes_state_every_listed_value(
         assert RS._states_effect({"statement": reqs[swr]["statement"], "field": field, "op": "write", "value": int(value),
                                   "args": []}), field
     assert not RS.parameterised_write(reqs["SWR-012"]["statement"], "SPI_CR1.SPE")
+
+
+def test_learning_set_3_a_one_bit_value_write_states_its_set_and_clear(frozen):
+    """Learning set 3 (Feature 015 SPI1): 'write the requested master value 1 or slave value 0 to SPI_CFG2.MASTER'
+    states both the set and the clear of that bit; a 1 written to another field in the same requirement does not."""
+    s = "When LL_SPI_SetMode is called while SPI_CR1.SPE is 0, the SPI LL driver shall write the requested master value 1 or " \
+        "slave value 0 to SPI_CFG2.MASTER."
+    assert RS.bit_written(s, "SPI_CFG2.MASTER", "set") and RS.bit_written(s, "SPI_CFG2.MASTER", "clear")
+    assert not RS.bit_written("The driver shall write 1 to SPI_CR1.SPE. It shall read SPI_CFG2.MASTER.", "SPI_CFG2.MASTER",
+                              "set")
+    assert RS._states_effect({"statement": s, "field": "SPI_CFG2.MASTER", "op": "set", "value": 1, "args": []})
+
+
+def test_learning_set_3_a_configuration_or_imposed_field_decides_the_candidates(frozen):
+    """Learning set 3 (USART1 'Configure word length M0'; SPI1/USART1 S1-OMIT): a configuration behaviour is stated by a
+    set, clear or write of its field, and a field named only as a precondition (before 'shall') is not imposed."""
+    facts = RS.baseline_facts(frozen)
+    reqs = {"SWR-004": {"statement": "When LL_USART_SetDataWidth is called with 8 bits while USART_CR1.UE is 0, the USART "
+                                     "LL driver shall clear USART_CR1.M0 to 0.", "verification": ""},
+            "SWR-009": {"statement": "When LL_SPI_SetMode is called while SPI_CR1.SPE is 0, the SPI LL driver shall write "
+                                     "the requested mode to SPI_CFG2.MASTER.", "verification": ""}}
+    f = {**facts, "reqs": reqs}
+    m0 = {"phrase": "Configure word length M0", "action": "set", "register_field": "USART_CR1.M0"}
+    assert RS.candidates(f, m0) == ["SWR-004"]
+    spe = {"phrase": "Enable the SPI peripheral", "action": "set", "register_field": "SPI_CR1.SPE"}
+    assert RS.candidates(f, spe) == []
+    assert RS.behaviour_claims(m0, {"quote": "", "answer": "SWR-004"}, f) == []
+
+
+def test_learning_set_3_a_fixed_state_assumption_is_not_an_uncovered_behaviour(frozen):
+    """Learning set 3 (USART1): 'USART_CR1.FIFOEN is 0 throughout verification' records an environment state; a claim
+    that no requirement writes FIFOEN is refuted, while an unrecorded field still stands."""
+    assert RS.fixed_state_fields("USART_CR1.FIFOEN is 0 throughout verification; (USART_CR1.OVER8 = 0, reset state)") \
+        == {"USART_CR1.FIFOEN", "USART_CR1.OVER8"}
+    assert RS.fixed_state_fields("the driver shall set USART_CR1.UE is 1 when enabled") == set()
+    facts = {**RS.baseline_facts(frozen), "reqs": {}, "fixed_state": {"USART_CR1.FIFOEN"}}
+    fifo = {"phrase": "FIFO mode disabled", "action": "clear", "register_field": "USART_CR1.FIFOEN"}
+    got = RS.behaviour_claims(fifo, {"quote": "", "answer": "NONE"}, facts)
+    assert [c["decision"] for c in got] == ["REFUTED"] and "fixed state" in got[0]["evidence"]
+    ue = {"phrase": "Enable the USART", "action": "set", "register_field": "USART_CR1.UE"}
+    assert [c["decision"] for c in RS.behaviour_claims(ue, {"quote": "", "answer": "NONE"}, facts)] == ["STANDS"]
+
+
+def test_learning_set_3_the_safety_scope_is_asked_in_an_asil_work_order_and_decided_on_the_document(frozen):
+    """Learning set 3 (SPI1/USART1 S1-QM): the gate's QM check knows only registered scopes; the inspector asks whether
+    the safety document keeps the ASIL target and confirms a QM answer only when the document states a QM scope."""
+    m = frozen / ".forge-run/manifest.json"
+    man = json.loads(m.read_text())
+    m.write_text(json.dumps({**man, "safety_target": "B"}))
+    facts = RS.baseline_facts(frozen)
+    q = next(q for q in RS.step_questions(frozen, facts) if q["id"] == "safety-scope")
+    assert q["item"] == "SWE1-01" and q["source"] == RS.SAFETY_DOC and q["asil"] == "B"
+    assert RS.step_claims(frozen, q, {"quote": "", "answer": "ASIL_TARGET_KEPT"}, facts) == []
+    doc = frozen / RS.SAFETY_DOC
+    doc.parent.mkdir(parents=True, exist_ok=True)
+    doc.write_text("# Software safety requirements\n\nSafety allocation PENDING for ASIL B.\n")
+    got = RS.step_claims(frozen, q, {"quote": "allocation PENDING", "answer": "QM_CLAIMED"}, facts)
+    assert [c["decision"] for c in got] == ["REFUTED"]
+    doc.write_text("# Software safety requirements\n\nQM development scope: no software safety requirements are "
+                   "allocated.\n")
+    got = RS.step_claims(frozen, q, {"quote": "QM development scope", "answer": "QM_CLAIMED"}, facts)
+    assert [c["decision"] for c in got] == ["CONFIRMED"] and RS.SAFETY_DOC in got[0]["detail"]
+    m.write_text(json.dumps({**man, "safety_target": "QM"}))
+    assert all(q["id"] != "safety-scope" for q in RS.step_questions(frozen, facts))
+
+
+def test_learning_set_3_a_flag_wait_is_stated_where_the_flag_is_a_condition(frozen):
+    """Replay of learning set 1 after the learning-set-3 rules (rc4): 'wait until PVU is cleared', answered as a clear,
+    is stated by SWR-004, which names IWDG_SR.PVU as its condition before 'shall'; a set/clear is not."""
+    facts = RS.baseline_facts(frozen)
+    st = ("When both IWDG_SR.PVU and IWDG_SR.RVU become inactive before the update timeout during HAL_IWDG_Init, the "
+          "IWDG driver shall return HAL_OK after the final refresh by writing 0xAAAA to IWDG_KR.KEY.")
+    f = {**facts, "reqs": {"SWR-004": {"statement": st, "verification": ""}}}
+    wait = {"phrase": "wait until PVU is cleared", "action": "clear", "register_field": "IWDG_SR.PVU"}
+    assert RS.candidates(f, wait) == ["SWR-004"]
+    assert RS.behaviour_claims(wait, {"quote": "", "answer": "NONE"}, f)[0]["decision"] == "REFUTED"
+    assert RS.candidates(f, {**wait, "phrase": "clear the PVU flag"}) == []
+    assert RS.candidates(f, {**wait, "phrase": "PVU clear with update-flag wait"}) == []  # 0008B S1-OMIT stays caught

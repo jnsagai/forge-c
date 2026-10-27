@@ -333,6 +333,12 @@ def _truth(ws: Path, p: dict) -> dict:
             return {"quote": "", "answer": RS.startup_hit(facts, q["field"]) or "NONE"}
         if q["id"].startswith("input-"):
             return {"quote": "", "answer": RS.input_label(q["answers"], q["input"]) or "NONE"}
+        if q["id"] == "safety-scope":
+            from ..assurance.scope import QM_CLAIM
+
+            doc = ws / RS.SAFETY_DOC
+            return {"quote": "", "answer": "QM_CLAIMED" if doc.is_file() and QM_CLAIM.search(doc.read_text())
+                    else "ASIL_TARGET_KEPT"}
         if q["id"].startswith("budget-"):
             b = q["row"]
             hit = next((x for x, r in sorted(facts["reqs"].items()) if re.search(rf"\b{b['resource']}\b", r["statement"],
