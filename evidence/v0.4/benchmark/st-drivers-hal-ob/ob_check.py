@@ -43,6 +43,7 @@ def collect():
         decision = verify(root)
         packages[peripheral] = {
             "key": key, "sha256": package["sha256"], "canonical_hash_ok": facts.canonical_hash(package) == package["sha256"],
+            "package_snapshot": package,
             "inputs": package["inputs"], "approval_code": decision["code"], "approval": decision["approval"],
             "approval_sha256": digest(root / "onboarding/approval.json")
             if (root / "onboarding/approval.json").is_file() else None,
@@ -71,16 +72,21 @@ def collect():
                                       "package_record": read(package_path),
                                       "package_record_sha256": digest(package_path) if package_path.is_file() else None})
         orders.append(entry)
-    return {"schema": "forge-c/st-hal-onboarding-acceptance/0.1", "recorded_at": utc_now(),
+    return {"schema": "forge-c/st-hal-onboarding-acceptance/0.2", "recorded_at": utc_now(),
             "packages": packages, "orders": orders}
 
 
 def check(record, selected=PERIPHERALS):
-    assert record["schema"] == "forge-c/st-hal-onboarding-acceptance/0.1"
+    assert record["schema"] in ("forge-c/st-hal-onboarding-acceptance/0.1", "forge-c/st-hal-onboarding-acceptance/0.2")
+    complete_inputs = record["schema"].endswith("/0.2")
     for peripheral in selected:
         package = record["packages"][peripheral]
         assert package["canonical_hash_ok"] and package["approval_code"] == "APPROVAL_OK", peripheral
         assert package["approval"]["package_sha256"] == package["sha256"], peripheral
+        if complete_inputs:
+            snapshot = package["package_snapshot"]
+            assert facts.canonical_hash(snapshot) == package["sha256"], f"{peripheral}: signed facts snapshot"
+            assert snapshot["inputs"] == package["inputs"], f"{peripheral}: input metadata"
         signed = DECISIONS / package["approval"]["approval_id"] / "approval.json"
         assert digest(signed) == package["approval_sha256"], peripheral
         assert digest(Path(str(signed) + ".sig")) == package["signature_sha256"], peripheral
@@ -88,6 +94,10 @@ def check(record, selected=PERIPHERALS):
         assert signature_valid(signed, package["approval"]["decided_by"], ALLOWED_SIGNERS), peripheral
         origins = package["prompt_origins"]
         assert origins and all(p["from"].startswith(("template:", "owner:scope", "model:")) for p in origins), peripheral
+        if complete_inputs:
+            expected_origins = [{"section": section, "key": name, "from": entry["from"]}
+                                for section, entries in snapshot["texts"].items() for name, entry in entries.items()]
+            assert origins == expected_origins, f"{peripheral}: signed text origins"
         orders = [o for o in record["orders"] if o["peripheral"] == peripheral]
         assert orders, f"{peripheral}: NOT_RUN"
         order = orders[-1]
@@ -103,12 +113,28 @@ def check(record, selected=PERIPHERALS):
         marker = Path(attempt["workspace"]) / ".forge-run/package.json"
         assert digest(marker) == attempt["package_record_sha256"] and read(marker) == outcome, peripheral
         assert all(b["onboarding_sha256"] == package["sha256"] for b in attempt["baselines"]), peripheral
+        if complete_inputs:
+            workspace = Path(attempt["workspace"])
+            manifest = read(workspace / ".forge-run/manifest.json")
+            recorded = {i["path"]: i["sha256"] for i in attempt["inputs"] + attempt["delivered_code"]}
+            for item in package["inputs"]:
+                # Configured dependency headers differ from their raw input templates;
+                # the delivery manifest binds those exact configured bytes below.
+                if item["role"] != "delivered_dependency":
+                    assert recorded.get(item["path"]) == item["sha256"], f"{peripheral}: input binding {item['path']}"
+                    assert digest(workspace / item["path"]) == item["sha256"], f"{peripheral}: signed input bytes"
+            for item in manifest.get("inputs", []) + manifest.get("delivered", []):
+                assert digest(workspace / item["path"]) == item["sha256"], f"{peripheral}: input bytes {item['path']}"
+            for baseline in attempt["baselines"]:
+                assert digest(Path(baseline["path"])) == baseline["sha256"], f"{peripheral}: baseline bytes"
         archive = Path(outcome["archive"])
         assert archive.is_file() and digest(archive) == outcome["archive_sha256"], f"{peripheral}: archive hash"
         # These checks establish bindings, inputs, origin labels and actual terminal outcomes.
         # SC-005 still needs a cited cause review of every gap; do not infer it from READY/BLOCKED alone.
         print(peripheral, outcome["package_status"], "gaps", outcome.get("gap_count"), "archive", outcome["archive_sha256"])
     print("PASS terminal outcomes and approved package bindings; gap-cause/SC-005 review remains separate")
+    if not complete_inputs:
+        print("Historical schema 0.1: input metadata retained; full signed facts and live byte checks require schema 0.2")
 
 
 def main():
