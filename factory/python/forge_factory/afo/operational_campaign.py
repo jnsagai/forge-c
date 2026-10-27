@@ -132,6 +132,8 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         if observer_plan_ref is None:
             raise Refused("OPERATIONAL_COLLECTION_REPORT_PLAN_REQUIRED")
         collection = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref).verify()
+        if collection["history_sha256"] != digest(lines):
+            raise Refused("OPERATIONAL_COLLECTION_REPORT_HISTORY_CHANGED")
     if not samples:
         return {"status": "NOT_RUN", "target_hours": target_hours, "manifest_bound": manifest_bound}
     expected_end = head["wall"] + target_hours * 3600

@@ -149,9 +149,17 @@ class Collector:
             **receipt["sample"],
         }
 
-    def replay(self, sequence, previous_ref):
+    def replay(self, sequence, previous_ref, *, receipt_ref=None):
         path = self.directory(sequence) / "receipt.json"
-        record = O.read_json(path)
+        if receipt_ref is not None:
+            if (not isinstance(receipt_ref, dict) or set(receipt_ref) != {"path", "sha256"}
+                    or receipt_ref.get("path") != str(path)
+                    or not isinstance(receipt_ref.get("sha256"), str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", receipt_ref["sha256"])):
+                raise Refused("OPERATIONAL_COLLECTION_RECEIPT_UNBOUND")
+            record = O.bound_json(receipt_ref, path=path)
+        else:
+            record = O.read_json(path)
         if (
             record.get("schema") != SCHEMA
             or record.get("sequence") != sequence
@@ -283,30 +291,56 @@ class Collector:
             soak._append_locked(self.log, row)
             return row
 
-    def verify(self):
-        """Replay original evidence, including older artifacts; never trust log success flags."""
+    def verify_batches(self):
+        """Replay every original capture in finite, single-sample batches.
+
+        A live generator retains its verified prefix only in process memory. It
+        accepts no starting cursor or external success receipt; a new invocation
+        starts at zero. Partial yields cannot authorize a campaign verdict.
+        The soak lock is released between reads so collection can keep appending.
+        Completion rechecks the original log prefix under the writer lock.
+        """
         with soak.locked(self.log):
             rows = self.history()
-            previous_ref = None
-            budget = O.MAX_TRACE_BYTES
-            observations = []
-            for sequence, row in enumerate(rows[1:]):
-                # Bound total verification work before parsing each source again.
-                directory = self.directory(sequence)
-                for name in ("receipt.json", "host-attempt.json", "host.json", "observation-attempt.json", "observation.json"):
-                    p = directory / name
-                    if p.exists():
-                        budget -= len(O.read_bytes(p, min(O.MAX_BYTES, max(0, budget))))
-                record = self.replay(sequence, previous_ref)
-                expected = {**self._sample(record), "collection_ref": reference(directory / "receipt.json")}
-                if row != expected:
-                    raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
-                observations.append(O.bound_json(record["observation_attempt_ref"])["artifact_ref"])
-                previous_ref = row["collection_ref"]
-            return {
-                "status": "SOURCE_REPLAY_PASS",
-                "samples": len(rows) - 1,
-                "unexpected_interventions": None,
-                "host_coverage": "SEPARATE_INDEPENDENT_VERIFICATION_REQUIRED",
-                "observation_refs": observations,
-            }
+        if len(rows) - 1 > self.config["max_samples"]:
+            raise Refused("OPERATIONAL_COLLECTION_HISTORY_ALLOWANCE_EXCEEDED")
+        previous_ref, observations, total_bytes = None, [], 0
+        for sequence, row in enumerate(rows[1:]):
+            # Five individually bounded files fit one batch. Repeated semantic
+            # reads also remain individually bounded; this counts source bytes,
+            # not physical I/O or a model/mission expenditure estimate.
+            directory, source_bytes = self.directory(sequence), 0
+            for name in ("receipt.json", "host-attempt.json", "host.json", "observation-attempt.json", "observation.json"):
+                p = directory / name
+                if p.exists():
+                    source_bytes += len(O.read_bytes(p))
+            if source_bytes > O.MAX_TRACE_BYTES:
+                raise Refused("OPERATIONAL_COLLECTION_BATCH_BYTE_BOUND_EXCEEDED")
+            record = self.replay(sequence, previous_ref, receipt_ref=row["collection_ref"])
+            if row != {**self._sample(record), "collection_ref": row["collection_ref"]}:
+                raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+            observations.append(O.bound_json(record["observation_attempt_ref"])["artifact_ref"])
+            previous_ref = row["collection_ref"]
+            total_bytes += source_bytes
+            yield {"status": "SOURCE_REPLAY_PARTIAL", "samples": sequence + 1,
+                   "sample_allowance": self.config["max_samples"], "batch_source_bytes": source_bytes,
+                   "source_bytes": total_bytes, "unexpected_interventions": None}
+        with soak.locked(self.log):
+            # A new sample may append while verification yields. Rewrites,
+            # truncation and rebindings of the checked prefix still refuse.
+            if self.history()[:len(rows)] != rows:
+                raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+        yield {"status": "SOURCE_REPLAY_PASS", "samples": len(rows) - 1,
+               "history_sha256": digest(rows), "source_bytes": total_bytes,
+               "unexpected_interventions": None,
+               "host_coverage": "SEPARATE_INDEPENDENT_VERIFICATION_REQUIRED",
+               "observation_refs": observations}
+
+    def verify(self):
+        """Consume all batches; only a fully replayed prefix produces success."""
+        result = None
+        for batch in self.verify_batches():
+            result = batch
+        if result is None or result.get("status") != "SOURCE_REPLAY_PASS":
+            raise Refused("OPERATIONAL_COLLECTION_REPLAY_INCOMPLETE")
+        return result
