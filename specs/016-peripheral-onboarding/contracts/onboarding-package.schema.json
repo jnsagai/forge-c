@@ -1,0 +1,461 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/onboarding-package/0.1",
+  "title": "Feature 016 onboarding package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "work_order",
+    "inputs",
+    "factory_revision",
+    "driver_style",
+    "facts",
+    "authored",
+    "assumptions",
+    "gaps",
+    "profile",
+    "texts",
+    "status",
+    "sha256",
+    "created_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/onboarding-package/0.1"
+    },
+    "work_order": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "role",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "factory_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "driver_style": {
+      "enum": [
+        "LL",
+        "HAL_ON_LL",
+        "HAL_STANDALONE"
+      ]
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fact"
+      }
+    },
+    "authored": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assumption"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gap"
+      }
+    },
+    "profile": {
+      "type": "object",
+      "description": "derived profile, validated separately against specs/009 peripheral-profile.schema.json",
+      "required": [
+        "derived_from"
+      ]
+    },
+    "texts": {
+      "type": "object",
+      "description": "generated prompt keys; each value is {text, from} with from = template:<id> or authored:<item id>",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": [
+            "text",
+            "from"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "from": {
+              "type": "string",
+              "pattern": "^(template|authored):"
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "READY_FOR_OWNER",
+        "BLOCKED"
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "file",
+            "doc",
+            "log",
+            "workorder"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "value": {}
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "status",
+        "method",
+        "sources"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "instance",
+            "base_address",
+            "mm_page",
+            "register_prefix",
+            "register_index",
+            "driver_style",
+            "function_prefix",
+            "headers",
+            "time_base",
+            "timeout_constants",
+            "waits",
+            "undelivered_externals",
+            "instance_comparisons",
+            "host_instance",
+            "file_map",
+            "framework_modules"
+          ]
+        },
+        "value": {},
+        "status": {
+          "enum": [
+            "DERIVED",
+            "NOT_DERIVED",
+            "CONFLICT"
+          ]
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "owner_question": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DERIVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sources": {
+                "minItems": 1
+              },
+              "value": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "CONFLICT"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "owner_question"
+            ],
+            "properties": {
+              "sources": {
+                "minItems": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NOT_DERIVED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "owner_question"
+            ],
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "path",
+        "attempts",
+        "gate",
+        "inspection",
+        "limits",
+        "status",
+        "reused"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(model|text:[a-z_]+)$"
+        },
+        "role": {
+          "enum": [
+            "onboard-model-author",
+            "onboard-text-author"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^onboarding/"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "gate": {
+          "type": "object",
+          "required": [
+            "verdict",
+            "findings"
+          ],
+          "properties": {
+            "verdict": {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tool": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "invocation_id": {
+              "type": "string"
+            }
+          }
+        },
+        "inspection": {
+          "type": "object",
+          "required": [
+            "verdict",
+            "findings"
+          ],
+          "properties": {
+            "verdict": {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "inspector_role": {
+              "enum": [
+                "onboard-model-inspector",
+                "onboard-text-inspector"
+              ]
+            }
+          }
+        },
+        "limits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "ACCEPTED",
+            "GAP"
+          ]
+        },
+        "reused": {
+          "type": "boolean"
+        }
+      }
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "symbol",
+        "reason",
+        "affects"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ASM-[A-Z0-9-]+$"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "affects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "proposed_value": {},
+        "proposed_source": {
+          "$ref": "#/$defs/source"
+        },
+        "confirmed_value": {}
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ref",
+        "effect",
+        "blocks_approval"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^GAP-OB-[0-9]{3}$"
+        },
+        "kind": {
+          "enum": [
+            "NOT_DERIVED",
+            "CONFLICT",
+            "AUTHORED_ITEM_FAILED",
+            "MISSING_INPUT",
+            "ASSUMPTION_UNCONFIRMED"
+          ]
+        },
+        "ref": {
+          "type": "string"
+        },
+        "effect": {
+          "type": "string"
+        },
+        "blocks_approval": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
