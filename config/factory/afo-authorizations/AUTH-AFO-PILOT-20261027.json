@@ -1,0 +1,35 @@
+{
+ "schema_version": "1.0",
+ "authorization_id": "AUTH-AFO-PILOT-20261027",
+ "approver": "jnsagai",
+ "approval_evidence_ref": "owner 2026-10-27: \"do the same work done for LL, do it now for HAL\" (the five ST HAL driver classes added; models, actions, mode, recovery-planner policy and expiry unchanged from AUTH-AFO-PILOT-20261026)",
+ "issued_utc": "2026-10-27T00:00:00Z",
+ "expires_utc": "2026-11-24T00:00:00Z",
+ "policy_sha256": "364259f2bed727da3dceae78f3000d9f41261bafece11a4cc56ed0389b488fc1",
+ "mode": "PILOT",
+ "allowed_actions": [
+  "submit_workorder",
+  "launch_workorder",
+  "recover_workorder"
+ ],
+ "scope": {
+  "driver_classes": [
+   "STM32N6_CRC_LL_ST",
+   "STM32N6_SPI_LL_ST",
+   "STM32N6_USART_LL_ST",
+   "STM32N6_GPIO_LL_ST",
+   "STM32N6_TIM_LL_ST",
+   "STM32N6_CRC_HAL_ST",
+   "STM32N6_SPI_HAL_ST",
+   "STM32N6_USART_HAL_ST",
+   "STM32N6_GPIO_HAL_ST",
+   "STM32N6_TIM_HAL_ST"
+  ],
+  "models": [
+   "codex-claude"
+  ]
+ },
+ "signature_ref": "AUTH-AFO-PILOT-20261027.sig",
+ "revoked_utc": null,
+ "signed_runbook_ref": null
+}
