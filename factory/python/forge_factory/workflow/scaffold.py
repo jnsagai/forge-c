@@ -128,6 +128,14 @@ def scaffold(ws: Path) -> dict:
         if hal_standalone(ws) and profile(ws)["hal"].get("time_base"):  # F015 ST HAL: HAL_GetTick is defined in
             # stm32n6xx_hal.c, which is not delivered: the deterministic host time base, restarted by ut_reset_regs()
             text = _time_base(text, ws).replace("    (void)memset(", "    ut_tick = 0U;\n    (void)memset(", 1)
+        cs = profile(ws)["hal"].get("clock_stub") if hal_standalone(ws) else None
+        if cs:  # F015 ST HAL: the kernel clock the delivered HAL asks the (not delivered) RCC HAL for - fixed, recorded
+            name = cs["prototype"].split("(")[0].split()[-1]
+            args = [a.split()[-1] for a in cs["prototype"].split("(", 1)[1].rstrip(")").split(",") if a.strip()]
+            text = text.replace("static int failures = 0;\n", "static int failures = 0;\n/* kernel clock of the "
+                                "peripheral (RCC HAL not delivered): fixed by the test environment */\n"
+                                f"{cs['prototype']};\n{cs['prototype']}\n{{\n" +
+                                "".join(f"    (void){a};\n" for a in args) + f"    return {cs['hz']}U;\n}}\n", 1)
         p.write_text(text, encoding="utf-8")
         return {"status": "PASS", "created": True, "file": UNIT_TEST, "host_device": True}
     if hal_unit_isolation(ws):  # CAPA-038: generated LL test double + harness that uses it

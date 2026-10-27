@@ -26,6 +26,7 @@ hal:
   header: stm32n6xx_hal_gpio.h
   source: stm32n6xx_hal_gpio.c
   function_prefix: HAL_GPIO_
+  host_instance: GPIOA
 sim:
   model: gpio_model.py
   platform: stm32n6_gpio.repl

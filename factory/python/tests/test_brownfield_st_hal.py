@@ -175,3 +175,39 @@ def test_st_hal_prompts_describe_the_delivered_handle_api(tmp_path, monkeypatch)
     build("WO-X", goal="x", sections={}, layer="HAL", trace=True, brownfield="FROZEN", peripheral="crc",
           delivery_style="cmsis", hal_standalone=False)
     assert "CRC_HandleTypeDef" not in P.author_prompt("SWE.2")                      # factory HAL texts unchanged
+
+
+def _manifest_ws(tmp_path, peripheral, standalone=True):
+    import json
+
+    (tmp_path / ".forge-run").mkdir(parents=True)
+    (tmp_path / ".forge-run/manifest.json").write_text(json.dumps(
+        {"layer": "HAL", "hal_standalone": standalone, "peripheral": peripheral}))
+    return tmp_path
+
+
+def test_host_tests_map_the_concrete_instance_the_st_hal_compares_against(tmp_path):
+    """ST UART_SetConfig compares huart->Instance with USART1 (UART_GETCLOCKSOURCE): on the host USART1 must be the
+    RAM struct too, or the HAL dereferences the device address (host test exit-11)."""
+    from forge_factory.brownfield import cmsis
+
+    h = cmsis.host_header(_manifest_ws(tmp_path, "usart"))
+    assert "#define USART (&forge_host_usart)" in h and "#define USART1 (&forge_host_usart)" in h
+    crc = cmsis.host_header(_manifest_ws(tmp_path / "c", "crc"))                     # instance == prefix: once
+    assert crc.count("#define CRC (&forge_host_crc)") == 1
+
+
+def test_standalone_hal_views_need_no_ll_component_and_no_timeout_path_without_waits(tmp_path):
+    from forge_factory.inspection import views
+    from forge_factory.layer import components
+
+    crc, usart = _manifest_ws(tmp_path / "c", "crc"), _manifest_ws(tmp_path / "u", "usart")
+    assert components("HAL", crc) == ("stm32n6xx_hal_crc",)
+    assert components("HAL", _manifest_ws(tmp_path / "f", "crc", standalone=False)) == ("stm32n6xx_hal_crc",
+                                                                                         "stm32n6xx_ll_crc")
+    for ws, comp in ((crc, "stm32n6xx_hal_crc"), (usart, "stm32n6xx_hal_uart")):
+        (ws / "workproducts/SWE.2").mkdir(parents=True)
+        (ws / views.STATIC).write_text(f'@startuml\ncomponent "{comp}" as SWC_HAL\n@enduml\n')
+        (ws / views.DYNAMIC).write_text("@startuml\nparticipant Caller\nCaller -> SWC_HAL : HAL_OK\n@enduml\n")
+    assert not [f for f in views.check_views(crc)["major_findings"] if "MISSING_COMPONENT" in f or "TIMEOUT" in f]
+    assert "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH" in views.check_views(usart)["major_findings"]  # UART waits (HAL_GetTick)

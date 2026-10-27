@@ -42,7 +42,7 @@ SIM_DIR = REPO_ROOT / "factory" / "sim" / "stm32n6"
 MAILBOX = 0x341F0000
 MAGIC = 0xF0C6E5A1
 CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", "-ffreestanding", "-nostdlib",
-          "-Wall", "-Wextra"]
+          "-Wall", "-Wextra", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections"]  # F015-T065: see tests.py
 
 
 def renode_bin() -> str | None:
@@ -70,7 +70,8 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
 
     incs += target_flags(ws)  # feature 008 (ST pilot): vendor includes, defines, -mcmse (RCC_S at the secure base)
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
-                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
+                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf), "-lgcc"], elf.parent, 180,
+                 {"arm-none-eabi-gcc"})  # -lgcc: compiler runtime helpers (ST UART_SetConfig: 64-bit __aeabi_uldivmod)
     lines = b.stderr.decode(errors="replace").splitlines()
     # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
     errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines

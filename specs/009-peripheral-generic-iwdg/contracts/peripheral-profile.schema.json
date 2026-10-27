@@ -129,6 +129,30 @@
           "type": "string",
           "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
           "description": "external millisecond time base the HAL's waits are bounded by (e.g. HAL_GetTick); none = iteration-bounded waits (RCC)"
+        },
+        "clock_stub": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "prototype",
+            "hz"
+          ],
+          "description": "Feature 015 (ST HAL): a kernel-clock function the delivered HAL calls but that is not delivered (e.g. ST UART_SetConfig -> HAL_RCCEx_GetPeriphCLKFreq); host and target tests define it returning hz",
+          "properties": {
+            "prototype": {
+              "type": "string",
+              "pattern": "^uint32_t [A-Za-z_][A-Za-z0-9_]*\\(.*\\)$"
+            },
+            "hz": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "host_instance": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "description": "Feature 015 (ST HAL): the concrete device instance (e.g. USART1) the delivered HAL compares its handle's Instance against; host tests map it to the host RAM struct of the peripheral"
         }
       }
     },

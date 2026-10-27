@@ -117,6 +117,8 @@ def api_prefix(layer: str, ws: Path | None = None) -> str:
 def components(layer: str, ws: Path | None = None) -> tuple[str, ...]:
     p = profile(ws)
     ll, hal = Path(p["ll"]["header"]).stem, Path(p["hal"]["header"]).stem
+    if layer != "LL" and ws is not None and hal_standalone(ws):  # F015: ST's classic HAL, no LL component
+        return (hal,)
     return (ll,) if layer == "LL" else (hal, ll)
 
 
