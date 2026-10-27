@@ -168,7 +168,8 @@ def test_every_role_needs_a_measured_objective_never_an_assumed_size():
 
 
 def test_operational_campaign_cannot_pass_idle_duration_without_faults_and_later_intake(tmp_path, monkeypatch):
-    from forge_factory.afo import soak, operational_campaign as O
+    from forge_factory.afo import operational_campaign as O
+    from forge_factory.afo import soak
 
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     m = Q.freeze("operation-24", tmp_path / "manifest.json", identity=identity(), model_profile="qwen-fixture")
@@ -288,3 +289,40 @@ def test_a_stage_without_its_authored_catalogue_refuses_to_freeze(tmp_path, monk
     monkeypatch.setitem(Q.CATALOGUES, "targeted", "factory/qualification/014/absent-targeted-cases.json")
     with pytest.raises(Refused, match="STAGE_CATALOGUE_NOT_AUTHORED"):
         Q.freeze("targeted", tmp_path / "t.json", identity=identity())
+
+
+@pytest.mark.parametrize("change", ["empty", "missing", "duplicate", "unknown"])
+def test_operational_gate_cannot_drop_required_fault_classes(tmp_path, change):
+    m = Q.freeze("operation-24", tmp_path / "manifest.json", identity=identity())
+    if change == "empty":
+        m["faults"] = []
+    elif change == "missing":
+        m["faults"].remove("reboot")
+    elif change == "duplicate":
+        m["faults"][-1] = m["faults"][0]
+    else:
+        m["faults"][-1] = "invented-favorable-case"
+    with pytest.raises(Refused, match="OPERATIONAL_FAULT_CATALOGUE_CHANGED"):
+        Q.validate(m)
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("restore_seconds", 0),
+        ("restore_seconds", float("inf")),
+        ("restore_seconds", float("nan")),
+        ("restore_seconds", True),
+        ("restore_seconds", "unbounded"),
+        ("inference_requests", 2),
+        ("verification_workers", 2),
+        ("batch_items", 33),
+        ("batch_items", 1.5),
+        ("post_campaign_seconds", 1),
+    ],
+)
+def test_operational_campaign_bounds_are_finite_and_preserve_existing_resources(tmp_path, key, value):
+    m = Q.freeze("operation-24", tmp_path / "manifest.json", identity=identity())
+    m["bounds"][key] = value
+    with pytest.raises(Refused, match="OPERATIONAL_"):
+        Q.validate(m)

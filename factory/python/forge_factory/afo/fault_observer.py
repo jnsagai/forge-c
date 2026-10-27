@@ -8,6 +8,7 @@ artifacts belong to the existing qualification evidence tree, not another databa
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -34,10 +35,11 @@ FIELDS = {
     "afo_execution_liveness": ("job_id", "launch_nonce", "native_run_ids", "resource_lease", "execution_liveness"),
 }
 MAX_BYTES = 16 * 1024 * 1024
+MAX_TRACE_BYTES = 128 * 1024 * 1024
 
 
-def read_json(path, limit=MAX_BYTES):
-    # Never wait on a FIFO or follow a final-component symlink when state is damaged.
+def read_bytes(path, limit=MAX_BYTES):
+    # Single regular-file read supplies BOTH parsing and the reference digest.
     import stat
 
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
@@ -45,21 +47,35 @@ def read_json(path, limit=MAX_BYTES):
         mode = os.fstat(f.fileno())
         if not stat.S_ISREG(mode.st_mode) or mode.st_size > limit:
             raise Refused("OBSERVER_ARTIFACT_NOT_BOUNDED_REGULAR_FILE")
-        return strict_json(f.read(limit + 1), limit)
+        raw = f.read(limit + 1)
+        if len(raw) > limit:
+            raise Refused("OBSERVER_ARTIFACT_NOT_BOUNDED_REGULAR_FILE")
+        return raw
+
+
+def read_json(path, limit=MAX_BYTES):
+    return strict_json(read_bytes(path, limit), limit)
+
+
+def bound_json(ref, *, path=None):
+    raw = read_bytes(path or ref["path"])
+    if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
+        raise Refused("OBSERVER_ARTIFACT_HASH_CHANGED")
+    return strict_json(raw, MAX_BYTES)
 
 
 def plan(manifest, ref):
     qualification.validate(manifest)
     if not manifest["stage"].startswith("operation-") or ref not in manifest["inputs"]:
         raise Refused("OBSERVER_PLAN_NOT_FROZEN")
-    p = Path(ref["path"])
-    d = read_json(p)
-    if sha256_file(p) != ref["sha256"]:
-        raise Refused("OBSERVER_PLAN_CHANGED")
+    d = bound_json(ref)
+    from . import operational_facts
+
     if (
         d.get("schema") != "forge-c/operational-observer-plan/1"
         or not re.fullmatch(r"[A-Za-z0-9_.@-]+\.service", d.get("unit", ""))
         or d.get("observer_source_sha256") != sha256_file(Path(__file__))
+        or d.get("fact_evaluator_sha256") != sha256_file(Path(operational_facts.__file__))
         or type(d.get("max_rows")) is not int
         or not 1 <= d["max_rows"] <= 10000
         or not all(
@@ -111,24 +127,86 @@ def ledger(path, limit):
         raise Refused("OBSERVER_DATABASE_UNAVAILABLE")
     with closing(sqlite3.connect(p.resolve().as_uri() + "?mode=ro", uri=True, timeout=2)) as c:
         c.row_factory = sqlite3.Row
+        c.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_BYTES)
+        budget = MAX_BYTES
+
+        def take(sql, params=()):
+            nonlocal budget
+            rows = []
+            for row in c.execute(sql, params):
+                budget -= sum(
+                    len(value.encode("utf-8")) if isinstance(value, str) else len(value) if isinstance(value, bytes) else 32
+                    for value in row
+                )
+                if budget < 0:
+                    raise Refused("OBSERVER_LEDGER_BYTE_BOUND_EXCEEDED")
+                rows.append(row)
+            return rows
+
+        def project(raw, fields):
+            record = strict_json(raw, MAX_BYTES)
+            if not isinstance(record, dict):
+                raise Refused("OBSERVER_LEDGER_RECORD_INVALID")
+            if "charge" in fields and (type(record.get("charge")) is not int or record["charge"] < 0):
+                raise Refused("OBSERVER_LEDGER_ACCOUNTING_INVALID")
+            if "limits" in fields:
+                from .mission_ledger import validate_limits
+
+                validate_limits(record.get("limits"))
+            if "execution_liveness" in fields:
+                from .durable import validate
+
+                validate("execution-lifecycle", record)
+            return {k: record.get(k) for k in fields}
+
         c.execute("PRAGMA query_only=ON")
         c.execute("BEGIN")
         result = {}
         for table, fields in FIELDS.items():
-            rows = c.execute("SELECT record FROM " + table + " LIMIT ?", (limit + 1,)).fetchall()  # noqa: S608
+            rows = take("SELECT record FROM " + table + " LIMIT ?", (limit + 1,))  # noqa: S608
             if len(rows) > limit:
                 raise Refused("OBSERVER_LEDGER_ROW_BOUND_EXCEEDED")
-            result[table] = [{k: row.get(k) for k in fields} for row in (strict_json(r[0], MAX_BYTES) for r in rows)]
-        orders = c.execute(
-            "SELECT order_id,state,authorization_id FROM afo_work_orders ORDER BY order_id LIMIT ?", (limit + 1,)
-        ).fetchall()
-        commands = c.execute(
+            result[table] = [project(r[0], fields) for r in rows]
+        orders = take(
+            "SELECT order_id,state,authorization_id,created_epoch,terminal_reason,envelope FROM afo_work_orders "
+            "ORDER BY order_id LIMIT ?",
+            (limit + 1,),
+        )
+        attempts = take("SELECT record FROM afo_attempts ORDER BY attempt_id LIMIT ?", (limit + 1,))
+        controls = take("SELECT key,value FROM afo_control WHERE key IN ('paused','draining')")
+        commands = take(
             "SELECT command_id,kind,idempotency_key,ack_ref FROM afo_commands_outbox ORDER BY command_id LIMIT ?", (limit + 1,)
-        ).fetchall()
-        actions = c.execute("SELECT seq,action FROM afo_operator_actions ORDER BY seq LIMIT ?", (limit + 1,)).fetchall()
-        if max(len(orders), len(commands), len(actions)) > limit:
+        )
+        actions = take("SELECT seq,action FROM afo_operator_actions ORDER BY seq LIMIT ?", (limit + 1,))
+        if max(len(orders), len(commands), len(actions), len(attempts)) > limit:
             raise Refused("OBSERVER_LEDGER_ROW_BOUND_EXCEEDED")
-        result.update(orders=[dict(r) for r in orders], commands=[dict(r) for r in commands], actions=[dict(r) for r in actions])
+        from . import contracts
+
+        clean_orders = []
+        for r in orders:
+            row = dict(r)
+            if row["state"] not in contracts.fsm()["order_states"]:
+                raise Refused("OBSERVER_QUEUE_STATE_INVALID")
+            envelope = row.pop("envelope")
+            try:
+                row["envelope_valid"] = not contracts.errors("work-order", strict_json(envelope, 65536))
+            except (ValueError, TypeError):
+                row["envelope_valid"] = False
+            # The untrusted/private envelope itself never leaves the database.
+            clean_orders.append(row)
+        result.update(
+            orders=clean_orders,
+            commands=[dict(r) for r in commands],
+            actions=[dict(r) for r in actions],
+            controls={r["key"]: r["value"] for r in controls},
+            attempts=[
+                project(
+                    r[0],
+                    ("attempt_id", "attempt_seq", "order_id", "state", "fabro_run_id", "exit_status", "terminal_package_status"),
+                )
+                for r in attempts
+            ],
+        )
         return result
 
 
@@ -180,9 +258,38 @@ def health(frozen, bound):
 
 def _intent(path):
     record = read_json(path, 65536)
-    if record.get("mode") not in ("RUNNING", "PAUSED", "DRAINING", "STOPPED") or type(record.get("epoch")) is not int:
+    if (
+        record.get("mode") not in ("RUNNING", "PAUSED", "DRAINING", "STOPPED")
+        or type(record.get("epoch")) is not int
+        or record["epoch"] < 0
+    ):
         raise Refused("OBSERVER_OPERATIONS_INTENT_UNKNOWN")
-    return {k: record[k] for k in ("mode", "epoch")}
+    return {k: record.get(k) for k in ("mode", "epoch", "effective_stop")}
+
+
+def heartbeat(path):
+    record = read_json(path, 65536)
+    if (
+        any(type(record.get(k)) is not int or record[k] < 0 for k in ("pid", "cycle"))
+        or type(record.get("epoch")) not in (int, float)
+        or not math.isfinite(record["epoch"])
+    ):
+        raise Refused("OBSERVER_HEARTBEAT_INVALID")
+    return {k: record.get(k) for k in ("pid", "cycle", "epoch", "mode", "ok")}
+
+
+def independent(sample):
+    unit = sample.get("unit") or {}
+    own = sample.get("observer_cgroups")
+    pid = unit.get("MainPID")
+    if not own or not isinstance(pid, str) or not pid.isdecimal() or pid == str(sample["observer_pid"]):
+        return False
+    group = unit.get("ControlGroup")
+    if group:
+        return all(g != group and not g.startswith(group + "/") for g in own)
+    # systemd legitimately releases an empty stopped cgroup. Unknown/missing unit
+    # properties are different from the explicit inactive/failed + PID 0 state.
+    return pid == "0" and unit.get("ActiveState") in ("inactive", "failed") and unit.get("SubState") in ("dead", "failed")
 
 
 def capture(manifest, plan_ref, destination):
@@ -206,6 +313,7 @@ def capture(manifest, plan_ref, destination):
         "intent": lambda: _intent(frozen["intent"]),
         "unit": lambda: unit_status(frozen["unit"]),
         "health": lambda: health(frozen, manifest["bounds"]["control_cycle_seconds"]),
+        "heartbeat": lambda: heartbeat(frozen["heartbeat"]),
         "free_bytes": lambda: os.statvfs(frozen["data_root"]).f_bavail * os.statvfs(frozen["data_root"]).f_frsize,
         "observer_cgroups": lambda: [s.split(":", 2)[-1] for s in Path("/proc/self/cgroup").read_text().splitlines()],
     }
@@ -216,14 +324,16 @@ def capture(manifest, plan_ref, destination):
             # No exception messages (which can contain private data), no artificial healthy defaults.
             out[name] = None
             out["errors"][name] = getattr(exc, "code", type(exc).__name__)
-    unit = out.get("unit") or {}
-    cgroup = unit.get("ControlGroup")
-    out["independent_process"] = bool(
-        cgroup
-        and unit.get("MainPID") != str(os.getpid())
-        and out.get("observer_cgroups")
-        and all(g != cgroup and not g.startswith(cgroup + "/") for g in out["observer_cgroups"])
-    )
+    if out.get("health") is not None:
+        hb, unit = out.get("heartbeat") or {}, out.get("unit") or {}
+        out["health"]["conductor"] = (
+            out["health"].get("conductor") is True
+            and unit.get("ActiveState") == "active"
+            and str(hb.get("pid")) == unit.get("MainPID")
+            and unit.get("MainPID") != "0"
+        )
+    out["independent_process"] = independent(out)
+    out["completed_wall"] = time.time()
     out["capture_seconds"] = time.monotonic() - started
     out["complete"] = (
         not out["errors"] and out["independent_process"] and out["capture_seconds"] <= manifest["bounds"]["control_cycle_seconds"]
@@ -291,15 +401,19 @@ def load_samples(manifest, plan_ref, refs):
     rows = []
     if not 2 <= len(refs) <= 50000:
         raise Refused("OBSERVER_SAMPLE_COUNT_INVALID")
+    byte_budget = MAX_TRACE_BYTES
     for ref in refs:
         p = artifact(frozen, ref["path"])
-        row = read_json(p)
-        if (
-            sha256_file(p) != ref["sha256"]
-            or row.get("schema") != SCHEMA
-            or row.get("manifest_sha256") != digest(manifest)
-            or row.get("plan_ref") != plan_ref
-        ):
+        if byte_budget <= 0:
+            raise Refused("OBSERVER_TRACE_BYTE_BOUND_EXCEEDED")
+        raw = read_bytes(p, min(MAX_BYTES, byte_budget))
+        byte_budget -= len(raw)
+        if byte_budget < 0:
+            raise Refused("OBSERVER_TRACE_BYTE_BOUND_EXCEEDED")
+        if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
+            raise Refused("OBSERVER_SAMPLE_UNBOUND")
+        row = strict_json(raw, MAX_BYTES)
+        if row.get("schema") != SCHEMA or row.get("manifest_sha256") != digest(manifest) or row.get("plan_ref") != plan_ref:
             raise Refused("OBSERVER_SAMPLE_UNBOUND")
         if any(type(row.get(k)) not in (float, int) or not math.isfinite(row[k]) for k in ("wall", "mono")):
             raise Refused("OBSERVER_SAMPLE_CLOCK_INVALID")
@@ -317,15 +431,18 @@ def load_samples(manifest, plan_ref, refs):
 def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
     """Correlate objective signal-fault restoration; no hand-entered success flags."""
     frozen = plan(manifest, plan_ref)
-    receipt = read_json(artifact(frozen, injection_ref["path"]))
-    if sha256_file(Path(injection_ref["path"])) != injection_ref["sha256"] or receipt.get("manifest_sha256") != digest(manifest):
+    receipt = bound_json(injection_ref, path=artifact(frozen, injection_ref["path"]))
+    if receipt.get("manifest_sha256") != digest(manifest):
         raise Refused("OBSERVER_FAULT_RECEIPT_UNBOUND")
     fault = receipt.get("fault")
     if fault not in manifest["faults"]:
         raise Refused("OBSERVER_FAULT_NOT_FROZEN")
     rows = load_samples(manifest, plan_ref, sample_refs)
+    if type(receipt.get("at")) not in (int, float) or not math.isfinite(receipt["at"]):
+        raise Refused("OBSERVER_FAULT_CLOCK_INVALID")
     before = [s for s in rows if s["wall"] <= receipt["at"]]
     after = [s for s in rows if s["wall"] > receipt["at"]]
+    from . import operational_facts
     from .operational_campaign import SIGNALS
 
     exposure = bool(
@@ -355,15 +472,27 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
         (
             s
             for s in affected
-            if s.get("complete")
-            and set(s.get("health") or {}) == {"conductor", "fabro", "gateway", "data_volume"}
-            and all(value is True for value in s["health"].values())
+            if operational_facts.healthy(s, manifest["bounds"]["control_cycle_seconds"])
             and s.get("intent") == before[-1]["intent"]
             and s["unit"]["ActiveState"] == "active"
             and s["unit"]["MainPID"] != before[-1]["unit"]["MainPID"]
         ),
         None,
     )
+    if fault not in SIGNALS:
+        fixture_ref = receipt.get("fixture_ref")
+        if (
+            receipt.get("schema") != "forge-c/operational-exposure/1"
+            or receipt.get("unit") != frozen["unit"]
+            or not rows
+            or receipt.get("host") != rows[0]["host"]
+            or not isinstance(fixture_ref, dict)
+            or fixture_ref not in manifest["inputs"]
+        ):
+            raise Refused("OBSERVER_EXTERNAL_EXPOSURE_NOT_FROZEN")
+        fixture = bound_json(fixture_ref)
+        parameters = operational_facts.validate_fixture(fixture, fault, plan_ref, frozen["unit"])
+        exposure, restored = operational_facts.external(manifest, fault, parameters, receipt, rows)
     gaps = any(
         b["wall"] - a["wall"] > manifest["bounds"]["probe_gap_seconds"]
         or (a["boot_id"] == b["boot_id"] and abs((b["wall"] - a["wall"]) - (b["mono"] - a["mono"])) > soak.CLOCK_SKEW_S)
@@ -380,14 +509,17 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination):
         "sample_refs": sample_refs,
         "fault_exposed": exposure,
         "independently_restored": bool(exposure and restored and not gaps),
-        "restoration_seconds": restored["wall"] - receipt["at"] if restored and exposure else None,
+        "restoration_seconds": (0 if fault == "post-campaign-continuity" else restored["wall"] - receipt["at"])
+        if restored and exposure
+        else None,
+        "observation_seconds": rows[-1]["wall"] - rows[0]["wall"],
         "observation_gaps": gaps,
         **facts,
         "status": "OBSERVED_REQUIRES_HOST_AUDIT" if exposure and restored and not gaps else "INCOMPLETE",
         "limitations": [
             "HOST_INTERVENTION_AUDIT_REQUIRED",
             *(["INDEPENDENT_READY_ORACLE_REQUIRED"] if facts["false_ready"] is None else []),
-            *(["EXTERNAL_FAULT_EXPOSURE_FIXTURE_REQUIRED"] if fault not in SIGNALS else []),
+            *(["FAULT_EXPOSURE_NOT_OBSERVED"] if not exposure else []),
         ],
     }
     if destination is not None:

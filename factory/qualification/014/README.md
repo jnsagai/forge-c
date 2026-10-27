@@ -146,6 +146,7 @@ Its plan must be an exact hash-bound input of the frozen operation manifest:
   "schema": "forge-c/operational-observer-plan/1",
   "unit": "forge-conductor.service",
   "observer_source_sha256": "<sha256 of afo/fault_observer.py>",
+  "fact_evaluator_sha256": "<sha256 of afo/operational_facts.py>",
   "data_root": "<absolute isolated factory root>",
   "database": "<data_root>/state/conductor/conductor.sqlite3",
   "heartbeat": "<data_root>/state/afo/conductor.heartbeat",
@@ -184,16 +185,71 @@ ordered `sample_refs`, each with path and SHA256. Capture enough samples for the
 frozen probe/detection bounds; two examples are not a 24-hour campaign.
 
 The observer correlates the three existing signal receipts with actual unit/PID,
-health and intent observations, preserves missing/corrupt/truncated accounting as
-UNKNOWN, and detects lost/decreased mission accounting or duplicate native identity
-observations. HTTP probes are loopback-only, ignore proxy variables and refuse
+health and intent observations. External exposure fixtures cover the other thirteen
+classes below. It preserves missing/corrupt/truncated accounting as UNKNOWN and
+detects lost/decreased mission accounting or duplicate native identity observations. HTTP probes are loopback-only, ignore proxy variables and refuse
 redirects. Campaign reporting recomputes observer records from their source refs;
 legacy handwritten booleans cannot pass the independent recovery gate.
 
-This increment is **partial qualification tooling**. Host-level intervention audit
+This remains **partial qualification tooling**. Host-level intervention audit
 is still required; authenticated AFO actions alone do not prove no manual host
 intervention. READY packages require the independent package oracle. Unsupported
-fault exposures (including reboot and mount loss) remain missing, and unknown
+live fault exposures (including reboot and mount loss) remain missing, and unknown
 fields cannot pass campaign reporting. No service, model, campaign or deployment is
 activated by these commands. Full DA-T026/046/049/050/052 remain unqualified until
 actual authorized host fixtures, complete observation and wall-clock campaigns exist.
+
+### External exposure fixtures and fault-class predicates
+
+An external fixture is a hash-bound input of the operation manifest, authored and
+frozen before signing. It describes what an authorized host/queue fixture intends
+to exercise; it never grants permission, executes an action, or supplies success flags.
+For example:
+
+```json
+{
+  "schema": "forge-c/operational-exposure-fixture/1",
+  "fault": "resource-pressure",
+  "unit": "forge-conductor.service",
+  "observer_plan_ref": {"path": "<plan>", "sha256": "<plan hash>"},
+  "parameters": {"minimum_free_bytes": 1073741824}
+}
+```
+
+A runtime exposure receipt has schema `forge-c/operational-exposure/1`, the exact
+`manifest_sha256`, `fault`, `unit`, target `host`, factual start `at` (UTC epoch
+seconds), and `fixture_ref` (the exact path/hash input above). `evaluate` checks its
+bindings and derives exposure/restoration from the captured timeline. A receipt
+without the corresponding measured change cannot count. All values/IDs must be
+frozen for the actual isolated installation; the example threshold is not policy.
+
+| Fault class | Frozen parameters | Required observed facts |
+|---|---|---|
+| last-job-success/failure/block | `order_id` | The sole active order reaches the specified outcome, with its latest native attempt; control stays healthy across another declared cycle window. Historical failed attempts cannot substitute. |
+| empty-queue | none | No queued/active work and healthy continued control across the cycle window. |
+| drained-queue | none | DRAINING intent/control, no active/native-held work, continued healthy control. |
+| dependency-outage | `dependency` (`fabro`, `gateway`, `data_volume`) | Actual failed dependency probe followed by healthy restoration. |
+| reboot | none | Changed boot identity and restored control; unknown boot identity cannot establish exposure. |
+| restart-limit | none | A failed unit with actual `start-limit-hit`, then a new restored process/boot. |
+| poison-head | `order_id`, `eligible_order_id` | Older malformed queued item becomes BLOCKED while the separate eligible item progresses under recorded authority within its bound. |
+| resource-pressure | `minimum_free_bytes` | Free space crosses the frozen threshold and is restored. This checks disk pressure, not an unmeasured CPU/RAM load. |
+| operator-stop-resume | none | Newer STOPPED intent, bounded settlement before effective stop, no new request/execution identity while stopped, quiescence and inactive unit before authorized newer resume. |
+| post-campaign-continuity | none | Full stage duration before the event, healthy post-campaign interval through the declared bound. The no-outage event has zero restoration latency and a separately retained observation duration. |
+| later-authorized-intake | `order_id` | A newly observed order is admitted and has a native attempt, within its scheduling bound. |
+
+The union of these thirteen classes and the three existing signal recipes must
+match the actual `qualification.FAULTS` catalogue. This is tested as a coverage
+invariant; additional classes cannot silently default to success. The inspector,
+author/gate rules and controller's admission authority remain unchanged.
+
+Collection now reads bounded bytes once for both digest and JSON parsing, caps
+cumulative SQLite projection at 16 MiB and loaded traces at 128 MiB, and retains
+scope/path restrictions. Capture never follows a FIFO or creates a missing database.
+Unit/PID and fresh completed-cycle heartbeat facts are correlated; a legitimately
+stopped PID-0/empty-cgroup unit is known downtime, not missing independence.
+
+Predicate tests use synthetic timelines and real private SQLite/HTTP fixtures. They
+are not live fault exposure or elapsed-time qualification. Host intervention audit,
+independent READY verification, complete live workload/fault coverage and a genuine
+reboot/mount window remain required. No observer command activates a service or
+performs any of the external actions above.

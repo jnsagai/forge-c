@@ -6,11 +6,13 @@ Synthetic clocks/unit observations below are deterministic tests, never soak pro
 import copy
 import json
 import os
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from forge_factory.afo import fault_observer as O
+from forge_factory.afo import operational_facts as F
 from forge_factory.afo import qualification as Q
 from forge_factory.afo.durable import Refused, digest, immutable_json
 from forge_factory.afo.mission_ledger import MissionLedger
@@ -58,7 +60,11 @@ def setup(tmp_path, monkeypatch):
         "unit": "forge-conductor.service",
         "max_rows": 100,
         "observer_source_sha256": sha256_file(Path(O.__file__)),
+        "fact_evaluator_sha256": sha256_file(Path(F.__file__)),
     }
+    heartbeat = Path(raw["heartbeat"])
+    heartbeat.parent.mkdir(parents=True, exist_ok=True)
+    immutable_json(heartbeat, {"pid": 12345, "cycle": 1, "epoch": time.time(), "ok": True, "mode": "PILOT"})
     path = tmp_path / "plan.json"
     immutable_json(path, raw)
     ref = {"path": str(path), "sha256": sha256_file(path)}
@@ -84,6 +90,8 @@ def sample(p, name, wall, pid):
     # Deliberately synthetic timing/unit facts for the pure evaluation checker.
     row.update(wall=wall, mono=wall, boot_id="fixture-boot", host="fixture-host")
     row["unit"]["MainPID"] = pid
+    row["completed_wall"] = wall
+    row["heartbeat"].update(pid=int(pid), epoch=wall, cycle=int(wall))
     path = p.tmp / (name + "-synthetic.json")
     immutable_json(path, row)
     return {"path": str(path), "sha256": sha256_file(path)}
@@ -347,3 +355,128 @@ def test_observation_output_cannot_be_written_into_unapproved_workspace(setup):
     with pytest.raises(Refused, match="OUTSIDE_APPROVED_ROOT"):
         O.capture(p.manifest, p.ref, target)
     assert not target.exists()
+
+
+def test_stopped_empty_cgroup_is_known_but_never_healthy(setup, monkeypatch):
+    p = setup
+    monkeypatch.setattr(
+        O,
+        "unit_status",
+        lambda _: {
+            "MainPID": "0",
+            "ActiveState": "inactive",
+            "SubState": "dead",
+            "Result": "success",
+            "ControlGroup": "",
+            "NRestarts": "0",
+        },
+    )
+    row = O.capture(p.manifest, p.ref, p.tmp / "stopped-known.json")
+    assert row["independent_process"] and row["complete"]
+    assert not row["health"]["conductor"] and not F.healthy(row)
+
+
+def test_hash_binding_uses_the_bytes_that_were_parsed(setup, monkeypatch):
+    p = setup
+    calls = []
+    original = O.read_bytes
+
+    def captured(path, limit=O.MAX_BYTES):
+        calls.append(str(path))
+        result = original(path, limit)
+        if str(path) == p.ref["path"]:
+            p.path.chmod(0o600)
+            p.path.write_text('{"untrusted":"replacement after read"}')
+        return result
+
+    monkeypatch.setattr(O, "read_bytes", captured)
+    # Source-dependent validation sees the exact old bytes which matched the
+    # frozen ref, never parses replacement content with an old file hash.
+    assert O.bound_json(p.ref) == p.raw
+    assert calls == [p.ref["path"]]
+
+
+def test_aggregate_observation_bytes_are_bounded_before_full_trace_allocation(setup, monkeypatch):
+    p = setup
+    _, refs = fixture_evaluation(p)
+    monkeypatch.setattr(O, "MAX_TRACE_BYTES", Path(refs[0]["path"]).stat().st_size)
+    with pytest.raises(Refused, match="TRACE_BYTE_BOUND"):
+        O.load_samples(p.manifest, p.ref, refs)
+
+
+def external_case(p):
+    doc = {
+        "schema": "forge-c/operational-exposure-fixture/1",
+        "fault": "dependency-outage",
+        "unit": p.raw["unit"],
+        "observer_plan_ref": p.ref,
+        "parameters": {"dependency": "gateway"},
+    }
+    file = p.tmp / "external-fixture.json"
+    immutable_json(file, doc)
+    ref = {"path": str(file), "sha256": sha256_file(file)}
+    p.manifest = {**p.manifest, "inputs": [p.ref, ref]}
+    before, outage, recovered = [
+        sample(p, name, wall, "12345")
+        for name, wall in [("external-before", 100), ("external-outage", 110), ("external-recovered", 150)]
+    ]
+    row = json.loads(Path(outage["path"]).read_text())
+    row["health"]["gateway"] = False
+    changed = p.tmp / "external-outage-fact.json"
+    immutable_json(changed, row)
+    outage = {"path": str(changed), "sha256": sha256_file(changed)}
+    receipt = {
+        "schema": "forge-c/operational-exposure/1",
+        "manifest_sha256": digest(p.manifest),
+        "fault": "dependency-outage",
+        "unit": p.raw["unit"],
+        "host": "fixture-host",
+        "at": 105,
+        "fixture_ref": ref,
+    }
+    file = p.tmp / "external-receipt.json"
+    immutable_json(file, receipt)
+    return {"path": str(file), "sha256": sha256_file(file)}, [before, outage, recovered]
+
+
+def test_external_receipt_is_bound_to_frozen_fixture_and_measured_change(setup):
+    p = setup
+    ref, rows = external_case(p)
+    record = O.evaluate(p.manifest, p.ref, ref, rows, p.tmp / "external-evaluation.json")
+    assert record["fault_exposed"] and record["independently_restored"]
+    assert record["restoration_seconds"] == 45
+    assert record["unexpected_interventions"] is None
+    assert O.verify(p.manifest, record) == record
+
+
+def test_external_receipt_cannot_select_an_unfrozen_fixture(setup):
+    p = setup
+    ref, rows = external_case(p)
+    receipt = json.loads(Path(ref["path"]).read_text())
+    receipt["fixture_ref"] = {"path": str(p.tmp / "unreviewed.json"), "sha256": "0" * 64}
+    path = p.tmp / "unbound-external.json"
+    immutable_json(path, receipt)
+    with pytest.raises(Refused, match="EXTERNAL_EXPOSURE_NOT_FROZEN"):
+        O.evaluate(p.manifest, p.ref, {"path": str(path), "sha256": sha256_file(path)}, rows, None)
+
+
+def test_sqlite_snapshot_has_a_cumulative_byte_bound(setup, monkeypatch):
+    p = setup
+    with p.store.tx() as c:
+        original = json.loads(c.execute("SELECT record FROM afo_missions").fetchone()[0])
+        for n in range(3):
+            extra = {**original, "mission_id": "extra-" + str(n), "lineage": "extra-lineage-" + str(n), "padding": "x" * 1500}
+            c.execute("INSERT INTO afo_missions VALUES (?,?,?)", (extra["mission_id"], extra["lineage"], json.dumps(extra)))
+    monkeypatch.setattr(O, "MAX_BYTES", 3000)
+    with pytest.raises(Refused, match="LEDGER_BYTE_BOUND"):
+        O.ledger(p.db, 100)
+
+
+@pytest.mark.parametrize("replacement", ["[]", '{"identity":"bad","charge":null}'])
+def test_malformed_accounting_is_incomplete_not_a_zero_charge(setup, replacement):
+    p = setup
+    with p.store.tx() as c:
+        c.execute("UPDATE afo_mission_executions SET record=?", (replacement,))
+    result = O.capture(p.manifest, p.ref, p.tmp / "invalid-accounting.json")
+    assert result["complete"] is False and result["ledger"] is None
+    assert result["errors"]["ledger"] in {"OBSERVER_LEDGER_RECORD_INVALID", "OBSERVER_LEDGER_ACCOUNTING_INVALID"}

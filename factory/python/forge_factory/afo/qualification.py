@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import socket
 import statistics
 import subprocess
@@ -172,6 +173,44 @@ def validate(manifest):
     if manifest.get("schema") != "forge-c/qualification-014/1" or manifest.get("stage") not in STAGES:
         raise Refused("CAMPAIGN_MANIFEST_INVALID")
     from ..lrtx.role_capability import key
+
+    if manifest["stage"].startswith("operation-"):
+        faults = manifest.get("faults")
+        if (not isinstance(faults, list) or len(faults) != len(FAULTS)
+                or any(not isinstance(fault, str) for fault in faults) or set(faults) != set(FAULTS)):
+            raise Refused("OPERATIONAL_FAULT_CATALOGUE_CHANGED")
+        required = {
+            "probe_gap_seconds",
+            "control_cycle_seconds",
+            "restore_seconds",
+            "eligible_queue_seconds",
+            "immediate_start_burst",
+            "start_interval_seconds",
+            "slow_recovery_cooldown_seconds",
+            "verification_workers",
+            "inference_requests",
+            "batch_items",
+            "post_campaign_seconds",
+        }
+        bounds = manifest.get("bounds")
+        if (
+            not isinstance(bounds, dict)
+            or set(bounds) != required
+            or any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in bounds.values())
+        ):
+            raise Refused("OPERATIONAL_FINITE_BOUNDS_REQUIRED")
+        counts = ("inference_requests", "verification_workers", "batch_items", "immediate_start_burst")
+        if (
+            any(type(bounds[k]) is not int for k in counts)
+            or bounds["inference_requests"] != 1
+            or bounds["verification_workers"] != 1
+            or type(bounds["batch_items"]) is not int
+            or bounds["batch_items"] > 32
+            or type(bounds["immediate_start_burst"]) is not int
+            or bounds["post_campaign_seconds"]
+            < max(bounds["probe_gap_seconds"], bounds["control_cycle_seconds"], bounds["slow_recovery_cooldown_seconds"])
+        ):
+            raise Refused("OPERATIONAL_RESOURCE_OR_CONTINUITY_BOUND_INVALID")
 
     if key(manifest["identity"]) != manifest["identity_sha256"]:
         raise Refused("CAMPAIGN_IDENTITY_CHANGED")
