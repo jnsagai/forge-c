@@ -1,0 +1,11 @@
+reproducers:
+- id: AFO-OB-SIGNER-NAMESPACE-V2
+  script: reproducer.py
+  sha256: 250dbc9050d7363510a29688759891457c4c599f4fe1092cac09154a9ff636b6
+  symptom_signature: factory signer policy rejects the onboarding approval namespace
+  observed_in: Four valid owner signatures refused on deployed F016
+  baseline_revision: 5fb0a8673944c7e919ceffc78daaf6f3b782d71e
+  fix_revision: 9fa4664798183218184a6cf1a650ab1985087ea4
+  note: Host regression tests perform real SSH signing and verification with a disposable
+    key; this isolated probe checks the exact shipped namespace restriction without
+    requiring a passwd entry for UID 2001.
