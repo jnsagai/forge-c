@@ -139,6 +139,8 @@ def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | Non
                     if a.strip() and a.strip() != "void"]
             stubs.append(f"{e['prototype']} {{ {''.join(f'(void){a}; ' for a in args)}{body} }}")
         fns = list(api.get("prototypes") or {})
+        if not fns:  # register-level LL (header-only static inlines): no smoke image template yet
+            return []
         init = next((f for f in fns if f.endswith("_Init")), fns[0])
         query = next((f for f in fns if re.search(r"GetState|Read|Get|Is", f)), None)
         if api.get("handle"):
