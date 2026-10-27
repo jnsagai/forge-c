@@ -1,0 +1,56 @@
+"""Render a frozen onboarding acceptance snapshot; refuse to overwrite output."""
+
+import json
+import sys
+from pathlib import Path
+
+from forge_factory.benchmark.record import markdown
+
+record = Path(sys.argv[1])
+out = Path(sys.argv[2])
+r = json.loads(record.read_text())
+lines = [
+    "# ST HAL onboarding acceptance record",
+    "",
+    f"Recorded {r['recorded_at']}. The JSON snapshot retains every attempt, all named gaps and raw token counters.",
+    "",
+    "| Peripheral | Current package SHA-256 | Signed approval |",
+    "|---|---|---|",
+]
+for name, p in r["packages"].items():
+    lines.append(f"| {name.upper()} | `{p['sha256']}` | {p['approval']['approval_id']} ({p['approval_code']}) |")
+lines += [
+    "",
+    "The initial GPIO package was superseded after omitted RM fields were found. Its failed attempt and original archive "
+    "remain in this record; OA-2026-10-27-05 approves the corrected package. The first SPI attempt also remains visible "
+    "with its factory probe defect. Terminal package status is not safety acceptance.",
+    "",
+]
+entries = []
+for o in r["orders"]:
+    for a in o["attempts"]:
+        entries.append({"route": "AFO", "request_id": o["request_id"], "order_id": o["order_id"], "order_state": o["state"], **a})
+lines += [markdown({"queue": "st-hal-onboarding", "schema": r["schema"], "recorded_at": r["recorded_at"], "entries": entries})]
+for o in r["orders"]:
+    lines += [f"## {o['request_id']}", "", f"Order `{o['order_id']}`: **{o['state']}**.", ""]
+    for a in o["attempts"]:
+        b = a.get("onboarding") or {}
+        p = a.get("package_record") or {}
+        lines += [
+            f"- Attempt `{a['attempt_id']}`, Fabro `{a.get('fabro_run_id')}`.",
+            f"- Factory `{a.get('factory_revision')}`; approved package `{b.get('sha256')}` ({b.get('approval_id')}).",
+            f"- Archive `{p.get('archive')}`.",
+            f"- Archive SHA-256 `{p.get('archive_sha256')}`; {p.get('gap_count')} named gaps "
+            "(full list in JSON and sealed archive).",
+            "",
+        ]
+lines += [
+    "## Review status",
+    "",
+    "All packages are for offline review. SC-005 cause review and owner dispositions are recorded separately; terminal "
+    "binding checks alone do not prove SC-005. Held-out model authoring and the optional author graph remain open. "
+    "No merge or safety approval is implied.",
+    "",
+]
+with out.open("x") as f:
+    f.write("\n".join(lines))
