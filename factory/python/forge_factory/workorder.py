@@ -158,6 +158,18 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
+    onboarded = None
+    if (spec.get("delivery") or {}).get("onboarding"):  # feature 016: only from an owner-approved package (FR-016)
+        from .onboarding import admit, delivery_from_package, derive, onboarding_dir
+
+        key = Path(example).name
+        derive(example, key)  # re-derived at every launch: any changed input voids the approval (FR-017)
+        ob_pkg, ob_appr, ob_prof = admit(key, spec)
+        spec["delivery"] = delivery_from_package(spec, ob_pkg)
+        spec["peripheral"] = f"onboarded:{key}"
+        onboarded = {"key": key, "package": f"state/onboarding/{key}/onboarding/package.json",
+                     "sha256": ob_pkg["sha256"], "approval_id": ob_appr["approval_id"],
+                     "profile_sha256": sha256_bytes((onboarding_dir(key) / "onboarding/profile.json").read_bytes())}
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
     inputs: dict[str, bytes] = {}
@@ -274,8 +286,10 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         missing = [x for x in prof["rm"]["key_sections"] if x not in have]
         if missing:
             raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
-        manifest["peripheral"] = prof["id"]
+        manifest["peripheral"] = spec["peripheral"] if onboarded else prof["id"]  # F016: onboarded:<WO>
         manifest["peripheral_profile_sha256"] = prof["sha256"]
+    if onboarded:
+        manifest["onboarding"] = onboarded
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 

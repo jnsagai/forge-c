@@ -1,0 +1,7 @@
+{
+  "schema": "forge-c/afo-launch-manifest/0.1",
+  "benchmark_item": "usart-st-hal-ob",
+  "example": "examples/0012e-st-cube-usart-hal-ob",
+  "model_profile": "codex-claude",
+  "note": "Feature 016: owner-input-only onboarding; owner-signed package approval required before AFO submission; delivered ST HAL remains FROZEN."
+}

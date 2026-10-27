@@ -9,7 +9,6 @@
     "licence",
     "licence_allows_modification",
     "source",
-    "files",
     "scope",
     "build"
   ],
@@ -162,6 +161,61 @@
     "provided_ll": {
       "type": "boolean",
       "description": "Feature 015 (ST HAL): false for a delivered HAL that accesses the registers itself (ST's classic HAL) - no provided LL work order; default true (the factory's HAL on a provided LL)."
+    },
+    "onboarding": {
+      "type": "boolean",
+      "description": "Feature 016: the delivery is onboarded by the factory (owner inputs only): files, dependencies and the hal_conf modules are derived from the source and the packages; when given anyway they are cross-checked (CONFLICT on difference). Absent or false: the hand-written file map is used as before."
+    },
+    "packages": {
+      "type": "array",
+      "description": "Feature 016: the vendor packages the delivered code builds against (e.g. the CMSIS device and core packages); the onboarding stage picks the headers the build actually includes from them.",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "origin",
+          "licence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "origin": {
+            "type": "string",
+            "minLength": 3
+          },
+          "licence": {
+            "type": "string",
+            "minLength": 2
+          },
+          "provenance": {
+            "type": "string"
+          }
+        }
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "not": {
+          "properties": {
+            "onboarding": {
+              "const": true
+            }
+          },
+          "required": [
+            "onboarding"
+          ]
+        }
+      },
+      "then": {
+        "required": [
+          "files"
+        ]
+      }
+    }
+  ]
 }
