@@ -1,5 +1,14 @@
 # Feature 014 evidence — current status 2026-10-27
 
+Newest leaf source **`2928a9377c3ef96aab7cef7cf94355b96bdaa381`** adds bounded
+kernel-audit source parsing/capture and read-only host preflight:
+[results and native blocker evidence](host-audit-2928a93/summary.json).
+**273 affected PASS / 1 SKIP**, release **13/13 PASS**. Native Omniverse2 preflight
+is **BLOCKED / exit 2**; required audit tools/privileged setup are unavailable.
+Bus/control correlation and continuous segmented audit capture remain unfinished;
+intervention count remains UNKNOWN. No new inference, service mutation, deployment
+or task checkbox change occurred. Earlier cohorts below remain distinct.
+
 Latest verification-tooling source **`08cc4326063074878b876c4aec36b9062fbde970`**:
 [exact commands, results and hashes](operational-work-08cc432/summary.json).
 **235 affected checks PASS / 1 SKIP**, release **13/13 PASS**; history replay and

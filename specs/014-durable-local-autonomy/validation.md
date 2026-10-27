@@ -375,3 +375,38 @@ audit production/integration is still incomplete. The actual authorized host
 reboot/mount-loss fixtures, native workload/fault exposure and 24/72/168-hour
 campaigns have not run. Current UNKNOWN host-audit facts still prevent campaign
 PASS. No additional Qwen request, deployment, inspector tuning or merge occurred.
+
+## 2026-10-27: bounded kernel-audit source capture and actual host prerequisites
+
+Exact clean source **`2928a9377c3ef96aab7cef7cf94355b96bdaa381`**:
+**273 affected PASS, one historical HAL-r154 workspace SKIP, zero failures/errors**
+(27.347 s); release **13/13 PASS** (10.301 s). [Exact commands, JUnit and hashes](../../evidence/014-durable-local-autonomy/host-audit-2928a93/summary.json).
+The new leaf adapter/parser has 38 tests including real subprocess resource/output
+limits. The earlier seven local systemd/history checks remain at `08cc432`; they
+were not repeated for this unused-by-runtime leaf. Current independent CRE again
+**REJECTED / PROTECTED_PATH_CHANGE**, retained without waiver. Static spec/contracts,
+handoff and new-source/test Ruff checks pass separately.
+
+`afo/host_audit.py` exports bounded read-only native kernel status/rule/log facts,
+not a complete host intervention verdict. Source capture binds a protected,
+root-owned regular source prefix; compound identities, duplicate/truncated records,
+path-item consistency, privacy exclusions, missing counters, historical losses,
+counter resets, daemon/policy/boot/clock changes and input bounds are tested.
+The implementation executes no audit configuration, package installation, counter
+reset, service mutation or model call. Global intervention count remains UNKNOWN.
+
+On Omniverse2, a clean isolated qualification checkout at this exact source ran
+`host_audit preflight`: **BLOCKED / exit 2**, with durable invocation/exit record.
+Auditctl/ausearch are unavailable, auditd is inactive, and noninteractive sudo
+listing returned 1. This is native prerequisite evidence, not runtime qualification.
+The existing `repo-b309039`, services, GPU queue and model setup were preserved;
+no shared-factory source deployment, grant renewal or inference occurred.
+
+Source work remains for continuous/rotation-safe segments, systemd-bus capture,
+authenticated-control/actor correlation and complete intervention-source replay.
+The current kernel counter comparison is not a complete coverage verifier and
+must not be used to set the campaign's unplanned-intervention count to zero.
+The actual host setup/privileged fault window, independent product oracle evidence
+and full native campaigns remain unavailable/unrun. No task was ticked (30/58);
+product success, learning benefit, availability and self-healing remain separate
+unproven qualifications.

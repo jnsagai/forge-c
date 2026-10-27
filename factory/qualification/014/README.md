@@ -335,3 +335,58 @@ qualification or a host audit producer. Genuine independently produced product
 oracle evidence, host intervention audit integration, authorized external fault
 fixtures and elapsed campaigns remain required. A partial or missing audit cannot
 make a campaign PASS.
+
+### Kernel audit source adapter and host prerequisites
+
+`forge_factory.afo.host_audit` captures bounded Linux audit source facts. It is a
+**partial independent-host-audit adapter**, not a complete intervention verifier.
+Its preflight always lists the missing systemd-bus and authenticated-control
+coverage until those channels are implemented and measured. Neither an empty
+kernel event selection nor a zero counter difference becomes a zero-intervention
+claim. The factory's service state and engineering authority are unchanged.
+
+```bash
+python -m forge_factory.afo.host_audit preflight --out <observer-dir>/host-preflight.json
+```
+
+Exit 2 means BLOCKED prerequisites and still produces a durable factual record.
+The command only queries existing audit status; it never enables auditing,
+installs packages/rules, resets counters or changes a service. Utility execution
+has finite CPU, memory, output-file and wall limits, and stderr content is not
+retained. Keep temporary files in the existing approved qualification directory.
+
+For source capture, freeze an additional host plan in the operation manifest's
+existing `inputs` list. It has schema `forge-c/host-audit-plan/1`, the existing
+`observer_plan_ref`, the host-audit module's exact `source_sha256`, the target
+`host`, absolute `kernel_log`, two frozen keys (for example `forgec014-files` and
+`forgec014-signals`), and a `rules_ref` also present in manifest inputs. The latter
+binds the exact externally approved installed-rule listing; examples are not a
+complete audit-policy qualification or permission to install it.
+
+```bash
+python -m forge_factory.afo.host_audit capture \
+  --manifest operation.json --observer-plan-ref observer-reference.json \
+  --host-plan-ref host-reference.json --out <observer-dir>/kernel-source.json
+```
+
+The source must be a root-owned regular file with protected ancestry; symlinks,
+unprotected sources, oversized or truncated records are refused. Capture binds
+an exact bounded prefix on one file descriptor by device/inode/length/SHA256.
+The native parser groups compound records by node/time/serial and validates
+SYSCALL/PATH consistency. Export includes selected numeric identity/status fields
+and source hashes, excluding EXECVE arguments, process titles, command text,
+account names and raw paths. Private OS audit sources are not copied into Git.
+
+`kernel_window` compares cumulative loss and source/clock/daemon/configuration
+facts. Historical nonzero loss is preserved; decreases are resets, not recovery.
+A stable observed difference remains only a kernel-counter fact, not verified
+coverage of all intervention paths. Rotations require segment evidence. Current
+source capture is a bounded prefix adapter; segmented continuous collection,
+systemd bus collection, actor/control correlation and full intervention replay
+remain required before an operational campaign can PASS.
+
+Actual Omniverse2 probe at source `2928a93`: auditctl/ausearch unavailable, auditd
+inactive, noninteractive sudo listing exit 1; native preflight BLOCKED/exit 2.
+The isolated qualification checkout ran no model or shared-service action. See
+`evidence/014-durable-local-autonomy/host-audit-2928a93/summary.json`. No privileged
+setup or source deployment was activated, and no task checkbox changed.

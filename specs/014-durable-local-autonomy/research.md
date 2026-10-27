@@ -59,3 +59,30 @@ Feature 005 already requires headless 24/7 service, bounded recovery, fair conti
 Unexpected clean exit and exhausted start limits need explicit recovery coverage. Official [systemd.service](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html) documents exit/restart and operator-stop semantics; [systemd.unit](https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html) explains that start-limited units need a later start trigger. Extend the existing independent operations path with persistent bounded cooldown and intent checks, preserving restart limits and human shutdown. Inspect the installed version rather than assuming latest-manual directives exist on Omniverse2.
 
 Continuous availability requires isolation, durable waiting and resource housekeeping as well as restarts. A budget-exhausted model job cannot renew itself, while model-free supervision continues and unrelated eligible jobs progress. Missing telemetry, storage loss and power failure remain reported outages; no single-host zero-downtime claim follows from an indefinite loop. Full integration design and qualification scope are in [continuous-operation.md](continuous-operation.md).
+
+## Host-audit source boundary — 2026-10-27
+
+The upstream [Linux audit project format](https://github.com/linux-audit/audit-userspace/blob/master/README.md)
+identifies compound records with the shared timestamp and serial. The implementation
+therefore groups those records before validating syscall/path consistency; a
+filtered syscall line alone is not a whole source event.
+
+The [auditctl manual](https://www.man7.org/linux/man-pages/man8/auditctl.8.html)
+describes status/rule inspection, the cumulative lost/backlog fields and the
+configuration lock. The adapter queries status and installed rules; it never
+changes configuration or resets historical counters. Counter differences and
+reset detection are factual inputs, not a host-wide completeness certificate.
+
+The [D-Bus monitor documentation](https://dbus.freedesktop.org/doc/dbus-monitor.1.html)
+notes that bus policy can restrict visible messages. Design inference: systemd
+bus coverage needs its own native producer/verification; a running user bus or
+kernel status snapshot cannot substitute for that evidence. Control correlations
+must also retain the existing authenticated operator intent/actions. The current
+partial adapter explicitly leaves these channels missing and intervention count
+UNKNOWN.
+
+Read-only Omniverse2 probes found no auditctl/ausearch, inactive auditd and a
+noninteractive sudo-listing exit of 1. The source-pinned native preflight returned
+BLOCKED/exit 2. No package/rule/service/deployment action was attempted. These facts
+block native audit capture; they do not establish complete host coverage or prove
+that the source-side bus/control/segmentation work has already been implemented.

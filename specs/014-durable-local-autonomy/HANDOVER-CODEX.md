@@ -255,3 +255,38 @@ Prepare only authorized host reboot/mount-loss fixtures once prerequisites are
 actually available. Keep the seventeen owner-accepted live omissions unscheduled,
 all safety signing boundaries, CRE veto and inspector freeze. Native operational
 campaigns, product success, learning benefit and 30-day SLO remain unproven.
+
+## Codex follow-up — 2026-10-27 11:16 UTC
+
+Source **`2928a9377c3ef96aab7cef7cf94355b96bdaa381`** adds `afo/host_audit.py`
+and 38 new tests. It is a bounded **partial kernel-source adapter**, not a complete
+host audit. The existing fault observer deliberately still leaves intervention
+count UNKNOWN; do not turn kernel-only facts into a zero-intervention flag.
+
+- Exact clean local tree `$B/repos/forge-c-014-regress-2928a93`: **273 affected
+  PASS / 1 historical HAL-r154 workspace SKIP / zero failures; release 13 PASS**.
+  Current CRE REJECTED/PROTECTED_PATH_CHANGE. Prior systemd/history and wider core
+  cohorts remain distinct; not rerun for this unused-by-runtime leaf increment.
+- Public evidence `evidence/014-durable-local-autonomy/host-audit-2928a93/`, with
+  command/exit/JUnit/hashes and actual native prerequisite receipts. Task-style
+  record `evidence/v0.4/runs/DA014-host-audit-2928a93/latest.json` is deterministic
+  PASS only; native preflight is explicitly BLOCKED/exit 2.
+- Native read-only preflight ran from an isolated, clean
+  `/mnt/data/forge-c/inspector-014-b309039/host-audit-2928a93/repo`; output alongside
+  it. It uses the existing LRTX venv, private cache/temp/state paths and no model.
+  Actual host: auditctl/ausearch missing, auditd inactive, `sudo -n -l` exit 1.
+  No installation, rule/counter/service mutation, deployment or grant change.
+  Original source/services remain untouched. Raw audit/proctitle data was not
+  collected or published; the kernel log is unavailable here.
+- Parser/status/resource/privacy/compound-record tests pass. Root-protected regular
+  source prefix bindings, exact approved-rule references and cumulative-loss/reset
+  facts are implemented. Historical nonzero counters are not reset for green results.
+
+Next source work: systemd-bus collection with actual visibility proof, authenticated
+operator/control/actor correlation, segmented/rotation-safe continuous kernel
+capture and full source-derived intervention verification. Current preflight keeps
+these missing channels explicit; no kernel-only complete-host verdict exists.
+Genuine independent product oracle production/evidence and the authorized host
+reboot/mount-loss window remain required. Preserve the inspector freeze, seventeen
+owner-accepted unscheduled live cases, finite/exhausted missions, protected CRE veto
+and signing boundaries. Formal progress remains **30/58**, no task/ledger rebaseline.
