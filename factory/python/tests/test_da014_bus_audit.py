@@ -155,7 +155,7 @@ def test_bus_name_hyphens_are_not_interface_name_characters():
         B.profile_line(line(interface="invalid.hyphen-name"))
 
 
-def test_name_grammar_matches_independent_native_libdbus_oracle():
+def test_normative_name_examples_also_checked_with_independent_native_libdbus():
     try:
         lib = ctypes.CDLL("libdbus-1.so.3")
     except OSError:
@@ -163,7 +163,10 @@ def test_name_grammar_matches_independent_native_libdbus_oracle():
     for function in (lib.dbus_validate_bus_name, lib.dbus_validate_interface):
         function.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
         function.restype = ctypes.c_int
-    names = [":1.ABC", ":Upper_case.part-two", ":0._", ":1..two", ":1./two", ":one", ":" + "a" * 250 + ".xyz",
+    # libdbus 1.12 accepts even ':' and ':one'. The normative period/element
+    # requirements remain separately enforced by malformed-name fixtures above;
+    # this library is additional evidence, not sole authority for the grammar.
+    names = [":1.ABC", ":Upper_case.part-two", ":0._", ":1..two", ":1./two", ":" + "a" * 250 + ".xyz",
              ":" + "a" * 251 + ".xyz", "-valid.name", "valid.Name", "invalid-name.part", "invalid.hyphen-name"]
     for name in names:
         assert bool(B.UNIQUE.fullmatch(name) or B.NAME.fullmatch(name)) == bool(lib.dbus_validate_bus_name(name.encode(), None))
