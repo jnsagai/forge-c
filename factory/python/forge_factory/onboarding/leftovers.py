@@ -58,7 +58,8 @@ def instructions(key: str) -> dict[str, str]:
     return nodes
 
 
-TOKEN = re.compile(r"\b(?:HAL|LL)_\w+|\b\w+_(?:Handle|Init)?TypeDef\b|\bll_\w+_regs\b|\bstm32n6xx_ll_\w+|\b[A-Z][A-Z0-9]+_[A-Z0-9_]+\b"
+TOKEN = re.compile(r"\b(?:HAL|LL)_\w+|\b\w+_(?:Handle|Init)?TypeDef\b|\bll_\w+_regs\b|\bstm32n6xx_ll_\w+|"
+                   r"\b[A-Z][A-Z0-9]+_[A-Z0-9_]+\b"
                    r"(?:\.[A-Z][A-Z0-9_]*\b)?")
 GENERIC = {"HAL_OK", "HAL_ERROR", "HAL_BUSY", "HAL_TIMEOUT", "HAL_StatusTypeDef", "UT_ID", "SWR_ID", "NOT_IMPLEMENTED",
            "FORGE_MAILBOX_DEFINE", "FORGE_TEST_BEGIN", "FORGE_TEST_END", "TCHECK", "CHECK_EXPR", "USE_FULL_ASSERT",
@@ -86,13 +87,14 @@ def check(key: str, pkg: dict, files: list[Path]) -> list[str]:
     return sorted(set(out))
 
 
-def write_preview(key: str, pkg: dict) -> None:
+def write_preview(key: str, pkg: dict, model_paths: tuple[Path, Path] | None = None) -> None:
     """The preview profile (assumptions at a placeholder value) the leftover check and the model smoke build use;
     never used by a run (prepare loads only the approved profile.json)."""
     from . import onboarding_dir
     from .profile import derived_profile
 
-    prof = derived_profile(pkg, {"assumption_confirmations": [{"id": a["id"], "value": 1} for a in pkg["assumptions"]]})
+    prof = derived_profile(pkg, {"assumption_confirmations": [{"id": a["id"], "value": 1} for a in pkg["assumptions"]]},
+                           model_paths=model_paths, gate_preview=bool(model_paths))
     p = onboarding_dir(key) / "onboarding/profile.preview.json"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(prof, indent=2, sort_keys=True) + "\n")
@@ -105,7 +107,6 @@ def run(key: str) -> list[str]:
     """The check for a derived package `key` (state/onboarding/<key>), with a preview of its profile."""
     from . import facts as F
     from . import onboarding_dir
-    from .profile import derived_profile
 
     root = onboarding_dir(key)
     pkg = F.read_package(root)

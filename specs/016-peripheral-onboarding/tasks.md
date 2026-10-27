@@ -272,11 +272,11 @@ and inspected.
 
 ### Slice J (model part) and slice K
 
-- [ ] **OB-T041** [US4] Add the roles `onboard-model-author` (MCP: `forge-docs-mcp` reads, `forge-sim-mcp check_model`,
+- [X] **OB-T041** [US4] Add the roles `onboard-model-author` (MCP: `forge-docs-mcp` reads, `forge-sim-mcp check_model`, ✅ Evidence: `evidence/v0.4/runs/OB-MODEL-CONTROLS/latest.json`
   `write_file` under `onboarding/model/`) and `onboard-model-inspector` to `config/factory/agents.yaml`, with
   SKILL.md rendered, authz prefixes, and the onboarding-graph nodes (model author → `check_model` → inspector,
   bounded at 3).
-- [X] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and ✅ Evidence: `evidence/v0.4/runs/OB-T040/latest.json`
+- [X] **OB-T042** [US4] When a model exists for the peripheral, the onboarding stage re-gates it (`reused: true`) and ✅ Evidence: `evidence/v0.4/runs/OB-MODEL-CONTROLS/latest.json`
   never authors one. When none exists, it authors one. Implement this in `ff/onboarding/__init__.py`.
 - [ ] **OB-T043** [US4] Held-out authoring (SC-007). Run onboarding for `0014c` with the hand CRC model hidden (an
   onboarding option `--hide-model crc`, test-only, recorded in the package). Expected: an authored model passes
@@ -292,10 +292,10 @@ SWE.1–SWE.6.
 
 **Independent test**: the frozen record with packages, approvals, run ids and release packages; the SC-001 audit.
 
-- [X] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`, ✅ Evidence: `evidence/v0.4/runs/OB-T034/latest.json`
+- [X] **OB-T044** [US5] Create the acceptance work orders `examples/0010e-st-cube-gpio-hal-ob`, ✅ Evidence: `evidence/v0.4/runs/OB-SC001-PREPARATION/latest.json`, `evidence/v0.4/runs/OB-CORRECTED-APPROVALS/latest.json`
   `0011e-st-cube-spi-hal-ob`, `0012e-st-cube-usart-hal-ob` and `0013e-st-cube-tim-hal-ob`. They hold owner inputs
   only: driver, target with `target.instance`, the RM chapter and memory-map inputs, delivery source, provenance and
-  licence, FROZEN, scope (copied verbatim from the `00NNd` scope statements, which are owner scope text), budgets and
+  licence, FROZEN, scope (the exact acceptance text bound by the signed owner approvals; see amendment below), budgets and
   `onboarding: true`. No `files`, `dependencies` or `configure`.
 - [X] **OB-T045** [US5] Add queue items and AFO launch manifests `config/factory/benchmark/afo/<p>-st-hal-ob.json` ✅ Evidence: `evidence/v0.4/runs/OB-T045/latest.json`
   (model profile codex-claude), with the driver classes covered by the owner's authorization
@@ -318,18 +318,19 @@ SWE.1–SWE.6.
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [X] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047; ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
   the owner signs).
-- [ ] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
+- [X] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048). ✅ Evidence: `evidence/v0.4/runs/OB-T054/latest.json`
 - [X] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [X] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
-- [ ] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
-- [ ] **OB-T058** [US5] Freeze the record `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. Per attempt
+- [X] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048). ✅ Evidence: `evidence/v0.4/runs/OB-T057/latest.json`
+- [X] **OB-T058** [US5] Freeze the record `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. Per attempt ✅ Evidence: `evidence/v0.4/runs/OB-T058/latest.json`
   it holds: revision, input and package hashes, approval id, Fabro run ids, phase verdicts, package status and gaps,
   duration, tokens. Add a checker `evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py` (inputs, outcome, SC-005:
   no gap caused by an onboarding fact).
-- [ ] **OB-T059** [US5] SC-001 audit, scripted in `ob_check.py`: `git log` over `config/factory/peripherals/` and
+- [X] **OB-T059** [US5] SC-001 audit, scripted in `ob_check.py`: `git log` over `config/factory/peripherals/` and ✅ Evidence: `evidence/v0.4/runs/OB-OWNER-REVIEW/latest.json`
   `examples/00NNe-*` shows no per-driver text added for the four drivers. Every prompt text of the four runs has
-  `from` template or authored.
-- [ ] **OB-T060** [US5] Owner review of the four release packages: the owner decides; the decisions are recorded in
+  `from` template or authored. Owner decision OD-2026-10-27-02 accepts only the existing
+  unused legacy GPIO description edit; retain the strict literal FAIL and validate the scoped exception separately.
+- [X] **OB-T060** [US5] Owner review of the four release packages: the owner decides; the decisions are recorded in ✅ Evidence: `evidence/v0.4/runs/OB-OWNER-REVIEW/latest.json`, `evidence/v0.4/runs/OB-T058/latest.json`
   owner-decision records. Close feature 015 T065 by reference to OB-T058, through `mark_task.py` with this
   evidence.
 
@@ -459,3 +460,59 @@ SWE.1–SWE.6.
   failures. Raw suite remains FAIL; OB-NO-REGRESSIONS independently verifies the unchanged failure set.
 - Corrected GPIO request `BENCH-GPIO-ST-HAL-OB-R1` launched as `afo-3043541c6afd38b1`, on `557e920` with
   owner-signed OA-2026-10-27-05. Its live workspace is not modified by implementation work.
+
+- The SPI probe-context correction is isolated in runtime candidate `9dd5b71` (source `883a54c`). CRE
+  `pd-8fdefc372c5e6a0f2943` passes the staged causal contrast and all seven hard gates; oracle commit `61020fa`
+  precedes deployment. The generic SWE.3 failure fingerprint already belongs to CAPA-028, so the new reproducer
+  is linked there rather than opening a duplicate. CAPA-028's prior VERIFIED status concerns its older tool-budget
+  cause; it is not a claim that this new symptom completed that lifecycle. The new probe contrast is recorded separately.
+- Quickstart §1 now uses the actual USART assumption identifier and derived module closure. Section §5 uses the
+  implemented model-gate API and owner-confirmed clock rather than the unimplemented CLI alias. The exact command
+  passes as OB-QUICKSTART-MODEL. Held-out model authoring remains explicitly open.
+
+- Evidence review reopens OB-T042: OB-T040 proves existing-model reuse/re-gating, but does not prove the second
+  clause (author a model when none exists). That depends on the still-open OB-T041/043. Historical PASS evidence
+  remains intact; the task is not claimed complete from partial coverage.
+
+- Corrected GPIO R1 finished BLOCKED (`afo-3043541c6afd38b1`), after SWE.1/2/3 inspection PASS. Its sealed archive
+  is `9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b`, with 709 named gaps; archive integrity and
+  schema-0.2 signed-fact/input/baseline bindings PASS (OB-GPIO-R1). SWE.4 stopped on repeated unit failures plus
+  uncovered USPECs; AFO rejected rework of escalated FROZEN defects. These CODE reports need owner adjudication,
+  including BRR/BSRR hardware equivalence versus the written requirement. No missing onboarding fact was identified
+  in this corrected attempt. The initial GPIO SC-005 FAIL is preserved, not replaced by R1's narrower assessment.
+
+- The literal SC-001 history audit is now frozen as OB-SC001-HISTORY **FAIL**: commit `d4bbb55` corrected the
+  unused legacy GPIO target-model reset description. The separate package-generation read audit still passes
+  with zero hand-profile reads. OB-T059 remains open for adjudication of this literal history criterion; neither
+  audit result is relabelled to erase the exception.
+
+- The clean full suite on exact candidate `9dd5b71` completed: 1410 passed, 27 skipped, the same three known
+  baseline failures, in 2358.09 s. Raw OB-FULL-SUITE stays FAIL; OB-NO-REGRESSIONS passes the independent
+  failure-set comparison. No source change followed this suite.
+
+- Runtime `9dd5b71` deployed after the completed clean suite and frozen CRE oracle, with no live orders or pending
+  commands and unit/SQLite backups. Process cwd and service directory match that exact commit; cloud gateway is
+  inactive and disabled. All four current package signatures remain APPROVAL_OK; no facts changed.
+- Submitted fresh request `BENCH-SPI-ST-HAL-OB-R1` as `afo-d5622d4914a0ac9d` on this runtime. GPIO's terminal
+  artifacts are retained; USART and TIM remain prepared for sequential submission.
+
+- OB-T044 scope amendment: the four acceptance scopes simplify the legacy `00NNd` scopes rather than copying
+  them verbatim. Their exact text is in the signed package subject (OA-2026-10-27-02/03/04/05), which the owner
+  approved in this session and signed. That explicit acceptance supersedes the original verbatim-copy clause.
+  The task now cites the exact-scope/read-trace proof and signature proof, rather than the unrelated text-test run.
+
+- SPI R1 (`afo-d5622d4914a0ac9d`) finished BLOCKED with 310 named gaps. SWE.1/2/3 inspections passed on `9dd5b71`,
+  so the previous DMA-type contract-probe failure is resolved in the real run. SWE.4 stopped on repeated failed
+  unit checks and uncovered USPECs, and AFO refused rework of escalated FROZEN CODE findings. Archive
+  `858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458` integrity and fact/input/baseline bindings
+  PASS (OB-SPI-R1); the cited cause review identifies no missing onboarding fact in this corrected attempt.
+- USART request `BENCH-USART-ST-HAL-OB` launched as `afo-91b7e28a3bab37e5` on `9dd5b71`, with the signed
+  OA-2026-10-27-03 clock confirmation of 64,000,000 Hz. TIM remains prepared for sequential submission.
+
+- USART (`afo-91b7e28a3bab37e5`) finished BLOCKED with 711 named gaps after SWE.1/2/3 inspection PASS. Archive
+  `c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8` integrity and fact/input/baseline bindings
+  PASS (OB-T054). SWE.4 unit failures and uncovered USPECs remain; AFO refused rework of escalated FROZEN findings.
+  The cited review identifies no missing onboarding fact but explicitly leaves generated baud-validity and strict
+  deadline premises for owner adjudication, rather than asserting every CODE report is a true ST defect.
+- TIM `BENCH-TIM-ST-HAL-OB` launched as `afo-a06f0cfbf6e556cc`, with OA-2026-10-27-04 on unchanged runtime
+  `9dd5b71`. Model-authoring development is isolated in the feature checkout; no new source is deployed to it.

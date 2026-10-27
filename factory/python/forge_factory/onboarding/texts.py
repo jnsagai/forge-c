@@ -26,10 +26,10 @@ def _t(text: str, src: str) -> dict:
     return {"text": text, "from": src}
 
 
-def model_description(pid: str) -> str | None:
+def model_description(pid: str, model_path: Path | None = None) -> str | None:
     """The behaviour description a simulation model carries in its header comment (the model is the artifact that
     states it; feature 015 models and authored models both have one)."""
-    p = SIM_DIR / f"{pid}_model.py"
+    p = model_path or SIM_DIR / f"{pid}_model.py"
     if not p.is_file():
         return None
     lines = []
@@ -55,7 +55,8 @@ def _example_field(pkg: dict, device_macros: set[str]) -> tuple[str, str]:
     raise TextsUnavailable("TEXTS_NO_EXAMPLE_FIELD")
 
 
-def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str], function_order: list[str]) -> dict:
+def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str], function_order: list[str],
+           model_path: Path | None = None) -> dict:
     """`prompt` + `prompt_st_hal` for ST's classic HAL (driver style HAL_STANDALONE)."""
     P, inst = value(pkg, "register_prefix"), value(pkg, "instance")
     pid = P.lower()
@@ -84,7 +85,7 @@ def st_hal(pkg: dict, scope: list[str], system_name: str, device_macros: set[str
     mask = f"{P}_{reg}_{field}"
     one_bit = (lambda d: d["msb"] == d["lsb"])(value(pkg, "register_index")[f"{P}_{reg}"]["fields"][field])
     effect = f"set {P}_{reg}.{field}" if one_bit else f"write the configured value to {P}_{reg}.{field}"
-    model = model_description(pid)
+    model = model_description(pid, model_path)
     if model is None:
         raise TextsUnavailable(f"TEXTS_MODEL_DESCRIPTION_MISSING:{pid}")
     protos = "; ".join(api["prototypes"][f] for f in fns)
@@ -267,7 +268,7 @@ def device_macros(ctx) -> set[str]:
     return set(re.findall(r"#define\s+(\w+)\s", dh.read_text(errors="replace"))) if dh else set()
 
 
-def generate(ctx, pkg: dict) -> dict:
+def generate(ctx, pkg: dict, model_path: Path | None = None) -> dict:
     """The package `texts` for the work order's driver style; {} when the style has no template set yet."""
     style = value(pkg, "driver_style")
     if style != "HAL_STANDALONE":
@@ -275,7 +276,7 @@ def generate(ctx, pkg: dict) -> dict:
     scope = ctx.spec.get("scope") if isinstance(ctx.spec.get("scope"), list) else []
     # the base instructions name the system '<P> driver' (EARS check); the examples use the same name
     return st_hal(pkg, scope, f"{value(pkg, 'register_prefix')} driver", device_macros(ctx),
-                  ctx.delivery["scope"]["functions"])
+                  ctx.delivery["scope"]["functions"], model_path=model_path)
 
 
 def plain(texts: dict) -> dict:

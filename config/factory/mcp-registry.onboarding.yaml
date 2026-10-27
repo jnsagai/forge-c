@@ -1,0 +1,21 @@
+# Additive Feature 016 operation. No existing role gains a grant.
+schema: forge-c/mcp-registry-overlay/0.1
+servers:
+  forge-sim-mcp:
+    ops:
+    - name: check_model
+      logical_tool: RM-sourced model load, reset, access and delivered-code smoke gate
+      mandatory: false
+      status: IMPLEMENTED_ONBOARDING
+      timeout_seconds: 600
+      role_grants: [onboard-model-author, onboard-model-inspector]
+      notes: Fixed derived input subject and candidate path; authored execution uses the offline filesystem sandbox.
+  forge-docs-mcp:
+    ops:
+    - name: read_onboarding_input
+      logical_tool: Bounded read of immutable onboarding owner-input documents
+      mandatory: false
+      status: IMPLEMENTED_ONBOARDING
+      timeout_seconds: 30
+      role_grants: [onboard-model-author, onboard-model-inspector]
+      notes: inputs/ only; literal bounded search and offsets, no writes or external paths.
