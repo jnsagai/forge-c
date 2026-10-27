@@ -280,3 +280,12 @@ and RNG suggestions (unsupported access/RMW). One isolated LPTIM read passes,
 which does not satisfy the original clearing requirement. This narrows the next
 engineering work to source-grounded semantic-profile changes and correct intent
 mapping; it is not a repaired driver, autonomous recovery or qualified lesson.
+
+
+## KI-014-030: Full host-audit coverage is unavailable
+
+- **What:** At clean fbd8bc8, finite user-bus visibility passes with both exact harmless probe/reply pairs. System-bus BecomeMonitor and boundary visibility are denied (native fallback diagnostics retained as byte counts only); kernel audit status remains unavailable. Software continuous/rotation accounting, authenticated-control/actor correlation and full intervention replay are still incomplete.
+- **Impact:** Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.
+- **Evidence:** evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json
+- **Human action:** Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.
+- **Status:** OPEN

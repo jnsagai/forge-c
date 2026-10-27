@@ -410,3 +410,42 @@ The actual host setup/privileged fault window, independent product oracle eviden
 and full native campaigns remain unavailable/unrun. No task was ticked (30/58);
 product success, learning benefit, availability and self-healing remain separate
 unproven qualifications.
+
+
+## 2026-10-27: native bus visibility source and measured permission boundaries
+
+Exact clean source **`fbd8bc89967b68ed4e99e4c63fe12784f135e62f`**:
+**318 affected PASS / one historical HAL-r154 workspace SKIP / zero failures or
+errors** (31.083 s); release **13 PASS** (8.794 s). [Commands, JUnit, source
+profiles and native receipts](../../evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json).
+The 83 host/bus tests include isolated native D-Bus Manager and Unit calls, unknown
+actor preservation, exact third-party call/reply visibility, malformed/truncated
+headers, monitor clean exit/fallback, child cleanup, bytes/messages/duration
+bounds, source freezing and response-body injection/privacy. No shared service
+was exercised by those isolated tests. Spec/contracts (58 mappings, six schemas,
+38 structural fixtures), 14 design checks, handoff 30/58 and selected Ruff pass
+separately. Current independent CRE remains **REJECTED/PROTECTED_PATH_CHANGE**.
+Earlier full-core/inherited/systemd cohorts retain their original revisions.
+
+`bus_audit` collects the native header-only profile and exact stream hash, not
+classic unescaped message bodies. It proves BecomeMonitor via loss of the
+monitor's acquired unique name and both harmless GetId query/reply boundaries,
+binds the systemd owner at both ends and detects ownership/disconnect/clock
+uncertainty. Optional frozen bus scopes extend the existing host capture; legacy
+plans continue working. The finite source never supplies a global intervention
+count or clears continuous coverage/authentication prerequisites.
+
+Actual Omniverse2 probes from isolated clean
+`/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/repo`:
+**user bus visibility PASS/exit 0**; **system bus BLOCKED/exit 2** (BecomeMonitor
+and boundary visibility not proven; fallback diagnostics); **kernel preflight
+BLOCKED/exit 2** (status unavailable). Native invocations preserve source SHA,
+clean start/end, command, exit, clocks and artifact hashes. No raw body, private
+credential, model call, service mutation, grant renewal or factory deployment.
+KI-014-030 distinguishes actual host prerequisites from incomplete software.
+
+Formal task count stays **30/58**. Remaining software includes continuous and
+rotation-safe sources, authenticated-control/actor correlation and complete
+source-derived intervention verification. Genuine product oracle production,
+the approved host fault window and elapsed 24/72/168-hour campaigns remain unrun;
+product success, learning benefit and operational availability are unproven.

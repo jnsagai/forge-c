@@ -290,3 +290,40 @@ Genuine independent product oracle production/evidence and the authorized host
 reboot/mount-loss window remain required. Preserve the inspector freeze, seventeen
 owner-accepted unscheduled live cases, finite/exhausted missions, protected CRE veto
 and signing boundaries. Formal progress remains **30/58**, no task/ledger rebaseline.
+
+
+## Codex follow-up — 2026-10-27 native bus source
+
+Latest tested source **`fbd8bc89967b68ed4e99e4c63fe12784f135e62f`**. Worktree
+`$FC014_OPS/codex-resume-20261027`; test commands ran clean there with private
+state/events/temp, with no concurrent source edits. Evidence/docs commit follows.
+
+- Added finite `bus_audit` source and `host_audit bus-preflight --bus user|system`;
+  optional frozen `bus_scopes`/`bus_source_sha256` in host plans reuse capture.
+  Native header-only profile retains exact replay bytes/hash, excludes bodies,
+  and proves monitor activation plus two third-party query/reply boundaries.
+  Manager/Unit calls are captured; actor, manager unit argument and effects remain
+  UNKNOWN. No continuous coverage or global intervention count is inferred.
+- **318 affected PASS, 1 historical HAL-r154 workspace SKIP, zero failures;
+  release 13 PASS**. Includes actual isolated D-Bus traffic and malicious body
+  text, clean exit/fallback/privacy/resource/source-freezing checks. Static
+  spec/contracts/design/handoff/Ruff pass separately. CRE still
+  REJECTED/PROTECTED_PATH_CHANGE. Broader cohorts are earlier revisions.
+- Remote isolated clone `$Q/host-bus-fbd8bc8/repo` clean at source above, artifacts
+  alongside: user-bus finite visibility **PASS exit 0**; system-bus monitor/fallback
+  **BLOCKED exit 2**; kernel prerequisite **BLOCKED exit 2**. Public evidence
+  `host-bus-fbd8bc8/`, private local copies `$FC014_OPS/host-bus-native-fbd8bc8/`.
+  No new Qwen calls or changes to shared services, authority, counters or source
+  deployment. GPU queue was empty at this turn's initial read.
+- New KI-014-030 records host prerequisites and separate incomplete software.
+  Formal **30/58** unchanged; do not tick from finite visibility alone.
+
+Next: complete authenticated operator/control and actor correlation using the
+existing CLI/dashboard/Intent/Store action/event paths, then continuous/segmented
+rotation-safe source accounting and full observer verification. Header profiles
+alone cannot identify manager-call unit arguments or prove effects; preserve those
+unknowns until authoritative sources actually resolve them. Kernel audit/system
+bus privilege and the approved host fault window remain unavailable, but do not
+block independent software work. Product oracle production and elapsed native
+campaigns remain required. Preserve all earlier owner freezes, finite/exhausted
+missions, signing boundaries and the CRE veto; no automatic deployment or merge.

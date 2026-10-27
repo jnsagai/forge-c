@@ -293,6 +293,16 @@
    "evidence": "evidence/014-durable-local-autonomy/st3-driver-runs/author-diagnostics.json",
    "human_action": "Review semantic-domain support and model validation separately before a scoped, independently checked remedy or bounded retry; do not relax gates or the inspector freeze.",
    "status": "OPEN"
+  },
+  {
+   "id": "KI-014-030",
+   "area": "operational-qualification",
+   "title": "Complete independent host audit remains unavailable on Omniverse2",
+   "what": "At clean fbd8bc8, finite user-bus visibility passes with both exact harmless probe/reply pairs. System-bus BecomeMonitor and boundary visibility are denied (native fallback diagnostics retained as byte counts only); kernel audit status remains unavailable. Software continuous/rotation accounting, authenticated-control/actor correlation and full intervention replay are still incomplete.",
+   "impact": "Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.",
+   "evidence": "evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
+   "human_action": "Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.",
+   "status": "OPEN"
   }
  ]
 }
