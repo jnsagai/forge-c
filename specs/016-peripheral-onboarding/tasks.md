@@ -446,3 +446,7 @@ SWE.1–SWE.6.
 - OB-T062's documentation task is now verified and ticked with `OB-T062-RECORD`: the underlying local-model
   execution record remains explicitly NOT_RUN, with no command, no exit code and zero model calls. Passing the
   record-presence check does not claim a local-model run or profile qualification.
+
+- The owner signed corrected GPIO approval OA-2026-10-27-05; it verifies against hash `e7eeec3c04d4…` and is
+  preserved in owner-decision commit `b7c7244`. `OB-CORRECTED-APPROVALS` verifies all four current packages and
+  their immutable signed copies. GPIO retry `BENCH-GPIO-ST-HAL-OB-R1` is prepared and waits for SPI to terminate.
