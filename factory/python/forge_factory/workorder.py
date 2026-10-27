@@ -177,7 +177,11 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
     return ods
 
 
-def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
+            *, purpose: str = "DEVELOPMENT") -> tuple[Path, dict]:
+    from .release.development import binding
+
+    development = binding(purpose)
     spec = json.loads((example / "workorder.json").read_text())
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
@@ -244,6 +248,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             idx[item["path"]] = register_index(ws / item["path"])
     manifest = {
         "schema": "forge-c/work-order/0.4",
+        "purpose": purpose,
+        **({"development_safety": development} if development else {}),
         "work_order": wo,
         "created_at": utc_now(),
         "input_baseline_commit": head,
@@ -302,7 +308,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
         (ws / ".forge-run/safety_scope.json").chmod(0o444)
         # OD-2026-10-19-11: owner-signed safety documents enter the work order read-only, hash-checked; unsigned
-        # drafts never do (the issues are recorded and the package stays BLOCKED on the missing document)
+        # drafts never do. Formal review keeps signature gaps; the separately bound development policy can defer them.
         for doc in sc.get("documents") or []:
             data = (REPO_ROOT / doc["source"]).read_bytes()
             if sha256_bytes(data) != doc["sha256"]:
@@ -608,7 +614,12 @@ def run(
     fresh_recovery_from: str | None = None,
     durable_binding: dict | None = None,
     recovery_exhausted: dict | None = None,
+    purpose: str = "DEVELOPMENT",
 ) -> dict:
+    from .release.development import PURPOSES
+
+    if purpose not in PURPOSES:
+        raise ValueError("WORK_ORDER_PURPOSE_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
     local = None
@@ -699,10 +710,11 @@ def run(
         resume_limits = inherited
     if resume and intake_only:
         raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
+    purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
     ws, manifest = (
-        prepare(example, wo, provided_from, resume_limits=resume_limits)
+        prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
-        else prepare(example, wo, provided_from)
+        else prepare(example, wo, provided_from, **purpose_args)
     )
     if durable_binding:
         from .afo.product_job import install
@@ -847,6 +859,8 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--example", type=Path, required=True)
+    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW"), default="DEVELOPMENT",
+                    help="development defers owner-authorized SSA/TAA signatures; formal review retains strict policy")
     ap.add_argument("--wo", required=True)
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
@@ -919,6 +933,7 @@ def main(argv: list[str] | None = None) -> int:
             resume_upto=a.resume_upto,
             resume_max_attempts=a.resume_max_attempts,
             resume_max_wall_seconds=a.resume_max_wall_seconds,
+            purpose=a.purpose,
         )
     except ResumeRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))

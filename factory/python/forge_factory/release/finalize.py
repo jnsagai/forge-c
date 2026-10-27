@@ -542,6 +542,7 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         "derived_from": "recorded evidence only",
         "generated_at": utc_now(),
         "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
+        "work_order_purpose": wo.get("purpose", "LEGACY"),
     }
     _w(stage, "quality/final-gates.json", pretty_json(quality))
     return quality
@@ -595,7 +596,9 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     import tempfile
 
     with tempfile.TemporaryDirectory() as dry:  # status under v0.4 rules (KPI files can only add, never remove gaps)
-        dry_status = pk.build(stage, Path(dry), run_id, POLICY_V04)["package_status"]
+        from .development import effective_policy
+
+        dry_status = pk.build(stage, Path(dry), run_id, effective_policy(POLICY_V04, ws, stage))["package_status"]
     kpi_snapshot_into(ws, stage, dry_status)
     from ..reliability.evidence import bundle_into  # feature 004: CRE evidence (never changes the package status)
 
@@ -615,7 +618,8 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     sealed: dict = {}
 
     def seal(_key: str) -> dict:
-        res = pk.build(stage, out_dir, run_id, POLICY_V05)
+        selected_policy = effective_policy(POLICY_V05, ws, stage)
+        res = pk.build(stage, out_dir, run_id, selected_policy)
         with pk.zipfile.ZipFile(res["archive"]) as z:
             gaps = json.loads(z.read("missing_artifacts.json"))["gaps"]
         for f in out_dir.iterdir():
@@ -630,7 +634,10 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             "gaps": gaps,
             "quality_run_status": quality["run_status"],
             "scope": NOT_SAFETY,
-            "policy": str(POLICY_V05.relative_to(REPO_ROOT)),
+            "work_order_purpose": quality.get("work_order_purpose", "LEGACY"),
+            "policy": str(POLICY_V05.relative_to(REPO_ROOT)) if selected_policy == POLICY_V05
+            else "archive:evidence/" + selected_policy.relative_to(stage).as_posix(),
+            "policy_sha256": sha256_file(selected_policy),
             "finalized_at": utc_now(),
         }
         os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
@@ -655,8 +662,8 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
         run_id=run_id,
         payload_ref=out["archive_ref"],
     )
-    from ..knowledge.store import LessonStore
     from ..knowledge.experience import capture_workspace, consolidate
+    from ..knowledge.store import LessonStore
 
     lessons = LessonStore()
     capture_workspace(lessons, ws, run_id, package=out)

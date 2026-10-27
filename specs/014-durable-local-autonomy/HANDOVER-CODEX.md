@@ -30,6 +30,7 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 | 2026-10-27 | Option (b) then "Drivers first" | Durable-AFO activation for an operation-24 campaign was authorized, but a no-reboot operation-24 cannot PASS by the factory's own rules (missing faults), so: run the three new drivers as normal local work orders first; formal campaign later with a reboot/mount window and an independent fault observer. |
 | 2026-10-27 | Peripherals "RNG, LPTIM, WWDG"; merge main into feat/014 "Yes, merge now" | Done (see below). |
 | 2026-10-27 | OD-2026-10-27-01 "ASIL B for all three" | Scopes SC-WWDG/SC-RNG/SC-LPTIM-2026-10-27 in `config/factory/safety-scope.yaml` (protected path; owner-decision commit `de54734`). |
+| 2026-10-27 | OD-2026-10-27-02 "about the safety signature, I want it to be ignored during the development of forge-c" | SSA/TAA signature prerequisites are deferred for bound DEVELOPMENT work orders; ASIL and engineering gates remain. FORMAL_REVIEW retains signatures. Supersedes development signature requests below; see [development-safety-policy.md](development-safety-policy.md). |
 
 Standing rules from the owner and earlier handovers:
 - ALL Qwen tests run on remote **Omniverse2** (`ssh omniverse2@100.118.28.92`, key auth; RTX 6000 Ada 48 GB, shared,
@@ -136,6 +137,8 @@ PARTIAL, product/learning/availability stay NOT_RUN, deployment NOT_ACTIVATED.
 
 ## Owner actions pending (ask once, then act)
 
+**Update OD-2026-10-27-02:** do not request SSA/TAA signatures for development. The earlier signing item below applies only to formal review; the development deferral is bound in each new work order. Other owner actions remain in force.
+
 1. Review and sign SSA-STC-001 / TAA-STC-001 (answer Q-07, Q-04). On the owner's instruction, register them under the
    three scopes (path, basis, sha256, approved_by/at, decision) in an "Owner decision" commit; then re-run the drivers
    for READY packages.
@@ -163,7 +166,7 @@ Tick a task only when its acceptance test's exact evidence exists. Effort is wal
 
 | # | Owner act | Then | Tasks served |
 |---|---|---|---|
-| B1 | Sign SSA-STC-001 / TAA-STC-001 (answer Q-07 RNG relevance, Q-04 model per role) | register them in an "Owner decision" commit; re-run the st3 drivers for READY packages; with the Feature 015 TIM review this gives >= 4 fresh held-out baselines for one new inspector measurement (the only route to closing KI-014-003) | DA-T027 groundwork; KI-014-003; DA-T035 (KI: "paired author/inspector run on a refreshed held-out set") |
+| B1 | **Development signing prerequisite superseded by OD-2026-10-27-02.** SSA/TAA signatures remain a formal-review act. | Bound DEVELOPMENT work orders defer the two signatures. Fix the recorded SWE.1 semantic/output failures before an authorized driver rerun; signatures alone do not yield READY. With the TIM review, >= 4 genuinely verified fresh frozen held-out baselines are still required for inspector measurement. | DA-T027 groundwork; KI-014-003; DA-T035 (KI: "paired author/inspector run on a refreshed held-out set") |
 | B2 | Review PR #42 (brownfield-resume behaviour change; CRE REJECTED/PROTECTED_PATH_CHANGE) | address review comments; keep the PR mergeable against main | KI-014-010 |
 | B3 | Add the two allowed-signers lines and sign one disposition and one patch bundle | run the offline round trip live | KI-014-009 (DA-T056–058 are already ticked deterministically) |
 

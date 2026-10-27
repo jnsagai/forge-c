@@ -27,7 +27,7 @@ TOOLS = ("clang", "gcc", "arm-none-eabi-gcc", "cppcheck", "cmake", "ninja", "gco
 CONTRACT_FIELDS = ("driver", "layer", "target", "scope", "budgets", "system_names", "guideline", "trace_profile",
                    "register_contract", "hal_unit_isolation", "upstream", "owner_dispositions", "safety_target",
                    "owner_safety_documents", "owner_safety_document_issues", "peripheral", "peripheral_profile_sha256",
-                   "delivery", "code_mode")
+                   "delivery", "code_mode", "purpose", "development_safety")
 TABLES = ("CREATE TABLE IF NOT EXISTS lineages (root TEXT PRIMARY KEY, started REAL, limits TEXT)",
           "CREATE TABLE IF NOT EXISTS attempts (wo TEXT PRIMARY KEY, root TEXT, parent TEXT, reserved REAL)")
 

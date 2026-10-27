@@ -1,7 +1,9 @@
 # Owner decisions on the PRODUCT safety scope (ADR-0010). Only the owner writes this file; an agent never derives an
 # ASIL. workorder.prepare copies the matching decision, read-only, into .forge-run/safety_scope.json.
 # Recording a target ASIL is not a safety approval: ASIL work orders need the HSI, the allocation review, a software
-# safety analysis and a tool assurance assessment, written by competent humans; until then the package stays BLOCKED.
+# safety analysis and a tool assurance assessment, written by competent humans, for formal assurance review.
+# OD-2026-10-27-02 defers SSA/TAA signatures during Forge-C development only; see development-safety-policy.yaml.
+# The target ASIL, engineering gates and absence of a safety approval remain explicit.
 schema_version: '1.0'
 decisions:
   - scope_id: SC-RCC-2026-10-18
