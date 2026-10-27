@@ -35,6 +35,8 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 | KI-014-027 | live evidence | DA-T040: Native lesson retrieval before a job not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job. |
 | KI-014-028 | live evidence | DA-T041: Independent lesson candidate qualification not shown live | ACCEPTED_BY_OWNER | Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows. |
 | KI-014-029 | local-author | Three ST LL pilots BLOCKED at SWE.1; required outputs missing | OPEN | Review author/output failures before a bounded retry; inspector freeze remains. |
+| KI-014-030 | operational-qualification | Complete independent host audit unavailable | OPEN | Provide host visibility/fault windows; finish the separate continuous collection/correlation software. |
+| KI-014-031 | operator-intent | Older resume database effects after newer stop | RESOLVED_DETERMINISTIC | Source 7e1abb2 concurrency/rollback evidence retained; native campaign remains separate. |
 
 ## KI-014-001: Five diagnosis protocol trials not run: no qualified alternative local model
 
@@ -174,9 +176,9 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 
 ## KI-014-018: DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live
 
-- **What:** No live status or scorecard snapshot and no privacy scan.
+- **What:** No qualifying live status/scorecard snapshot and privacy scan. Backlog A1 was re-checked after Job 050 had already ended at 08:19 UTC; terminal artifact/hash replay and a published-metadata privacy-pattern scan pass, but cannot supply a live snapshot retrospectively.
 - **Impact:** DA-T018 stays unticked; its behaviour is verified only by deterministic fixtures.
-- **Evidence:** specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)
+- **Evidence:** evidence/014-durable-local-autonomy/st3-driver-runs/publication-recheck-20261027.json; specs/014-durable-local-autonomy/implementation-status.csv
 - **Human action:** Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run.
 - **Status:** ACCEPTED_BY_OWNER
 

@@ -1,0 +1,46 @@
+{
+  "schema": "forge-c/external-engineering-independent-check/1",
+  "source_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "model_findings": [
+    {
+      "index": 0,
+      "function": "effective_policy",
+      "literal_quote_matches": false,
+      "verdict": "NOT_ACTIONABLE_GIVEN_FROZEN_PROTECTED_BASELINES",
+      "reason": "Requires changes to immutable protected baseline files outside the declared caller contract; current fixed baseline behavior matches the proposed expectation."
+    },
+    {
+      "index": 1,
+      "function": "effective_policy",
+      "literal_quote_matches": true,
+      "verdict": "NOT_ACTIONABLE_GIVEN_FROZEN_PROTECTED_BASELINES",
+      "reason": "Requires changes to immutable protected baseline files outside the declared caller contract; current fixed baseline behavior matches the proposed expectation."
+    }
+  ],
+  "actual_baselines": [
+    {
+      "base": "factory/release-manager/policies/release-package-policy-v0.4.json",
+      "sha256": "c69fab88c6ec01509eda324cef4475254fe167cd4a601350e8e5c9da62094908",
+      "source_schema": "forge-c/release-package-policy/0.4",
+      "effective_schema": "forge-c/release-package-policy/0.4-development",
+      "repeated_same_base_is_idempotent": true,
+      "metadata_required_once": true,
+      "base_unchanged": true
+    },
+    {
+      "base": "factory/release-manager/policies/release-package-policy-v0.5.json",
+      "sha256": "37dac9b31548bbd40dfebdbe40046ae75a19b5e7e4eec8f977b7ea8e2e02b98e",
+      "source_schema": "forge-c/release-package-policy/0.5",
+      "effective_schema": "forge-c/release-package-policy/0.5-development",
+      "repeated_same_base_is_idempotent": true,
+      "metadata_required_once": true,
+      "base_unchanged": true
+    }
+  ],
+  "accepted_findings": 0,
+  "code_changes_from_review": 0,
+  "qualified_lessons": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "runtime_qualification": "NOT_CLAIMED",
+  "new_model_requests": 0
+}

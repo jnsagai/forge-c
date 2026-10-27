@@ -635,3 +635,59 @@ Formal **30/58** stays unchanged; no new task or ledger baseline. Broader reconc
 new model request, deployment, shared-service mutation, grant/mission reset or merge.
 Product success, learning benefit, operational campaigns and the thirty-day SLO
 remain unproven. Existing owner omissions/freeze/signing decisions stay in force.
+
+
+## 2026-10-27: owner development signature policy, A1 revalidation and remote Qwen assistance
+
+Owner **OD-2026-10-27-02** explicitly defers SSA/TAA signatures during Forge-C
+development. Source `1b32534eecfaa0481d4eb00ebf30fe478b42cb01` binds this policy
+and unchanged formal-policy hashes into new DEVELOPMENT work orders and brownfield
+identity. The finalizer defers exactly the two document files and seals explicit
+policy/deferral records. ASIL, all other quality checks and absence of safety
+approval remain. FORMAL_REVIEW and legacy orders use strict policies; malformed,
+changed or revoked bindings produce a blocking finding. Drafts remain unsigned.
+[Policy behavior and owner quote](development-safety-policy.md).
+
+Exact clean source: **1232 core/assurance PASS / 15 SKIP / zero failures or errors**,
+580.655 s; release **13 PASS**, 9.066 s. Final Omniverse2 **49 PASS**, 47.171 s.
+Native initial 44 PASS/5 FAIL (missing tool/data-root settings) and second 48
+PASS/1 FAIL (directory used as Fabro binary) are retained. The final environment
+uses the existing executable/PlantUML/LLVM with private state/home/archives. No
+source/test gate was weakened to pass. Total native test time including failures
+119.653 s. Skips list exact historical workspace/RM/archive, disabled live Fabro
+and two OS-identity fixture prerequisites. [Raw attempts, commands and hashes](../../evidence/014-durable-local-autonomy/development-safety-1b32534/summary.json).
+
+Synthetic READY fixture results prove mechanical packaging behavior only, not real
+driver success or safety approval. Native kernel-audit preflight remains BLOCKED
+(auditctl absent, continuous bus/control correlation missing). CRE retains
+REJECTED/PROTECTED_PATH_CHANGE. Static spec/contracts, design, handover and Ruff
+pass separately. Last full inherited 1840 cohort remains 20650af; this source's
+expanded core/assurance cohort has 1247 cases. No deployment or automatic merge.
+
+**Backlog A1:** Job 050 was already terminal. Existing 0/3 READY, three SWE.1 blocks,
+59 gaps each, source/package hashes and all 76 requests / 324810 input / 51810
+output tokens are revalidated against read-only remote artifacts. The published
+metadata secret-pattern scan and executable hash/count replay pass; an altered-count
+private copy is refused. [Terminal recheck](../../evidence/014-durable-local-autonomy/st3-driver-runs/publication-recheck-20261027.json).
+No live status/scorecard capture is invented; KI-014-018 rechecked and DA-T018 stays
+unticked. The actual SWE.1 failures still need engineering fixes; development
+signature deferral cannot repair them.
+
+Owner requested useful remote Qwen work. New distinct bounded job 080 reviewed the
+new policy source: **one upstream request**, 2574 input + 531 output tokens,
+7912.9 ms. Reference check FAIL (one exact quote, one inexact); both suggestions
+depend on hypothetical changes to protected fixed policies outside the input
+contract. Actual baseline replay PASS with zero actionable findings/code changes.
+Existing LessonStore APIs retain factual review and independent-check dispositions
+(DEFERRED_BUDGET, NO_NEW_LESSON), no invented repair incident, zero promoted lessons
+or measured benefit. [Sanitized study/accounting](../../evidence/014-durable-local-autonomy/qwen-development-safety-review-1b32534/summary.json).
+This one-call budget is SPENT; older ST3/bus-study budgets remain SPENT. It does not
+qualify a model role or prove autonomous self-healing. Final native qualification
+ran after the Qwen request completed; no competing inference or shared-service
+mutation was introduced.
+
+Formal **30/58** remains unchanged, no task/ledger baseline change. Product, learning
+benefit and actual 24/72/168-hour campaigns remain unproven. Continue backlog A2's
+independent observer, A3 comparison tooling, then A4 clean-worktree housekeeping.
+Owner-signature deferral is specific to development SSA/TAA; the remaining signing,
+authority, inspector-freeze and parked-case decisions remain in force.

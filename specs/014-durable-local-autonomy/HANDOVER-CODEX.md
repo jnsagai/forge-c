@@ -5,6 +5,51 @@ implementation, evidence and qualification from here; do not produce another pla
 specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from passing evidence records.
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
+
+## Current checkpoint — 2026-10-27 development policy and backlog A1
+
+- Tested runtime source **`1b32534eecfaa0481d4eb00ebf30fe478b42cb01`**: new DEVELOPMENT
+  work orders defer SSA/TAA signatures under owner decision OD-2026-10-27-02.
+  ASIL and engineering gates remain; FORMAL_REVIEW/legacy stay strict. No SSA/TAA
+  was signed, registered or approved by the agent. This supersedes development
+  signing prerequisites in historical text below. No deployment was activated.
+- Exact clean expanded core/assurance: **1232 PASS / 15 SKIP / zero failures or
+  errors**, 580.655 s; release **13 PASS**, 9.066 s. Final isolated Omniverse2
+  qualification **49 PASS**, 47.171 s. Both earlier native harness failures remain
+  published: missing tool/data-root settings (44/5), then an unpacked directory
+  used as Fabro executable (48/1). Actual executable/private settings fixed the
+  harness without changing source or gates. Static checks PASS separately.
+- Public `development-safety-1b32534/` includes exact commands, every native attempt,
+  hashes, skips and preflight. CRE still REJECTED/PROTECTED_PATH_CHANGE. Native
+  kernel audit preflight remains BLOCKED; host interventions UNKNOWN. The prior
+  full 1840-test cohort remains at 20650af; the new expanded core has 1247 cases.
+- **A1 complete/revalidated:** job 050 is terminal since 08:19 UTC, 0/3 READY,
+  all SWE.1 BLOCKED/59 gaps. Source/packaged artifact hashes and 76 requests /
+  324810 input + 51810 output tokens match existing publication. Executable
+  `st3-driver-runs/verify-publication.py` passes and rejects altered counts.
+  The metadata privacy-pattern scan passes; no live snapshot can be captured
+  retrospectively. KI-014-018 rechecked and stays accepted/DA-T018 unticked.
+- Owner requested more remote Qwen work. Distinct job **080** reviewed the new
+  development-policy module: **one upstream call**, 2574 input + 531 output tokens,
+  7912.9 ms request. Literal reference FAIL (one quote exact, one not); two
+  suggestions require hypothetical protected-baseline edits outside the declared
+  contract. Actual frozen-baseline replay PASS, **zero actionable findings or
+  model-derived code changes**. Factual dispositions: DEFERRED_BUDGET and
+  NO_NEW_LESSON, zero qualified lessons/benefit. Public study
+  `qwen-development-safety-review-1b32534/`; one-call budget **SPENT**. Do not
+  re-dispatch it or either older spent study. No role/self-healing qualification.
+- All qualification/model commands above are terminal. Formal **30/58**, no new
+  task tick, CSV/ledger source_revision unchanged. Product success, learning
+  benefit and actual 24/72/168-hour campaigns remain NOT_RUN/unproven.
+
+Next: **A2 independent fault observer**, then A3 controlled-comparison reporting,
+then A4's four exact clean worktree removals. Preserve unverified observer WIP in
+`$FC014_OPS/codex-resume-20261027` (`fault_observer.py`, `soak.py`), backed up as
+`collector-wip-before-A1-20261027.patch`. It is not committed or tested. Continue
+from actual files; the collector module/integration is still unfinished. The
+development-policy worktree is `$FC014_OPS/development-safety-20261027`. Host
+privileges/fault windows are separate prerequisites, not excuses for that software.
+
 ## Start here
 
 - Repository https://github.com/jnsagai/forge-c, branch `feat/014-durable-local-autonomy`, OPEN DRAFT PR
@@ -116,9 +161,9 @@ PARTIAL, product/learning/availability stay NOT_RUN, deployment NOT_ACTIVATED.
 - GPU job 040 (`e0c020d`, done 08:13 UTC): learning sets 1–4 = 49/49, 63/63, 14/14, 13/14 (set 4: both clean
   baselines accepted, GPIOA S1-OMIT off target). Record: `evidence/014-durable-local-autonomy/stepwise-inspector-20261026/
   learning-round-e0c020d.json`. Inspector development is frozen (owner).
-- GPU job 050 started 08:13 UTC: deploy OK (`9a88fbc`), inputs VERIFIED, peripheral tests 12 passed, campaign running.
+- GPU job 050 started 08:13 UTC and completed 08:19 UTC: deploy OK (`9a88fbc`), inputs VERIFIED, peripheral tests 12 passed; all three products BLOCKED at SWE.1. See the current checkpoint and published terminal results.
 
-## In flight at transfer: GPU job 050 (st3 driver runs)
+## Historical transfer snapshot: GPU job 050 (completed 08:19 UTC)
 
 - Omniverse2 GPU queue: runner `$Q/runs/gpuq-runner.sh` (flock), `Q=/mnt/data/forge-c/inspector-014-b309039`. Jobs are
   scripts in `$Q/gpuq/pending/` run in name order; results in `$Q/gpuq/done|failed/<job>.{log,status}`; status with
@@ -157,7 +202,7 @@ Tick a task only when its acceptance test's exact evidence exists. Effort is wal
 
 | # | Item | Tasks served | Effort | Done when |
 |---|---|---|---|---|
-| A1 | Collect and publish GPU job 050 (st3 driver runs): package status, gaps, first failing phase per driver; sanitized summary under `evidence/014-durable-local-autonomy/st3-driver-runs/`. While it still runs, capture status/scorecard snapshots and a privacy scan (KI-014-018's close condition is "any live run"). | groundwork DA-T027; DA-T018 (KI) | hours | summary committed; KI-014-018 re-checked against the snapshots |
+| A1 | **DONE/revalidated 2026-10-27; DA-T018 remains unticked.** Collect and publish GPU job 050 (st3 driver runs): package status, gaps, first failing phase per driver; sanitized summary under `evidence/014-durable-local-autonomy/st3-driver-runs/`. While it still runs, capture status/scorecard snapshots and a privacy scan (KI-014-018's close condition is "any live run"). | groundwork DA-T027; DA-T018 (KI) | hours | summary committed; KI-014-018 re-checked against the snapshots |
 | A2 | Independent fault observer for `operation-24`: one record per `FAULTS` class (`afo/qualification.py`) with `independently_restored`, `restoration_seconds`, `unexpected_interventions`, `ledger_reset`, `duplicate_effects`, `false_ready`, bound to the manifest sha (`afo/operational_campaign.report`); deterministic tests; then the operation-24 manifest with the three drivers as product job bindings. | prerequisite of DA-T016/017/026/046/049/052 | ~1 day | observer + manifest tested locally; nothing ticked yet |
 | A3 | DA-T028 comparison report on frozen cases and recorded configuration identities (no RCC dependency); use already-recorded runs where they qualify, record NOT_RUN for any live comparison still missing. | DA-T028 (partial) | ~0.5 day | report generator tested; live part listed as missing |
 | A4 | Housekeeping: remove the clean leftover worktrees `repos/forge-c-014-regress-1e2fd46`, `-regress-20650af`, `-onboard-rng`, `-onboard-lptim` (`git -C $FC014_REPO worktree remove ...`); check loop10 free space. | — | minutes | worktrees gone |

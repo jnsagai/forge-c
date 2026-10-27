@@ -178,9 +178,9 @@
    "id": "KI-014-018",
    "title": "DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live",
    "area": "live evidence",
-   "what": "No live status or scorecard snapshot and no privacy scan.",
+   "what": "No qualifying live status/scorecard snapshot and privacy scan. Backlog A1 was re-checked after Job 050 had already ended at 08:19 UTC; terminal artifact/hash replay and a published-metadata privacy-pattern scan pass, but cannot supply a live snapshot retrospectively.",
    "impact": "DA-T018 stays unticked; its behaviour is verified only by deterministic fixtures.",
-   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "evidence": "evidence/014-durable-local-autonomy/st3-driver-runs/publication-recheck-20261027.json; specs/014-durable-local-autonomy/implementation-status.csv",
    "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run.",
    "status": "ACCEPTED_BY_OWNER"
   },
@@ -298,9 +298,9 @@
    "id": "KI-014-030",
    "area": "operational-qualification",
    "title": "Complete independent host audit remains unavailable on Omniverse2",
-   "what": "Native probes at fbd8bc8 found kernel audit status unavailable and system-bus monitor/boundary visibility unproven (diagnostic/fallback). At 7e1abb2 user-bus visibility and 62 remote control/bus tests passed. Source 2246a58 adds frozen, privacy-checked application control ingestion/replay with 83 remote deterministic passes, but native actor/control/write/service correlation, continuous/rotation-safe sources and full all-channel intervention verification remain incomplete.",
+   "what": "Native probes at fbd8bc8 found kernel audit status unavailable and system-bus monitor/boundary visibility unproven (diagnostic/fallback). At 7e1abb2 user-bus visibility and 62 remote control/bus tests passed. Source 2246a58 adds frozen, privacy-checked application control ingestion/replay. Source c38158c adds bounded protected byte segments, retained single-rotation handoff and executable prefix-chain replay (152 Omniverse2 deterministic passes). Source 6b41668 adds bounded incremental selected-event replay across ranges/rotation, explicit pending/orphan facts and enriched-record handling (183 remote deterministic passes). Actual 6b41668 preflight remains BLOCKED: auditctl unavailable, continuous system-bus coverage and authenticated control correlation required. Native full-record/window qualification, batched continuous replay, native actor/control/write/service correlation and full all-channel intervention verification remain incomplete.",
    "impact": "Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.",
-   "evidence": "evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
+   "evidence": "evidence/014-durable-local-autonomy/event-replay-6b41668/summary.json; evidence/014-durable-local-autonomy/audit-segments-c38158c/summary.json; evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
    "human_action": "Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.",
    "status": "OPEN"
   },

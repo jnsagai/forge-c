@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="49" time="54.776" timestamp="2026-10-27T15:33:48.879479+00:00" hostname="omniverse2"><testcase classname="factory.python.tests.test_development_safety_policy" name="test_development_defers_exactly_ssa_taa_and_records_unapproved_status" time="0.010" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[failed-phase]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[unfinished]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[open-finding]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[missing-safety-requirements]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[purpose-only]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[formal]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[legacy]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[hash]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[purpose]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[decision]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[revoked]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_prepare_binds_the_owner_policy_without_signing_or_reclassifying_asil[DEVELOPMENT]" time="0.226" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_prepare_binds_the_owner_policy_without_signing_or_reclassifying_asil[FORMAL_REVIEW]" time="0.207" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_assurance_defers_documents_without_claiming_qm_or_waiving_hsi" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_unknown_purpose_is_refused" time="0.000" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_finalizer_seals_development_deferrals_and_retains_formal_signature_gaps" time="10.198" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_signed_documents_with_matching_hash_and_basis_count" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED0]" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED1]" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED2]" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_HASH_MISMATCH]" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_BASIS_CHANGED]" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_PATH_INVALID0]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_PATH_INVALID1]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_a_signed_file_that_still_says_draft_is_not_used" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_unregistered_documents_are_issues" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_committed_rcc_register_is_either_an_unsigned_draft_or_an_intact_signature" time="0.010" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_prepare_copies_only_signed_documents_read_only" time="0.413" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_package_keeps_only_the_signed_version" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_work_orders_without_the_register_are_unchanged" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_assurance_scope_counts_only_signed_documents" time="0.001" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_turn_budget_blocks_and_resets_per_visit" time="0.347" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_inspector_last_calls_reserved_for_recording_the_inspection" time="0.224" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_hook_returns_turn_budget_exhausted" time="0.639" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_token_exhaustion_cancels_and_blocks_never_false_pass" time="0.139" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t043_5mb_tool_log_small_payload_full_log_hashed" time="0.363" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence" time="5.897"><failure message="PermissionError: [Errno 13] Permission denied: '/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl'">env = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/corrected-env/tmp/tests/test_t044_interrupted_stage_re0')
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/corrected-env/tmp/tests/test_t044_interrupted_stage_re0')
+
+    def test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence(env, tmp_path):
+        ws = tmp_path / "ws"
+        (ws / "workproducts/SWE.1").mkdir(parents=True)
+        (ws / "workproducts/SWE.1/software_requirements.md").write_text("- **SWR-001** The RCC driver shall reset.\n")
+        s = Store(ws)
+        b1 = s.freeze("SWE.1", "swe1-author")
+        first = (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes()
+        b2 = s.freeze("SWE.1", "swe1-author")  # "resumed" stage re-runs the same freeze
+        assert b2["baseline_id"] == b1["baseline_id"] and len(s.baselines("SWE.1")) == 1
+        assert (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes() == first
+        out = env / "archives/WO-T044"
+        F.finalize(ws, "WO-T044")
+        h = F.verify_archive(next(out.glob("*.zip")))
+        again = F.finalize(ws, "WO-T044")  # replayed finalizer must not rewrite a released archive
+        assert "write-once" in again["note"] and F.verify_archive(next(out.glob("*.zip"))) == h
+&gt;       r = subprocess.run([os.environ.get("FORGE_FABRO_BIN", "fabro"), "resume", "--help"], capture_output=True, text=True,
+                           env={**os.environ, "HOME": os.environ.get("FORGE_FABRO_HOME", str(Path.home()))})
+
+factory/python/tests/test_m7_governance_release.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: 255 args: ['/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64...&gt;
+args = ['/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl', 'resume', '--help']
+executable = b'/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl'
+preexec_fn = None, close_fds = True, pass_fds = (), cwd = None
+env = {'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'FORGE_ARCHIVE_DIR': '/mnt/data/forge-c/inspector-014-b30...est_t044_interrupted_stage_re0/archives', 'FORGE_DASHBOARD_AUTH': 'token', 'FORGE_DATA_ROOT': '/mnt/data/forge-c', ...}
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 12, c2pwrite = 13, errread = 14, errwrite = 15
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread &gt; 2)
+                and (c2pwrite == -1 or c2pwrite &gt; 2)
+                and (errwrite == -1 or errwrite &gt; 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask &lt; 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write &lt; 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn, _USE_VFORK)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) &gt; 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+&gt;                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   PermissionError: [Errno 13] Permission denied: '/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl'
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:1991: PermissionError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_v04_policy_superset_and_operational_inventory_hashed" time="7.103" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_ready_requires_every_check_and_tamper_detected" time="7.659" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_failing_swe3_static_check_blocked_archive_no_human" time="9.159" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_packages_crashed_run" time="5.278" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_asks_the_server_that_holds_the_run" time="4.679" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t047_product_defect_loops_swe_infra_defect_routes_repair" time="1.403" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t049_forged_ai_pass_cannot_pass_gate" time="0.574" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_owner_decision_becomes_a_scope_record" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_agent_or_profile_derived_asil_is_refused[agent:swe-author-approved:x-NOT_HUMAN_APPROVED]" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_agent_or_profile_derived_asil_is_refused[Jefferson Nascimento-profile:HIGH_ASSURANCE-SCOPE_DECISION_INVALID]" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_asil_b_scope_blocks_without_safety_evidence_and_travels_with_the_package" time="0.001" /></testsuite></testsuites>
