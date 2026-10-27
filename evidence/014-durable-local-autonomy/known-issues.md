@@ -267,3 +267,8 @@ This register lists what the factory cannot do yet or does imperfectly, with its
 - **Evidence:** [ST3 pilot results](st3-driver-runs/summary.json).
 - **Human action:** Review author/output failures and scoped remediation before a new bounded pilot. Inspector development remains frozen; no retry or owner signature was performed during collection.
 - **Status:** OPEN
+
+KI-014-029 triage: [recorded diagnostic codes](st3-driver-runs/author-diagnostics.json)
+identify unsupported register-I/O semantics and some invalid model proposals. The
+assembler refuses incomplete/invalid task results; missing files do not establish
+an empty model response. No gate/domain rule was relaxed and no retry was run.

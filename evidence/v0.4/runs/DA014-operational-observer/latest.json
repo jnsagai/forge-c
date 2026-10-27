@@ -1,0 +1,189 @@
+{
+  "command": {
+    "auxiliary": "python operations/feature014/run_auxiliary_current.py (history, isolated systemd, exact-source independent CRE)",
+    "core_release": [
+      {
+        "command": [
+          "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "factory/python/tests/test_da014_advisory.py",
+          "factory/python/tests/test_da014_advisory_recovery.py",
+          "factory/python/tests/test_da014_dispatch_faults.py",
+          "factory/python/tests/test_da014_fault_observer.py",
+          "factory/python/tests/test_da014_integration.py",
+          "factory/python/tests/test_da014_isolation.py",
+          "factory/python/tests/test_da014_launch_boundary.py",
+          "factory/python/tests/test_da014_learning.py",
+          "factory/python/tests/test_da014_lesson_delivery.py",
+          "factory/python/tests/test_da014_llama_server.py",
+          "factory/python/tests/test_da014_maintenance.py",
+          "factory/python/tests/test_da014_offline_disposition.py",
+          "factory/python/tests/test_da014_offline_export.py",
+          "factory/python/tests/test_da014_offline_patch.py",
+          "factory/python/tests/test_da014_proposal_diagnostics.py",
+          "factory/python/tests/test_da014_protocol.py",
+          "factory/python/tests/test_da014_protocol_faults.py",
+          "factory/python/tests/test_da014_provider_process.py",
+          "factory/python/tests/test_da014_provider_recovery.py",
+          "factory/python/tests/test_da014_qualification.py",
+          "factory/python/tests/test_da014_qualification_audit.py",
+          "factory/python/tests/test_da014_qualification_inputs.py",
+          "factory/python/tests/test_da014_qualification_intake.py",
+          "factory/python/tests/test_da014_qualification_reservations.py",
+          "factory/python/tests/test_da014_qualification_scope.py",
+          "factory/python/tests/test_da014_qualification_state.py",
+          "factory/python/tests/test_da014_two_step.py",
+          "factory/python/tests/test_afo_codex_claude.py",
+          "factory/python/tests/test_afo_local_autonomy.py",
+          "factory/python/tests/test_afo_m0_audit.py",
+          "factory/python/tests/test_afo_m0_contracts_status.py",
+          "factory/python/tests/test_afo_m0_policy_authz.py",
+          "factory/python/tests/test_afo_m1_services.py",
+          "factory/python/tests/test_afo_m2_queue.py",
+          "factory/python/tests/test_afo_m3_reconcile.py",
+          "factory/python/tests/test_afo_m4_recovery.py",
+          "factory/python/tests/test_afo_m5_maintainer.py",
+          "factory/python/tests/test_afo_m6_operations.py",
+          "factory/python/tests/test_afo_m7_readiness.py",
+          "factory/python/tests/test_afo_m8_acceptance.py",
+          "factory/python/tests/test_afo_planner_run.py",
+          "factory/python/tests/test_m5_lessons.py",
+          "factory/python/tests/test_inspection_lessons.py",
+          "factory/python/tests/test_lrtx_profile.py",
+          "factory/python/tests/test_lrtx_v2_profile.py",
+          "factory/python/tests/test_llm_gateway.py",
+          "factory/python/tests/test_acp_gate.py",
+          "factory/python/tests/test_acp_proxy.py",
+          "factory/python/tests/test_t009_inspection.py",
+          "factory/python/tests/test_t009_workflow_gates.py",
+          "factory/python/tests/test_t005_t006_agents_skills.py",
+          "factory/python/tests/test_brownfield_resume.py",
+          "factory/python/tests/test_bubblewrap_confinement.py",
+          "factory/python/tests/test_cre_d7_isolation.py",
+          "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-c72992a-core",
+          "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-c72992a-core.xml"
+        ],
+        "ended_at": "2026-10-27T08:44:51.718467+00:00",
+        "exit_code": 0,
+        "label": "core",
+        "started_at": "2026-10-27T08:36:26.174778+00:00"
+      },
+      {
+        "command": [
+          "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "factory/python/tests/test_m7_governance_release.py",
+          "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-c72992a-release",
+          "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-c72992a-release.xml"
+        ],
+        "ended_at": "2026-10-27T08:45:00.978351+00:00",
+        "exit_code": 0,
+        "label": "release",
+        "started_at": "2026-10-27T08:44:51.742123+00:00"
+      }
+    ],
+    "kernel": "python -m pytest -q factory/python/tests/test_cre_d7_isolation.py::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits (private 0600 nonsecret sentinel)"
+  },
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-regress-c72992a",
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "c72992ad1fe7a16fdbaa4850af5f6ccc66653994",
+  "host": {
+    "node": "master",
+    "python": "3.13.13"
+  },
+  "known_issues": [
+    "KI-014-010",
+    "KI-014-011",
+    "KI-014-029"
+  ],
+  "log": "evidence/v0.4/runs/DA014-operational-observer/20261027T084759.log",
+  "log_sha256": "f25d0adc65f3bf18d67cef7139abbfa025ffa5c281fbbbfcc4458b292497a9c3",
+  "results": {
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "5200badbdf7911ee78a21f365d30644da3c555267003c42598bf5c5df4d7e94e",
+      "seconds": 504.886,
+      "skipped": 11,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_bundles_from_real_failed_runs_and_none_for_a_passing_one"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r142 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r146 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]"
+        },
+        {
+          "reason": "WO-0002A-STM32N6-RCC-LL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]"
+        },
+        {
+          "reason": "live Fabro disabled",
+          "test": "factory.python.tests.test_t009_workflow_gates::test_installed_fabro_validates_generated_workflow"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]"
+        }
+      ],
+      "tests": 673
+    },
+    "kernel_fixture": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "651c987441ea180d269c5d228a8ca25fa708fbf000d41981c404f9ac49ea7dc1",
+      "seconds": 1.795,
+      "skipped": 0,
+      "skips": [],
+      "tests": 2
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "91d44709a18bce6fa860d8affbae7e8b0d8f87e4f1c6d4d85bbffdae7a0a4284",
+      "seconds": 8.98,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_OBSERVER_IMPLEMENTATION_NOT_LIVE_OPERATIONAL_QUALIFICATION",
+  "status": "PASS",
+  "summary": {
+    "path": "evidence/014-durable-local-autonomy/operational-observer-c72992a/summary.json",
+    "sha256": "c92ef4b35950df78c8ac8a13f5359b25fbc2ec7ad1bd77df5d3af59f54129718"
+  },
+  "task": "DA014-operational-observer",
+  "ts_utc": "2026-10-27T08:47:59.783282+00:00"
+}

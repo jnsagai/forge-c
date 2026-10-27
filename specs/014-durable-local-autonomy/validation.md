@@ -235,3 +235,35 @@ that does not imply product acceptance. [Sanitized results](../../evidence/014-d
 retain native IDs, case denominator, request/token/energy measurements and package
 hashes. Collection is read-only, no new inference or retry. No task was ticked.
 Inspector development stays frozen; safety drafts remain unsigned/unregistered.
+
+## 2026-10-27: initial independent operational observer
+
+Source **`c72992ad1fe7a16fdbaa4850af5f6ccc66653994`**, clean dedicated worktree:
+core **662 passed, 11 skipped, 0 failures/errors** (504.886 s); release **13/13**
+(8.980 s). The 11 skip reasons are retained: eight missing historical workspaces,
+one disabled live-Fabro test and two absent owner-only permission fixtures. The
+last two were then exercised with a private nonsecret 0600 sentinel: **2/2 PASS**.
+This is supplemental coverage, not a second independent whole-suite cohort.
+
+The new read-only observer binds its source, isolated endpoints, mount, input plan
+and artifacts to the campaign; collects bounded SQLite/unit/health/intent facts
+outside the controller; recomputes signal-fault restoration and accounting checks;
+and refuses handwritten recovery verdicts. HTTP redirects/proxies, out-of-root
+artifacts, corrupted/truncated state, clock gaps and verdict tampering are covered.
+It is **partial tooling**, not full DA-T052: host intervention auditing, other
+fault-class exposure fixtures and an independent oracle for READY remain required.
+Missing facts stay UNKNOWN; no operational campaign can pass from those omissions.
+
+`run_auxiliary_current.py` on that exact candidate: offline history replay and
+seven isolated local systemd cases PASS; stage preparation remains blocked on its
+real prerequisites; independent CRE **REJECTED / PROTECTED_PATH_CHANGE**, retained.
+The full inherited 1,840-test suite was not repeated on this narrow increment;
+its previous clean `20650af` evidence remains distinct. Static spec/contracts,
+14 design checks and handoff reconciliation pass separately (documentation only).
+
+[Exact commands, JUnit, skipped reasons and hashes](../../evidence/014-durable-local-autonomy/operational-observer-c72992a/summary.json)
+and task-style record `evidence/v0.4/runs/DA014-operational-observer/latest.json`.
+No task checkbox changed (30/58); no source deployment, new Qwen request, pilot
+retry, owner signature or inspector development was performed. The three recorded
+pilot author diagnostics identify unsupported register-I/O effects and invalid
+proposals; no correctness gate was relaxed to emit partial artifacts as accepted.
