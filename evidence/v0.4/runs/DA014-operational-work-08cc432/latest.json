@@ -1,0 +1,73 @@
+{
+  "command": {
+    "affected_release": [
+      [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_operational_work.py",
+        "factory/python/tests/test_da014_operational_report.py",
+        "factory/python/tests/test_da014_read_snapshot.py",
+        "factory/python/tests/test_da014_fault_observer.py",
+        "factory/python/tests/test_da014_operational_facts.py",
+        "factory/python/tests/test_da014_qualification.py",
+        "factory/python/tests/test_da014_qualification_audit.py",
+        "factory/python/tests/test_da014_qualification_state.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_afo_m2_queue.py",
+        "factory/python/tests/test_afo_m3_reconcile.py",
+        "factory/python/tests/test_afo_m6_operations.py",
+        "factory/python/tests/test_afo_m8_acceptance.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-08cc432-affected",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-08cc432-affected.xml"
+      ],
+      [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_m7_governance_release.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-08cc432-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-08cc432-release.xml"
+      ]
+    ],
+    "auxiliary": "python operations/feature014/run_auxiliary_current.py"
+  },
+  "evidence": "evidence/014-durable-local-autonomy/operational-work-08cc432/summary.json",
+  "evidence_sha256": "41e6ca30d2784349eb676a259fc0738a4e1264af47f0933c8da196460d0e84c5",
+  "exit_code": 0,
+  "git_head": "08cc4326063074878b876c4aec36b9062fbde970",
+  "new_task_checkboxes": [],
+  "results": {
+    "affected": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 235,
+      "seconds": 26.223,
+      "skipped": 1,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        }
+      ],
+      "tests": 236
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 9.226,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "scope": "READ_ONLY_NATIVE_WORK_IN_WINDOW_AND_INDEPENDENT_AUDIT_INTEGRATION_NOT_LIVE_QUALIFICATION",
+  "status": "PASS_DETERMINISTIC",
+  "task_ids_with_partial_tooling": [
+    "DA-T026",
+    "DA-T052"
+  ]
+}

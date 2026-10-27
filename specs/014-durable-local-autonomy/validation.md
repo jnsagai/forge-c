@@ -325,3 +325,53 @@ Omniverse2 also lacks the approved host-admin reboot/authoritative-mount-loss
 fixture window; actual work/fault campaigns and their 24/72/168 hours were not run.
 The current observer deliberately returns UNKNOWN for missing audit/oracle facts,
 so it cannot silently pass a campaign. No deployment or automatic merge occurred.
+
+## 2026-10-27: independent native work/READY audit binding and continuity
+
+Exact tested source **`08cc4326063074878b876c4aec36b9062fbde970`**: clean start/end,
+**235 affected checks PASS, one historical HAL-r154 workspace SKIP, zero failures**
+(26.223 s); release **13/13 PASS** (9.226 s). [Exact commands, JUnit, skip and hashes](../../evidence/014-durable-local-autonomy/operational-work-08cc432/summary.json).
+The previous `ccd10f0` observation-consumption record is retained separately,
+including its subsequently corrected historical-work-count limitation.
+
+The new `afo/operational_work.py` reuses `qualification_capture`'s existing
+independent audit, binds its exact native observation to the campaign and captured
+order/latest-attempt/mission/nonce/native/request identities, and requires actual
+captured quiescence/released capacity. READY requires all six native SWE gates and
+the sealed package result plus the independent correctness audit. A BLOCKED job
+can be independently verified as an outcome without becoming product success.
+Missing or edited audits, same-model producer labels, changed oracle bytes and
+missing/extra gate sets cannot turn into accepted evidence. Request identities
+are explicit; a genuine zero-request native outcome differs from missing telemetry.
+
+The existing Store now provides `ReadSnapshot`: one bounded read-only SQLite
+transaction, no migrations or database creation, SQL mutation refusal, and row,
+byte and deadline bounds. Tests use actual SQLite writer/read concurrency and
+verify the database remains unchanged. The observer's executable `product` and
+`work` commands bound workspace/archive reads and refuse FIFOs, symlinks, live or
+held executions, out-of-root paths and late publication. They execute no model,
+compiler, job dispatch or service change. Source hashes are frozen in the plan.
+
+Campaign reporting recomputes work and fault evidence. Legacy success/continuity
+booleans alone no longer count. It binds the actual stage/window/manifest,
+keeps missing or contradictory clocks/probes UNKNOWN and unavailable in the gross
+denominator, and derives later job processing/post-campaign continuity from source
+records. Work exposure requires an attempt created during the window or native
+activity observed there under fresh reconciliation. Re-reading historical terminal
+work cannot inflate the real-work counter; historical outcome proofs remain usable
+for READY auditing. Unknown timing stays unknown.
+
+Exact-source history replay and seven isolated local systemd cases PASS.
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**, without waiver.
+Spec/contracts (58 mappings, six schemas, 38 structural fixtures), 14 static design
+checks, handoff reconciliation and changed-module/new-test Ruff checks PASS
+separately. The full 712-pass core run remains at `c86d577`; the full inherited
+1,840-test record remains at `20650af`. Neither cohort is claimed on this revision.
+
+This advances DA-T026/052 tooling; no formal task was ticked (30/58). The independent
+product audit consumer is implemented, but genuine product-correctness oracle
+production/evidence for this candidate is still unavailable. Host intervention
+audit production/integration is still incomplete. The actual authorized host
+reboot/mount-loss fixtures, native workload/fault exposure and 24/72/168-hour
+campaigns have not run. Current UNKNOWN host-audit facts still prevent campaign
+PASS. No additional Qwen request, deployment, inspector tuning or merge occurred.

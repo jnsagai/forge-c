@@ -87,3 +87,23 @@ Lesson identity includes applicability/source versions as well as content; old v
 Version these proposed interfaces independently of the unchanged recovery-plan schema. Unknown versions fail closed. Hash serialization is defined in `contracts/README.md`; clients cannot rely on unspecified JSON key order. State migrations require independently qualified compatibility/recovery evidence and remain outside automatic worker promotion.
 
 Store only the bounded semantic proposal, redacted evidence references, tool events and receipts needed for audit. Raw prompts/completions remain off by default; no hidden model reasoning is collected. No schema, fixture or synthetic hash in this feature is evidence of an actual Omniverse2 run.
+
+## Operational verification artifacts (implementation follow-up)
+
+`forge-c/independent-operational-work/1` is a recomputable qualification artifact,
+not a new authority or database. It references the frozen observer plan, existing
+product qualification row and external sample artifacts. It binds order, latest
+attempt, mission, native run, nonce and request identities; records independently
+verified outcome separately from product success; and carries native quiescence,
+false-READY and observation-window facts. Product correctness still comes from the
+existing independent CRE/reference/metamorphic/mutant qualification audit.
+
+The product observation compatibly includes `request_ids` and `attempt_created_utc`.
+Missing legacy values remain unknown. Observer projections include attempt creation
+and the existing execution's `last_reconciled_at`. `native_active_observed_at` records
+actual matching RUNNING/HELD observations with fresh reconciliation and healthy
+control/native/storage prerequisites. A terminal observation's time is not its
+execution time: campaign work exposure needs a new in-window attempt or captured
+in-window native activity. Historical audit evidence can verify an outcome without
+proving fresh campaign work. All primary source/artifact hashes remain bound; no
+ledger or finite mission allowance is reset by capture or replay.

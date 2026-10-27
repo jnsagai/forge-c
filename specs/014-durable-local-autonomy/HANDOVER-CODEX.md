@@ -213,3 +213,45 @@ For KI-014-029, independently reproduce unsupported access/RMW effects against t
 frozen RM/domain and propose a scoped semantic-profile extension through its
 external engineering boundary. Do not rerun a pilot simply with the rejected
 suggestions or remove requirements. Keep inspector frozen and original failures.
+
+## Codex follow-up — 2026-10-27 10:32 UTC
+
+Latest source: **`08cc4326063074878b876c4aec36b9062fbde970`** (source increments
+`8bd0108`, `ccd10f0`, `08cc432`). The final evidence/handover commit follows it.
+Worktree remains `$FC014_OPS/codex-resume-20261027`; exact clean regression tree
+`$B/repos/forge-c-014-regress-08cc432`. All local artifacts stay on loop10.
+
+- Implemented `afo/operational_work.py`, reusing the existing product independent
+  audit and externally captured native/mission/request facts. `fault_observer`
+  provides executable `product` and `work` commands; CLI/configuration documented
+  in `factory/qualification/014/README.md`. The plan freezes work/qualification-
+  capture/queue-reader source hashes. No model, dispatch or service effect.
+- `queue.ReadSnapshot` reuses Store reads in one bounded read-only SQLite snapshot;
+  no migrations, missing-database creation or SQL writes. Actual concurrent writer
+  tests, bounds, FIFO/path refusal and publication-deadline tests pass.
+- Report consumes recomputed work/continuity evidence; handwritten success flags
+  do not count. Unknown/contradictory clocks and probes stay UNKNOWN/unavailable.
+  A new attempt or fresh observed native activity must establish real work during
+  the campaign; recapturing a historical terminal job cannot inflate work counts.
+  Native outcomes and product success remain separate, including zero-request work.
+- Exact source: **235 affected PASS / 1 historical workspace SKIP / zero failures;
+  release 13 PASS**. History replay and seven isolated local systemd cases PASS;
+  independent CRE still **REJECTED / PROTECTED_PATH_CHANGE**. Static/handoff checks
+  pass separately. No full core/1,840-test cohort claimed on this revision.
+- Evidence: `evidence/014-durable-local-autonomy/operational-work-08cc432/`, with
+  exact commands/JUnit/hashes; task-style record under
+  `evidence/v0.4/runs/DA014-operational-work-08cc432/latest.json`. The earlier
+  `operational-work-ccd10f0` record is historical; its timing-count limitation was
+  fixed in `08cc432`. Formal count remains **30/58**, no ledger/CRLF rebaseline.
+- No additional inference after the three-request remote study, no activation,
+  inspector change or merge. Do not repeat that exhausted study as a new mission.
+
+Next: implement/integrate a real independent host-intervention audit producer and
+its source verification. It must establish coverage and derive interventions from
+actual authoritative host events; do not replace current UNKNOWN with hand-entered
+success/count flags. The product audit consumer now exists, but a genuine product
+correctness oracle producer/evidence is still required for native qualification.
+Prepare only authorized host reboot/mount-loss fixtures once prerequisites are
+actually available. Keep the seventeen owner-accepted live omissions unscheduled,
+all safety signing boundaries, CRE veto and inspector freeze. Native operational
+campaigns, product success, learning benefit and 30-day SLO remain unproven.

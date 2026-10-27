@@ -1,8 +1,18 @@
 # Feature 014 evidence — current status 2026-10-27
 
+Latest verification-tooling source **`08cc4326063074878b876c4aec36b9062fbde970`**:
+[exact commands, results and hashes](operational-work-08cc432/summary.json).
+**235 affected checks PASS / 1 SKIP**, release **13/13 PASS**; history replay and
+seven isolated local systemd cases PASS. Independent CRE still rejects protected
+paths. The work/READY audit consumer, read-only Store snapshot and source-derived
+continuity/window accounting are implemented. Actual independent product oracle
+evidence, host intervention audit and live campaigns remain pending. No task was
+ticked and no deployment or new inference occurred. Earlier wider regression and
+pilot evidence below remain distinct historical cohorts.
+
 Formal completion remains **30/58**; no additional task was ticked in this increment.
 
-- Latest tested source **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**:
+- Previous wider core source **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**:
   [exact commands, JUnit, skips and artifact hashes](operational-observer-c86d577/summary.json).
   Core **712 PASS / 11 SKIP / 0 failures**; release **13/13 PASS**. The two skipped
   permission checks also passed with a private nonsecret 0600 sentinel. History
