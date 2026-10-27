@@ -74,46 +74,80 @@ def _fields(body):
     return result
 
 
-def events(raw, *, host, keys):
-    """Group compound events by node/time/serial; export whitelisted facts only.
+class EventReplay:
+    """Ephemeral bounded assembly; no raw record is persisted or exposed.
 
-    EXECVE argv, PROCTITLE, account names, command strings and raw path names are
-    deliberately absent. Original private source bytes remain separately hashed.
+    Interleaved events retain their node/time/serial identity across byte/file
+    boundaries. End-of-input is never an implicit event boundary. This is a
+    selected-field parser, not a replacement for the native audit/retention stack.
     """
-    if len(raw) > observer.MAX_BYTES or (raw and not raw.endswith(b"\n")):
-        raise Refused("HOST_AUDIT_LOG_BOUND_OR_TRUNCATION")
-    groups = {}
-    records = duplicates = 0
-    try:
-        lines = raw.decode("utf-8").splitlines()
-    except UnicodeError as exc:
-        raise Refused("HOST_AUDIT_LOG_ENCODING") from exc
-    for line in lines:
+
+    def __init__(self, *, host, keys, maximum=None):
+        self.maximum = observer.MAX_TRACE_BYTES if maximum is None else maximum
+        if type(self.maximum) is not int or not 1 <= self.maximum <= observer.MAX_TRACE_BYTES:
+            raise Refused("HOST_AUDIT_EVENT_REPLAY_BOUND_INVALID")
+        self.host, self.keys = host, keys
+        self.groups = {}
+        self.records = self.duplicates = self.input_bytes = 0
+        self.partial = b""
+        self.input_hash = hashlib.sha256()
+        self.closed = self.failed = False
+
+    def feed(self, raw):
+        if self.closed or self.failed:
+            raise Refused("HOST_AUDIT_EVENT_REPLAY_ALREADY_SETTLED")
+        try:
+            if not isinstance(raw, bytes) or len(raw) > observer.MAX_BYTES or self.input_bytes + len(raw) > self.maximum:
+                raise Refused("HOST_AUDIT_LOG_BOUND_OR_TRUNCATION")
+            self.input_bytes += len(raw)
+            self.input_hash.update(raw)
+            data = self.partial + raw
+            start = 0
+            while True:
+                end = data.find(b"\n", start)
+                if end < 0:
+                    break
+                if end - start > MAX_LINE:
+                    raise Refused("HOST_AUDIT_RECORD_BOUND_EXCEEDED")
+                try:
+                    line = data[start:end].removesuffix(b"\r").decode("utf-8")
+                except UnicodeError as exc:
+                    raise Refused("HOST_AUDIT_LOG_ENCODING") from exc
+                self._line(line)
+                start = end + 1
+            self.partial = data[start:]
+            if len(self.partial) > MAX_LINE:
+                raise Refused("HOST_AUDIT_RECORD_BOUND_EXCEEDED")
+        except ValueError:
+            self.failed = True
+            raise
+
+    def _line(self, line):
         if not line or len(line.encode()) > MAX_LINE:
             raise Refused("HOST_AUDIT_RECORD_BOUND_EXCEEDED")
         m = HEADER.fullmatch(line)
         if m is None:
             raise Refused("HOST_AUDIT_RECORD_HEADER_INVALID")
-        node = m["node"] or host
-        if node != host:
+        node = m["node"] or self.host
+        if node != self.host:
             raise Refused("HOST_AUDIT_LOG_HOST_MISMATCH")
         epoch = float(m["epoch"])
         if not math.isfinite(epoch):
             raise Refused("HOST_AUDIT_EVENT_CLOCK_INVALID")
         identity = (node, m["epoch"], int(m["serial"]))
-        if identity not in groups:
-            if len(groups) >= MAX_EVENTS:
+        if identity not in self.groups:
+            if len(self.groups) >= MAX_EVENTS:
                 raise Refused("HOST_AUDIT_EVENT_COUNT_BOUND_EXCEEDED")
-            groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": set()}
-        group = groups[identity]
+            self.groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": set()}
+        group = self.groups[identity]
         sha = hashlib.sha256(line.encode()).hexdigest()
         if sha in group["hashes"]:
-            duplicates += 1
-            continue
+            self.duplicates += 1
+            return
         group["hashes"].add(sha)
         group["types"].add(m["kind"])
-        records += 1
-        if records > MAX_RECORDS:
+        self.records += 1
+        if self.records > MAX_RECORDS:
             raise Refused("HOST_AUDIT_RECORD_COUNT_BOUND_EXCEEDED")
         if m["kind"] == "SYSCALL":
             if group["syscall"] is not None:
@@ -129,39 +163,83 @@ def events(raw, *, host, keys):
             if not re.fullmatch(r"\d{1,8}", fields.get("item", "")) or int(fields["item"]) in group["paths"]:
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
             group["paths"].add(int(fields["item"]))
-    selected = []
-    integrity = []
-    for (node, epoch, serial), group in sorted(groups.items(), key=lambda i: (float(i[0][1]), i[0][2])):
-        syscall = group["syscall"]
-        changes = [t for t in group["types"] if t.startswith("DAEMON_") or t == "CONFIG_CHANGE"]
-        if changes:
-            integrity.append({"host": node, "at": float(epoch), "serial": serial, "types": sorted(changes)})
-        if syscall is None or syscall.get("key") not in keys:
-            continue
-        if int(syscall["items"]) > MAX_RECORDS or group["paths"] != set(range(int(syscall["items"]))):
-            raise Refused("HOST_AUDIT_COMPOUND_EVENT_INCOMPLETE")
-        selected.append(
-            {
-                "host": node,
-                "at": float(epoch),
-                "serial": serial,
-                "record_types": sorted(group["types"]),
-                "path_records": len(group["paths"]),
-                "key": syscall["key"],
-                "arch": syscall["arch"].lower(),
-                "syscall": int(syscall["syscall"]),
-                "success": syscall["success"] == "yes",
-                **{k: int(syscall[k]) for k in ("pid", "ppid", "uid", "auid")},
-                "source_record_hashes": sorted(group["hashes"]),
-            }
-        )
-    return {
-        "events": selected,
-        "integrity_events": integrity,
-        "source_events": len(groups),
-        "source_records": records,
-        "duplicate_records": duplicates,
-    }
+
+    def finish(self, *, legacy=False):
+        if self.closed or self.failed:
+            raise Refused("HOST_AUDIT_EVENT_REPLAY_ALREADY_SETTLED")
+        self.closed = True
+        if legacy and self.partial:
+            raise Refused("HOST_AUDIT_LOG_BOUND_OR_TRUNCATION")
+        selected, pending, integrity = [], [], []
+        orphan = 0
+        for (node, epoch, serial), group in sorted(self.groups.items(), key=lambda i: (float(i[0][1]), i[0][2])):
+            syscall = group["syscall"]
+            changes = [t for t in group["types"] if t.startswith("DAEMON_") or t == "CONFIG_CHANGE"]
+            if changes:
+                integrity.append({"host": node, "at": float(epoch), "serial": serial, "types": sorted(changes)})
+            if syscall is None:
+                if group["types"] & {"PATH", "EXECVE", "CWD", "PROCTITLE", "EOE", "SOCKADDR"}:
+                    orphan += 1
+                continue
+            if syscall.get("key") not in self.keys:
+                continue
+            if int(syscall["items"]) > MAX_RECORDS:
+                raise Refused("HOST_AUDIT_COMPOUND_EVENT_INCOMPLETE")
+            path_coverage = group["paths"] == set(range(int(syscall["items"])))
+            boundary = sorted(group["types"] & {"PROCTITLE", "EOE"})
+            if legacy and not path_coverage:
+                raise Refused("HOST_AUDIT_COMPOUND_EVENT_INCOMPLETE")
+            if not legacy and (not path_coverage or not boundary):
+                pending.append({"host": node, "at": float(epoch), "serial": serial,
+                                "path_records": len(group["paths"]), "expected_path_records": int(syscall["items"]),
+                                "path_item_coverage": path_coverage, "boundary_records": boundary,
+                                "source_record_hashes": sorted(group["hashes"])})
+                continue
+            selected.append(
+                {
+                    "host": node,
+                    "at": float(epoch),
+                    "serial": serial,
+                    "record_types": sorted(group["types"]),
+                    "path_records": len(group["paths"]),
+                    "key": syscall["key"],
+                    "arch": syscall["arch"].lower(),
+                    "syscall": int(syscall["syscall"]),
+                    "success": syscall["success"] == "yes",
+                    **{k: int(syscall[k]) for k in ("pid", "ppid", "uid", "auid")},
+                    "source_record_hashes": sorted(group["hashes"]),
+                }
+            )
+        facts = {
+            "events": selected,
+            "integrity_events": integrity,
+            "source_events": len(self.groups),
+            "source_records": self.records,
+            "duplicate_records": self.duplicates,
+        }
+        if legacy:
+            return facts
+        blockers = []
+        if self.partial:
+            blockers.append("KERNEL_EVENT_PARTIAL_LINE")
+        if pending:
+            blockers.append("KERNEL_EVENT_PENDING_COMPOUND_RECORDS")
+        if orphan:
+            blockers.append("KERNEL_EVENT_ORPHAN_COMPOUND_GROUPS")
+        return {"schema": "forge-c/kernel-event-replay/1", "facts": facts,
+                "status": "INCOMPLETE_EVENT_PREFIX" if blockers else "SELECTED_EVENT_FACTS_REPLAYED",
+                "pending_events": pending, "orphan_compound_groups": orphan,
+                "pending_line": {"length": len(self.partial), "sha256": hashlib.sha256(self.partial).hexdigest()},
+                "input_bytes": self.input_bytes, "input_sha256": self.input_hash.hexdigest(),
+                "blockers": blockers, "unexpected_interventions": None,
+                "scope": "SELECTED_RECORD_FACTS_NOT_ALL_RECORD_COMPLETENESS_OR_HOST_COVERAGE"}
+
+
+def events(raw, *, host, keys):
+    """Compatible single-buffer facts; raw commands/argv/paths stay private."""
+    replay = EventReplay(host=host, keys=keys, maximum=observer.MAX_BYTES)
+    replay.feed(raw)
+    return replay.finish(legacy=True)
 
 
 def _command(argv):
@@ -474,7 +552,7 @@ def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destinatio
         raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_REPLAY")
     if not isinstance(refs, list) or not 1 <= len(refs) <= audit_segments.MAX_SEGMENTS:
         raise Refused("HOST_AUDIT_SEGMENT_REFERENCES_INVALID")
-    segments, previous_ref, budget = [], None, observer.MAX_BYTES
+    segments, previous_ref, budget, boots = [], None, observer.MAX_BYTES, set()
     for sequence, ref in enumerate(refs):
         record = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref)
         budget -= len(canonical(record))
@@ -494,16 +572,49 @@ def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destinatio
                     or rotation["observation"].get("pid") != status["pid"]):
                 raise Refused("HOST_AUDIT_SEGMENT_DAEMON_BINDING_UNKNOWN")
         segments.append(segment)
+        boot = record.get("boot_id")
+        boots.add(boot if isinstance(boot, str) else None)
         previous_ref = ref
-    byte_chain = audit_segments.verify_chain(plan["segments"], segments)
+    errors = []
+    if len(boots) != 1 or not isinstance(next(iter(boots)), str) or not re.fullmatch(
+        r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", next(iter(boots))
+    ):
+        errors.append("KERNEL_EVENT_REPLAY_BOOT_CONTINUITY_UNKNOWN")
+    replay = EventReplay(host=plan["host"], keys=plan["keys"])
+
+    def consume(raw):
+        if not errors:
+            try:
+                replay.feed(raw)
+            except Refused as exc:
+                errors.append(exc.code)
+
+    byte_chain = audit_segments.verify_chain(plan["segments"], segments, consume=consume)
+    event_replay = None
+    if not errors:
+        try:
+            event_replay = replay.finish()
+        except Refused as exc:
+            errors.append(exc.code)
+    if event_replay is None:
+        event_replay = {"schema": "forge-c/kernel-event-replay/1", "status": "BLOCKED",
+                        "facts": None, "blockers": errors, "unexpected_interventions": None,
+                        "scope": "EVENT_REPLAY_UNAVAILABLE_NOT_ZERO"}
+    elif event_replay["input_bytes"] != byte_chain["bytes"]:
+        raise Refused("HOST_AUDIT_EVENT_REPLAY_INPUT_MISMATCH")
+    event_replay["parser_source_sha256"] = plan["source_sha256"]
     result = {"schema": "forge-c/host-audit-segment-replay/1",
               "manifest_sha256": digest(manifest), "observer_plan_ref": observer_plan_ref,
               "host_plan_ref": host_plan_ref, "capture_refs_sha256": digest(refs),
               "first_capture_ref": refs[0], "last_capture_ref": refs[-1], "byte_chain": byte_chain,
+              "kernel_event_replay": event_replay,
               "status": "INCOMPLETE_SOURCE_COVERAGE", "unexpected_interventions": None,
-              "blockers": ["KERNEL_SEGMENT_COMPOUND_EVENT_REPLAY_REQUIRED",
-                           "HOST_AUDIT_ALL_CHANNEL_CONTINUOUS_COVERAGE_REQUIRED"],
+              "blockers": sorted(set(event_replay["blockers"] + [
+                  "KERNEL_AUDIT_FULL_RECORD_AND_WINDOW_QUALIFICATION_REQUIRED",
+                  "HOST_AUDIT_ALL_CHANNEL_CONTINUOUS_COVERAGE_REQUIRED"])),
               "scope": "CAPTURED_BYTE_PREFIX_NOT_HOST_INTERVENTION_VERIFICATION"}
+    if len(canonical(result)) > observer.MAX_BYTES:
+        raise Refused("HOST_AUDIT_SEGMENT_REPLAY_OUTPUT_BOUND_EXCEEDED")
     immutable_json(observer.artifact(frozen, destination), result)
     return result
 

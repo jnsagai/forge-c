@@ -98,9 +98,46 @@ Linux exposes descriptor flags in octal in [the proc filesystem interface](https
 The append-writer check follows [auditd's native file open](https://github.com/linux-audit/audit-userspace/blob/master/src/auditd-event.c).
 
 `CAPTURED_BYTE_PREFIX_REPLAYED` proves only the supplied captured byte prefix was
-replayed. A final source may have an explicitly reported unread tail. Complete
-compound-event replay across byte boundaries, boot/loss/time-window reconciliation,
-continuous bus/control/actor correlation and all-channel intervention verification
-remain separate unfinished work. The global intervention count stays **UNKNOWN**.
+replayed. A final source may have an explicitly reported unread tail. Native full
+record qualification, boot/loss/time-window reconciliation, continuous bus/control/
+actor correlation and all-channel intervention verification remain unfinished.
+The global intervention count stays **UNKNOWN**.
 Synthetic protection/UID fixtures and deterministic tests are not live root audit
 qualification, product success, learning benefit or 24/72/168-hour availability.
+
+## Incremental selected-event replay
+
+`verify-segments` also feeds each verified range once into the existing kernel
+fact parser. Ephemeral assembly retains interleaved node/time/serial groups and
+partial UTF-8/line bytes across captures and retained file rotations. No raw line,
+command, account, path or partial byte string is persisted in the replay receipt.
+The `kernel_event_replay` report binds the complete supplied byte count/hash and
+parser source hash, selected factual records, integrity records and duplicates.
+
+For selected syscalls, the reported PATH item indices must match `items`, and a
+PROCTITLE or EOE boundary must be observed. Missing path items or boundaries stay
+in `pending_events`; incomplete trailing lines retain only length/hash. Recognized
+orphan compound groups are explicitly counted. End-of-input does not flush them
+into completed events. These checks do not validate every native record payload.
+The selected-fact status is therefore distinct from full record completeness.
+
+The [upstream auditd configuration documentation](https://github.com/linux-audit/audit-userspace/blob/master/docs/auditd.conf.5)
+describes interleaving, boundary records and native timeout-based completion. This
+adapter implements explicit PROCTITLE/EOE observations; it does not invent a timeout
+or treat its wall clock as a native event boundary. The [upstream libaudit header](https://github.com/linux-audit/audit-userspace/blob/master/lib/libaudit.h)
+defines the record-local enrichment separator as 0x1D. Enriched fields remain in
+their original record's hash and are excluded from exported facts. LF, rather
+than Python's broader `splitlines()` definition, separates streamed records.
+
+A malformed record or missing/changed capture boot identity yields
+`kernel_event_replay.status=BLOCKED` with `facts=null`. It does not become an empty
+valid event log. Byte-prefix replay can still succeed independently. A valid
+partial event prefix reports its pending facts and blockers. The top-level status
+remains `INCOMPLETE_SOURCE_COVERAGE`, exit 2, even if selected event facts replay
+without errors. Recorded boot IDs/hashes are not independent host authentication.
+
+The existing 128 MiB byte-I/O allowance includes stream input; parsing introduces
+no second source pass. The parser additionally bounds lines to 64 KiB, groups to
+10,000 and unique records to 50,000. The final serialized replay receipt is bounded
+to 16 MiB. A bound violation is explicit; history is never silently dropped. This
+is still a finite prefix verifier, not a qualified batched continuous campaign.

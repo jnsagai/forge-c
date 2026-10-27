@@ -337,9 +337,10 @@ def test_chain_budget_counts_terminal_anchor_reads_and_refuses_before_source_io(
 
 
 @pytest.fixture
-def segmented_plan(setup, logs, monkeypatch):
+def segmented_plan(setup, logs, monkeypatch, request):
     p = setup
     active, cfg = logs
+    cfg["max_bytes"] = getattr(request, "param", cfg["max_bytes"])
     host_path = p.tmp / "host-plan.json"
     immutable_json(host_path, {"schema": "forge-c/host-audit-plan/1", "observer_plan_ref": p.ref,
         "source_sha256": sha256_file(Path(H.__file__)), "host": H.socket.gethostname(),

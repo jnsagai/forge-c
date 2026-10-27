@@ -286,7 +286,7 @@ def replay(config, segment, *, check_anchor=True):
     return raw
 
 
-def verify_chain(config, segments):
+def verify_chain(config, segments, *, consume=None):
     """Reconstruct a captured prefix with bounded I/O and rolling anchor memory.
 
     Historical descriptor facts are checked structurally, not authenticated by
@@ -338,6 +338,8 @@ def verify_chain(config, segments):
                     "sha256": hashlib.sha256(tail).hexdigest()}
         if cursor["anchor"] != expected:
             raise Refused("AUDIT_SEGMENT_CHAIN_ANCHOR_CHANGED")
+        if consume is not None:
+            consume(raw)
         previous = cursor
     # Retired files must still be exactly at their sealed EOF, even if the late
     # append happened after all old ranges were captured. No history is dropped.
