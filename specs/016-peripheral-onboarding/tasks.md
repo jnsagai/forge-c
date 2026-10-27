@@ -308,12 +308,12 @@ SWE.1–SWE.6.
   or approves `approval.json` (conflicts, assumptions, accepted gaps), and signs it in their own terminal. The
   implementation engineer verifies with `onboarding verify` and commits the signed copy to
   `evidence/easa/owner-decisions/` in an owner-decision commit.
-- [ ] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix
+- [X] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix ✅ Evidence: `evidence/v0.4/runs/OB-T048/latest.json`
   any factory defect through the CRE process (registry → CAPA → reproducer → promotion) and retry with new request
   ids `-R<n>`.
 - [X] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [X] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
-- [ ] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
+- [X] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048). ✅ Evidence: `evidence/v0.4/runs/OB-T051/latest.json`
 - [X] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption: ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [X] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047; ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
@@ -341,7 +341,7 @@ SWE.1–SWE.6.
   `software/include/`). Also reject a plan whose stated remedy is to produce an output that a gate demands but the
   driver style does not have. Reason codes `PLAN_REJECTED:FROZEN_CODE_SCOPE` and `PLAN_REJECTED:STYLE_OUTPUT`. Also: in a FROZEN delivery, a phase STUCK on failing checks that are all reproduced by ESCALATED CODE defects (CRC HAL R2, `WO-AFO-071ffed673bf5df5-a1`: DEF-002/003/004 in ST's CRC HAL, e.g. the polynomial scan never tests bit 31) is not reworkable: reject REWORK plans with `PLAN_REJECTED:FROZEN_DEFECTS_NEED_OWNER` and finalize the order BLOCKED with the defects as gaps for the owner's disposition. Test
   it in `tests/test_afo_planner_frozen.py` with the recorded plan as a fixture. CRE gate.
-- [ ] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no
+- [X] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no ✅ Evidence: `evidence/v0.4/runs/OB-T062-RECORD/latest.json`
   qualified local profile; see feature 014). If a profile is qualified later, run quickstart §1–§4 on omniverse2 and
   replace the record.
 - [X] **OB-T063** [P] Write an ADR, `docs/adr/ADR-00NN-peripheral-onboarding-stage.md`: the two-run design and ✅ Evidence: `evidence/v0.4/runs/OB-T063/latest.json`
@@ -420,3 +420,42 @@ SWE.1–SWE.6.
 - `BENCH-GPIO-ST-HAL-OB`, order `afo-6a6875714405b8ce`, is running on that revision with the approved package.
   Its Fabro run is `01M5YK3Z4XR0ANW069WPHZZQ0K`. SPI, USART and TIM have not been submitted yet (one at a time).
   No acceptance-run completion or READY result is claimed.
+
+
+## Field-index correction and sequential acceptance (2026-10-27)
+
+- GPIO's initial run finished BLOCKED with 52 named gaps; its sealed archive (`ddea8b4c93b6…`) verifies intact.
+  OB-T048 records the actual terminal package, not a READY claim or an SC-005 pass. Its SC-005 result is FAIL:
+  the RM parser omitted the comma-separated fields of GPIO_ADVCFGRL/H. CAPA-073 preserves that finding.
+- The parser now derives all 64 fields from the supplied RM. A second audit finding, saved API mappings changing
+  generated function order after JSON serialization, is fixed by retaining the owner's function sequence.
+  The namespace and package facts stay unchanged for SPI, USART and TIM.
+- Runtime `557e920` passed CRE `pd-29aa710d612f9cbae9e3` against `9fa4664`, including independent baseline/candidate
+  contrasts for both findings, and is deployed with the cloud gateway disabled. Targeted register/identity tests
+  (35) and prompt persistence tests (9) pass; a fresh full suite is running in a separate clean worktree.
+- Corrected GPIO hash: `e7eeec3c04d48ad30d4b6ef2d178bee17131299a7e4bff094d8caaab9edb9891`. Its original approval
+  is preserved in void history and owner-decision evidence; the owner must sign OA-2026-10-27-05 before GPIO R1.
+  The review delta and terminal signing aid are in state/onboarding/REVIEW-GPIO-R1.md and sign-GPIO-R1.sh.
+- SPI is running as order `afo-cbde5111bd5eeaf6`, Fabro `01M5YN8RVQVAK9SZM8G5FBE1RP`, with its original valid
+  approval and hash. USART and TIM have not been submitted. Only one acceptance order runs at a time.
+- SC-001 preparation evidence passes by regenerating package texts while tracing reads: no hand-profile text is
+  read, and the exact acceptance scope is bound into the package. The acceptance scopes simplify the legacy text
+  (they are not verbatim copies of it); the audit reports that difference and the unused legacy GPIO reset-description
+  correction explicitly. Final run audit and owner review remain open.
+
+- OB-T062's documentation task is now verified and ticked with `OB-T062-RECORD`: the underlying local-model
+  execution record remains explicitly NOT_RUN, with no command, no exit code and zero model calls. Passing the
+  record-presence check does not claim a local-model run or profile qualification.
+
+- The owner signed corrected GPIO approval OA-2026-10-27-05; it verifies against hash `e7eeec3c04d4…` and is
+  preserved in owner-decision commit `b7c7244`. `OB-CORRECTED-APPROVALS` verifies all four current packages and
+  their immutable signed copies. GPIO retry `BENCH-GPIO-ST-HAL-OB-R1` is prepared and waits for SPI to terminate.
+
+- SPI's initial acceptance (`afo-cbde5111bd5eeaf6`) reached its sealed BLOCKED package (OB-T051). SWE.1 and
+  SWE.2 passed. The SWE.3 contract probe omitted ST's configured HAL umbrella and failed on `DMA_HandleTypeDef`
+  (escalated factory DEF-008); seven delivered-code defects were separately escalated. This is terminal-outcome
+  evidence, not SC-005 success. No approved package fact or delivered code is changed by the probe correction.
+- The clean full suite on deployed `557e920` completed: 1406 passed, 27 skipped, exactly the three known baseline
+  failures. Raw suite remains FAIL; OB-NO-REGRESSIONS independently verifies the unchanged failure set.
+- Corrected GPIO request `BENCH-GPIO-ST-HAL-OB-R1` launched as `afo-3043541c6afd38b1`, on `557e920` with
+  owner-signed OA-2026-10-27-05. Its live workspace is not modified by implementation work.
