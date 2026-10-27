@@ -97,7 +97,7 @@ T040, T061.
 
 Commit them after checking the OB-T020 result.
 
-**No task is ticked yet.** Tick with `scripts/mark_task.py specs/016-peripheral-onboarding/tasks.md <OB-Tnnn>
+Tick tasks with `scripts/mark_task.py specs/016-peripheral-onboarding/tasks.md <OB-Tnnn>
 <evidence-name>`, only for tasks whose evidence PASSED. Map:
 
 | Evidence | Tasks |
@@ -142,6 +142,14 @@ Commit them after checking the OB-T020 result.
   - DEF-004: DeInit leaves a BUSY handle.
 - These need the owner's disposition. The earlier R1 order (afo-a52297345f08e79d) ended BLOCKED on the SWE.3
   LL-header gate defect, since fixed.
+
+**Full-suite result (clean worktree at 64d6d61, log `forge-c/logs/f016-64d6d61-full-tests.log`):** 1395 passed,
+27 skipped, 7 failed. Of the 7, three are the known baseline failures (`test_cre_d7_e2e` latest_local_qwen,
+`test_kpi_003` t012, t020). The other four are `test_onboarding_oracle[0008c, 0010c, 0012c, 0014c]`: the LL smoke
+crash, fixed in f1dba7d, where OB-T020's oracle evidence PASSES. Re-run the full suite on the current HEAD before the
+CRE gate. The test worktree has been removed.
+
+**Ticked:** 40 of 64 tasks, through `mark_task` with evidence (cfd2548). The 24 open tasks are listed in §4.
 
 ## 4. Next steps, in order
 
