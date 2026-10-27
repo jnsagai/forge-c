@@ -30,15 +30,37 @@ def _intent_of(op: dict) -> dict:
             "precondition_fact_ids": list(op.get("precondition_fact_ids") or [])}
 
 
+def rebuild_domain(ws: Path, expected_engine: dict | None = None) -> tuple[dict, bytes]:
+    """Rebuild with the frozen profile authority, never artifact-selected semantics."""
+    from ..lrtx.profile import ProfileRefused, semantic_configuration
+    from ..safec_bridge import domain as D
+
+    manifest = Path(ws) / ".forge-run/manifest.json"
+    before = manifest.read_bytes()
+    try:
+        prof = semantic_configuration(json.loads(before))
+    except ProfileRefused as exc:
+        raise ValueError("FROZEN_PROFILE_BINDING") from exc
+    engine = prof["safec"]["engine"]
+    offered = expected_engine if isinstance(expected_engine, dict) else {}
+    if engine["semantic_profile"] == "register-io-0.2" or offered.get("semantic_profile") == "register-io-0.2":
+        expected = {k: engine[k] for k in ("source_commit_sha", "binary_sha256", "semantic_profile")}
+        if expected_engine != expected:
+            raise ValueError("FROZEN_ENGINE_BINDING")
+    domain, raw = D.build(ws, semantic_profile=engine["semantic_profile"])
+    if manifest.read_bytes() != before:
+        raise ValueError("WORKORDER_BINDING_CHANGED")
+    return domain, raw
+
+
 def verified(ws: Path) -> tuple[dict | None, list[str]]:
     from ..safec_bridge import contract as K
     from ..safec_bridge import contracts as C
-    from ..safec_bridge import domain as D
     from ..safec_bridge import oracle as O
 
     try:
         rec = json.loads((Path(ws) / FILE).read_text())
-        domain, raw = D.build(ws)
+        domain, raw = rebuild_domain(ws, rec.get("engine"))
     except (OSError, ValueError, KeyError) as exc:
         return None, [f"SAFEC_ORACLE_BLOCKED:UNREADABLE:{type(exc).__name__}"]
     if rec.get("schema") != "forge-c/lrtx-register-oracle/1":
@@ -55,7 +77,7 @@ def verified(ws: Path) -> tuple[dict | None, list[str]]:
         issues += [f"SAFEC_ORACLE_BLOCKED:ENGINES_DISAGREE:{op['intent_id']}:{k}" for k, v in ref.items()
                    if op.get(k) != v]
     vc = K.ValidatedContract(rec["contract_semantic_digest"], rec["domain_sha256"], tuple(rec["operations"]),
-                             (), (), (), (), {})
+                             (), (), (), (), {"profile": domain["profile"]})
     issues += [f"SAFEC_ORACLE_BLOCKED:{i}" for i in O.verify(rec["oracle"], vc, raw)]
     return (None, issues) if issues else (rec, [])
 

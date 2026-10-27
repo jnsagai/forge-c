@@ -43,6 +43,23 @@ def load(profile_id: str, directory: Path | None = None) -> dict:
             "_sha256": sha256_bytes(raw)}
 
 
+def semantic_configuration(manifest: dict) -> dict:
+    """Resolve the existing semantic profile authority and validate new frozen bindings."""
+    local = manifest.get("local_profile") or {}
+    if not isinstance(local, dict):
+        raise ProfileRefused(["PROFILE_BINDING_INVALID"])
+    prof = load(local.get("id", "local-rtx-v2"))
+    engine = prof["safec"]["engine"]
+    if (engine["semantic_profile"] == "register-io-0.2" or "semantic_profile" in local) and (
+            local.get("id") != prof["id"]
+            or local.get("semantic_profile") != engine["semantic_profile"]
+            or type(local.get("version")) is not int or local["version"] != prof["version"]
+            or local.get("config") != prof["_path"]
+            or local.get("config_sha256") != prof["_sha256"]):
+        raise ProfileRefused(["PROFILE_BINDING_CHANGED_OR_MISSING"])
+    return prof
+
+
 def selection_issues(prof: dict, *, model: str, provider: str, code_model: str | None, acp_authors: str | None,
                      acp_inspectors: str | None) -> list[str]:
     """LRTX-FR-002/FR-005: combinations the local-only profile refuses instead of silently changing them."""

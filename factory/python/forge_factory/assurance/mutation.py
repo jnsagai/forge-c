@@ -56,7 +56,6 @@ def register_ops(ws: Path) -> list[tuple]:
     - RO_WRITE: a write to a read-only register added after one register write statement.
     Nothing is derived from the candidate code; an empty list when the work order has no verified contract."""
     from ..layer import layer_of, register_block
-    from ..safec_bridge import domain as D
     from . import safec_oracle as SO
 
     if layer_of(ws) != "LL" or not SO.present(ws):
@@ -64,7 +63,11 @@ def register_ops(ws: Path) -> list[tuple]:
     rec, _issues = SO.verified(ws)
     if rec is None:
         return []
-    domain, _raw = D.build(ws)
+    domain, raw = SO.rebuild_domain(ws, rec.get("engine"))
+    from ..safec_bridge.contracts import sha256_bytes
+
+    if sha256_bytes(raw) != rec["domain_sha256"]:
+        return []
     regs = {r["register_id"]: r for r in domain["registers"]}
     block = re.escape(register_block(ws))
     lit = lambda v: rf"(?i)\b0x0*{v:X}U?\b"  # noqa: E731 - a literal in any width, with or without U

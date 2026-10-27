@@ -30,7 +30,6 @@ OBLIGATIONS_FILE = "workproducts/SWE.1/register_obligations.json"
 def verified(ws: Path) -> tuple[dict | None, list[str]]:
     """The recorded obligations, re-verified against the oracle record's operations and the rebuilt domain."""
     from ..safec_bridge import contract as K
-    from ..safec_bridge import domain as D
     from ..safec_bridge import obligations as OB
     from . import safec_oracle as SO
 
@@ -42,14 +41,17 @@ def verified(ws: Path) -> tuple[dict | None, list[str]]:
         return None, issues
     try:
         ob = json.loads(p.read_text())
-        _domain, raw = D.build(ws)
+        domain, raw = SO.rebuild_domain(ws, rec.get("engine"))
     except (OSError, ValueError, KeyError) as exc:
         return None, [f"WP_OBLIGATIONS_UNREADABLE:{type(exc).__name__}"]
     if ob.get("schema") != "forge-c/lrtx-register-obligations/1" or ob.get("contract_semantic_digest") != \
             rec["contract_semantic_digest"]:
         return None, ["WP_OBLIGATIONS_NOT_OF_THIS_CONTRACT"]
+    if domain["profile"] == "register-io-0.2" and (
+            ob.get("engine") != rec.get("engine") or ob.get("domain_sha256") != rec["domain_sha256"]):
+        return None, ["WP_OBLIGATIONS_BINDING_CHANGED"]
     vc = K.ValidatedContract(rec["contract_semantic_digest"], rec["domain_sha256"], tuple(rec["operations"]),
-                             (), (), (), (), {})
+                             (), (), (), (), {"profile": domain["profile"]})
     issues = OB.verify(ob["obligations"], vc, raw)
     return (None, issues) if issues else ({**rec, "obligations": ob["obligations"]}, [])
 

@@ -62,23 +62,16 @@ class EngineFault(RuntimeError):
 # ---- context of one visit ------------------------------------------------------------------------------------------
 class Context:
     def __init__(self, ws: Path):
-        from .profile import load
+        from .profile import ProfileRefused, semantic_configuration
 
         self.ws = Path(ws)
         self.manifest_raw = (self.ws / ".forge-run/manifest.json").read_bytes()
         m = json.loads(self.manifest_raw)
-        local = m.get("local_profile") or {}
-        if not isinstance(local, dict):
-            raise EngineFault("PROFILE_BINDING_INVALID")
-        prof = load(local.get("id", "local-rtx-v2"))
+        try:
+            prof = semantic_configuration(m)
+        except ProfileRefused as exc:
+            raise EngineFault(str(exc)) from exc
         e = prof["safec"]["engine"]
-        if (e["semantic_profile"] == "register-io-0.2" or "semantic_profile" in local) and (
-                local.get("id") != prof["id"]
-                or local.get("semantic_profile") != e["semantic_profile"]
-                or type(local.get("version")) is not int or local["version"] != prof["version"]
-                or local.get("config") != prof["_path"]
-                or local.get("config_sha256") != prof["_sha256"]):
-            raise EngineFault("PROFILE_BINDING_CHANGED_OR_MISSING")
         self.pin = CL.EnginePin(Path(e["binary"]), e["binary_sha256"], e["source_commit_sha"], e["semantic_profile"])
         self.limits = CL.Limits(timeout_s=float(prof["safec"].get("timeout_s", 60)))
         self.domain, self.domain_raw = D.build(ws, semantic_profile=self.pin.semantic_profile)
