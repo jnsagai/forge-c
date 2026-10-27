@@ -4,7 +4,6 @@ peripheral or an unknown register field."""
 import json
 
 import pytest
-
 from forge_factory import onboarding as OB
 from forge_factory.common import REPO_ROOT
 from forge_factory.onboarding import leftovers as L
@@ -27,6 +26,11 @@ def state(tmp_path, monkeypatch):
 def test_generated_instructions_have_no_leftover(key, state):
     need_inputs()
     pkg = OB.derive(REPO_ROOT / "examples" / key)
+    from forge_factory.onboarding import identity, texts
+
+    stored = OB.facts.read_package(OB.onboarding_dir(key))
+    regenerated = texts.generate(identity.context(REPO_ROOT / "examples" / key), stored)
+    assert json.loads(json.dumps(regenerated)) == pkg["texts"]
     assert all(v["from"].split(":")[0] in ("template", "owner", "model") for g in pkg["texts"].values()
                for v in g.values())
     assert L.run(key) == []
