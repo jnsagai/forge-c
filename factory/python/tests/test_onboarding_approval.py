@@ -5,7 +5,6 @@ import shutil
 import subprocess
 
 import pytest
-
 from forge_factory.onboarding import approval as A
 from forge_factory.onboarding import facts as F
 
@@ -57,6 +56,12 @@ def test_a_complete_signed_approval_verifies(tmp_path, signer):
     r = A.verify(tmp_path, allowed)
     assert r["code"] == "APPROVAL_OK", r
     assert (tmp_path / A.SUMMARY).read_text().count("Question") == 2
+
+
+def test_shipped_signer_permissions_allow_both_factory_namespaces(signer):
+    from repro_onboarding_signer_namespace import probe
+
+    assert probe() == {A.NAMESPACE: True, "forge-afo-authorization": True, "forge-unrelated": False}
 
 
 @pytest.mark.parametrize("mutate,code", [
