@@ -6,19 +6,19 @@
     "-q",
     "evidence/v0.4/benchmark/st-drivers-hal-ob/test_ob_check.py"
   ],
-  "duration_s": 0.837,
+  "duration_s": 0.711,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "10c0973f26ad7ae89bb8c51b08453f73fd24a455",
+  "git_head": "b68bdbb608d66cb6c5ebe9bc714afa928d0c8aad",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/OB-RECORD-CHECKER/20261027T142405.log",
+  "log": "evidence/v0.4/runs/OB-RECORD-CHECKER/20261027T160731.log",
   "log_sha256": "fe183ed25cf9298d48aa1731b51ea6fea20013514e5fb4af35bdd10683217d47",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "OB-RECORD-CHECKER",
-  "ts_utc": "2026-10-27T14:24:05.143350Z"
+  "ts_utc": "2026-10-27T16:07:31.374827Z"
 }
