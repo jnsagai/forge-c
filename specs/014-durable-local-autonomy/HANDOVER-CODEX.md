@@ -6,7 +6,49 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 bounded kernel-event replay and crash-safe scratch
+## Current priority — dedicated Omniverse2 production go-live within eight hours
+
+Owner instruction at2026-10-27T20:50:49Z: "I need to have the forge-c up and running
+in the omniverse machine for production in the next8 hours maximum, even if it not
+perfect". Deadline2026-10-28T04:50:49Z. This supersedes the prior dedicated-factory
+deployment hold. Prioritize useful local-Qwen work; defer further observer expansion.
+It does not authorize release, private-key access or resetting historical missions.
+
+Dedicated controller actually deployed22:02:51Z at
+`/mnt/data/forge-c/production-local-014`, pinned runtime
+**3849410a4de676266c0754ae86b91f1c82b0180f**. Backend healthy; dedicated recovery timer
+enabled; original data/unit retained;4BLOCKED orders/20attempts preserved. Fixes
+include honoring deployment CRE authority and the stack CLI options that otherwise
+prevented the rendered controller from starting. Native50PASS/1engine-pinSKIP;
+that skipped test separately1PASS with the real pin. Real systemd clean-exit
+process restoration10.602s; first heartbeat waits prior120s scheduler lease.
+
+Owner subsequently explicitly authorized SSH-agent signing for the exact prepared
+production grant AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1. Signed through the existing
+agent with -U, verified AUTH_OK, installed; effective mode now **PILOT**. Scope is
+local Qwen3.6, manually approved LL orders, one concurrent order,120ktokens and
+3attempts/order,6h job limits; expiry2026-10-29T05:00Z. No private key was read/copied
+and no historical mission was renewed. Signed payload remains exactly as approved.
+Product role capability and measured semantic-objective wiring remain blockers;
+do not disable guards or claim capability from protocol results. No model request
+or product attempt was made by this deployment. Full Feature014 remains30/58;
+all runtime, capability, product, learning and availability claims stay separate.
+
+**Owner pause:** "I just have3% lefting of weekly codex credit. Can we let omniverse
+machine running overnight autonomously and stop the goal here until that?"
+Leave the dedicated remote controller and recovery timer running; pause the Codex
+goal after saving/pushing this checkpoint. Latest live heartbeat is healthy PILOT,
+idle;4orders BLOCKED,20historical attempts,0new durable requests. No eligible Qwen
+driver job is queued. Overnight supervision/recovery can continue; useful Qwen
+engineering progress must not be promised. No new benchmark/campaign was started.
+Resume critical admission/capability work before more observer expansion. Remote
+operator entrypoint: `/mnt/data/forge-c/production-local-014/deployment/forge-c-operator`
+(`status`, `list`, authenticated `pause`/`drain`/`resume`/`shutdown --reason ...`).
+
+[Deployment evidence and remaining work](../../evidence/014-durable-local-autonomy/production-3849410/README.md).
+Private live checkpoint: loop10`operations/feature014/GO-LIVE-20261027.json`.
+
+## Previous checkpoint — 2026-10-27 bounded kernel-event replay and crash-safe scratch
 
 Exact runtime **b321a8766947fa5f5174bbb4f61f5d05720b22d6**. The existing
 host-audit verify-segments command now supports a frozen continuous_replay object.
