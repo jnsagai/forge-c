@@ -318,7 +318,7 @@ SWE.1–SWE.6.
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [X] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047; ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
   the owner signs).
-- [ ] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
+- [X] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048). ✅ Evidence: `evidence/v0.4/runs/OB-T054/latest.json`
 - [X] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [X] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
 - [ ] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
@@ -507,3 +507,11 @@ SWE.1–SWE.6.
   PASS (OB-SPI-R1); the cited cause review identifies no missing onboarding fact in this corrected attempt.
 - USART request `BENCH-USART-ST-HAL-OB` launched as `afo-91b7e28a3bab37e5` on `9dd5b71`, with the signed
   OA-2026-10-27-03 clock confirmation of 64,000,000 Hz. TIM remains prepared for sequential submission.
+
+- USART (`afo-91b7e28a3bab37e5`) finished BLOCKED with 711 named gaps after SWE.1/2/3 inspection PASS. Archive
+  `c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8` integrity and fact/input/baseline bindings
+  PASS (OB-T054). SWE.4 unit failures and uncovered USPECs remain; AFO refused rework of escalated FROZEN findings.
+  The cited review identifies no missing onboarding fact but explicitly leaves generated baud-validity and strict
+  deadline premises for owner adjudication, rather than asserting every CODE report is a true ST defect.
+- TIM `BENCH-TIM-ST-HAL-OB` launched as `afo-a06f0cfbf6e556cc`, with OA-2026-10-27-04 on unchanged runtime
+  `9dd5b71`. Model-authoring development is isolated in the feature checkout; no new source is deployed to it.

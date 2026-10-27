@@ -1,0 +1,68 @@
+{
+  "schema": "forge-c/onboarding-gap-review/0.1",
+  "recorded_at": "2026-10-27T15:14:23.677746Z",
+  "status": "REVIEWED",
+  "reviewer": "Codex implementation review, source-cited; owner adjudication pending",
+  "request_id": "BENCH-USART-ST-HAL-OB",
+  "attempt_id": "afo-91b7e28a3bab37e5-a1",
+  "archive_sha256": "c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8",
+  "gap_count": 711,
+  "gap_list_sha256": "f5e1ee6c5dd23680a3730b3df507bda7b782a7252786463574b50d573d8f5bf9",
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding:CONFORMANCE": 672,
+    "unresolved_finding:DELIVERED_CODE": 6,
+    "unresolved_finding:SWE.4": 1,
+    "unresolved_finding:SWE.5": 1,
+    "unresolved_finding:SWE.6": 1,
+    "unresolved_finding:escalated_defect": 8
+  },
+  "onboarding_fact_causes_identified": [],
+  "assessment": "USART passed SWE.1/2/3 inspection with the signed 64 MHz test-clock assumption. SWE.4 stopped on runtime unit checks and unverified USPEC coverage. Named gaps include conformance/guideline findings and escalated CODE reports, unfinished verification and safety artifacts. No missing or wrong onboarding fact was identified in these blockers.",
+  "interpretation_limit": "The generated requirements need owner adjudication: DEF-004/007 treat BRR=8 with OVER16 as valid from a representable-nonzero premise, and deadline tests require elapsed <= Timeout. These premises must be reviewed against RM constraints and the declared API/time-base contract before accepting the generated CODE diagnoses. This review is not safety acceptance.",
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "bc08fc455779818658123476704c828d62a8f2d8ede58773973a2a4d4e7b4830"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/package.json",
+      "sha256": "1a1e819a79e4011bda3d38a1a7b45c3560c845bccd76c120694d4e49d414ee6a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "05d9c1b44e78681fcadda2cfb48fef97799b53847db4259beadde524bbe8571f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "85b3e8728a0a0c3ad81c784d96613e0a6c63ef64da4093789a1d78eed9ebf9e6"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "4e9d885d5d302d1c2992f7af05ca01629b1888688b474df175000051bf162a7f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b3f00d7d8280207dd2838e034fe69ffe48485ea10753d1218c13439658eca41f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "3f01c8879e045d6c57bf667823c611b268f57552a2179b1a40c462306b4cee34"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "51908393d5385220c89b8ed2dca30a05e1bc6a9d8706c8bbb0b8bf0d22d0223b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "6e045eed0ca6942ac5c18d85307383a40c74001f1ef36ea7edc74bc736a3025c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "e04990cc03fb8d65d8aee9644f35dd5d596b9072ecab79790145da32a7efcee5"
+    }
+  ]
+}

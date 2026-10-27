@@ -1,0 +1,4 @@
+usart BLOCKED gaps 711 archive c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8
+PASS terminal outcomes and approved package bindings; gap-cause/SC-005 review remains separate
+
+--- stderr ---
