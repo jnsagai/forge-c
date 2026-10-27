@@ -340,7 +340,7 @@ SWE.1–SWE.6.
   `ff/afo/planner.py` (plan validation), reject any plan whose `artifact_scope` or remedy creates or edits files
   under a FROZEN delivery's code directories (`software/ll/`, `software/hal/`, `software/src/`,
   `software/include/`). Also reject a plan whose stated remedy is to produce an output that a gate demands but the
-  driver style does not have. Reason codes `PLAN_REJECTED:FROZEN_CODE_SCOPE` and `PLAN_REJECTED:STYLE_OUTPUT`. Test
+  driver style does not have. Reason codes `PLAN_REJECTED:FROZEN_CODE_SCOPE` and `PLAN_REJECTED:STYLE_OUTPUT`. Also: in a FROZEN delivery, a phase STUCK on failing checks that are all reproduced by ESCALATED CODE defects (CRC HAL R2, `WO-AFO-071ffed673bf5df5-a1`: DEF-002/003/004 in ST's CRC HAL, e.g. the polynomial scan never tests bit 31) is not reworkable: reject REWORK plans with `PLAN_REJECTED:FROZEN_DEFECTS_NEED_OWNER` and finalize the order BLOCKED with the defects as gaps for the owner's disposition. Test
   it in `tests/test_afo_planner_frozen.py` with the recorded plan as a fixture. CRE gate.
 - [ ] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no
   qualified local profile; see feature 014). If a profile is qualified later, run quickstart §1–§4 on omniverse2 and
