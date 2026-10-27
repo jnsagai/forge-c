@@ -813,8 +813,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec", "expose-api"])
     ap.add_argument("--profile", default=os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
     ap.add_argument("--host-port", type=int, help="expose-api only: host loopback port when the profile port is taken")
-    ap.add_argument("rest", nargs=argparse.REMAINDER)
-    a = ap.parse_args(argv)
+    # Parse stack options before the explicit command separator. REMAINDER
+    # consumed --profile/--host-port after cmd, including the unit renderer's
+    # `exec --profile ... -- ...`, forwarding them to nsenter instead.
+    args = list(sys.argv[1:] if argv is None else argv)
+    separator = args.index("--") if "--" in args else len(args)
+    a, remainder = ap.parse_known_args(args[:separator])
+    rest = remainder + args[separator + 1:]
+    if a.cmd != "exec" and rest:
+        ap.error("unrecognized arguments: " + " ".join(rest))
     s = settings(a.profile)
     if a.cmd == "env":
         print("unset PYTHONPATH")
@@ -822,7 +829,6 @@ def main(argv: list[str] | None = None) -> int:
             print(f"export {k}={json.dumps(v)}")
         return 0
     if a.cmd == "exec":
-        rest = a.rest[1:] if a.rest[:1] == ["--"] else a.rest
         return exec_in(s, rest)
     if shutil.which("unshare") is None or shutil.which("nsenter") is None:
         raise SystemExit("util-linux unshare/nsenter required")
