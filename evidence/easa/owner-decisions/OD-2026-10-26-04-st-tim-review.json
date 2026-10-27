@@ -1,0 +1,23 @@
+{
+ "schema": "forge-c/owner-decision/0.1",
+ "decision_id": "OD-2026-10-26-04",
+ "decided_on": "2026-10-26",
+ "decided_by": "Jefferson Nascimento (owner)",
+ "subject": "Offline review of the feature 015 benchmark package for the ST TIM2 LL driver (STM32CubeN6 v1.4.0, FROZEN)",
+ "statement": "TIM approved",
+ "decision": "The owner reviewed the READY_FOR_OFFLINE_REVIEW package below and approved it. The approval is bound to the sealed archive by its SHA-256; any other archive of this work order is not covered. With OD-2026-10-26-02 and OD-2026-10-26-03, all five benchmark drivers' packages are owner-approved.",
+ "packages": [
+  {
+   "request_id": "BENCH-TIM-ST-R5",
+   "driver_class": "STM32N6_TIM_LL_ST",
+   "work_order": "WO-AFO-c2fd276494a54e7f-a1",
+   "package_status": "READY_FOR_OFFLINE_REVIEW",
+   "gap_count": 0,
+   "finalized_at": "2026-10-26T17:12:08.261004Z",
+   "factory_revision": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+   "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-c2fd276494a54e7f-a1/forge-c-WO-AFO-c2fd276494a54e7f-a1-review.zip",
+   "archive_sha256": "995f31e322a1feb0370ecec97709424beab02c1d84102c02fae09b50113e4ad6"
+  }
+ ],
+ "not_changed": "No safety approval, ASPICE/ISO 26262 compliance or certification claim; the delivered ST code is unchanged (FROZEN); the signed SSA-STB-001/TAA-STB-001 and their open findings stand."
+}

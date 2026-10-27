@@ -1,0 +1,30 @@
+{
+ "schema_version": "1.0",
+ "authorization_id": "AUTH-AFO-PILOT-20261026",
+ "approver": "jnsagai",
+ "approval_evidence_ref": "owner 2026-10-26: \"enable_recovery_planner=true\" (AFO recovery planner on the owner's Claude login; scope, actions and expiry unchanged from AUTH-AFO-PILOT-20261025)",
+ "issued_utc": "2026-10-26T10:15:00Z",
+ "expires_utc": "2026-11-24T00:00:00Z",
+ "policy_sha256": "1f413b50876a929c70b6f20500d78bef90190f221b981eec2d964f68e78ad97e",
+ "mode": "PILOT",
+ "allowed_actions": [
+  "submit_workorder",
+  "launch_workorder",
+  "recover_workorder"
+ ],
+ "scope": {
+  "driver_classes": [
+   "STM32N6_CRC_LL_ST",
+   "STM32N6_SPI_LL_ST",
+   "STM32N6_USART_LL_ST",
+   "STM32N6_GPIO_LL_ST",
+   "STM32N6_TIM_LL_ST"
+  ],
+  "models": [
+   "codex-claude"
+  ]
+ },
+ "signature_ref": "AUTH-AFO-PILOT-20261026.sig",
+ "revoked_utc": null,
+ "signed_runbook_ref": null
+}

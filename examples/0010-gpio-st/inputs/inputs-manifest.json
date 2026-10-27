@@ -1,0 +1,34 @@
+{
+  "documents": [
+    {
+      "converted_at": "2026-10-25T08:46:13.566425Z",
+      "converter": "forge_factory.docs.pdf2md + pdftotext -layout",
+      "doc": "RM0486",
+      "markdown": "RM0486-rev4-ch15-gpio.md",
+      "markdown_sha256": "d765bc7f30c1b616290e37394468d71de557dee9f59c17f261c6ed4cbd50492a",
+      "pages": [
+        783,
+        807
+      ],
+      "pdf": "rm0486.pdf",
+      "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "retrieved_via": "web.archive.org capture 20260815172300",
+      "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf"
+    },
+    {
+      "converted_at": "2026-10-25T08:46:13.970842Z",
+      "converter": "forge_factory.docs.pdf2md + pdftotext -layout",
+      "doc": "RM0486",
+      "markdown": "RM0486-rev4-memory-map-excerpt-gpio.md",
+      "markdown_sha256": "4fa355b31eb795d3bb86798a616dc8aec7c3639560159dcac95bdd6a5e8767c5",
+      "pages": [
+        176,
+        176
+      ],
+      "pdf": "rm0486.pdf",
+      "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "retrieved_via": "web.archive.org capture 20260815172300",
+      "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ tool. CBMC and Frama-C are not installed on this host -> UNAVAILABLE (disabled, 
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import xml.etree.ElementTree as ET
@@ -77,6 +78,21 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
                   "cppcheck", tool_version("cppcheck"), r.exit_code, r.duration_ms, a.model_dump(), r.stderr)
 
 
+DELIVERED_STATIC = "verification/static/delivered_static_analysis.json"
+DIAG = re.compile(r"^(?P<file>[^:\s][^:]*):(?P<line>\d+):\d+: (?P<kind>warning|error): .*?(?:\[(?P<checker>[\w.-]+)\])?$")
+
+
+def vendor_paths(ws) -> set[str]:
+    """Delivered files whose analyzer warnings are vendor findings (FROZEN or vendor-style delivery), else empty."""
+    from ...brownfield import code_mode, delivered_paths, manifest_of
+    from ...brownfield.checks import style_of
+
+    m = manifest_of(ws)
+    if not delivered_paths(m) or not (code_mode(m) == "FROZEN" or style_of(m) != "forge"):
+        return set()
+    return set(delivered_paths(m))
+
+
 def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
     files = [f for f in srcs(ctx) if f.endswith(".c")]
     if not files:  # feature 008 (ST pilot): the generated build-only unit of a header-only delivery
@@ -87,6 +103,8 @@ def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
     if not files:
         return result(ctx, "BLOCKED", "no C sources", issues=["NO_SOURCES"], tool="clang")
     log, issues, ms = b"", [], 0.0
+    vendor, vendor_found = vendor_paths(ctx.workspace), []
+    root = str(ctx.workspace.resolve()) + "/"
     for f in files:
         r = run_argv(["clang", "--analyze", "-std=c11", "-DFORGE_HOST_BUILD=1", *incs(ctx), "-Xanalyzer",
                       "-analyzer-output=text", "-o", "/dev/null", f], ctx.workspace, 120, ALLOW)
@@ -94,10 +112,28 @@ def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
         log += r.stdout + r.stderr
         for line in r.stderr.decode(errors="replace").splitlines():
             if ": warning:" in line or ": error:" in line:
+                d = DIAG.match(line)
+                rel = d.group("file").removeprefix(root) if d else ""
+                if d and d.group("kind") == "warning" and rel in vendor:
+                    # owner 2026-10-26 ("Dispositionable"): an analyzer warning located in FROZEN/vendor delivered
+                    # code is a DELIVERED_CODE finding (a package gap unless the owner dispositions it), not a
+                    # failure of the factory's analysis; errors and findings elsewhere still fail the tool
+                    fid = f"STATIC_ANALYSIS:{d.group('checker') or 'clang'}:{rel}:{d.group('line')}"
+                    if fid not in vendor_found:
+                        vendor_found.append(fid)
+                    continue
                 issues.append(line.split("/")[-1][:120])
-    return result(ctx, "PASS" if not issues else "FAIL", f"clang analyzer: {len(issues)} diagnostics",
-                  [ctx.store(log)], issues, {"files": len(files), "diagnostics": len(issues)}, "clang --analyze",
-                  tool_version("clang"), 0, ms, a.model_dump(), log)
+    if vendor:  # the full list for the package (the tool result's issues are bounded); rewritten on every run
+        out = ctx.workspace / DELIVERED_STATIC
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps({"schema": "forge-c/delivered-static-analysis/0.1", "tool": tool_version("clang"),
+                                   "findings": vendor_found}, indent=1) + "\n")
+    return result(ctx, "PASS" if not issues else "FAIL",
+                  f"clang analyzer: {len(issues)} diagnostics" + (f", {len(vendor_found)} in the delivered code "
+                                                                   "(delivered-code findings)" if vendor_found else ""),
+                  [ctx.store(log)], [f"DELIVERED_CODE:{x}" for x in vendor_found] + issues,
+                  {"files": len(files), "diagnostics": len(issues), "delivered_findings": len(vendor_found)},
+                  "clang --analyze", tool_version("clang"), 0, ms, a.model_dump(), log)
 
 
 def clang_tidy(ctx: ToolContext, a: AnalyzeIn) -> dict:

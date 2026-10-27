@@ -99,8 +99,11 @@ class Authorizer:
     def __init__(self, binding: Binding, agents: list[AgentDefinition] | None = None):
         self.binding = binding
         self.workspace = Path(os.path.realpath(binding.workspace))
-        self.agents = {a.id: a for a in (agents or load_agents()[0])}
-        self.registry = load_registry()
+        # Feature 005 overlay roles (afo-*) and their MCP servers exist only for a binding that binds one of them
+        # (the afo-recovery-planner's single-node run); SWE work-order bindings see the base registry, unchanged
+        afo = any(str(n.get("role", "")).startswith("afo-") for n in binding.nodes.values())
+        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo)[0])}
+        self.registry = load_registry(include_afo=afo)
         self.protected = list(ALWAYS_PROTECTED)
         # Supervisor protected paths (incl. workproducts/**, evidence/**) bind infrastructure-repair roles;
         # SWE authors legitimately produce new revisions of their own phase outputs (re-inspected on change).

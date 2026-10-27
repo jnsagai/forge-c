@@ -31,13 +31,17 @@ def seed(ws: Path) -> dict:
     texts = {rel: (ws / rel).read_text(errors="replace") for rel in reference_paths(m) if (ws / rel).is_file()}
     macros = S.constant_macros(list(texts.values()))
     defs = {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
+    from ..layer import register_prefix
+
+    pfx = register_prefix(ws)  # feature 015: the work order's peripheral (RCC was implied)
     rows, facts = [], []
     for f in scope_functions(ws):
         sha = sha256_bytes((ws / f["file"]).read_bytes()) if (ws / f["file"]).is_file() else None
         rows.append({"function": f["name"], "file": f["file"], "sha256": sha, "unit": "SWU-?", "uspecs": []})
         d = defs.get(f["name"])
         eff = [] if d is None else [{"register": e.register, "op": e.op, "bits": S.bits(e.mask), "via": e.via}
-                                    for e in S.register_effects(d, macros, style, defs=defs) if d.kind != "macro"
+                                    for e in S.register_effects(d, macros, style, defs=defs, prefix=pfx)
+                                    if d.kind != "macro"
                                     or not d.params]
         facts.append({"function": f["name"], "file": f["file"], "line": f["line"], "kind": f["kind"],
                       "params": d.params if d else [], "register_effects": eff})

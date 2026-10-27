@@ -1,0 +1,155 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "d9a2163a6d33770d9959477fa0d30b2c7ca0cee5",
+  "baseline_sha256": "672d836fff24de465f97e8057a5e0499e16384211df8241b38b6395b73db46bc",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "90c9957ac2c09fac0d6a8c2bf307987d6166274b",
+  "candidate_sha256": "067bfa5502aabf24712b00638ce4f06ee2dc96918ddbf4b150ca03fda61b9f1f",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "decision_id": "pd-13c87c316eade36534c7",
+  "evaluated_at": "2026-10-25T20:11:19.200290Z",
+  "evaluator_id": "cre-promotion-runner@90c9957ac2c0",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:d9a2163a6d33..90c9957ac2c0"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "NOT_APPLICABLE_FOR_CHANGE",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-64b4df2fd90ca0a1a2fd",
+        "reproducer-run:rr-e5f7858440c1fb853a75",
+        "reproducer-run:rr-b9dec28ae38206294391",
+        "reproducer-run:rr-03fd3621b96372963b92",
+        "reproducer-run:rr-6d3ddd580cd477dfaaa9",
+        "reproducer-run:rr-ee59e296432878ad5e42",
+        "reproducer-run:rr-ce1cee01052275584001",
+        "reproducer-run:rr-584b59d3f120d0a127bb",
+        "reproducer-run:rr-0001b5fae32dae41bdf3",
+        "reproducer-run:rr-e717d777b2662ea05051",
+        "reproducer-run:rr-bbafef005bf1af0f6779",
+        "reproducer-run:rr-620269ee37acf8e0cf3b",
+        "reproducer-run:rr-621c890af524a9a92d08",
+        "reproducer-run:rr-e399273b22b156d7c564",
+        "reproducer-run:rr-0149f504c916c0212fe4",
+        "reproducer-run:rr-b573c957bdcb2ca243de",
+        "reproducer-run:rr-039c0025413b79f15653",
+        "reproducer-run:rr-35d7b7d5cca6bc2d667f",
+        "reproducer-run:rr-4e8f954f1ef6267841d8",
+        "reproducer-run:rr-59225632a1a1656101e8",
+        "reproducer-run:rr-e794f7ade92244d683ed",
+        "reproducer-run:rr-f15cf1e319c2ce192a0b",
+        "reproducer-run:rr-acb824a4fd8e02500056",
+        "reproducer-run:rr-68d12e0ff454d259ab6c",
+        "reproducer-run:rr-2e198ca8328cb741f370",
+        "reproducer-run:rr-9a8422982713e39623ce",
+        "reproducer-run:rr-c9a0ea3a7bcf6994252e",
+        "reproducer-run:rr-46bbb81e74902abc573f",
+        "reproducer-run:rr-47b1480b840da348264e",
+        "reproducer-run:rr-17938b9fc7a29bbf9914",
+        "reproducer-run:rr-5a34c8bfa59872b929cc",
+        "reproducer-run:rr-b63d23c6aa446c75a5e9",
+        "reproducer-run:rr-37b6b95d3c3c2211cffa",
+        "reproducer-run:rr-95240648410056fdfc0b",
+        "reproducer-run:rr-73e9f5db7a0238ccb357",
+        "reproducer-run:rr-f17c755847c7e7473a6c",
+        "reproducer-run:rr-4520731f40ef686952f9",
+        "reproducer-run:rr-2d39af66003ac4c1f1db",
+        "reproducer-run:rr-4d53f7164e3d25714762",
+        "reproducer-run:rr-999c9cbc61a8763454e3",
+        "reproducer-run:rr-e84b40a8526626694c60",
+        "reproducer-run:rr-a8afaddfb0a73e8c0478",
+        "reproducer-run:rr-21a3f839921b3167ad3c",
+        "reproducer-run:rr-144cd59da5fe827d0ea2",
+        "reproducer-run:rr-a0f6d16c7c1eecf47ff1",
+        "reproducer-run:rr-45461f684bf63fbedadd",
+        "reproducer-run:rr-e96b2672e18cd8dbebae",
+        "reproducer-run:rr-547602a97d6f6b6b199f",
+        "reproducer-run:rr-d0034f701c9ffed9b528",
+        "reproducer-run:rr-30f54d6d15d92705e6b1",
+        "reproducer-run:rr-f65e0c4d8cd1a913e65c",
+        "reproducer-run:rr-9b3b9ea883c4b039c4e7",
+        "reproducer-run:rr-e254bb387cee9a760147",
+        "reproducer-run:rr-0147dbfe7452c4b415af",
+        "reproducer-run:rr-a18faed5110ef90e2dab",
+        "reproducer-run:rr-1bc0ee4dfb90eab10704",
+        "reproducer-run:rr-d3ee101b51a4be138bd6",
+        "reproducer-run:rr-692ff0f3e476f941bef4",
+        "reproducer-run:rr-d70aa30d99be7e822d50",
+        "reproducer-run:rr-666e78eae64f7d54b50f",
+        "reproducer-run:rr-f9971740e4730ac275ed",
+        "reproducer-run:rr-440e0455da003251d985",
+        "reproducer-run:rr-d732caea79bfc9d0a95b",
+        "reproducer-run:rr-d29098021f6f1a270980",
+        "reproducer-run:rr-322dde552f238527c94d",
+        "reproducer-run:rr-7ef363e38d806b49f12c",
+        "reproducer-run:rr-fe22d9573ca0b9d729fe",
+        "reproducer-run:rr-ea2ab6929a900650f547",
+        "reproducer-run:rr-2197721f9103ede56563",
+        "reproducer-run:rr-72abd2d4cec36b61c4f2",
+        "reproducer-run:rr-0552fd02493dad551430",
+        "reproducer-run:rr-dd6bd5b33f8971bf4308"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:30d24895d370ae8f",
+        "baseline-tests:exit0:sha256:13d983a5e1d965ac",
+        "design:exit0"
+      ],
+      "name": "quality_process",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-c44325db1a957b0fda6d",
+        "benchmark-run:br-c3bd0deb9653a263c003"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-339119081e65d3ed51fb",
+        "benchmark-run:br-dc40018294d66e0fa6f3"
+      ],
+      "name": "holdout",
+      "reason_code": null,
+      "result": "PASS"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 5812 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "efficiency (informational, n=1 run each, not a gate): golden duration 7.7s -> 8.6s; model tokens 0 -> 0",
+    "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

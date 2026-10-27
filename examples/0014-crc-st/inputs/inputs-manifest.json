@@ -1,0 +1,34 @@
+{
+  "documents": [
+    {
+      "converted_at": "2026-10-25T08:46:17.312734Z",
+      "converter": "forge_factory.docs.pdf2md + pdftotext -layout",
+      "doc": "RM0486",
+      "markdown": "RM0486-rev4-ch26-crc.md",
+      "markdown_sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+      "pages": [
+        1169,
+        1175
+      ],
+      "pdf": "rm0486.pdf",
+      "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "retrieved_via": "web.archive.org capture 20260815172300",
+      "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf"
+    },
+    {
+      "converted_at": "2026-10-25T08:46:17.678318Z",
+      "converter": "forge_factory.docs.pdf2md + pdftotext -layout",
+      "doc": "RM0486",
+      "markdown": "RM0486-rev4-memory-map-excerpt-crc.md",
+      "markdown_sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+      "pages": [
+        176,
+        176
+      ],
+      "pdf": "rm0486.pdf",
+      "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "retrieved_via": "web.archive.org capture 20260815172300",
+      "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf"
+    }
+  ]
+}

@@ -48,7 +48,10 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     fabro_url = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/")
     if not p.get("fabro", lambda: _healthy(fabro_url.rsplit("/api", 1)[0] + "/health"))():
         issues.append("FABRO_UNAVAILABLE")
-    if not p.get("gateway", lambda: _healthy("http://127.0.0.1:11437/health"))():
+    from .runtime import model_gateway
+
+    gw = model_gateway(env["model_profile"])
+    if gw and not p.get("gateway", lambda: _healthy(gw + "/health"))():  # an all-ACP profile needs no gateway
         issues.append("MODEL_GATEWAY_UNAVAILABLE")
     if env["model_profile"] not in (eff.get("engineering.allowed_model_profiles") or []):
         issues.append(f"MODEL_NOT_ALLOWED:{env['model_profile']}")

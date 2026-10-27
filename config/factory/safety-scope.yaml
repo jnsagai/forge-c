@@ -92,3 +92,142 @@ decisions:
           tools that produced or verified this work order, so no tool assurance assessment is performed.
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-21'
+  # OD-2026-10-25-02 (feature 015 ST-driver benchmark): the owner set the target ASIL of the five ST LL benchmark
+  # product scopes, answering "ASIL B for all five (Recommended)" to the agent's question "Which target ASIL do you set
+  # for the five ST benchmark driver scopes (CRC, SPI, USART, GPIO, TIM)?" (2026-10-25). The owner-signed safety
+  # documents (OD-2026-10-19-11) are registered under safety_documents only on the owner's signature.
+  - scope_id: SC-CRC-2026-10-25
+    examples: [0014c-st-cube-crc]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 CRC calculation unit LL driver delivered by ST
+      (benchmark example 0014c-st-cube-crc) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+    # OD-2026-10-25-03: the owner signed SSA-STB-001 and TAA-STB-001 v1.0 ("for my decisions I approve all", 2026-10-25),
+    # Approved with open findings; one document pair for the five benchmark scopes, registered per scope with its basis.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md
+        basis: 76d9347ef9a5d9e0e2f49a9c6c41f0fa0cbf52e8fe953ab433274f5ee1ba372a
+        sha256: aa753cb4784537777227a5eeeaca3166cc048e05eccac0deb0429b8fa82ab9d2
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md
+        basis: 76d9347ef9a5d9e0e2f49a9c6c41f0fa0cbf52e8fe953ab433274f5ee1ba372a
+        sha256: 1100db2915434dc6f7073d6aa7b38b4da14b7114a820194c6a2cb4d6d3af9977
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+  - scope_id: SC-SPI-2026-10-25
+    examples: [0011c-st-cube-spi]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 SPI1 LL driver delivered by ST
+      (benchmark example 0011c-st-cube-spi) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+    # OD-2026-10-25-03: the owner signed SSA-STB-001 and TAA-STB-001 v1.0 ("for my decisions I approve all", 2026-10-25),
+    # Approved with open findings; one document pair for the five benchmark scopes, registered per scope with its basis.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md
+        basis: 0700c04fa15af5fcdd4539d4de951da186d7d2e15f67bfa88819558b5a4949af
+        sha256: aa753cb4784537777227a5eeeaca3166cc048e05eccac0deb0429b8fa82ab9d2
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md
+        basis: 0700c04fa15af5fcdd4539d4de951da186d7d2e15f67bfa88819558b5a4949af
+        sha256: 1100db2915434dc6f7073d6aa7b38b4da14b7114a820194c6a2cb4d6d3af9977
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+  - scope_id: SC-USART-2026-10-25
+    examples: [0012c-st-cube-usart]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 USART1 LL driver delivered by ST
+      (benchmark example 0012c-st-cube-usart) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+    # OD-2026-10-25-03: the owner signed SSA-STB-001 and TAA-STB-001 v1.0 ("for my decisions I approve all", 2026-10-25),
+    # Approved with open findings; one document pair for the five benchmark scopes, registered per scope with its basis.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md
+        basis: 8a172ad502f3d75bcc0fcff7ac25ad586cc9e3bb0fd7f71df0a278cd28cecfc1
+        sha256: aa753cb4784537777227a5eeeaca3166cc048e05eccac0deb0429b8fa82ab9d2
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md
+        basis: 8a172ad502f3d75bcc0fcff7ac25ad586cc9e3bb0fd7f71df0a278cd28cecfc1
+        sha256: 1100db2915434dc6f7073d6aa7b38b4da14b7114a820194c6a2cb4d6d3af9977
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+  - scope_id: SC-GPIO-2026-10-25
+    examples: [0010c-st-cube-gpio]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 GPIOA LL driver delivered by ST
+      (benchmark example 0010c-st-cube-gpio) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+    # OD-2026-10-25-03: the owner signed SSA-STB-001 and TAA-STB-001 v1.0 ("for my decisions I approve all", 2026-10-25),
+    # Approved with open findings; one document pair for the five benchmark scopes, registered per scope with its basis.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md
+        basis: 068be9376a6832b0da92eadd900f0db0a1ee5796520dcd263c5970c9b68e4d4e
+        sha256: aa753cb4784537777227a5eeeaca3166cc048e05eccac0deb0429b8fa82ab9d2
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md
+        basis: 068be9376a6832b0da92eadd900f0db0a1ee5796520dcd263c5970c9b68e4d4e
+        sha256: 1100db2915434dc6f7073d6aa7b38b4da14b7114a820194c6a2cb4d6d3af9977
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+  - scope_id: SC-TIM-2026-10-25
+    examples: [0013c-st-cube-tim]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-25 by Jefferson Nascimento - the STM32N6 TIM2 LL driver delivered by ST
+      (benchmark example 0013c-st-cube-tim) is ASIL B (answer "ASIL B for all five (Recommended)", OD-2026-10-25-02)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-25'
+    hsi_hash: null
+    allocation_review_ref: null
+    # OD-2026-10-25-03: the owner signed SSA-STB-001 and TAA-STB-001 v1.0 ("for my decisions I approve all", 2026-10-25),
+    # Approved with open findings; one document pair for the five benchmark scopes, registered per scope with its basis.
+    safety_documents:
+      software_safety_analysis:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md
+        basis: 771f73af66c754cc43e54a35b761624cd389b640b123b0be233520d40b8f0283
+        sha256: aa753cb4784537777227a5eeeaca3166cc048e05eccac0deb0429b8fa82ab9d2
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03
+      tool_assurance_assessment:
+        path: config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md
+        basis: 771f73af66c754cc43e54a35b761624cd389b640b123b0be233520d40b8f0283
+        sha256: 1100db2915434dc6f7073d6aa7b38b4da14b7114a820194c6a2cb4d6d3af9977
+        approved_by: Jefferson Nascimento
+        approved_at: '2026-10-25'
+        decision: OD-2026-10-25-03

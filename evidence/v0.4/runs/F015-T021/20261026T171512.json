@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python3",
+    "evidence/v0.4/benchmark/st-drivers/f015_check.py",
+    "outcome",
+    "spi"
+  ],
+  "duration_s": 0.037,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "e2065e7844234f2591eac2071731d3578e25954e",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F015-T021/20261026T171512.log",
+  "log_sha256": "12c68d6ebe42f93bf1d271eacf799bc5bcc6c3e08aee916502e3b09b781d0944",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F015-T021",
+  "ts_utc": "2026-10-26T17:15:12.659678Z"
+}

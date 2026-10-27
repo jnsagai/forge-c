@@ -8,7 +8,7 @@ import threading
 import time
 
 import pytest
-from forge_factory.afo import alerts, deadletter, dispatch, metrics, planner, readiness, recovery, scheduler, soak
+from forge_factory.afo import alerts, deadletter, dispatch, metrics, planner, policy, readiness, recovery, scheduler, soak
 from forge_factory.afo.queue import QueueError, Store
 from test_afo_m2_queue import OK, _env, _pilot, repo  # noqa: F401 - shared M2 fixture/helpers
 from test_afo_m3_reconcile import ALLOW, FakeFabro
@@ -108,7 +108,7 @@ def test_readiness_levels_are_evidence_derived_and_never_assumed(repo):  # noqa:
     pm = r["levels"]["PILOT_ELIGIBLE"]["missing"]
     assert "AFO-T015 reboot/mount drill PASS" in pm and "signed PILOT authorization valid" in pm
     assert r["levels"]["ACTIVE_ELIGIBLE"]["missing"][0] == "previous level not demonstrated"
-    assert r["configured_mode"] == "OBSERVE_ONLY"                                       # reported, never switched
+    assert r["configured_mode"] == policy.load().mode                                    # reported, never switched
     t2 = {**tasks, "AFO-T044": {"status": "PARTIAL"}}
     r2 = readiness.assess({"tasks": t2}, soaks=[{"status": "DEMONSTRATED", "target_hours": 168}], pilot_authorized=True)
     assert r2["highest_demonstrated"] == "NONE" and "AFO-T044 PARTIAL" in r2["levels"]["IMPLEMENTED"]["missing"]

@@ -76,8 +76,12 @@ def _in_fix_loop(workspace: str, role: str) -> bool:
 
 def turn_limit(role: str, workspace: str | None = None) -> int:
     """CAPA-015: authored max_turns, plus 1 turn per 2 allocated API functions above REFERENCE_FUNCTIONS for the
-    code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25."""
-    base = next((a.max_turns for a in load_agents()[0] if a.id == role), 20)
+    code/test author roles (r81: SWE.3 needed 36 of 35 calls for a 16-function LL), capped at +25.
+    F015: the SWE.3 author of a delivered-code (brownfield) work order gets 1 turn per allocated function (cap +25):
+    it recovers a detailed design and unit specification for every delivered unit, reading the delivered code first.
+    USART1 (21 functions, budget 47) and TIM2 (22, budget 48) exhausted every SWE.3 turn (TURN_BUDGET_EXHAUSTED, then
+    AGENT_OUTPUT_PROSE, rework budget exhausted); SPI (22) passed with 3 denials; CRC (10) was denied on its first turn."""
+    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled
 
@@ -93,7 +97,18 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
         n = len(allocated_functions(Path(workspace)))
     except Exception:  # noqa: BLE001 - scaling is advisory; the authored budget always applies
         return base
+    if role == "swe3-author" and _delivered_code(Path(workspace)):
+        return base + min(25, n)
     return base + min(25, max(0, n - REFERENCE_FUNCTIONS) // 2)
+
+
+def _delivered_code(ws: Path) -> bool:
+    try:
+        from ..brownfield import delivered_paths, manifest_of
+
+        return bool(delivered_paths(manifest_of(ws)))
+    except Exception:  # noqa: BLE001 - not a delivered-code work order (or no manifest): greenfield scaling
+        return False
 
 
 def count_tool_call(binding_id: str, run_id: str, node_id: str, role: str,

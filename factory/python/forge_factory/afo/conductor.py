@@ -53,8 +53,15 @@ def cycle(n: int) -> tuple[str, bool, str]:
         dispatch.reconcile_inflight(store, runtime.fabro_view)
         from . import recovery
 
-        dispatch.reconcile_running(store, runtime.fabro_view, recover=recovery.make_recover(
-            store, eff, f"conductor-{os.getpid()}", runtime.workspace_of))
+        planner = None
+        if eff.get("engineering.enable_recovery_planner"):  # owner 2026-10-26; a Fabro run on the Claude login
+            from . import planner as afo_planner
+            from . import planner_run
+
+            planner = afo_planner.make(planner_run.invoke)
+        recover = recovery.make_recover(store, eff, f"conductor-{os.getpid()}", runtime.workspace_of, planner=planner)
+        dispatch.reconcile_running(store, runtime.fabro_view, recover=recover)
+        recovery.poll_waiting(store, recover)
         for o in store.orders(("RUNNING", "VALIDATING")):
             att = store.attempts(o["order_id"])[-1]
             ws = runtime.workspace_of(att)

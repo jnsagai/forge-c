@@ -1,0 +1,115 @@
+# Peripheral profile (feature 015, owner 2026-10-25 benchmark set): serial peripheral interface, instance SPI1, RM0486
+# Rev 4 chapter 67 (pp. 3426-3500); secure base 0x52003000, 1 KB (RM0486 p.180, Table 3). Used with ST's CubeN6 LL code
+# delivered FROZEN: the scope follows how ST's LL couples fields (MBR with BPASS, SSM with SSOE).
+schema: forge-c/peripheral-profile/0.1
+id: spi
+name: Serial peripheral interface (SPI1)
+register_prefix: SPI
+base_address: "0x52003000"
+mm_page: 180
+window_bytes: 1024
+system_name: SPI LL driver
+rm:
+  doc: RM0486
+  chapter: 67
+  key_sections: ["67.11.1", "67.11.2", "67.11.3", "67.11.4", "67.11.6", "67.11.7", "67.11.8", "67.11.9"]
+ll:
+  header: stm32n6xx_ll_spi.h
+  compile_unit: stm32n6xx_ll_spi.c
+  function_prefix: LL_SPI_
+  register_block: ll_spi_regs
+  register_count: 256
+  void_signatures: false
+hal:
+  header: stm32n6xx_hal_spi.h
+  source: stm32n6xx_hal_spi.c
+  function_prefix: HAL_SPI_
+sim:
+  model: spi_model.py
+  platform: stm32n6_spi.repl
+# Prompt texts replacing the RCC domain content of the generic LL prompts (feature 009 mechanism); the ST HAL code
+# comes later (owner "LL first, HAL later"), so no HAL texts yet. Hardware facts stay in the RM0486 chapter 67 inputs.
+prompt:
+  swe1_cover: >-
+    Cover (only what the SPI scope names): enabling and disabling the peripheral (set/clear SPI_CR1.SPE) and the enable
+    status query (return 1U when SPI_CR1.SPE is set, else 0U); the configuration written while SPI_CR1.SPE is 0 (RM0486
+    67.11.3/67.11.4: SPI_CFG1/SPI_CFG2 are write-protected while enabled): master or slave mode (write the requested
+    value to SPI_CFG2.MASTER), clock phase (SPI_CFG2.CPHA), clock polarity (SPI_CFG2.CPOL), bit order
+    (SPI_CFG2.LSBFRST), the baud rate prescaler (write the requested value to SPI_CFG1.MBR together with the prescaler
+    bypass SPI_CFG1.BPASS: one value sets both), the data frame size (SPI_CFG1.DSIZE), the FIFO threshold
+    (SPI_CFG1.FTHLV) and the slave select management (SPI_CFG2.SSM together with the NSS output enable SPI_CFG2.SSOE:
+    one value sets both), each preserving the other fields of its register; the number of frames of a transfer
+    (SPI_CR2.TSIZE); starting a master transfer (set SPI_CR1.CSTART); the status queries RXP, TXP, EOT, TXC and OVR
+    (return 1U when the SPI_SR flag is set, else 0U); clearing EOT and OVR (write 1 to SPI_IFCR.EOTC, SPI_IFCR.OVRC);
+    writing an 8-bit frame to SPI_TXDR and reading one from SPI_RXDR; one requirement per function and value, naming
+    the register field (e.g. SPI_CFG2.CPOL); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function
+    has been called after reset, the SPI LL driver shall not write any SPI register.'). The half-duplex direction and
+    communication mode (SPI_CR1.HDDIR, SPI_CFG2.COMM), CRC, TI mode, I2S/PCM, interrupts, DMA, suspend, underrun
+    handling, IO swap, GPIO control and 16/32-bit frames are out of scope.
+    Registers whose RM0486 access type is w (write-only: SPI_IFCR) return their reset value when read (RM0486 1.2,
+    register conventions input): a requirement on them states the value written, verified with the register at its reset
+    value before the call.
+  swe1_effect_example: '{"case":"SET_CPOL_HIGH","swr":"SWR-005","register":"SPI_CFG2","field":"CPOL","op":"set"}'
+  swe1_effect_rule: >-
+    Use op "set"/"clear" for single bits (SPE, CPHA, CPOL, LSBFRST, MASTER, CSTART, the IFCR clear bits) and op "write"
+    with "value" (an integer or "0x..." string) for multi-bit fields (MBR, DSIZE, FTHLV, TSIZE) and for TXDR; a function
+    that writes a caller-supplied value gets one entry with a representative value and the api_calls args pass that
+    value; a function that sets two coupled fields (MBR with BPASS, SSM with SSOE) gets one entry per field. Status
+    queries and RXDR reads get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the SPI_TypeDef instance pointer first): LL_SPI_Enable,
+    LL_SPI_Disable, LL_SPI_IsEnabled, LL_SPI_SetMode, LL_SPI_SetClockPhase, LL_SPI_SetClockPolarity,
+    LL_SPI_SetTransferBitOrder, LL_SPI_SetBaudRatePrescaler (MBR and BPASS), LL_SPI_SetDataWidth,
+    LL_SPI_SetFIFOThreshold, LL_SPI_SetNSSMode (SSM and SSOE), LL_SPI_SetTransferSize, LL_SPI_StartMasterTransfer,
+    LL_SPI_IsActiveFlag_RXP, LL_SPI_IsActiveFlag_TXP, LL_SPI_IsActiveFlag_EOT, LL_SPI_IsActiveFlag_TXC,
+    LL_SPI_IsActiveFlag_OVR, LL_SPI_ClearFlag_EOT, LL_SPI_ClearFlag_OVR, LL_SPI_TransmitData8 and LL_SPI_ReceiveData8;
+    list in Interfaces exactly the functions of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_spi (LL, header-only) and the SPI1 register block (0x52003000, RM0486 p.180)
+    and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_spi, SPI1, showing the configuration while disabled (mode, clock phase and
+    polarity, prescaler, frame size, slave select management), the enable, a transfer size, a frame written and the
+    master transfer start, the caller polling the end-of-transfer flag (the caller bounds the loop), the received frame
+    read and the flag cleared, using the allocated LL_SPI_ function names
+  ut_example: |-
+    static void ut_spi_config(void)
+    {
+        ut_reset_regs();
+        forge_host_spi.CFG2 = SPI_CFG2_CPHA;
+        LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+        CHECK("UT-001", (forge_host_spi.CFG2 & SPI_CFG2_CPOL) == SPI_CFG2_CPOL);
+        CHECK("UT-002", (forge_host_spi.CFG2 & SPI_CFG2_CPHA) == SPI_CFG2_CPHA);
+        forge_host_spi.SR = SPI_SR_EOT;
+        CHECK("UT-003", LL_SPI_IsActiveFlag_EOT(SPI1) == 1U);
+        forge_host_spi.SR = 0U;
+        CHECK("UT-004", LL_SPI_IsActiveFlag_EOT(SPI1) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests preset the write-only registers (SPI_IFCR: on the device a read returns the reset value, RM0486 1.2)
+    to their reset value before the call, never an arbitrary RAM value.
+    Set/clear and value functions check the written field (a coupled function: both fields) and that a preset unrelated
+    field of the same register is preserved; status queries get a flag-set and a flag-clear case; flag clear functions
+    check the SPI_IFCR bit; the data functions check the 8-bit frame in SPI_TXDR / returned from SPI_RXDR.
+  target_model: >-
+    The simulated SPI1 (factory/sim/stm32n6/spi_model.py) is a behavioural loopback master: SPI_CFG1 resets to
+    0x00070007, SPI_SR to 0x00001002 (TXP, TXC), SPI_CRCPOLY to 0x107 and the others to 0; SPI_CFG1/SPI_CFG2 writes are
+    ignored while SPI_CR1.SPE is set; frames written to SPI_TXDR wait until SPI_CR1.CSTART is set with SPE and
+    SPI_CFG2.MASTER, then each frame is received back (loopback) into a 16-frame RxFIFO, setting SPI_SR.RXP; after
+    SPI_CR2.TSIZE frames SPI_SR.EOT and TXTF are set and CSTART clears; a read of SPI_RXDR pops a frame; a frame
+    arriving with a full RxFIFO is lost and sets SPI_SR.OVR; SPI_SR flags clear only through SPI_IFCR. Expected values
+    in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_spi_target.c (configuration while disabled reaches SPI_CFG1/SPI_CFG2 and is
+    ignored while enabled; with master mode, TSIZE 2 and two frames written, the master transfer start gives EOT, the
+    two frames read back in order and RXP clear afterwards; EOT clears through the clear function) and
+    software/tests/target/test_spi_target_overrun.c (17 frames written with TSIZE 17 and none read: OVR is set and
+    clears through the clear function)
+  field_mask_example: SPI_CFG2_CPOL
+  query_example: LL_SPI_IsActiveFlag_EOT(SPI1)
+  integration: >-
+    the configuration while disabled (mode, clock phase and polarity, prescaler with bypass, frame size, FIFO threshold,
+    slave select management), enable, transfer size, a frame written and the master transfer start, the
+    end-of-transfer flag polled with the flag preset (on the host the status register keeps what the test wrote), the
+    received frame read and the flag cleared
+  requirement_example: When the SPI clock polarity function is called with the high polarity value, the SPI LL driver shall set SPI_CFG2.CPOL.

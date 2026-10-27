@@ -47,6 +47,18 @@ def _defs(ws: Path, m: dict) -> dict[str, S.Definition]:
     return {d.name: d for rel in reversed(list(texts)) for d in S.index(texts[rel], rel)}  # delivered wins
 
 
+def _macros(ws: Path, m: dict) -> set[str]:
+    """Names the delivered code #defines (constants and function-like macros)."""
+    return {n for rel in reference_paths(m) if (ws / rel).is_file()
+            for n in re.findall(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)", (ws / rel).read_text(errors="replace"), re.M)}
+
+
+def undelivered(allocated: set[str], defs, macros: set[str]) -> list[str]:
+    """F015 GPIO-R3: SWE.2 rows name the parameter constants next to a function (SWR-012 | LL_GPIO_SetPinPull |
+    LL_GPIO_PULL_NO=0, ...); a name the delivered code #defines is delivered, not a missing function."""
+    return [f"ALLOCATED_NOT_DELIVERED:{f}" for f in sorted(allocated) if f not in defs and f not in macros]
+
+
 def _scope(ws: Path) -> list[dict]:
     p = ws / DELIVERY_DIR / "scope.json"
     return json.loads(p.read_text()).get("functions", []) if p.is_file() else []
@@ -97,6 +109,15 @@ def _expected_mask(token: str, reg: str, field: str, rm: dict) -> tuple[str, int
     bit = None
     if f not in fields and re.fullmatch(r".+_\d+", f) and f.rsplit("_", 1)[0] in fields:  # one bit of a field: SYSSW_0
         f, bit = f.rsplit("_", 1)[0], int(f.rsplit("_", 1)[1])
+    if f not in fields and "_" in f:  # F015: CMSIS joins the names one bit has in the RM's alternate sections
+        known = [x for x in f.split("_") if x in fields]  # (USART_ISR_RXNE_RXFNE: RXNE FIFO disabled, RXFNE enabled)
+        if known and all(fields[x] == fields[known[0]] for x in known):
+            f = known[0]
+    if f not in fields and f"{f}0" in fields:  # F015: a field the RM splits (USART_CR1_M = M0 bit 12 | M1 bit 28)
+        parts = [fields[f"{f}{i}"] for i in range(8) if f"{f}{i}" in fields]
+        if kind == "pos":
+            return ("pos", min(lsb for _, lsb in parts))
+        return ("mask", sum(((1 << (msb - lsb + 1)) - 1) << lsb for msb, lsb in parts))
     if f not in fields:
         return None
     msb, lsb = fields[f]
@@ -183,7 +204,7 @@ def implementation(ws: Path, m: dict) -> dict:
         pfx = (pr["hal"]["function_prefix"], pr["ll"]["function_prefix"])
         allocated = {f for fns in allocation(arch.read_text(errors="replace"), names, pfx).values() for f in fns}
     v = verify(ws, "swe3_verify")
-    findings = [f"ALLOCATED_NOT_DELIVERED:{f}" for f in sorted(allocated) if f not in defs]
+    findings = undelivered(allocated, defs, _macros(ws, m))
     return {"check": "delivered_implementation", "allocated": sorted(allocated), "delivery": v["status"],
             "fingerprint_issues": v["issues"], "findings": findings + [f"DELIVERY:{i}" for i in v["issues"]]}
 

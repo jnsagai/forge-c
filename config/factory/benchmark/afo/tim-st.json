@@ -1,0 +1,7 @@
+{
+ "benchmark_item": "tim-st",
+ "example": "examples/0013c-st-cube-tim",
+ "model_profile": "codex-claude",
+ "note": "Feature 015 benchmark (owner 2026-10-25): ST LL code delivered FROZEN, ASPICE SWE work products by Codex authors and Claude inspectors",
+ "schema": "forge-c/afo-launch-manifest/0.1"
+}
