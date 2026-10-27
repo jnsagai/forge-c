@@ -3,6 +3,11 @@
 import copy
 import hashlib
 import json
+import os
+import selectors
+import signal
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -24,6 +29,12 @@ def config(**changes):
             "max_seconds": 120, "max_cpu_seconds": 60, **changes}
 
 
+def no_sort_files(parent):
+    controls = {parent / ".kernel-replay-init-owner.json", parent / ".kernel-replay-init.lock"}
+    assert set(parent.glob(".kernel-replay-*")) <= controls
+    assert not list(parent.glob("#* (deleted)"))
+
+
 def invoke(tmp_path, chunks, **changes):
     pages = []
     with K.Replay(config(**changes), host="omniverse2", keys=KEYS, scratch_parent=tmp_path) as replay:
@@ -35,7 +46,7 @@ def invoke(tmp_path, chunks, **changes):
             return {"path": str(tmp_path / (str(index) + ".json")), "sha256": digest(page)}
 
         result = replay.finish(publish, {"fixture": True})
-    assert not list(tmp_path.glob(".kernel-replay-*"))
+    no_sort_files(tmp_path)
     return result, pages
 
 
@@ -88,6 +99,8 @@ def test_scratch_tampering_cannot_publish_final_success(tmp_path, change):
         replay.feed(raw_event())
         assert b"DO-NOT-EXPORT" not in replay.database.read_bytes()
         assert b"/private/" not in replay.database.read_bytes()
+        assert b"DO-NOT-EXPORT" not in b"".join(row[0] for row in replay.connection.execute("SELECT data FROM records"))
+        assert os.stat(replay.database).st_nlink == 0
         if change == "data":
             replay.connection.execute("UPDATE records SET data=?", (b'{}',))
         elif change == "copies":
@@ -104,7 +117,7 @@ def test_scratch_tampering_cannot_publish_final_success(tmp_path, change):
             replay.finish(lambda *a: {"path": "unused", "sha256": "f" * 64}, {})
         with pytest.raises(Refused, match="ALREADY_SETTLED"):
             replay.feed(raw_event())
-    assert not list(tmp_path.glob(".kernel-replay-*"))
+    no_sort_files(tmp_path)
 
 
 @pytest.mark.parametrize("bound", ["source", "records", "scratch", "output", "wall", "cpu"])
@@ -122,7 +135,7 @@ def test_finite_allowances_never_become_partial_success(tmp_path, monkeypatch, b
         with pytest.raises(Refused):
             replay.feed(raw)
             replay.finish(lambda i, p: {"path": str(i), "sha256": digest(p)}, {})
-    assert not list(tmp_path.glob(".kernel-replay-*"))
+    no_sort_files(tmp_path)
 
 
 @pytest.mark.parametrize("key", ["max_source_bytes", "max_records", "max_scratch_bytes", "max_output_bytes", "max_seconds", "max_cpu_seconds"])
@@ -176,6 +189,84 @@ def test_invalid_integer_subclass_and_changed_source_refuse():
         K.configuration(config(max_records=Integer(1)))
     with pytest.raises(Refused):
         K.configuration(config(source_sha256="f" * 64))
+
+
+@pytest.mark.parametrize("phase", ["active", "initialization"])
+def test_hard_crash_reaps_anonymous_sort_storage_without_external_cleanup(tmp_path, phase):
+    script = '''import json,os,sys,time
+from forge_factory.afo import kernel_replay as K
+if sys.argv[3]=="initialization":
+    original=K.sqlite3.connect
+    def pause(*a,**k):
+        c=original(*a,**k)
+        print("INIT",flush=True)
+        time.sleep(30)
+        return c
+    K.sqlite3.connect=pause
+with K.Replay(json.loads(sys.argv[1]),host="omniverse2",keys=[],scratch_parent=sys.argv[2]) as r:
+    for i in range(12000):r.feed(f"type=USER_NOTE msg=audit(100.001:{i}): PRIVATE\\n".encode())
+    assert os.stat(r.database).st_size>4096
+    print(os.stat(r.database).st_nlink,flush=True)
+    time.sleep(30)
+'''
+    before = set(tmp_path.iterdir())
+    child = subprocess.Popen([sys.executable, "-c", script, json.dumps(config()), str(tmp_path), phase],
+                             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    try:
+        with selectors.DefaultSelector() as poll:
+            poll.register(child.stdout, selectors.EVENT_READ)
+            assert poll.select(10), "owned scratch child did not become ready"
+        assert child.stdout.readline() == (b"0\n" if phase == "active" else b"INIT\n")
+        owned = {tmp_path / ".kernel-replay-init-owner.json", tmp_path / ".kernel-replay-init.lock"}
+        slot = tmp_path / ".kernel-replay-init.sqlite3"
+        assert set(tmp_path.iterdir()) == before | owned | ({slot} if phase == "initialization" else set())
+        child.kill()
+        assert child.wait(timeout=10) == -signal.SIGKILL
+        with K.Replay(config(), host="omniverse2", keys=KEYS, scratch_parent=tmp_path) as replay:
+            assert replay.input_bytes == replay.lines == 0
+            assert os.stat(replay.database).st_nlink == 0
+        assert set(tmp_path.iterdir()) == before | owned
+    finally:
+        if child.poll() is None:
+            child.kill()
+            child.wait(timeout=10)
+        child.stdout.close()
+
+
+@pytest.mark.parametrize("change", ["no-owner", "wrong-owner", "hardlink", "symlink", "public-mode", "live-initializer"])
+def test_unowned_or_live_scratch_is_never_truncated(tmp_path, change):
+    from forge_factory.afo import soak
+
+    slot = tmp_path / ".kernel-replay-init.sqlite3"
+    if change == "no-owner":
+        slot.write_bytes(b"OWNER-DATA")
+    elif change == "wrong-owner":
+        immutable_json(tmp_path / ".kernel-replay-init-owner.json", {"other": True})
+    else:
+        with K.Replay(config(), host="omniverse2", keys=KEYS, scratch_parent=tmp_path):
+            pass
+        original = tmp_path / "preserved"
+        original.write_bytes(b"OWNER-DATA")
+        original.chmod(0o600)
+        if change == "hardlink":
+            os.link(original, slot)
+        elif change == "symlink":
+            slot.symlink_to(original)
+        else:
+            slot.write_bytes(b"OWNER-DATA")
+            slot.chmod(0o644 if change == "public-mode" else 0o600)
+    before = slot.read_bytes() if slot.exists() else None
+
+    def attempt():
+        with pytest.raises(Refused):
+            K.Replay(config(), host="omniverse2", keys=KEYS, scratch_parent=tmp_path)
+
+    if change == "live-initializer":
+        with soak.locked(slot):
+            attempt()
+    else:
+        attempt()
+    assert (slot.read_bytes() if slot.exists() else None) == before
 
 
 def test_legacy_chain_wrapper_never_returns_a_partial_result(logs, monkeypatch):
@@ -288,4 +379,4 @@ def test_actual_128_mib_boundary_with_compound_event_spanning_all_ranges(continu
     assert events["totals"]["pending_events"] == 0 and events["pending_line"]["length"] == 0
     assert events["status"] == "SELECTED_EVENT_FACTS_REPLAYED" and result["unexpected_interventions"] is None
     assert "PRIVATE" not in json.dumps(result) + ''.join(Path(r["path"]).read_text() for r in events["fact_pages"])
-    assert not list(p.tmp.glob(".kernel-replay-*"))
+    no_sort_files(p.tmp)

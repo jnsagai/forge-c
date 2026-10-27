@@ -1,7 +1,8 @@
 """Ephemeral external grouping for retained audit evidence, never a runtime store.
 
 Original protected sources remain authoritative. The scratch SQLite B-tree only
-sorts selected facts; it is deleted and rebuilt from zero on every invocation.
+sorts selected facts; its processing inode is unlinked. A single owned, locked
+initialization slot is discarded and rebuilt from zero after an initializer crash.
 No raw audit bodies, argv, commands or paths are persisted. Integrity tags are
 process-local scratch checks, not authorization or durable completion receipts.
 """
@@ -10,14 +11,16 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import secrets
 import sqlite3
-import tempfile
+import stat
 import time
 from pathlib import Path
 
 from . import fault_observer as O
 from . import host_audit as H
+from . import soak
 from .durable import Refused, canonical, digest, immutable_json
 
 MODULUS = 2**256
@@ -47,11 +50,41 @@ class Replay:
         self.partial = b""
         self.failed = self.closed = False
         self.started, self.cpu_started = time.monotonic(), time.process_time()
-        self.temporary = tempfile.TemporaryDirectory(prefix=".kernel-replay-", dir=scratch_parent)
-        self.database = Path(self.temporary.name) / "selected-sort.sqlite3"
         try:
-            self.connection = sqlite3.connect(self.database, isolation_level=None, timeout=0)
-            self.database.chmod(0o600)
+            self._open(scratch_parent)
+        except BaseException as exc:
+            if hasattr(self, "connection"):
+                self.connection.close()
+            if hasattr(self, "temporary"):
+                self.temporary.close()
+            if isinstance(exc, (OSError, sqlite3.Error)):
+                raise Refused("KERNEL_REPLAY_SCRATCH_UNAVAILABLE", type(exc).__name__) from exc
+            raise
+
+    def _open(self, parent):
+        parent = Path(parent)
+        slot = parent / ".kernel-replay-init.sqlite3"
+        marker = parent / ".kernel-replay-init-owner.json"
+        owner = {"schema": "forge-c/ephemeral-kernel-sort-slot/1", "slot": slot.name,
+                 "scope": "DISCARDABLE_SORT_INITIALIZATION_NOT_EVIDENCE_OR_RESUME_STATE"}
+        # Existing qualification locking fences a live initializer, including
+        # one stuck in native I/O. A crash leaves at most this single owned slot.
+        with soak.locked(slot):
+            if not marker.exists():
+                if slot.exists() or slot.is_symlink():
+                    raise Refused("KERNEL_REPLAY_SCRATCH_SLOT_NOT_OWNED")
+                immutable_json(marker, owner)
+            if O.read_json(marker, 4096) != owner:
+                raise Refused("KERNEL_REPLAY_SCRATCH_SLOT_NOT_OWNED")
+            fd = os.open(slot, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+            self.temporary = os.fdopen(fd, "r+b")
+            metadata = os.fstat(fd)
+            if (not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != os.getuid()
+                    or metadata.st_nlink != 1 or metadata.st_mode & 0o077):
+                raise Refused("KERNEL_REPLAY_SCRATCH_SLOT_NOT_PROTECTED")
+            os.ftruncate(fd, 0)  # Never consume stale scratch as a verified prefix.
+            self.database = Path("/proc/self/fd") / str(fd)
+            self.connection = sqlite3.connect(slot, isolation_level=None, timeout=0)
             c = self.connection
             c.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, 65536)
             c.execute("PRAGMA page_size=4096")
@@ -59,21 +92,20 @@ class Replay:
             c.execute("PRAGMA synchronous=OFF")
             c.execute("PRAGMA cache_size=-2048")
             c.execute("PRAGMA mmap_size=0")
-            c.execute("PRAGMA max_page_count=" + str(config["max_scratch_bytes"] // 4096))
+            c.execute("PRAGMA max_page_count=" + str(self.config["max_scratch_bytes"] // 4096))
+            c.execute("BEGIN EXCLUSIVE")
             c.execute("CREATE TABLE records (event TEXT, sha TEXT, data BLOB, copies INTEGER, tag BLOB, "
                       "PRIMARY KEY(event,sha)) WITHOUT ROWID")
-        except BaseException:
-            if hasattr(self, "connection"):
-                self.connection.close()
-            self.temporary.cleanup()
-            raise
+            # SQLite must open its real filename before unlinking: giving its
+            # VFS /proc/self/fd directly can create a different named database.
+            slot.unlink()
 
     def __enter__(self):
         return self
 
     def __exit__(self, *_):
         self.connection.close()
-        self.temporary.cleanup()
+        self.temporary.close()
 
     def _budget(self):
         if self.closed or self.failed:
