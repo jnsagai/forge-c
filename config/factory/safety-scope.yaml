@@ -231,3 +231,39 @@ decisions:
         approved_by: Jefferson Nascimento
         approved_at: '2026-10-25'
         decision: OD-2026-10-25-03
+  # OD-2026-10-27-01 (feature 014 operation-24 campaign): the owner set the target ASIL of the three new ST LL product
+  # scopes, answering "ASIL B for all three (Recommended)" to the agent's question "What target ASIL should the three new
+  # safety scopes (SC-WWDG / SC-RNG / SC-LPTIM-2026-10-27) carry?" (2026-10-27). The owner-signed safety documents
+  # (OD-2026-10-19-11) are registered under safety_documents only on the owner's signature.
+  - scope_id: SC-WWDG-2026-10-27
+    examples: [0016c-st-cube-wwdg]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-27 by Jefferson Nascimento - the STM32N6 system window watchdog LL driver delivered
+      by ST (campaign example 0016c-st-cube-wwdg) is ASIL B (answer "ASIL B for all three (Recommended)", OD-2026-10-27-01)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-27'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-RNG-2026-10-27
+    examples: [0017c-st-cube-rng]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-27 by Jefferson Nascimento - the STM32N6 true random number generator LL driver
+      delivered by ST (campaign example 0017c-st-cube-rng) is ASIL B (answer "ASIL B for all three (Recommended)",
+      OD-2026-10-27-01)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-27'
+    hsi_hash: null
+    allocation_review_ref: null
+  - scope_id: SC-LPTIM-2026-10-27
+    examples: [0018c-st-cube-lptim]
+    target_asil: B
+    product_asil_source: >-
+      approved:owner-decision-2026-10-27 by Jefferson Nascimento - the STM32N6 LPTIM1 low-power timer LL driver delivered
+      by ST (campaign example 0018c-st-cube-lptim) is ASIL B (answer "ASIL B for all three (Recommended)",
+      OD-2026-10-27-01)
+    approved_by: Jefferson Nascimento
+    approved_at: '2026-10-27'
+    hsi_hash: null
+    allocation_review_ref: null

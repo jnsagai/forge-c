@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decision_id": "OD-2026-10-27-01",
+  "decided_on": "2026-10-27",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "subject": "Target ASIL of the three new ST LL product scopes for the Feature 014 operation-24 campaign (WWDG, RNG, LPTIM1)",
+  "statements": [
+    "Which work should the factory do while faults are injected? -> \"New ST LL drivers (Recommended)\"",
+    "Which new STM32N6 peripherals should the campaign's ST LL driver work orders cover? -> \"RNG, LPTIM, WWDG\"",
+    "What target ASIL should the three new safety scopes (SC-WWDG / SC-RNG / SC-LPTIM-2026-10-27) carry? -> \"ASIL B for all three (Recommended)\""
+  ],
+  "decision": "New scope decisions SC-WWDG-2026-10-27 (0016c-st-cube-wwdg), SC-RNG-2026-10-27 (0017c-st-cube-rng) and SC-LPTIM-2026-10-27 (0018c-st-cube-lptim) in config/factory/safety-scope.yaml, target ASIL B each. Safety documents are drafted by the agent and registered only on the owner's signature (OD-2026-10-19-11).",
+  "basis": {
+    "SC-WWDG-2026-10-27": "30ec84e960beee4bfff8515ee813ec6dffbdff3aedc22ba9d73faa1f37af1801",
+    "SC-RNG-2026-10-27": "fe6e9312cd4c04d9846170b9af1ca228d0c79c3c12da988a66f00a89578e3b96",
+    "SC-LPTIM-2026-10-27": "062a1ad94ec1edf8b880dc920b1351f6b5ff81ac7ab5ed9a9d57857b6c0d3012"
+  },
+  "agent_note": "The basis hashes were computed as workorder.prepare does (the same method reproduces the registered CRC basis 76d9347e...). The agent recorded the owner's answers; it made no safety judgement.",
+  "not_changed": "Existing scopes and their signed documents; hsi_hash and allocation_review_ref stay null; no safety approval, release decision or certification."
+}
