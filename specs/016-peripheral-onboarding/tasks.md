@@ -313,7 +313,7 @@ SWE.1–SWE.6.
   ids `-R<n>`.
 - [X] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [X] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs). ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
-- [ ] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
+- [X] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048). ✅ Evidence: `evidence/v0.4/runs/OB-T051/latest.json`
 - [X] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption: ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [X] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047; ✅ Evidence: `evidence/v0.4/runs/OB-APPROVALS/latest.json`
@@ -450,3 +450,12 @@ SWE.1–SWE.6.
 - The owner signed corrected GPIO approval OA-2026-10-27-05; it verifies against hash `e7eeec3c04d4…` and is
   preserved in owner-decision commit `b7c7244`. `OB-CORRECTED-APPROVALS` verifies all four current packages and
   their immutable signed copies. GPIO retry `BENCH-GPIO-ST-HAL-OB-R1` is prepared and waits for SPI to terminate.
+
+- SPI's initial acceptance (`afo-cbde5111bd5eeaf6`) reached its sealed BLOCKED package (OB-T051). SWE.1 and
+  SWE.2 passed. The SWE.3 contract probe omitted ST's configured HAL umbrella and failed on `DMA_HandleTypeDef`
+  (escalated factory DEF-008); seven delivered-code defects were separately escalated. This is terminal-outcome
+  evidence, not SC-005 success. No approved package fact or delivered code is changed by the probe correction.
+- The clean full suite on deployed `557e920` completed: 1406 passed, 27 skipped, exactly the three known baseline
+  failures. Raw suite remains FAIL; OB-NO-REGRESSIONS independently verifies the unchanged failure set.
+- Corrected GPIO request `BENCH-GPIO-ST-HAL-OB-R1` launched as `afo-3043541c6afd38b1`, on `557e920` with
+  owner-signed OA-2026-10-27-05. Its live workspace is not modified by implementation work.

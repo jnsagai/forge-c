@@ -248,6 +248,12 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
         b = m["delivery"].get("build") or {}
         headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
         include_dirs = [*include_dirs, Path(ws) / "inputs/vendor/include"]
+        # Use the same vendor HAL include context as delivery.build_check. Standalone
+        # module headers can need types from earlier modules in the configured umbrella
+        # (e.g. SPI's DMA handles); the delivered code itself remains unchanged.
+        if any(x.startswith("software/hal/") for x in delivered_paths(m)) and \
+                (Path(ws) / "inputs/vendor/include/stm32n6xx_hal.h").is_file():
+            headers = ["stm32n6xx_hal.h", *headers]
         extra = [f"-D{d}" for d in b.get("defines") or []]
         if b.get("style") == "cmsis":
             compiler = ["arm-none-eabi-gcc", "-std=c11", "-mcpu=cortex-m55", "-mthumb"] + \

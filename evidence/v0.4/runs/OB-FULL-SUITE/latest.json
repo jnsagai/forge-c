@@ -3,9 +3,9 @@
   "task": "OB-FULL-SUITE",
   "status": "FAIL",
   "exit_code": 1,
-  "ts_utc": "2026-10-27T11:31:25.285010Z",
-  "duration_s": 2440.02,
-  "git_head": "02bcb49e90cd6480f39057d849ef3da9a52c4c86",
+  "ts_utc": "2026-10-27T13:12:35.626436Z",
+  "duration_s": 2317.39,
+  "git_head": "557e920daa540a47461958c1e62842ac6bb709fd",
   "git_dirty_at_start": false,
   "command": [
     "python",
@@ -13,19 +13,23 @@
     "pytest",
     "-p",
     "no:cacheprovider",
-    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-codex-full",
-    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-02bcb49-full-tests.xml"
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml"
   ],
   "host": {
     "python": "3.13.13",
     "node": "master"
   },
-  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.log",
-  "log_sha256": "4512fa80560738ecf36f3ac6459047a513045a55cbefaa15e2df725e28ce2e2c",
-  "junit": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.xml",
-  "junit_sha256": "9c583dc2ec67391ab1a8aa955a7dc2e01367021a54bd7b2420c6f8bccc53dc99",
-  "passed": 1399,
+  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T122641.log",
+  "log_sha256": "446dd23daa4e738ca29e60932155663591caf912444f544c214adde58ee270e7",
+  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml",
+  "junit_sha256": "bcf71f01cc947492b73f6cc789fadb5a7b8c946ec31c2f5329cff2d8ed2921de",
+  "passed": 1406,
   "skipped": 27,
   "failed": 3,
-  "note": "Exactly the three baseline failures listed in HANDOFF-codex.md. Raw suite remains FAIL; see OB-NO-REGRESSIONS for the independent failure-set comparison. Added acceptance manifests/check script are covered by OB-T045 and OB-ACCEPTANCE-PREPARATION; application code matches the gated runtime."
+  "failed_cases": [
+    "factory.python.tests.test_cre_d7_e2e.test_latest_local_qwen_work_order_has_real_terminal_evidence",
+    "factory.python.tests.test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege",
+    "factory.python.tests.test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence"
+  ],
+  "note": "Exact deployed runtime, clean isolated test worktree. Raw suite FAIL; independent failure-set comparison checks only the three recorded baseline failures. Full raw JUnit retained externally with hash; public summary omits passing parameterized fixture strings."
 }
