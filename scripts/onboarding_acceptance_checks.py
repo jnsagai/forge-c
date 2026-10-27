@@ -12,8 +12,8 @@ from pathlib import Path
 from forge_factory.afo import cli
 from forge_factory.benchmark.queue import load
 from forge_factory.common import REPO_ROOT
-from forge_factory.onboarding import intake_check, onboarding_dir
 from forge_factory.onboarding import facts as F
+from forge_factory.onboarding import intake_check, onboarding_dir
 from forge_factory.onboarding.leftovers import run
 
 QUEUE = REPO_ROOT / "config/factory/benchmark/st-driver-onboarding-queue.yaml"

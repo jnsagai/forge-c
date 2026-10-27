@@ -297,7 +297,7 @@ SWE.1–SWE.6.
   only: driver, target with `target.instance`, the RM chapter and memory-map inputs, delivery source, provenance and
   licence, FROZEN, scope (copied verbatim from the `00NNd` scope statements, which are owner scope text), budgets and
   `onboarding: true`. No `files`, `dependencies` or `configure`.
-- [ ] **OB-T045** [US5] Add queue items and AFO launch manifests `config/factory/benchmark/afo/<p>-st-hal-ob.json`
+- [X] **OB-T045** [US5] Add queue items and AFO launch manifests `config/factory/benchmark/afo/<p>-st-hal-ob.json` ✅ Evidence: `evidence/v0.4/runs/OB-T045/latest.json`
   (model profile codex-claude), with the driver classes covered by the owner's authorization
   AUTH-AFO-PILOT-20261027. If a new class is needed, prepare an UNSIGNED authorization for the owner to sign.
   Never sign it.
@@ -311,15 +311,15 @@ SWE.1–SWE.6.
 - [ ] **OB-T048** [US5] Submit and run `BENCH-GPIO-ST-HAL-OB` SWE.1–SWE.6 to READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps. Fix
   any factory defect through the CRE process (registry → CAPA → reproducer → promotion) and retry with new request
   ids `-R<n>`.
-- [ ] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`).
+- [X] **OB-T049** [US5] Derive the SPI package and its summary (`0011e-st-cube-spi-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [ ] **OB-T050** [US5] **Owner approval, SPI** (as OB-T047; the owner signs).
 - [ ] **OB-T051** [US5] Submit and run `BENCH-SPI-ST-HAL-OB` to a release package (as OB-T048).
-- [ ] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption:
+- [X] **OB-T052** [US5] Derive the USART package and its summary (`0012e-st-cube-usart-hal-ob`). Expected assumption: ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
   `ASM-CLOCK-USART1` (kernel clock for `HAL_RCCEx_GetPeriphCLKFreq`).
 - [ ] **OB-T053** [US5] **Owner approval, USART**, including the owner's confirmed kernel clock value (as OB-T047;
   the owner signs).
 - [ ] **OB-T054** [US5] Submit and run `BENCH-USART-ST-HAL-OB` to a release package (as OB-T048).
-- [ ] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`).
+- [X] **OB-T055** [US5] Derive the TIM package and its summary (`0013e-st-cube-tim-hal-ob`). ✅ Evidence: `evidence/v0.4/runs/OB-PACKAGES/latest.json`
 - [ ] **OB-T056** [US5] **Owner approval, TIM** (as OB-T047; the owner signs).
 - [ ] **OB-T057** [US5] Submit and run `BENCH-TIM-ST-HAL-OB` to a release package (as OB-T048).
 - [ ] **OB-T058** [US5] Freeze the record `evidence/v0.4/benchmark/st-drivers-hal-ob/record.{json,md}`. Per attempt
@@ -344,7 +344,7 @@ SWE.1–SWE.6.
 - [ ] **OB-T062** [P] Record the local-model onboarding run as NOT_RUN in `evidence/v0.4/runs/OB-T062/` (reason: no
   qualified local profile; see feature 014). If a profile is qualified later, run quickstart §1–§4 on omniverse2 and
   replace the record.
-- [ ] **OB-T063** [P] Write an ADR, `docs/adr/ADR-00NN-peripheral-onboarding-stage.md`: the two-run design and
+- [X] **OB-T063** [P] Write an ADR, `docs/adr/ADR-00NN-peripheral-onboarding-stage.md`: the two-run design and ✅ Evidence: `evidence/v0.4/runs/OB-T063/latest.json`
   owner gate (Constitution III), the derived profile, the template generator versus the legacy hand texts, and the
   migration policy for hand-onboarded peripherals (owner choice, FR-019).
 - [ ] **OB-T064** Run the full suite, `tests/spec/validate_design.py`, the provenance scan, `safec_bridge.static_check`
@@ -378,3 +378,17 @@ SWE.1–SWE.6.
 2. Add **US2**: from then on, ASPICE work can only start from owner-approved facts.
 3. Add **US3** and US4's gate (slice I). Then run **US5** driver by driver, fixing factory defects through CRE.
 4. US4's authoring (OB-T041–OB-T043) completes the "inputs only" goal for peripherals without a model.
+
+## Continuation status (2026-10-27, Codex)
+
+- OB-T035–OB-T037 and OB-T041/OB-T043 remain open: the ST HAL template and reused-model acceptance path does not
+  exercise AI authoring. No evidence or owner closure has been claimed for those tasks.
+- OB-T062 has an explicit NOT_RUN record at `evidence/v0.4/runs/OB-T062/latest.json` (no qualified local profile).
+  Its box stays open because `mark_task.py` requires PASS evidence.
+- The four real-state packages and summaries have been prepared; unsigned approval drafts propose 64 MHz for
+  USART. The owner approved the four packages and that proposal in chat on 2026-10-27. SSH signatures are still
+  required by the verification gate before OB-T047/T050/T053/T056 or any acceptance submission can complete.
+- Runtime candidate `164c300e0c7d232a5b38009c0acb7f3a1237f658` passed CRE decision
+  `pd-80b9072120a93edf011e`. Its non-evidence tree matches feature source `bb7a04a867ec` exactly; its evidence tree
+  matches deployed baseline `11482e3`. The feature-head rejection and source-equivalence proof are preserved in
+  `evidence/cre/decisions/`. No gate or protected policy was changed.
