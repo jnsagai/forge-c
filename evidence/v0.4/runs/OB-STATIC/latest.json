@@ -4,19 +4,19 @@
     "-m",
     "forge_factory.safec_bridge.static_check"
   ],
-  "duration_s": 0.178,
+  "duration_s": 0.176,
   "exit_code": 0,
   "git_dirty": true,
-  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
+  "git_head": "65e947bd940869a0f9b7a465e6740db35469fdef",
   "host": {
     "node": "master",
     "python": "3.13.13",
     "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   },
-  "log": "evidence/v0.4/runs/OB-STATIC/20261027T160205.log",
+  "log": "evidence/v0.4/runs/OB-STATIC/20261027T163845.log",
   "log_sha256": "0083028d40ae37be75c597a712945fbc27dc2594b05c4a448fe50cada50d4677",
   "schema": "forge-c/task-evidence/0.4",
   "status": "PASS",
   "task": "OB-STATIC",
-  "ts_utc": "2026-10-27T16:02:05.549640Z"
+  "ts_utc": "2026-10-27T16:38:45.669801Z"
 }

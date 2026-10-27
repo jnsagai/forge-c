@@ -13,7 +13,7 @@ from pathlib import Path
 from ..common import canonical_json, sha256_bytes, sha256_file
 from ..mcp.sdk import ToolContext, result
 from . import facts
-from .model_gate import SIM_DIR, check
+from .model_gate import SIM_DIR, check, model_limits
 
 
 def run(ctx: ToolContext, candidate: bool = True, *, freeze: bool = False) -> dict:
@@ -32,6 +32,7 @@ def run(ctx: ToolContext, candidate: bool = True, *, freeze: bool = False) -> di
     if package["work_order"] != key:
         raise ValueError("MODEL_CASE_KEY_MISMATCH")
     prefix = facts.value(package, "register_prefix")
+    declared_limits = []
     if not candidate:
         if case.get("hide_model"):
             raise ValueError("MODEL_HIDDEN_FROM_AUTHOR")
@@ -49,6 +50,9 @@ def run(ctx: ToolContext, candidate: bool = True, *, freeze: bool = False) -> di
             raise ValueError("MODEL_CANDIDATE_SCOPE_OR_SIZE")
         blob = source.read_bytes()
         digest = sha256_bytes(blob)
+        declared_limits = model_limits(blob.decode())
+        if not all(isinstance(v, str) for v in declared_limits):
+            raise ValueError("MODEL_LIMITS_NOT_STRINGS")
         if inspector:
             prior = json.loads((root / "onboarding/gate.json").read_text())
             if prior["model_sha256"] != digest:
@@ -67,7 +71,7 @@ def run(ctx: ToolContext, candidate: bool = True, *, freeze: bool = False) -> di
             if inspector:
                 raise ValueError("MODEL_INSPECTOR_CANNOT_FREEZE")
             (root / "onboarding/inspection-model.py").write_bytes(blob)
-    gate = {**gate, "model_sha256": digest, "package_sha256": case["package_sha256"],
+    gate = {**gate, "declared_limits": declared_limits, "model_sha256": digest, "package_sha256": case["package_sha256"],
             "invocation_id": ctx.invocation_id}
     directory = root / "onboarding"
     directory.mkdir(exist_ok=True)

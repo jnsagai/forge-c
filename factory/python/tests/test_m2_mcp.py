@@ -48,7 +48,8 @@ def call(mod, server, op, args, role, phase=None):
 # ---------------- T010 registry + preflight --------------------------------------------------------
 def test_t010_catalog_all_ops_implemented_and_mandatory_available():
     cat = PF.op_catalog()
-    assert len(cat) == 39  # 34 design ops + 2 v0.5 KPI overlay ops + run_robot (SWE.6) + report/reject_defect (ADR-0008)
+    assert len(cat) == 41  # 39 existing operations plus two Feature 016 onboarding operations
+    assert {"forge-sim-mcp.check_model", "forge-docs-mcp.read_onboarding_input"} <= cat.keys()
     assert not [k for k, e in cat.items() if e["status"] == "NOT_IMPLEMENTED"]
     assert not [k for k, e in cat.items() if e["mandatory"] and e["status"] != "OK"]
 

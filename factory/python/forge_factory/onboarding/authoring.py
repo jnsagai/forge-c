@@ -85,9 +85,14 @@ def graph(workspace: Path) -> tuple[str, dict]:
                                '--workspace', workspace)
             lines.append(f'  {node} [shape=parallelogram, max_visits=1, timeout="600s", '
                          f'stdin_source="context.response.{source}", script="{_q(command)}"]')
-        following = f'model_author_{attempt + 1}' if attempt < MAX_ATTEMPTS else 'finish'
+        begin = f'model_begin_{attempt}'
+        command = _command('forge_factory.onboarding.authoring', '--step', 'begin', '--attempt', attempt,
+                           '--workspace', workspace)
+        lines.append(f'  {begin} [shape=parallelogram, max_visits=1, script="{_q(command)}"]')
+        lines.append(f'  {begin} -> {author}')
+        following = f'model_begin_{attempt + 1}' if attempt < MAX_ATTEMPTS else 'finish'
         if attempt == 1:
-            lines.append(f'  start -> {author}')
+            lines.append(f'  start -> {begin}')
         lines += [f'  {author} -> {gate}', f'  {gate} -> {inspector} [condition="outcome=succeeded"]',
                   f'  {gate} -> {following}', f'  {inspector} -> {verdict}',
                   f'  {verdict} -> exit [condition="outcome=succeeded"]', f'  {verdict} -> {following}']
@@ -224,7 +229,7 @@ def step_inspect(ws: Path, attempt: int, text: str) -> bool:
     return ok
 
 
-def finish(ws: Path, accepted: bool = False, attempts: int = MAX_ATTEMPTS) -> dict:
+def finish(ws: Path, accepted: bool = False, attempts: int | None = None) -> dict:
     result_path = ws / 'onboarding/result.json'
     if result_path.is_file():
         return json.loads(result_path.read_text())
@@ -232,6 +237,10 @@ def finish(ws: Path, accepted: bool = False, attempts: int = MAX_ATTEMPTS) -> di
     gate = json.loads((ws / 'onboarding/gate.json').read_text()) if (ws / 'onboarding/gate.json').is_file() else {}
     inspection = json.loads((ws / 'onboarding/inspection.json').read_text()) if (
         ws / 'onboarding/inspection.json').is_file() else {}
+    if attempts is None:
+        observed = [int(m[1]) for p in (ws / 'onboarding/history').glob('*.json')
+                    if (m := re.fullmatch(r'([1-3])-(?:begin|gate|inspection)\.json', p.name))]
+        attempts = max(observed, default=0)
     path = 'onboarding/model/model.py'
     if accepted:
         blob = (ws / 'onboarding/inspection-model.py').read_bytes()
@@ -261,7 +270,8 @@ def finish(ws: Path, accepted: bool = False, attempts: int = MAX_ATTEMPTS) -> di
     item = {'id': 'model', 'role': ROLES[0], 'path': path, 'attempts': attempts, 'gate': model_gate,
             'inspection': {'verdict': 'PASS' if accepted else 'FAIL', 'findings': [] if accepted else
                            (inspection.get('issues') or ['MODEL_NOT_ACCEPTED']), 'inspector_role': ROLES[1]},
-            'limits': gate.get('limits', []), 'reused': False, 'status': 'ACCEPTED' if accepted else 'GAP'}
+            'limits': list(dict.fromkeys([*gate.get('declared_limits', []), *gate.get('limits', [])])),
+            'reused': False, 'status': 'ACCEPTED' if accepted else 'GAP'}
     record = {'subject': case['subject'], 'item': item, 'workspace': str(ws), 'recorded_at': utc_now()}
     (ws / 'onboarding/result.json').write_text(json.dumps(record, indent=2, sort_keys=True) + '\n')
     return record
@@ -362,10 +372,13 @@ def author(example: Path, key: str, package: dict, hide_model: str | None = None
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--workspace', type=Path, required=True)
-    parser.add_argument('--step', choices=('gate', 'inspect', 'finish'), required=True)
+    parser.add_argument('--step', choices=('begin', 'gate', 'inspect', 'finish'), required=True)
     parser.add_argument('--attempt', type=int, choices=range(1, MAX_ATTEMPTS + 1), default=MAX_ATTEMPTS)
     args = parser.parse_args(argv)
     ws = args.workspace.resolve()
+    if args.step == 'begin':
+        _history(ws, args.attempt, 'begin', {'attempt': args.attempt, 'entered_at': utc_now()})
+        return 0
     if args.step == 'finish':
         finish(ws)
         return 0

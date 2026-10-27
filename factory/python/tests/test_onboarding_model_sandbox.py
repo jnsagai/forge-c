@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from forge_factory.common import REPO_ROOT
 from forge_factory.onboarding import model_sandbox as S
 
 
@@ -36,7 +37,9 @@ def test_filesystem_view_excludes_host_hand_model_and_home(tmp_path):
     # The trusted test broker selects Python to probe the same mount builder used for Renode.
     command = S.argv(Path('/usr/bin/python3'), scratch, ['-c',
         f"from pathlib import Path; assert not Path({str(secret)!r}).exists(); "
-        "assert not Path('/home/jefferson').exists(); assert not Path('/media').exists(); "
+        # Scratch can live on the data volume: mount ancestors exist, their host siblings remain hidden.
+        f"assert not Path({str(REPO_ROOT / 'factory/sim/stm32n6/crc_model.py')!r}).exists(); "
+        "assert not Path('/home/jefferson/.ssh').exists(); "
         "assert not Path('/proc/net/route').read_text().splitlines()[1:]"])
     result = subprocess.run(command, capture_output=True, timeout=15)
     assert result.returncode == 0, result.stderr.decode()

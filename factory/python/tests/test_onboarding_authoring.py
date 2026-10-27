@@ -259,3 +259,29 @@ def test_model_gate_never_falls_back_to_hidden_model(case, monkeypatch):
     monkeypatch.setattr(A, 'artifact_paths', lambda _: None)
     report = model_gate.check('test-case', pkg=pkg)
     assert report['verdict'] == 'FAIL' and report['findings'] == ['MODEL_HIDDEN_NO_ACCEPTED_CANDIDATE']
+
+
+@pytest.mark.parametrize('entered', [0, 1, 2])
+def test_interrupted_runs_report_observed_attempts_instead_of_three(case, entered):
+    ws, _ = case
+    for attempt in range(1, entered + 1):
+        assert A.main(['--workspace', str(ws), '--step', 'begin', '--attempt', str(attempt)]) == 0
+    record = A.finish(ws)
+    assert record['item']['status'] == 'GAP' and record['item']['attempts'] == entered
+
+
+def test_declared_limits_are_retained_even_without_a_gate_mismatch(case):
+    ws, _ = case
+    model = MODEL.replace('MODEL_LIMITS = []', 'MODEL_LIMITS = ["CRC_SR.VALUE"]')
+    (ws / 'onboarding/model/model.py').write_text(model)
+    T.run(ctx(ws), freeze=True)
+    assert A.step_inspect(ws, 1, reply(sha256_bytes(model.encode())))
+    result = json.loads((ws / 'onboarding/result.json').read_text())
+    assert result['item']['limits'] == ['CRC_SR.VALUE']
+
+
+def test_non_string_model_limits_cannot_pass_to_owner_review(case):
+    ws, _ = case
+    (ws / 'onboarding/model/model.py').write_text(MODEL.replace('MODEL_LIMITS = []', 'MODEL_LIMITS = [1]'))
+    with pytest.raises(ValueError, match='MODEL_LIMITS_NOT_STRINGS'):
+        T.run(ctx(ws), freeze=True)
