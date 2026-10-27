@@ -1,0 +1,193 @@
+{
+ "schema": "forge-c/work-order-spec/0.4",
+ "driver": "STM32N6 low-power timer LPTIM1 low-level (LL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+ "target": {
+  "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+  "core": "Arm Cortex-M55",
+  "silicon_revision": "UNSPECIFIED",
+  "source_documents": [
+   "DS14791 Rev 9",
+   "RM0486 Rev 4 chapter 58 (LPTIM) + memory map p.181"
+  ],
+  "hsi_contract": "RM0486 Rev 4 ch.58 LPTIM register interface + memory map p.181 (LPTIM1 secure base 0x50002400)",
+  "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the LPTIM campaign work orders"
+ },
+ "scope": [
+  "LL (header-only, __STATIC_INLINE functions) as delivered by ST: register access through the CMSIS device structure LPTIM1 (stm32n6xx.h); the RM0486 LPTIMx_ registers of instance LPTIM1 (named LPTIM_CR, LPTIM_ISR, ...)",
+  "Enable, disable and query the timer (LPTIM_CR.ENABLE); start the counter in Continuous or Single mode (LPTIM_CR.CNTSTRT / LPTIM_CR.SNGSTRT); reset the counter (LPTIM_CR.COUNTRST)",
+  "Set and read the register update mode (LPTIM_CFGR.PRELOAD) and the clock prescaler (LPTIM_CFGR.PRESC); write and read the auto-reload value (LPTIM_ARR); read the counter (LPTIM_CNT)",
+  "Query and clear the auto-reload match flag (LPTIM_ISR.ARRM, LPTIM_ICR.ARRMCF); enable, disable and query the auto-reload match interrupt (LPTIM_DIER.ARRMIE); query and clear the auto-reload update OK flag (LPTIM_ISR.ARROK, LPTIM_ICR.ARROKCF) and the interrupt enable register update OK flag (LPTIM_ISR.DIEROK, LPTIM_ICR.DIEROKCF)",
+  "Out of scope: HAL API, capture/compare channels and PWM/waveform output, encoder mode, the external clock and input selection, external trigger and timeout, the repetition counter, the update event flag and its interrupt/DMA, the asynchronous reset after read, DMA, the other LPTIM instances, the LPTIM kernel clock selection (RCC), the LL init/deinit functions of stm32n6xx_ll_lptim.c"
+ ],
+ "system_names": [
+  "LPTIM LL driver",
+  "LPTIM driver",
+  "STM32N6 LPTIM LL driver"
+ ],
+ "budgets": {
+  "flash_bytes": 4096,
+  "static_ram_bytes": 64,
+  "stack_bytes": 128,
+  "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25) and the feature 014 operation-24 campaign (2026-10-27)"
+ },
+ "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+ "inputs": [
+  {
+   "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+   "role": "datasheet"
+  },
+  {
+   "path": "../0018-lptim-st/inputs/RM0486-rev4-ch58-lptim.md",
+   "role": "reference_manual_lptim_chapter"
+  },
+  {
+   "path": "../0018-lptim-st/inputs/RM0486-rev4-memory-map-excerpt-lptim.md",
+   "role": "reference_manual_memory_map"
+  },
+  {
+   "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+   "role": "reference_manual_register_conventions"
+  },
+  {
+   "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0018-lptim-st/inputs/inputs-manifest.json",
+   "role": "conversion_provenance"
+  },
+  {
+   "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+   "role": "development_guideline"
+  }
+ ],
+ "layer": "LL",
+ "layer_note": "Feature 014 operation-24 campaign (owner 2026-10-27: new ST LL drivers RNG, LPTIM, WWDG): ST's existing STM32CubeN6 LPTIM LL code (stm32n6xx-hal-driver v1.4.0), FROZEN. Requirements are derived from RM0486 independently of the code; secure build (CMSIS selects LPTIM1_S at 0x50002400).",
+ "delivery": {
+  "code_mode": "FROZEN",
+  "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+  "licence": "BSD-3-Clause",
+  "licence_allows_modification": true,
+  "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+  "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+  "files": [
+   {
+    "from": "Inc/stm32n6xx_ll_lptim.h",
+    "to": "software/ll/stm32n6xx_ll_lptim.h"
+   }
+  ],
+  "scope": {
+   "functions": [
+    "LL_LPTIM_Enable",
+    "LL_LPTIM_Disable",
+    "LL_LPTIM_IsEnabled",
+    "LL_LPTIM_StartCounter",
+    "LL_LPTIM_ResetCounter",
+    "LL_LPTIM_SetUpdateMode",
+    "LL_LPTIM_GetUpdateMode",
+    "LL_LPTIM_SetPrescaler",
+    "LL_LPTIM_GetPrescaler",
+    "LL_LPTIM_SetAutoReload",
+    "LL_LPTIM_GetAutoReload",
+    "LL_LPTIM_GetCounter",
+    "LL_LPTIM_IsActiveFlag_ARRM",
+    "LL_LPTIM_ClearFlag_ARRM",
+    "LL_LPTIM_EnableIT_ARRM",
+    "LL_LPTIM_DisableIT_ARRM",
+    "LL_LPTIM_IsEnabledIT_ARRM",
+    "LL_LPTIM_IsActiveFlag_ARROK",
+    "LL_LPTIM_ClearFlag_ARROK",
+    "LL_LPTIM_IsActiveFlag_DIEROK",
+    "LL_LPTIM_ClearFlag_DIEROK"
+   ],
+   "note": "enable, start (continuous/single), counter reset, update mode, prescaler, auto-reload, counter read, auto-reload match flag and interrupt, ARROK and DIEROK update flags"
+  },
+  "dependencies": [
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n6xx.h",
+    "to": "inputs/vendor/include/stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/stm32n657xx.h",
+    "to": "inputs/vendor/include/stm32n657xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+    "from": "Include/system_stm32n6xx.h",
+    "to": "inputs/vendor/include/system_stm32n6xx.h",
+    "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "core_cm55.h",
+    "to": "inputs/vendor/include/core_cm55.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_version.h",
+    "to": "inputs/vendor/include/cmsis_version.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_compiler.h",
+    "to": "inputs/vendor/include/cmsis_compiler.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "cmsis_gcc.h",
+    "to": "inputs/vendor/include/cmsis_gcc.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/cmsis_gcc_m.h",
+    "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_mpu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv8m_pmu.h",
+    "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   },
+   {
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+    "from": "m-profile/armv7m_cachel1.h",
+    "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+    "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+    "licence": "Apache-2.0"
+   }
+  ],
+  "build": {
+   "style": "cmsis",
+   "defines": [
+    "STM32N657xx"
+   ],
+   "secure": true
+  }
+ },
+ "peripheral": "lptim"
+}
