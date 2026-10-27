@@ -1,0 +1,217 @@
+{
+  "status": "NO_MATCHING_PRODUCT_SCOPE_IN_AVAILABLE_GRANTS",
+  "proposed_order_id": "WWDG-LL-v02-001",
+  "scope_checks": [
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-5DC2DF3-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-DDDF00E-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-DBCEC39-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-836AE49-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-BDBA4C1-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-2DFD32F-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-EC0C8F9-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-C6850AC-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-0CE4618-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-B7CE315-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-1017E88-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-3DE1A44-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-677D45A-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-CC2B39C-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-E35ED0A-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-BCB8CAE-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-20F6B02-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-A206C54-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    },
+    {
+      "authorization_id": "AUTH-OMNI-Q014-QUAL-B759094-20261025",
+      "expires": "2026-10-27T19:00:00Z",
+      "keys": [
+        "order_ids",
+        "driver_classes",
+        "models",
+        "service_actions"
+      ],
+      "wwdg_order_ids": []
+    }
+  ],
+  "signature_verification": "NOT_REACHED_SCOPE_MISMATCH",
+  "new_grants_signed": 0
+}

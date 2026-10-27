@@ -775,3 +775,65 @@ Forge-C independent contract checks, legacy regressions and actual formal checks
 then one new bounded WWDG attempt under valid authority. The private SafeC AGENTS
 requires confirmation for functional changes; the proposal does not authorize them
 or reopen parked DA-T036. See wwdg-safec-unblock.md. Formal 30/58 unchanged.
+
+## 2026-10-27 — approved opt-in WWDG capability extension
+
+Owner explicitly approved “I - Approve the scoped SafeC/Forge-C extension”.
+Only the relevant mandatory-operation preflight portion of parked DA-T036 is
+reopened; the full task remains unticked. Formal ledger/source/CSV stay30/58.
+
+Exact clean Forge-C a74baa91f15383012b997461c551b1e1c066e279:
+256 affected PASS, one missing local SPI-state fixture SKIP, 433.012s.
+Release/legacy quality/OSS gates29 PASS,9.822s. Omniverse2 new native bridge,
+preflight and WWDG tests35 PASS,1.830s. Separate static spec (58 mappings),
+contracts (six/38),14 design tests, handoff and Ruff PASS. Static validity is not
+runtime, model or operational qualification.
+
+New explicit register-io-0.2/domain3 and contract/oracle/obligations2 preserve
+legacy schema/default behavior. Rust remains semantic authority; Python derives
+accepted arithmetic, oracle cases and formal text independently. New WWDG work
+orders freeze12 mandatory forms; actual pinned-engine preflight happens before
+author packets/model calls, with finite60s/32form bounds and changed-scope refusal.
+Actual source-timeout/engine failure remains distinct from capability absence.
+
+Private semantic source c241a9a, opt-in register-io-v02 build, hash
+d1df63cea412d672fbe042b1a2b0e31f5167cfd1ea21c717c4dfcbdf81e8ef72:
+core31 PASS plus explicit actual CBMC formal run; bridge33 PASS each legacy/new.
+Affected fmt/Clippy pass with warnings denied. Actual CBMC6.11.0 proves five
+generated correct cases and rejects ten semantic/frame mutants within one-call
+32-bit register-image assumptions. No arbitrary hardware/timing/concurrency claim.
+Whole-private-workspace checks fail: inherited Linux CLI unused-mut lint and one
+retained-evidence replay failure. No-fail-fast workspace at docs-only30bea77:
+264 PASS/1 FAIL. S014-T008 remains unchecked; no golden is fabricated/auto-accepted.
+Private draft PR4 retains these failures; only interfaces/counts/digests are public.
+
+Native frozen WWDG domain:12/12 required forms pass versus prior9 UNSUPPORTED/3PASS.
+All36 validation/oracle/obligation derivations survive independent materialization.
+Unsafe values and profile mismatch controls reject. Final study accounting:
+53 bridge calls,52 engine run requests,1 client domain-binding refusal,0 model calls,
+0 product attempts. Original52-call harness completed the checks but failed while
+capturing unsupported SUCCESS; separate reconciliation captured factual PASS and
+NO_NEW_LESSON without redispatch. Additional correctly bound legacy-domain control
+was evaluated and refused by the actual engine. All raw failed runs are retained.
+
+Candidate WWDG-LL-v02-001 is prepared on Omniverse2 with original full scope,
+frozen12form manifest and accepted ST target-compiler intake after PATH correction.
+Its initial BUILD_NOT_RUN is retained. It is NOT_ADMITTED: available19 signed
+protocol grants do not name it, cumulative continuation mission and explicit
+isolated profile binding remain required. No grant renewal, historical mission
+reset, default pin/service change, inspector tuning, deployment or automatic merge.
+Original WWDG expenditure floor and later diagnosis uncertainty remain preserved.
+No driver READY, author/inspection/maintenance qualification, self-healing,
+learning-benefit, product benchmark or24/72/168-hour claim follows from this result.
+
+Evidence/commands/versions/hashes:
+evidence/014-durable-local-autonomy/wwdg-v02-a74baa9/.
+
+Follow-up: nonfunctional private CLI cleanup3256cb6 now passes whole-workspace
+fmt/Clippy with warnings denied. Exact3256cb6 no-fail-fast workspace264 PASS/1FAIL.
+tools/check.py reaches and refuses retained-evidence replay.16 original raw
+payload inputs are missing across eight retained cases; no matching original
+available, no logs fabricated, no manifest changed or check skipped. Restore exact
+recorded bytes to unblock. Candidate's fresh domain separately passed12 native
+preflight contracts in7.460138s (12 additional engine requests,0 model calls);
+its disposition is NO_NEW_LESSON. It remains NOT_ADMITTED.

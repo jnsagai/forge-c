@@ -6,39 +6,53 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 focus on an actual driver unblock
+## Current checkpoint — 2026-10-27 approved WWDG capability extension
 
-The owner asked whether work was progressing. The agent acknowledged that supporting
-infrastructure advances had not changed the main outcomes (30/58, 0/3 READY, no proven
-self-healing/availability). Further observer expansion was parked, not promoted.
-`codex-resume-20261027` retains uncommitted `audit_segments.py`/`host_audit.py` window
-WIP, backed up as `parked-audit-window-after-ea77ed3.patch`; **unverified, do not apply**.
-The clean active evidence worktree is `development-safety-20261027`.
+Owner: **“I - Approve the scoped SafeC/Forge-C extension.”** Approval satisfies
+the private AGENTS functional-change confirmation requirement. Do not ask again.
+Only the relevant mandatory-operation preflight part of DA-T036 is reopened;
+all other parked tasks and the inspector freeze remain.
 
-Read `wwdg-safec-unblock.md` next. On Omniverse2, twelve minimal *required* WWDG
-operation forms against the frozen domain yield **9 UNSUPPORTED / 3 PASS**. The
-three passing ordinary reads also passed independent Python contract derivation.
-Both `rs` and `rc_w0` are unsupported in the pinned register-io-0.1 profile, and writes
-beside rs fail the RMW check. This establishes a required engine capability limit,
-not a diagnosis inferred from model opinions. Full-scope phase 14.055950 s; initial
-four-intent phase 2.243598 s. **16 total engine invocations, zero model requests**.
-All raw source/engine outputs stay private; sanitized evidence is
-`wwdg-required-capability-20261027/`. Factual learning dispositions retained, no
-qualified lesson or measured benefit. Original runs, failures, budgets and schemas
-are unchanged; no new product attempt or engine/profile update occurred.
+Exact Forge-C runtime **a74baa91f15383012b997461c551b1e1c066e279**:
+**256 affected PASS / 1 absent-local-fixture SKIP**, 29 release/legacy gate PASS,
+and **35 PASS on Omniverse2**. Private semantic source c241a9a adds explicit
+register-io-0.2/domain3, with separate contract/oracle/obligation2 schemas;
+legacy defaults and pins remain frozen. Five actual CBMC correct cases proved,
+ten semantic/frame mutants rejected. The whole private workspace still fails
+retained-evidence replay (16 original inputs missing); Linux lint was fixed in3256cb6. Scoped bridge qualification
+does not imply a full private product pass.
 
-A narrowly versioned rs/rc_w0 semantic extension plus compatible independent bridge
-checks is the concrete proposed way to attempt the unchanged full WWDG scope.
-Private SafeC `AGENTS.md` says "Functional changes require confirmation." No such
-new scope has yet been confirmed. Prepare/review that explicit owner decision before
-changing private SafeC verification semantics or reopening parked DA-T036. Do not
-turn this diagnosis into permission to waive gates, normalize special access to rw,
-repeat a spent study, tune the inspector, renew grants or activate deployment.
+The measured WWDG ceiling is removed in that explicit profile: **12/12 required
+forms PASS**, all36 validation/oracle/obligation checks independently materialized
+on Omniverse2. Early mandatory-operation preflight passes; unsafe values and
+profile/domain mismatch controls reject. Final native accounting: 53 bridge
+requests, 52 engine run requests, one client refusal, zero model calls/products.
+Initial learning bookkeeping refused an unsupported SUCCESS label; reconciliation
+captured factual PASS/NO_NEW_LESSON without replaying qualification requests.
+[Evidence, exact commands, versions, limits](../../evidence/014-durable-local-autonomy/wwdg-v02-a74baa9/README.md).
 
-Published runtime remains d9d70e1, prior source/evidence head ea77ed3. All collector,
-comparison and Qwen commands from the previous checkpoint are terminal. A1, A3 report
-tooling and A4 are done; A2/full host coverage and all measured goal outcomes remain
-open. Formal ledger and CSV stay 30/58 at their historical source revision.
+A real full-scope candidate **WWDG-LL-v02-001 is PREPARED_NOT_ADMITTED** under
+the isolated remote wwdg-a74baa9 root. ST target-compiler intake passed after PATH
+correction; the earlier BUILD_NOT_RUN log is retained. The prepared domain also
+passed12 independent preflight contracts in7.460138s,12 additional engine requests
+and0 model calls, with factual NO_NEW_LESSON. Next: reconcile cumulative
+product/diagnosis expenditure and current authority, bind the isolated opt-in
+engine profile, then one bounded driver job through all unchanged gates.
+The available19 signed protocol grants do not name this product order; no grant
+was silently renewed, old mission replaced, engine default deployed or service
+changed. Do not assume a fresh empty allowance. Driver READY, self-healing,
+learning benefit and operational availability remain unproven.
+
+Private SafeC branch feat/014-wwdg-register-effects retains its source/spec/tasks.
+Private implementation/logs/vendor domains are not published to Forge-C: only
+approved interfaces, counts, versions and hashes. Local work stays on loop10,
+Qwen only on Omniverse2. Other owner services remain untouched.
+
+Earlier observer-window WIP is still parked in codex-resume-20261027:
+audit_segments.py/host_audit.py uncommitted/unverified, patch backup retained.
+A1/A3(report tooling)/A4 done; A2 and all measured goal outcomes remain open.
+Formal task ledger/source and CSV remain **30/58**. No benchmark, role, product,
+learning-benefit or continuous-availability completion claim.
 
 ## Previous checkpoint — 2026-10-27 collector and comparison reporting
 
@@ -161,6 +175,7 @@ privileges/fault windows are separate prerequisites, not excuses for that softwa
 | 2026-10-27 | Peripherals "RNG, LPTIM, WWDG"; merge main into feat/014 "Yes, merge now" | Done (see below). |
 | 2026-10-27 | OD-2026-10-27-01 "ASIL B for all three" | Scopes SC-WWDG/SC-RNG/SC-LPTIM-2026-10-27 in `config/factory/safety-scope.yaml` (protected path; owner-decision commit `de54734`). |
 | 2026-10-27 | OD-2026-10-27-02 "about the safety signature, I want it to be ignored during the development of forge-c" | SSA/TAA signature prerequisites are deferred for bound DEVELOPMENT work orders; ASIL and engineering gates remain. FORMAL_REVIEW retains signatures. Supersedes development signature requests below; see [development-safety-policy.md](development-safety-policy.md). |
+| 2026-10-27 | “I - Approve the scoped SafeC/Forge-C extension” | Versioned one-bit RS/RC_W0, independent bridge checks and zero-model mandatory preflight authorized; narrow DA-T036 reopening only; no deployment, mission reset, grant renewal or inspector tuning. |
 
 Standing rules from the owner and earlier handovers:
 - ALL Qwen tests run on remote **Omniverse2** (`ssh omniverse2@100.118.28.92`, key auth; RTX 6000 Ada 48 GB, shared,
