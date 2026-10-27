@@ -287,6 +287,15 @@ def replay(config, segment, *, check_anchor=True):
 
 
 def verify_chain(config, segments, *, consume=None):
+    result = None
+    for batch in verify_chain_batches(config, segments, consume=consume):
+        result = batch
+    if result is None or result.get("status") != "CAPTURED_BYTE_PREFIX_REPLAYED":
+        raise Refused("AUDIT_SEGMENT_CHAIN_REPLAY_INCOMPLETE")
+    return result
+
+
+def verify_chain_batches(config, segments, *, consume=None, maximum=None, max_segments=MAX_SEGMENTS):
     """Reconstruct a captured prefix with bounded I/O and rolling anchor memory.
 
     Historical descriptor facts are checked structurally, not authenticated by
@@ -296,7 +305,11 @@ def verify_chain(config, segments, *, consume=None):
     if not isinstance(config, dict) or not isinstance(config.get("paths"), list) or not config["paths"]:
         raise Refused("AUDIT_SEGMENT_CONFIGURATION_INVALID")
     configuration(config, config["paths"][0])
-    if not isinstance(segments, list) or not 1 <= len(segments) <= MAX_SEGMENTS:
+    maximum = observer.MAX_TRACE_BYTES if maximum is None else maximum
+    if (type(maximum) is not int or not 1 <= maximum <= 2**40
+            or type(max_segments) is not int or not 1 <= max_segments <= 50000):
+        raise Refused("AUDIT_SEGMENT_REPLAY_ALLOWANCE_INVALID")
+    if not isinstance(segments, list) or not 1 <= len(segments) <= max_segments:
         raise Refused("AUDIT_SEGMENT_CHAIN_COUNT_INVALID")
     for segment in segments:
         validate(segment, config)
@@ -305,7 +318,7 @@ def verify_chain(config, segments, *, consume=None):
     final = segments[-1]["cursor"]
     terminal = [*final["sealed_sources"], final]
     total = sum(s["source"]["length"] for s in segments)
-    if total + sum(s["anchor"]["length"] for s in terminal) > observer.MAX_TRACE_BYTES:
+    if total + sum(s["anchor"]["length"] for s in terminal) > maximum:
         raise Refused("AUDIT_SEGMENT_CHAIN_BYTE_BOUND_EXCEEDED")
     previous, tail = None, b""
     for segment in segments:
@@ -341,6 +354,7 @@ def verify_chain(config, segments, *, consume=None):
         if consume is not None:
             consume(raw)
         previous = cursor
+        yield {"status": "CAPTURED_BYTE_PREFIX_PARTIAL", "cursor_sha256": digest(cursor)}
     # Retired files must still be exactly at their sealed EOF, even if the late
     # append happened after all old ranges were captured. No history is dropped.
     remaining = None
@@ -355,7 +369,7 @@ def verify_chain(config, segments, *, consume=None):
             _check_anchor(fd, entry["anchor"], entry["end"])
             if entry is final:
                 remaining = s.st_size - entry["end"]
-    return {"status": "CAPTURED_BYTE_PREFIX_REPLAYED", "segments": len(segments),
+    yield {"status": "CAPTURED_BYTE_PREFIX_REPLAYED", "segments": len(segments),
             "bytes": total, "generations": len(terminal), "segments_sha256": digest(segments),
             "last_cursor_sha256": digest(final), "uncaptured_final_source_bytes": remaining,
             "scope": "RETAINED_BYTE_PREFIX_NOT_EVENT_COMPLETENESS_OR_HOST_AUDIT"}

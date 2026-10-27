@@ -122,7 +122,7 @@ class EventReplay:
             self.failed = True
             raise
 
-    def _line(self, line):
+    def selected_record(self, line):
         if not line or len(line.encode()) > MAX_LINE:
             raise Refused("HOST_AUDIT_RECORD_BOUND_EXCEEDED")
         m = HEADER.fullmatch(line)
@@ -135,34 +135,54 @@ class EventReplay:
         if not math.isfinite(epoch):
             raise Refused("HOST_AUDIT_EVENT_CLOCK_INVALID")
         identity = (node, m["epoch"], int(m["serial"]))
-        if identity not in self.groups:
-            if len(self.groups) >= MAX_EVENTS:
-                raise Refused("HOST_AUDIT_EVENT_COUNT_BOUND_EXCEEDED")
-            self.groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": set()}
-        group = self.groups[identity]
-        sha = hashlib.sha256(line.encode()).hexdigest()
-        if sha in group["hashes"]:
-            self.duplicates += 1
-            return
-        group["hashes"].add(sha)
-        group["types"].add(m["kind"])
-        self.records += 1
-        if self.records > MAX_RECORDS:
-            raise Refused("HOST_AUDIT_RECORD_COUNT_BOUND_EXCEEDED")
+        fields, path_item = None, None
         if m["kind"] == "SYSCALL":
-            if group["syscall"] is not None:
-                raise Refused("HOST_AUDIT_SYSCALL_AMBIGUOUS")
             fields = _fields(m["body"])
             if not all(re.fullmatch(r"\d{1,20}", fields.get(k, "")) for k in ("pid", "ppid", "uid", "auid", "syscall", "items")):
                 raise Refused("HOST_AUDIT_SYSCALL_INCOMPLETE")
             if fields.get("success") not in ("yes", "no") or not re.fullmatch(r"[0-9a-fA-F]{8}", fields.get("arch", "")):
                 raise Refused("HOST_AUDIT_SYSCALL_INCOMPLETE")
-            group["syscall"] = fields
+            # This selected representation is also the only data allowed into
+            # the ephemeral external sorter. Never retain comm/exe/argv/paths.
+            key = fields.get("key") if fields.get("key") in self.keys else None
+            fields = {k: fields[k] for k in ("pid", "ppid", "uid", "auid", "syscall", "items", "success", "arch")}
+            fields["key"] = key
         elif m["kind"] == "PATH":
-            fields = _fields(m["body"])
-            if not re.fullmatch(r"\d{1,8}", fields.get("item", "")) or int(fields["item"]) in group["paths"]:
+            path = _fields(m["body"])
+            if not re.fullmatch(r"\d{1,8}", path.get("item", "")):
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
-            group["paths"].add(int(fields["item"]))
+            path_item = int(path["item"])
+        return {"identity": identity, "kind": m["kind"], "sha256": hashlib.sha256(line.encode()).hexdigest(),
+                "syscall": fields, "path_item": path_item}
+
+    def _line(self, line):
+        self._record(self.selected_record(line))
+
+    def _record(self, record):
+        """Apply a selected record parsed from original bytes, or hash-checked scratch."""
+        identity = tuple(record["identity"])
+        if identity not in self.groups:
+            if len(self.groups) >= MAX_EVENTS:
+                raise Refused("HOST_AUDIT_EVENT_COUNT_BOUND_EXCEEDED")
+            self.groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": set()}
+        group = self.groups[identity]
+        sha = record["sha256"]
+        if sha in group["hashes"]:
+            self.duplicates += 1
+            return
+        group["hashes"].add(sha)
+        group["types"].add(record["kind"])
+        self.records += 1
+        if self.records > MAX_RECORDS:
+            raise Refused("HOST_AUDIT_RECORD_COUNT_BOUND_EXCEEDED")
+        if record["kind"] == "SYSCALL":
+            if group["syscall"] is not None:
+                raise Refused("HOST_AUDIT_SYSCALL_AMBIGUOUS")
+            group["syscall"] = record["syscall"]
+        elif record["kind"] == "PATH":
+            if record["path_item"] in group["paths"]:
+                raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
+            group["paths"].add(record["path_item"])
 
     def finish(self, *, legacy=False):
         if self.closed or self.failed:
@@ -438,17 +458,27 @@ def _plans(manifest, observer_plan_ref, host_plan_ref):
         from . import audit_segments
 
         audit_segments.configuration(segments, plan["kernel_log"])
+    if "continuous_replay" in plan:
+        from . import kernel_replay
+
+        kernel_replay.configuration(plan["continuous_replay"])
+        if segments is None:
+            raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_REPLAY")
     return frozen, plan
 
 
-def _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref):
+def _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref, *, with_size=False, limit=None):
     if (
         not isinstance(ref, dict) or set(ref) != {"path", "sha256"}
         or not isinstance(ref["path"], str) or not isinstance(ref["sha256"], str)
         or not re.fullmatch(r"[0-9a-f]{64}", ref["sha256"])
     ):
         raise Refused("HOST_AUDIT_CAPTURE_REFERENCE_INVALID")
-    record = observer.bound_json(ref, path=observer.artifact(frozen, ref["path"]))
+    maximum = observer.MAX_BYTES if limit is None else min(observer.MAX_BYTES, limit)
+    raw = observer.read_bytes(observer.artifact(frozen, ref["path"]), maximum)
+    if hashlib.sha256(raw).hexdigest() != ref["sha256"]:
+        raise Refused("OBSERVER_ARTIFACT_HASH_CHANGED")
+    record = observer.strict_json(raw, observer.MAX_BYTES)
     if (
         not isinstance(record, dict) or record.get("schema") != "forge-c/host-audit-source-capture/1"
         or record.get("manifest_sha256") != digest(manifest)
@@ -456,7 +486,7 @@ def _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, re
         or record.get("source_sha256") != plan["source_sha256"] or record.get("host") != plan["host"]
     ):
         raise Refused("HOST_AUDIT_PREVIOUS_CAPTURE_UNBOUND")
-    return record
+    return (record, len(raw)) if with_size else record
 
 
 def capture(manifest, observer_plan_ref, host_plan_ref, destination, *, previous_ref=None):
@@ -548,14 +578,19 @@ def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destinatio
     from . import audit_segments
 
     frozen, plan = _plans(manifest, observer_plan_ref, host_plan_ref)
+    if "continuous_replay" in plan:
+        from . import kernel_replay
+
+        return kernel_replay.verify(manifest, observer_plan_ref, host_plan_ref, refs, destination)
     if plan.get("segments") is None:
         raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_REPLAY")
     if not isinstance(refs, list) or not 1 <= len(refs) <= audit_segments.MAX_SEGMENTS:
         raise Refused("HOST_AUDIT_SEGMENT_REFERENCES_INVALID")
     segments, previous_ref, budget, boots = [], None, observer.MAX_BYTES, set()
     for sequence, ref in enumerate(refs):
-        record = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref)
-        budget -= len(canonical(record))
+        record, size = _capture_record(manifest, frozen, plan, observer_plan_ref, host_plan_ref, ref,
+                                       with_size=True, limit=budget)
+        budget -= size
         if budget < 0:
             raise Refused("HOST_AUDIT_SEGMENT_METADATA_BOUND_EXCEEDED")
         segment = record.get("kernel_segment")
