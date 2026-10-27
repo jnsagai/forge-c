@@ -6,7 +6,32 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — 2026-10-27 downstream consumers fixed; native ST/model mismatch
+## Current checkpoint — 2026-10-27 collection replay through bounded batches
+
+Exact runtime **bf05e59b968f01abc6bc8ba60f8d369237e1c804**. Existing collector
+verification now replays every original sample in bounded batches, without the
+former 128 MiB aggregate-capture ceiling. Each file, sample allowance and soak log
+remains bounded. No trusted external checkpoint or new authority. Partial yields
+cannot PASS; restarts recheck from zero. Collection can append between batches,
+and the final prefix hash prevents mixed-window campaign reports.
+
+Exact local 393 affected/AFO PASS (38.290s), 29 release/legacy PASS (11.104s).
+The generated 8-sample fixture verifies 134,234,326 source bytes, exceeding the
+former 134,217,728-byte bound. Initial environment/command failures remain retained.
+The first broad native lane timed out at 180s while filesystem journal waiting was
+observed; it is incomplete. A separate focused native lane passes all 18 new cases
+in 40.713s under the same limits, with a 134,233,135-byte fixture. The broader timeout
+remains retained; no inferred counts from partial output.
+
+[Evidence, commands and remaining boundaries](../../evidence/014-durable-local-autonomy/collection-batches-bf05e59/README.md).
+This is collection-source replay only. Kernel-event replay continuation, native
+actor/control/write/service correlation and all-channel intervention verification
+remain unfinished. Interventions UNKNOWN; no live campaign or Qwen request.
+Formal ledger **30/58** unchanged. Existing WWDG model/authority/private-input blockers,
+inspector freeze, parked tasks and historical expenditure remain. No deployment,
+signature, grant renewal, mission reset or merge.
+
+## Previous checkpoint — 2026-10-27 downstream consumers fixed; native ST/model mismatch
 
 Exact latest runtime **466d87bef4688af6209937433ef056baa4a5d51f**.
 Oracle/proof/mutation consumers now preserve the frozen semantic profile through

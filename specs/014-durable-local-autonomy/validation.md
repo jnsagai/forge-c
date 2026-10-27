@@ -914,3 +914,31 @@ uncertainty, raw failures and candidates remain. Private broader replay still ne
 16 missing original inputs. Formal30/58 unchanged; operational campaigns and
 product/role/self-healing/learning-benefit qualification remain unproven.
 Evidence: wwdg-consumers-466d87b in the Feature014 evidence directory.
+
+## 2026-10-27 bounded collection replay (A2 increment)
+
+Exact runtime bf05e59b968f01abc6bc8ba60f8d369237e1c804. Existing collector source
+verification now uses single-sample batches across the whole frozen log prefix.
+It accepts no external starting checkpoint; new invocations replay from zero.
+Partial yields cannot produce a successful report. Each file, frozen sample
+allowance and log remains bounded. The final history hash prevents mixed-window
+campaign reports while collection can append between batches.
+
+Exact local 393 affected/AFO PASS (38.290s), 29 release/legacy PASS (11.104s).
+The actual 8-sample fixture verifies 134,234,326 source bytes across 24 files,
+beyond the old aggregate 134,217,728-byte ceiling. All original evidence remains.
+The initial exact-source run retains an unset-Fabro environment failure; the first
+release invocation retains a wrong-path NOT_RUN. Corrected commands pass.
+
+First broad native lane TIMEOUT at 180s; journal waiting was directly observed.
+No completed JUnit verdict. Both wrapper and pytest were confirmed terminal before
+the focused run. Same-source focused native 18 PASS (40.713s), fixture 134,233,135
+bytes, under the same 180s wall / 120s CPU / 3 GiB limits. The focused result does
+not replace or qualify the broad timeout. No Qwen/model request or product attempt.
+
+Evidence, commands, hashes and scope: collection-batches-bf05e59 in the Feature014
+evidence directory. Static validation remains separate from runtime qualification.
+This does not implement kernel-event continuation beyond its 128 MiB bound,
+native all-channel correlation or actual fault/work campaigns. Interventions
+UNKNOWN; formal tasks remain 30/58. No readiness, self-healing, learning-benefit or
+availability claim, signature, grant renewal, allowance reset, deployment or merge.

@@ -44,9 +44,26 @@ reject altered health claims. Incomplete captures produce unknown telemetry.
 `unexpected_interventions` remains null: byte preservation and healthy HTTP probes
 are not independent proof of authenticated host-wide intervention coverage. Current
 all-channel correlation, genuine product oracles, native boot/reboot/mount windows
-and actual campaigns remain separate unfinished qualification. Full replay is
-bounded to 128 MiB; longer campaigns need a bounded continuation verifier before
-that limit, never a silently truncated successful report.
+and actual campaigns remain separate unfinished qualification.
+
+Collection receipt replay at bf05e59 no longer places a 128 MiB limit on the sum
+of all captures. `Collector.verify_batches()` starts at sequence zero and verifies
+one sample per batch using the original receipt, attempts and captured sources.
+Each of the five capture files remains limited to 16 MiB; repeated semantic reads
+are also individually bounded. The reported source-byte count counts those files
+once per sample, not physical I/O. The frozen cumulative sample allowance and
+128 MiB soak-log bound still apply. No earlier prefix is replaced by a caller's
+cursor, checkpoint or success flag.
+
+Every sample yield is `SOURCE_REPLAY_PARTIAL`. Only the final yield, after all
+original sources and the unchanged log prefix have been checked, can be
+`SOURCE_REPLAY_PASS`. The verifier releases the writer lock between batches;
+new samples may append while the original prefix is checked. Its final result
+binds that prefix's canonical history hash. The campaign reporter refuses a
+different window. An interrupted verifier starts from zero on its next invocation;
+there is no durable trusted checkpoint or fresh allowance. This is collection
+metadata/source replay, not a continuation proof for kernel compound events.
+The latter still has its independent 128 MiB bound and remains unfinished.
 
 Qwen job 081 authored a pure configuration-validator candidate on Omniverse2. The
 candidate accepted integer subclasses; independent review corrected strict integer

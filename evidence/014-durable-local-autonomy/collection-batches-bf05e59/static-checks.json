@@ -1,0 +1,37 @@
+{
+  "schema": "forge-c/014-collection-batch-static/1",
+  "source_revision": "bf05e59b968f01abc6bc8ba60f8d369237e1c804",
+  "checks": {
+    "spec": {
+      "status": "PASS",
+      "sha256": "442b344881a58d48a5c862590b4f2cabd0ae02244a849ae7310c0188e153681b",
+      "scope": "STATIC_NOT_RUNTIME"
+    },
+    "contracts": {
+      "status": "PASS",
+      "sha256": "6a44a7de8ed0f6a80069d8865c1317666d9f7fa6b39733979af864ac8ce77b94",
+      "scope": "STATIC_NOT_RUNTIME"
+    },
+    "design": {
+      "status": "PASS",
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe",
+      "scope": "STATIC_NOT_RUNTIME"
+    },
+    "handoff": {
+      "status": "PASS",
+      "sha256": "5cbf3321a8c9951f403f5e18123567253e7da69b4c02a684634c81d046f9392a",
+      "scope": "STATIC_NOT_RUNTIME"
+    },
+    "ruff": {
+      "status": "PASS",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "scope": "SOURCE_LINT"
+    }
+  },
+  "requirements_tasks_acceptance_mappings": 58,
+  "contract_schemas": 6,
+  "contract_fixtures": 38,
+  "design_cases": 14,
+  "handoff_checked_tasks": 30,
+  "handoff_source_revision": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238"
+}
