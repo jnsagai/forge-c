@@ -96,17 +96,19 @@ def write_host_device(ws: Path) -> bool:
         return False
     src, out = ws / VENDOR_DIR, ws / HOST_DIR
     if out.exists():
-        for p in out.iterdir():
-            p.chmod(0o644)
+        for p in out.rglob("*"):
+            p.chmod(0o755 if p.is_dir() else 0o644)
         shutil.rmtree(out)
     out.mkdir(parents=True)
     for h in sorted(src.glob("*.h")):  # device headers only: the core/compiler headers are Arm-only
         if not (h.name.startswith("core_") or h.name.startswith("cmsis_")):
             shutil.copyfile(h, out / h.name)
+    for sub in sorted(p for p in src.iterdir() if p.is_dir() and p.name != "m-profile"):  # F015 ST HAL: Legacy/
+        shutil.copytree(sub, out / sub.name)                                               # (m-profile is Arm core)
     (out / "core_cm55.h").write_text(CORE_STUB)
     (out / "forge_host_device.h").write_text(host_header(ws))
-    for p in out.iterdir():
-        p.chmod(0o444)
+    for p in sorted(out.rglob("*"), reverse=True):
+        p.chmod(0o555 if p.is_dir() else 0o444)
     return True
 
 

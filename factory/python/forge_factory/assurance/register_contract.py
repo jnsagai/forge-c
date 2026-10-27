@@ -22,7 +22,7 @@ from pathlib import Path
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 CALLS = "workproducts/SWE.2/api_calls.json"
 OPS = ("set", "clear", "no_write", "write")  # write (feature 009): the field holds "value" after the call
-STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
+STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR", "HAL_BUSY")  # HAL_BUSY: ST's classic HAL (handle locked/state)
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
 FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
 SAFE_ARG = re.compile(r"^[A-Za-z0-9_&(){}.=, +\-*/\[\]]*$")

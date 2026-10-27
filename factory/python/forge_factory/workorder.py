@@ -192,7 +192,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
                        "part_number": d["target"]["part_number"], "silicon_revision": d["target"]["silicon_revision"]})
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
     provided = []
-    if layer == "HAL":
+    standalone = layer == "HAL" and (spec.get("delivery") or {}).get("provided_ll") is False  # F015: ST classic HAL
+    if layer == "HAL" and not standalone:
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
         data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
@@ -215,7 +216,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
                 "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
                 "trace_profile": TRACE_PROFILE,
                 "register_contract": REGISTER_CONTRACT,
-                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
+                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" and not standalone else {}),
+                **({"hal_standalone": True} if standalone else {}),  # F015: the delivered HAL needs no provided LL
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
@@ -490,6 +492,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+                         hal_standalone=bool(manifest.get("hal_standalone")),
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
                          delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),

@@ -158,6 +158,26 @@
     "mm_page": {
       "type": "integer",
       "description": "RM page of the memory-map line for the base address"
+    },
+    "prompt_st_hal": {
+      "type": "object",
+      "description": "Feature 015 (ST HAL): texts that replace the factory-HAL prompt texts of 'prompt' when the work order delivers ST's classic, handle-based HAL (delivery provided_ll: false); 'replace' lists [old, new] fragment pairs applied after them.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "replace": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   }
 }

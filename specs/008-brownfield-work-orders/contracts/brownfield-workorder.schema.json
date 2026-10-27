@@ -109,6 +109,25 @@
           },
           "source": {
             "type": "string"
+          },
+          "configure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "hal_modules"
+            ],
+            "description": "Feature 015 (ST HAL): the dependency is ST's stm32n6xx_hal_conf_template.h configured for this work order - exactly the listed HAL modules enabled (HAL_<MODULE>_MODULE_ENABLED), every other module line commented out; nothing else changes. The template's SHA-256 and the module list are recorded.",
+            "properties": {
+              "hal_modules": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z0-9]+$"
+                }
+              }
+            }
           }
         }
       }
@@ -139,6 +158,10 @@
           "description": "cmsis style: build for the secure state (-mcmse; CMSIS selects the secure peripheral aliases, e.g. RCC at 0x56028000)"
         }
       }
+    },
+    "provided_ll": {
+      "type": "boolean",
+      "description": "Feature 015 (ST HAL): false for a delivered HAL that accesses the registers itself (ST's classic HAL) - no provided LL work order; default true (the factory's HAL on a provided LL)."
     }
   }
 }

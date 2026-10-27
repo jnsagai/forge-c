@@ -69,7 +69,10 @@ def cmsis_harness(ws: Path) -> str:
 
     pfx = instance(ws)
     var = f"forge_host_{pfx.lower()}"
-    heads = "".join(f'#include "{Path(h).name}"\n' for h in delivered_paths(manifest_of(ws)) if h.endswith(".h"))
+    m = manifest_of(ws)
+    heads = "".join(f'#include "{Path(h).name}"\n' for h in delivered_paths(m) if h.endswith(".h"))
+    if "inputs/vendor/include/stm32n6xx_hal.h" in delivered_paths(m, None):  # F015 ST HAL: the umbrella header
+        heads = '#include "stm32n6xx_hal.h" /* ST HAL entry point: hal_conf.h selects the delivered module */\n'
     return (HARNESS.replace('#include "stm32n6xx_hal_rcc.h"\n\nvolatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];\n',
                             "#include <string.h>\n#define FORGE_HOST_DEVICE_IMPLEMENTATION /* defines " + var +
                             " once, here */\n#include \"forge_host_device.h\" /* " + pfx + " -> RAM struct " + var +
@@ -117,7 +120,15 @@ def scaffold(ws: Path) -> dict:
 
     if is_cmsis(ws):  # feature 008 (ST pilot): the delivered CMSIS code on the generated host device map
         write_host_device(ws)
-        p.write_text(cmsis_harness(ws), encoding="utf-8")
+        text = cmsis_harness(ws)
+        from ..layer import hal_standalone
+
+        from ..layer import profile
+
+        if hal_standalone(ws) and profile(ws)["hal"].get("time_base"):  # F015 ST HAL: HAL_GetTick is defined in
+            # stm32n6xx_hal.c, which is not delivered: the deterministic host time base, restarted by ut_reset_regs()
+            text = _time_base(text, ws).replace("    (void)memset(", "    ut_tick = 0U;\n    (void)memset(", 1)
+        p.write_text(text, encoding="utf-8")
         return {"status": "PASS", "created": True, "file": UNIT_TEST, "host_device": True}
     if hal_unit_isolation(ws):  # CAPA-038: generated LL test double + harness that uses it
         from .ll_fake import write
