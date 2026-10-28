@@ -491,6 +491,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
             "-c",
             "user.name=forge-factory",
             "commit",
+            "--allow-empty",
             "-qm",
             f"forge: resume from {source_wo} (stable: {', '.join(stable) or 'none'})",
         ],
@@ -615,6 +616,7 @@ def run(
     recovery_plan: dict | None = None,
     fresh_recovery_from: str | None = None,
     durable_binding: dict | None = None,
+    before_native_launch=None,
     recovery_exhausted: dict | None = None,
     purpose: str = "DEVELOPMENT",
 ) -> dict:
@@ -845,6 +847,8 @@ def run(
     import os
 
     fab = os.environ.get("FORGE_FABRO_BIN", fab)
+    if before_native_launch is not None:
+        before_native_launch()
     fabro_run_id = launch_run(ws, wo, toml, fab, labels)
     # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
     # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.

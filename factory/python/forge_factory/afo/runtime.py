@@ -46,6 +46,27 @@ def model_gateway(profile: str) -> str | None:
 
 
 def launcher(manifest: dict, wo: str, labels: dict) -> dict:
+    binding = manifest.get("durable_binding")
+    if not binding:
+        return _launcher(manifest, wo, labels)
+    invoked = False
+
+    def before_native():
+        nonlocal invoked
+        # From this point any launch/journal/transport error is uncertain.
+        invoked = True
+
+    try:
+        return _launcher(manifest, wo, labels, before_native_launch=before_native)
+    except Exception as exc:
+        if not invoked:
+            from .local_agent import LaunchNotStarted
+
+            raise LaunchNotStarted(binding, exc) from exc
+        raise
+
+
+def _launcher(manifest: dict, wo: str, labels: dict, *, before_native_launch=None) -> dict:
     from ..workorder import factory_revision, run
 
     if manifest.get("model_profile"):  # a SWITCH_PREAPPROVED_MODEL_PROFILE recovery attempt
@@ -114,6 +135,7 @@ def launcher(manifest: dict, wo: str, labels: dict) -> dict:
         recovery_plan=manifest.get("recovery_plan"),
         durable_binding=manifest.get("durable_binding"),
         recovery_exhausted=manifest.get("recovery_exhausted"),
+        **({"before_native_launch": before_native_launch} if before_native_launch is not None else {}),
     )
     if not r.get("fabro_run_id"):
         raise RuntimeError(f"no Fabro run (preflight {r.get('preflight')})")

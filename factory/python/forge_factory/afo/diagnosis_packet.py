@@ -175,7 +175,11 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
                     if row_phase not in PHASES or PHASES.index(row_phase) > PHASES.index(phase):
                         continue
                     scoped_rows.append(row)
-                    result = row.get("result") or row.get("gate") or {}
+                    # Native author gates put issues on the row and use result
+                    # as a status string. Tool results use a nested object.
+                    result = row.get("result")
+                    if not isinstance(result, dict):
+                        result = row.get("gate") if isinstance(row.get("gate"), dict) else row
                     if isinstance(result, dict):
                         for n, issue in enumerate(result.get("issues") or result.get("findings") or []):
                             findings.append(

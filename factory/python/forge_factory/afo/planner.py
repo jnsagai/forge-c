@@ -52,6 +52,13 @@ def case(bundle: dict, workspace: Path, budget: dict, *, mission_id: str | None 
         from .durable import immutable_json
 
         doc.update(mission_id=mission_id, packet_ref=build(workspace, bundle, prior_strategies=prior_strategies))
+        if p.is_file():
+            # Polls observe a changing remaining budget; they must adopt the
+            # original case allowance, never rewrite or replenish it.
+            old = json.loads(p.read_text())
+            if {k: v for k, v in old.items() if k != "budget"} != {k: v for k, v in doc.items() if k != "budget"}:
+                raise ValueError("FROZEN_RECOVERY_CASE_CHANGED")
+            return p
         immutable_json(p, doc)
         return p
     if not p.exists():

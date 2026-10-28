@@ -24,7 +24,7 @@ TERMINAL = {"SUCCEEDED": "SUCCEEDED", "FAILED": "FAILED", "CANCELLED": "CANCELLE
 
 def item_failure(store, order_id, exc, stage):
     """Contain typed item failures; SQLite/integrity failures deliberately remain uncaught."""
-    from .durable import digest, canonical
+    from .durable import canonical, digest
 
     order = store.order(order_id)
     code = getattr(exc, "code", type(exc).__name__)
@@ -73,7 +73,7 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
     for cmd in store.commands("PENDING"):
         if cmd["kind"] != "FABRO_LAUNCH":
             continue
-        from .operations import configured, Intent
+        from .operations import Intent, configured
 
         payload = json.loads(cmd["payload"])
         if configured():
@@ -95,8 +95,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
             out.append({"command_id": cmd["command_id"], "action": "refused", "code": d.code})
             continue
         att = _attempt(store, cmd["attempt_id"])
-        from .mission_ledger import MissionLedger
         from .durable import Refused
+        from .mission_ledger import MissionLedger
 
         try:
             mission = MissionLedger(store).for_order(order["order_id"])
@@ -142,8 +142,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
                     if payload.get(k)
                 },
             }
-        from .mission_ledger import MissionLedger
         from .durable import Refused
+        from .mission_ledger import MissionLedger
 
         try:
             mission = MissionLedger(store).for_order(order["order_id"])
@@ -173,6 +173,15 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         try:
             receipt = launcher(manifest, name, labels)
         except Exception as exc:  # noqa: BLE001 - outcome unknown: reconciliation decides, never a blind retry
+            from .local_agent import LaunchNotStarted
+
+            if mission and isinstance(exc, LaunchNotStarted):
+                if exc.job_id != job["job_id"] or exc.nonce != nonce:
+                    raise Refused("LAUNCH_NOT_STARTED_BINDING_CHANGED") from exc
+                ex = Executions(store)
+                ex.not_dispatched(job["job_id"], failure_type=exc.failure_type)
+                out.append(_settle_local_refusal(store, cmd, job["job_id"], exc.failure_type))
+                continue
             out.append(
                 {
                     "command_id": cmd["command_id"],
@@ -186,6 +195,22 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         adopt(store, cmd, receipt["fabro_run_id"], receipt.get("factory_revision", "unknown"))
         out.append({"command_id": cmd["command_id"], "action": "launched", "fabro_run_id": receipt["fabro_run_id"]})
     return out
+
+
+def _settle_local_refusal(store, cmd, job_id, failure_type):
+    """No inference release here: the existing execution proof must settle it."""
+    from .durable import Refused
+    from .execution_lifecycle import Executions
+
+    execution = Executions(store)
+    if execution.get(job_id)["task_outcome"] == "ACTIVE":
+        execution.outcome(job_id, "BLOCKED", "PRODUCT_LAUNCH_NOT_STARTED:" + failure_type)
+    attempt = _attempt(store, cmd["attempt_id"])
+    if attempt["state"] in ("DISPATCH_PENDING", "UNKNOWN"):
+        store.attempt_transition(cmd["attempt_id"], "FAILED", exit_status="local_launch_not_started", finished_utc=utc_now())
+    _set_cmd(store, cmd["command_id"], "QUARANTINED")
+    result = item_failure(store, cmd["order_id"], Refused("PRODUCT_LAUNCH_NOT_STARTED", failure_type), "product_launch")
+    return {**result, "job_id": job_id}
 
 
 def adopt(store: Store, cmd: dict, run_id: str, revision: str = "unknown") -> None:
@@ -224,6 +249,19 @@ def reconcile_inflight(store: Store, view, *, now: float | None = None) -> list[
     for cmd in store.commands("IN_FLIGHT") + store.commands("UNKNOWN"):
         if cmd["kind"] != "FABRO_LAUNCH":
             continue
+        if _durable_order(store, cmd["order_id"]):
+            from .execution_lifecycle import Executions
+
+            with store.tx() as c:
+                jobs = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_product_jobs")]
+            job = next((j for j in jobs if j["attempt_id"] == cmd["attempt_id"]), None)
+            if job:
+                ex = Executions(store)
+                proof = ex._evidence(job["job_id"], "LAUNCH_NOT_STARTED")
+                if proof:
+                    ex.reconcile(job["job_id"], None)  # local proof; no native listing is required
+                    out.append(_settle_local_refusal(store, cmd, job["job_id"], proof["failure_type"]))
+                    continue
         att = _attempt(store, cmd["attempt_id"])
         nonce, t0 = _nonce(att)
         runs = view()
@@ -294,8 +332,8 @@ def reconcile_running(store: Store, view, recover=None) -> list[dict]:
                 continue
             kind = run_kind(run)
             if kind in TERMINAL:
-                from .execution_lifecycle import Executions
                 from ..fabro.client import FabroClient, load_token
+                from .execution_lifecycle import Executions
 
                 with store.tx() as c:
                     pending = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_execution_liveness")]
@@ -325,20 +363,41 @@ def enforce_deadlines(store: Store, eff, client=None, now: float | None = None) 
 
     now = time.time() if now is None else now
     out = []
-    for order in store.orders(("RUNNING",)):
-        expired = now >= order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds", 0))
+    for order in store.orders(("ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING", "WAITING_EXTERNAL_CHANGE")):
+        durable = _durable_order(store, order["order_id"])
+        if not durable and order["state"] != "RUNNING":
+            continue  # retain inherited legacy lifecycle semantics
+        deadline = order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds", 0))
+        if durable:
+            from .mission_ledger import MissionLedger
+
+            ledger = MissionLedger(store)
+            deadline = min(deadline, ledger.snapshot(ledger.for_order(order["order_id"]))["limits"]["deadline"])
+        expired = now >= deadline
         allowed = authority.decide("launch_workorder", request_for(order), afo=eff, log=False).allow
         if not expired and allowed:
             continue
         attempt = store.attempts(order["order_id"])[-1]
         rid = attempt["record"].get("fabro_run_id")
-        if not rid:
-            continue
-        try:
-            c = client or FabroClient(token=load_token(), timeout=5)
-            code = c.cancel(rid)
-        except Exception:  # noqa: BLE001 - unknown cancellation is recorded, never claimed as stopped
-            code = None
+        code = None
+        cancel_error = None
+        if rid:
+            try:
+                if client is None:
+                    with FabroClient(token=load_token(), timeout=5) as c:
+                        code = c.cancel(rid)
+                else:
+                    code = client.cancel(rid)
+            except Exception as exc:  # noqa: BLE001 - retain uncertain native liveness independently
+                cancel_error = type(exc).__name__
+        reason = "ORDER_WALL_BUDGET_EXHAUSTED" if expired else "AUTHORIZATION_REVOKED_OR_EXPIRED"
+        # The task is terminal even while a possibly live execution retains its
+        # inference lease. No later outbox replay can launch expired work.
+        if durable:
+            with store.tx() as db:
+                db.execute("UPDATE afo_commands_outbox SET state='QUARANTINED' WHERE order_id=? AND kind='FABRO_LAUNCH' "
+                           "AND state IN ('PENDING','IN_FLIGHT','UNKNOWN')", (order["order_id"],))
+            store.transition(order["order_id"], "BLOCKED", reason, terminal_reason=reason)
         with store.tx() as db:
             store._event(
                 db,
@@ -346,8 +405,9 @@ def enforce_deadlines(store: Store, eff, client=None, now: float | None = None) 
                 order["order_id"],
                 attempt["attempt_id"],
                 {
-                    "reason": "ORDER_WALL_BUDGET_EXHAUSTED" if expired else "AUTHORIZATION_REVOKED_OR_EXPIRED",
+                    "reason": reason,
                     "http_status": code,
+                    "error_type": cancel_error,
                     "cancellation_confirmed": False,
                 },
             )
