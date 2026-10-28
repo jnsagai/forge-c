@@ -619,11 +619,14 @@ def run(
     before_native_launch=None,
     recovery_exhausted: dict | None = None,
     purpose: str = "DEVELOPMENT",
+    evaluation_holdout: bool = False,
 ) -> dict:
     from .release.development import PURPOSES
 
     if purpose not in PURPOSES:
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
+    if type(evaluation_holdout) is not bool:
+        raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
     local = None
@@ -687,6 +690,7 @@ def run(
             "basis": "fresh revalidation after externally approved factory change; "
             "no prior phase evidence or delivered-code corrections carried",
         }
+        evaluation_holdout = evaluation_holdout or bool(old.get("evaluation_holdout"))
     resume_limits = {
         "max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
         "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"],
@@ -714,12 +718,20 @@ def run(
         resume_limits = inherited
     if resume and intake_only:
         raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
+    if resume:
+        from .brownfield.resume import source_workspace
+
+        source_scope = json.loads((source_workspace(resume) / ".forge-run/manifest.json").read_text())
+        evaluation_holdout = evaluation_holdout or bool(source_scope.get("evaluation_holdout"))
     purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
         else prepare(example, wo, provided_from, **purpose_args)
     )
+    if evaluation_holdout:
+        manifest["evaluation_holdout"] = True
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if durable_binding:
         from .afo.product_job import install
 
