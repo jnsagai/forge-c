@@ -85,3 +85,15 @@ accounted; no frozen baseline or inspection yet. No SafeC outputs exist.
 The control-register packet is still being generated. The observer's original
 private index-path error was corrected; it was not a runtime finding. This
 partial evidence neither establishes independent correctness nor a phase PASS.
+
+## Frozen baseline and inspection progress,15:43:46Z
+
+BL-SWE.1-001 frozen_at **15:25:05.479640Z**, hash
+d96f4b3e0dd53f00865bb077818cea23b2f833ad50244109631799294375da33.
+Seven author packets locallyVALID. SWE1-01/04PASS, SWE1-02FAIL4findings,
+SWE1-03FAIL2findings; full aggregate inspection pending. No whole-phase/productPASS.
+The read-only observer now distinguishes verdict packets from author schemas,
+reports actual frozen_at, and refuses a changed/dirty runtime source instead of
+re-validating historical artifacts with another revision. Actual remote probePASS;
+zero model calls, worker signals or artifact changes. Earlier private observer
+schema mismatch was an observation-tool error, not a factory/runtime failure.
