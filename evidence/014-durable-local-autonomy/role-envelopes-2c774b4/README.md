@@ -1,5 +1,10 @@
 # Prospective role capacity and first Qwen3.8 native request
 
+**Historical snapshot:** the smoke finished FAILED_PROTOCOL and production authority
+was restored at11:30:02Z. Native quiescence was proved;65536 charged tokens and
+UNKNOWN usage remain. Follow the [current checkpoint](../workflow-runtime-fa90128/README.md);
+the RUNNING state and restoration instructions below describe the earlier snapshot.
+
 Tested and deployed runtime: **2c774b440db65f47f5b78a4702ad974254fa6a96**.
 Formal Feature014 completion remains **30/58**; no additional task is ticked.
 

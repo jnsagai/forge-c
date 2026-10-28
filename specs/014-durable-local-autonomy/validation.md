@@ -1016,3 +1016,28 @@ native API RUNNING, SENT request, HELD lease, unknown usage.99/100 cases remain 
 no role/campaign/product/learning/availability success. Restore original production
 policy after independently proven native/request quiescence and audit the original row.
 Formal30/58 unchanged. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/role-envelopes-2c774b4/README.md).
+
+
+## 2026-10-28 native routing, bounded workflow capacity and evaluation holdout
+
+Runtime fa901289fffbb3424b6cde5b38628760670e153d is deployed on Omniverse2,
+RUNNING epoch11; original production authority/deadline and failed mission costs
+are preserved. Implemented verified native endpoint/cache identity, finite gateway
+read timeout, optional independent request/tool caps, inherited workspace holdout
+and staged target compiler PATH. Native fixtures65PASS at1cfea7a and106PASS at19acb5b;
+finalfa125-case lane124PASS/1FAIL(PlantUML fixture), followed by exact failed-case
+PASS after attaching the existing read-only toolchain. No code/gate change to pass.
+Local exact19ac140PASS; holdout96PASS and toolpath19PASS candidate cohorts.
+All are separate fixture/regression commands with zero inference, not role qualification.
+
+The actual first Q38 trial ended FAILED_PROTOCOL, audited with1request/0receipts,
+0duplicates/0escapes. Its65536 conservative cost and UNKNOWN usage remain. Native
+SUCCEEDED transport is not semantic correctness. Exact provider retirement proof
+and native termination preceded physical release; engineering intervention means
+fully autonomous recovery remains unproven. Catalogue100/observed1/unrun99, reportFAIL.
+Production policy restored11:30:02Z; previous RUNNING/temporary-authority instructions
+above are historical. A new frozen CRC/RNG E2E scope through16:29:12Z is prepared,
+unsigned and awaiting explicit enlarged finite-cap approval. Both native delivered
+buildsPASS, no product/role/learning/operational claim. Formalledger30/58unchanged.
+
+[Detailed evidence and current next steps](../../evidence/014-durable-local-autonomy/workflow-runtime-fa90128/README.md).

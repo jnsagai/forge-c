@@ -7,47 +7,65 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
-## Current checkpoint — 2026-10-28 finite Qwen3.8 role admission and live smoke
+## Current checkpoint — 2026-10-28 five-hour runnable-factory window
 
-Tested/deployed **2c774b440db65f47f5b78a4702ad974254fa6a96**. Quality profile v2
-binds prospective65536-token diagnosis/maintenance reservations by exact profile
-version/path/SHA256. It checks the complete first diagnosis request before charging,
-preserves legacy reservations and rejects job/profile/case rebinding. Existing
-policy/mission/role/gateway gates remain. Exact139 local regression PASS(30.694s),
-75 native fixture PASS(265.659s), zero fixture inference; original failures retained.
+The active owner goal is now **runnable end-to-end workflows on Omniverse2 by
+2026-10-28T16:29:12Z**, from the later five-hour window begun11:29:12Z. Historical
+mission/grant deadlines are immutable. Prioritize actual product workflows over
+additional broad Feature014 qualification. Formal feature ledger stays30/58.
 
-Engineering deployment preserved both failed driver mission snapshots (RCC86000,
-IWDG116000) and original production grant expiry. Current intent RUNNING epoch7.
-Controller/backend/recovery timer are healthy. Recorder migration's immutable-plan
-failure is retained; corrected repository preserves prior commits and publishes
-the existing q38/2026-10-28-local-factory branch, same14:06:31Z observation deadline.
+Tested/deployed source **fa901289fffbb3424b6cde5b38628760670e153d**; profile
+local-rtx-v2-omniverse2-q38-quality version3, Qwen3.8-27B Q8, xhigh, context65536,
+one admitted inference, one verification worker. Operator intent RUNNING epoch11;
+respect newer authenticated intent. Backend/controller/recovery timer healthy.
+Engineering deployment preserved historical missions and original production
+authority AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2(expiry29Oct05:00Z).
 
-**Active scoped Qwen3.8 xhigh protocol smoke:** order afo-39c86c2270b4cf1a,
-job afo-agent-14b99411ece11c4e260560b4, native01M611WAN8544QQKWQE3A1H2MC.
-At10:48:42Z native API RUNNING, one request SENT, inference HELD, usage UNKNOWN.
-Do not redispatch or infer termination from observation timeout. Prior SSH/banner
-timeouts recovered through one reused SSH connection; they caused no worker restart.
+The first Q38 protocol trial is **finished FAILED_PROTOCOL**, independently audited,
+and production policy was restored at11:30:02Z. Subject2c774b4 made1 request and
+admitted0 semantic receipts. Preserve65536 conservative charged tokens and UNKNOWN
+usage; never replay/replenish this exhausted1-request mission. Catalogue100, observed1,
+unrun99. Native transport SUCCEEDED did not establish semantic success. Engineering
+intervention fixed a host-relay/private-namespace endpoint mistake; external watchdog
+then retired the exact provider, proved quiescence and released inference. This does
+not prove fully autonomous recovery or Qwen capability.
 
-One independently compiled seeded REG32 case is enrolled from the unchanged
-100-case protocol catalogue;99 remain unrun. Distinct signed qualification scope
-AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1 permits one job/request,65536 tokens,
-zero product attempts/tools/corrections, deadline14:06:31Z. This uses standing owner
-qualification approval/SSH-agent signing; it does not refill a failed driver mission.
-Current active policy is the temporary qualification policy. **After native/request
-quiescence, collect/audit the original row and restore the backed-up production
-policy under current operator intent.** Production grant V2 expiry remains29Oct05:00Z.
+1cfea7a binds native route/probe identity to actual namespace/profile/endpoint.
+19acb5b adds a finite3600s Q38 gateway timeout and independent prospective policy
+request/tool caps, preserving legacy defaults and old mission limits. d36feb7 retains
+holdout through real dispatch/resume; fa90128 exposes the staged ARM compiler on PATH.
+Native fixtures:1c65PASS,19ac106PASS. Finalfa125-case lane124PASS/1FAIL due missing
+fixture PlantUML; exact failed case passed after attaching existing read-only tools,
+without code/gate changes. Local140 exact19acPASS;96 holdout candidatePASS;19 toolpath
+candidatePASS. Failed initial fixture lanes remain retained. Zero fixture model calls.
 
-Private remote directory: production-local-014/deployment/q38-protocol-smoke-20261028.
-Local one-shot observer/provision and activation scripts are in loop10
-operations/feature014/overnight-audit-20261028. Controller owns dispatch; manual
-observation must never create a competing poll/launch scheduler. Exact live source
-must stay2c774b4 while its job runs.
+**Next product execution is prepared, unsigned and NOT activated.** Two fresh serial
+factory-acceptance orders use unchanged frozen ST CRC(10functions) and RNG(17functions).
+Both native delivered-code intakes report ACCEPTED/buildPASS. Scope SHA256
+c7e46accd585c46d3770c0ff931749998fbe1c13ec22ca5ea3b21a6e56ae1276,
+remote deployment/e2e-window-20261028-v1/{scope.json,plan.json,proposed-policy.yaml}.
+Current signed120k tokens/32 requests cannot cover the full workflow. Explicit owner
+approval is pending for prospective2million tokens/512 requests/1024 tools per order,
+3product attempts/4recovery jobs, deadline16:29:12Z, aggregate4million tokens. Two
+separate grants must then be SSH-agent signed/verified before policy/intake activation.
+Do not activate enlarged allowances from elapsed time or silently renew old grants.
+Role trial remains experimental; independent gates/offline review remain required.
 
-No role, product, recovery, learning-benefit or availability success is claimed.
-Formal ledger remains30/58; no task tick. Existing parked tasks/inspector freeze
-remain; this is a scoped model-switch protocol observation, not their requalification.
+Orders:CRC afo-99cc4f39103951e7 then RNG afo-8298dbdf8767eb9c. No old mission is
+continued or reset. Existing overnight intake/recorder owns finite serial submission;
+Conductor owns all execution/recovery. Proposed progress branch
+e2e/2026-10-28-q38-five-hour-window. Current historical recorder continues publishing
+q38/2026-10-28-local-factory until its unchanged14:06:31Z deadline. Actual factory
+supervision continues independently after any recorder/campaign ends.
 
-[Evidence, commands and next execution steps](../../evidence/014-durable-local-autonomy/role-envelopes-2c774b4/README.md).
+Private loop10 operations: operations/feature014/overnight-audit-20261028.
+Remote production root:/mnt/data/forge-c/production-local-014. Shared resources were
+explicitly accepted by owner; do not stop other accounts or claim dedicated timing.
+All Qwen inference/tests stay on Omniverse2; local writes stay onloop10. Existing
+parked-task/inspector freeze remains. No product, role, learning benefit, benchmark,
+fully autonomous self-healing or24/72/168-hour success is claimed.
+
+[Evidence, commands, tested revisions and limitations](../../evidence/014-durable-local-autonomy/workflow-runtime-fa90128/README.md).
 
 ## Previous checkpoint — 2026-10-28 official Qwen3.8 Q8 xhigh
 
