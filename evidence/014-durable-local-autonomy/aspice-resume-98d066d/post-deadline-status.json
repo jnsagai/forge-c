@@ -1,0 +1,384 @@
+{
+  "at": "2026-10-28T16:29:48.170072Z",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 18
+  },
+  "deadline_epoch": 1793204952.0,
+  "orders": [
+    {
+      "order": {
+        "order_id": "afo-533cd9ba25e792a5",
+        "state": "BLOCKED",
+        "terminal_reason": "PRODUCT_LAUNCH_NOT_STARTED",
+        "created_epoch": 1793198030.4980652
+      },
+      "attempts": [
+        {
+          "attempt_id": "afo-533cd9ba25e792a5-a1",
+          "seq": 1,
+          "state": "SUCCEEDED",
+          "terminal_reason": null,
+          "record": {
+            "schema_version": "1.0",
+            "order_id": "afo-533cd9ba25e792a5",
+            "attempt_id": "afo-533cd9ba25e792a5-a1",
+            "attempt_seq": 1,
+            "state": "SUCCEEDED",
+            "workspace_ref": "workorder:WO-AFO-533cd9ba25e792a5-a1",
+            "factory_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+            "created_utc": "2026-10-28T14:37:34.457183Z",
+            "fabro_run_id": "01M61F40BHTFTDTXW16WGVRN9Q",
+            "fabro_server": null,
+            "recovery_plan_id": null,
+            "exit_status": "succeeded",
+            "terminal_package_status": null,
+            "checkpoint_refs": [],
+            "evidence_refs": [
+              "nonce:<redacted>",
+              "dispatched_epoch:1793198255"
+            ],
+            "finished_utc": "2026-10-28T15:49:03.208386Z"
+          }
+        },
+        {
+          "attempt_id": "afo-533cd9ba25e792a5-a2",
+          "seq": 2,
+          "state": "FAILED",
+          "terminal_reason": null,
+          "record": {
+            "schema_version": "1.0",
+            "order_id": "afo-533cd9ba25e792a5",
+            "attempt_id": "afo-533cd9ba25e792a5-a2",
+            "attempt_seq": 2,
+            "state": "FAILED",
+            "workspace_ref": "workorder:WO-AFO-533cd9ba25e792a5-a2",
+            "factory_revision": "pending",
+            "created_utc": "2026-10-28T15:49:04.186209Z",
+            "fabro_run_id": null,
+            "fabro_server": null,
+            "recovery_plan_id": "afo-plan-4c3be0966a6c2bd3",
+            "exit_status": "local_launch_not_started",
+            "terminal_package_status": null,
+            "checkpoint_refs": [
+              "resume_from:WO-AFO-533cd9ba25e792a5-a1"
+            ],
+            "evidence_refs": [
+              "nonce:<redacted>",
+              "dispatched_epoch:1793202562"
+            ],
+            "finished_utc": "2026-10-28T15:49:24.643220Z"
+          }
+        }
+      ],
+      "mission": {
+        "authorization_ref": "AUTH-014-Q38-E2E-WINDOW-20261028-V3",
+        "created_at": "2026-10-28T12:46:05.636011Z",
+        "limits": {
+          "deadline": 1793204952.0,
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 512,
+          "max_tokens": 2000000,
+          "max_tools": 1024
+        },
+        "lineage": "F014-OWNER-E2E-ACCEPTANCE-20261028-CRC",
+        "mission_id": "F014-E2E5H-20261028-CRC",
+        "attempts": 3,
+        "jobs": 0,
+        "requests": 38,
+        "tools": 0,
+        "corrections": 0,
+        "charged_tokens": 1900000,
+        "usage_unknown": true,
+        "unique_executions": 3,
+        "unbounded_historical_usage": false
+      },
+      "jobs": [
+        {
+          "job": {
+            "job_id": "afo-product-2350a09769eeed9c90ee142b",
+            "state": null,
+            "role": null,
+            "reserved_tokens": 400000,
+            "deadline_epoch": 1793204952.0,
+            "factory_revision": {
+              "basis": "recorded_at_launch",
+              "branch": "HEAD",
+              "commit": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+              "dirty": false
+            }
+          },
+          "execution": {
+            "admission_state": "NATIVE_ACCEPTED",
+            "authorization_state": "VALID",
+            "cancel_attempts": 0,
+            "cancellation_state": "NOT_REQUESTED",
+            "execution_id": "execution-246377db2527a9dab40f2b2b",
+            "execution_liveness": "QUIESCENT",
+            "identity_state": "CONFIRMED",
+            "job_id": "afo-product-2350a09769eeed9c90ee142b",
+            "last_cancel_error": null,
+            "last_reconciled_at": "2026-10-28T15:49:02.927315Z",
+            "launch_nonce": "<redacted-dispatch-nonce>",
+            "lease_epoch": 17,
+            "mission_id": "F014-E2E5H-20261028-CRC",
+            "native_run_ids": [
+              "01M61F40BHTFTDTXW16WGVRN9Q"
+            ],
+            "outcome_evidence_ref": "product-failure:ca90e7153b000a5d03d3af8103d3cd2c1fc068352067101c7fee6e91612611e6",
+            "quiescence_evidence_ref": "native-terminals:7ab92346679e747b340862fa1def9db3c64bfd6bd2f84714c4988ee2528b5969",
+            "resource_lease": "RELEASED",
+            "revision": 266,
+            "schema_version": "1.0",
+            "task_outcome": "BLOCKED",
+            "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 50 gaps"
+          },
+          "native_handles": [
+            {
+              "native_id": "01M61F40BHTFTDTXW16WGVRN9Q",
+              "status": "SUCCEEDED"
+            }
+          ],
+          "requests": [
+            {
+              "request_id": "structured-request-b7347c0a1b594007b16941087dec4ffe",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 6745,
+              "reserved_tokens": 46946,
+              "created_at": "2026-10-28T14:37:42.614670Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-4d1caaeca8bd428fbce39c235619c6e1",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 7734,
+              "reserved_tokens": 47134,
+              "created_at": "2026-10-28T14:40:32.880626Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-f48cd35b176140dba98257d709589173",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 21883,
+              "reserved_tokens": 49720,
+              "created_at": "2026-10-28T14:43:52.161630Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-dc8cfecfa5ac450188a83c1d1ebadcc3",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 13520,
+              "reserved_tokens": 49699,
+              "created_at": "2026-10-28T14:55:28.417243Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-0fbca13017f9466b8f513c86db84e592",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 13299,
+              "reserved_tokens": 46716,
+              "created_at": "2026-10-28T15:01:57.366628Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-9c6dc2c1175342378c5927a22637aec2",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 16487,
+              "reserved_tokens": 47882,
+              "created_at": "2026-10-28T15:08:42.157158Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-e5f187b0cfac460895b9fa32ed6bf0d9",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 6664,
+              "reserved_tokens": 47114,
+              "created_at": "2026-10-28T15:17:10.280680Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-565acbc0726e469ab9a449ea1004648d",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 8828,
+              "reserved_tokens": 46092,
+              "created_at": "2026-10-28T15:19:52.840820Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-dd2bc9b9960243ca9f13f8cb9c640641",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 4104,
+              "reserved_tokens": 48062,
+              "created_at": "2026-10-28T15:24:02.114246Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-815a8dcade9d4b869fb0f092e4554c4a",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 8533,
+              "reserved_tokens": 56074,
+              "created_at": "2026-10-28T15:25:05.826736Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-c4949244ec194736ba2dcacac9345e7e",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 15209,
+              "reserved_tokens": 56070,
+              "created_at": "2026-10-28T15:26:28.966125Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-b0740474b47e4328be06c50adb440283",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 11250,
+              "reserved_tokens": 56066,
+              "created_at": "2026-10-28T15:31:54.719009Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-781f910f98014a2f86aaef4967157b31",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 10692,
+              "reserved_tokens": 56066,
+              "created_at": "2026-10-28T15:34:58.577147Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-ffc9271486c5491e8d6801e02b3cbe5c",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 8404,
+              "reserved_tokens": 56058,
+              "created_at": "2026-10-28T15:37:36.308699Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-11fc7050abef44cfb91ef0c849af929e",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 9407,
+              "reserved_tokens": 56058,
+              "created_at": "2026-10-28T15:38:55.766962Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-9fb4740b7cd943c1ac8a517f88008480",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 11505,
+              "reserved_tokens": 57299,
+              "created_at": "2026-10-28T15:40:46.787910Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-5c08d9dcfaea4ba9b303c75840d0ff1a",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 11038,
+              "reserved_tokens": 56062,
+              "created_at": "2026-10-28T15:43:43.431149Z",
+              "updated_at": null
+            },
+            {
+              "request_id": "structured-request-fb0624cfaa184bb498d6b03056a23cc8",
+              "state": "QUIESCENT",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "charge": 10001,
+              "reserved_tokens": 56052,
+              "created_at": "2026-10-28T15:46:38.449965Z",
+              "updated_at": null
+            }
+          ]
+        },
+        {
+          "job": {
+            "job_id": "afo-product-d2fab982c59bd2b4ab8e282c",
+            "state": null,
+            "role": null,
+            "reserved_tokens": 100000,
+            "deadline_epoch": 1793204952.0,
+            "factory_revision": {
+              "basis": "recorded_at_launch",
+              "branch": "HEAD",
+              "commit": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+              "dirty": false
+            }
+          },
+          "execution": {
+            "admission_state": "DISPATCH_INTENT_RECORDED",
+            "authorization_state": "VALID",
+            "cancel_attempts": 0,
+            "cancellation_state": "NOT_REQUESTED",
+            "execution_id": "execution-8000f6b88cf6f917db25f957",
+            "execution_liveness": "NOT_STARTED",
+            "identity_state": "NONE",
+            "job_id": "afo-product-d2fab982c59bd2b4ab8e282c",
+            "last_cancel_error": null,
+            "last_reconciled_at": "2026-10-28T15:49:24.476192Z",
+            "launch_nonce": "<redacted-dispatch-nonce>",
+            "lease_epoch": 19,
+            "mission_id": "F014-E2E5H-20261028-CRC",
+            "native_run_ids": [],
+            "outcome_evidence_ref": "execution-outcome:78ef2b239ca6351ef1c4a16dc0b6bc2f6b46758b19e324fc070ac5a00015e8c8",
+            "quiescence_evidence_ref": null,
+            "resource_lease": "RELEASED",
+            "revision": 5,
+            "schema_version": "1.0",
+            "task_outcome": "BLOCKED",
+            "terminal_reason": "PRODUCT_LAUNCH_NOT_STARTED:ResumeRefused"
+          },
+          "native_handles": [],
+          "requests": []
+        }
+      ]
+    }
+  ],
+  "units": {
+    "forge-conductor-local-omniverse2.service": "active",
+    "forge-afo-watchdog-014-omniverse2.timer": "active",
+    "forge-qwen-golive-20261028.service": "inactive",
+    "forge-aspice-expiry-20261028.timer": "active"
+  },
+  "resources": "790 MiB, 0 %",
+  "current_policy": {
+    "authorization_ref": "AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2",
+    "sha256": "83e78088c66df61e6513c466b9221e85f54ba34adbcddf0dcae48b69d91a96ad",
+    "mode": "PILOT",
+    "issues": []
+  },
+  "expiry_cleanup_journal": "Oct 28 16:29:15 omniverse2 systemd[637200]: Starting Restore original policy after bounded ASPICE qualification (operator epoch fenced)...\nOct 28 16:29:15 omniverse2 python[388225]: {\"status\": \"CLEANUP_FENCED_BY_NEWER_OPERATOR_INTENT\", \"epoch\": 18}\nOct 28 16:29:15 omniverse2 systemd[637200]: Finished Restore original policy after bounded ASPICE qualification (operator epoch fenced).\n"
+}

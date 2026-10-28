@@ -7,6 +7,34 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Five-hour deadline — NOT ACHIEVED, 2026-10-28
+
+No passing end-to-end driver workflow by16:29:12Z. At16:29:48Z factory stillRUNNING18,
+Conductor/watchdog active, finite recorder correctly inactive. Original signed production
+PILOT policy83e78088… active/no issues, expiry29Oct05:00Z unchanged. Stale epoch16
+expiry cleanup executed16:29:15Z and fenced against newer operator intent18.
+CRC remainsBLOCKED,3/3attempts,38requests,1.9m conservative charge/UNKNOWNusage.
+Candidate98d066d native124PASS/local71PASS, **NOT DEPLOYED**; deployedfcb retainsbug.
+No new Qwen work, budget reset or deadline extension. End-to-end/self-healing/product
+success still unproven. See aspice-resume-98d066d/deadline-outcome.json below.
+
+## Prospective ASPICE resume fix98d066d — NOT DEPLOYED
+
+The introduced historical work-order-ID bug is corrected in candidate
+**98d066dfe519c5ea2b23cec7d8f9681aff1f71d0**, with explicit prospective contractv2.
+Only its own administrative ID is excluded after identity validation; complete
+historical scope and policy/allocation/input binding retained. Legacy hashes unchanged.
+Both source/destination contracts now recomputed before copying.
+Baseline faulty-function counterexample1FAIL; exact local71PASS/102.543s;
+exact isolated Omniverse2124PASS/116.556s,0skips/0Qwen calls.
+Three real prepared-work-order integration cases cover valid inherited evidence and
+changed destination allocation/policy refusal. Native transport is a fixture.
+Candidate includes prior coherent-obligation/CRC-guidance/crosscutting input fixes;
+their combined native fixtures now pass. No candidate Qwen benefit measured.
+Production remainsfcb15cb, where the defect remains. No exhausted mission retry,
+allowance reset, promotion or task tick. Original engineering cutoff16:29:12Z unchanged.
+[Exact regression/native evidence and executable tooling](../../evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md).
+
 ## 2026-10-28 terminal CRC result and owner-requested MTP test
 
 Authoritative product is **BLOCKED**, not running. Native01M61F40BHTFTDTXW16WGVRN9Q
