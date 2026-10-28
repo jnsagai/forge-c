@@ -318,15 +318,15 @@ def _pinned_process_ended(expected, current):
 
 
 def start(s: dict, *, recovery=False) -> dict:
-    from ..afo.operations import configured, Intent, fenced_call
+    from ..afo.operations import Intent, configured, fenced_call
 
     if configured():
         epoch = Intent().read()["epoch"]
 
         def effect():
             if managed_serving():
-                from ..afo.queue import Store
                 from ..afo.durable import Refused
+                from ..afo.queue import Store
 
                 _managed_scope(s)
 
@@ -634,6 +634,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "shared_readonly": prof["deployment"]["shared_readonly"],
         **({"serving_instance": serving} if serving else {}),
         **({"serving_holder": rec["serving_holder"]} if rec.get("serving_holder") else {}),
+        # Recovery refreshes service health frequently. Keep the relay ownership
+        # record so a later managed stop can retire its exact processes.
+        **({"api_bridge": rec["api_bridge"]} if rec.get("api_bridge") else {}),
     }
     _save_services(r, rec)
     return rec
@@ -642,8 +645,8 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
 def stop(s: dict) -> dict:
     if managed_serving():
         from ..afo import operations
-        from ..afo.queue import Store
         from ..afo.durable import Refused
+        from ..afo.queue import Store
 
         _managed_scope(s)
         store = Store(s["root"] / "state/conductor/conductor.sqlite3")
