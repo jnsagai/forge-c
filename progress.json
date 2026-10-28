@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-28T21:55:24.610563Z",
+  "captured_utc": "2026-10-28T22:00:24.735004Z",
   "deadline_epoch": 1793250000.0,
   "source_revision": "e098b515a421900131b05a6763029d20b3a8b09d",
   "intent": {
@@ -9,12 +9,12 @@
   "orders": [
     {
       "order_id": "afo-cf20126621ac2673",
-      "state": "RUNNING",
+      "state": "BLOCKED",
       "attempts": [
         {
           "attempt_id": "afo-cf20126621ac2673-a1",
           "seq": 1,
-          "state": "RUNNING"
+          "state": "FAILED"
         }
       ]
     }
@@ -24,8 +24,8 @@
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": "afo-product-0f073d82c67ba07ed855b1f8",
-      "epoch": 21
+      "holder": null,
+      "epoch": 22
     },
     {
       "resource": "generation",
