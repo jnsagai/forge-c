@@ -6,6 +6,29 @@ Historical Oct26 checkpoint: Updated 2026-10-26 (Claude continuation). Exact run
 
 The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
 
+## 2026-10-28 terminal result and bounded MTP experiment
+
+Authoritative CRC order is BLOCKED/PRODUCT_LAUNCH_NOT_STARTED. Original native
+transport SUCCEEDED at15:49Z, SWE1-02/03FAIL, downstream phases NOT_RUN. Advisory
+continuation made no model call: the introduced ASPICE resume contract hashes
+historical scope.work_order_id, so changing attempt IDs refuses an otherwise
+identical continuation. Read-only exact reproduction confirms the sole contract
+difference; the bug remains UNFIXED. Mission3/3 attempts,38requests,1.9m conservative
+charge/UNKNOWN usage and original deadline preserved. No new task completion.
+
+Owner-requested native Q8 MTP microbenchmark: baseline28.61→MTP83.00tok/s,
+2.90× decoding; four short no-thinking requests per mode. Eight generated C outputs
+compiled and passed independent bounded functional checks. Only2/4 paired outputs
+byte-identical (CRC braces differ). This does not qualify xhigh role protocol,
+long-context accuracy, arbitrary drivers, product success or operational availability.
+Source/backend remainfcb15cb/original Ollama. Authenticated pause17 followed by
+original signed production-policy restoration and RUNNING18; no grant renewal or
+mission allowance edits. Epoch16 expiry cleanup now fences itself; original policy
+already restored. Controller/watchdog/recorder active at16:17:44Z.
+[Exact results and executable tooling](../../evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md).
+
+The following scope activation is a historical snapshot superseded above.
+
 ## 2026-10-28 owner ASPICE-only scope — deployed fcb15cb
 
 The owner's latest instruction supersedes the active Safety/SafeC trial scope:

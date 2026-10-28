@@ -1,0 +1,17 @@
+{
+  "magic": "GGUF",
+  "version": 3,
+  "tensor_count": 866,
+  "metadata": {
+    "general.architecture": "qwen35",
+    "general.name": "Qwen3.8 27B 0814",
+    "general.file_type": 7
+  },
+  "mtp_tensor_names": [
+    "blk.64.nextn.eh_proj.weight",
+    "blk.64.nextn.enorm.weight",
+    "blk.64.nextn.hnorm.weight",
+    "blk.64.nextn.shared_head_norm.weight"
+  ],
+  "header_bytes": 10995033
+}

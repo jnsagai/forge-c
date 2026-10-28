@@ -1,0 +1,16 @@
+0.00.667.587 W model has unused tensor blk.64.nextn.eh_proj.weight (size = 55705600 bytes) -- ignoring
+0.00.667.588 W model has unused tensor blk.64.nextn.enorm.weight (size = 20480 bytes) -- ignoring
+0.00.667.589 W model has unused tensor blk.64.nextn.hnorm.weight (size = 20480 bytes) -- ignoring
+0.00.667.593 W model has unused tensor blk.64.nextn.shared_head_norm.weight (size = 20480 bytes) -- ignoring
+0.08.358.681 I slot print_timing: id  0 | task 0 | prompt eval time =     182.20 ms /    72 tokens (    2.53 ms per token,   395.18 tokens per second)
+0.08.358.684 I slot print_timing: id  0 | task 0 |        eval time =    4196.99 ms /   120 tokens (   35.27 ms per token,    28.35 tokens per second)
+0.08.358.685 I slot print_timing: id  0 | task 0 |       total time =    4379.19 ms /   192 tokens
+0.12.786.315 I slot print_timing: id  0 | task 122 | prompt eval time =     149.41 ms /    72 tokens (    2.08 ms per token,   481.88 tokens per second)
+0.12.786.317 I slot print_timing: id  0 | task 122 |        eval time =    4150.60 ms /   120 tokens (   34.88 ms per token,    28.67 tokens per second)
+0.12.786.317 I slot print_timing: id  0 | task 122 |       total time =    4300.01 ms /   192 tokens
+0.15.126.451 I slot print_timing: id  0 | task 244 | prompt eval time =     147.46 ms /    54 tokens (    2.73 ms per token,   366.19 tokens per second)
+0.15.126.454 I slot print_timing: id  0 | task 244 |        eval time =    2190.31 ms /    64 tokens (   34.77 ms per token,    28.76 tokens per second)
+0.15.126.454 I slot print_timing: id  0 | task 244 |       total time =    2337.77 ms /   118 tokens
+0.17.587.931 I slot print_timing: id  0 | task 310 | prompt eval time =     146.20 ms /    54 tokens (    2.71 ms per token,   369.37 tokens per second)
+0.17.587.934 I slot print_timing: id  0 | task 310 |        eval time =    2185.95 ms /    64 tokens (   34.70 ms per token,    28.82 tokens per second)
+0.17.587.935 I slot print_timing: id  0 | task 310 |       total time =    2332.15 ms /   118 tokens

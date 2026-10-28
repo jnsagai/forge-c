@@ -7,6 +7,31 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## 2026-10-28 terminal CRC result and owner-requested MTP test
+
+Authoritative product is **BLOCKED**, not running. Native01M61F40BHTFTDTXW16WGVRN9Q
+ended15:49Z with transportSUCCEEDED; SWE1-02/03FAIL, downstreamNOT_RUN. Advisory a2
+failed **before inference**: introduced ASPICE resume contract binds historical
+scope.work_order_id, so different attempt IDs cause RESUME_CONTRACT_OR_RUNTIME_CHANGED.
+Read-only exact reproduction confirms sole contract difference. **Bug remains unfixed**.
+No diagnosis job ran; deterministic capability-limit disposition is not a Qwen diagnosis failure.
+Original mission3/3 attempts,38requests,1.9m conservative charge,UNKNOWNusage,
+original2m cap/16:29:12Z deadline retained. No refund, reset or further CRC retry.
+
+Owner requested option3 MTP test. Actual Q8/GPU comparison completed on Omniverse2:
+**28.61→83.00tok/s (2.90× decoding)**,
+four short calls per mode. All8 generated C outputs compile and pass independent bounded
+functional checks;2/4 paired outputs byte-identical (CRC braces differ).
+Raw prompt closes thinking: **not xhigh/role/long-context/product qualification**.
+Production backend/source unchangedfcb15cb. Temporary pause17, restored original
+signed production policy83e78088… then RUNNING18. Grant not renewed; expiry29Oct05:00Z.
+Epoch16 cleanup is fenced, and its intended original-policy restoration already completed.
+Controller/watchdog/recorder active, GPU790MiB/0% at16:17:44Z; no live CRC inference.
+Prospectivef93f750 corrections remain NOT_DEPLOYED/nativeNOT_RUN. Feature30/58 unchanged.
+[Exact results, executable tools and Astra review entry point](../../evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md).
+
+Earlier snapshots below are historical and superseded by this terminal result.
+
 ## Actual first baseline and prospective author-input fixes — 2026-10-28
 
 Runtime remainsfcb15cb. Observed at15:29Z: actual Qwen had frozen **BL-SWE.1-001**,

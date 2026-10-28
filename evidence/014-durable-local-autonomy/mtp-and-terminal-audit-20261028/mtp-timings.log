@@ -1,0 +1,16 @@
+0.05.938.368 I slot print_timing: id  0 | task 0 | prompt eval time =     197.93 ms /    72 tokens (    2.75 ms per token,   363.77 tokens per second)
+0.05.938.371 I slot print_timing: id  0 | task 0 |        eval time =    1488.43 ms /   126 tokens (   11.91 ms per token,    83.98 tokens per second)
+0.05.938.371 I slot print_timing: id  0 | task 0 |       total time =    1686.36 ms /   198 tokens
+0.05.938.378 I slot print_timing: id  0 | task 0 | draft acceptance = 0.96875 (   93 accepted /    96 generated), mean len =  3.91
+0.07.700.140 I slot print_timing: id  0 | task 35 | prompt eval time =     170.08 ms /    72 tokens (    2.36 ms per token,   423.33 tokens per second)
+0.07.700.142 I slot print_timing: id  0 | task 35 |        eval time =    1460.28 ms /   126 tokens (   11.68 ms per token,    85.60 tokens per second)
+0.07.700.143 I slot print_timing: id  0 | task 35 |       total time =    1630.36 ms /   198 tokens
+0.07.700.146 I slot print_timing: id  0 | task 35 | draft acceptance = 0.96875 (   93 accepted /    96 generated), mean len =  3.91
+0.08.667.293 I slot print_timing: id  0 | task 70 | prompt eval time =     172.66 ms /    54 tokens (    3.20 ms per token,   312.76 tokens per second)
+0.08.667.296 I slot print_timing: id  0 | task 70 |        eval time =     790.77 ms /    64 tokens (   12.55 ms per token,    79.67 tokens per second)
+0.08.667.297 I slot print_timing: id  0 | task 70 |       total time =     963.42 ms /   118 tokens
+0.08.667.300 I slot print_timing: id  0 | task 70 | draft acceptance = 0.96078 (   49 accepted /    51 generated), mean len =  3.88
+0.09.749.516 I slot print_timing: id  0 | task 90 | prompt eval time =     167.13 ms /    54 tokens (    3.10 ms per token,   323.09 tokens per second)
+0.09.749.519 I slot print_timing: id  0 | task 90 |        eval time =     790.56 ms /    64 tokens (   12.55 ms per token,    79.69 tokens per second)
+0.09.749.519 I slot print_timing: id  0 | task 90 |       total time =     957.69 ms /   118 tokens
+0.09.749.523 I slot print_timing: id  0 | task 90 | draft acceptance = 0.96078 (   49 accepted /    51 generated), mean len =  3.88
