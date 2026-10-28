@@ -7,6 +7,18 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Prospective correction2c2971a — NOT DEPLOYED
+
+Deterministic reproducer confirms current CRC field partition separates the
+owner's coupled input-reversal fields RTYPE_IN/REV_IN. Generic opt-in coherent
+scope components now retain joint fields within bounded packets; invalid,
+oversized/cross-register obligations block before inference. Legacy inventories,
+frozen inspector, gates and hardware semantics unchanged. Baseline2FAIL,
+candidate56PASS, exact9PASS,0skips/0Qwen calls. Native qualificationNOT_RUN while
+remote missionlive; **runtime remains fcb15cb**. No budget/deadline renewal,
+no task tick. Do not change the active provider/source/profile.
+[Evidence](../../evidence/014-durable-local-autonomy/coherent-obligations-2c2971a/README.md).
+
 ## 2026-10-28 owner ASPICE-only scope — deployed fcb15cb
 
 The owner's latest instruction supersedes the active Safety/SafeC trial scope:
