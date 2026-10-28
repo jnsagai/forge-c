@@ -249,8 +249,11 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              "(e.g. that a write changes only the named bits). Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules: {coverage_guidance(ws)} "
              "Do NOT write flash/RAM/stack budget requirements: the factory adds them from the owner's work-order "
-             "budgets. Same statement, verification and source_page rules as the register tasks; reset/startup "
-             "requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a named "
+             "budgets. Every statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', "
+             f"the subject 'the {sysname}', and ends with a period. "
+             "verification states the test and its explicit pass criterion ('... passes when ...'). "
+             "source_page is the RM0486 page supporting the requirement, from the provided sources. "
+             "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a named "
              "field. not_covered stays empty.")
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
