@@ -1063,3 +1063,17 @@ old-policy restore scheduled16:29:15Z, fenced against newer intent; future actio
 yet verified. Formal30/58unchanged, role/product/learning/operational success unproven.
 
 [Evidence, actual authorization basis, exact revisions and next steps](../../evidence/014-durable-local-autonomy/e2e-window-d7fa97e/README.md).
+
+
+## 2026-10-28 preserve requested coverage after semantic-tool refusal
+
+Candidate dd870e1fe826fbf90a9ecd514a06ee693389a127 rejects not_covered entries
+for fields explicitly required by the owner scope, through both structured author
+paths; existing owner exclusions and exact field identity remain. Observed liveCRC
+packet dropped3required reversal fields and had0intents despite a localVALID label.
+This is an unresolved quality finding, not proof thatQwen repaired the missing tool
+capability. Runtime remainsd7fa97e; candidateNOT_DEPLOYED/nativeNOT_RUN while mission
+runs. Baseline4PASS/6FAIL0.250s; localcandidate31PASS4.608s;44inherited semanticPASS
+326.579s; exact10PASS0.158s;0skips/0model calls. No inspector/safety/engine semantics
+or old mission allowance changed. Formal30/58unchanged; no role/product/learning/
+availability claim. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/scope-coverage-dd870e1/README.md).

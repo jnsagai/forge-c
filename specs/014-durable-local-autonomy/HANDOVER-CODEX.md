@@ -9,6 +9,17 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 ## Current checkpoint — 2026-10-28 live CRC→RNG end-to-end window
 
+**Reviewable candidate dd870e1fe826fbf90a9ecd514a06ee693389a127 is NOT deployed.**
+ActualCRC packet declaredVALID after excluding explicitly requiredCR reversal fields
+and retaining0intents. This is not a valid repair/global-coverage result. New generic
+SWE.1 author guard refuses exclusion of exact fields in positive owner scope, in
+both semantic/legacy paths. Explicit owner exclusions/unmentioned fields preserved;
+no inspector or hardware-semantic change. Baseline4PASS/6FAIL, candidate31PASS and
+44inherited semanticPASS, exact10PASS,0skips/0model calls. All actualQwen staysremote.
+Native qualificationNOT_RUN while live mission occupiesOmniverse2. Runtime remains
+pinnedd7fa97e; do not change an active run's artifacts/profile/source or reset budgets.
+See scope-coverage-dd870e1 evidence. Full feature stays30/58, no newtasktick.
+
 13:25Z dashboard timeout correction: nativeCRC never timed out. First SWE.1 author
 and continuationSUCCEEDED; next continuationRUNNING. Actual author-node timeout14400s,
 mission deadline16:29:12Z unchanged. Monitor8s remote fetch timeout reproduced; new
