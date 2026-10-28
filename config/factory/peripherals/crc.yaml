@@ -35,7 +35,7 @@ prompt:
     requested reversal to CRC_CR.REV_IN and its reversal type to CRC_CR.RTYPE_IN: one mode value sets both, RM0486
     26.4.3) and the output reversal mode (CRC_CR.REV_OUT with its type CRC_CR.RTYPE_OUT, likewise), each preserving the
     other CRC_CR fields, writing the initial value (write the requested
-    value to CRC_INIT.INIT) and the polynomial coefficients (write the requested value to CRC_POL.POL), feeding a 32-bit
+    value to CRC_INIT.CRC_INIT) and the polynomial coefficients (write the requested value to CRC_POL.POL), feeding a 32-bit
     data word (write the word to CRC_DR.DR), reading the current CRC (return CRC_DR.DR), and writing and reading the
     independent data register (CRC_IDR.IDR); one requirement per function and value, naming the register field (e.g.
     CRC_CR.POLYSIZE); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after
@@ -152,7 +152,7 @@ prompt:
     HAL_CRC_Calculate without the reset.
   hal_contract_rule: >-
     The oracle sees only the register values after the call: HAL_CRC_Init with a valid configuration gets op write
-    entries for CRC_POL.POL, CRC_INIT.INIT, CRC_CR.POLYSIZE, CRC_CR.REV_IN and CRC_CR.REV_OUT (the configured values),
+    entries for CRC_POL.POL, CRC_INIT.CRC_INIT, CRC_CR.POLYSIZE, CRC_CR.REV_IN and CRC_CR.REV_OUT (the configured values),
     status HAL_OK; HAL_CRC_Calculate and HAL_CRC_Accumulate with valid arguments get op write CRC_DR.DR with the last
     word of the buffer (on the host the data register keeps the last written word), status HAL_OK; invalid parameter:
     one entry per invalid value (NULL configuration, buffer or result pointer, count 0, a polynomial size of 4, an input
