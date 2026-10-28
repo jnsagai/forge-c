@@ -152,9 +152,12 @@ def reconcile(store, eff, client):
         jobs = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_product_jobs")]
     for job in jobs:
         rec = ex.get(job["job_id"])
-        if not rec or rec["resource_lease"] == "RELEASED":
+        if not rec:
             continue
         order = store.order(job["order_id"])
+        rec = _failed_outcome(ex, job, rec, order)
+        if rec["resource_lease"] == "RELEASED":
+            continue
         valid = (
             order is not None
             and order["state"] in ("ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING")
@@ -165,5 +168,40 @@ def reconcile(store, eff, client):
         if not valid and rec["authorization_state"] == "VALID":
             ex.revoke(job["job_id"])
             ex.outcome(job["job_id"], "BLOCKED", "PRODUCT_AUTHORITY_OR_OUTCOME_TERMINAL")
-        out.append(ex.reconcile(job["job_id"], client, cancel=not valid))
+        reconciled = ex.reconcile(job["job_id"], client, cancel=not valid)
+        out.append(_failed_outcome(ex, job, reconciled, order))
     return out
+
+
+def _failed_outcome(ex, job, rec, order):
+    """Project factual product failure even after native capacity was settled.
+
+    A successful transport never proves product success. Independent recovery
+    verification remains the only path to RECOVERED. This projection changes no
+    physical-liveness proof, request accounting or resource ownership.
+    """
+    if rec["task_outcome"] != "ACTIVE":
+        return rec
+    if order and order["state"] in ("BLOCKED", "FAILED", "CANCELLED"):
+        return ex.outcome(job["job_id"], "BLOCKED", "PRODUCT_ORDER_TERMINAL:" + order["state"])
+    if not ex._evidence(job["job_id"], "NATIVE_TERMINAL"):
+        return rec
+    from .dispatch import package_verdict
+
+    path = Path(job["workspace"]) / ".forge-run/package.json"
+    try:
+        raw = path.read_bytes()
+        verdict = package_verdict(path)
+        if verdict["verdict"] != "BLOCKED" or path.read_bytes() != raw:
+            return rec
+    except OSError:
+        return rec  # unavailable package evidence does not establish a result
+    import hashlib
+
+    evidence = {
+        "job_id": job["job_id"], "attempt_id": job["attempt_id"],
+        "package_record_sha256": hashlib.sha256(raw).hexdigest(), "verdict": verdict,
+    }
+    ex._save_evidence(job["job_id"], "PRODUCT_FAILURE", evidence)
+    return ex.outcome(job["job_id"], "BLOCKED", ("PRODUCT_PACKAGE_BLOCKED:" + verdict["reason"])[:200],
+                      "product-failure:" + digest(evidence))
