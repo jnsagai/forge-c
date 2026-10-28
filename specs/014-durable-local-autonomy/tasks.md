@@ -166,10 +166,10 @@ general diagnosis qualification remains M3 and the frozen inspector remains unch
 - [ ] **IE-T004:** Implement compatible versioned development routing and durable shared repair limits; record real deferred ladder steps. Serves IE-AT-003.
 - [X] **IE-T005:** Complete fast end-to-end integration anchor and independently rejected negative control. Serves IE-AT-004/005.
 - [X] **IE-T006:** Add exact incident-route resume regression while preserving98d066d coverage. Serves IE-AT-006.
-- [ ] **IE-T007:** Prepare bounded live harness, per-role admission and exact source/profile/model/authority report. Serves IE-AT-007.
+- [X] **IE-T007:** Prepare bounded live harness, per-role admission and exact source/profile/model/authority report. Serves IE-AT-007.
 - [ ] **IE-T008:** Execute actual authorized/reviewed M1 and publish independently recomputable package/evidence. Serves IE-AT-008.
 - [ ] **IE-T009:** After accepted M1, execute three unassisted M2 cases, then scoped M3 repair/expansion/qualification milestones. Serves IE-AT-009.
 
 No task is complete solely from implementation or a passing unrelated unit fixture.
 
-Incremental completion evidence (2026-10-28): [exact revisions, commands, XML and limitations](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md). IE-T004 remains partial pending a positive dependency-independent provisional path; IE-T007 remains partial pending complete actual live request/authority bindings. No M1 or formal DA task completion is inferred.
+Incremental completion evidence (2026-10-28): [exact revisions, commands, XML and limitations](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md). IE-T004 remains partial pending a positive dependency-independent provisional path; IE-T007 now has captured complete native initial/SKILL requests, structured SWE.1 inspection packets, all-role admission and current signed source/profile/model authority in the M1 high-allowance evidence. Later tool histories remain subject to live admission. No M1 or formal DA task completion is inferred.

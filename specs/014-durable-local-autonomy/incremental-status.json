@@ -2,7 +2,7 @@
   "schema": "forge-c/incremental-delivery-status/1",
   "handoff_revision": "5e89a2b",
   "milestones": {
-    "M1": "NOT_RUN",
+    "M1": "EXECUTED_BLOCKED_SWE1",
     "M2": "NOT_RUN",
     "M3": "NOT_RUN",
     "M4": "NOT_RUN",
@@ -13,22 +13,23 @@
     "IE-T002",
     "IE-T003",
     "IE-T005",
-    "IE-T006"
+    "IE-T006",
+    "IE-T007"
   ],
   "formal_da_completed_tasks": 30,
   "formal_da_total_tasks": 58,
-  "live_authority": "NOT_ESTABLISHED_FOR_NEW_OBJECTIVE",
-  "requirements_review": "PENDING",
-  "product_acceptance": "NOT_RUN",
+  "live_authority": "ACTIVE_SIGNED_SCOPED_M1_UNTIL_2026-10-29T05:00:00Z",
+  "requirements_review": "REVIEWED_OWNER_a9d0ddb",
+  "product_acceptance": "BLOCKED",
   "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "41a6c2832b14332125b7c37ce798a8117b6a4a78",
-  "production_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "latest_source_revision": "1dd54a0ea7887221910e1857a1b11f5dc5b28645",
+  "production_revision": "e098b515a421900131b05a6763029d20b3a8b09d",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
-    "revision": "7a4bc51abb200b074e2a2e3ecf962298901c0808",
-    "passed": 169,
+    "revision": "e098b515a421900131b05a6763029d20b3a8b09d",
+    "passed": 79,
     "skipped": 0,
     "model_requests": 0
   },
@@ -39,8 +40,19 @@
     "benefit": "UNKNOWN"
   },
   "partial_tasks": {
-    "IE-T004": "Shared bounds/deferred rungs implemented; no qualified positive independent provisional continuation.",
-    "IE-T007": "Executable complete-role preflight; actual live bodies and bounded current objective authority missing."
+    "IE-T004": "Shared bounds/deferred rungs implemented; no qualified positive independent provisional continuation."
   },
-  "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md"
+  "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md",
+  "active_order_id": "afo-cf20126621ac2673",
+  "active_native_run_id": "01M627SG16KEX8E9MS736GJRCG",
+  "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
+  "live_order_state": "BLOCKED",
+  "later_phases": "NOT_RUN",
+  "reported_output_tokens_completed_requests": 17340,
+  "undeployed_candidate": {
+    "revision": "1dd54a0ea7887221910e1857a1b11f5dc5b28645",
+    "native_fixture_passed": 3,
+    "model_requests": 0,
+    "purpose": "unchanged failed inspection progress guard"
+  }
 }

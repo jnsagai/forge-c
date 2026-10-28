@@ -7,6 +7,46 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Latest run outcome — 2026-10-28 21:59Z
+
+M1 is **EXECUTED_BLOCKED_SWE1**, not accepted or still generating. Six real Qwen
+responses: four PASS, SWE1-03 and SWE1-04 FAIL;17,340 provider-reported output tokens.
+The former challenges safe-state/failure-handling applicability to the approved scope;
+the latter identifies missing CPU/timing allocations. Do not invent safety or performance
+requirements. Later phases were NOT_RUN. The unchanged assisted baseline then looped
+through cached inspections; the external engineer stopped this one stalled order under
+the owner's stop-and-rethink instruction. Native FAILED, order BLOCKED, requests and
+execution QUIESCENT, lease RELEASED through normal reconciliation. Services/recording
+and high limits remain active; historical missions unchanged. This is not self-healing.
+
+Candidate1dd54a0 adds an unchanged-failed-baseline progress guard (3 local and3 native
+fixture passes, zero model calls), not deployed to
+the current e098b51 signed scope. Preserve the same M1 mission and100m conservative
+execution charge for any continuation. Resolve applicability/inputs before another source-bound live attempt; native fixture
+checks do not qualify model behavior. See the evidence linked below.
+
+## Deployment checkpoint — 2026-10-28 21:51Z (historical)
+
+Runtime **e098b515a421900131b05a6763029d20b3a8b09d** is deployed on Omniverse2.
+Owner reviewed the exact requirements and approved M1, then explicitly requested
+extraordinary high development limits. Opt-in high-allowance v2 preserves legacy v1,
+historical missions and quality gates. MTP v3 uses Qwen3.8 Q8/xhigh,131072 context,
+16384 answer tokens and32768 reasoning reserve, one inference.
+
+Real Qwen order **afo-cf20126621ac2673**, native **01M627SG16KEX8E9MS736GJRCG**,
+is RUNNING in SWE.1 inspection. At21:51Z: one request QUIESCENT, one SENT; no
+downstream product acceptance yet. Current scoped grants expire29Oct05:00UTC;
+do not silently extend them. The old full-CRC mission remains exhausted and unchanged.
+Conductor/watchdog/recorder are active. Git progress branch:
+e2e/2026-10-28-idr-m1-high.
+
+Evidence, exact commands and monitoring:
+[high-allowance deployment](../../evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md).
+Native79PASS, exact local29PASS; allocation and static request admission are separate
+from runtime/model/product qualification. IE-T007 is complete for the preparation
+harness; IE-T004 remains partial, IE-T008 running/unaccepted, IE-T009 NOT_RUN.
+Formal Feature014 completion remains30/58. The older checkpoints below are historical.
+
 ## Active implementation brief — incremental IDR delivery
 
 Owner decision5e89a2b supersedes the immediate full-CRC recovery priority:
@@ -17,7 +57,7 @@ MTP explicitly (2026-10-28: "no, go with MTP"); the tiny xhigh/MCP backend smoke
 passed. Full role qualification, deployment, general recovery and broader qualification
 remain incomplete. Preserve all historical
 expenditure, quality gates, model-free supervision and exact runtime authority.
-See incremental-status.json and incremental-traceability.csv; all live milestones NOT_RUN.
+See incremental-status.json and incremental-traceability.csv for the current running M1; later milestones remain NOT_RUN.
 
 ## Incremental implementation checkpoint — 2026-10-28 19:50Z
 
