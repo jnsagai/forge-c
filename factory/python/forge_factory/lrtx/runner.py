@@ -106,7 +106,12 @@ def main(argv: list[str] | None = None) -> int:
     stale = ws / ".forge-run/lrtx" / a.phase / "reply.json"
     stale.unlink(missing_ok=True)  # the gate must never read the reply of an earlier visit
     try:
-        if a.step == "code":  # SWE.3: unit code tasks (the LL author and fix author nodes)
+        if a.step == "author" and a.phase == "SWE.1" and \
+                json.loads((ws / ".forge-run/manifest.json").read_text()).get("provided_requirements"):
+            from ..provided_requirements import materialize
+
+            rep = _call(ws, materialize, ws)
+        elif a.step == "code":  # SWE.3: unit code tasks (the LL author and fix author nodes)
             rep = _call(ws, mod.visit_code, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
         elif a.step == "tests":  # SWE.4/SWE.5: test tasks (the unit-test / target-test author node)
             rep = _call(ws, mod.visit_tests, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)

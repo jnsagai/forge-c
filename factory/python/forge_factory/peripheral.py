@@ -36,7 +36,11 @@ def load(pid: str = DEFAULT) -> dict:
 def of_ws(ws) -> dict:
     """The profile of a workspace (its manifest's `peripheral`, else RCC)."""
     try:
-        pid = json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("peripheral") or DEFAULT
+        manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+        pid = manifest.get("peripheral") or DEFAULT
     except (OSError, ValueError):
         pid = DEFAULT
-    return load(pid)
+        manifest = {}
+    from .operation_scope import scoped
+
+    return scoped(load(pid), manifest.get("operation_scope"))

@@ -185,6 +185,13 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
     development = binding(purpose) if aspice_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
+    from .development_execution import binding as execution_binding
+
+    execution = execution_binding(spec.get("development_execution_policy"), purpose)
+    from .operation_scope import validate as validate_operation_scope
+
+    if "operation_scope" in spec:
+        validate_operation_scope(spec["operation_scope"], delivery=spec.get("delivery"))
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
     inputs: dict[str, bytes] = {}
@@ -196,6 +203,15 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         dst = f"inputs/{src.name}"
         inputs[dst] = src.read_bytes()
         listed.append({"path": dst, "role": item["role"], "sha256": sha256_file(src), "bytes": src.stat().st_size})
+    assisted = None
+    if spec.get("provided_requirements"):
+        src = (example / spec["provided_requirements"]).resolve()
+        if REPO_ROOT not in src.parents or not src.is_file():
+            raise ValueError("PROVIDED_REQUIREMENTS_INPUT_UNAVAILABLE")
+        rel = "inputs/provided-requirements.json"
+        inputs[rel] = src.read_bytes()
+        assisted = {"path": rel, "sha256": sha256_file(src), "authorship": "EXTERNALLY_PREPARED"}
+        listed.append({**assisted, "role": "provided_requirements", "bytes": src.stat().st_size})
     index_lines = ["# Input section index (one line per section: number | title | page | file to read_file)", ""]
     for item in list(listed):
         if item["path"].startswith("inputs/RM") and item["path"].endswith(".md"):
@@ -251,6 +267,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     manifest = {
         "schema": "forge-c/work-order/0.4",
         "purpose": purpose,
+        **({"provided_requirements": assisted} if assisted else {}),
+        **({"development_execution": execution} if execution else {}),
+        **({"operation_scope": spec["operation_scope"]} if "operation_scope" in spec else {}),
         **({"aspice_development": aspice_scope, "aspice_resume_contract_version": 2} if aspice_scope else {}),
         **({"development_safety": development} if development else {}),
         "work_order": wo,
@@ -327,9 +346,10 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         manifest["owner_safety_documents"] = sc.get("documents") or []
         manifest["owner_safety_document_issues"] = sc.get("document_issues") or []
     if spec.get("peripheral"):  # feature 009: the peripheral profile this work order builds (RCC when absent)
+        from .operation_scope import scoped
         from .peripheral import load as load_profile
 
-        prof = load_profile(spec["peripheral"])
+        prof = scoped(load_profile(spec["peripheral"]), spec.get("operation_scope"))
         have = {ln.split(" | ")[0] for ln in index_lines if " | " in ln}
         missing = [x for x in prof["rm"]["key_sections"] if x not in have]
         if missing:
@@ -589,6 +609,10 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         # from the code tasks of a local code author, which a delivered-code work order has none of; phases outside
         # the profile's list run as the existing agent nodes (as a HAL work order does). Without the key: unchanged.
         phases, inspect = [x for x in phases if x in keep], [x for x in inspect if x in keep]
+    if manifest.get("development_execution") and (manifest.get("delivery") or {}).get("build", {}).get("style") == "cmsis":
+        # The legacy structured interface schema permits integer-only parameters.
+        # The existing native MCP role supports the pinned vendor pointer signatures.
+        phases = [x for x in phases if x != "SWE.2"]
     out = {
         "phases": phases,
         "inspect_phases": inspect,
@@ -791,6 +815,7 @@ def run(
         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
         peripheral=manifest.get("peripheral"),
+        operation_scope=manifest.get("operation_scope"),
         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
         structured=local_profile_structured(local, manifest, model),
         recovery_plan=recovery_plan,

@@ -234,5 +234,9 @@ class Authorizer:
                     return Decision(False, denied, rel, role_id)
                 if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
+                from ..development_execution import mutation_allowed
+
+                if not mutation_allowed(self.workspace, phase, role_id, rel):
+                    return Decision(False, "DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", rel, role_id)
             return Decision(True, "ALLOW_WRITE", tool, role_id)
         return Decision(False, "UNKNOWN_TOOL_DENIED", tool, role_id)

@@ -109,7 +109,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
           delivery_style: str | None = None, structured: dict | None = None,
-          recovery_plan: dict | None = None) -> tuple[str, dict]:
+          recovery_plan: dict | None = None, operation_scope: dict | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -122,9 +122,10 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
     prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     prompts.BROWNFIELD["style"] = delivery_style if brownfield else None  # ST pilot: "cmsis" test prompts
+    from ..operation_scope import scoped
     from ..peripheral import load as load_profile
 
-    prompts.PERIPHERAL["profile"] = load_profile(peripheral) if peripheral else None  # feature 009
+    prompts.PERIPHERAL["profile"] = scoped(load_profile(peripheral), operation_scope) if peripheral else None
     dot, nodes = _build(work_order, phases, goal, sections)
     if recovery_plan is not None:
         import re

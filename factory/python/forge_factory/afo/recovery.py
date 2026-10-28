@@ -202,9 +202,8 @@ def rule_plan(
 
 def _new_lessons(bundle: dict, since_utc: str, *, ws=None) -> list[str]:
     try:
-        from ..knowledge.store import LessonStore
-
         from ..knowledge.context import applicability
+        from ..knowledge.store import LessonStore
 
         scope = applicability(ws) if ws is not None else {}
         holdout = scope.pop("holdout", False)
@@ -321,9 +320,9 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     from .dispatch import _durable_order
 
     if _durable_order(store, order["order_id"]):
-        from .scheduler import launch_manifest
         from ..lrtx.role_capability import local_alternatives
         from ..workorder import factory_revision
+        from .scheduler import launch_manifest
 
         allowed = local_alternatives(
             launch_manifest(order), bundle["phase"], allowed_profiles=allowed, adapter_revision=factory_revision()["commit"]
@@ -338,6 +337,10 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
         allowed_models=allowed,
     )
     source = "RULE"
+    from ..development_execution import selected as development_execution
+
+    if development_execution(ws):
+        plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "DEFERRED_BY_DEVELOPMENT_POLICY")
     if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
         n = budget_snapshot(store, order, eff)["transient_retries"] + 1
         plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
@@ -376,7 +379,7 @@ def execute(store: Store, order: dict, decision: dict, *, epoch: int, eff, previ
         to = "WAITING_EXTERNAL_CHANGE" if plan["rationale_code"] == "FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE" else "BLOCKED"
         store.transition(oid, to, plan["rationale_code"], terminal_reason=plan["rationale_code"][:200])
         return {"order_id": oid, "action": to.lower()}
-    from .completion_receipt import Receipts, for_plan, applying
+    from .completion_receipt import Receipts, applying, for_plan
 
     receipt = for_plan(store, plan["plan_id"])
     if receipt:
@@ -492,7 +495,11 @@ def advisory_final(decision: dict, b: dict, ws) -> bool:
     is spent) and the profile continues in advisory mode: instead of closing the order, one final attempt resumes
     the phase with recovery marked exhausted, so the route gate may register the gap and continue. A factory defect
     needing an external change, another failure class, or a phase already marked keeps the old behaviour."""
+    from ..development_execution import selected as development_execution
     from ..inspection.gate import advisory_enabled
+
+    if development_execution(ws):
+        return False
 
     plan = decision["plan"]
     return (decision.get("status") == "VALIDATED" and plan["strategy"] == "CLOSE_BLOCKED"

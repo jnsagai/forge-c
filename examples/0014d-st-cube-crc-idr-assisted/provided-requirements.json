@@ -1,0 +1,92 @@
+{
+  "schema": "forge-c/provided-requirements/1",
+  "origin": {
+    "prepared_by": "Codex external implementation engineer",
+    "prepared_on": "2026-10-28",
+    "kind": "SOURCE_BACKED_CANDIDATE_NOT_HUMAN_REVIEWED"
+  },
+  "scope_sha256": "0acc99b73463d6d459d11dcd79cc9e4685285b7df2e9da8171ea06684d976fea",
+  "groups": {
+    "CRC_IDR": {
+      "requirements": [
+        {
+          "key": "write_idr",
+          "statement": "When the caller invokes write-IDR with a value and a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+          "source_page": 1172,
+          "verification": "Host and target tests pass when zero, all ones and alternating values reach all 32 CRC_IDR.IDR bits without changing unrelated registers.",
+          "verified_by": "host_unit_test",
+          "effects": [
+            {
+              "case": "WRITE_IDR",
+              "register": "CRC_IDR",
+              "field": "IDR",
+              "op": "write",
+              "value": "0x12345678"
+            }
+          ]
+        },
+        {
+          "key": "read_idr",
+          "statement": "When the caller invokes read-IDR with a valid accessible CRC instance, the CRC LL driver shall return the current 32-bit value of CRC_IDR.IDR.",
+          "source_page": 1172,
+          "verification": "Independent read tests preset IDR without the write API and pass when all 32 bits are returned and no register changes.",
+          "verified_by": "host_unit_test",
+          "effects": [
+            {
+              "case": "READ_IDR",
+              "register": "CRC_IDR",
+              "field": "IDR",
+              "op": "no_write",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "not_covered": [],
+      "open_points": [
+        "Caller must provide a valid accessible CRC instance. This slice specifies no behavior for invalid pointers or inaccessible hardware."
+      ]
+    }
+  },
+  "crosscutting": {
+    "requirements": [
+      {
+        "key": "startup",
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any CRC register.",
+        "source_page": 1172,
+        "verification": "Target startup observation passes when no driver write occurs before an explicit IDR call.",
+        "verified_by": "target_robot_test",
+        "effects": []
+      },
+      {
+        "key": "no_polling",
+        "statement": "When either scoped IDR function is invoked with a valid accessible CRC instance, the CRC LL driver shall complete without polling a status flag.",
+        "source_page": 1172,
+        "verification": "Source/control-flow review and bounded host/target execution pass when the IDR functions contain no status-polling loop.",
+        "verified_by": "host_unit_test",
+        "effects": []
+      }
+    ],
+    "not_covered": [],
+    "open_points": [
+      "No safety assurance, safe-state allocation or error-return contract is assessed or invented. Caller-owned access setup and the invocation domain are part of this prospective development scope."
+    ]
+  },
+  "sources": [
+    {
+      "path": "inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+      "pages": [
+        1172
+      ],
+      "section": "26.4.2"
+    }
+  ],
+  "review": {
+    "status": "PENDING",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "record_ref": null,
+    "payload_sha256": "09aa9891c58759059484cedbedb7f922ff2013d8350d72206245207968f1d1a4"
+  }
+}

@@ -327,6 +327,13 @@ def call(
 ) -> dict:
     """One structured call. Returns {doc, errors, usage, wall_ms, raw_chars, format_note}; never raises on model
     output problems (they are findings for the localized repair loop)."""
+    ws = RECOVERY_WORKSPACE.get()
+    if ws is not None:
+        from ..development_execution import reserve_call
+
+        if not reserve_call(ws, p):
+            return {"doc": None, "errors": ["CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"], "usage": None,
+                    "wall_ms": 0, "finish_reason": None, "raw_chars": 0, "format_note": "phase allowance retained"}
     body = {
         "model": p["model"],
         "messages": p["_messages"],

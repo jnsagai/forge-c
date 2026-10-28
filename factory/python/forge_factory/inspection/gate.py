@@ -434,6 +434,21 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
 
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
+    from .. import development_execution as development
+
+    if development.selected(store.workspace):
+        if g["decision"] == "PASS":
+            _state(store.workspace, phase, {"step": "route", "gate": g})
+            return 0
+        # Global phase checkpoint, deliberately independent of upstream budget epochs.
+        allowed = g["decision"] != "PASS" and development.reserve_phase_rework(store.workspace, phase)
+        result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
+                  "development_ladder": development.ladder(store.workspace, phase),
+                  "reason": "one bounded development repair" if allowed else
+                  "development repair exhausted; dependent continuation requires independently valid inputs"}
+        _state(store.workspace, phase, {"step": "route", "gate": result})
+        print(json.dumps(result))
+        return 0 if allowed else 1
     # rework budget counts failed inspections AND rejected author attempts (both are failed production cycles)
     # The route node is reached ONLY after a failed author/verify/inspection stage (including agent-session failures
     # where no gate could run), so each route invocation is one failed cycle.

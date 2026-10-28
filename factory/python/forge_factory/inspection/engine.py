@@ -370,6 +370,11 @@ class Store:
                 decision, reason = "PASS", last["inspection_id"]
             else:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), last["inspection_id"]
+        from ..provided_requirements import findings as assisted_findings
+
+        assisted = assisted_findings(self.workspace)
+        if assisted:
+            decision, reason = "BLOCKED", ";".join(assisted)
         return {"phase": phase, "decision": decision, "reason": reason, "failed_inspections": failed,
                 "max_rework_cycles": max_cycles}
 

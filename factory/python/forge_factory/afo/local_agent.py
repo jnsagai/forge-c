@@ -101,6 +101,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if not isolation.available():
             raise QueueError("MAINTAINER_SANDBOX_UNAVAILABLE", "candidate code cannot run as the production account")
     man = json.loads((ws / ".forge-run/manifest.json").read_text())
+    from ..development_execution import selected as development_execution
+
+    if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer"):
+        raise QueueError("DEFERRED_BY_DEVELOPMENT_POLICY", role)
     profile = (man.get("local_profile") or {}).get("id")
     model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")
     if not profile or not model or model not in (eff.get("engineering.allowed_model_profiles") or []):

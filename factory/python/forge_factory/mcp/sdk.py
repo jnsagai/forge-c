@@ -301,7 +301,20 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
         except ValidationError as exc:
             loc = ",".join(map(str, exc.errors()[0].get("loc", ())))
             raise ToolDenied("INPUT_INVALID", loc) from exc
-        out = operation.handler(ctx, parsed)
+        from ..development_execution import verification
+
+        verify = operation.name.startswith(("run_", "check_", "compile", "build", "measure"))
+        key = server + "." + operation.name
+        if verify and not verification(ws, phase, role, key):
+            raise ToolDenied("DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", key)
+        try:
+            out = operation.handler(ctx, parsed)
+        except Exception:
+            if verify:
+                verification(ws, phase, role, key, "UNKNOWN")
+            raise
+        if verify:
+            verification(ws, phase, role, key, out["status"])
         try:  # durable, append-only record of every tool result for deterministic gates/finalizer
             rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,
                    "run_id": run, "result": out}
