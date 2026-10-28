@@ -94,3 +94,24 @@ Keep public legacy states and provider paths compatible; add explicit versioned 
 Knowledge migration is additive: preserve v0.4 repair source checks and existing lesson IDs/history/usage; add explicitly versioned ordinary-outcome/negative-observation sources and their validators. Implement matching curator/MCP/schema/registry/lock updates through normal external engineering. Keep `IL-*.yaml` inspector knowledge separately reviewed, selected and CRE-qualified. Test actual phase and tool-version matching, not just the presence of those API parameters.
 
 No automatic merge, deployment, new model allowlist, budget increase or gate relaxation is introduced. The optional future design is documented in [future-worker-promotion.md](future-worker-promotion.md).
+
+## Incremental M1 engineering sequence
+
+Implement [the owner handoff](IMPLEMENTATION-INCREMENTAL-E2E.md) through the current
+work-order/peripheral, phase runner/gate, Fabro/MCP and release mechanisms.
+1. Freeze a distinct two-function IDR operation scope, original frozen ST/CMSIS inputs,
+   source-backed candidate requirements and independent negative oracle.
+2. Add a minimal provided-requirements import with content/source/scope/review provenance;
+   pending human review is a real live prerequisite, not an inferred approval.
+3. Opt in to versioned development execution; share finite repair allowances across
+   nested calls/re-entry and record deferred ladder steps without altering other profiles.
+4. Exercise real preparation, import/validation, phase transitions, evidence, compilation,
+   tests and package boundaries with explicitly substituted provider responses only.
+5. Preserve98d066d and reproduce the original failed-incident recovery/advisory route.
+6. Prepare exact per-role serialized admission, including release and gateway reasoning,
+   plus source/profile/model pins and a finite live harness. Never use old expired authority.
+7. Run M1 only with actual review/current runtime scope; keep every unresolved acceptance
+   prerequisite explicit. Only after accepted M1 proceed to unassisted M2, then M3–M5.
+
+Administrative source records stay hash-bound outside small semantic role views. No budget,
+reasoning, tokenizer, backend or model change is inferred from this incremental brief.

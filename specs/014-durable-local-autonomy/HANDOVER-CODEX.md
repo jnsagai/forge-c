@@ -7,6 +7,16 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Active implementation brief — incremental IDR delivery
+
+Owner decision5e89a2b supersedes the immediate full-CRC recovery priority:
+[IMPLEMENTATION-INCREMENTAL-E2E.md](IMPLEMENTATION-INCREMENTAL-E2E.md).
+Start M1 input-assisted SWE.1–6 for LL_CRC_Write_IDR/LL_CRC_Read_IDR, with legitimate
+review and actual checks, then M2 unassisted repeatability. General recovery, MTP
+promotion and broader qualification remain later milestones. Preserve all historical
+expenditure, quality gates, model-free supervision and exact runtime authority.
+See incremental-status.json and incremental-traceability.csv; all live milestones NOT_RUN.
+
 ## Exact diagnosis admission refusal and continuation readiness
 
 Read-only actual deployed case at16:34:15Z: complete packet14findings/11obligations,

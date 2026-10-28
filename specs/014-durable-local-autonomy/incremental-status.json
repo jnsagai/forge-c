@@ -1,0 +1,17 @@
+{
+  "schema": "forge-c/incremental-delivery-status/1",
+  "handoff_revision": "5e89a2b",
+  "milestones": {
+    "M1": "NOT_RUN",
+    "M2": "NOT_RUN",
+    "M3": "NOT_RUN",
+    "M4": "NOT_RUN",
+    "M5": "NOT_RUN"
+  },
+  "completed_incremental_tasks": [],
+  "formal_da_completed_tasks": 30,
+  "formal_da_total_tasks": 58,
+  "live_authority": "NOT_ESTABLISHED_FOR_NEW_OBJECTIVE",
+  "requirements_review": "PENDING",
+  "product_acceptance": "NOT_RUN"
+}

@@ -226,3 +226,33 @@ DiagnosisPacket, SemanticProposal, CompletionReceipt, MissionLedger, ExecutionLi
 - Omniverse2 has the profile-recorded RTX 6000 Ada 48 GB and Core Ultra 9 285K, with approximately 125 GiB observed system RAM; this is not proof a particular model/context fits.
 - Native detailed events and authoritative RCC artifacts may require read-only host access. Their absence does not justify fabricating evidence or halting unrelated implementation.
 - This request authorizes specification delivery. Future deployment, model campaigns and source promotion follow their existing explicit authorization rules; the exhausted October 24 diagnosis grant is not renewed here.
+
+## Incremental delivery milestones — owner decision 2026-10-28
+
+[IMPLEMENTATION-INCREMENTAL-E2E.md](IMPLEMENTATION-INCREMENTAL-E2E.md) is the active
+implementation brief. Existing final feature requirements and qualification targets remain.
+M1 demonstrates input-assisted SWE.1–SWE.6 for frozen ST LL_CRC_Write_IDR and
+LL_CRC_Read_IDR, including necessary dependencies and independently checked packaging.
+M2 removes requirements-authoring assistance and requires three fresh accepted executions
+on that fixture. M3 demonstrates one independently detected seeded repair. M4 adds coherent
+operations and another existing peripheral while retaining prior anchors. M5 performs the
+original reserved-cohort, learning and operational qualification. M1 is neither autonomous
+requirements authorship, new driver implementation nor completion of Feature014.
+
+**DA-FR-054 execution-policy clarification:** existing profiles retain the complete ladder.
+A versioned opt-in ASPICE_ONLY development policy is pinned to the prepared work order,
+source decision and resume contract. It permits an initial attempt and at most one repair
+pass per phase across tasks, technical retries and re-entry, within overall finite budgets.
+It records actual executed/unavailable/deferred steps. General diagnosis, advisory relaunch
+and factory maintenance may be explicitly deferred, never reported as exhausted.
+Execution completion is separate from acceptance: missing or contradictory contracts,
+tampered/stale input, failed executable checks and authority/resource failures cannot pass.
+Dependent work requires valid coherent frozen inputs; no independence is inferred merely
+from an advisory flag. Unresolved required findings keep the existing release policy BLOCKED.
+
+Provided SWE.1 requirements require content/source/scope identity and legitimate review
+provenance. Import uses ordinary structural, scope, contract, trace and inspection gates.
+The receipt declares external assistance and cannot fabricate Qwen authorship or human review.
+Safety remains NOT_ASSESSED, not reclassified as QM. Startup and caller/error responsibilities
+must be concrete and sourced; no generic invented safe state. Original full-CRC mission,
+three attempts,1.9m conservative expenditure and UNKNOWN usage remain immutable.

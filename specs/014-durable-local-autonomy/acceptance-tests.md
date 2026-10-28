@@ -646,3 +646,32 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **Then:** Only the valid bundle activates, after its truthful preflight and declared regression pass; all others are refused with exact reasons; rollback restores the prior revision.
 - **Evidence:** Import records, preflight and regression logs, refusal reasons, rollback record.
 - **Expected:** Zero activation of an invalid bundle and a working one-step rollback.
+
+## Incremental delivery acceptance (separate from DA-AT qualification)
+
+- **IE-AT-001:** Real preparation binds exactly the two IDR functions, required primary
+  register section and original ST/CMSIS identities; shared full-CRC defaults unchanged.
+- **IE-AT-002:** Pending/unbound/fabricated-agent review, changed scope/content/source and
+  stale imported artifacts refuse. Valid supplied review imports through ordinary checks;
+  receipt declares external assistance, with no Qwen authorship/inspection claim.
+- **IE-AT-003:** Initial phase work plus one repair pass is shared across tasks, nested
+  repairs, technical failures and re-entry. Deferred ladder steps are explicit. Existing
+  profile routing retains its original behavior; no artificial exhaustion claim.
+- **IE-AT-004:** A fast fixture performs actual preparation/validation/transitions/evidence,
+  compilation/test execution and packaging. Provider/checklist substitutions are named;
+  neither fixture acceptance nor unit counts establish Qwen or M1 live capability.
+- **IE-AT-005:** A wrong readback mutant or broken required trace fails an independent
+  executable/trace check and prevents package acceptance despite any provider PASS claim.
+- **IE-AT-006:** Original ASPICE SWE.1 failure→diagnosis admission refusal→advisory→resume
+  at SWE.1 preserves failure, unresolved findings, cumulative expenditure and incompatible
+  identity refusal before copy/reservation. It is not a live recovery qualification.
+- **IE-AT-007:** Live harness checks exact role requests (including release and gateway
+  output/reasoning), capability/source/profile/model identities, finite budgets and current
+  scope. Missing review/authority/stage input records NOT_RUN, never silently enables a run.
+- **IE-AT-008 (M1 live):** All six phases have substantive scoped artifacts and recorded
+  real checks; build, unit/integration/target-simulation, trace, inspection and release pass.
+  Independent recomputation yields READY_FOR_OFFLINE_REVIEW with package hash, assisted
+  boundary, limitations, wall time, repairs and usage/UNKNOWN accounted separately.
+  Compiler-only/host-only, mocked or diagnostic-BLOCKED runs do not satisfy M1.
+- **IE-AT-009 (later):** M2 requires three accepted fresh unassisted author executions with
+  reference answers excluded; M3–M5 retain their declared repair/expansion/cohort evidence.

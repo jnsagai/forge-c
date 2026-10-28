@@ -153,3 +153,21 @@ Owner decisions of 2026-10-26: "Stepwise inspector in 014", "Advisory + calibrat
 Use the repository evidence convention (`scripts/mark_task.py` where applicable) and cite an existing passing `evidence/v0.4/runs/.../latest.json` with tested revision, command, exit code and artifact hashes. Spec validators validate documentation/contracts only; their PASS cannot tick implementation tasks. Do not overwrite old evidence.
 
 For live-containing tasks, document implementation and live status separately until both required parts are evidenced. The 168-hour soak, 30-day SLO observation and future policy amendment must not prevent delivery/review of verified core fixes; they constrain the associated readiness claim.
+
+## Incremental delivery tasks — additional milestone inventory
+
+These do not renumber the58 DA tasks or change their evidence/completion status.
+The new owner brief authorizes the scoped M1 work, including relevant context composition;
+general diagnosis qualification remains M3 and the frozen inspector remains unchanged.
+
+- [ ] **IE-T001:** Reconcile milestone/execution-policy specification, plan, acceptance and trace/status records. Serves IE-AT-001..009.
+- [ ] **IE-T002:** Freeze prospective IDR work order, original delivery/source pins, requirements candidate and negative oracle. Serves IE-AT-001/005.
+- [ ] **IE-T003:** Implement legitimate assisted import, ordinary validation and tamper/invalidation provenance. Serves IE-AT-002.
+- [ ] **IE-T004:** Implement compatible versioned development routing and durable shared repair limits; record real deferred ladder steps. Serves IE-AT-003.
+- [ ] **IE-T005:** Complete fast end-to-end integration anchor and independently rejected negative control. Serves IE-AT-004/005.
+- [ ] **IE-T006:** Add exact incident-route resume regression while preserving98d066d coverage. Serves IE-AT-006.
+- [ ] **IE-T007:** Prepare bounded live harness, per-role admission and exact source/profile/model/authority report. Serves IE-AT-007.
+- [ ] **IE-T008:** Execute actual authorized/reviewed M1 and publish independently recomputable package/evidence. Serves IE-AT-008.
+- [ ] **IE-T009:** After accepted M1, execute three unassisted M2 cases, then scoped M3 repair/expansion/qualification milestones. Serves IE-AT-009.
+
+No task is complete solely from implementation or a passing unrelated unit fixture.
