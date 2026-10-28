@@ -43,6 +43,28 @@ def load(profile_id: str, directory: Path | None = None) -> dict:
             "_sha256": sha256_bytes(raw)}
 
 
+def role_job_tokens(prof: dict, role: str, registry_default: int) -> int:
+    """Prospective per-job capacity, not a capability receipt or mission allowance.
+
+    Profiles without an AFO override keep the role registry unchanged. The
+    controller must separately bind the profile and enforce its signed policy
+    and cumulative mission. Never clamp an invalid configured envelope.
+    """
+    afo = prof.get("afo", {})
+    if not isinstance(afo, dict):
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"])
+    limits = afo.get("role_job_tokens", {})
+    try:
+        context = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"]) from exc
+    if (not isinstance(limits, dict)
+            or not set(limits) <= {"afo-recovery-planner", "afo-factory-maintainer"}
+            or any(type(n) is not int or not 0 < n <= context for n in limits.values())):
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"])
+    return limits.get(role, registry_default)
+
+
 def semantic_configuration(manifest: dict) -> dict:
     """Resolve the existing semantic profile authority and validate new frozen bindings."""
     local = manifest.get("local_profile") or {}

@@ -129,6 +129,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     """Materialize every exact source case of the stage's frozen catalogue (protocol: 100; targeted: its own size);
     administrative admission remains separate."""
     from ..lrtx.profile import load as load_profile
+    from ..lrtx.profile import role_job_tokens
     from ..registry.agents import load_agents
     from .durable_agent import request_material
     from .semantic_proposal import signature
@@ -166,7 +167,8 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
     template_path = REPO_ROOT / CATALOGUES[stage]
     catalogue = json.loads(template_path.read_text())["cases"]
     registry_default = next(a.max_stage_tokens for a in load_agents(include_afo=True)[0] if a.id == "afo-recovery-planner")
-    reserved = registry_default if qualification_job_tokens is None else qualification_job_tokens
+    profile_default = role_job_tokens(selected, "afo-recovery-planner", registry_default)
+    reserved = profile_default if qualification_job_tokens is None else qualification_job_tokens
     mission = "qualification-014-" + campaign_id
     tenant = mission
     jobs, trials = {}, []
@@ -196,7 +198,8 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
                 ws / ".forge-run/manifest.json",
                 {
                     "work_order": "QUAL014-" + trial.replace(":", "-"),
-                    "local_profile": {"id": profile},
+                    "local_profile": {"id": profile, "version": selected["version"],
+                                      "config": selected["_path"], "config_sha256": selected["_sha256"]},
                     "evaluation_holdout": True,
                     "fixture_kind": "SEEDED_PROTOCOL_NOT_PRODUCT",
                     "factory_revision": revision,
@@ -412,6 +415,7 @@ def prepare(root, *, compiler, campaign_id, authorization_ref, model=MODEL, prof
         "count": len(trials),
         "requested_initial_reservations": {binding["job_id"]: reserved for binding in jobs.values()},
         "registry_default_tokens": registry_default,
+        "profile_default_tokens": profile_default,
         "allowances_authorized": False,
         "runtime_admission_created": False,
         "grants_created": 0,

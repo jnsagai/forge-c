@@ -108,6 +108,32 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     if not authorized(order, eff, model):
         raise QueueError("LOCAL_RECOVERY_MODEL_NOT_AUTHORIZED", model)
     agent = next(a for a in load_agents(include_afo=True)[0] if a.id == role)
+    from ..lrtx.profile import ProfileRefused, role_job_tokens
+    from ..lrtx.profile import load as load_profile
+
+    selected = load_profile(profile)
+    tokens = role_job_tokens(selected, role, agent.max_stage_tokens)
+    profile_reservation = None
+    if role in (selected.get("afo", {}).get("role_job_tokens") or {}):
+        local = man["local_profile"]
+        if (type(local.get("version")) is not int or local["version"] != selected["version"]
+                or local.get("config") != selected["_path"]
+                or local.get("config_sha256") != selected["_sha256"]):
+            raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_BINDING_CHANGED"])
+        if tokens > int(eff.get("budgets.max_model_tokens_per_order")):
+            raise QueueError("RECOVERY_PROFILE_ENVELOPE_EXCEEDS_POLICY", role)
+        profile_reservation = {
+            "profile_sha256": selected["_sha256"], "profile_version": selected["version"],
+            "registry_default_tokens": agent.max_stage_tokens, "configured_tokens": tokens,
+        }
+    # A changed model/profile/case cannot turn an already registered identity
+    # into a fresh job or enlarge its original allowance, including legacy jobs.
+    for prior in records(store, order["order_id"]):
+        if prior["attempt_id"] == attempt_id and prior["role"] == role and (
+                prior["profile"] != profile or prior["model"] != model
+                or prior["case_sha256"] != sha256_file(case)
+                or prior.get("profile_initial_reservation") != profile_reservation):
+            raise QueueError("LOCAL_AGENT_JOB_REBOUND", prior["job_id"])
     now = time.time()
     deadline = min(
         order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds")),
@@ -131,10 +157,12 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "nonce": secrets.token_hex(16),
         "created_epoch": now,
         "deadline_epoch": deadline,
-        "reserved_tokens": agent.max_stage_tokens,
+        "reserved_tokens": tokens,
         "reported_tokens": None,
         "run_id": None,
     }
+    if profile_reservation is not None:
+        job["profile_initial_reservation"] = profile_reservation
     doc = json.loads(case.read_text())
     if qualification_manifest is not None and not doc.get("packet_ref"):
         from .durable import Refused
@@ -165,9 +193,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         job["role_capabilities"] = man.get("role_capabilities") or {}
         job["qualified_local_alternatives"] = man.get("qualified_local_alternatives") or []
         job["qualification_manifest_sha256"] = doc.get("qualification_manifest_sha256")
-        from ..lrtx.profile import load as load_profile
-
-        model_identity = load_profile(profile)["models"]["allowed"][model]
+        model_identity = selected["models"]["allowed"][model]
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
         job["native_context"] = {key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)}
@@ -175,6 +201,12 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             from .qualification import initial_reservation
 
             job.update(initial_reservation(qualification_manifest, job, eff, store=store))
+        if profile_reservation is not None and job.get("durable_protocol"):
+            from .durable_agent import request_body
+            from .semantic_proposal import two_step
+
+            first = 1 if two_step(job) else None
+            _, job["initial_request_measurement"] = request_body(store, job, step=first)
         MissionLedger(store).execution(
             job["mission_id"],
             job["job_id"],

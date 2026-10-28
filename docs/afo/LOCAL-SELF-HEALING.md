@@ -162,6 +162,26 @@ Use existing AFO authority and a registered durable mission before enabling `FOR
 
 A complete evidence packet, short semantic judgment and deterministic receipt/binding replace fragile model-written administration. The adapter measures the complete serialized request and reserves output. Unfit or unqualified work blocks within its scope; all global requirement/dependency coverage remains recorded. Role capability is measured separately for diagnosis, authoring, inspection and maintenance; same-model agreement is not independent correctness evidence.
 
+The owner-selected Qwen3.8 Q8 xhigh profile has finite prospective AFO job
+reservations in `afo.role_job_tokens`: 65536 tokens each for diagnosis and
+maintenance. The workspace must bind the exact profile version, path and SHA256.
+Profiles without this setting keep the role registry's original amounts.
+These reservations consume the existing mission allowance; they do not increase
+its ceiling or change an old job's reservation. An exhausted mission stays
+exhausted, and an already registered job cannot acquire a new model/profile/case.
+
+Before reserving a new diagnosis job under this profile, the controller measures
+the complete first effective request, including primary evidence, instructions,
+schema and the gateway's reasoning/output extension. An unfit request returns
+CAPABILITY_LIMIT without charging or launching that new job. Stored metadata
+contains counts and hashes, not prompts or hidden reasoning. This conservative
+UTF8 byte bound is not a measured tokenizer or semantic capability qualification.
+Later requests and native maintenance tool dialogue still pass the existing
+gateway/role/cumulative admission checks; fitting the first request does not
+promise that every later call fits. Qualification preparation uses the same
+profile default and frozen binding without creating a grant or admission; an
+explicit signed qualification override still passes all policy and mission checks.
+
 Every ordinary success, failure, block, timeout and unknown outcome enters factual experience with a recoverable disposition. Qualified ordinary/negative lessons extend the existing LessonStore, preserve PROMOTED repair validation and separate inspector IL governance, and obey phase/role/target/source/tool/version and context limits. Delivery and retraction share a transactional fence. A captured experience or staged improvement proposal is not evidence of learning benefit. Learning comparisons include all retrieval, curation and validation cost.
 
 AFO job/phase capture preserves the workspace evaluation-holdout flag, and native

@@ -453,6 +453,9 @@ def _two_step_material(job, packet, doc, aliases, step, prior):
 def request_body(store, job, step=None, prior=None):
     """Complete effective request must fit before native code contacts the gateway."""
     body, measured = request_material(job, step, prior)
+    pinned = job.get("profile_initial_reservation")
+    if pinned and measured["profile_sha256"] != pinned["profile_sha256"]:
+        raise Refused("REQUEST_PROFILE_CHANGED")
     # Byte upper bound is deliberately conservative until a pinned tokenizer is independently qualified.
     if measured["input_tokens"] + measured["effective_output_cap"] > job["reserved_tokens"]:
         raise Refused("CAPABILITY_LIMIT", "complete serialized evidence does not fit the reserved job")

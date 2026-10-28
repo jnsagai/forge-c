@@ -4,7 +4,7 @@
 # Historical profiles and their frozen inspector configuration remain unchanged.
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-quality
-version: 1
+version: 2
 status: OWNER_SELECTED_FOR_OMNIVERSE2; ROLE_QUALIFICATION_PENDING
 description: 'Owner2026-10-28: officially use Qwen3.8-27B Q8 for authoring, inspection, diagnosis and maintenance;
   prioritize quality and reliability. Explicit dedicated-host selection; no qualification receipt or gate change.'
@@ -90,6 +90,13 @@ gateway:
     qwen3.8:27b-q8_0:
       effort: xhigh
       extra_output_tokens: 32768
+afo:
+  # Prospective jobs only; these are NOT mission grants or capability receipts.
+  # Legacy16k/24k jobs cannot fit32k reasoning plus complete input and answer.
+  # Every call still passes actual serialized-context and cumulative admission.
+  role_job_tokens:
+    afo-recovery-planner: 65536
+    afo-factory-maintainer: 65536
 admission:
   max_inflight: 1
   max_queue: 8

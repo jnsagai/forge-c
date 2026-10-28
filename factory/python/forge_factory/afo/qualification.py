@@ -290,7 +290,7 @@ def initial_reservation(manifest, job, eff, *, store=None):
 
     No runtime can infer this allowance from a model proposal, measured size or
     expired grant. Existing ledger identities still reject reservation changes.
-    Production calls omit the manifest and retain the role registry allowance.
+    Production calls omit the manifest and retain the bound profile/role allowance.
     """
     from . import authz
 
@@ -339,7 +339,9 @@ def initial_reservation(manifest, job, eff, *, store=None):
         "qualification_initial_reservation": {
             "authorization_ref": ref,
             "manifest_sha256": sha,
-            "registry_default_tokens": job["reserved_tokens"],
+            "registry_default_tokens": (job.get("profile_initial_reservation") or {}).get(
+                "registry_default_tokens", job["reserved_tokens"]),
+            "profile_default_tokens": job["reserved_tokens"],
             "authorized_tokens": tokens,
         },
         **bind_fault(manifest, job),
