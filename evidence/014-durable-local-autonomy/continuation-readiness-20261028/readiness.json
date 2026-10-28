@@ -1,0 +1,68 @@
+{
+  "schema": "forge-c/continuation-readiness/1",
+  "status": "BLOCKED_NOT_EXECUTABLE_UNDER_EXPIRED_WINDOW",
+  "candidate_source": "98d066dfe519c5ea2b23cec7d8f9681aff1f71d0",
+  "candidate_profile": {
+    "id": "local-rtx-v2-omniverse2-q38-aspice",
+    "version": 2,
+    "sha256": "df9ed8f0a86be8b55b09b027a93750154b5b28fe6866d3f9c9457fcdf73599f3"
+  },
+  "model": "qwen3.8:27b-q8_0",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "backend": "Existing Ollama; MTP remains experimental and is not enabled by this package",
+  "source_bundle": {
+    "path": "aspice-resume-98d066d-incremental.bundle",
+    "sha256": "e66961daaa7ff1baccdad3ba2b450417c079cca23b01807610584ce2572c5bab",
+    "remote_staged": "/mnt/data/forge-c/production-local-014/deployment/aspice-resume-98d066d-incremental.bundle"
+  },
+  "native_candidate_checkout": "/mnt/data/forge-c/production-local-014/deployment/qualification-aspice-resume-98d066d/repo",
+  "candidate_evidence": {
+    "native_tests": 124,
+    "local_exact_tests": 71,
+    "skipped": 0,
+    "qwen_qualification": "NOT_RUN"
+  },
+  "current_runtime": {
+    "source": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+    "operator_epoch": 18,
+    "mode": "RUNNING",
+    "policy_sha256": "83e78088c66df61e6513c466b9221e85f54ba34adbcddf0dcae48b69d91a96ad",
+    "grant_expiry": "2026-10-29T05:00:00Z"
+  },
+  "blockers": [
+    {
+      "code": "ENGINEERING_WINDOW_EXPIRED",
+      "deadline": "2026-10-28T16:29:12Z",
+      "required": "Explicit new owner scope before new engineering inference/campaign deployment; no silent renewal"
+    },
+    {
+      "code": "ORIGINAL_CRC_MISSION_EXHAUSTED",
+      "mission_id": "F014-E2E5H-20261028-CRC",
+      "attempts": "3/3",
+      "conservative_charge": 1900000,
+      "usage": "UNKNOWN",
+      "required": "Preserve mission, expenditure and uncertainty; no same-work relabel/new-order reset"
+    },
+    {
+      "code": "DIAGNOSIS_EFFECTIVE_CONTEXT_EXCEEDS_RESERVATION",
+      "required_bound": 103998,
+      "role_reservation": 65536,
+      "excess": 38462,
+      "required": "Scoped coherent evidence/context design or independently qualified tokenizer/configuration and role envelope; no silent truncation or arbitrary budget inflation"
+    },
+    {
+      "code": "EXACT_PROSPECTIVE_ROLE_SCOPE_REQUIRED",
+      "required": "Do not reuse expired fcb/profilev1 role qualification for candidate98d/profilev2; author/inspector/diagnosis/maintenance qualify separately"
+    }
+  ],
+  "invariants": {
+    "one_inference_request": true,
+    "finite_verification_resources": true,
+    "fixed_inspector_gates": true,
+    "safety_assurance": "NOT_ASSESSED",
+    "machine_general_drivers": true,
+    "new_grants_signed": false,
+    "deployment_activated": false,
+    "original_mission_modified": false
+  }
+}

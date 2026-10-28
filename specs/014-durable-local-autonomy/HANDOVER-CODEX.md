@@ -7,6 +7,20 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Exact diagnosis admission refusal and continuation readiness
+
+Read-only actual deployed case at16:34:15Z: complete packet14findings/11obligations,
+one selected objective. Effective serialized request69,054bytes; conservative input69,182
+plus34,816 output/reasoning cap = **103,998**, exceeding65,536 role reservation by38,462.
+Administrative manifest alone30,605bytes. No job/native/gateway/Qwen call. This is a
+separate cause from the now-prospectively-fixed resume ID bug. More retries alone
+cannot repair it; conservative byte bounds are not native tokenizer measurements.
+No silent truncation, budget inflation, role promotion or grant renewal.
+[Exact measurement, executable observer and pinned continuation readiness](../../evidence/014-durable-local-autonomy/continuation-readiness-20261028/README.md).
+Source98d/profilev2 bundle and native checkout staged; no deployment authority inferred.
+Original engineering cutoff/CRC exhausted mission retained. Genuine new work requires
+explicit scope/allowance; MissionLedger rejects changing original mission limits.
+
 ## Five-hour deadline — NOT ACHIEVED, 2026-10-28
 
 No passing end-to-end driver workflow by16:29:12Z. At16:29:48Z factory stillRUNNING18,
