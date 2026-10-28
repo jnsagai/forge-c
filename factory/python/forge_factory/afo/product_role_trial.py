@@ -47,7 +47,9 @@ def authorized(ref, job, eff):
         raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
     roles = trial.get("roles")
     allowed = {f"swe{i}-{r}" for i in range(1, 7) for r in ("author", "inspector")}
-    allowed |= {"afo-recovery-planner", "afo-factory-maintainer"}
+    # The existing six-phase workflow ends with a read-only inventory role.
+    # It still needs its own signed experimental configuration or measured receipt.
+    allowed |= {"release-manager", "afo-recovery-planner", "afo-factory-maintainer"}
     if not isinstance(roles, dict) or not roles or not set(roles) <= allowed:
         raise Refused("PRODUCT_ROLE_TRIAL_ROLES_INVALID")
     for role, identities in roles.items():

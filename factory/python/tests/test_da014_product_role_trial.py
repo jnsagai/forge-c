@@ -117,3 +117,37 @@ def test_signed_manifest_and_frozen_bytes_rechecked_at_every_request(trial, monk
 def test_no_experiment_keeps_ordinary_capability_requirement(trial):
     with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
         C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())
+
+
+def test_signed_trial_covers_every_role_of_the_real_product_workflow(trial):
+    from forge_factory.registry.agents import load_agents
+    from forge_factory.workflow.builder import build
+
+    _, nodes = build("WO-EXPERIMENT", goal="Native workflow admission", sections={}, layer="LL", brownfield="FROZEN")
+    roles = {node["role"] for node in nodes.values()}
+    assert "release-manager" in roles
+    assert next(agent for agent in load_agents()[0] if agent.id == "release-manager").readonly
+    identity = trial.doc["roles"]["swe1-author"][0]
+    trial.doc["roles"] = {role: [{**identity, "role": role}] for role in roles}
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    for role in roles:
+        assert C.admit_job(trial.job, role, input_tokens=100, output_tokens=50, body=body()) == {
+            "qualification_only": True,
+            "qualified": False,
+        }
+
+
+@pytest.mark.parametrize("role", ["afo-conductor", "safety-authority", "operator"])
+def test_product_experiment_cannot_add_administrative_authority(trial, role):
+    identity = trial.doc["roles"]["swe1-author"][0]
+    trial.doc["roles"][role] = [{**identity, "role": role}]
+    with pytest.raises(Refused, match="PRODUCT_ROLE_TRIAL_ROLES_INVALID"):
+        T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+
+
+def test_release_role_requires_its_own_signed_configuration_or_capability(trial):
+    with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
+        C.admit_job(trial.job, "release-manager", input_tokens=1, output_tokens=1, body=body())
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    with pytest.raises(Refused, match="CONFIGURATION_UNDECLARED"):
+        C.admit_job(trial.job, "release-manager", input_tokens=1, output_tokens=1, body=body())
