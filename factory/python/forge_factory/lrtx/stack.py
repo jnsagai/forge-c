@@ -591,6 +591,11 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "FORGE_GATEWAY_REASONING": gateway_reasoning(prof),
     }
     gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
+    if "drop_retries" in prof.get("gateway", {}):
+        retries = prof["gateway"]["drop_retries"]
+        if type(retries) is not int or not 0 <= retries <= 2:
+            raise ValueError("GATEWAY_DROP_RETRIES_INVALID")
+        gw_env["FORGE_GATEWAY_DROP_RETRIES"] = str(retries)
     ls = llama_server_spec(r, prof, p, env)
     if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
         gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in ls[3]})

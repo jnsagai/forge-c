@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-aspice-mtp
-version: 1
+version: 2
 work_order_purpose: ASPICE_ONLY
 status: OWNER_SELECTED_MTP_DEVELOPMENT; EXACT_ROLE_QUALIFICATION_PENDING
 description: 'Owner 2026-10-28: no, go with MTP. Incremental IDR development; same
@@ -84,6 +84,7 @@ structured:
   timeout_s: 3600
   visit_time_s: 1200
 gateway:
+  drop_retries: 0
   request_timeout_s: 3600
   reasoning:
     qwen3.8:27b-q8_0:
