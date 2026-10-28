@@ -23,7 +23,9 @@ Candidate1dd54a0 adds an unchanged-failed-baseline progress guard (3 local and3 
 fixture passes, zero model calls), not deployed to
 the current e098b51 signed scope. Preserve the same M1 mission and100m conservative
 execution charge for any continuation. Resolve applicability/inputs before another source-bound live attempt; native fixture
-checks do not qualify model behavior. See the evidence linked below.
+checks do not qualify model behavior. See the evidence linked below. The Git recorder published progress commit870ca10 at
+22:05UTC after correcting its host administrative context; inference isolation stayed
+unchanged. The output viewer shows the six saved final answers, not an in-flight token tap.
 
 ## Deployment checkpoint — 2026-10-28 21:51Z (historical)
 

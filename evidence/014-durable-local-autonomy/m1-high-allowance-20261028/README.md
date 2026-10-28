@@ -105,11 +105,15 @@ are retained. Production remained e098b51 throughout. The first local test
 assertion overlooked the fixture's pre-existing inspection; it was corrected to verify
 preservation of the initial count plus two new failures. No production verdict changed.
 
-The deployment needed two external operational corrections: initial short readiness
+The deployment needed three external operational corrections: initial short readiness
 checks preceded the23-second model load, so admission waited for observed health;
 the new recorder unit needed explicit Python/module environment variables. The latter
 is recorded in [recorder-env-correction.json](recorder-env-correction.json), with zero
-provider signals or new inference. Neither is autonomous self-healing evidence.
+provider signals or new inference. Finally, the model-free Git recorder was moved
+from the denied-egress inference namespace to its proper host administrative context,
+without changing inference egress policy. [Correction](recorder-host-context-correction.json)
+and [successful publication](recorder-publication.json) at22:05UTC are retained.
+These are external interventions, not autonomous self-healing evidence.
 
 Runtime implementation, static admission, local-model capability, M1 product acceptance,
 learning benefit and continuous availability remain separate. IE-T007's preparation
