@@ -251,7 +251,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     manifest = {
         "schema": "forge-c/work-order/0.4",
         "purpose": purpose,
-        **({"aspice_development": aspice_scope} if aspice_scope else {}),
+        **({"aspice_development": aspice_scope, "aspice_resume_contract_version": 2} if aspice_scope else {}),
         **({"development_safety": development} if development else {}),
         "work_order": wo,
         "created_at": utc_now(),

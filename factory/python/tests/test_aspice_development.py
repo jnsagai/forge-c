@@ -96,6 +96,37 @@ def test_resume_contract_binds_scope_without_changing_old_contracts(ws):
     assert "aspice_development" not in legacy and "historical_safety_scope" not in legacy
 
 
+def test_aspice_resume_legacy_hashes_and_full_provenance_remain_bound(ws):
+    _, m = ws
+    original = copy.deepcopy(m)
+    other = copy.deepcopy(m)
+    other["work_order"] = "WO-ANOTHER"
+    other["historical_safety_scope"]["scope"]["work_order_id"] = other["work_order"]
+    assert resume.contract(m) == resume.contract(other)
+    assert m == original
+    other["historical_safety_scope"]["scope"]["target_asil"] = "D"
+    assert resume.contract(m) != resume.contract(other)
+    # Unmarked manifests keep their original full-history compatibility semantics.
+    m.pop("aspice_resume_contract_version")
+    other = copy.deepcopy(m)
+    other["historical_safety_scope"]["scope"]["work_order_id"] = "WO-ANOTHER"
+    assert resume.contract(m) != resume.contract(other)
+    assert resume.contract(m)["historical_safety_scope"] == m["historical_safety_scope"]
+
+
+@pytest.mark.parametrize("fault", [True, 1, 3, "2", "scope-id", "purpose"])
+def test_aspice_resume_normalization_refuses_ambiguous_or_forged_identity(ws, fault):
+    _, m = ws
+    if fault == "scope-id":
+        m["historical_safety_scope"]["scope"]["work_order_id"] = "WO-FORGED"
+    elif fault == "purpose":
+        m["purpose"] = "FORMAL_REVIEW"
+    else:
+        m["aspice_resume_contract_version"] = fault
+    with pytest.raises(resume.ResumeRefused):
+        resume.contract(m)
+
+
 @pytest.mark.parametrize("fault", [None, "static", "trace", "inspection", "open-finding", "unfinished"])
 def test_finalizer_removes_only_safety_obligations_and_preserves_engineering_gates(tmp_path, monkeypatch, fault):
     from test_m7_governance_release import complete_workspace
