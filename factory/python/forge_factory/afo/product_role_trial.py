@@ -97,3 +97,111 @@ def identity(job, role, body, eff):
     if len(candidates) != 1:
         raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED")
     return candidates[0]
+
+
+def preflight(workspace, job, requests):
+    """Measure supplied complete role requests using normal admission, without reserving or sending.
+
+    This is executable preparation, not runtime qualification or launch authority.
+    Future requests still pass the gateway's live authorization/accounting checks.
+    No prompt text or hidden reasoning is returned in the public report.
+    """
+    from pathlib import Path
+
+    from .. import provided_requirements
+    from ..common import sha256_file
+    from ..llm_gateway import sanitize_request
+    from ..lrtx import profile, role_capability
+    from ..workflow.builder import build
+    from ..workorder import factory_revision, local_profile_structured
+    from .diagnosis_packet import measure_request
+
+    ws = Path(workspace)
+    man = json.loads((ws / ".forge-run/manifest.json").read_text())
+    revision = factory_revision()
+    if revision.get("dirty") or revision.get("commit") != (job.get("factory_revision") or {}).get("commit"):
+        raise Refused("PRODUCT_PREFLIGHT_SOURCE_CHANGED_OR_DIRTY")
+    prof = profile.load(job["profile"])
+    model = prof["models"]["allowed"].get(job["model"])
+    if not model or model["digest"] != job.get("model_digest") or model["quantization"] != job.get("precision"):
+        raise Refused("PRODUCT_PREFLIGHT_MODEL_CHANGED")
+    _, nodes = build(man["work_order"], goal="Role admission preflight", sections={},
+                     layer=man.get("layer", "LL+HAL"), brownfield=man.get("code_mode"),
+                     peripheral=man.get("peripheral"), operation_scope=man.get("operation_scope"),
+                     delivery_style=((man.get("delivery") or {}).get("build") or {}).get("style"),
+                     structured=local_profile_structured(prof, man, job["model"]))
+    roles = {n["role"] for n in nodes.values()}
+    if any(not isinstance(r, dict) or set(r) != {"role", "body"} or r["role"] not in roles for r in requests):
+        raise Refused("PRODUCT_PREFLIGHT_REQUEST_INVENTORY_INVALID")
+    imported = None
+    if man.get("provided_requirements"):
+        provided_requirements.validate(ws)  # Review and source/scope bindings remain required.
+        if provided_requirements.findings(ws):
+            raise Refused("PRODUCT_PREFLIGHT_ASSISTED_INPUT_NOT_VALIDATED")
+        receipt = ws / ".forge-run/provided-requirements-receipt.json"
+        imported = sha256_file(receipt)
+    rows = []
+    for role in sorted(roles):
+        supplied = [r["body"] for r in requests if r["role"] == role]
+        if role == "swe1-author" and imported:
+            if supplied:
+                raise Refused("PRODUCT_PREFLIGHT_IMPORTED_AUTHOR_MUST_NOT_INFER")
+            rows.append({"role": role, "status": "NO_INFERENCE_IMPORTED_REQUIREMENTS", "receipt_sha256": imported})
+            continue
+        if not supplied:
+            rows.append({"role": role, "status": "NOT_RUN", "reason": "COMPLETE_SERIALIZED_REQUEST_MISSING"})
+        for body in supplied:
+            row = {"role": role, "supplied_request_sha256": digest(body)}
+            try:
+                if not isinstance(body, dict) or body.get("model") != job["model"]:
+                    raise Refused("PRODUCT_PREFLIGHT_REQUEST_MODEL_CHANGED")
+                effective = sanitize_request(body, policy=prof.get("gateway", {}).get("reasoning", {}))
+                measured = measure_request(effective)
+                caps = [effective[k] for k in ("max_tokens", "max_completion_tokens") if effective.get(k) is not None]
+                if len(caps) != 1 or type(caps[0]) is not int or caps[0] < 1:
+                    raise Refused("PROVIDER_OUTPUT_CAP_MISSING_OR_AMBIGUOUS")
+                row.update(measurement=measured, effective_output_cap=caps[0],
+                           effective_reasoning=effective.get("reasoning_effort"),
+                           conservative_reservation=measured["input_tokens"] + caps[0])
+                admission = role_capability.admit_job(job, role, input_tokens=measured["input_tokens"],
+                                                     output_tokens=caps[0], body=effective)
+                row.update(status="PASS_STATIC_ADMISSION", qualification_only=admission.get("qualification_only", False))
+            except Refused as exc:
+                row.update(status="REFUSED", reason=exc.code)
+            rows.append(row)
+    return {"schema": "forge-c/product-request-preflight/1", "source_revision": revision["commit"],
+            "profile": prof["id"], "profile_sha256": prof["_sha256"], "model_digest": model["digest"],
+            "work_order": man["work_order"], "required_roles": sorted(roles), "rows": rows,
+            "status": "PASS_STATIC_ADMISSION" if all(r["status"] in
+                      ("PASS_STATIC_ADMISSION", "NO_INFERENCE_IMPORTED_REQUIREMENTS") for r in rows) else "NOT_RUN",
+            "runtime_qualification": "NOT_RUN", "generation_performed": False,
+            "reservation_performed": False, "launch_authority": False,
+            "live_authority": "NOT_CHECKED_BY_STATIC_PREFLIGHT"}
+
+
+def main(argv=None):
+    import argparse
+    from pathlib import Path
+
+    from .durable import immutable_json
+
+    ap = argparse.ArgumentParser(description="Read-only complete product-role request admission preflight")
+    ap.add_argument("--workspace", type=Path, required=True)
+    ap.add_argument("--job", type=Path, required=True)
+    ap.add_argument("--requests", type=Path, required=True)
+    ap.add_argument("--out", type=Path, required=True)
+    args = ap.parse_args(argv)
+    try:
+        result = preflight(args.workspace, strict_json(args.job.read_bytes(), 4 * 1024 * 1024),
+                           strict_json(args.requests.read_bytes(), 4 * 1024 * 1024))
+    except (Refused, ValueError) as exc:
+        result = {"schema": "forge-c/product-request-preflight/1", "status": "NOT_RUN",
+                  "blockers": [str(exc).split(":", 1)[0]], "runtime_qualification": "NOT_RUN",
+                  "generation_performed": False, "reservation_performed": False, "launch_authority": False}
+    immutable_json(args.out, result)
+    print(json.dumps({"status": result["status"], "runtime_qualification": "NOT_RUN", "out": str(args.out)}))
+    return 0 if result["status"] == "PASS_STATIC_ADMISSION" else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

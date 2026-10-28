@@ -10,7 +10,9 @@ import time
 import pytest
 from forge_factory import workorder as WO
 from forge_factory.afo import planner, recovery
-from forge_factory.afo.durable import Refused
+from forge_factory.afo import product_role_trial as role_trial
+from forge_factory.afo.diagnosis_packet import measure_request
+from forge_factory.afo.durable import Refused, immutable_json
 from forge_factory.afo.mission_ledger import MissionLedger
 from forge_factory.brownfield import resume as R
 from forge_factory.inspection import gate
@@ -18,14 +20,17 @@ from forge_factory.inspection.engine import PHASES, Store
 from forge_factory.lrtx import role_capability
 from test_afo_m4_recovery import order  # noqa: F401
 from test_brownfield_resume import pair  # noqa: F401
+from test_da014_product_role_trial import trial  # noqa: F401
 from test_resume_from import _all_pass
 
 
 @pytest.mark.parametrize("pair", ["ASPICE_ONLY"], indirect=True)
 def test_failed_swe1_admission_refusal_advisory_resumes_swe1_without_erasing_history(
-        order, pair, monkeypatch):  # noqa: F811
+        order, pair, trial, monkeypatch):  # noqa: F811
     s, o, b, epoch, eff = order
     src, old, dst, new, prepare, _ = pair
+    # Both reused fixtures own private stores; retain the brownfield workspace namespace.
+    monkeypatch.setenv("FORGE_STATE_DIR", str(src.parents[2]))
     st = Store(src)
     verdicts = _all_pass("SWE.1")
     verdicts["SWE1-05"] = {"verdict": "FAIL", "evidence_refs": ["workproducts/SWE.1/software_requirements.md"],
@@ -41,14 +46,27 @@ def test_failed_swe1_admission_refusal_advisory_resumes_swe1_without_erasing_his
     monkeypatch.setattr(recovery, "rule_plan", lambda *a, **kw: None)
     monkeypatch.setattr(gate, "advisory_enabled", lambda _: True)  # Explicit historical profile fixture.
     calls = []
+    # Separately declared qualification-only identity, with explicit fake signer/auth fixtures.
+    # This permits testing the context boundary rather than failing on a missing receipt.
+    identity = {**trial.doc["roles"]["swe1-author"][0], "role": "afo-recovery-planner",
+                "context_tokens": 65536, "reasoning": "xhigh"}
+    trial.doc["roles"] = {"afo-recovery-planner": [identity]}
+    ref = trial.publish(trial.doc)
+    immutable_json(src.parents[2] / ref["path"], trial.doc)
+    role_trial.bind(ref, trial.job, trial.eff)
+    body = {"model": "local", "messages": [{"role": "user", "content": "administrative fixture " + "x" * 69000}],
+            "response_format": {"type": "json_schema"}, "reasoning_effort": "xhigh", "temperature": 0,
+            "max_tokens": 32768 + 2048}
+    measured = measure_request(body)
+    assert measured["input_tokens"] + body["max_tokens"] > identity["context_tokens"]
 
     def refused_diagnosis(bundle, budget, ws):
         calls.append(bundle["phase"])
-        # Exercise the real role admission boundary; missing measured capability is a typed refusal,
-        # never an HTTP call or a semantic finding that no repair strategy exists.
+        # Complete administrative bytes plus reasoning/output exceed the scoped context.
+        # This is never an HTTP call or a semantic finding that no repair strategy exists.
         try:
-            role_capability.admit_job({}, "afo-recovery-planner", input_tokens=30605,
-                                      output_tokens=32768 + 2048)
+            role_capability.admit_job(trial.job, "afo-recovery-planner", input_tokens=measured["input_tokens"],
+                                      output_tokens=body["max_tokens"], body=body)
         except Refused as exc:
             raise planner.Failed(exc.code) from exc
         pytest.fail("an unqualified diagnosis request must not be generated")
