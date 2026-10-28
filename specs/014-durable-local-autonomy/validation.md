@@ -1,8 +1,40 @@
 # Implementation and qualification status
 
-Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
+Updated 2026-10-28. Current tested/deployed runtime: **fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61**, owner-scoped ASPICE-only development on Omniverse2. See the dated scope checkpoint below. Historical revisions remain separate; documentation commits do not qualify another deployment. Feature014 remains30/58, stacked on unmerged PR41.
+
+Historical Oct26 checkpoint: Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 
 The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
+
+## 2026-10-28 owner ASPICE-only scope — deployed fcb15cb
+
+The owner's latest instruction supersedes the active Safety/SafeC trial scope:
+focus ASPICE-only development, without safety assurance. Exact deployed/tested
+**fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61**, RUNNING epoch16. New purpose
+ASPICE_ONLY binds a separate owner policy; old formal/development allocations,
+signatures and frozen inspector source remain unchanged. Functional verification,
+traceability, reviews, finite budgets and offline review remain. No safety or
+formally assessed ASPICE compliance claim.
+
+100 native Omniverse2 fixturePASS(109.615s),16 exact localPASS(11.926s),
+114 inherited localPASS(95.776s), zero skips. Overlapping fixture cohorts, zero
+regression Qwen calls; role/product/learning/availability qualification separate.
+[Evidence, exact commands and executable tooling](../../evidence/014-durable-local-autonomy/aspice-development-fcb15cb/README.md).
+
+Current actual Qwen native **01M61F40BHTFTDTXW16WGVRN9Q**, order
+afo-533cd9ba25e792a5, continues the original CRC mission; 1.4m prior conservative
+charge retained, 400k new reservation,2/3 total product attempts, original2m
+cap/16:29:12Z deadline unchanged. At14:37:58Z first new requestSENT, nativeLIVE,
+leaseHELD, no phase/productPASS. Historical SafeC run preserved, cancelled and
+QUIESCENT/RELEASED before deployment. This owner scope change is not self-healing.
+Old planned SafeC RNG was not submitted; do not automatically restart it.
+
+Progress branch e2e/2026-10-28-q38-aspice-development updates every5minutes.
+Existing production dashboard source shows the new run (actual HTTP200).
+New expiry cleanup16:29:15Z is epoch16/current-policy fenced, restores original
+production policy only; timer execution unproven until receipt. Original grant
+expiry29Oct05:00Z unchanged. Keep runtime pinned while active. Feature stays30/58;
+no task tick or benchmark/24/7 proof.
 
 ## Independent status axes
 
