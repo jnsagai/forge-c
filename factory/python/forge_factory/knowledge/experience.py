@@ -91,7 +91,8 @@ def consolidate(store, *, limit=32, inference_budget=0):
     with store._conn() as c:
         c.execute("BEGIN IMMEDIATE")
         rows = c.execute(
-            "SELECT e.*,d.record AS disposition FROM job_experience e JOIN learning_dispositions d USING(experience_id) WHERE d.state='PENDING' ORDER BY e.created_at,e.experience_id LIMIT ?",
+            "SELECT e.*,d.record AS disposition FROM job_experience e JOIN learning_dispositions d USING(experience_id) "
+            "WHERE d.state='PENDING' ORDER BY e.created_at,e.experience_id LIMIT ?",
             (limit,),
         ).fetchall()
         for row in rows:
@@ -161,7 +162,8 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
         saved = c.execute("SELECT value FROM afo_control WHERE key='learning_capture_cursor'").fetchone()
         cursor = saved[0] if saved else ""
         rows = c.execute(
-            "SELECT * FROM afo_attempts WHERE state IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN') AND created_utc||attempt_id>? ORDER BY created_utc,attempt_id LIMIT ?",
+            "SELECT * FROM afo_attempts WHERE state IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN') "
+            "AND created_utc||attempt_id>? ORDER BY created_utc,attempt_id LIMIT ?",
             (cursor, limit),
         ).fetchall()
         if not rows:
@@ -224,7 +226,8 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
         last = rows[-1]
         with afo_store.tx() as c:
             c.execute(
-                "INSERT INTO afo_control VALUES ('learning_capture_cursor',?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                "INSERT INTO afo_control VALUES ('learning_capture_cursor',?,?,?) ON CONFLICT(key) DO UPDATE "
+                "SET value=excluded.value,updated_utc=excluded.updated_utc",
                 (last["created_utc"] + last["attempt_id"], utc_now(), "deterministic-learning-reconciler"),
             )
     return out
@@ -233,6 +236,7 @@ def capture_afo(afo_store, lessons, workspace_of, *, limit=32):
 def capture_workspace(store, workspace, execution_id, *, package=None):
     """All authoritative inspection outcomes plus immutable package fact, including non-AFO work orders."""
     from pathlib import Path
+
     from ..inspection.engine import Store as InspectionStore
 
     ws = Path(workspace)
@@ -267,6 +271,35 @@ def capture_workspace(store, workspace, execution_id, *, package=None):
                     observed_at=record.get("recorded_at"),
                 )
             )
+    # A phase may block before its inspector records anything. The native route
+    # decision is still an observed phase outcome, distinct from model quality.
+    log = ws / ".forge-run/gates/gate-log.jsonl"
+    if log.is_file() and not log.is_symlink():
+        with log.open(encoding="utf-8") as stream:
+            for line in stream:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue  # a partial append can be reconciled on the next sweep
+                if not isinstance(row, dict) or row.get("step") != "route":
+                    continue
+                gate = row.get("gate")
+                phase = row.get("phase")
+                if phase not in ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6") or not isinstance(gate, dict):
+                    continue
+                if gate.get("phase", phase) != phase:
+                    continue
+                outcome = gate.get("decision")
+                if outcome not in ("PASS", "BLOCKED"):
+                    continue
+                sha = digest(row)
+                out.append(capture(
+                    store, execution_id, phase, outcome,
+                    facts={"record_kind": "NATIVE_PHASE_GATE", "gate_record_sha256": sha,
+                           "gate_decision": outcome, "scope": "RECORDED_GATE_OUTCOME_NOT_MODEL_QUALIFICATION"},
+                    source_refs=["phase-gate:sha256:" + sha], cohort=evaluation_scope(cohort, manifest),
+                    observed_at=row.get("ts"),
+                ))
     if package and package.get("package_status") in OUTCOMES:
         out.append(
             capture(
@@ -304,6 +337,7 @@ def intake_scope(envelope):
     acceptance data never reaches distillation by default.
     """
     import hashlib
+
     from ..common import REPO_ROOT
 
     try:
@@ -331,7 +365,8 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
             cursor = prior[0] if prior else ""
             fields = identity_col + ",record" if scope == "agent" else "order_id,state,envelope"
             rows = c.execute(
-                f"SELECT {fields} FROM {table} WHERE {identity_col}>? ORDER BY {identity_col} LIMIT ?", (cursor, limit)
+                f"SELECT {fields} FROM {table} WHERE {identity_col}>? ORDER BY {identity_col} LIMIT ?",  # noqa: S608 - fixed internal tables/columns
+                (cursor, limit)
             ).fetchall()
             if not rows:
                 c.execute("DELETE FROM afo_control WHERE key=?", (control,))
@@ -370,7 +405,8 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
         if rows:
             with afo_store.tx() as c:
                 c.execute(
-                    "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                    "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE "
+                "SET value=excluded.value,updated_utc=excluded.updated_utc",
                     (control, rows[-1][identity_col], utc_now(), "deterministic-learning-reconciler"),
                 )
     return out
@@ -380,8 +416,9 @@ def capture_workorders(afo_store, lessons, *, client=None, limit=8):
     """Bounded reconciliation also covers detached/non-AFO jobs and interrupted finalizers."""
     import heapq
     import os
+
     from ..common import state_dir
-    from ..fabro.client import run_status, FabroUnavailable
+    from ..fabro.client import FabroUnavailable, run_status
 
     root = state_dir() / "workorders"
     if not root.is_dir():
@@ -431,7 +468,8 @@ def capture_workorders(afo_store, lessons, *, client=None, limit=8):
     with afo_store.tx() as c:
         if names:
             c.execute(
-                "INSERT INTO afo_control VALUES ('learning_workspace_cursor',?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_utc=excluded.updated_utc",
+                "INSERT INTO afo_control VALUES ('learning_workspace_cursor',?,?,?) ON CONFLICT(key) DO UPDATE "
+                "SET value=excluded.value,updated_utc=excluded.updated_utc",
                 (names[-1], utc_now(), "deterministic-learning-reconciler"),
             )
         else:
