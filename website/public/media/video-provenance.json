@@ -1,0 +1,18 @@
+{
+  "description": "Rendered visualization of recorded gate events; not a live run or screen recording.",
+  "run_id": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+  "duration_seconds": 45,
+  "dimensions": [
+    1280,
+    720
+  ],
+  "replay_sha256": "8cc89797b4e7e73bffcd85e26833c8b9c7328b2f44d18505017f593cba81d209",
+  "video_sha256": "2f2448e8a65f2f17b90994f4b5e87ca97361813ed5e3a00a263589e781903511",
+  "event_count": 18,
+  "captions": "workflow-replay.vtt",
+  "source_hashes": {
+    "evidence/v0.4/runs/RC1/WO-0009B-STM32N6-IWDG-HAL-rc4/gate-log.jsonl": "24f7f99f9614c660221d64fc9593ab2ca96e22f99bf71c7d2e2b97299fb93c30",
+    "evidence/v0.4/runs/RC1/WO-0009B-STM32N6-IWDG-HAL-rc4/package.json": "a59510de6f3819320b7117c165e819660a04403c39b99c10fc1619de18415115",
+    "evidence/v0.4/runs/CR-T044/control-room-after-r168.png": "933d4bd37bec42b2bdd54774a5d3ffa5cd5c16220a8c4f558dcc401c67ac4433"
+  }
+}

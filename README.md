@@ -1,5 +1,7 @@
 # Forge-C
 
+[**Public website & documentation**](https://jnsagai.github.io/forge-c/)
+
 **An open-source, on-premise "software dark factory" for safety-related embedded C drivers.**
 
 You give Forge-C an approved set of inputs, such as requirements, safety inputs and the MCU reference manual. Forge-C then
