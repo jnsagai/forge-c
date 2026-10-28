@@ -11,6 +11,15 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 from . import structured as S
 
+# Admission facts are not malformed model answers. Retrying an identical denied
+# request inside its semantic repair loop cannot supply engineering evidence.
+# Busy/transport refusals retain their existing bounded retry behavior.
+NON_REPAIRABLE_REFUSALS = frozenset("CALL_REFUSED:" + code for code in (
+    "JOB_TOKEN_ENVELOPE_EXHAUSTED", "MISSION_TOKEN_CAPACITY_EXHAUSTED", "MISSION_REQUESTS_EXHAUSTED",
+    "MISSION_DEADLINE_EXHAUSTED", "REQUEST_NOT_AUTHORIZED", "GENERATION_RETIREMENT_FENCED",
+    "EXECUTION_INFERENCE_LEASE_REQUIRED", "REQUEST_START_FENCED", "REQUEST_ORDER_NOT_ACTIVE",
+    "REQUEST_AUTHORITY_CHANGED_BEFORE_PROVIDER_SEND",
+))
 
 def _ckpt(ws: Path, phase: str, task: str) -> Path:
     return Path(ws) / ".forge-run/lrtx" / phase / "packets" / (task.replace(":", "__") + ".json")
@@ -124,6 +133,8 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if r["doc"] is not None and not r["errors"]:
             doc = r["doc"]
         if not errs:
+            break
+        if any(error in NON_REPAIRABLE_REFUSALS for error in errs):
             break
         # bounded extension (at most 2 extra repairs, inside the visit's shared budget) while the answer improves
         if n + 1 == limit and limit < max_repairs + 3 and len(attempts) > 1 and \

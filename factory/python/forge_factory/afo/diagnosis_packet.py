@@ -171,7 +171,8 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
                     if not line.strip():
                         continue
                     row = json.loads(line)
-                    row_phase = row.get("phase") or (row.get("result") or {}).get("phase")
+                    nested = row.get("result")
+                    row_phase = row.get("phase") or (nested.get("phase") if isinstance(nested, dict) else None)
                     if row_phase not in PHASES or PHASES.index(row_phase) > PHASES.index(phase):
                         continue
                     scoped_rows.append(row)
@@ -186,6 +187,24 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
                                 {
                                     "id": f"{row.get('op', row.get('step', 'diagnostic'))}:{n}",
                                     "detail": issue,
+                                    "source_ref": rel,
+                                    "source_sha256": sha256_file(p),
+                                }
+                            )
+                        # An inspector can fail before recording any findings.
+                        # Preserve the gate's observed state as operational
+                        # evidence, without inventing a defect in the product.
+                        if (
+                            result.get("decision") in ("REINSPECT", "REWORK", "BLOCKED")
+                            and isinstance(result.get("reason"), str)
+                            and result["reason"].strip()
+                        ):
+                            findings.append(
+                                {
+                                    "id": f"{row.get('step', 'gate')}:state",
+                                    "category": "NATIVE_GATE_STATE",
+                                    "decision": result["decision"],
+                                    "detail": result["reason"],
                                     "source_ref": rel,
                                     "source_sha256": sha256_file(p),
                                 }
