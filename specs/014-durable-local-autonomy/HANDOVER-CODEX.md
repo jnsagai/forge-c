@@ -7,7 +7,49 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
-## Current checkpoint — 2026-10-28 official Qwen3.8 Q8 xhigh
+## Current checkpoint — 2026-10-28 finite Qwen3.8 role admission and live smoke
+
+Tested/deployed **2c774b440db65f47f5b78a4702ad974254fa6a96**. Quality profile v2
+binds prospective65536-token diagnosis/maintenance reservations by exact profile
+version/path/SHA256. It checks the complete first diagnosis request before charging,
+preserves legacy reservations and rejects job/profile/case rebinding. Existing
+policy/mission/role/gateway gates remain. Exact139 local regression PASS(30.694s),
+75 native fixture PASS(265.659s), zero fixture inference; original failures retained.
+
+Engineering deployment preserved both failed driver mission snapshots (RCC86000,
+IWDG116000) and original production grant expiry. Current intent RUNNING epoch7.
+Controller/backend/recovery timer are healthy. Recorder migration's immutable-plan
+failure is retained; corrected repository preserves prior commits and publishes
+the existing q38/2026-10-28-local-factory branch, same14:06:31Z observation deadline.
+
+**Active scoped Qwen3.8 xhigh protocol smoke:** order afo-39c86c2270b4cf1a,
+job afo-agent-14b99411ece11c4e260560b4, native01M611WAN8544QQKWQE3A1H2MC.
+At10:48:42Z native API RUNNING, one request SENT, inference HELD, usage UNKNOWN.
+Do not redispatch or infer termination from observation timeout. Prior SSH/banner
+timeouts recovered through one reused SSH connection; they caused no worker restart.
+
+One independently compiled seeded REG32 case is enrolled from the unchanged
+100-case protocol catalogue;99 remain unrun. Distinct signed qualification scope
+AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1 permits one job/request,65536 tokens,
+zero product attempts/tools/corrections, deadline14:06:31Z. This uses standing owner
+qualification approval/SSH-agent signing; it does not refill a failed driver mission.
+Current active policy is the temporary qualification policy. **After native/request
+quiescence, collect/audit the original row and restore the backed-up production
+policy under current operator intent.** Production grant V2 expiry remains29Oct05:00Z.
+
+Private remote directory: production-local-014/deployment/q38-protocol-smoke-20261028.
+Local one-shot observer/provision and activation scripts are in loop10
+operations/feature014/overnight-audit-20261028. Controller owns dispatch; manual
+observation must never create a competing poll/launch scheduler. Exact live source
+must stay2c774b4 while its job runs.
+
+No role, product, recovery, learning-benefit or availability success is claimed.
+Formal ledger remains30/58; no task tick. Existing parked tasks/inspector freeze
+remain; this is a scoped model-switch protocol observation, not their requalification.
+
+[Evidence, commands and next execution steps](../../evidence/014-durable-local-autonomy/role-envelopes-2c774b4/README.md).
+
+## Previous checkpoint — 2026-10-28 official Qwen3.8 Q8 xhigh
 
 This checkpoint supersedes the expired overnight RUNNING/pause instructions below.
 Owner subsequently requested a six-hour production milestone (08:06:31–14:06:31Z),

@@ -1,0 +1,18 @@
+{
+  "status": "ROLE_ENVELOPE_SOURCE_DEPLOYED",
+  "source_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "operator_epoch": 7,
+  "profile_version": 2,
+  "profile_sha256": "d9b03f1128dce9cc23784a7fb1f942bd067762bbbe028a0ac570cb01c401d4a8",
+  "health": {
+    "ollama": true,
+    "gateway": true,
+    "fabro": true
+  },
+  "new_generation_requests": 0,
+  "historical_mission_snapshots_unchanged": true,
+  "engineering_intervention": true,
+  "authorization_renewed": false,
+  "role_qualification": "PENDING",
+  "progress_deadline_epoch": 1793196391.0
+}

@@ -997,3 +997,22 @@ conclusion. New recorder observes history only; model-free factory remains activ
 Full task ledger30/58 unchanged. Recovery/product/learning/operational qualification
 remain distinct and unproven. Evidence, commands, native JUnit hashes and limits:
 [golive-q38-20261028](../../evidence/014-durable-local-autonomy/golive-q38-20261028/README.md).
+
+
+## 2026-10-28 finite role envelopes and first actual Qwen3.8 request
+
+Exact2c774b440db65f47f5b78a4702ad974254fa6a96:139 local regression PASS(30.694s),
+75 clean-source native Omniverse2 fixture PASS(265.659s), no skips/failures in these
+two lanes. Baseline14 failures, initial missing helper import and missing real-Fabro
+environment are retained. All fixtures generate zero inference. New profile budgets
+are prospective, exact-bound and finite; complete first diagnosis requests are
+measured before charging. Legacy costs/reservations and every admission gate stay.
+
+Deployed with operator fencing and exact owned retirement, healthy backend/controller.
+Recorder history migration required a correction; old failure and all commits remain.
+One Qwen3.8 xhigh protocol request is actually running on Omniverse2 under a separately
+signed one-job/one-request65536-token seeded scope, deadline14:06:31Z. At10:48:42Z
+native API RUNNING, SENT request, HELD lease, unknown usage.99/100 cases remain unrun;
+no role/campaign/product/learning/availability success. Restore original production
+policy after independently proven native/request quiescence and audit the original row.
+Formal30/58 unchanged. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/role-envelopes-2c774b4/README.md).

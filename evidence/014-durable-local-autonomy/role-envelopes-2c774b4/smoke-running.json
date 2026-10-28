@@ -1,0 +1,115 @@
+{
+  "captured_utc": "2026-10-28T10:48:42.001861Z",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 7
+  },
+  "trial": "obligation-counterexample:0",
+  "order": {
+    "order_id": "afo-39c86c2270b4cf1a",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "provisioning": null,
+  "records": [
+    {
+      "job": {
+        "job_id": "afo-agent-14b99411ece11c4e260560b4",
+        "state": "RUNNING",
+        "run_id": "01M611WAN8544QQKWQE3A1H2MC",
+        "error": null,
+        "deadline_epoch": 1793187962.0790026,
+        "reserved_tokens": 65536,
+        "reported_tokens": null,
+        "receipt_id": null,
+        "initial_request_measurement": {
+          "sha256": "1afa59f778cbd6688b6c9f7d20be7fa0d00e087639cccdc2aee1f31c355e67ba",
+          "serialized_bytes": 9745,
+          "input_tokens": 9873,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "wire_request_sha256": "b90865127b0b1477bf71fb5c941ad9445baae279b725ffa49378a36cc99ea343",
+          "profile_sha256": "d9b03f1128dce9cc23784a7fb1f942bd067762bbbe028a0ac570cb01c401d4a8",
+          "effective_reasoning_effort": "xhigh",
+          "effective_output_cap": 34816,
+          "requested_output_cap": 2048,
+          "gateway_transformation_count": 1,
+          "evidence_ref_aliases": 5
+        }
+      },
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-82ab0a895f07dec7c25a01e2",
+        "execution_liveness": "UNKNOWN",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-14b99411ece11c4e260560b4",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-28T10:48:35.148231Z",
+        "launch_nonce": "4212f2c71b8e2407da4035d62c5cdde5",
+        "lease_epoch": 13,
+        "mission_id": "qualification-014-q38-quality-smoke-20261028",
+        "native_run_ids": [
+          "01M611WAN8544QQKWQE3A1H2MC"
+        ],
+        "outcome_evidence_ref": null,
+        "quiescence_evidence_ref": null,
+        "resource_lease": "HELD",
+        "revision": 11,
+        "schema_version": "1.0",
+        "task_outcome": "ACTIVE",
+        "terminal_reason": null
+      },
+      "native_handle": {
+        "run_id": "01M611WAN8544QQKWQE3A1H2MC",
+        "status": "RUNNING"
+      },
+      "requests": [
+        {
+          "request_id": "request-a8ac2511e10ed825fcb314ba",
+          "state": "SENT",
+          "reserved_tokens": 44689,
+          "charge": 44689,
+          "reported_tokens": null,
+          "reported_input_tokens": null,
+          "reported_output_tokens": null
+        }
+      ]
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1",
+    "created_at": "2026-10-28T10:45:00.800456Z",
+    "limits": {
+      "deadline": 1793196391.0,
+      "max_attempts": 0,
+      "max_corrections": 0,
+      "max_jobs": 1,
+      "max_requests": 1,
+      "max_tokens": 65536,
+      "max_tools": 0
+    },
+    "lineage": "owner:q38-first-protocol-generation:20261028",
+    "mission_id": "qualification-014-q38-quality-smoke-20261028",
+    "attempts": 0,
+    "jobs": 1,
+    "requests": 1,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 65536,
+    "usage_unknown": true,
+    "unique_executions": 1,
+    "unbounded_historical_usage": false
+  },
+  "heartbeat": {
+    "ts": "2026-10-28T10:48:35.897516Z",
+    "epoch": 1793184515.8979554,
+    "pid": 45961,
+    "cycle": 49,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  }
+}

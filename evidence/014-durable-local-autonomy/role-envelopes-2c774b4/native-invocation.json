@@ -1,0 +1,20 @@
+{
+  "revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "start_dirty": "",
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_role_envelopes.py",
+    "factory/python/tests/test_da014_qualification_reservations.py",
+    "factory/python/tests/test_da014_q38_quality_profile.py",
+    "factory/python/tests/test_da014_protocol.py",
+    "factory/python/tests/test_da014_maintenance.py",
+    "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-2c774b4/tmp",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-2c774b4/tests.xml"
+  ],
+  "scope": "ISOLATED_NATIVE_FIXTURES_ZERO_MODEL_REQUESTS",
+  "exit_code": 0,
+  "end_dirty": ""
+}

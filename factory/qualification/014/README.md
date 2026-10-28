@@ -30,7 +30,7 @@ to a copy of the request, including reasoning settings and output extensions.
 The adapter sends the original request, so the gateway applies that transformation
 once. Provider admission and mission accounting remain independent checks.
 
-The selected Omniverse2 Qwen profile reserves 16,384 extra output tokens for high
+The historical Qwen3.6 Omniverse2 profile reserves 16,384 extra output tokens for high
 reasoning. With the adapter's 2,048 answer tokens this alone exceeds the current
 16,000-token diagnosis job reservation. Preparation reports
 `COMPLETE_SERIALIZED_CASE_EXCEEDS_JOB_ENVELOPE`; it does not disable reasoning,
@@ -47,8 +47,19 @@ reservations. It does not authorize them. Preparation emits `jobs.json` and
 manifest hash. Provisioning checks that signature, source/case/mission/model
 identity, per-order policy cap and declared context before the first ledger
 reservation. Rebinding an existing job's reservation remains forbidden. The
-ordinary production path retains the registry allowance. Full campaign readiness
+ordinary production path retains its bound profile/role allowance. Full campaign readiness
 still requires every other prerequisite below.
+
+The owner-selected `local-rtx-v2-omniverse2-q38-quality` profile (version2) uses
+xhigh, a32768-token reasoning increment and a prospective65536-token envelope
+for each AFO diagnosis/maintenance job. Preparation uses that profile default when
+`--qualification-job-tokens` is omitted and binds version/path/SHA256 into every
+workspace manifest. The true registry default and profile default are recorded
+separately. A configured reservation is not authorization or model qualification.
+The controller checks policy/mission limits, complete first diagnosis request size
+and the profile binding before charging a new job. Existing job reservations and
+historical mission costs cannot be changed. Profiles without an override retain
+their original registry amounts; no grant is created or silently renewed here.
 
 The optional freeze argument `--mission <json-file>` binds an explicit mission
 ID, lineage and finite ledger limits into that same signed manifest. The existing
