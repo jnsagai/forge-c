@@ -107,10 +107,18 @@ def envmap(s: dict) -> dict[str, str]:
 
 def fabro_config(s: dict) -> str:
     r, p = s["root"], s["ports"]
+    runtime = s["profile"].get("runtime") or {}
+    context = runtime.get("fabro_context_tokens", 32768)
+    output = runtime.get("fabro_max_output_tokens", 16384)
+    if (type(context) is not int or type(output) is not int or not 0 < output <= context
+            or not 0 < context <= 65536):
+        raise ValueError("FABRO_MODEL_LIMITS_INVALID")
+    if "fabro_context_tokens" in runtime and context > int(runtime["ollama"]["OLLAMA_CONTEXT_LENGTH"]):
+        raise ValueError("FABRO_CONTEXT_EXCEEDS_PROVIDER")
     models = "\n".join(
         f'[llm.providers.ollama.models."{m}"]\ndisplay_name = "{m} (local, profile {s["profile"]["id"]})"\n'
         f'api_model = "{m}"\ncapabilities = {{ text = true, tools = true }}\n'
-        f"limits = {{ context_tokens = 32768, max_output_tokens = 16384 }}\n"
+        f"limits = {{ context_tokens = {context}, max_output_tokens = {output} }}\n"
         for m in s["profile"]["models"]["allowed"]
     )
     return f"""_version = 1
