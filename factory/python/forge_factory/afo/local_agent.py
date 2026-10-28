@@ -132,6 +132,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if prior["attempt_id"] == attempt_id and prior["role"] == role and (
                 prior["profile"] != profile or prior["model"] != model
                 or prior["case_sha256"] != sha256_file(case)
+                or prior.get("profile_sha256", selected["_sha256"]) != selected["_sha256"]
                 or prior.get("profile_initial_reservation") != profile_reservation):
             raise QueueError("LOCAL_AGENT_JOB_REBOUND", prior["job_id"])
     now = time.time()
@@ -151,6 +152,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "case_sha256": sha256_file(case),
         "source_workspace": str(ws),
         "profile": profile,
+        "profile_sha256": selected["_sha256"],
         "model": model,
         "policy_sha256": eff.sha256,
         "state": "PREPARED",
@@ -436,9 +438,55 @@ def _launch(job: dict, invoke) -> str:
     return rid
 
 
+def endpoint_for(job):
+    """Use the verified native route inside its runtime, retaining the intake hint.
+
+    A host preparer may record the host-only API relay. That URL is unreachable
+    from the Conductor's private network. The existing profile and owned runtime
+    record can prove the native endpoint, without changing job identity, nonce,
+    allowance or historical observations. Unproven/legacy contexts keep the hint.
+    """
+    hint = job.get("fabro_url")
+    if not job.get("profile") or os.environ.get("FORGE_LRTX_PROFILE") != job["profile"]:
+        return hint
+    from urllib.parse import urlparse
+
+    from ..lrtx.profile import LOOPBACK, ProfileRefused, load
+
+    try:
+        root = Path(os.environ["FORGE_LRTX_ROOT"]).resolve()
+        context = job.get("native_context") or {}
+        if (not context.get("FORGE_DATA_ROOT") or Path(context["FORGE_DATA_ROOT"]).resolve() != root
+                or not job.get("fabro_storage")
+                or os.environ.get("FORGE_FABRO_STORAGE") != job["fabro_storage"]):
+            return hint
+        profile = load(job["profile"])
+        pinned = job.get("profile_sha256") or (job.get("profile_initial_reservation") or {}).get("profile_sha256")
+        if not pinned or pinned != profile["_sha256"]:
+            return hint
+        path = root / "run/services.json"
+        observed = path.stat()
+        if path.is_symlink() or observed.st_uid != os.getuid() or observed.st_mode & 0o022 or observed.st_size > 65536:
+            return hint
+        services = json.loads(path.read_text())
+        if (services.get("root") != str(root) or services.get("profile") != job["profile"]
+                or services.get("profile_sha256") != pinned
+                or services.get("netns") != os.readlink("/proc/self/ns/net")):
+            return hint
+        url = urlparse(os.environ.get("FORGE_FABRO_URL", ""))
+        port = profile["deployment"]["ports"]["fabro"]
+        if (url.scheme != "http" or url.hostname not in LOOPBACK or url.port != port
+                or url.username is not None or url.password is not None
+                or url.path.rstrip("/") not in ("", "/api/v1") or url.query or url.fragment):
+            return hint
+        return f"http://127.0.0.1:{port}/api/v1"
+    except (OSError, ValueError, KeyError, TypeError, ProfileRefused):
+        return hint
+
+
 def poll(store, order, job, eff, *, client=None, launch_fn=None):
     own = client is None
-    client = client or FabroClient(base_url=job.get("fabro_url"), token=load_token(job.get("fabro_storage")), timeout=5)
+    client = client or FabroClient(base_url=endpoint_for(job), token=load_token(job.get("fabro_storage")), timeout=5)
     try:
         return _poll(store, order, job, eff, client=client, launch_fn=launch_fn)
     finally:
@@ -448,7 +496,7 @@ def poll(store, order, job, eff, *, client=None, launch_fn=None):
 
 def _poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) -> dict:
     """All I/O is bounded native control-plane work; model inference runs independently in Fabro."""
-    client = client or FabroClient(base_url=job.get("fabro_url"), token=load_token(job.get("fabro_storage")), timeout=5)
+    client = client or FabroClient(base_url=endpoint_for(job), token=load_token(job.get("fabro_storage")), timeout=5)
     launch_fn = launch_fn or launch
     if job.get("durable_protocol") or job.get("durable_native"):
         from .durable_agent import poll as durable_poll

@@ -223,7 +223,8 @@ class Executions:
                     from .dependency_wait import probe
 
                     observed = probe(
-                        self.store, "native:" + job_id, "status:" + rid, lambda rid=rid: self._observe_native(client, rid)
+                        self.store, "native:" + job_id, self._probe_condition(client, "status", rid),
+                        lambda rid=rid: self._observe_native(client, rid),
                     )
                     status = observed.get("result", {}).get("status", "UNKNOWN")
                 else:
@@ -257,7 +258,7 @@ class Executions:
                         cancel_observation = probe(
                             self.store,
                             "native:" + job_id,
-                            "cancel:" + rid,
+                            self._probe_condition(client, "cancel", rid),
                             lambda rid=rid: {"ok": False, "code": client.cancel(rid)},
                         )
                         if not cancel_observation.get("due"):
@@ -277,6 +278,16 @@ class Executions:
             "LIVE" if rec["identity_state"] == "CONFIRMED" and all(s != "UNKNOWN" for s in observations.values()) else "UNKNOWN"
         )
         return self._write(rec, rec["revision"])
+
+    @staticmethod
+    def _probe_condition(client, action, rid):
+        identity = getattr(client, "observation_identity", None)
+        suffix = ":" + identity if (
+            isinstance(identity, str) and len(identity) == 64 and all(c in "0123456789abcdef" for c in identity)
+        ) else ""
+        # Preserve the old condition/cooldown for legacy native adapters. A
+        # different actual route gets its own observation; old facts stay.
+        return action + ":" + rid + suffix
 
     @staticmethod
     def _observe_native(client, rid):
