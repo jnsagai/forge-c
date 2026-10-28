@@ -218,6 +218,7 @@ class MissionLedger:
                 raise Refused("INFERENCE_REQUEST_BUSY")
             rec = {
                 "request_id": request_id,
+                "accounting": "settled-usage/1",
                 "mission_id": mission_id,
                 "job_id": job_id,
                 "body_sha256": body_sha256,
@@ -298,15 +299,21 @@ class MissionLedger:
             if input_tokens is not None and output_tokens is not None:
                 if any(type(n) is not int or n < 0 for n in (input_tokens, output_tokens, cached_tokens or 0)):
                     raise Refused("REPORTED_USAGE_INVALID")
-                rec.update(
-                    input_tokens=input_tokens,
-                    cached_tokens=cached_tokens,
-                    output_tokens=output_tokens,
-                    reported_tokens=input_tokens + output_tokens,
-                )
+                if input_tokens + output_tokens >= (rec.get("reported_tokens") or 0):
+                    rec.update(input_tokens=input_tokens, cached_tokens=cached_tokens,
+                               output_tokens=output_tokens, reported_tokens=input_tokens + output_tokens)
                 rec["charge"] = max(rec["charge"], rec["reported_tokens"])
+            if rec.get("accounting") == "settled-usage/1" and rec["state"] == "QUIESCENT":
+                # A late usage observation cannot resurrect a completed request.
+                quiescent, evidence_ref = True, rec["quiescence_ref"]
             rec["state"] = "QUIESCENT" if quiescent and evidence_ref else "UNKNOWN"
             rec["quiescence_ref"] = evidence_ref if rec["state"] == "QUIESCENT" else None
+            if (rec.get("accounting") == "settled-usage/1" and rec["state"] == "QUIESCENT"
+                    and rec.get("reported_tokens") is not None):
+                # Release only the unused per-request reservation, inside the
+                # unchanged job envelope. Mission/job charges and all original
+                # reservation/history fields remain; unknown usage stays reserved.
+                rec["charge"] = rec["reported_tokens"]
             c.execute(
                 "UPDATE afo_request_ledger SET state=?,record=? WHERE request_id=?",
                 (rec["state"], canonical(rec).decode(), request_id),

@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -109,8 +110,8 @@ def packet(
             )
     exposed = []
     if with_lessons and ws is not None and role.endswith("-author"):
-        from ..knowledge.store import LessonStore
         from ..afo.durable import canonical, digest, immutable_json
+        from ..knowledge.store import LessonStore
 
         m = ws / ".forge-run/manifest.json"
         manifest = json.loads(m.read_text()) if m.is_file() else {}
@@ -355,8 +356,8 @@ def call(
             "role": p["role"],
         }
     t0 = time.monotonic()
-    req = urllib.request.Request(
-        (url or _gateway_url()).rstrip("/") + "/chat/completions",  # noqa: S310 - loopback
+    req = urllib.request.Request(  # noqa: S310 - operator-selected profile gateway
+        (url or _gateway_url()).rstrip("/") + "/chat/completions",
         data=json.dumps(body).encode(),
         headers={"Content-Type": "application/json"},
     )
@@ -372,6 +373,17 @@ def call(
                 for ch in chunk.get("choices") or []:
                     content.append((ch.get("delta") or {}).get("content") or "")
                     finish = ch.get("finish_reason") or finish
+    except urllib.error.HTTPError as exc:
+        code = f"HTTP_{exc.code}"
+        try:
+            value = json.loads(exc.read(4096))
+            candidate = value.get("error", {}).get("type")
+            if isinstance(candidate, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_:-]{0,95}", candidate):
+                code = candidate
+        except (OSError, ValueError, AttributeError):
+            code = f"HTTP_{exc.code}"
+        return {"doc": None, "errors": ["CALL_REFUSED:" + code], "usage": None,
+                "wall_ms": round((time.monotonic() - t0) * 1000, 1), "raw_chars": 0, "finish_reason": None}
     except (urllib.error.URLError, OSError, ValueError) as exc:
         return {
             "doc": None,
