@@ -971,3 +971,29 @@ UNKNOWN;0 model/product attempts; no qualified lessons or measured benefit.
 Evidence and commands: kernel-continuation-b321a87 in the Feature014 evidence tree.
 Formal30/58 unchanged; no role/product/self-healing/availability qualification,
 grant renewal, mission reset, deployment, promotion or merge.
+
+
+## 2026-10-28 engineering recovery and official Qwen3.8 Q8 xhigh
+
+Runtime a7490b45e25a399c87e274f60c3f2fcaba1080c2:32 native profile/gateway/product/gate
+fixture PASS (25.297s),13 inherited governance/release PASS (9.658s).
+Predecessor24f5d00:241 local affected/AFO/learning/inherited PASS (110.203s),
+52 native fixture PASS (122.768s). These are separate exact-source cohorts.
+Counterexamples, initial environment failures and an incomplete native lane remain
+retained. Static schema/specification/design/handoff checks are not runtime evidence.
+
+Official owner-selected Qwen3.8-27B Q8 xhigh is deployed on Omniverse2. Five model
+blobs freshly verified; two native render-only calls prove distinct xhigh/medium
+instructions with zero generation tokens. No Qwen3.8 role is yet qualified.
+New scoped production grant preserves original expiry/limits and historical cost.
+
+Old RCC:BLOCKED,86000 charged; source-verified engineering prelaunch reconciliation
+is not autonomous healing. Actual fresh Qwen3.6 IWDG:31 requests,83631 reported
+tokens,116000 conservative charge,SWE.1 baseline but no inspection PASS, both
+products BLOCKED/INCOMPLETE. At least13 required packets remain against1 request;
+no feasible continuation under frozen allowances, no budget reset or model-accuracy
+conclusion. New recorder observes history only; model-free factory remains active.
+
+Full task ledger30/58 unchanged. Recovery/product/learning/operational qualification
+remain distinct and unproven. Evidence, commands, native JUnit hashes and limits:
+[golive-q38-20261028](../../evidence/014-durable-local-autonomy/golive-q38-20261028/README.md).

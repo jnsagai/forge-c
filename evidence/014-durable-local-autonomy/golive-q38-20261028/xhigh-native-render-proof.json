@@ -1,0 +1,43 @@
+{
+  "details": {
+    "families": [
+      "qwen35"
+    ],
+    "family": "qwen35",
+    "format": "gguf",
+    "parameter_size": "27.3B",
+    "parent_model": "",
+    "quantization_level": "Q8_0"
+  },
+  "model": "qwen3.8:27b-q8_0",
+  "ollama": {
+    "version": "0.34.0"
+  },
+  "proof": [
+    {
+      "mode": "RENDER_ONLY_ZERO_GENERATION",
+      "requested_effort": "xhigh",
+      "template_sha256": "1f10acdd6115cf33c9be110b593e25d07e625c6b3f3a205c2a5b8eae7f23bbf7",
+      "top_effort_instruction_present": true,
+      "usage": {
+        "completion_tokens": 0,
+        "prompt_tokens": 0,
+        "total_tokens": 0
+      }
+    },
+    {
+      "mode": "RENDER_ONLY_ZERO_GENERATION",
+      "requested_effort": "medium",
+      "template_sha256": "201cd8de28e1d41d13cd3e6393e9f3f855ce87c97aa53ab4d50f1356159e0c73",
+      "top_effort_instruction_present": false,
+      "usage": {
+        "completion_tokens": 0,
+        "prompt_tokens": 0,
+        "total_tokens": 0
+      }
+    }
+  ],
+  "resident_models": [
+    "qwen3.8:27b-q8_0"
+  ]
+}

@@ -86,3 +86,12 @@ original mission costs, actual phase gates, sealed packages and Git history befo
 further work. No automatic merge, source promotion, renewed grant or hardware release.
 API bridge recovery after backend/host restart remains unverified; no24/72/168-hour
 campaign, RCC recovery qualification,30-product benchmark or learning benefit claim.
+
+
+## Post-window result
+
+The launch status above is historical. The RCC trial ended BLOCKED; IWDG was not
+submitted in that original window. Source-bound engineering reconciliation, actual
+subsequent IWDG results and the official model switch are recorded in
+[the2026-10-28 checkpoint](../golive-q38-20261028/README.md). No overnight autonomy
+or recovery success is inferred from the launch record.

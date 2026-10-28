@@ -6,7 +6,60 @@ specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from 
 No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
-## Current checkpoint — owner-approved eight-hour remote continuation
+
+## Current checkpoint — 2026-10-28 official Qwen3.8 Q8 xhigh
+
+This checkpoint supersedes the expired overnight RUNNING/pause instructions below.
+Owner subsequently requested a six-hour production milestone (08:06:31–14:06:31Z),
+selected Qwen3.8-27B Q8 for every local role and requested xhigh reasoning.
+Dedicated Omniverse2 runtime is **a7490b45e25a399c87e274f60c3f2fcaba1080c2**,
+profile **local-rtx-v2-omniverse2-q38-quality**: context65536, explicit xhigh,
+reasoning increment32768, one admitted inference. Backend, Conductor and recovery
+timer are running under RUNNING epoch5; obey any newer authenticated operator intent.
+
+Official switch was an engineering intervention with source/policy/DB/ownership
+backups. Scoped SSH-agent-signed production grant
+AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2 retains original expiry
+**2026-10-29T05:00Z**, finite allowances and manual LL order scope.
+Historical mission costs and old grants remain intact. Five installed model blobs
+were hash-verified; native Ollama0.34.0 render-only checks prove xhigh is applied
+with zero generation tokens. **Qwen3.8 role qualification is still pending.**
+
+Actual previous overnight RCC trial ended BLOCKED; a prelaunch empty Git commit
+became UNKNOWN and held capacity. Explicit source-bound engineering reconciliation
+released the proven prelaunch lease, retaining86000 charged tokens. No autonomous
+self-healing success. Fresh Qwen3.6 IWDG trial at97936d7 made31 real model requests
+and created a SWE.1 baseline, but inspection/continuation exhausted its finite
+envelopes. BLOCKED/INCOMPLETE,116000 conservative tokens retained. At least13 known
+required packets remain against1 request left; **do not replay or reset it**.
+
+General corrections now cover prelaunch evidence, immutable case identity,
+settled request accounting, bridge ownership, operator epoch fencing, reason-only
+gate diagnosis, administrative-refusal retry handling, separate failed product
+outcomes/physical leases, and factual phase-gate learning dispositions.
+
+Exact a7490b4:32 native Omniverse2 fixture PASS (25.297s),13 inherited release PASS
+(9.658s). Earlier24f5d00:241 local affected/regression PASS (110.203s),52 native
+PASS (122.768s). Initial failures/incomplete lanes remain retained. Do not aggregate
+these as a single full-suite result or call specification checks runtime evidence.
+
+Existing finite recorder was repinned after its source guard correctly rejected
+the old plan; published progress is now on **q38/2026-10-28-local-factory**.
+It only observes already terminal historical Qwen3.6 orders, with no new intake or
+generation, until the original14:06:31Z milestone. The factory supervisor continues
+independently. Old overnight and golive progress branches remain historical.
+
+Next resolve prospective role-envelope feasibility before another large product
+attempt: legacy diagnosis16000/maintenance24000 jobs cannot fit the32768 reasoning
+increment plus input/answer. Use existing qualification/admission paths and current
+finite authorization; never refill an exhausted mission. Qualify each role separately
+against independent evidence. Full recovery/RCC, product benchmark, learning benefit,
+independent fault observation and24/72/168-hour operation remain unproven.
+Formal ledger remains **30/58**, no new ticks; Feature014 and this goal are active.
+
+[Evidence, exact commands, outcomes and remaining work](../../evidence/014-durable-local-autonomy/golive-q38-20261028/README.md).
+
+## Historical checkpoint — owner-approved eight-hour remote continuation
 
 The owner clarified the overnight request: **"I want a brute force continuation on
 omniverse, for8 hours"**. Remote source is pinned to

@@ -1,0 +1,13 @@
+{
+  "scope": "SOURCE_VERIFIED_ENGINEERING_RECONCILIATION_NOT_AUTONOMOUS_RECOVERY",
+  "original_revision": "66c3d13d38b401129023b2a20b3e0239ef844f74",
+  "job_id": "afo-product-6b757c421fc20327812c971a",
+  "proof_sha256": "3a5988fc6dbbe060fe3c58ea174052cbcdfd06560c565a894f9490cb1d5cc37b",
+  "observed_failure": "git commit: nothing to commit, working tree clean",
+  "reviewed_boundary": "Original resume commit precedes model-profile/preflight/workflow/native launch. Original single-dispatch trace and hash-bound prepared workspace establish local prelaunch failure.",
+  "engineering_intervention": true,
+  "autonomous_recovery_claim": false,
+  "historical_charged_tokens_preserved": 86000,
+  "resource_lease_after_reconciliation": "RELEASED",
+  "current_intent_supersedes_maintenance_pause": "RUNNING epoch5"
+}
