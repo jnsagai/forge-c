@@ -1,0 +1,81 @@
+{
+  "M1": "NOT_RUN",
+  "cohorts": [
+    {
+      "artifact": "local-7a4bc51.xml",
+      "errors": 0,
+      "failures": 0,
+      "host": "master",
+      "provider_substitutions": "Explicit scripted semantic artifact/inspection fixtures; real tools and gates. Not Qwen qualification.",
+      "revision": "7a4bc51abb200b074e2a2e3ecf962298901c0808",
+      "seconds": 166.956,
+      "sha256": "bbbb9bff75c661789310acaa58facfb62b94b9fc9c26c2af05cfe8f40d1abb4e",
+      "skipped": 0,
+      "tests": 120
+    },
+    {
+      "artifact": "omniverse2-7a4bc51.xml",
+      "errors": 0,
+      "failures": 0,
+      "host": "omniverse2",
+      "provider_substitutions": "Explicit scripted semantic artifact/inspection fixtures; real tools and gates. Not Qwen qualification.",
+      "revision": "7a4bc51abb200b074e2a2e3ecf962298901c0808",
+      "seconds": 289.44,
+      "sha256": "25b2e17c0dc0145c0388b548af4e546575e50c86a6da79aa872418e318eadc95",
+      "skipped": 0,
+      "tests": 169
+    },
+    {
+      "artifact": "local-545e102.xml",
+      "errors": 0,
+      "failures": 0,
+      "host": "master",
+      "provider_substitutions": "Explicit scripted semantic artifact/inspection fixtures; real tools and gates. Not Qwen qualification.",
+      "revision": "545e1024f396a039d3107279fd040eac83a1e51c",
+      "seconds": 45.976,
+      "sha256": "eeb9a46f25a3bd8dcbefc3153593a6c24d5a74b19eef760a97e7ca60f27e4989",
+      "skipped": 0,
+      "tests": 11
+    },
+    {
+      "artifact": "local-41a6c28.xml",
+      "errors": 0,
+      "failures": 0,
+      "host": "master",
+      "provider_substitutions": "Explicit scripted semantic artifact/inspection fixtures; real tools and gates. Not Qwen qualification.",
+      "revision": "41a6c2832b14332125b7c37ce798a8117b6a4a78",
+      "seconds": 5.289,
+      "sha256": "e1579eca96707065cc357adc1ae0a8d94bf842858e1fe1f27085a4a22b710ddf",
+      "skipped": 0,
+      "tests": 23
+    }
+  ],
+  "completed_incremental_tasks": [
+    "IE-T001",
+    "IE-T002",
+    "IE-T003",
+    "IE-T005",
+    "IE-T006"
+  ],
+  "formal_tasks": {
+    "completed": 30,
+    "total": 58
+  },
+  "general_recovery": "DEFERRED_BY_DEVELOPMENT_POLICY",
+  "latest_runtime_source": "41a6c2832b14332125b7c37ce798a8117b6a4a78",
+  "learning_benefit": "UNKNOWN",
+  "live_role_requests": "NOT_CAPTURED",
+  "new_objective_authority": "NOT_ESTABLISHED",
+  "operational_availability": "NOT_QUALIFIED",
+  "overlapping_cohorts": true,
+  "product_acceptance": "NOT_RUN",
+  "production_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "requirements_review": "PENDING",
+  "schema": "forge-c/incremental-verification/1",
+  "static_validation": {
+    "contracts": "PASS",
+    "design": "PASS",
+    "runtime_qualification": false,
+    "spec": "PASS"
+  }
+}

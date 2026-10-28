@@ -128,6 +128,10 @@ Keep AFO/Fabro, versioned roles, MCP boundaries, current stores, deterministic v
 For M1:
 
 - Keep the selected local Qwen model and existing Ollama backend fixed. MTP is a separate later comparison.
+  **Superseding owner decision, 2026-10-28:** "no, go with MTP" selects the
+  single-slot Qwen3.8-27B Q8_0 MTP3/xhigh profile prospectively. The earlier
+  Ollama-only instruction is historical. Backend smoke, complete role qualification
+  and product acceptance remain separate; all other bounds below still apply.
 - Maintain one admitted inference request at a time and bounded verification resources.
 - Use small coherent engineering packets and self-contained instructions.
 - Keep author and inspector roles separated, and use independent executable/reference checks to address common-model errors.

@@ -12,10 +12,54 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 Owner decision5e89a2b supersedes the immediate full-CRC recovery priority:
 [IMPLEMENTATION-INCREMENTAL-E2E.md](IMPLEMENTATION-INCREMENTAL-E2E.md).
 Start M1 input-assisted SWE.1–6 for LL_CRC_Write_IDR/LL_CRC_Read_IDR, with legitimate
-review and actual checks, then M2 unassisted repeatability. General recovery, MTP
-promotion and broader qualification remain later milestones. Preserve all historical
+review and actual checks, then M2 unassisted repeatability. Owner later selected
+MTP explicitly (2026-10-28: "no, go with MTP"); the tiny xhigh/MCP backend smoke
+passed. Full role qualification, deployment, general recovery and broader qualification
+remain incomplete. Preserve all historical
 expenditure, quality gates, model-free supervision and exact runtime authority.
 See incremental-status.json and incremental-traceability.csv; all live milestones NOT_RUN.
+
+## Incremental implementation checkpoint — 2026-10-28 19:50Z
+
+Latest runtime source **41a6c28**, prospective/not deployed. Formal ledger remains
+**30/58**. Scoped IE-T001/002/003/005/006 complete with linked evidence; IE-T004/007
+partial, IE-T008/009 and all live milestones NOT_RUN. Do not report fixture READY
+as an actual reviewed/Qwen M1 product.
+
+- Six-phase IDR fixture uses real authorization tickets, compilation, host tests,
+  coverage, integration, Renode, Robot, trace/inspection and release. Provider
+  artifacts, semantic inspection verdicts and review are explicit fixtures.
+  Wrong-read executable mutant and broken required trace are independently rejected.
+- Exact7a4bc51: **120 local PASS;169 Omniverse2 PASS**,0skips. Exact545e102:
+  **11 local PASS** after reserving-versus-executing status correction. Exact41a6c28:
+  **23 local PASS** for complete-role preflight, context refusal/advisory resume
+  and inherited recovery. Cohorts overlap; native source clean before/after.
+- Real MTP/Q8/xhigh backend smoke atd3f0b28: two actual requests, real MCP stdio
+  configure ticket consumed, independently checked final JSON;1295 reported tokens,
+ 73949 conservative reservation. Original deadline/cumulative bounds retained after
+  correcting an MCP field-name harness failure that made0requests. Experiment
+  stopped its own providers before restoring RUNNING22. No production promotion.
+- The reference importer uses the existing LessonStore/qualification/curator path.
+  Historical CRC/SPI/USART/GPIO inspector holdouts are excluded even when old source
+  manifests lack evaluation_holdout. TIM's short SWE.2 handoff candidate prepared
+  onloop10; independent transfer qualification pending, exposure=false, benefit UNKNOWN.
+- Complete-role static preflight uses the normal gateway transformation and role
+  admission, measures all serialized content and output/reasoning, includes release,
+  and cannot reserve or launch. Prepared M1 reports
+  PROVIDED_REQUIREMENTS_REVIEW_MISSING_OR_UNBOUND. Complete live requests not captured;
+  authority for the distinct objective not established. Owner requirements-review
+  question is pending; do not fabricate a review or renew old authority.
+
+Next: reviewed requirements at a clean prospective source; finish dependency-safe
+positive provisional continuation and actual bounded M1 request/authority bindings;
+then existing AFO/Conductor admission and one Qwen product attempt. General recovery
+is deferred by the explicit development policy, not falsely recorded as attempted.
+The old CRC mission remains exhausted; a new name cannot reset it. Production still
+fcb15cb, model-free supervision retained. Reprepare inputs after a final reviewed
+commit; the staged41a6c28 report is evidence, not a reusable launch permission.
+
+[Exact evidence and executable harnesses](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md).
+[Phase-reference preparation](REFERENCE-ARTIFACTS.md).
 
 ## Exact diagnosis admission refusal and continuation readiness
 

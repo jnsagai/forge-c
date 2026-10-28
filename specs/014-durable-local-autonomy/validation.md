@@ -1160,3 +1160,28 @@ runs. Baseline4PASS/6FAIL0.250s; localcandidate31PASS4.608s;44inherited semantic
 326.579s; exact10PASS0.158s;0skips/0model calls. No inspector/safety/engine semantics
 or old mission allowance changed. Formal30/58unchanged; no role/product/learning/
 availability claim. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/scope-coverage-dd870e1/README.md).
+
+
+## Incremental IDR checkpoint — 2026-10-28
+
+Prospective runtime41a6c28; production remainsfcb15cb. Scoped IE-T001/002/003/005/006
+have evidence; the formal DA ledger remains30/58. Exact7a4bc51 passed120local and169
+Omniverse2 checks,0skips; exact545e102 passed11incremental checks after distinguishing
+reservations from execution; exact41a6c28 passed23preflight/context-refusal/advisory
+checks. Cohorts overlap. Actual build, host, Renode, Robot and release checks use
+explicit semantic-provider/review fixtures, never substituted tool PASS outcomes.
+
+The real d3f0b28 MTP/Q8/xhigh backend smoke passed two requests through actual MCP
+stdio and a normal one-use tool ticket, with an independently checked final JSON.
+It establishes only that small backend/protocol path, not general role competence.
+TIM reference preparation remains unqualified/unexposed. Historical cloud holdouts
+are excluded. Exposure, application and benefit remain separate.
+
+The prepared M1 preflight reports missing genuine requirements review; current
+objective authority and complete live role requests are not established. Positive
+dependency-independent provisional continuation remains incomplete (IE-T004).
+IE-T007 remains partial, IE-T008/009 NOT_RUN; no product, learning-benefit or 24/7
+availability claim. Spec/contracts/design checks remain documentation evidence.
+
+[Exact revisions, executable harnesses, XML, known failures and current blockers](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md).
+[Incremental runbook](INCREMENTAL-RUNBOOK.md).

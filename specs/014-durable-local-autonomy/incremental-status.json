@@ -8,7 +8,13 @@
     "M4": "NOT_RUN",
     "M5": "NOT_RUN"
   },
-  "completed_incremental_tasks": [],
+  "completed_incremental_tasks": [
+    "IE-T001",
+    "IE-T002",
+    "IE-T003",
+    "IE-T005",
+    "IE-T006"
+  ],
   "formal_da_completed_tasks": 30,
   "formal_da_total_tasks": 58,
   "live_authority": "NOT_ESTABLISHED_FOR_NEW_OBJECTIVE",
@@ -16,5 +22,25 @@
   "product_acceptance": "NOT_RUN",
   "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
-  "backend_qualification": "PENDING_EXACT_XHIGH_ROLE_PROTOCOL"
+  "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
+  "latest_source_revision": "41a6c2832b14332125b7c37ce798a8117b6a4a78",
+  "production_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
+  "native_fixture": {
+    "revision": "7a4bc51abb200b074e2a2e3ecf962298901c0808",
+    "passed": 169,
+    "skipped": 0,
+    "model_requests": 0
+  },
+  "reference_candidate": {
+    "source": "WO-AFO-c2fd276494a54e7f-a1",
+    "status": "PENDING_INDEPENDENT_QUALIFICATION",
+    "exposed": false,
+    "benefit": "UNKNOWN"
+  },
+  "partial_tasks": {
+    "IE-T004": "Shared bounds/deferred rungs implemented; no qualified positive independent provisional continuation.",
+    "IE-T007": "Executable complete-role preflight; actual live bodies and bounded current objective authority missing."
+  },
+  "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md"
 }
