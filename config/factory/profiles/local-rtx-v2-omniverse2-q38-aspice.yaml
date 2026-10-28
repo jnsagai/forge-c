@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-aspice
-version: 1
+version: 2
 work_order_purpose: ASPICE_ONLY
 status: OWNER_SELECTED_ASPICE_DEVELOPMENT; ROLE_QUALIFICATION_PENDING
 description: 'Owner2026-10-28: prospective ASPICE-only engineering development. Existing
@@ -34,6 +34,7 @@ runtime:
     OLLAMA_NOPRUNE: '1'
   timeout_scale: 4
 structured:
+  coherent_scope_groups: true
   phases_by_layer:
     LL:
     - SWE.1

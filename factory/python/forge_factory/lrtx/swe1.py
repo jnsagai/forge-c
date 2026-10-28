@@ -107,20 +107,30 @@ def inventory(ws: Path) -> dict:
                                                     "description": desc.get(k, "")}
                                                 for k, v in r["fields"].items()}})
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
-    return {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
-            "generated_at": utc_now()}
+    inv = {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
+           "generated_at": utc_now()}
+    local = _manifest(ws).get("local_profile") or {}
+    if local.get("id"):
+        from .profile import load
+
+        structured = load(local["id"]).get("structured") or {}
+        if structured.get("coherent_scope_groups") is True:
+            from .obligations import scope_field_sets
+
+            inv["coherent_field_sets"] = scope_field_sets(_manifest(ws)["scope"])
+    return inv
 
 
 def groups(inv: dict) -> list[dict]:
     """One packet per register, split at MAX_FIELDS fields (field order of the RM section kept)."""
+    from .obligations import partition
+
     out = []
     for r in inv["registers"]:
         names = list(r["fields"])
-        n = -(-len(names) // MAX_FIELDS) or 1  # balanced parts, none larger than MAX_FIELDS
-        size = -(-len(names) // n) if names else 0
-        for i in range(0, len(names), size or 1):
-            part = names[i:i + size]
-            gid = f"{r['register']}" + (f"_{i // size + 1}" if n > 1 else "")
+        parts = partition(r["register"], names, inv.get("coherent_field_sets", []), MAX_FIELDS)
+        for i, part in enumerate(parts):
+            gid = f"{r['register']}" + (f"_{i + 1}" if len(parts) > 1 else "")
             out.append({"id": gid, "register": r["register"], "section": r["section"], "file": r["file"],
                         "pages": r["pages"], "fields": {f: r["fields"][f] for f in part}})
     return out
@@ -654,10 +664,16 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     S.record(ws, "SWE.1/inventory.json", inv)
     if inv["missing_sections"]:
         return reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
+    from .obligations import CoherentScopeRefused
+
+    try:
+        obligations = groups(inv)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
     results = []
-    for g in groups(inv):
+    for g in obligations:
         task = f"requirements:{g['id']}"
         rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
                        lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget, routed.get(task))
