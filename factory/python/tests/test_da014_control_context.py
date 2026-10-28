@@ -159,3 +159,24 @@ def test_existing_http_operator_decision_and_token_fingerprint_bind_one_receipt(
     assert auth["method"] == "DASHBOARD_OPERATOR_BEARER" and auth["credential_sha256"] == hashlib.sha256(token.encode()).hexdigest()
     assert token not in json.dumps(receipts(store)) and "FORGED" not in json.dumps(receipts(store))
     assert not D.operator_ok("Bearer wrong") and D.operator_ok("Bearer " + token)
+
+
+def test_delayed_maintenance_resume_cannot_replace_newer_operator_stop(control):
+    store, intent = control
+    paused = O.synchronize(store, 'pause', 'maintenance', 'bounded deployment')
+    stopped = O.synchronize(store, 'shutdown', 'owner', 'newer stop')
+    before = receipts(store)
+    with pytest.raises(Refused, match='OPERATIONS_INTENT_SUPERSEDED'):
+        O.synchronize(store, 'resume', 'maintenance', 'finish deployment', expected_epoch=paused['epoch'])
+    assert intent.read() == stopped
+    assert store.control() == {'paused': '1', 'draining': '1'}
+    assert receipts(store) == before
+
+
+def test_current_maintenance_epoch_can_resume_through_existing_control_path(control):
+    store, intent = control
+    paused = O.synchronize(store, 'pause', 'maintenance', 'bounded deployment')
+    resumed = O.synchronize(store, 'resume', 'maintenance', 'finish deployment', expected_epoch=paused['epoch'])
+    assert resumed['epoch'] == paused['epoch'] + 1
+    assert resumed['mode'] == 'RUNNING' and intent.read() == resumed
+    assert store.control() == {'paused': '0', 'draining': '0'}

@@ -85,11 +85,13 @@ class Intent:
             if os.path.exists(tmp):
                 os.unlink(tmp)
 
-    def set(self, mode, *, actor, reason, initialize=False, settle=None, apply=None, authentication=None):
+    def set(self, mode, *, actor, reason, initialize=False, settle=None, apply=None, authentication=None, expected_epoch=None):
         if mode not in MODES or not actor or not reason.strip():
             raise Refused("AUTHENTICATED_INTENT_AND_REASON_REQUIRED")
         with self.lock():
             old = self.read()
+            if expected_epoch is not None and old["epoch"] != expected_epoch:
+                raise Refused("OPERATIONS_INTENT_SUPERSEDED")
             if old["mode"] == "UNKNOWN" and not initialize:
                 raise Refused("OPERATIONS_INTENT_UNKNOWN")
             rec = {
@@ -226,7 +228,7 @@ def control_context(location, record, *, authentication=None):
     return {**body, "control_id": "control-" + digest(body)}
 
 
-def synchronize(store, action, actor, reason, *, authentication=None):
+def synchronize(store, action, actor, reason, *, authentication=None, expected_epoch=None):
     """Shared CLI/dashboard control path; the caller authenticates before entering."""
     mode = {"pause": "PAUSED", "drain": "DRAINING", "resume": "RUNNING", "shutdown": "STOPPED"}[action]
     def apply(rec):
@@ -234,7 +236,9 @@ def synchronize(store, action, actor, reason, *, authentication=None):
                             "draining": "1" if action in ("drain", "shutdown") else "0"},
                            actor, reason, context=rec["control_context"])
 
-    rec = Intent().set(mode, actor=actor, reason=reason, apply=apply, authentication=authentication)
+    rec = Intent().set(
+        mode, actor=actor, reason=reason, apply=apply, authentication=authentication, expected_epoch=expected_epoch
+    )
     return rec
 
 
