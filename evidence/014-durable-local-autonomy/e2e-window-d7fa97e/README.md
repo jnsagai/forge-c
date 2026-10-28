@@ -118,3 +118,28 @@ production-local-014/deployment/observe-e2e-window-v3.py, not a duplicate dispat
 
 Private local artifacts/scripts: loop10 operations/feature014/overnight-audit-20261028.
 Remote state: /mnt/data/forge-c/production-local-014/deployment/e2e-window-20261028-v3.
+
+
+## Owner dashboard connection — 13:05Z
+
+The existing Fabro Monitor now includes source **forge-c-omniverse2-production**,
+labelled **Forge-C · Omniverse production · Qwen3.8 Q8 xhigh**, under Forge-C Fabric.
+Open http://localhost:8787 (or the existing master.local:8787 LAN address), select
+Forge-C Fabric and click the CRC row WO-AFO-99cc4f39103951e7-a1. RNG appears after
+it starts; no native RNG row is fabricated while its serial intake is pending.
+
+[Connection](dashboard-connection.json) preserves all10 previous sources and uses
+an inbound-only SSH tunnel127.0.0.1:32395→remote127.0.0.1:32491. New tunnel unit,
+configuration, credential file and byte-identical old-config backup live onloop10.
+The existing canonical config path now symlinks to that loop10 copy, so other
+terminals still use the same path. The first cross-device rename failed before
+config mutation; same-directory atomic symlink replacement completed installation.
+Only the local monitor was restarted;0remote worker restarts/0model calls.
+
+[Live verification](dashboard-verification.json) proves connected:true,7production
+native runs listed, currentCRC RUNNING, SWE.1 author stage running and a68343-character
+workflow SVG with no graph error. Run detail and graph endpoints return successfully.
+Browser visual inspection was NOT_RUN because browser tooling is unavailable;
+backend/graph checks are not a browser-rendering claim. No credentials, private
+inputs, raw model output or hidden reasoning are published in these evidence files.
+Historical Fabro SUCCEEDED is transport/workflow status, not product acceptance.

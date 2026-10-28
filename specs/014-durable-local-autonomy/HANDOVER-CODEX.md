@@ -9,6 +9,18 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 ## Current checkpoint — 2026-10-28 live CRC→RNG end-to-end window
 
+Owner requested dashboard visibility at13:00Z. It is connected and verified at13:05Z:
+http://localhost:8787 → Forge-C Fabric → **Omniverse production · Qwen3.8 Q8 xhigh**.
+Source id forge-c-omniverse2-production, inbound SSH127.0.0.1:32395→remote32491,
+unit forge-c-omniverse2-production-fabro.service. All10 old sources preserved.
+Config/auth/unit/backup live onloop10 overnight-audit-20261028/dashboard-omniverse-production;
+canonical ~/fabro_dashboard/config.local.json now symlinks there.7native runs listed,
+CRC RUNNING/SWE.1 author active, real graph/detail endpointsPASS. No browser visual
+inspection. No remote worker restart/model call; local monitor only restarted.
+See dashboard-connection/dashboard-verification in e2e-window-d7fa97e evidence.
+At13:04:51Z third model request also QUIESCENT(17570accounted), fourthSENT; no
+phase/productPASS yet. Re-poll current state rather than relying on this snapshot.
+
 Exact runtime **d7fa97e41f6e265e55737478379052db8d6bd859**, operator RUNNING epoch13.
 Owner active five-hour goal ends **2026-10-28T16:29:12Z**. Formal Feature014 ledger
 remains30/58, no new task tick. Keep runtime pinned during live work; do not deploy
