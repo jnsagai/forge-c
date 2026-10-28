@@ -7,7 +7,65 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
-## Current checkpoint — 2026-10-28 five-hour runnable-factory window
+## Current checkpoint — 2026-10-28 live CRC→RNG end-to-end window
+
+Exact runtime **d7fa97e41f6e265e55737478379052db8d6bd859**, operator RUNNING epoch13.
+Owner active five-hour goal ends **2026-10-28T16:29:12Z**. Formal Feature014 ledger
+remains30/58, no new task tick. Keep runtime pinned during live work; do not deploy
+documentation commits or reset earlier failed mission/grant deadlines.
+
+**Actual CRC workflow RUNNING:** order afo-99cc4f39103951e7,
+product job afo-product-b8ba83de00a6225bee89f8e4,
+native **01M618R74R8KQFQR9AJ4VQXZ5Q**. At12:48:38Z first request QUIESCENT with4544
+accounted tokens; second SENT12:48:00Z. Inference/native ownership HELD/LIVE;
+never redispatch or infer termination from observation timeout. Q38Q8/xhigh/context65536,
+complete model resident in GPU VRAM32140983008bytes, GPU99%. RNG
+**afo-8298dbdf8767eb9c** follows CRC serially; not submitted yet in this snapshot.
+
+Existing recorder publishes every5minutes to
+**e2e/2026-10-28-q38-five-hour-window**. It owns finite serial intake only;
+Conductor owns all execution/recovery. Source d7 adds signed experimental coverage
+for the existing read-only final inventory role, with no ordinary capability or
+release-gate bypass. Real workflow launch preflight PASS for network/model/agents/
+all MCP handshakes/complete role list;0preflight inference. Both frozen ST delivery
+buildsPASS.101local candidatePASS; exact native34PASS/4fixture failures followed by
+13inherited releasePASS after real tool-path/PlantUML setup. Original failures retained.
+
+**Authorization clarification supersedes the additional-approval blocker below:**
+existing explicit owner bounded Feature014 qualification and SSH-agent signing
+approval already covers these prospective experiments. The engineer asked again
+unnecessarily. No new approval reply was received, fabricated or inferred from time.
+Exact authorization-basis record is in the evidence. V3 grants were signed through
+the existing SSH agent and verified before temporary experimental policy activation
+at12:46:05Z. No private key/safety/review/patch signature act. Original production
+grant and historical missions are unchanged. New per-order finite limits:2million
+local tokens,512requests,1024tools,3product attempts,4recoveryjobs,1correction;
+one inference/one verification worker, common16:29:12Z cutoff. New acceptance work
+around unchanged frozen CRC/RNG deliveries is not continuation/refill of failed
+RCC/IWDG/protocol missions. First1.4million conservative allocation is not reported
+actual model usage. Actual usage and uncertainty remain separate.
+
+Remote window: production-local-014/deployment/e2e-window-20261028-v3.
+Scope SHA570a031c15ff4bc668cfa58ab9d3602ac70e1f7e935352b57398b6641258d35d.
+Read-only observer: deployment/observe-e2e-window-v3.py. Local scripts/records stay on
+loop10 operations/feature014/overnight-audit-20261028. All Qwen runs stay on Omniverse2.
+Shared resources accepted; never stop another account or claim exclusive timing.
+
+At16:29:15Z the installed one-shot policy cleanup restores the exact original signed
+production policy only if operator epoch13 and current temporary policy still match.
+It does not stop/restart workers, release capacity, change budgets or override newer
+operator intent. Timer execution is unproven until receipt exists. Existing persistent
+Conductor/watchdog handle job expiry/reconciliation and continue after campaign end.
+Original production grant expiry remains29Oct05:00Z. Check cleanup receipt and physical
+leases before any new generation. Do not use old unsigned V1/V2 scope proposals.
+
+Next: monitor original live handle, independently inspect phase gates/artifacts,
+let bounded Conductor recovery operate, collect CRC and then RNG outcomes. Preserve
+all costs/failures/uncertainty. No end-to-end product success, role qualification,
+fully autonomous self-healing, learning-benefit, benchmark or24/72/168h claim yet.
+Parked-task/inspector freeze remains. [Evidence and commands](../../evidence/014-durable-local-autonomy/e2e-window-d7fa97e/README.md).
+
+## Historical checkpoint — 2026-10-28 five-hour runnable-factory window
 
 The active owner goal is now **runnable end-to-end workflows on Omniverse2 by
 2026-10-28T16:29:12Z**, from the later five-hour window begun11:29:12Z. Historical

@@ -1041,3 +1041,25 @@ unsigned and awaiting explicit enlarged finite-cap approval. Both native deliver
 buildsPASS, no product/role/learning/operational claim. Formalledger30/58unchanged.
 
 [Detailed evidence and current next steps](../../evidence/014-durable-local-autonomy/workflow-runtime-fa90128/README.md).
+
+
+## 2026-10-28 actual Q38 CRC end-to-end execution
+
+Runtime d7fa97e41f6e265e55737478379052db8d6bd859 deployed, RUNNING epoch13. Final
+read-only inventory role now supports its own signed experimental identity; ordinary
+capability guard, MCP grants and deterministic release decisions remain. Baseline
+14PASS/1FAIL;101local candidatePASS20.172s. Native38-case34PASS/4fixtureFAIL25.307s;
+corrected inherited13PASS44.272s with actual binaries/read-only PlantUML. No fixture
+inference. Real workflow network/model/role/MCP launch preflightsPASS forCRC/RNG.
+
+Existing owner bounded qualification/SSH-agent approval established no additional
+reply was required; the previous pending-approval interpretation is superseded.
+No new reply was received or inferred. Exact prospective V3 scope signed/verified,
+activated12:46:05Z, cutoff16:29:12Z; historical missions/grants unchanged. CRC native
+01M618R74R8KQFQR9AJ4VQXZ5Q RUNNING, at12:48:38Z first requestQUIESCENT/4544accounted,
+secondSENT. Model fully resident perOllama GPUmetadata, utilization99%. RNG serially
+pending. Physical lease remainsHELD; no product or phasePASS inferred. One-shot exact
+old-policy restore scheduled16:29:15Z, fenced against newer intent; future action not
+yet verified. Formal30/58unchanged, role/product/learning/operational success unproven.
+
+[Evidence, actual authorization basis, exact revisions and next steps](../../evidence/014-durable-local-autonomy/e2e-window-d7fa97e/README.md).
