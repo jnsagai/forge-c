@@ -143,3 +143,32 @@ Browser visual inspection was NOT_RUN because browser tooling is unavailable;
 backend/graph checks are not a browser-rendering claim. No credentials, private
 inputs, raw model output or hidden reasoning are published in these evidence files.
 Historical Fabro SUCCEEDED is transport/workflow status, not product acceptance.
+
+
+### Dashboard timeout correction —13:25Z
+
+The owner observed a timeout. Independent native observation still reportedRUNNING;
+first SWE.1 author and first continuation had endedSUCCEEDED, and the next checkpoint
+continuation was active. The actual graph uses14400s author-node timeouts, not the
+20-minute local task time box. Mission cutoff remains16:29:12Z. No native deadline
+was extended and no worker was restarted. Re-reading checkpoints also shows that
+Qwen revised the initially rejected CRC_CR_1 packet until its local checks returned
+VALID; this is not a whole-phase inspection or independent product-success claim.
+
+The read-only monitor's fixed8s HTTP timeout did reproduce502/TimeoutError while
+native execution continued. [Minimal client patch](dashboard-remote-timeout.patch)
+adds an optional finite per-source request_timeout_seconds, bounded0.1–60s, default8
+unchanged. Only the production source now uses30s. Explicit stream deadlines remain.
+The viewing SSH tunnel enables compression; previous10source configurations remain.
+Only the local tunnel/monitor were restarted. Original dirty monitor changes were
+preserved and backed up onloop10; no monitor repository reset or blanket commit.
+
+[Regression evidence](dashboard-timeout-tests.json):2 real delayed-response/invalid-cap
+checksPASS,15 inherited monitor testsPASS. [Reproducible local check](verify_dashboard_timeout.py)
+imports the installed monitor; set TMPDIR toloop10 and run with Python-B. These are
+local monitor tests, not concurrent Qwen or GPU tests. [Live verification](dashboard-timeout-verification.json)
+then loaded detail in16.167s and the real68343-character graph in15.476s, with native
+RUNNING and checkpoint continuation visible. The longer display deadline permits
+responses that exceeded the previous8s bound. Browser visual inspection remainsNOT_RUN.
+Six real Qwen requests wereQUIESCENT and seventhSENT at13:24:11Z; do not treat either
+a display timeout or a completed continuation node as job termination.

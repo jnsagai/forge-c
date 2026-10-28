@@ -1,0 +1,27 @@
+{
+  "scope": "LOCAL_READ_ONLY_MONITOR_FIX_NOT_FACTORY_RUNTIME_OR_MODEL_QUALIFICATION",
+  "server_before_sha256": "846b8cd4067cf5a6bea66a86fa3d24d8082c2ea73536044b8171d3b15d49b064",
+  "server_after_sha256": "723123c18a1150e69760a0e8df77869f2a0e49ec81ad597a5a3a04c1841f5683",
+  "configuration_sha256": "4941683f06d530e6241c4c27fbb1668254d52faa1e6c7a7f5b1e6f2fcb6a1d89",
+  "tests": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B test_remote_timeout.py",
+      "tests": 2,
+      "exit_code": 0,
+      "log_sha256": "f2ce33636da838066f363f1e86f6ea9cbe30ce80015e8e4e7e49e7757b3e2d99"
+    },
+    {
+      "command": "TMPDIR=<loop10> PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -v",
+      "cwd": "/home/jefferson/fabro_dashboard",
+      "tests": 15,
+      "exit_code": 0,
+      "log_sha256": "edee07588d470cc768f8697199dce44f263c03d48a72f0a3e6b60eb4b4d3129a"
+    }
+  ],
+  "existing_uncommitted_monitor_changes_preserved": true,
+  "new_local_files_location": "loop10",
+  "remote_worker_restarts": 0,
+  "mission_deadlines_changed": false,
+  "current_native_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+  "native_status_after_local_changes": "RUNNING"
+}

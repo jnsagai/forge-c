@@ -9,6 +9,17 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 ## Current checkpoint — 2026-10-28 live CRC→RNG end-to-end window
 
+13:25Z dashboard timeout correction: nativeCRC never timed out. First SWE.1 author
+and continuationSUCCEEDED; next continuationRUNNING. Actual author-node timeout14400s,
+mission deadline16:29:12Z unchanged. Monitor8s remote fetch timeout reproduced; new
+optional bounded per-source request_timeout_seconds(default8,0.1–60s) now30 only for
+production. SSH viewing tunnel usescompression. Local monitor/tunnel only restarted;
+0remote worker restarts.2 focused+15 inherited local monitor testsPASS; actual detail
+16.167s and graph15.476sPASS. Existing dirty ~/fabro_dashboard/server.py edits preserved,
+minimal patch/backups/tests onloop10, public patch/evidence in e2e-window-d7fa97e.
+At13:24:11Z6requestsQUIESCENT/seventhSENT; CRC_CR_1 packet locallyVALID after repair,
+whole phase not yet inspected. Keep originalrun; no duplicate dispatch/deadline edit.
+
 Owner requested dashboard visibility at13:00Z. It is connected and verified at13:05Z:
 http://localhost:8787 → Forge-C Fabric → **Omniverse production · Qwen3.8 Q8 xhigh**.
 Source id forge-c-omniverse2-production, inbound SSH127.0.0.1:32395→remote32491,
