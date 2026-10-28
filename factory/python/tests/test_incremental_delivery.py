@@ -49,6 +49,21 @@ def reviewed_fixture(ws, man):
     (ws / ".forge-run/manifest.json").write_text(pretty_json(man))
 
 
+def pending_fixture(ws, man):
+    """Negative-control input only; never clear the owner's checked-in review."""
+    path = ws / man["provided_requirements"]["path"]
+    doc = json.loads(path.read_text())
+    doc["review"] = {"status": "PENDING"}
+    path.chmod(0o644)
+    path.write_text(pretty_json(doc))
+    path.chmod(0o444)
+    man["provided_requirements"]["sha256"] = sha256_file(path)
+    for item in man["inputs"]:
+        if item["path"] == man["provided_requirements"]["path"]:
+            item["sha256"] = sha256_file(path)
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(man))
+
+
 def test_exact_idr_scope_keeps_shared_profile_and_delivery_frozen(prepared):
     ws, man = prepared
     assert man["delivery"]["scope"]["functions"] == ["LL_CRC_Write_IDR", "LL_CRC_Read_IDR"]
@@ -61,10 +76,22 @@ def test_exact_idr_scope_keeps_shared_profile_and_delivery_frozen(prepared):
 
 def test_pending_review_is_not_replaced_by_codex_or_a_model(prepared):
     ws, man = prepared
+    pending_fixture(ws, man)
     with pytest.raises(ValueError, match="REVIEW_MISSING"):
         P.materialize(ws)
     assert Store(ws).latest_baseline("SWE.1") is None
-    assert json.loads((EX / "provided-requirements.json").read_text())["review"]["status"] == "PENDING"
+    assert json.loads((EX / "provided-requirements.json").read_text())["review"]["status"] == "REVIEWED"
+
+
+def test_actual_owner_review_import_retains_exact_approved_payload(prepared):
+    ws, _ = prepared
+    doc, _ = P.validate(ws)
+    record = json.loads((REPO_ROOT / doc["review"]["record_ref"]).read_text())
+    assert record["user_statement"] == "I approve, go"
+    assert record["approved_requirements_payload_sha256"] == digest(P.payload(doc))
+    assert P.materialize(ws)["status"] == "PASS"
+    receipt = json.loads((ws / "traceability/assisted_requirements.json").read_text())
+    assert receipt["review_as_supplied"] == doc["review"] and not receipt["qwen_authored"]
 
 
 def imported(prepared):

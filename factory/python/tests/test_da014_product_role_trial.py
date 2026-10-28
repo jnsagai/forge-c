@@ -8,7 +8,7 @@ from forge_factory.afo import authz, policy, queue
 from forge_factory.afo import product_role_trial as T
 from forge_factory.afo.durable import Refused, digest, immutable_json
 from forge_factory.lrtx import role_capability as C
-from test_incremental_delivery import prepared  # noqa: F401
+from test_incremental_delivery import pending_fixture, prepared  # noqa: F401
 
 
 @pytest.fixture
@@ -198,7 +198,8 @@ def test_preflight_measures_tools_and_gateway_reasoning_before_admission(product
 
 def test_preflight_cli_persists_missing_review_without_launching(product_preflight, prepared, tmp_path):  # noqa: F811
     trial, _, _, _ = product_preflight
-    ws, _ = prepared
+    ws, man = prepared
+    pending_fixture(ws, man)
     job, requests, out = (tmp_path / n for n in ("job.json", "requests.json", "preflight.json"))
     job.write_text(json.dumps(trial.job))
     requests.write_text("[]")
