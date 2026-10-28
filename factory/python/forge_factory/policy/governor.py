@@ -81,6 +81,12 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
     it recovers a detailed design and unit specification for every delivered unit, reading the delivered code first.
     USART1 (21 functions, budget 47) and TIM2 (22, budget 48) exhausted every SWE.3 turn (TURN_BUDGET_EXHAUSTED, then
     AGENT_OUTPUT_PROSE, rework budget exhausted); SPI (22) passed with 3 denials; CRC (10) was denied on its first turn."""
+    if workspace:
+        from ..development_execution import selected
+
+        policy = selected(workspace)
+        if policy and policy.get("max_tool_calls_per_visit"):
+            return policy["max_tool_calls_per_visit"]
     base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled

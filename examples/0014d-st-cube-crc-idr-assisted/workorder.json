@@ -170,7 +170,7 @@
     }
   },
   "peripheral": "crc",
-  "development_execution_policy": "incremental-delivery-v1",
+  "development_execution_policy": "incremental-delivery-high-allowance-v2",
   "provided_requirements": "provided-requirements.json",
   "operation_scope": {
     "schema": "forge-c/operation-scope/1",

@@ -10,20 +10,26 @@ from pathlib import Path
 from .common import REPO_ROOT, pretty_json, sha256_file, utc_now
 
 NAME = "incremental-delivery-v1"
+HIGH = "incremental-delivery-high-allowance-v2"
 DECISION = "specs/014-durable-local-autonomy/IMPLEMENTATION-INCREMENTAL-E2E.md"
 
 
 def binding(name, purpose):
     if name is None:
         return None
-    if name != NAME or purpose != "ASPICE_ONLY":
+    if name not in (NAME, HIGH) or purpose != "ASPICE_ONLY":
         raise ValueError("DEVELOPMENT_EXECUTION_POLICY_INVALID")
-    return {"schema": "forge-c/development-execution/1", "name": NAME, "max_phase_repair_passes": 1,
+    result = {"schema": "forge-c/development-execution/1", "name": name, "max_phase_repair_passes": 1,
             "decision": {"path": DECISION, "sha256": sha256_file(REPO_ROOT / DECISION)},
             "validator_sha256": sha256_file(Path(__file__)),
             "product_diagnosis": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "factory_maintenance": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "advisory_relaunch": "DEFERRED_BY_DEVELOPMENT_POLICY"}
+    if name == HIGH:
+        result.update(max_phase_repair_passes=1000, max_task_calls=1001,
+                      max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
+                      max_upstream_loops=1000)
+    return result
 
 
 def selected(ws):
@@ -67,12 +73,22 @@ def phase_state(ws, phase):
 
 def reserve_call(ws, packet):
     """Count before provider contact. Input changes, re-entry and technical failures do not refill a task."""
-    if not selected(ws) or not packet["role"].endswith("-author"):
+    policy = selected(ws)
+    if not policy or not packet["role"].endswith("-author"):
         return True
     key = packet["role"] + ":" + packet["task"]
     repair_hint = bool(packet.get("repair_of") or packet.get("findings") or packet["task"].startswith("triage:"))
     with phase_state(ws, packet["phase"]) as state:
         n = state["calls"].get(key, 0)
+        if policy["name"] == HIGH:
+            if n >= policy["max_task_calls"]:
+                return False
+            if n or repair_hint:
+                state["repair_tasks"].append(key)
+                if state["repair_pass"] is None:
+                    state["repair_pass"] = {"origin": "localized_repair", "at": utc_now()}
+            state["calls"][key] = n + 1
+            return True
         if n >= (1 if packet["task"].startswith("triage:") else 2):
             return False
         if n or repair_hint:
@@ -86,9 +102,17 @@ def reserve_call(ws, packet):
 
 
 def reserve_phase_rework(ws, phase):
-    if not selected(ws):
+    policy = selected(ws)
+    if not policy:
         raise ValueError("DEVELOPMENT_POLICY_REQUIRED")
     with phase_state(ws, phase) as state:
+        if policy["name"] == HIGH:
+            count = state.get("phase_reworks", 0)
+            if count >= policy["max_phase_repair_passes"]:
+                return False
+            state["phase_reworks"] = count + 1
+            state["repair_pass"] = {"origin": "phase_gate", "at": utc_now(), "pass": count + 1}
+            return True
         if state["repair_pass"] is not None:
             return False
         state["repair_pass"] = {"origin": "phase_gate", "at": utc_now()}
@@ -96,6 +120,7 @@ def reserve_phase_rework(ws, phase):
 
 
 def ladder(ws, phase):
+    policy = selected(ws)
     with phase_state(ws, phase) as state:
         repair = state["repair_pass"]
         calls = dict(state["calls"])
@@ -104,17 +129,18 @@ def ladder(ws, phase):
     return [{"rung": "initial_engineering", "status": "RESERVED" if calls else "UNKNOWN", "calls": calls},
             {"rung": "bounded_phase_repair", "status": "RESERVED" if repair else "UNAVAILABLE",
              "reason": repair or "No phase repair was requested"},
-            *[{"rung": rung, "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": NAME}
+            *[{"rung": rung, "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": policy["name"] if policy else NAME}
               for rung in ("general_product_diagnosis", "advisory_relaunch", "factory_maintenance")]]
 
 def verification(ws, phase, role, key, status=None):
     """Bound repeated failed native checks; technical failures cannot refill the phase."""
-    if not phase or not role.endswith("-author") or not selected(ws):
+    policy = selected(ws)
+    if not phase or not role.endswith("-author") or not policy:
         return True
     with phase_state(ws, phase) as state:
         failed = state.setdefault("failed_checks", {})
         if status is None:
-            return failed.get(key, 0) < 2
+            return failed.get(key, 0) < policy.get("max_failed_checks_per_operation", 2)
         if status != "PASS":
             failed[key] = failed.get(key, 0) + 1
         if state.get("repair_mutation_started"):
@@ -123,7 +149,8 @@ def verification(ws, phase, role, key, status=None):
 
 
 def mutation_allowed(ws, phase, role, relative):
-    if not phase or not role.endswith("-author") or not selected(ws):
+    policy = selected(ws)
+    if not phase or not role.endswith("-author") or not policy:
         return True
     # Closing a truthful report remains possible after a failed recheck.
     reports = {"workproducts/SWE.4/unit_verification_report.md",
@@ -134,7 +161,7 @@ def mutation_allowed(ws, phase, role, relative):
     with phase_state(ws, phase) as state:
         if not state.get("failed_checks") and state["repair_pass"] is None:
             return True
-        if state.get("verification_after_repair"):
+        if state.get("verification_after_repair") and policy["name"] != HIGH:
             return False
         if state["repair_pass"] is None:
             state["repair_pass"] = {"origin": "native_check_failure", "at": utc_now()}

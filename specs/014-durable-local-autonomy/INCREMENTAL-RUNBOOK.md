@@ -11,7 +11,10 @@ new local files. Preserve the cloud benchmark terminal and its resources.
 - Example: `examples/0014d-st-cube-crc-idr-assisted/`, two original ST functions,
   FROZEN; source-backed candidate requirements remain REVIEW_PENDING.
 - Selected prospective profile: `local-rtx-v2-omniverse2-q38-aspice-mtp`,v2,
-  Qwen3.8-27B Q8_0/xhigh/MTP3, one slot,65536 context, f16 KV, no empty-reply retries.
+  Qwen3.8-27B Q8_0/xhigh/MTP3, one slot,131072 context, f16 KV, no empty-reply retries.
+  Profile v3 and the prospective high-quota development v2 follow the explicit owner
+  amendment in IMPLEMENTATION-INCREMENTAL-E2E.md section 10; activation still needs
+  current source-bound grants and exact-role admission, and proves no product result.
 - Independent tool fixture: real six-phase build/host/integration/Renode/Robot/
   release; scripted semantic artifacts/review explicitly disclosed.
 - Latest native qualification source7a4bc51:169PASS,0skips,0Qwen calls.

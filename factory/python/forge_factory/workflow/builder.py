@@ -109,7 +109,8 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
           delivery_style: str | None = None, structured: dict | None = None,
-          recovery_plan: dict | None = None, operation_scope: dict | None = None) -> tuple[str, dict]:
+          recovery_plan: dict | None = None, operation_scope: dict | None = None,
+          execution_policy: dict | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -145,6 +146,18 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
             if n in nodes:
                 dot = dot.replace(f"  {n} [label=", f'  {n} [{MODEL_ATTR}="{_q(code_model)}", label=', 1)
                 nodes[n] = {**nodes[n], "model": code_model}
+    if execution_policy:
+        import re
+
+        from .. import development_execution as development
+
+        if execution_policy != development.binding(execution_policy.get("name"), "ASPICE_ONLY"):
+            raise ValueError("DEVELOPMENT_EXECUTION_BINDING_CHANGED")
+        if execution_policy["name"] == development.HIGH:
+            visits = execution_policy["max_phase_repair_passes"] + 2
+            dot = re.sub(r"max_visits=(\d+)", lambda m: "max_visits=" +
+                         str(visits if int(m[1]) > 1 else 1), dot)
+            dot = dot.replace('loop_restart_signature_limit="8"', 'loop_restart_signature_limit="10000"')
     return dot, nodes
 
 

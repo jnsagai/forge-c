@@ -27,6 +27,13 @@ def prepared(tmp_path, monkeypatch):
     for key in ("STATE", "EVENTS", "ARCHIVE"):
         monkeypatch.setenv("FORGE_" + key + "_DIR", str(tmp_path / key))
     ws, man = W.prepare(EX, "WO-IDR-PLUMBING", purpose="ASPICE_ONLY")
+    # Keep the original one-repair policy's regression coverage after the owner
+    # selected the separate high-allowance policy for live development.
+    from forge_factory.brownfield import resume
+
+    man["development_execution"] = D.binding(D.NAME, "ASPICE_ONLY")
+    resume.initialize(ws, man)
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(man))
     Binding("idr-fixture", str(ws), {"swe1_author": {"role": "swe1-author", "phase": "SWE.1"}}).dump(
         ws / ".forge-run/binding.json")
     return ws, man
@@ -132,6 +139,35 @@ def test_shared_repair_pass_cannot_refill_on_task_or_phase_reentry(prepared):
     assert not D.reserve_call(ws, q)
     assert {r["status"] for r in D.ladder(ws, "SWE.2") if r["rung"] == "general_product_diagnosis"} == {
         "DEFERRED_BY_DEVELOPMENT_POLICY"}
+
+
+def test_high_allowance_policy_persists_large_counters_without_changing_old_policy(prepared):
+    from forge_factory.inspection.defects import loop_budget
+    from forge_factory.policy.governor import turn_limit
+    from forge_factory.workflow.builder import build
+
+    ws, man = prepared
+    legacy = D.binding(D.NAME, "ASPICE_ONLY")
+    man["development_execution"] = D.binding(D.HIGH, "ASPICE_ONLY")
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(man))
+    packet = {"phase": "SWE.4", "role": "swe4-author", "task": "unit:IDR"}
+    for _ in range(20):
+        assert D.reserve_call(ws, packet)
+        assert D.reserve_phase_rework(ws, "SWE.4")
+        assert D.verification(ws, "SWE.4", "swe4-author", "run_unit", "FAIL")
+        assert D.mutation_allowed(ws, "SWE.4", "swe4-author", "software/tests/unit/test_crc.c")
+    assert turn_limit("swe4-author", str(ws)) == 10000
+    assert loop_budget(ws) == 1000
+    assert D.selected(ws)["max_phase_repair_passes"] == 1000
+    graph, _ = build("WO-HIGH", sections={}, layer="LL", execution_policy=D.selected(ws))
+    assert "max_visits=1002" in graph and 'loop_restart_signature_limit="10000"' in graph
+    legacy_graph, _ = build("WO-LEGACY", sections={}, layer="LL")
+    assert "max_visits=1002" not in legacy_graph
+    assert D.binding(D.NAME, "ASPICE_ONLY") == legacy and legacy["max_phase_repair_passes"] == 1
+    with D.phase_state(ws, "SWE.4") as state:
+        assert state["calls"]["swe4-author:unit:IDR"] == 20
+        state["phase_reworks"] = 1000
+    assert not D.reserve_phase_rework(ws, "SWE.4")  # Still finite, never reset on re-entry.
 
 
 def test_localized_repair_spends_the_only_phase_reentry(prepared):

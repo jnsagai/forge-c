@@ -252,7 +252,7 @@ def create_app(
     if request_timeout_s is None:
         request_timeout_s = float(os.environ.get("FORGE_GATEWAY_REQUEST_TIMEOUT_S", "600"))
     if (type(request_timeout_s) not in (int, float) or not math.isfinite(request_timeout_s)
-            or not 1 <= request_timeout_s <= 3600):
+            or not 1 <= request_timeout_s <= 86400):
         raise ValueError("GATEWAY_REQUEST_TIMEOUT_INVALID")
     if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
         from .lrtx import admission as lrtx_admission

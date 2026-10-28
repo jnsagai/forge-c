@@ -178,7 +178,7 @@
         "max_model_tokens_per_order": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 100000000
+          "maximum": 100000000000
         },
         "max_inference_requests_per_order": {
           "description": "Optional explicit request cap, independent of recovery-job count; legacy default remains eight per recovery job.",

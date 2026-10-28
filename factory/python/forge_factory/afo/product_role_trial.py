@@ -52,6 +52,31 @@ def authorized(ref, job, eff):
     allowed |= {"release-manager", "afo-recovery-planner", "afo-factory-maintainer"}
     if not isinstance(roles, dict) or not roles or not set(roles) <= allowed:
         raise Refused("PRODUCT_ROLE_TRIAL_ROLES_INVALID")
+    context_ceiling = 65536
+    if any(isinstance(values, list) and any(isinstance(i, dict) and type(i.get("context_tokens")) is int
+            and i["context_tokens"] > context_ceiling for i in values) for values in roles.values()):
+        from pathlib import Path
+
+        from ..common import sha256_file
+        from ..lrtx.profile import load as load_profile
+
+        prof = load_profile(job["profile"])
+        configured = prof.get("runtime", {})
+        context_ceiling = min(int(configured["ollama"]["OLLAMA_CONTEXT_LENGTH"]),
+                              configured.get("fabro_context_tokens", 65536),
+                              configured.get("context_limit_tokens", 65536))
+        allocation_ref = trial.get("context_allocation_ref") or {}
+        path = Path(allocation_ref.get("path", ""))
+        if (trial.get("profile_sha256") != prof["_sha256"] or not path.is_file() or path.is_symlink()
+                or sha256_file(path) != allocation_ref.get("sha256")):
+            raise Refused("PRODUCT_ROLE_TRIAL_CONTEXT_ALLOCATION_UNBOUND")
+        allocation = json.loads(path.read_text())
+        if (allocation.get("status") != "PASS_ALLOCATION_ONLY"
+                or allocation.get("provider_context_tokens", 0) < context_ceiling
+                or allocation.get("model_digest") != job.get("model_digest")
+                or allocation.get("precision") != job.get("precision")
+                or allocation.get("provider_slot_count") != 1 or allocation.get("kv_precision") != "f16"):
+            raise Refused("PRODUCT_ROLE_TRIAL_CONTEXT_NOT_ALLOCATED")
     for role, identities in roles.items():
         if not isinstance(identities, list) or not 1 <= len(identities) <= 32:
             raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATIONS_UNBOUNDED")
@@ -62,7 +87,7 @@ def authorized(ref, job, eff):
                 or identity["adapter_revision"] != trial["source_revision"]
                 or identity["model_digest"] != job.get("model_digest")
                 or identity["precision"] != job.get("precision")
-                or identity["context_tokens"] > 65536
+                or identity["context_tokens"] > context_ceiling
             ):
                 raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATION_CHANGED")
     authref = trial.get("authorization_ref")

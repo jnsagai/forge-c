@@ -20,7 +20,7 @@ from test_da014_protocol import protocol  # noqa: F401
 from test_da014_qualification_reservations import signed  # noqa: F401
 
 
-@pytest.mark.parametrize("configured,expected", [(None, 600), (3600, 3600)])
+@pytest.mark.parametrize("configured,expected", [(None, 600), (3600, 3600), (21600, 21600)])
 def test_actual_default_and_routed_http_requests_receive_the_finite_timeout(tmp_path, monkeypatch, configured, expected):
     observed = []
     monkeypatch.delenv("FORGE_GATEWAY_MAX_INFLIGHT", raising=False)
@@ -40,7 +40,7 @@ def test_actual_default_and_routed_http_requests_receive_the_finite_timeout(tmp_
     assert all(t["read"] == expected and t["connect"] == 10 for _, t in observed)
 
 
-@pytest.mark.parametrize("invalid", [True, 0, -1, 3601, float("nan"), float("inf"), "3600"])
+@pytest.mark.parametrize("invalid", [True, 0, -1, 86401, float("nan"), float("inf"), "3600"])
 def test_invalid_timeout_is_refused_without_starting_a_provider(tmp_path, invalid):
     with pytest.raises(ValueError, match="GATEWAY_REQUEST_TIMEOUT_INVALID"):
         G.create_app("http://unused", tmp_path / "meter", request_timeout_s=invalid)

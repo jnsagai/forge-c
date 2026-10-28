@@ -41,7 +41,7 @@ def gateway_reasoning(prof: dict) -> str:
 
 def gateway_timeout(prof: dict) -> int | float:
     value = (prof.get("gateway") or {}).get("request_timeout_s", 600)
-    if type(value) not in (int, float) or not math.isfinite(value) or not 1 <= value <= 3600:
+    if type(value) not in (int, float) or not math.isfinite(value) or not 1 <= value <= 86400:
         raise ValueError("GATEWAY_REQUEST_TIMEOUT_INVALID")
     return value
 
@@ -120,8 +120,9 @@ def fabro_config(s: dict) -> str:
     runtime = s["profile"].get("runtime") or {}
     context = runtime.get("fabro_context_tokens", 32768)
     output = runtime.get("fabro_max_output_tokens", 16384)
+    ceiling = runtime.get("context_limit_tokens", 65536)
     if (type(context) is not int or type(output) is not int or not 0 < output <= context
-            or not 0 < context <= 65536):
+            or type(ceiling) is not int or not 0 < ceiling <= 262144 or not 0 < context <= ceiling):
         raise ValueError("FABRO_MODEL_LIMITS_INVALID")
     if "fabro_context_tokens" in runtime and context > int(runtime["ollama"]["OLLAMA_CONTEXT_LENGTH"]):
         raise ValueError("FABRO_CONTEXT_EXCEEDS_PROVIDER")

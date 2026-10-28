@@ -245,3 +245,40 @@ Deliver incremental commits containing:
 The implementation report must distinguish source implemented, deterministic checks passed, live local execution, product acceptance, assistance level and later unrun milestones.
 
 **Start with M1. Finish one small delivery path before expanding the objective.**
+
+## 10. Superseding owner allowance decision — 2026-10-28
+
+The owner approved the actual requirements review and live M1 with “I approve, go”,
+then explicitly requested: “increase all the limits to extraordinary high values,
+after it is working we can define the limits”. This prospectively supersedes the
+one-repair and unchanged-budget instructions above for a separately identified
+ASPICE_ONLY development policy, `incremental-delivery-high-allowance-v2`.
+Legacy `incremental-delivery-v1` and other profiles retain their existing bounds.
+
+The opt-in policy allows 1,000 phase repairs and upstream loops, 1,001 calls per
+author task, and 10,000 tool calls per visit/failed checks per operation. Counters
+remain durable across re-entry. A repeated deterministic rejection still blocks
+the affected job for external diagnosis under the owner's earlier stop-and-rethink
+instruction; it does not stop model-free factory supervision.
+
+The prospective M1 allowance is 100 million reserved tokens per native execution,
+100 billion cumulative mission tokens, 100,000 requests, one million tool calls
+and 1,000 execution attempts. These are finite ceilings, not estimated consumption.
+The cumulative ceiling covers 1,000 conservative execution reservations; unknown
+usage and historical charges are never refunded or reset. Existing grants are not
+renewed: a new signed scope must name its own deadline within current authority.
+
+The MTP profile v3 uses 131,072 context tokens, 16,384 answer tokens plus the
+existing 32,768 xhigh reasoning reserve, one inference slot and f16 KV. Omniverse's
+development profile uses the existing maximum timeout scale of 10 and six-hour
+request/structured-visit ceilings, still subordinate to the signed mission deadline.
+Omniverse's
+allocation-only probe passed at this context, with roughly 9.7 GiB VRAM free.
+That allocation is not a model-quality, role-capability or product-success result.
+Larger experimental role identities require the exact profile hash and hash-bound
+allocation proof, in addition to the existing signed qualification-only trial.
+
+This owner-authorized change preserves functional resource requirements, source
+coverage, independent checks, release gates, single inference, operator fencing,
+old mission expenditure and explicit deferred diagnosis/maintenance. It authorizes
+preparation and execution of the scoped M1 trial; it does not claim M1 acceptance.

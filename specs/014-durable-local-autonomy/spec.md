@@ -243,6 +243,9 @@ requirements authorship, new driver implementation nor completion of Feature014.
 A versioned opt-in ASPICE_ONLY development policy is pinned to the prepared work order,
 source decision and resume contract. It permits an initial attempt and at most one repair
 pass per phase across tasks, technical retries and re-entry, within overall finite budgets.
+The subsequent owner allowance decision in the implementation brief also permits
+`incremental-delivery-high-allowance-v2`: prospective high finite quotas with durable
+counters and unchanged acceptance gates. Legacy v1 retains its one-repair behavior.
 It records actual executed/unavailable/deferred steps. General diagnosis, advisory relaunch
 and factory maintenance may be explicitly deferred, never reported as exhausted.
 Execution completion is separate from acceptance: missing or contradictory contracts,

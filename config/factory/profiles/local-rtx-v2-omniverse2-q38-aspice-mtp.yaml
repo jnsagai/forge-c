@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-aspice-mtp
-version: 2
+version: 3
 work_order_purpose: ASPICE_ONLY
 status: OWNER_SELECTED_MTP_DEVELOPMENT; EXACT_ROLE_QUALIFICATION_PENDING
 description: 'Owner 2026-10-28: no, go with MTP. Incremental IDR development; same
@@ -23,16 +23,17 @@ models:
         separately
       license_source: https://huggingface.co/Qwen/Qwen3.8-27B
 runtime:
-  fabro_context_tokens: 65536
-  fabro_max_output_tokens: 8192
+  context_limit_tokens: 131072
+  fabro_context_tokens: 131072
+  fabro_max_output_tokens: 16384
   ollama:
     OLLAMA_NUM_PARALLEL: '1'
     OLLAMA_MAX_LOADED_MODELS: '1'
     OLLAMA_FLASH_ATTENTION: '1'
     OLLAMA_KV_CACHE_TYPE: f16
-    OLLAMA_CONTEXT_LENGTH: '65536'
+    OLLAMA_CONTEXT_LENGTH: '131072'
     OLLAMA_NOPRUNE: '1'
-  timeout_scale: 4
+  timeout_scale: 10
   llama_server:
     model: qwen3.8:27b-q8_0
     slots: 1
@@ -81,23 +82,23 @@ structured:
   - SWE.1
   - SWE.2
   reinspect_direct: true
-  timeout_s: 3600
-  visit_time_s: 1200
+  timeout_s: 21600
+  visit_time_s: 21600
 gateway:
   drop_retries: 0
-  request_timeout_s: 3600
+  request_timeout_s: 21600
   reasoning:
     qwen3.8:27b-q8_0:
       effort: xhigh
       extra_output_tokens: 32768
 afo:
   role_job_tokens:
-    afo-recovery-planner: 65536
-    afo-factory-maintainer: 65536
+    afo-recovery-planner: 131072
+    afo-factory-maintainer: 131072
 admission:
   max_inflight: 1
   max_queue: 8
-  max_wait_s: 1800
+  max_wait_s: 21600
 measurement:
   sample_s: 10
 deployment:

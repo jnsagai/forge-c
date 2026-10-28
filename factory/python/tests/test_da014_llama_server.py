@@ -51,6 +51,9 @@ def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path):
     argv, _, _, models = stack.llama_server_spec(r, p, p["deployment"]["ports"], {})
     assert models == [model]
     assert argv[argv.index("-np") + 1] == "1"
+    assert argv[argv.index("-c") + 1] == "131072"
+    config = stack.fabro_config({"root": r, "profile": p, "ports": p["deployment"]["ports"]})
+    assert "context_tokens = 131072" in config and "max_output_tokens = 16384" in config
     assert argv[argv.index("--reasoning") + 1] == "on"
     assert argv[argv.index("--reasoning-effort") + 1] == "xhigh"
     assert argv[argv.index("--reasoning-format") + 1] == "deepseek"

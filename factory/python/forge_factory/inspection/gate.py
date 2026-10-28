@@ -442,9 +442,14 @@ def step_route(store: Store, phase: str) -> int:
             return 0
         # Global phase checkpoint, deliberately independent of upstream budget epochs.
         allowed = g["decision"] != "PASS" and development.reserve_phase_rework(store.workspace, phase)
+        high = development.selected(store.workspace)["name"] == development.HIGH
+        stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
+        if stuck:
+            allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
-                  "reason": "one bounded development repair" if allowed else
+                  "reason": ("high-allowance development repair" if high else "one bounded development repair")
+                  if allowed else "STUCK: repeated deterministic rejection; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
@@ -534,7 +539,7 @@ def step_upstream(store: Store, target: str) -> int:
     taken = defects.take_upstream(store.workspace, target)
     _state(store.workspace, target, {"step": "upstream", "result": "LOOP" if taken else "NONE",
                                      "defects": [d["id"] for d in taken], "loops_used": defects.loops_used(
-                                         store.workspace), "loop_budget": defects.UPSTREAM_LOOP_BUDGET})
+                                         store.workspace), "loop_budget": defects.loop_budget(store.workspace)})
     if taken:
         emit("workflow", "WARN", f"upstream loop to {target}: {', '.join(d['id'] for d in taken)}", phase=target)
     print(json.dumps({"target": target, "defects": [d["id"] for d in taken]}))

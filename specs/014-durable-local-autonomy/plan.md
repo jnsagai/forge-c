@@ -124,3 +124,10 @@ slot/admitted request. Preserve evidence of the old no-thinking microbenchmark;
 it does not qualify xhigh role/tool behavior. Exact native backend and per-role
 admission/capability checks remain prerequisites. No old authority, allowance or
 qualification receipt is silently reused. All other incremental boundaries remain.
+
+### Subsequent owner development allowance decision — 2026-10-28
+
+Implement the explicit high-quota owner amendment in section 10 of the incremental
+brief as opt-in v2, preserving v1 behavior and historical mission accounting.
+Use the measured 131,072-context allocation only to bind the experimental profile;
+retain separately signed role experiments and full live admission/quality checks.

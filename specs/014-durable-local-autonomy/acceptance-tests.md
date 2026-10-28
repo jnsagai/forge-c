@@ -657,6 +657,10 @@ Evidence must identify the requirement, case, tested source revision, effective 
 - **IE-AT-003:** Initial phase work plus one repair pass is shared across tasks, nested
   repairs, technical failures and re-entry. Deferred ladder steps are explicit. Existing
   profile routing retains its original behavior; no artificial exhaustion claim.
+  The owner-approved high-allowance v2 permits repeated repairs through durable,
+  finite counters; v1 regressions must retain one repair. Large new reservations
+  must not change/refund an exhausted historical mission. Larger context identities
+  require exact profile/allocation proof and remain qualification-only.
 - **IE-AT-004:** A fast fixture performs actual preparation/validation/transitions/evidence,
   compilation/test execution and packaging. Provider/checklist substitutions are named;
   neither fixture acceptance nor unit counts establish Qwen or M1 live capability.

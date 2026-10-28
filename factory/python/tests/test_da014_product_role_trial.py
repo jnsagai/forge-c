@@ -120,6 +120,30 @@ def test_no_experiment_keeps_ordinary_capability_requirement(trial):
         C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())
 
 
+def test_larger_context_requires_pinned_profile_and_actual_allocation_proof(trial, monkeypatch):
+    from forge_factory.common import sha256_file
+    from forge_factory.lrtx import profile
+
+    trial.doc["roles"]["swe1-author"][0]["context_tokens"] = 131072
+    prof = {"_sha256": "e" * 64, "runtime": {"fabro_context_tokens": 131072,
+            "context_limit_tokens": 131072, "ollama": {"OLLAMA_CONTEXT_LENGTH": "131072"}}}
+    monkeypatch.setattr(profile, "load", lambda _: prof)
+    with pytest.raises(Refused, match="CONTEXT_ALLOCATION_UNBOUND"):
+        T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    allocation = trial.root / "allocation.json"
+    allocation.write_text(json.dumps({"status": "PASS_ALLOCATION_ONLY", "provider_context_tokens": 131072,
+                                     "model_digest": "a" * 64, "precision": "Q4_K_M",
+                                     "provider_slot_count": 1, "kv_precision": "f16"}))
+    trial.doc.update(profile_sha256=prof["_sha256"], context_allocation_ref={"path": str(allocation),
+                                                                            "sha256": sha256_file(allocation)})
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    assert C.admit_job(trial.job, "swe1-author", input_tokens=70000, output_tokens=34816, body=body()) == {
+        "qualification_only": True, "qualified": False}
+    allocation.write_text("{}")
+    with pytest.raises(Refused, match="CONTEXT_ALLOCATION_UNBOUND"):
+        C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())
+
+
 def test_signed_trial_covers_every_role_of_the_real_product_workflow(trial):
     from forge_factory.registry.agents import load_agents
     from forge_factory.workflow.builder import build
