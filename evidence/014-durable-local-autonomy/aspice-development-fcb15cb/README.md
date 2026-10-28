@@ -75,3 +75,13 @@ continues independently of the finite engineering/recording window.
 
 Feature014 remains **30/58**, no newly completed task IDs. Independent RCC/product
 benchmark, learning-benefit and24/72/168h operational qualifications remain unproven.
+
+## Partial author evidence,14:46:38Z
+
+CRC_DR and CRC_IDR packets are locally VALID, four requirements/two register
+fields, no exclusions, and pass a repeat of the existing deterministic author
+checks. Six register groups plus cross-cutting obligations remain globally
+accounted; no frozen baseline or inspection yet. No SafeC outputs exist.
+The control-register packet is still being generated. The observer's original
+private index-path error was corrected; it was not a runtime finding. This
+partial evidence neither establishes independent correctness nor a phase PASS.
