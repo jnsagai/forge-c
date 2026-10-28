@@ -99,8 +99,10 @@ def ladder(ws, phase):
     with phase_state(ws, phase) as state:
         repair = state["repair_pass"]
         calls = dict(state["calls"])
-    return [{"rung": "initial_engineering", "status": "EXECUTED", "calls": calls},
-            {"rung": "bounded_phase_repair", "status": "EXECUTED" if repair else "UNAVAILABLE",
+    # These are admission reservations, not provider execution or engineering-success receipts.
+    # A gateway refusal or crash can consume one without any Qwen inference.
+    return [{"rung": "initial_engineering", "status": "RESERVED" if calls else "UNKNOWN", "calls": calls},
+            {"rung": "bounded_phase_repair", "status": "RESERVED" if repair else "UNAVAILABLE",
              "reason": repair or "No phase repair was requested"},
             *[{"rung": rung, "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": NAME}
               for rung in ("general_product_diagnosis", "advisory_relaunch", "factory_maintenance")]]

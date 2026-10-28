@@ -113,6 +113,8 @@ def test_localized_repair_spends_the_only_phase_reentry(prepared):
     assert D.reserve_call(ws, p)
     assert not D.reserve_call(ws, p)
     assert not D.reserve_phase_rework(ws, "SWE.4")
+    assert {r["status"] for r in D.ladder(ws, "SWE.4") if r["rung"] in
+            ("initial_engineering", "bounded_phase_repair")} == {"RESERVED"}
     token = S.RECOVERY_WORKSPACE.set(ws)
     try:
         assert S.call(p)["errors"] == ["CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"]
