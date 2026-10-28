@@ -1,0 +1,141 @@
+{
+  "schema": "forge-c/evidence-replay/1",
+  "run_id": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+  "date": "2026-10-21",
+  "label": "Recorded gate-event replay; time compressed. Not a live run or a screen recording.",
+  "duration_seconds": 45,
+  "archive_sha256": "385a688647b3f72c3859ba08a66ef4e8d257a2124fc3afb84eab468325efb095",
+  "events": [
+    {
+      "phase": "SWE.1",
+      "step": "author",
+      "outcome": "REJECTED",
+      "timestamp": "2026-10-21T08:17:48.360644Z",
+      "detail": "Requirements lacked required register effects."
+    },
+    {
+      "phase": "SWE.1",
+      "step": "route",
+      "outcome": "REWORK",
+      "timestamp": "2026-10-21T08:17:48.655330Z",
+      "detail": "Return to the author. The rework budget remains bounded."
+    },
+    {
+      "phase": "SWE.1",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:20:47.034844Z",
+      "detail": "Baseline BL-SWE.1-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.1",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:21:09.706287Z",
+      "detail": "The recorded inspection gate passed. The agent status separately reported FAILED; see the source log."
+    },
+    {
+      "phase": "SWE.2",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:24:31.039950Z",
+      "detail": "Baseline BL-SWE.2-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.2",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:25:03.952155Z",
+      "detail": "The recorded inspection gate passed."
+    },
+    {
+      "phase": "SWE.3",
+      "step": "author",
+      "outcome": "REJECTED",
+      "timestamp": "2026-10-21T08:29:54.670471Z",
+      "detail": "The detailed-design diagram did not pass the render check."
+    },
+    {
+      "phase": "SWE.3",
+      "step": "route",
+      "outcome": "REWORK",
+      "timestamp": "2026-10-21T08:29:55.032371Z",
+      "detail": "Return to the author. The rework budget remains bounded."
+    },
+    {
+      "phase": "SWE.3",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:33:57.566913Z",
+      "detail": "Baseline BL-SWE.3-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.3",
+      "step": "verify",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:33:58.017975Z",
+      "detail": "Guideline verification: 0 violations, 0 implementation findings, 0 register-map findings."
+    },
+    {
+      "phase": "SWE.3",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:34:24.618686Z",
+      "detail": "The recorded inspection gate passed. The agent status separately reported FAILED; see the source log."
+    },
+    {
+      "phase": "SWE.4",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:39:54.830545Z",
+      "detail": "Baseline BL-SWE.4-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.4",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:40:11.580443Z",
+      "detail": "The recorded inspection gate passed."
+    },
+    {
+      "phase": "SWE.5",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:44:11.657019Z",
+      "detail": "Baseline BL-SWE.5-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.5",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:44:30.213094Z",
+      "detail": "The recorded inspection gate passed."
+    },
+    {
+      "phase": "SWE.6",
+      "step": "author",
+      "outcome": "FROZEN",
+      "timestamp": "2026-10-21T08:51:01.939726Z",
+      "detail": "Baseline BL-SWE.6-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE."
+    },
+    {
+      "phase": "SWE.6",
+      "step": "inspect",
+      "outcome": "PASS",
+      "timestamp": "2026-10-21T08:51:17.041028Z",
+      "detail": "The recorded inspection gate passed."
+    },
+    {
+      "phase": "PACKAGE",
+      "step": "seal",
+      "outcome": "READY_FOR_OFFLINE_REVIEW",
+      "timestamp": "2026-10-21T08:51:46.431962Z",
+      "detail": "0 declared gaps. Offline review only; not safety approved."
+    }
+  ],
+  "sources": {
+    "evidence/v0.4/runs/RC1/WO-0009B-STM32N6-IWDG-HAL-rc4/gate-log.jsonl": "24f7f99f9614c660221d64fc9593ab2ca96e22f99bf71c7d2e2b97299fb93c30",
+    "evidence/v0.4/runs/RC1/WO-0009B-STM32N6-IWDG-HAL-rc4/package.json": "a59510de6f3819320b7117c165e819660a04403c39b99c10fc1619de18415115",
+    "evidence/v0.4/runs/CR-T044/control-room-after-r168.png": "933d4bd37bec42b2bdd54774a5d3ffa5cd5c16220a8c4f558dcc401c67ac4433"
+  }
+}

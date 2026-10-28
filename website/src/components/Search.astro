@@ -1,0 +1,142 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<button
+  class="search-trigger"
+  aria-label="Search documentation"
+  data-search-open
+>
+  <svg
+    width="17"
+    height="17"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    aria-hidden="true"
+    ><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"
+    ></path></svg
+  >
+  <span>Search documentation</span><kbd>Ctrl K</kbd>
+</button>
+<dialog id="forge-search" aria-label="Search documentation" data-base={base}>
+  <div class="search-top">
+    <span>Search Forge-C</span><button
+      data-search-close
+      aria-label="Close search">Close <kbd>Esc</kbd></button>
+  </div>
+  <div id="pagefind-search"></div>
+  <p class="search-note">
+    Search is available in the built website. Use <code>npm run build</code> and
+    <code>npm run preview</code> locally.
+  </p>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("#forge-search");
+  let initialized = false;
+  async function openSearch() {
+    if (!dialog) return;
+    dialog.showModal();
+    if (!initialized) {
+      const base = dialog.dataset.base!;
+      try {
+        const script = document.createElement("script");
+        script.src = `${base}pagefind/pagefind-ui.js`;
+        await new Promise<void>((resolve, reject) => {
+          script.onload = () => resolve();
+          script.onerror = () => {
+            script.remove();
+            reject(new Error("Search index is unavailable"));
+          };
+          document.head.append(script);
+        });
+        const { PagefindUI } = window as unknown as {
+          PagefindUI: new (options: object) => unknown;
+        };
+        new PagefindUI({ element: "#pagefind-search", showSubResults: true });
+        const stylesheet = document.createElement("link");
+        stylesheet.rel = "stylesheet";
+        stylesheet.href = `${base}pagefind/pagefind-ui.css`;
+        document.head.append(stylesheet);
+        dialog.querySelector<HTMLElement>(".search-note")!.hidden = true;
+        initialized = true;
+      } catch {
+        /* Dev mode has no search index; the dialog explains the build step. */
+      }
+    }
+    dialog.querySelector<HTMLInputElement>("input")?.focus();
+  }
+  document
+    .querySelector("[data-search-open]")
+    ?.addEventListener("click", openSearch);
+  document
+    .querySelector("[data-search-close]")
+    ?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  document.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openSearch();
+    }
+  });
+</script>
+<style>
+  .search-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-2);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 7px;
+    padding: 0.55rem 0.8rem;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+  }
+  kbd {
+    margin-inline-start: auto;
+    font:
+      0.7rem ui-monospace,
+      monospace;
+    opacity: 0.7;
+  }
+  dialog {
+    width: min(90vw, 48rem);
+    max-height: 80vh;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 12px;
+    background: var(--sl-color-bg);
+    color: var(--sl-color-text);
+    padding: 1.5rem;
+  }
+  dialog::backdrop {
+    background: #0009;
+    backdrop-filter: blur(4px);
+  }
+  .search-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .search-top button {
+    background: none;
+    color: inherit;
+    border: 0;
+    cursor: pointer;
+  }
+  .search-note {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+  @media (max-width: 50rem) {
+    .search-trigger span,
+    .search-trigger kbd {
+      display: none;
+    }
+  }
+</style>
