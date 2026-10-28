@@ -613,6 +613,9 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         # The legacy structured interface schema permits integer-only parameters.
         # The existing native MCP role supports the pinned vendor pointer signatures.
         phases = [x for x in phases if x != "SWE.2"]
+        # The legacy structured inspector also carries the generated-array note;
+        # preserve its frozen context and select the existing CMSIS-aware native inspector.
+        inspect = [x for x in inspect if x != "SWE.2"]
     out = {
         "phases": phases,
         "inspect_phases": inspect,

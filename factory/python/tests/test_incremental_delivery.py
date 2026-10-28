@@ -150,7 +150,7 @@ def test_cmsis_development_uses_existing_pointer_capable_mcp_author(prepared):
     local = {"id": "local-rtx-v2-omniverse2-q38-aspice"}
     scoped = W.local_profile_structured(local, man, "qwen3.8:27b-q8_0")
     assert "SWE.1" in scoped["phases"] and "SWE.2" not in scoped["phases"]
-    assert "SWE.2" in scoped["inspect_phases"]
+    assert "SWE.2" not in scoped["inspect_phases"]
     legacy = copy.deepcopy(man)
     legacy.pop("development_execution")
     assert "SWE.2" in W.local_profile_structured(local, legacy, "qwen3.8:27b-q8_0")["phases"]
@@ -204,3 +204,26 @@ int main(void) {
                              "-c", str(unit), "-o", str(obj)], capture_output=True, text=True)
     assert target.returncode == 0, target.stderr
     assert obj.is_file() and sha256_file(header) == before
+
+def test_six_phase_anchor_and_broken_required_trace_prevent_acceptance(prepared, tmp_path, monkeypatch):
+    from forge_factory.release import finalize
+    from incremental_idr_anchor import Anchor
+
+    ws, _ = imported(prepared)
+    assert inject(ws)["status"] == "INJECTED"
+    anchor = Anchor(ws, monkeypatch)
+    anchor.architecture()
+    anchor.implementation()
+    anchor.unit()
+    anchor.integration()
+    anchor.validation()
+    result = finalize.finalize(ws, "idr-scripted-provider-fixture")
+    assert result["package_status"] == "READY_FOR_OFFLINE_REVIEW", result["gaps"]
+    assert finalize.verify_archive(__import__("pathlib").Path(result["archive"]))["integrity"] == "PASS"
+    mutant = tmp_path / "broken-trace-workspace"
+    shutil.copytree(ws, mutant)
+    trace = mutant / "traceability/requirements_to_tests.csv"
+    trace.write_text("requirement_id,test_id,test_file\n")
+    monkeypatch.setenv("FORGE_ARCHIVE_DIR", str(tmp_path / "mutant-archives"))
+    negative = finalize.finalize(mutant, "idr-broken-trace-fixture")
+    assert negative["package_status"] == "BLOCKED"
