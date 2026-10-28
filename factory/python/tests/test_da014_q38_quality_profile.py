@@ -28,7 +28,7 @@ def test_rendered_fabro_default_and_provider_catalogue_use_only_q38(tmp_path):
     providers = config['llm']['providers']
     assert set(providers) == {'ollama'} and set(providers['ollama']['models']) == {MODEL}
     assert providers['ollama']['default_model'] == MODEL
-    assert providers['ollama']['models'][MODEL]['limits'] == {'context_tokens': 65536, 'max_output_tokens': 32768}
+    assert providers['ollama']['models'][MODEL]['limits'] == {'context_tokens': 65536, 'max_output_tokens': 49152}
     legacy = profile.load('local-rtx-v2-omniverse2-q38')
     old = tomllib.loads(stack.fabro_config({'profile': legacy, 'root': tmp_path, 'ports': legacy['deployment']['ports']}))
     assert old['llm']['providers']['ollama']['models'][MODEL]['limits'] == {
@@ -52,7 +52,7 @@ def test_quality_reasoning_is_bounded_measured_and_never_persisted():
     reasoning = json.loads(stack.gateway_reasoning(p))
     body = sanitize_request({'model': MODEL, 'max_tokens': 512, 'messages': [{'role': 'user', 'content': 'Bounded task'}]},
                             policy=reasoning)
-    assert body['reasoning_effort'] == 'high' and body['max_tokens'] == 16896
+    assert body['reasoning_effort'] == 'xhigh' and body['max_tokens'] == 33280
     measured = measure_request(body)
     assert measured['input_tokens'] + body['max_tokens'] <= int(p['runtime']['ollama']['OLLAMA_CONTEXT_LENGTH'])
     clean, removed = strip_reasoning({'content': 'answer', 'reasoning_content': 'PRIVATE_REASONING'})

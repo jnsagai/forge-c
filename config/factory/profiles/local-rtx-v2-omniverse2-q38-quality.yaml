@@ -25,7 +25,7 @@ models:
       license_source: https://huggingface.co/Qwen/Qwen3.8-27B
 runtime:
   fabro_context_tokens: 65536
-  fabro_max_output_tokens: 32768
+  fabro_max_output_tokens: 49152
   ollama:
     OLLAMA_NUM_PARALLEL: '1'
     OLLAMA_MAX_LOADED_MODELS: '1'
@@ -88,8 +88,8 @@ safec:
 gateway:
   reasoning:
     qwen3.8:27b-q8_0:
-      effort: high
-      extra_output_tokens: 16384
+      effort: xhigh
+      extra_output_tokens: 32768
 admission:
   max_inflight: 1
   max_queue: 8

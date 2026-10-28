@@ -76,7 +76,7 @@ def scope_tools(body: dict) -> dict:
     return {**body, "tools": kept}
 
 
-EFFORTS = ("low", "medium", "high")
+EFFORTS = ("low", "medium", "high", "xhigh")
 
 
 def reasoning_policy() -> dict[str, dict]:
@@ -327,10 +327,11 @@ def create_app(
         native_id = request.headers.get("x-session-id")
         if binding is None and native_id and os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1":
             # Enable only after pinned Fabro header propagation is measured on the actual local profile.
+            import uuid
+
+            from .afo.durable import Refused
             from .afo.product_job import from_native
             from .afo.queue import Store
-            from .afo.durable import Refused
-            import uuid
 
             try:
                 binding = {**from_native(Store(), native_id), "request_id": "native-request-" + uuid.uuid4().hex}
@@ -340,7 +341,7 @@ def create_app(
         if binding is not None:
             return await durable_request(request, binding, body, headers)
         # Legacy calls retain their existing behavior, but cannot bypass a held durable native execution.
-        from .afo.queue import default_path, Store
+        from .afo.queue import Store, default_path
 
         if default_path().exists() or os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
             from .afo.request_admission import unbound_allowed
