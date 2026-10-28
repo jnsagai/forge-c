@@ -13,5 +13,8 @@
   "formal_da_total_tasks": 58,
   "live_authority": "NOT_ESTABLISHED_FOR_NEW_OBJECTIVE",
   "requirements_review": "PENDING",
-  "product_acceptance": "NOT_RUN"
+  "product_acceptance": "NOT_RUN",
+  "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
+  "backend_owner_decision": "2026-10-28: no, go with MTP",
+  "backend_qualification": "PENDING_EXACT_XHIGH_ROLE_PROTOCOL"
 }

@@ -385,13 +385,23 @@ def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
     if not blob.is_file() or blob.stat().st_size != layer["size"]:
         raise RuntimeError(f"LLAMA_SERVER_MODEL_BLOB_MISSING:{layer['digest'][:19]}")
     lib, slots = r / "ollama-0.34.0/lib/ollama", int(ls["slots"])
+    reasoning = ls.get("reasoning", "off")
+    effort = ls.get("reasoning_effort")
+    if reasoning not in ("on", "off", "auto") or effort not in (None, "low", "medium", "high", "xhigh"):
+        raise RuntimeError("LLAMA_SERVER_REASONING_CONFIGURATION_INVALID")
     ctx, kv = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), prof["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"]
     argv = [str(lib / "llama-server"), "--model", str(blob), "--alias", model, "--host", "127.0.0.1",
             "--port", str(p["llama"]), "--no-webui", "--offline", "-c", str(ctx * slots), "-np", str(slots),
-            "--jinja", "--reasoning", "off", "--cache-type-k", kv, "--cache-type-v", kv, "--flash-attn", "on",
+            "--jinja", "--reasoning", reasoning, "--cache-type-k", kv, "--cache-type-v", kv, "--flash-attn", "on",
             "-b", "2048", "-ub", "2048"]
-    if ls.get("mtp_draft"):
+    if "mtp_draft" in ls:
+        if type(ls["mtp_draft"]) is not int or not 1 <= ls["mtp_draft"] <= 8:
+            raise RuntimeError("LLAMA_SERVER_MTP_CONFIGURATION_INVALID")
         argv += ["--spec-type", "draft-mtp", "--spec-draft-n-max", str(int(ls["mtp_draft"]))]
+    if effort:
+        argv += ["--reasoning-effort", effort, "--reasoning-format", "deepseek"]
+    if ls.get("gpu_layers") == "all":
+        argv += ["--gpu-layers", "all"]
     penv = {**env, "LD_LIBRARY_PATH": f"{lib}:{lib}/cuda_v13", "GGML_BACKEND_PATH": f"{lib}/cuda_v13/libggml-cuda.so"}
     return argv, penv, f"http://127.0.0.1:{p['llama']}/health", [model]
 

@@ -256,3 +256,12 @@ The receipt declares external assistance and cannot fabricate Qwen authorship or
 Safety remains NOT_ASSESSED, not reclassified as QM. Startup and caller/error responsibilities
 must be concrete and sourced; no generic invented safe state. Original full-CRC mission,
 three attempts,1.9m conservative expenditure and UNKNOWN usage remain immutable.
+
+### Subsequent owner backend decision — 2026-10-28
+
+The owner explicitly superseded M1's backend hold with “no, go with MTP”.
+Select the separately identified Qwen3.8-27B Q8_0 MTP profile, xhigh, one inference
+slot/admitted request. Preserve evidence of the old no-thinking microbenchmark;
+it does not qualify xhigh role/tool behavior. Exact native backend and per-role
+admission/capability checks remain prerequisites. No old authority, allowance or
+qualification receipt is silently reused. All other incremental boundaries remain.

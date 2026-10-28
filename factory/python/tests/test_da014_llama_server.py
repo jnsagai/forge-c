@@ -38,6 +38,30 @@ def test_the_variant_profile_serves_the_pinned_model_with_two_slots():
     assert prof["models"] == base["models"] and prof["structured"] == base["structured"]  # one serving factor only
     assert prof["deployment"]["ports"]["llama"] not in prof["deployment"]["forbidden_ports"]
 
+def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path):
+    r, old = _root(tmp_path)
+    source = r / "ollama-models/manifests/registry.ollama.ai/library/qwen3.6/35b-a3b"
+    target = source.parents[1] / "qwen3.8/27b-q8_0"
+    target.parent.mkdir()
+    target.write_bytes(source.read_bytes())
+    p = copy.deepcopy(lp.load("local-rtx-v2-omniverse2-q38-aspice-mtp"))
+    model = "qwen3.8:27b-q8_0"
+    p["models"]["allowed"][model]["digest"] = old["models"]["allowed"][MODEL]["digest"]
+    assert p["admission"]["max_inflight"] == 1
+    argv, _, _, models = stack.llama_server_spec(r, p, p["deployment"]["ports"], {})
+    assert models == [model]
+    assert argv[argv.index("-np") + 1] == "1"
+    assert argv[argv.index("--reasoning") + 1] == "on"
+    assert argv[argv.index("--reasoning-effort") + 1] == "xhigh"
+    assert argv[argv.index("--reasoning-format") + 1] == "deepseek"
+    assert argv[argv.index("--spec-type") + 1] == "draft-mtp"
+    assert argv[argv.index("--spec-draft-n-max") + 1] == "3"
+    assert argv[argv.index("--gpu-layers") + 1] == "all"
+    for wrong in (True, 0, 9, "3"):
+        p["runtime"]["llama_server"]["mtp_draft"] = wrong
+        with pytest.raises(RuntimeError, match="MTP_CONFIGURATION_INVALID"):
+            stack.llama_server_spec(r, p, p["deployment"]["ports"], {})
+
 
 def test_the_server_command_comes_from_the_profile_and_the_verified_model_file(tmp_path):
     r, prof = _root(tmp_path)

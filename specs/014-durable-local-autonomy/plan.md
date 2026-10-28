@@ -115,3 +115,12 @@ work-order/peripheral, phase runner/gate, Fabro/MCP and release mechanisms.
 
 Administrative source records stay hash-bound outside small semantic role views. No budget,
 reasoning, tokenizer, backend or model change is inferred from this incremental brief.
+
+### Subsequent owner backend decision — 2026-10-28
+
+The owner explicitly superseded M1's backend hold with “no, go with MTP”.
+Select the separately identified Qwen3.8-27B Q8_0 MTP profile, xhigh, one inference
+slot/admitted request. Preserve evidence of the old no-thinking microbenchmark;
+it does not qualify xhigh role/tool behavior. Exact native backend and per-role
+admission/capability checks remain prerequisites. No old authority, allowance or
+qualification receipt is silently reused. All other incremental boundaries remain.
