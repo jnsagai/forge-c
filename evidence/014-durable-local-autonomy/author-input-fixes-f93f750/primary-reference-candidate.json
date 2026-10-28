@@ -1,0 +1,1 @@
+{"status": "PASS", "scope": "PROFILE_REFERENCES_VS_HASH_BOUND_PRIMARY_REGISTER_NAMES_ONLY", "profile": "crc", "profile_sha256": "a9d0ca93103f1a1f7fa82d56eae9bac811c78cf4ced703bb84c556473d1e08c1", "primary_sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1", "registers": 5, "findings": []}

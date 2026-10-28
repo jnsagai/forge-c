@@ -7,6 +7,21 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Actual first baseline and prospective author-input fixes — 2026-10-28
+
+Runtime remainsfcb15cb. Observed at15:29Z: actual Qwen had frozen **BL-SWE.1-001**,
+hashd96f4b3e0dd53f00865bb077818cea23b2f833ad50244109631799294375da33.
+Seven author packetsVALID after two bounded local repairs. InspectionSWE1-01PASS;
+SWE1-02FAIL4 findings; remaining inspection pending. No whole-phase/productPASS.
+Read current state. Same original mission costs/limits/16:29:12Z cutoff.
+
+Prospectivef93f750 (includesf2d4dde/2c2971a) corrects the primary CRC_INIT field
+name in guidance and makes cross-cutting packet rules self-contained. Actual
+old template caused one repair costing~15.2minutes; no candidate benefit measured.
+Exact45localPASS,0skips,1deselected, nativeNOT_RUN, **NOT DEPLOYED** while Qwenlive.
+Inspector/gates/hardware semantics unchanged. Preserve all findings and sourcepins.
+[Evidence](../../evidence/014-durable-local-autonomy/author-input-fixes-f93f750/README.md).
+
 ## Prospective correction2c2971a — NOT DEPLOYED
 
 Deterministic reproducer confirms current CRC field partition separates the
