@@ -79,6 +79,7 @@ def runtime_identity() -> dict:
 
 def contract(man: dict) -> dict:
     return {**{k: man.get(k) for k in CONTRACT_FIELDS},
+            **{k: man[k] for k in ("aspice_development", "historical_safety_scope") if k in man},
             **({"semantic_required_operations": man["semantic_required_operations"]}
                if "semantic_required_operations" in man else {}),
             "inputs": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("inputs", [])),

@@ -136,6 +136,7 @@ def _launcher(manifest: dict, wo: str, labels: dict, *, before_native_launch=Non
         durable_binding=manifest.get("durable_binding"),
         recovery_exhausted=manifest.get("recovery_exhausted"),
         **({"evaluation_holdout": True} if manifest.get("evaluation_holdout") else {}),
+        **({"purpose": manifest["purpose"]} if "purpose" in manifest else {}),
         **({"before_native_launch": before_native_launch} if before_native_launch is not None else {}),
     )
     if not r.get("fabro_run_id"):

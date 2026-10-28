@@ -179,9 +179,11 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
             *, purpose: str = "DEVELOPMENT") -> tuple[Path, dict]:
+    from .release import aspice
     from .release.development import binding
 
-    development = binding(purpose)
+    aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
+    development = binding(purpose) if aspice_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
@@ -249,6 +251,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     manifest = {
         "schema": "forge-c/work-order/0.4",
         "purpose": purpose,
+        **({"aspice_development": aspice_scope} if aspice_scope else {}),
         **({"development_safety": development} if development else {}),
         "work_order": wo,
         "created_at": utc_now(),
@@ -298,7 +301,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         ]
         (ws / DISPOSITIONS).write_text(pretty_json(ods))
         (ws / DISPOSITIONS).chmod(0o444)
-    if sc:
+    if aspice_scope:
+        # Preserve the prior allocation as provenance, without assessing or reclassifying it.
+        manifest["historical_safety_scope"] = sc
+        manifest["target"]["safety_allocation"] = "NOT_ASSESSED: " + aspice.STATEMENT
+        manifest["rules"].append(aspice.STATEMENT)
+    if sc and not aspice_scope:
         from .assurance.scope import allocation_status
 
         manifest["safety_target"] = sc["scope"]["target_asil"]
@@ -621,18 +629,23 @@ def run(
     purpose: str = "DEVELOPMENT",
     evaluation_holdout: bool = False,
 ) -> dict:
+    from .release.aspice import PURPOSE as ASPICE_PURPOSE
+    from .release.aspice import validate_profile
     from .release.development import PURPOSES
 
-    if purpose not in PURPOSES:
+    if purpose not in (*PURPOSES, ASPICE_PURPOSE):
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
     if type(evaluation_holdout) is not bool:
         raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
     local = None
+    if purpose == ASPICE_PURPOSE and not profile:
+        raise ValueError("ASPICE_SCOPE_PROFILE_MISMATCH")
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
 
+        validate_profile(purpose, local_profile.load(profile))
         local = local_profile.select(
             profile, model=model, provider=provider, code_model=code_model, acp_authors=acp_authors, acp_inspectors=acp_inspectors
         )
@@ -879,8 +892,9 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--example", type=Path, required=True)
-    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW"), default="DEVELOPMENT",
-                    help="development defers owner-authorized SSA/TAA signatures; formal review retains strict policy")
+    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW", "ASPICE_ONLY"), default="DEVELOPMENT",
+                    help="development defers SSA/TAA signatures; ASPICE_ONLY excludes safety assurance; "
+                         "formal review retains strict policy")
     ap.add_argument("--wo", required=True)
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")

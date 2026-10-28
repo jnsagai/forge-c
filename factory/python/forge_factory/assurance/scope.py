@@ -185,6 +185,13 @@ def workspace_scope_findings(ws, phase: str) -> list[str]:
     from pathlib import Path
 
     ws = Path(ws)
+    from ..release.aspice import workspace_record
+
+    try:
+        if workspace_record(ws):
+            return []
+    except ValueError:
+        return ["ASPICE_SCOPE_BINDING_CHANGED"]
     p = ws / SCOPE_FILE
     if not p.is_file():
         return []

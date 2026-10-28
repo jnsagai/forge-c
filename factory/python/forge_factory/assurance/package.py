@@ -90,6 +90,12 @@ def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:
 
 
 def scope_dispositions(ws: Path, stage: Path) -> dict:
+    from ..release.aspice import workspace_record
+
+    aspice = workspace_record(ws)
+    if aspice:
+        return {"status": "NOT_ASSESSED_ASPICE_ONLY", "issues": [], "safety_approval": None,
+                "assessed_aspice_compliance": None, "owner_scope_binding": aspice}
     p = ws / SCOPE_FILE
     if not p.is_file():
         return {"status": "NO_APPROVED_SCOPE", "note": "product ASIL/QM scope not recorded by the owner; safety "

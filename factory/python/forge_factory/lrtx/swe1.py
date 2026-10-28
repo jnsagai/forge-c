@@ -419,6 +419,10 @@ def _scope_ids(alloc: str) -> tuple[str, str]:
 def safety_text(ws: Path) -> str | None:
     """The SWE.1 safety statement exactly as the SWE.1 author instructions prescribe it; None when an allocation exists
     (then the safety-relevant SWRs must come from an upstream SSR task - not implemented here: the visit fails)."""
+    from ..release.aspice import STATEMENT, workspace_record
+
+    if workspace_record(ws):
+        return "# Assurance scope\n\n" + STATEMENT + "\n"
     alloc = _manifest(ws)["target"].get("safety_allocation", "")
     if "OUT_OF_SCOPE" in alloc:
         return ("# Software safety requirements\n\nQM development scope: no software safety requirements are allocated "
