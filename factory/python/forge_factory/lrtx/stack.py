@@ -83,7 +83,8 @@ def envmap(s: dict) -> dict[str, str]:
         "LANG": os.environ.get("LANG", "C.UTF-8"),
         "TERM": "dumb",
         "PATH": ":".join(
-            [str(r / "venv/bin"), str(r / "toolchains/LLVM-19.1.7-Linux-X64/bin"), SYSTEM_PATH, str(r / "toolchains/formal/bin")]
+            [str(r / "venv/bin"), str(r / "toolchains/LLVM-19.1.7-Linux-X64/bin"), SYSTEM_PATH,
+             str(r / "toolchains/formal/bin"), str(r / "toolchains/sysroot/usr/bin")]
         ),
     }
     if os.environ.get("FORGE_OPERATIONS_INTENT"):
