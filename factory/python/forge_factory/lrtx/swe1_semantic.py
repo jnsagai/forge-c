@@ -227,7 +227,8 @@ def group_packet(ws: Path, g: dict, model: str, ctx: Context, findings: list[str
              "driver's prefix (e.g. LL_IWDG_Enable, LL_IWDG_IsActiveFlag_PVU, LL_RCC_HSI_Enable); the later "
              "architecture must define exactly this name. key is a short snake_case name. For every field of this "
              "task either write the "
-             "intents the scope demands or list it in not_covered with the scope reason. open_points lists "
+             "intents the scope demands or list it in not_covered with the scope reason. " + V1.SCOPE_COVERAGE_RULE +
+             " open_points lists "
              "ambiguities of the source (or nothing).")
     crit = ["every intent names a field of this task", "every field of the task has an intent or is in not_covered",
             "logical values are field values within the field width", "key writes cite their own value fact"]
@@ -361,7 +362,7 @@ def crosscut_rendered(ws: Path, doc: dict, inv: dict, sysname: str) -> dict:
 
 # ---- deterministic checks of one answer ------------------------------------------------------------------------------
 def local_checks(ws: Path, doc: dict, g: dict) -> list[str]:
-    out, keys = [], set()
+    out, keys = V1.required_scope_exclusions(ws, doc, g), set()
     excl = V1.out_of_scope_named(ws)
     for it in doc["intents"]:
         if it["key"] in keys:

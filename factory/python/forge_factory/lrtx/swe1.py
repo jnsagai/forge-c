@@ -23,6 +23,10 @@ from . import structured as S
 from . import visit as V
 
 MAX_FIELDS = 5
+SCOPE_COVERAGE_RULE = (
+    "A REGISTER.FIELD explicitly named in the in-scope work-order text must not be listed in not_covered. "
+    "A verifier limitation is an unresolved verification gap, not permission to remove a requested field."
+)
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
@@ -178,6 +182,20 @@ def out_of_scope_named(ws: Path) -> set[str]:
     return set(re.findall(rf"\b{register_prefix(ws)}_[A-Z0-9]+(?:\.[A-Z0-9_]+)?\b", out_txt))
 
 
+def required_scope_exclusions(ws: Path, doc: dict, g: dict) -> list[str]:
+    """Enforce explicit owner scope only; unmentioned hardware fields acquire no new requirement."""
+    text = " ".join(x for x in _manifest(ws)["scope"] if not x.lower().startswith("out of scope"))
+    excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}"
+                for x in doc["not_covered"]}
+    required = []
+    for field in g["fields"]:
+        full = f"{g['register']}.{field}"
+        if full in excluded and re.search(rf"(?<![\w.]){re.escape(full)}(?![\w.])", text):
+            required.append(full)
+    return [f"REQUIRED_SCOPE_FIELD_EXCLUDED:{full}: keep the requested scope and report the verification gap"
+            for full in sorted(required)]
+
+
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
     m = _manifest(ws)
     sysname = system_name(ws)
@@ -190,7 +208,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
              "other registers are separate tasks, and reset/startup behaviour and rules for all functions belong to a "
              "separate cross-cutting task - never write them here. Every requirement of this task names a field of this "
              "task as REGISTER.FIELD. For every field of this task either write the requirements the scope "
-             "demands for it or list it in not_covered with the scope reason. Each statement uses EARS "
+             "demands for it or list it in not_covered with the scope reason. " + SCOPE_COVERAGE_RULE +
+             " Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
              "when ...'), checking register bits and return values on the register array - never a count of register "
@@ -326,6 +345,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         if _needs_contract(st, pfx) and not r["effects"]:  # the gate's rule (CONTRACT_SWR_NOT_COVERED)
             out.append(f"[{k}] the statement names a field it sets or clears but has no effect entry")
     if g is not None:
+        out += required_scope_exclusions(ws, doc, g)
         covered = named | {f"{e['register']}.{e['field']}" for r in doc["requirements"] for e in r["effects"]}
         excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}" for x in doc["not_covered"]}
         for f in g["fields"]:
