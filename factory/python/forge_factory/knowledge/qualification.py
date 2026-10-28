@@ -11,13 +11,46 @@ import json
 from pathlib import Path
 
 from ..afo.durable import Refused, canonical, digest
-from ..common import sha256_file
+from ..common import REPO_ROOT, sha256_file
+
+
+def historical_holdout_refs(work_order, *, root=REPO_ROOT):
+    """Read historical evaluation projections without rewriting source manifests.
+
+    Older seeded trials recorded holdout identities in reports, while the original
+    successful cloud workspace predates evaluation_holdout. An explicit training
+    selection cannot erase that later classification. This is a projection of
+    existing evidence, not another cohort authority or writable registry.
+    """
+    refs = []
+
+    def matches(value):
+        return isinstance(value, str) and (value == work_order or f"/{work_order}/" in value)
+
+    def contains(value):
+        if isinstance(value, dict):
+            return any((key == "holdout" and matches(item))
+                       or (key == "holdouts" and isinstance(item, list) and any(matches(x) for x in item))
+                       or contains(item) for key, item in value.items())
+        return isinstance(value, list) and any(contains(item) for item in value)
+
+    for path in sorted((Path(root) / "evidence").rglob("*.json")):
+        raw = path.read_text()
+        if work_order not in raw or '"holdout' not in raw:
+            continue
+        # Unreadable matching evidence is not silently reclassified as training.
+        if contains(json.loads(raw)):
+            refs.append({"path": str(path.relative_to(root)), "sha256": sha256_file(path)})
+    return refs
 
 
 def heldout_source(connection, source):
     """An append-only correction classifies the whole execution, including older observations."""
     record = json.loads(source["record"])
     if record.get("cohort", {}).get("evaluation_holdout"):
+        return True
+    provenance = record.get("facts", {}).get("phase_reference_provenance", {})
+    if provenance.get("work_order") and historical_holdout_refs(provenance["work_order"]):
         return True
     return (
         connection.execute(
