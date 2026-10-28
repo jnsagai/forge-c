@@ -1,10 +1,12 @@
 """Authenticated operator provisioning of bounded mission lineage; no grant signing/renewal."""
 
 from __future__ import annotations
+
 import json
 import time
 from datetime import datetime
 from pathlib import Path
+
 from .durable import Refused
 from .mission_ledger import MissionLedger
 
@@ -29,7 +31,13 @@ def register(store, document, eff):
         "max_jobs": int(eff.get("budgets.max_recovery_model_calls_per_order")),
         "max_tokens": int(eff.get("budgets.max_model_tokens_per_order")),
     }
-    caps.update(max_requests=caps["max_jobs"] * 8, max_tools=caps["max_jobs"] * 8, max_corrections=1)
+    caps.update(
+        max_requests=eff.get("budgets.max_inference_requests_per_order", caps["max_jobs"] * 8),
+        max_tools=eff.get("budgets.max_tool_calls_per_order", caps["max_jobs"] * 8),
+        max_corrections=1,
+    )
+    if any(type(value) is not int or value < 1 for value in caps.values()):
+        raise Refused("MISSION_POLICY_CAP_INVALID")
     if any(limits.get(k, cap + 1) > cap for k, cap in caps.items()) or limits.get("deadline", float("inf")) > min(
         expiry, time.time() + float(eff.get("budgets.max_order_wall_seconds"))
     ):

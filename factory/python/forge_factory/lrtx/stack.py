@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import secrets
 import shutil
@@ -38,8 +39,16 @@ def gateway_reasoning(prof: dict) -> str:
     return json.dumps((prof.get("gateway") or {}).get("reasoning") or {}, sort_keys=True)
 
 
+def gateway_timeout(prof: dict) -> int | float:
+    value = (prof.get("gateway") or {}).get("request_timeout_s", 600)
+    if type(value) not in (int, float) or not math.isfinite(value) or not 1 <= value <= 3600:
+        raise ValueError("GATEWAY_REQUEST_TIMEOUT_INVALID")
+    return value
+
+
 def settings(profile_id: str = "local-rtx-v1") -> dict:
     prof = lp.load(profile_id)
+    gateway_timeout(prof)  # reject invalid configuration before creating any serving process
     root = Path(os.environ.get(prof["deployment"]["root_env"]) or prof["deployment"]["default_root"])
     return {"profile": prof, "root": root, "ports": prof["deployment"]["ports"]}
 
@@ -570,6 +579,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10)),
         "FORGE_GATEWAY_REASONING": gateway_reasoning(prof),
     }
+    gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
     ls = llama_server_spec(r, prof, p, env)
     if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
         gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in ls[3]})

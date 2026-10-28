@@ -182,6 +182,22 @@ promise that every later call fits. Qualification preparation uses the same
 profile default and frozen binding without creating a grant or admission; an
 explicit signed qualification override still passes all policy and mission checks.
 
+Native reconciliation uses a runtime endpoint only when the current network
+namespace, owned services record, storage and pinned profile prove that route.
+A host-only intake relay remains historical metadata. Probe caches bind the
+actual route, network namespace and boot; a failed host probe cannot suppress a
+different valid native observation. Old waits/cooldowns remain recorded.
+
+Workflow request and tool ceilings can be set independently in a signed AFO policy
+through `budgets.max_inference_requests_per_order` and `max_tool_calls_per_order`.
+Omission preserves the original eight-per-recovery-job defaults. These optional
+fields never change a registered mission's limits. A changed policy requires its
+own matching authorization. The Qwen3.8 quality profile v3 also sets a finite
+3600-second gateway request timeout; other profiles retain600 seconds. Job/mission
+deadlines and admission stay authoritative. Transport timeouts retain UNKNOWN
+usage and held capacity, with no transparent durable generation retry or invented
+zero-cost refusal.
+
 Every ordinary success, failure, block, timeout and unknown outcome enters factual experience with a recoverable disposition. Qualified ordinary/negative lessons extend the existing LessonStore, preserve PROMOTED repair validation and separate inspector IL governance, and obey phase/role/target/source/tool/version and context limits. Delivery and retraction share a transactional fence. A captured experience or staged improvement proposal is not evidence of learning benefit. Learning comparisons include all retrieval, curation and validation cost.
 
 AFO job/phase capture preserves the workspace evaluation-holdout flag, and native

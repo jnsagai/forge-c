@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import time
 from pathlib import Path
@@ -180,6 +181,12 @@ class Meter:
                 + "\n"
             )
 
+    def outcome_unknown(self, model: str | None, code: str) -> None:
+        """A transport failure after dispatch is not a zero-cost admission refusal."""
+        with self.path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "error": code,
+                                "basis": "unknown", "upstream_called": None, "completed": False}) + "\n")
+
     def record_sample(self, resources: dict) -> None:
         """Feature 010 admission gateway: periodic resource sample (no request, no content)."""
         with self.path.open("a", encoding="utf-8") as f:
@@ -238,9 +245,15 @@ def create_app(
     meter_path: Path | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     admission: Any = None,
+    request_timeout_s: float | None = None,
 ) -> FastAPI:
     """`admission` (feature 010, lrtx.admission.Admission; from FORGE_GATEWAY_MAX_INFLIGHT when not given) turns on the
     single-request queue, cancellation and timing; without it the gateway behaves as before."""
+    if request_timeout_s is None:
+        request_timeout_s = float(os.environ.get("FORGE_GATEWAY_REQUEST_TIMEOUT_S", "600"))
+    if (type(request_timeout_s) not in (int, float) or not math.isfinite(request_timeout_s)
+            or not 1 <= request_timeout_s <= 3600):
+        raise ValueError("GATEWAY_REQUEST_TIMEOUT_INVALID")
     if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
         from .lrtx import admission as lrtx_admission
 
@@ -267,11 +280,12 @@ def create_app(
 
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
-    client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0), transport=transport)
+    timeout = httpx.Timeout(float(request_timeout_s), connect=min(10.0, request_timeout_s))
+    client = httpx.AsyncClient(base_url=upstream, timeout=timeout, transport=transport)
     # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
     # llama.cpp server with several request slots; that model's chat requests go there, every other model to Ollama
     routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
-    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=httpx.Timeout(600.0, connect=10.0), transport=transport)
+    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
               for m, u in routes.items()}
 
     def cl(body: dict | None) -> httpx.AsyncClient:
@@ -467,9 +481,15 @@ def create_app(
         except Refused as exc:
             meter.refusal(body.get("model"), exc.code)
             return JSONResponse({"error": {"type": exc.code}}, status_code=429)
-        except httpx.HTTPError:
-            meter.refusal(body.get("model"), "PROVIDER_REQUEST_OUTCOME_UNKNOWN")
-            return JSONResponse({"error": {"type": "PROVIDER_REQUEST_OUTCOME_UNKNOWN"}}, status_code=502)
+        except httpx.HTTPError as exc:
+            code = "PROVIDER_REQUEST_OUTCOME_UNKNOWN"
+            for cls, kind in ((httpx.ReadTimeout, "READ"), (httpx.ConnectTimeout, "CONNECT"),
+                              (httpx.WriteTimeout, "WRITE"), (httpx.PoolTimeout, "POOL")):
+                if isinstance(exc, cls):
+                    code = f"PROVIDER_{kind}_TIMEOUT_OUTCOME_UNKNOWN"
+                    break
+            meter.outcome_unknown(body.get("model"), code)
+            return JSONResponse({"error": {"type": code}}, status_code=502)
         finally:
             durable.reconcile(store, rec["request_id"], usage, completed=completed or not started)
             if ticket is not None and not ticket.refused:
