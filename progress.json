@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-28T15:49:05.844948Z",
+  "captured_utc": "2026-10-28T15:50:01.147343Z",
   "deadline_epoch": 1793204952.0,
   "source_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
   "intent": {
@@ -9,7 +9,7 @@
   "orders": [
     {
       "order_id": "afo-533cd9ba25e792a5",
-      "state": "WAITING_RECOVERY",
+      "state": "BLOCKED",
       "attempts": [
         {
           "attempt_id": "afo-533cd9ba25e792a5-a1",
@@ -19,7 +19,7 @@
         {
           "attempt_id": "afo-533cd9ba25e792a5-a2",
           "seq": 2,
-          "state": "PREPARED"
+          "state": "FAILED"
         }
       ]
     }
@@ -30,7 +30,7 @@
     {
       "resource": "inference",
       "holder": null,
-      "epoch": 18
+      "epoch": 20
     },
     {
       "resource": "generation",
