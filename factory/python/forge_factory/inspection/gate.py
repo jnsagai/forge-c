@@ -432,6 +432,25 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
     ]
 
 
+def unchanged_failed_inspection(store: Store, phase: str) -> bool:
+    """A cached failed verdict on the same frozen baseline is not another engineering attempt."""
+    rows = store.inspections(phase)
+    if len(rows) < 2:
+        return False
+    a, b = rows[-2:]
+    baseline = store.latest_baseline(phase) or {}
+    if (a.get("verdict") != "FAIL" or b.get("verdict") != "FAIL"
+            or not baseline.get("baseline_hash")
+            or a.get("baseline_hash") != b.get("baseline_hash")
+            or b.get("baseline_hash") != baseline["baseline_hash"]
+            or store.current_hash(phase) != baseline["baseline_hash"]
+            or a.get("checklist_sha256") != b.get("checklist_sha256")):
+        return False
+    # Deterministic evidence file names/inspection IDs change on each record;
+    # compare the unresolved findings, not those administrative identities.
+    return bool(b.get("findings")) and a.get("findings") == b["findings"]
+
+
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
     from .. import development_execution as development
@@ -444,12 +463,14 @@ def step_route(store: Store, phase: str) -> int:
         allowed = g["decision"] != "PASS" and development.reserve_phase_rework(store.workspace, phase)
         high = development.selected(store.workspace)["name"] == development.HIGH
         stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
+        if high and unchanged_failed_inspection(store, phase):
+            stuck = ("UNCHANGED_FAILED_INSPECTION",)
         if stuck:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
-                  if allowed else "STUCK: repeated deterministic rejection; external diagnosis required" if stuck else
+                  if allowed else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))

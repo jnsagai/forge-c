@@ -210,6 +210,35 @@ def test_native_tool_repair_cannot_become_another_edit_verify_loop(prepared):
         "path": "workproducts/SWE.4/unit_verification_report.md", "content": "BLOCKED"}).allow
 
 
+@pytest.mark.parametrize("same_finding", [True, False])
+def test_high_allowance_stops_cached_failed_baseline_without_weakening_inspection(prepared, capsys, same_finding):
+    ws, man = imported(prepared)
+    man["development_execution"] = D.binding(D.HIGH, "ASPICE_ONLY")
+    (ws / ".forge-run/manifest.json").write_text(pretty_json(man))
+    st = Store(ws)
+    baseline = st.freeze("SWE.1", "swe1-author")
+    prior_inspections = len(st.inspections("SWE.1"))
+    verdicts = _all_pass("SWE.1")
+    verdicts["SWE1-03"] = {"verdict": "FAIL", "evidence_refs": ["workproducts/SWE.1/software_requirements.md"],
+                           "findings": ["Synthetic missing supported invocation contract"]}
+    st.record_inspection("SWE.1", "swe1-inspector", baseline["baseline_id"], verdicts)
+    assert gate.step_route(st, "SWE.1") == 0
+    capsys.readouterr()
+    if not same_finding:
+        verdicts["SWE1-03"]["findings"] = ["Synthetic different unresolved contract"]
+    st.record_inspection("SWE.1", "swe1-inspector", baseline["baseline_id"], verdicts)
+    assert gate.step_route(st, "SWE.1") == (1 if same_finding else 0)
+    result = json.loads(capsys.readouterr().out)
+    assert result["decision"] == ("BLOCKED" if same_finding else "REWORK")
+    assert st.gate("SWE.1")["decision"] != "PASS"
+    assert len(st.inspections("SWE.1")) == prior_inspections + 2  # No old failure or inspection is rewritten.
+    if same_finding:
+        assert "STUCK" in result["reason"]
+        req = ws / "workproducts/SWE.1/software_requirements.md"
+        req.write_text(req.read_text() + "\nChanged fixture evidence, awaiting a fresh legitimate baseline.\n")
+        assert not gate.unchanged_failed_inspection(st, "SWE.1")
+
+
 def test_cmsis_development_uses_existing_pointer_capable_mcp_author(prepared):
     _, man = prepared
     local = {"id": "local-rtx-v2-omniverse2-q38-aspice"}
