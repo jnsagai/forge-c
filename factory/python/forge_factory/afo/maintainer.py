@@ -30,6 +30,7 @@ from ..common import REPO_ROOT, sha256_bytes, sha256_file, state_dir, utc_now
 from ..reliability import isolation
 from ..reliability.protect import _match
 
+MAX_SOURCE_READ_BYTES = 4 * 1024 * 1024
 CANDIDATE_TESTS = "factory/python/tests/afo_candidate/"
 ALLOW = ["factory/python/forge_factory/**", CANDIDATE_TESTS + "**"]
 DENY = [  # inside ALLOW, still never the maintainer's: the deciders, the grants and the other repair identities
@@ -183,7 +184,8 @@ def read_source(case: dict, rel: str, max_bytes: int = MAX_EXCERPT * 2) -> str:
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=False)
     if not p.is_file():
         raise MaintainerDenied("NOT_FOUND", rel)
-    return p.read_text(errors="replace")[:max_bytes]
+    with p.open("rb") as stream:
+        return stream.read(max_bytes).decode("utf-8", errors="replace")
 
 
 def write_source(case: dict, rel: str, text: str) -> str:

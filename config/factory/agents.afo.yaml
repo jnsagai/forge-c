@@ -12,8 +12,8 @@ agents:
   model: qwen3:8b  # registry default like the 20 base roles; the run profile chooses the model
   model_provider: ollama
   max_stage_tokens: 16000
-  max_turns: 8
-  max_mcp_output_bytes: 2048
+  max_turns: 200
+  max_mcp_output_bytes: 65536
   allowed_tools:
   - forge-afo-mcp.read_failure_bundle
   - forge-afo-mcp.list_gate_findings
@@ -36,8 +36,8 @@ agents:
   model: qwen3:8b  # registry default like the 20 base roles; the run profile chooses the model
   model_provider: ollama
   max_stage_tokens: 24000
-  max_turns: 20
-  max_mcp_output_bytes: 2048
+  max_turns: 200
+  max_mcp_output_bytes: 65536
   allowed_tools:
   - forge-maintainer-mcp.read_case
   - forge-maintainer-mcp.read_source

@@ -4,6 +4,8 @@ provider: ollama
 max_concurrent_model_agents: 1
 no_model_supervisor_poll: true
 max_tool_result_bytes: 2048
+# Larger bounded evidence/source pages for the explicitly registered AFO overlay.
+afo_max_tool_result_bytes: 65536
 max_tool_log_lines_in_prompt: 30
 max_validated_lessons: 3
 max_lesson_payload_tokens: 700

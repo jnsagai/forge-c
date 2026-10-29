@@ -19,8 +19,6 @@ from ...common import state_dir
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
 from .afo_payload import payload
 
-MAX_BYTES = 2048
-
 
 def _case() -> dict:
     p = Path(os.environ.get("FORGE_AFO_MAINT_CASE", ""))
@@ -43,7 +41,7 @@ def _call(fn, *a):
 
 
 class NoIn(ToolInput):
-    offset: int = Field(default=0, ge=0, le=1000000, description="Page offset; continue at metrics.next_offset if present.")
+    offset: int = Field(default=0, ge=0, le=4 * 1024 * 1024, description="Page offset; continue at metrics.next_offset if present.")
 
 
 class PathIn(NoIn):
@@ -77,8 +75,8 @@ def read_case(ctx: ToolContext, a: NoIn) -> dict:
 def read_source(ctx: ToolContext, a: PathIn) -> dict:
     from ...afo import maintainer as M
 
-    text = _call(M.read_source, _case(), a.path, M.MAX_FILE_BYTES + 1)
-    if len(text) > M.MAX_FILE_BYTES:
+    text = _call(M.read_source, _case(), a.path, M.MAX_SOURCE_READ_BYTES + 1)
+    if len(text.encode()) > M.MAX_SOURCE_READ_BYTES:
         raise ToolDenied("SOURCE_TOO_LARGE", "split the candidate; source was not silently truncated")
     return payload(ctx, text, a.offset, refs=[f"src:{a.path}"], summary=a.path)
 

@@ -21,7 +21,6 @@ from ...common import sha256_file, state_dir
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
 from .afo_payload import payload
 
-MAX_BYTES = 2048
 PLAN_SCHEMA = json.loads((CONTRACTS / "recovery-plan.schema.json").read_text())
 
 
@@ -48,7 +47,7 @@ def _packet(ctx, case):
 
 
 class NoIn(ToolInput):
-    offset: int = Field(default=0, ge=0, le=1000000, description="Page offset; continue at metrics.next_offset if present.")
+    offset: int = Field(default=0, ge=0, le=4 * 1024 * 1024, description="Page offset; continue at metrics.next_offset if present.")
 
 
 class ReqIn(NoIn):
@@ -132,7 +131,7 @@ def read_requirement_excerpt(ctx: ToolContext, a: ReqIn) -> dict:
 def read_budget_snapshot(ctx: ToolContext, a: NoIn) -> dict:
     case, _ = _case()
     # the strategy list first: a long budget snapshot spills onto later pages (F015 planner trial 1 lost the list
-    # when one result was truncated at MAX_BYTES)
+    # when one result exceeded its serialized response envelope)
     return payload(ctx, {"allowed_strategies": case["allowed_strategies"], "budget": case["budget"],
                          "required_plan_fields": PLAN_SCHEMA["required"],
                          "budget_estimate_fields": ["tokens_max", "wall_seconds_max", "turns_max"]},

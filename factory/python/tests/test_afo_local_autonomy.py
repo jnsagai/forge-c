@@ -53,8 +53,8 @@ def test_native_planner_role_has_only_its_registered_mcp_grants(tmp_path):
     assert a.decide("agent", "mcp__forge_afo_mcp__submit_recovery_plan", {}).allow
     for tool in ["shell", "spawn_agent", "read_file", "write_file", "mcp__forge_maintainer_mcp__write_source"]:
         assert not a.decide("agent", tool, {"path": "software/src/x.c"}).allow
-    assert turn_limit("afo-recovery-planner") == 8
-    assert turn_limit("afo-factory-maintainer") == 20
+    assert turn_limit("afo-recovery-planner") == 200
+    assert turn_limit("afo-factory-maintainer") == 200
 
 
 def test_overlay_mcp_preflight_really_checks_the_roles():
@@ -330,7 +330,7 @@ def test_case_data_crosses_the_real_mcp_ticket_boundary_without_120_char_truncat
 
     _, _, _, _, ws, case = local
     doc = json.loads(case.read_text())
-    doc["bundle"]["redacted_summary"] = "finding-" * 180 + " END_OF_FINDINGS"
+    doc["bundle"]["redacted_summary"] = "finding-" * 5000 + " END_OF_FINDINGS"
     case.chmod(0o600)
     case.write_text(json.dumps(doc))
     monkeypatch.delenv("FORGE_MCP_TRUST", raising=False)
@@ -342,7 +342,7 @@ def test_case_data_crosses_the_real_mcp_ticket_boundary_without_120_char_truncat
     while True:
         sdk.issue_ticket("local-autonomy-test", tool, {"offset": offset}, "afo-recovery-planner", "agent", None, str(ws))
         out = sdk.invoke("forge-afo-mcp", op, {"offset": offset})
-        assert out["status"] == "PASS" and len(json.dumps(out).encode()) <= 2048
+        assert out["status"] == "PASS" and len(json.dumps(out).encode()) <= 65536
         chunks.append(out["metrics"]["data"])
         offset = out["metrics"]["next_offset"]
         if offset is None:

@@ -4,11 +4,11 @@
   "skills": {
     "afo-factory-maintainer": {
       "path": "factory/skills/afo/afo-factory-maintainer/SKILL.md",
-      "sha256": "56151b9cf741a5dc6c2281cdd12958290fc946cad9be711f03ff4cc29588a7d9"
+      "sha256": "c30d0229136bbe7e13885de2ae416841f3349642e4b095ed6a3dc98f3b7affa8"
     },
     "afo-recovery-planner": {
       "path": "factory/skills/afo/afo-recovery-planner/SKILL.md",
-      "sha256": "366ef33b48f7a91cc5a19abc1b5c0ad05b886967090e66747c38b44b09bb0bcf"
+      "sha256": "4b77bbc90b4392ac53b41adadfc706893819ca283159800f512a38dfbc00d7c9"
     }
   }
 }
