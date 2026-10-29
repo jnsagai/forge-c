@@ -1,6 +1,37 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — Qwen-authored partial repair, independent rejection and retained rework
+## Latest state — external bootstrap qualified, Qwen V5 independently rejected
+
+**Runtime92c49a6 / RUNNING epoch44**, provider retained and idle; previous
+**22:25:58UTC authority window expired**. No extension or new generation issued.
+V5 **01M64TQWV0QAJ69YGBJSS2STN3** is FAILED_PROTOCOL/no valid receipt;
+13served requests/510659reported tokens, native CAPABILITY_LIMIT on the next
+attempt. QUIESCENT/RELEASED independently; wrapper BLOCKED/wall budget exhausted.
+Actual Qwen patch removed required child environment propagation; frozen external
+checks **2FAIL** and sealed reproducer contract invalid. No operator repair edit,
+broker receipt or CRE acceptance. Mission4attempts/5jobs/407requests,
+404131072charged tokens, historical usage UNKNOWN; counters not reset.
+[Terminal evidence](../../evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md).
+
+**Sourcec1f1378733af388b50ba1d6e5de37c16f3c0a9ee is NOT_DEPLOYED.** SDK
+schema constraints and trusted Git-bound retained-task metadata now qualify:
+local **85PASS**, native **9PASS**, zero errors/failures/skips after preserving
+and correcting the recorded test fixture/environment failures. Native original
+SDK6cd2380 also **3PASS**. No inference/GPU/network in native verifier.
+[Bootstrap qualification](../../evidence/014-durable-local-autonomy/retained-maintenance-task-20261029/README.md).
+These are external Codex changes, not Qwen-authored repairs or self-healing proof.
+
+Active owner goal: make AFO work on Qwen, then run complete ASPICE LL/HAL examples
+and fix/retry until clean. Existing targets selected:0002a-arm_55_rcc_ll followed
+by0002b-arm_55_rcc_hal (HAL depends on independently verified LL output).
+Next: exact finite source-bound continuation under standing delegated signing,
+preserving cumulative mission history; activate only qualified bootstrap source,
+let Qwen author the repair, then independent causal/CRE/affected-phase checks.
+No reference repair/grader is supplied as model context. Full pipeline success,
+learning benefit and24/72/168-hour availability remain unproven. Formal30/58
+unchanged; no tasks newly checked.
+
+## Historical checkpoint — Qwen-authored partial repair, independent rejection and retained rework
 
 **Runtime92c49a6 / RUNNING epoch44**, same262144 Q8_0/f16/MTP3/xhigh profile,
 one inference and unchanged22:25:58UTC expiry. V4 native

@@ -31,7 +31,7 @@ The original native schema probe is retained and made zero generation calls.
 The native corrected-source test command is prepared with one CPU,1GiB address
 space,45CPU-seconds/60wall-seconds, network off and no GPU devices. It refuses to
 start while inference or an existing CRE verification worker owns capacity.
-**Corrected native qualification is NOT_RUN at this checkpoint.** This SDK fix
+**Exact corrected native6cd2380 qualification:3PASS**, zero errors/failures, with no model calls or production change. [Native provenance](native-qualified/provenance.json) records the command and bounds. This SDK fix
 is **NOT_DEPLOYED** into the running Qwen trial; Omniverse2 remains on92c49a6 and
 its exact signed role identity. No production source was hot-edited or rebound.
 

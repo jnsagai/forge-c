@@ -37,7 +37,7 @@ checks created no broker receipt, commit, CRE acceptance or production change.
 ## V5: exact artifact continuation, not reconstruction by the operator
 
 Order **afo-f516373e837db572**, job **afo-agent-97d070852addbf37acf1b7c9**,
-native run **01M64TQWV0QAJ69YGBJSS2STN3** is RUNNING at the saved checkpoint.
+native run **01M64TQWV0QAJ69YGBJSS2STN3** is now terminal. The initial running checkpoint is retained below.
 Signed primary/role records bind the same source/profile, V4 artifact provenance
 and independent-check hashes. Existing Store/Conductor/Maintainer APIs create a
 fresh isolated baseline candidate and copy the two exact Qwen-authored files;
@@ -53,6 +53,32 @@ Operator PAUSED43/RUNNING44 fenced policy enrollment, with the loaded provider
 unchanged. At the first checkpoint:4product attempts/5maintenance jobs/397requests/
 404131072conservative charged tokens. Native maintenance tool events remain
 separate from the596mission-tool counter; no missing expenditure is invented.
+
+## V5 terminal result: regression rejected independently
+
+The job is FAILED_PROTOCOL / NO_VALID_MAINTENANCE_RECEIPT, with13served requests
+and510659reported tokens; the next native attempt returned CAPABILITY_LIMIT.
+All13request records are QUIESCENT; the execution is QUIESCENT/RELEASED. There
+was no submission or broker receipt. The wrapper later became BLOCKED with
+ORDER_WALL_BUDGET_EXHAUSTED. The previous authority window expired; no extension
+or new generation was issued at this checkpoint.
+
+Qwen changed the runconfig but removed default FORGE_DATA_ROOT propagation,
+claiming isolated MCP children inherit host environment. That claim is false
+for the actual child isolation. Independent frozen checks on the exact bytes
+remain **2FAIL/0ERROR**, on both baseline and candidate. The unchanged seeded
+reproducer also remains invalid on its last-line contract. These results do not
+constitute a CRE decision because no valid submission exists. See
+[terminal independent result](v5/terminal/independent-result.json),
+[exact patch/provenance](v5/terminal/written-provenance.json) and
+[final durable state](v5/terminal/final-state.json).
+
+Same mission totals:4product attempts/5maintenance jobs/407served requests,
+404131072conservative charged tokens; usage UNKNOWN. The596tool ledger total
+still excludes separately recorded native maintenance events. All failures,
+charges and uncertainty remain historical. The operator made no repair-code
+edits. External SDK/task-binding fixes are recorded separately and are not
+Qwen self-healing proof.
 
 ## Verification readiness and remaining proof
 
