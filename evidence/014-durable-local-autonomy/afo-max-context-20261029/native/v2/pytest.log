@@ -1,0 +1,96 @@
+........................E............                                    [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_preflight_cli_persists_missing_review_without_launching _
+
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-max-context-92c49a6-v2/tmp/pytest-of-omniverse2/pytest-0/test_preflight_cli_persists_mi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f7fba05f070>
+
+    @pytest.fixture
+    def prepared(tmp_path, monkeypatch):
+        for key in ("STATE", "EVENTS", "ARCHIVE"):
+            monkeypatch.setenv("FORGE_" + key + "_DIR", str(tmp_path / key))
+>       ws, man = W.prepare(EX, "WO-IDR-PLUMBING", purpose="ASPICE_ONLY")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_incremental_delivery.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workorder.py:264: in prepare
+    intake = BD.intake(spec, example, wo, {r["path"]: inputs[r["path"]] for r in provided})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'budgets': {'flash_bytes': 4096, 'stack_bytes': 128, 'static_ram_bytes': 64, 'status': 'development targets set by th...high-allowance-v2', 'driver': 'STM32N6 CRC LL independent data register: input-assisted two-function development', ...}
+example = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-max-context-92c49a6-v2/repo/examples/0014d-st-cube-crc-idr-assisted')
+wo = 'WO-IDR-PLUMBING', extra = {}
+
+    def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = None) -> dict:
+        """Run intake for a work order spec with a `delivery` block. Returns the intake record (status ACCEPTED) and
+        leaves the delivery in the read-only store; raises DeliveryBlocked (after writing a BLOCKED record) otherwise.
+        `extra`: read-only files the delivery builds against but does not own (e.g. the HAL's provided LL header)."""
+        d = spec["delivery"]
+        store = store_dir(wo)
+        blank = [k for k in ("origin", "licence") if k in d and not str(d[k]).strip()]  # FR-005, named explicitly
+        issues = [f"DELIVERY_{k.upper()}_MISSING" for k in blank] + \
+            [e for e in validate(d) if not any(e.startswith(f"DELIVERY_SPEC_INVALID:{k}:") for k in blank)]
+        if not issues and d["code_mode"] == "FIX_ALLOWED" and not d["licence_allows_modification"]:
+            issues.append("DELIVERY_MODE_FORBIDDEN_BY_LICENCE:FIX_ALLOWED")
+        files: dict[str, bytes] = {}
+        records: list[dict] = []
+        resolved: list[dict] = []
+        excluded: list[str] = []
+        build = {"status": "NOT_RUN", "command": [], "exit_code": None, "log_sha256": None, "warnings": 0}
+        if not issues:
+            with tempfile.TemporaryDirectory(prefix="forge-bf-src-") as td:
+                try:
+                    root = _unpack(_resolve_source(d["source"], example), Path(td))
+                    for f in d["files"]:
+                        files[f["to"]] = _pick(root, f["from"]).read_bytes()
+                        records.append({"path": f["to"], "role": "delivered_code", "origin": d["origin"],
+                                        "licence": d["licence"]})
+                    for dep in d.get("dependencies") or []:
+                        droot = _unpack(_resolve_source(dep["source"], example), Path(td) / "dep") \
+                            if dep.get("source") else root
+                        files[dep["to"]] = _pick(droot, dep["from"]).read_bytes()
+                        records.append({"path": dep["to"], "role": "delivered_dependency", "origin": dep["origin"],
+                                        "licence": dep["licence"]})
+                except (DeliveryBlocked, OSError, tarfile.TarError) as exc:
+                    issues.append(str(exc) if isinstance(exc, DeliveryBlocked) else f"DELIVERY_SOURCE_UNREADABLE:{exc}")
+        if not issues:
+            for r in records:
+                r["sha256"] = sha256_bytes(files[r["path"]])
+                r["bytes"] = len(files[r["path"]])
+            defs = [x for r in records if r["role"] == "delivered_code"
+                    for x in S.index(files[r["path"]].decode("utf-8", errors="replace"), r["path"])]
+            by_name: dict[str, S.Definition] = {}
+            for x in defs:
+                by_name.setdefault(x.name, x)
+            for name in d["scope"]["functions"]:
+                x = by_name.get(name)
+                if x is None:
+                    issues.append(f"DELIVERY_SCOPE_FUNCTION_NOT_FOUND:{name}")
+                else:
+                    resolved.append({"name": name, "file": x.file, "line": x.line, "kind": x.kind})
+            excluded = sorted({x.name for x in defs} - set(d["scope"]["functions"]))
+        if not issues:
+            build = build_check({**(extra or {}), **files}, d["build"]["style"], d["build"].get("defines") or [],
+                                bool(d["build"].get("secure")))
+            if build["status"] != "PASS":
+                issues.append(f"DELIVERY_BUILD_{build['status']}")
+        rec = {"schema": INTAKE_SCHEMA, "work_order": wo, "checked_at": utc_now(),
+               "status": "BLOCKED" if issues else "ACCEPTED", "issues": issues, "code_mode": d.get("code_mode"),
+               "origin": d.get("origin"), "licence": d.get("licence"), "files": records, "build_check": build}
+        if store.exists():
+            for p in sorted(store.rglob("*"), reverse=True):  # a re-prepared work order replaces its own store only
+                p.chmod(0o755 if p.is_dir() else 0o644)
+            shutil.rmtree(store)
+        store.mkdir(parents=True)
+        (store / "intake.json").write_text(pretty_json(rec))
+        (store / "scope.json").write_text(pretty_json({"schema": "forge-c/delivery-scope/0.1", "functions": resolved,
+                                                       "excluded": excluded, "excluded_count": len(excluded)}))
+        if issues:
+>           raise DeliveryBlocked(";".join(issues))
+E           forge_factory.brownfield.delivery.DeliveryBlocked: DELIVERY_BUILD_NOT_RUN
+
+factory/python/forge_factory/brownfield/delivery.py:179: DeliveryBlocked
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_da014_product_role_trial.py::test_preflight_cli_persists_missing_review_without_launching

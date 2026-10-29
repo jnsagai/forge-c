@@ -1,0 +1,49 @@
+........................E............                                    [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_preflight_cli_persists_missing_review_without_launching _
+
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-max-context-92c49a6-v1/tmp/pytest-of-omniverse2/pytest-0/test_preflight_cli_persists_mi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b95c176acf0>
+
+    @pytest.fixture
+    def prepared(tmp_path, monkeypatch):
+        for key in ("STATE", "EVENTS", "ARCHIVE"):
+            monkeypatch.setenv("FORGE_" + key + "_DIR", str(tmp_path / key))
+>       ws, man = W.prepare(EX, "WO-IDR-PLUMBING", purpose="ASPICE_ONLY")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_incremental_delivery.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-max-context-92c49a6-v1/repo/examples/0014d-st-cube-crc-idr-assisted')
+wo = 'WO-IDR-PLUMBING', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
+                *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None) -> tuple[Path, dict]:
+        from .release import aspice, qm
+        from .release.development import binding
+    
+        aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
+        qm_scope = qm.binding() if purpose == qm.PURPOSE else None
+        development = binding(purpose) if aspice_scope is None and qm_scope is None else None
+        spec = json.loads((example / "workorder.json").read_text())
+        from .development_execution import binding as execution_binding
+    
+        execution = execution_binding(execution_policy or spec.get("development_execution_policy"), purpose)
+        from .operation_scope import validate as validate_operation_scope
+    
+        if "operation_scope" in spec:
+            validate_operation_scope(spec["operation_scope"], delivery=spec.get("delivery"))
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: ../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:203: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_da014_product_role_trial.py::test_preflight_cli_persists_missing_review_without_launching

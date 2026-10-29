@@ -1,0 +1,16 @@
+{
+  "native_run_id": "01M64QNGNT3VAEYGHBBBDATFK3",
+  "job_id": "afo-agent-5a107cd9d6c49697708b45a0",
+  "native_agent_error": "CAPABILITY_LIMIT",
+  "reported_tokens": 47792,
+  "candidate_submission": false,
+  "observed_tools": 7,
+  "tool_allowance_exhausted": false,
+  "model_repair_success": false,
+  "independent_candidate_tests": "NOT_RUN_NO_CANDIDATE",
+  "runtime_source": "979dcb406353b5c779cd7b61964e3e5f39add454",
+  "continuation_source": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "body_upstream_called_for_refused_request": false,
+  "recorded_request_refusals": 3,
+  "reason": "Same request body refused three times before native agent stopped; four requests actually reserved and completed."
+}

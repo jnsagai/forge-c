@@ -1,6 +1,33 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest activation — 2026-10-29 measured AFO paging/call allowances
+## Latest activation — 2026-10-29 native maximum context, AFO trial live
+
+Owner requested maximum context after a measured native admission refusal.
+**Omniverse2 runtime92c49a6adde181737af19bb32a5efbd2130e9cd4**, operator
+**RUNNING epoch42**, profile `local-rtx-v2-omniverse2-q38-afo-max-mtp`:
+**262144** per-request context (actual installed GGUF native maximum), Q8_0/f16,
+MTP3/xhigh, one inference, batch1024/microbatch512, same1m job allowance and
+32768-character pages/200calls/4MiB reads. Actual allocation PASS; GPU46608MiB
+used/1893MiB free at load. Historical mission and22:25:58UTC expiry unchanged.
+
+Order **afo-77ab6ea67e02ba0a**, job **afo-agent-239fde0d794a6068929fccc8**,
+native **01M64RG1FV5Y0B7M0VGN213D42** is RUNNING at the saved checkpoint.
+Existing Conductor dispatch, isolated actual historical9b4c390 failure, neutral
+hash-bound baseline source catalog; reference fix/grader withheld. Prior V3
+**01M64QNGNT3VAEYGHBBBDATFK3** is terminal without edits/candidate: fifth request
+89824 conservative byte-bound input+49152 output exceeded131072; four admitted
+requests completed, reported47792tokens. QUIESCENT/RELEASED proved independently;
+wrapper BLOCKED/SERIALIZED_CONTEXT_CAPABILITY_LIMIT_NO_CANDIDATE, all costs retained.
+
+Local37PASS; native36PASS plus one inherited setup ERROR (arm-none-eabi-gcc
+unavailable). Native initial missing ignored reference inputs corrected with seven
+hash-recorded existing files; both native logs/XML retained. No gate weakened.
+[Exact records, limitations and executable independent checks](../../evidence/014-durable-local-autonomy/afo-max-context-20261029/README.md).
+Self-healing **UNPROVEN**: no submitted candidate at checkpoint. Await this exact
+native handle; do not infer termination from observation timeouts or start a
+duplicate. Formal Feature014 completion unchanged.
+
+## Historical activation — 2026-10-29 measured AFO paging/call allowances
 
 Owner requested larger limits and sizing from Codex-workflow driver files.
 **Active Omniverse2 runtime979dcb406353b5c779cd7b61964e3e5f39add454**;
