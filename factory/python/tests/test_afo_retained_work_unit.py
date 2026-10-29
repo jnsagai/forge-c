@@ -66,7 +66,7 @@ def test_native_launch_records_verified_rework_and_keeps_maintainer_mcp_scope(fa
     case_path = M.case_dir(case["proposal_id"]) / "case.json"
     monkeypatch.setattr(workorder, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
     monkeypatch.setattr(profile, "select", lambda *a, **k: {"id": "test-local", "local_only": True})
-    job = {"job_id": "verified-rework", "role": "afo-factory-maintainer", "profile": "test-local", "model": "local-model",
+    job = {"job_id": "afo-agent-111111111111111111111111", "role": "afo-factory-maintainer", "profile": "test-local", "model": "local-model",
            "factory_revision": {"commit": "1" * 40}, "case": str(case_path), "case_sha256": sha256_file(case_path),
            "deadline_epoch": time.time() + 60, "nonce": "test-launch-nonce"}
     calls = []
