@@ -69,6 +69,10 @@ sign -U, public key only; no private key read/copied:
 
 Their JSON records and detached signatures are included. Active policy canonical
 SHA256:686f370bf511c3bdb0bcb87f8b5680658d40342c54278c322a9d51f39c881cbe.
+[Exact policy](policy.json), [qualification-only role trial](trial.json),
+[launch manifest](launch.json), [serial plan](plan.json).
+The plan authority text records its unsigned preparation state; the separate
+owner/signature/activation receipts establish its later authorized execution.
 [Time increment request](extension.json),
 [accepted durable receipt](deadline-extension-receipt.json),
 [pre-continuation snapshot](mission-before.json).
