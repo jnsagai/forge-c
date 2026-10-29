@@ -1,0 +1,25 @@
+{
+  "schema": "forge-c/owner-requirements-review/1",
+  "user_statement": "Approve this requirements payload",
+  "question_ref": "call_8cd69ef843b1410b9f3863e052b49986",
+  "reviewed_by": "Jefferson Nascimento",
+  "reviewed_at": "2026-10-29T07:30:49.470801Z",
+  "approved_requirements_payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+  "preview_path": "examples/0014d-st-cube-crc-idr-assisted/proposals/simulation-performance/REQUIREMENTS-PREVIEW.md",
+  "preview_sha256": "c24686771d6b96ffd85a2adfbd6e8d2b6090a0ef3f06823a330408009c443355",
+  "functional_scope": [
+    "LL_CRC_Write_IDR",
+    "LL_CRC_Read_IDR"
+  ],
+  "total_requirements": 9,
+  "simulation_allocations": {
+    "instructions_per_call": 64,
+    "microseconds_per_call": 100,
+    "performance_mips": 100
+  },
+  "hardware_wcet_claim": false,
+  "safety_assurance": "NOT_ASSESSED",
+  "runtime_grant_renewed": false,
+  "mission_allowance_reset": false,
+  "inspection_verdict_created": false
+}
