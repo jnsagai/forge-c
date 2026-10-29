@@ -168,6 +168,73 @@ def test_gateway_reservation_replay_and_unknown_liveness(protocol, monkeypatch, 
     assert p.ledger.snapshot("mission-test")["requests"] == 1
 
 
+@pytest.mark.parametrize("outcome", ["accepted", "oversized", "unidentified"])
+def test_native_request_context_evidence_retains_detected_role_without_body(protocol, monkeypatch, outcome):
+    from forge_factory.afo import policy, request_admission
+    from forge_factory.afo.diagnosis_packet import measure_request
+    from forge_factory.lrtx import role_capability
+
+    p = protocol
+    job = ready(p, monkeypatch)
+    job.update(
+        role=None, model_digest="a" * 64, precision="Q8_0", semantic_obligations=1,
+        work_class="PRODUCT_DIAGNOSIS", factory_revision={"commit": "b" * 40},
+    )
+    identity = {
+        "role": "swe2-author", "model_digest": job["model_digest"], "precision": job["precision"],
+        "reasoning": "none", "schema_mode": "unconstrained", "adapter_revision": "b" * 40,
+        "context_tokens": 1 if outcome == "oversized" else 4096,
+        "sampling": {"temperature": 0}, "task_class": "PRODUCT_DIAGNOSIS",
+    }
+    job["role_capabilities"] = {"swe2-author": {"identity": identity, "ref": {}}}
+    L.save(p.store, job)
+    # Only the independent capability receipt is a fixture. Actual native role
+    # detection, serialization measurement and context admission run unchanged.
+    monkeypatch.setattr(policy, "load", lambda **kw: p.eff)
+    monkeypatch.setattr(role_capability, "require", lambda *a, **kw: {"qualified_fixture": True})
+    Executions(p.store).reserve(job["job_id"], job["mission_id"], job["nonce"])
+    secret = "PRIVATE_ENGINEERING_BODY_NOT_FOR_ADMISSION_LOGS"
+    body = {
+        "model": job["model"],
+        "messages": [{"role": "user", "content": secret + (
+            " skill_name swe2-author" if outcome != "unidentified" else ""
+        )}],
+        "temperature": 0, "max_tokens": 20,
+    }
+    binding = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": "context-evidence"}
+    measured = measure_request(body)
+    before = p.ledger.snapshot(job["mission_id"])
+    if outcome == "accepted":
+        rec = request_admission.reserve(p.store, binding, body, eff=p.eff)
+        assert rec["state"] == "RESERVED"
+        kind = "REQUEST_METADATA:" + binding["request_id"]
+    else:
+        with pytest.raises(Refused, match="CAPABILITY_LIMIT") as caught:
+            request_admission.reserve(p.store, binding, body, eff=p.eff)
+        kind = "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measured["sha256"]
+        assert p.ledger.snapshot(job["mission_id"]) == before
+        with p.store.tx() as c:
+            assert c.execute("SELECT COUNT(*) FROM afo_request_ledger").fetchone()[0] == 0
+    evidence = Executions(p.store)._evidence(job["job_id"], kind)
+    assert evidence["role"] == (None if outcome == "unidentified" else "swe2-author")
+    assert evidence["measurement"] == measured and evidence["output_cap"] == 20
+    assert evidence["body_sha256"] == measured["sha256"]
+    assert secret not in json.dumps(evidence) and "messages" not in evidence
+    if outcome != "accepted":
+        assert evidence["code"] == caught.value.code and evidence["upstream_called"] is False
+        assert evidence["detail"] == caught.value.detail
+        if outcome == "oversized":
+            assert str(measured["input_tokens"]) + "+20" in evidence["detail"]
+            assert evidence["detail"].endswith("allowance 1")
+        # A subsequent changed body using the same request ID retains both facts.
+        body["messages"][0]["content"] += " changed"
+        with pytest.raises(Refused):
+            request_admission.reserve(p.store, binding, body, eff=p.eff)
+        assert Executions(p.store)._evidence(job["job_id"], kind) == evidence
+        other = "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measure_request(body)["sha256"]
+        assert other != kind and Executions(p.store)._evidence(job["job_id"], other)
+
+
 def test_operator_start_is_fenced_and_cooldown_survives_restart(tmp_path):
     tmp_path.chmod(0o700)
     i = Intent(tmp_path / "intent.json")

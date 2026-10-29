@@ -65,14 +65,39 @@ def reserve(store, binding, body, *, eff=None):
     cap = caps[0]
     if type(cap) is not int or cap < 1:
         raise Refused("PROVIDER_OUTPUT_CAP_REQUIRED")
+    role = binding.get("role") or job.get("role")
     if product or job.get("durable_protocol") or job.get("durable_native"):
         from ..lrtx.role_capability import admit_job
         from ..llm_gateway import detect_role
 
-        role = binding.get("role") or job.get("role") or detect_role(body.get("messages") or [])
-        if not role:
-            raise Refused("CAPABILITY_LIMIT", "native role identity is unqualified")
-        admit_job(job, role, input_tokens=measured["input_tokens"], output_tokens=cap, body=body)
+        role = role or detect_role(body.get("messages") or [])
+        try:
+            if not role:
+                raise Refused("CAPABILITY_LIMIT", "native role identity is unqualified")
+            admit_job(job, role, input_tokens=measured["input_tokens"], output_tokens=cap, body=body)
+        except Refused as exc:
+            from .execution_lifecycle import Executions
+
+            # A rejected request has no reservation or upstream effect. Preserve the
+            # complete serialized bound and typed cause without retaining its body.
+            # Distinct bodies for one request ID must not overwrite earlier evidence.
+            Executions(store)._save_evidence(
+                ctx.job_id,
+                "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measured["sha256"],
+                {
+                    "request_id": binding["request_id"],
+                    "body_sha256": measured["sha256"],
+                    "measurement": measured,
+                    "model": job["model"],
+                    "role": role,
+                    "output_cap": cap,
+                    "policy_sha256": eff.sha256,
+                    "code": exc.code,
+                    "detail": exc.detail[:500],
+                    "upstream_called": False,
+                },
+            )
+            raise
     from .provider_recovery import current_instance
 
     provider_instance = current_instance()
@@ -98,7 +123,7 @@ def reserve(store, binding, body, *, eff=None):
             "body_sha256": measured["sha256"],
             "measurement": measured,
             "model": job["model"],
-            "role": binding.get("role") or job.get("role"),
+            "role": role,
             "schema_mode": (body.get("response_format") or {}).get("type"),
             "policy_sha256": eff.sha256,
             "output_cap": cap,

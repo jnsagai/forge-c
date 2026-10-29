@@ -171,7 +171,11 @@ def admit_job(job, role, *, input_tokens, output_tokens, body=None):
         size, work_class = measured_objective(job, role)
         rec = require(entry["ref"], identity, semantic_obligations=size, work_class=work_class)
     if input_tokens + output_tokens > identity["context_tokens"]:
-        raise Refused("CAPABILITY_LIMIT", "complete serialized request exceeds qualified context allowance")
+        raise Refused(
+            "CAPABILITY_LIMIT",
+            f"complete serialized request {input_tokens}+{output_tokens} exceeds "
+            f"qualified context allowance {identity['context_tokens']}",
+        )
     return rec
 
 
