@@ -1,0 +1,13 @@
+{
+  "schema_checks": "PASS_TWO_UNSIGNED_GRANTS_POLICY_AND_ORDER",
+  "source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
+  "scope_sha256": "f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d",
+  "order_id": "afo-e65794989fbf6502",
+  "deadline_utc": "2026-10-29T18:05:39Z",
+  "deadline_changed": false,
+  "mission_counters_reset": false,
+  "model_requests": 0,
+  "production_mutated": false,
+  "agent_signing_delegation": "NEEDS_EXACT_UPDATED_QM_RECORDS",
+  "current_role_admission": "PREPARED_CAPTURE; RECHECK_WITH_CURRENT_SIGNATURES"
+}

@@ -16,6 +16,11 @@ Safety-specific allocation/assurance clauses are outside this lane; functional
 startup/error/caller contracts, resources, traceability, independent inspection,
 real tests and package gates remain. Historical ASIL allocations and failures remain.
 Both native and structured prompts resolve the actual frozen QM criteria.
+Exact-source local and isolated Omniverse2 qualification:137PASS/1expectedSKIP
+per host,0failures/errors/model generation. Complete QM native graph validation
+PASS;18native prompt nodes/72captured initial/SKILL bodies, maximum conservative
+reservation77030/131072. Later tool histories remain live-admitted.
+See [QM source qualification and prepared unsigned scope](../../evidence/014-durable-local-autonomy/qm-development-20261029/README.md).
 The earlier 7f35955 activation draft is superseded and must not be signed/activated.
 
 The prior deployed f206e3a real Qwen run **finished BLOCKED at SWE.1**:
