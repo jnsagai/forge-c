@@ -1,5 +1,28 @@
 # Implementation and qualification status
 
+## Independent archive verification follow-up — 2026-10-29
+
+Exact auditor source **319e215417b8f7e0d329fb3ce71b595f0367f8ef** fixes a reproduced
+false-positive integrity result: an indexed member removed from a ZIP could escape
+verification. The existing checker now verifies the complete, unambiguous inventory
+and streams hashes. Same24-check archive/inherited-release cohort passes locally
+and in isolated Omniverse2,0failures/errors/skips/model calls. Setup failures and
+the pre-fix counterexample are retained. Stronger audit of the actual private f206
+archive PASS; its product is still BLOCKED. No task or milestone acceptance changes.
+See [auditor evidence and commands](../../evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md).
+
+This independent auditor is **not deployed**. Keep the pending, separately qualified
+QM runtime/signing scope pinned to **5b398d2**; do not substitute a newer branch head.
+Its17-file unsigned packet and fenced stage1.py/stage2.py are staged on Omniverse2:
+/mnt/data/forge-c/production-local-014/deployment/idr-m1-qm-5b398d2-20261029.
+ScopeSHA256f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d.
+Updated exact execution signing/activation approval remains pending; QM classification
+itself is already authorized and requires no safety sign-off. Signature count0.
+At11:55UTC productionf206 clean, operatorRUNNING26, requestsQUIESCENT; at12:06UTC
+Conductor/watchdog timer/finite recorder all active. Cumulative2attempts/12requests/
+68tools/200m conservative tokens and UNKNOWN historical usage remain. Current window
+ends18:05:39UTC; no renewal/refill or inference occurred in this follow-up.
+
 ## Current QM implementation and actual prior outcome — 2026-10-29
 
 The owner explicitly selected **QM**: “Forget about safety now!!! implement as QM”.

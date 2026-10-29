@@ -1,0 +1,12 @@
+{
+  "auditor_revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
+  "archive_sha256": "1a406bbd48e75c163a57207268ccfe774072d36164e77fda5bdbef43f14ab257",
+  "verification": {
+    "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-5ab4a2eb3e9de743-a1/forge-c-WO-AFO-5ab4a2eb3e9de743-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "product_acceptance": "BLOCKED_UNCHANGED",
+  "model_requests": 0,
+  "production_mutated": false
+}
