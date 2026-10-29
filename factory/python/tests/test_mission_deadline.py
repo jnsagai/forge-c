@@ -210,3 +210,18 @@ def test_serial_continuation_intake_uses_effective_window_and_keeps_same_history
                          "request": m.doc["request"]}}
     overnight.provision_order(m.store, entry, m.eff, m.doc["deadline_epoch"])
     assert visible == ["new-order"] and m.ledger.snapshot("m1") == snapshot
+
+
+@pytest.mark.parametrize("content,code", [(None, "AUTH_RECORD_MISSING"), ("{", "AUTH_NOT_JSON"),
+                                         ("[]", "AUTH_SCHEMA_INVALID")])
+def test_missing_or_broken_grant_is_a_bounded_refusal(mission, content, code):
+    m = mission
+    path = m.root / (m.doc["authorization_ref"] + ".json")
+    if content is None:
+        path.unlink()
+    else:
+        path.write_text(content)
+    before = m.ledger.snapshot("m1")
+    with pytest.raises(Refused, match=code):
+        D.extend(m.store, m.doc, m.eff)
+    assert m.ledger.snapshot("m1") == before

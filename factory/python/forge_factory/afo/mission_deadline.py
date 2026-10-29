@@ -79,7 +79,14 @@ def extend(store, document, eff):
     if eff.mode not in ("PILOT", "ACTIVE"):
         raise Refused("MISSION_ACTIVE_AUTHORITY_REQUIRED")
     def current_grant():
-        auth = json.loads((authz.AUTH_DIR / (document["authorization_ref"] + ".json")).read_text())
+        try:
+            auth = json.loads((authz.AUTH_DIR / (document["authorization_ref"] + ".json")).read_text())
+        except FileNotFoundError as exc:
+            raise Refused("AUTH_RECORD_MISSING") from exc
+        except (ValueError, UnicodeError) as exc:
+            raise Refused("AUTH_NOT_JSON") from exc
+        if not isinstance(auth, dict):
+            raise Refused("AUTH_SCHEMA_INVALID")
         if auth.get("authorization_id") != document["authorization_ref"]:
             raise Refused("AUTH_ID_MISMATCH")
         decision = authz.verify(auth, policy_sha256=eff.sha256 or "", mode=eff.mode,
