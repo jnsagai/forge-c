@@ -25,7 +25,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "9f9a93f174f46aa0add59c16a423be7d56988614",
+  "latest_source_revision": "b1536d78bbfa23677c562a2e2e82aef4d27f423a",
   "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -171,7 +171,8 @@
     "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED",
     "current_context262_frozen_swe3": "COPIED_36_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; REAL_FAIL_PRESERVED",
     "current_context262_frozen_swe4": "COPIED_17_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS",
-    "current_context262_frozen_swe5": "COPIED_23_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS"
+    "current_context262_frozen_swe5": "COPIED_23_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS",
+    "current_context262_interrupted_engineering": "COPIED_101_FILES_4482319_BYTES; ALL_HASHES_AND_SIZES_VERIFIED; NOT_A_COMPLETED_RELEASE_PACKAGE"
   },
   "historical_f206_reported_usage": {
     "prompt_tokens": 31688,
@@ -324,5 +325,20 @@
     "artifact_sha256": "9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f",
     "scope": "Complete observed calls in pinned Renode instruction/time model; no silicon claim"
   },
-  "owner_stop_evidence": "evidence/014-durable-local-autonomy/owner-stop-20261029/README.md"
+  "owner_stop_evidence": "evidence/014-durable-local-autonomy/owner-stop-20261029/README.md",
+  "swe6_contract_followup": {
+    "revision": "b1536d78bbfa23677c562a2e2e82aef4d27f423a",
+    "local_tests": {
+      "passed": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 112.827
+    },
+    "scope": "Full scoped scripted-artifact anchor; actual Robot/compiler/Renode source-binding controls; inherited Robot and MCP environment regressions",
+    "model_requests": 0,
+    "native_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/swe6-performance-contract-20261029/README.md"
+  }
 }

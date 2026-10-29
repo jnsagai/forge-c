@@ -5,6 +5,35 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
+## SWE.6 performance contract fix; local37PASS — 2026-10-29 16:37UTC
+
+Candidate **b1536d78bbfa23677c562a2e2e82aef4d27f423a**, **not deployed**,
+retains the measurement gate and makes its declared test path explicit in the
+opt-in scaffold and compact MCP result. Wrong scenario, missing/failed measurement
+and changed budget now have distinct actionable failures within the issue bound.
+The actual interrupted suite used scn_performance.c for both performance cases;
+only software/tests/target/test_performance.c receives declared instrumentation.
+This is corrected contract visibility, not evidence the previous gate was wrong.
+
+Exact local **37PASS,0failures/errors/skips,112.827s**: actual Robot/compiler/
+Renode positive and copied-scenario negative cases, measurement-binding controls,
+full six-phase scripted-artifact fixture and inherited Robot/MCP root regressions.
+The first uncommitted iteration lost nested contract metadata at the scalar-only
+MCP envelope; both new cases failed. Compact JSON-string serialization fixes that;
+the complete exact-source cohort then passes. No Qwen calls or acceptance claims.
+
+The stopped run's **101engineering files/4482319bytes** are copied privately to
+loop10; every hash and size verified, archiveSHA12dbfd978a1530bc66e419b4091226de86bd276e46bb99811032d443ba822682.
+It is an interrupted engineering snapshot, not a finalized release package. SWE.6
+has test sources/results but no completed report. Open local inspection entry point
+inspection/feature014/2026-10-29-qwen/interrupted-engineering/afo-774900b297bdde37/START-HERE.md.
+
+**Remote remains STOPPED epoch33; no automatic18:00 resume.** Native qualification
+of the combined candidate remains NOT_RUN. Prepared9f9a93f epoch32 tooling is for
+that older exact candidate and must refuse the current stop. Do not promote from
+local results or silently renew the existing18:05:39UTC window. No task is ticked.
+[Exact commands/results, failure controls and transfer inventory](../../evidence/014-durable-local-autonomy/swe6-performance-contract-20261029/README.md).
+
 ## Owner stopped Qwen — 2026-10-29 16:27UTC
 
 Owner explicitly requested immediate stop. Durable intent is **STOPPED, epoch33,
