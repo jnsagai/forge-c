@@ -1,6 +1,33 @@
 # Implementation and qualification status
 
-## Real Qwen continuation active — 2026-10-29 10:13UTC
+## Current QM implementation and actual prior outcome — 2026-10-29
+
+The owner explicitly selected **QM**: “Forget about safety now!!! implement as QM”.
+Prospective source **5b398d27f2ee60d3c059dc115dd612f0ff105199** implements the generic
+QM purpose/profile and hash-bound checklist/release tailoring for any declared driver.
+Safety-specific allocation/assurance clauses are outside this lane; functional
+startup/error/caller contracts, resources, traceability, independent inspection,
+real tests and package gates remain. Historical ASIL allocations and failures remain.
+Both native and structured prompts resolve the actual frozen QM criteria.
+The earlier 7f35955 activation draft is superseded and must not be signed/activated.
+
+The prior deployed f206e3a real Qwen run **finished BLOCKED at SWE.1**:
+SWE1-01/02/04/05/06 PASS, SWE1-03 FAIL (allocated safe state and disputed supported-domain
+error behavior). Six model calls, 63041 provider-reported total tokens; later phases
+NOT_RUN. Native transport SUCCEEDED, task BLOCKED, execution QUIESCENT, lease RELEASED.
+Private archive integrity PASS independently; product BLOCKED/INCOMPLETE with49gaps.
+See [terminal evidence](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md).
+
+Same-M1 cumulative snapshot:2attempts,12requests,68tools,200million conservative
+tokens; aggregate actual usage UNKNOWN. Original full-CRC mission remains exhausted3/3.
+Current f206 execution authority ends18:05:39UTC today; QM needs exact updated source/
+role signatures before activation. No deadline extension or allowance reset is prepared.
+Source qualification, Qwen capability, product acceptance, learning benefit and
+operational availability are separate. Formal progress30/58 is unchanged;
+IE-T001–007 complete, IE-T008 unaccepted, IE-T009 unrun. Older checkpoints below
+are historical, including the 10:13UTC RUNNING snapshot.
+
+## Historical launch snapshot — 2026-10-29 10:13UTC
 
 The owner approved the exact prepared scope, three new SSH-agent signatures and
 activation. Production is now **f206e3aa26837f892c2267ec67c46dcc61844c60**.

@@ -1,0 +1,640 @@
+{
+  "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-5ab4a2eb3e9de743-a1/workspace",
+  "inspection_records": [
+    {
+      "path": "inspection/SWE.1/INS-SWE.1-001.json",
+      "sha256": "478a071079b32aba84a37a50c2cefc39128ee13a68bfccc3363b45ff950955c2",
+      "record": {
+        "author_role": "swe1-author",
+        "baseline_hash": "112600eefffb6f360c6cde033a6f5757485b8bd1314d493c620b7565f2a46d07",
+        "baseline_id": "BL-SWE.1-001",
+        "checklist_sha256": "6e14b1e3b5ca0b6e3658c678febf1af01009b987807268ab130db4dfe9f0594e",
+        "checklist_version": "0.4",
+        "findings": [
+          {
+            "detail": "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+            "id": "SWE1-03",
+            "severity": "major"
+          }
+        ],
+        "inspection_id": "INS-SWE.1-001",
+        "inspector_role": "swe1-inspector",
+        "items": {
+          "SWE1-01": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/register_effects.json",
+              "workproducts/SWE.1/software_requirements.md"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-02": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/register_effects.json",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-03": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              "safety/software_safety_requirements.md",
+              "traceability/upstream_gaps.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "workproducts/SWE.1/register_effects.json",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [
+              "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+              "workproducts/SWE.1/software_requirements.md, Scope and SWR-004, specify no status-flag polling or error return for valid accessible calls and leave invalid pointers or inaccessible hardware outside th"
+            ],
+            "verdict": "FAIL"
+          },
+          "SWE1-04": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "traceability/upstream_gaps.md",
+              "traceability/requirements_to_tests.csv",
+              "traceability/assisted_requirements.json",
+              "safety/software_safety_requirements.md"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-05": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-06": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              "traceability/upstream_gaps.md",
+              "safety/software_safety_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-07": {
+            "evidence_refs": [
+              "inspection/SWE.1/deterministic/SWE1-07-2026-10-29T102321.562771Z.json"
+            ],
+            "findings": [],
+            "source": "deterministic",
+            "verdict": "PASS"
+          },
+          "SWE1-08": {
+            "evidence_refs": [
+              "inspection/SWE.1/deterministic/SWE1-08-2026-10-29T102322.153272Z.json"
+            ],
+            "findings": [],
+            "source": "deterministic",
+            "verdict": "PASS"
+          }
+        },
+        "phase": "SWE.1",
+        "recorded_at": "2026-10-29T10:23:22.153515Z",
+        "schema": "forge-c/inspection/0.4",
+        "stale_reason": null,
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "path": "inspection/SWE.1/INS-SWE.1-002.json",
+      "sha256": "5eb614a5aa2da3bc4e2fc3aa3cdfdac27ea7968d00a3a58b991118d50c1faaaa",
+      "record": {
+        "author_role": "swe1-author",
+        "baseline_hash": "112600eefffb6f360c6cde033a6f5757485b8bd1314d493c620b7565f2a46d07",
+        "baseline_id": "BL-SWE.1-001",
+        "checklist_sha256": "6e14b1e3b5ca0b6e3658c678febf1af01009b987807268ab130db4dfe9f0594e",
+        "checklist_version": "0.4",
+        "findings": [
+          {
+            "detail": "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+            "id": "SWE1-03",
+            "severity": "major"
+          }
+        ],
+        "inspection_id": "INS-SWE.1-002",
+        "inspector_role": "swe1-inspector",
+        "items": {
+          "SWE1-01": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/register_effects.json",
+              "workproducts/SWE.1/software_requirements.md"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-02": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/register_effects.json",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-03": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              "safety/software_safety_requirements.md",
+              "traceability/upstream_gaps.md",
+              "traceability/assisted_requirements.json",
+              "traceability/requirements_to_tests.csv",
+              "workproducts/SWE.1/register_effects.json",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [
+              "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+              "workproducts/SWE.1/software_requirements.md, Scope and SWR-004, specify no status-flag polling or error return for valid accessible calls and leave invalid pointers or inaccessible hardware outside th"
+            ],
+            "verdict": "FAIL"
+          },
+          "SWE1-04": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "traceability/upstream_gaps.md",
+              "traceability/requirements_to_tests.csv",
+              "traceability/assisted_requirements.json",
+              "safety/software_safety_requirements.md"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-05": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "traceability/upstream_gaps.md",
+              "workproducts/SWE.1/software_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context",
+              "safety/software_safety_requirements.md",
+              "traceability/assisted_requirements.json"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-06": {
+            "evidence_refs": [
+              "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+              "workproducts/SWE.1/software_requirements.md",
+              "traceability/upstream_gaps.md",
+              "safety/software_safety_requirements.md",
+              ".forge-run/manifest.json#scope-target-budgets",
+              ".forge-run/manifest.json#inspection-assessment-context"
+            ],
+            "findings": [],
+            "verdict": "PASS"
+          },
+          "SWE1-07": {
+            "evidence_refs": [
+              "inspection/SWE.1/deterministic/SWE1-07-2026-10-29T102325.553051Z.json"
+            ],
+            "findings": [],
+            "source": "deterministic",
+            "verdict": "PASS"
+          },
+          "SWE1-08": {
+            "evidence_refs": [
+              "inspection/SWE.1/deterministic/SWE1-08-2026-10-29T102325.730428Z.json"
+            ],
+            "findings": [],
+            "source": "deterministic",
+            "verdict": "PASS"
+          }
+        },
+        "phase": "SWE.1",
+        "recorded_at": "2026-10-29T10:23:25.730654Z",
+        "schema": "forge-c/inspection/0.4",
+        "stale_reason": null,
+        "verdict": "FAIL"
+      }
+    }
+  ],
+  "model_results": [
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-01.json",
+      "sha256": "02ab434d899d281723b2a75fa6ca4532108b886819b3378fece8d579cf24e293",
+      "task": "inspect:112600eefffb6f36:SWE1-01",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context",
+          "safety/software_safety_requirements.md",
+          "traceability/assisted_requirements.json",
+          "traceability/requirements_to_tests.csv",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "workproducts/SWE.1/software_requirements.md"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "attempts": [
+        {
+          "input_hash": "f1f5fe3271bb63c2f1b2a2db2e05b8296efcc0853572f4ea471333dca3f72898",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18451,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18323,
+              "sha256": "02e05cde167a0854b8cdfd0f82ff276a50cbea0a554266aff6c6918b02a345ba"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6286,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17111
+          },
+          "usage": {
+            "completion_tokens": 5684,
+            "prompt_tokens": 5285,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 10969
+          },
+          "wall_ms": 105604.0,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    },
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-02.json",
+      "sha256": "6ece1beb56740f359e4f61dd95501e552c5abb4416705e3c17ca391ffb870127",
+      "task": "inspect:112600eefffb6f36:SWE1-02",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          "safety/software_safety_requirements.md",
+          "traceability/assisted_requirements.json",
+          "traceability/requirements_to_tests.csv",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "attempts": [
+        {
+          "input_hash": "b1ac50017330b39042485a1f0b88a0ea6d66523f80d641d53d2b966082a4e2da",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18447,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18319,
+              "sha256": "e22e519d3cc1b67c3a692e8a91d471b6c884a4bd1f1bf9661fd9a68989295bfa"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6284,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17107
+          },
+          "usage": {
+            "completion_tokens": 7654,
+            "prompt_tokens": 5279,
+            "prompt_tokens_details": {
+              "cached_tokens": 275
+            },
+            "total_tokens": 12933
+          },
+          "wall_ms": 153793.9,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    },
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-03.json",
+      "sha256": "506acc97a65dc291ce4ae407bbb6702f17d27702cd02f43018639e98cc2c4f4a",
+      "task": "inspect:112600eefffb6f36:SWE1-03",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          "workproducts/SWE.1/software_requirements.md",
+          "safety/software_safety_requirements.md",
+          "traceability/upstream_gaps.md",
+          "traceability/assisted_requirements.json",
+          "traceability/requirements_to_tests.csv",
+          "workproducts/SWE.1/register_effects.json",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [
+          "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; SWE1-03 safe-state specification is therefore missing.",
+          "workproducts/SWE.1/software_requirements.md, Scope and SWR-004, specify no status-flag polling or error return for valid accessible calls and leave invalid pointers or inaccessible hardware outside the supported invocation domain; this does not specify failure/error behavior within the supported invocation domain."
+        ],
+        "verdict": "FAIL"
+      },
+      "attempts": [
+        {
+          "input_hash": "5164da5ad674424de36c3565c209a549ad5fa49a0cd9aae59ee4174b9c0ade45",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18443,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18315,
+              "sha256": "e162187f429ccdec07ca0aefbfb987f008e089ca93770639aba780c5471fefcb"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6283,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17103
+          },
+          "usage": {
+            "completion_tokens": 6912,
+            "prompt_tokens": 5281,
+            "prompt_tokens_details": {
+              "cached_tokens": 275
+            },
+            "total_tokens": 12193
+          },
+          "wall_ms": 142337.8,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    },
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-04.json",
+      "sha256": "0d2582cab6d7618f9bf4707bef9310a93f2f26e17ce29a5faff059f18a4e0395",
+      "task": "inspect:112600eefffb6f36:SWE1-04",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context",
+          "traceability/upstream_gaps.md",
+          "traceability/requirements_to_tests.csv",
+          "traceability/assisted_requirements.json",
+          "safety/software_safety_requirements.md"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "attempts": [
+        {
+          "input_hash": "a5bfe582c4f425c09a2bc868ceaf433eff7244ea87c4f82a7cdabef8c814d171",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18435,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18307,
+              "sha256": "62034e76e4361d208babac32e460be131b17717265b216971242a566acef1bee"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6280,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17095
+          },
+          "usage": {
+            "completion_tokens": 2289,
+            "prompt_tokens": 5285,
+            "prompt_tokens_details": {
+              "cached_tokens": 275
+            },
+            "total_tokens": 7574
+          },
+          "wall_ms": 45201.8,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    },
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-05.json",
+      "sha256": "377f6895c6f0abe0eea187911f2fcdbc6ad3fbd5ee7dba2c46a2a8df486a95a3",
+      "task": "inspect:112600eefffb6f36:SWE1-05",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context",
+          "safety/software_safety_requirements.md",
+          "traceability/assisted_requirements.json"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "attempts": [
+        {
+          "input_hash": "a95683c513437967cbb0944a563ea9094ad2814fdd0044cb8ecef910b2fad023",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18439,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18311,
+              "sha256": "2c428bfb21a4c751aacb5aa77c5c62905db3085f2216b96ca79eaa56aafa0677"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6281,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17099
+          },
+          "usage": {
+            "completion_tokens": 4671,
+            "prompt_tokens": 5285,
+            "prompt_tokens_details": {
+              "cached_tokens": 275
+            },
+            "total_tokens": 9956
+          },
+          "wall_ms": 88874.9,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    },
+    {
+      "path": ".forge-run/lrtx/SWE.1/packets/inspect__112600eefffb6f36__SWE1-06.json",
+      "sha256": "de7ef3c1ac92ac8679deb6b098f085e33b8528425659e1fcf676b2e87fe7342d",
+      "task": "inspect:112600eefffb6f36:SWE1-06",
+      "status": "VALID",
+      "verdict": {
+        "evidence_checked": [
+          "workproducts/SWE.1/software_requirements.md",
+          "traceability/upstream_gaps.md",
+          "safety/software_safety_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "attempts": [
+        {
+          "input_hash": "6a4e6173678c5729297906381f1c89eb1e4af9d496d8f154236233a45055349e",
+          "accounting": {
+            "complete_serialized_request": {
+              "input_tokens": 18429,
+              "method": "utf8_byte_upper_bound",
+              "native_measured": false,
+              "serialized_bytes": 18301,
+              "sha256": "b425af9b6b6dd78e83bd90c841cb6f9bf37bec0328bed11b145a9ed782522e4b"
+            },
+            "context_tokens": 24576,
+            "estimated_prompt_tokens": 6278,
+            "fits": true,
+            "output_reserve": 2048,
+            "serialized_chars": 17089
+          },
+          "usage": {
+            "completion_tokens": 4143,
+            "prompt_tokens": 5273,
+            "prompt_tokens_details": {
+              "cached_tokens": 275
+            },
+            "total_tokens": 9416
+          },
+          "wall_ms": 84234.8,
+          "finish_reason": "stop",
+          "errors": [],
+          "schema_mode": "json_schema"
+        }
+      ]
+    }
+  ],
+  "package_metadata_files": [
+    {
+      "path": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-5ab4a2eb3e9de743-a1/workspace/.forge-run/package.json",
+      "value": {
+        "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-5ab4a2eb3e9de743-a1/forge-c-WO-AFO-5ab4a2eb3e9de743-a1-review.zip",
+        "archive_ref": "archive:sha256:1a406bbd48e75c163a57207268ccfe774072d36164e77fda5bdbef43f14ab257",
+        "archive_sha256": "1a406bbd48e75c163a57207268ccfe774072d36164e77fda5bdbef43f14ab257",
+        "finalized_at": "2026-10-29T10:23:28.238708Z",
+        "gap_count": 49,
+        "gaps": [
+          "failed_or_missing_quality_check:integration_verification",
+          "failed_or_missing_quality_check:misra_coverage_assessed",
+          "failed_or_missing_quality_check:resource_budgets",
+          "failed_or_missing_quality_check:software_verification",
+          "failed_or_missing_quality_check:static_analysis",
+          "failed_or_missing_quality_check:swe1_inspection",
+          "failed_or_missing_quality_check:swe2_inspection",
+          "failed_or_missing_quality_check:swe3_inspection",
+          "failed_or_missing_quality_check:swe4_inspection",
+          "failed_or_missing_quality_check:swe5_inspection",
+          "failed_or_missing_quality_check:swe6_inspection",
+          "failed_or_missing_quality_check:target_verification",
+          "failed_or_missing_quality_check:unit_verification",
+          "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+          "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+          "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+          "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+          "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+          "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+          "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+          "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+          "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+          "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+          "missing_or_empty_section:inspection/SWE.2",
+          "missing_or_empty_section:inspection/SWE.3",
+          "missing_or_empty_section:inspection/SWE.4",
+          "missing_or_empty_section:inspection/SWE.5",
+          "missing_or_empty_section:inspection/SWE.6",
+          "missing_or_empty_section:software/build",
+          "missing_or_empty_section:software/include",
+          "missing_or_empty_section:software/src",
+          "missing_or_empty_section:workproducts/SWE.2",
+          "missing_or_empty_section:workproducts/SWE.3",
+          "missing_or_empty_section:workproducts/SWE.4",
+          "missing_or_empty_section:workproducts/SWE.5",
+          "missing_or_empty_section:workproducts/SWE.6",
+          "missing_required_pattern:software/build/*.elf",
+          "missing_required_pattern:software/build/*.map",
+          "missing_required_pattern:software/include/*.h",
+          "missing_required_pattern:software/src/*.c",
+          "run_not_completed:INCOMPLETE",
+          "unresolved_finding:DELIVERY:NOT_INJECTED",
+          "unresolved_finding:SWE.1:GATE_REWORK",
+          "unresolved_finding:SWE.1:SWE1-03",
+          "unresolved_finding:SWE.2:GATE_REWORK",
+          "unresolved_finding:SWE.3:GATE_REWORK",
+          "unresolved_finding:SWE.4:GATE_REWORK",
+          "unresolved_finding:SWE.5:GATE_REWORK",
+          "unresolved_finding:SWE.6:GATE_REWORK"
+        ],
+        "package_status": "BLOCKED",
+        "policy": "archive:evidence/configuration/release-package-policy-v0.5-aspice-development.json",
+        "policy_sha256": "9d06f7e2ec1e35f76d40b5d6b083ee511d3a4f38a114127c84906c6bcb31908e",
+        "quality_run_status": "INCOMPLETE",
+        "run_id": "WO-AFO-5ab4a2eb3e9de743-a1",
+        "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED",
+        "work_order_purpose": "ASPICE_ONLY"
+      }
+    }
+  ]
+}
