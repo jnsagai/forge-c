@@ -32,20 +32,15 @@ def handle(ctx: dict, binding: Binding) -> Decision:
         return Decision(True, "NOT_A_TOOL_EVENT", str(ctx.get("event")))
     d = Authorizer(binding).decide(ctx.get("node_id"), str(ctx.get("tool_name", "")), ctx.get("tool_input"))
     if d.allow and d.role:
-        durable = Path(binding.workspace) / ".forge-run/durable-binding.json"
-        if durable.is_file():
-            from ..afo.mission_ledger import MissionLedger
-            from ..afo.queue import Store
-            from ..afo.durable import Refused
-            import uuid
+        import uuid
 
-            job = json.loads(durable.read_text())
-            try:
-                MissionLedger(Store()).count(
-                    job["mission_id"], job["job_id"], "TOOL", str(ctx.get("tool_call_id") or "hook-" + uuid.uuid4().hex)
-                )
-            except Refused as exc:
-                return Decision(False, exc.code, "shared mission tool allowance exhausted", d.role, d.op)
+        from ..afo.durable import Refused
+        from ..afo.tool_accounting import charge
+
+        try:
+            charge(Path(binding.workspace), str(ctx.get("tool_call_id") or "hook-" + uuid.uuid4().hex))
+        except Refused as exc:
+            return Decision(False, exc.code, "shared mission tool allowance refused", d.role, d.op)
         ok, n, limit, reserved = count_tool_call(
             binding.binding_id,
             str(ctx.get("run_id")),
