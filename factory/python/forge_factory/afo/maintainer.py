@@ -180,6 +180,29 @@ def safe_path(src: Path, rel: str, globs: list[str], *, write: bool) -> Path:
     return p
 
 
+
+def work_unit(case: dict) -> dict:
+    """Trusted task metadata from Git facts; incident/source prose never becomes an instruction."""
+    src = Path(case["src"])
+    names = _git("diff", "--name-only", "-z", case["base"], cwd=src).split("\0")
+    names += _git("ls-files", "--others", "--exclude-standard", "-z", cwd=src).split("\0")
+    paths = sorted({p for p in names if p})
+    if len(paths) > MAX_PATHS:
+        raise MaintainerDenied("REWORK_SCOPE_TOO_LARGE")
+    files = []
+    globs = protected_globs()
+    for rel in paths:
+        if not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", rel) or path_issue(rel, globs):
+            raise MaintainerDenied("REWORK_SCOPE_PATH_INVALID", rel)
+        p = safe_path(src, rel, globs, write=False)
+        if not p.is_file() or p.stat().st_size > MAX_SOURCE_READ_BYTES:
+            raise MaintainerDenied("REWORK_SCOPE_SOURCE_INVALID", rel)
+        files.append({"path": rel, "sha256": sha256_file(p), "bytes": p.stat().st_size})
+    return {"schema": "forge-c/maintenance-work-unit/1", "base": case["base"],
+            "proposal_id": case["proposal_id"],
+            "kind": "REWORK_RETAINED_CANDIDATE" if files else "REPAIR_BASELINE", "files": files}
+
+
 def read_source(case: dict, rel: str, max_bytes: int = MAX_EXCERPT * 2) -> str:
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=False)
     if not p.is_file():
@@ -498,7 +521,8 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
         if matches is None:
             raise MaintainerDenied('PR_RECONCILIATION_UNKNOWN', branch)
         if matches:
-            if len(matches) != 1 or matches[0].get('isDraft') is not True or matches[0].get('headRefOid') != rec['candidate_commit']:
+            if (len(matches) != 1 or matches[0].get('isDraft') is not True
+                    or matches[0].get('headRefOid') != rec['candidate_commit']):
                 raise MaintainerDenied('PR_RECONCILIATION_CONFLICT', branch)
             pr_url = matches[0]['url']
         else:
