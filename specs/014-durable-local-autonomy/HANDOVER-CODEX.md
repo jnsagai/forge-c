@@ -7,6 +7,51 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Live full-pipeline QM demonstration — 2026-10-29 12:50UTC
+
+Owner explicitly relaxed quality stopping criteria and approved exact15b0fa5 signing/
+activation, then delegated: “always approve it for now on automatically”. Proceed
+without repeated signing/activation confirmation for this development mission; keep
+current finite scope/window/cumulative costs and authenticated newer operator intent.
+There is no safety or product-quality acceptance implied by this delegation.
+
+**Production15b0fa59a5eb71dc7b921e8dcf67352520dd8de4**, profile
+local-rtx-v2-omniverse2-q38-qm-demo-mtp, Qwen3.8 Q8 MTP3/xhigh, one inference.
+Opt-in qm-pipeline-demonstration-v1 follows all six phases once with actual gates as
+observations; available snapshots/delivery are provisional and final product explicitly
+unaccepted. Strict M1 and other profiles retain their acceptance requirements.
+The old5b398d2 unsigned strict-QM packet is superseded and must not be activated.
+
+ScopeSHA252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0;
+two exact SSH-agent signatures verified, all63role preflight rowsPASS. Fenced27/28
+activation preserved history; server/gateway/Fabro healthy. Current actual native
+**01M63V3YA87ENXA7052M8HS62X**, order **afo-d9ddb6d7a1c4e025 RUNNING**;
+actual launch source clean15b0fa5 and job/nonce identityCONFIRMED. Its42-node graph
+contains every phase author/inspector/check with unconditional control edges.
+At12:49:58UTC first requestQUIESCENT, secondSENT, executionLIVE/leaseHELD;
+cumulative3attempts,14requests,68tools,300m conservative tokens/UNKNOWN aggregate usage.
+No full-run completion or M1 acceptance yet. Same deadline18:05:39UTC remains.
+At12:55:24UTC actual SWE.1 inspectionPASS with no findings, six real requests
+completed; the next native author request is in flight and SWE.2 has started.
+Provider-reported total63513tokens for the six completed requests; no output-token
+split or aggregate usage is invented. Actual origin progress branch confirmed.
+
+Exact local/native16PASS each,0failures/errors/skips/model calls in qualification;
+real all-six-phase tool fixture retains failed SWE.1 and BLOCKED release. Native
+context capture14nodes/56bodies, bound77481/131072. See
+[qualification, actual signatures, preflight, runtime path and live evidence](../../evidence/014-durable-local-autonomy/qm-pipeline-demonstration-20261029/README.md).
+Git progress branch e2e/2026-10-29-idr-m1-qm-demo has active recorder commits.
+
+User requested local inspection copies. Complete previous f206 archive transferred,
+SHA and full inventoryPASS,86files extracted; it has SWE.1 only because later phases
+never ran. A live model-free collector fetches completed quiescent same-mission
+archives every60seconds until18:35:39UTC, verifies and extracts separate private
+job folders on loop10. Local index:
+/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/START-HERE.md.
+Current demo archive is not finalized. Do not replace missing outcomes with fixtures.
+Formal30/58, IE-T001–007 complete, IE-T008 unaccepted, IE-T009/M2–M5 unrun.
+Older entries below are historical checkpoints, including earlier pending delegations.
+
 ## Independent archive verification follow-up — 2026-10-29
 
 Exact auditor source **319e215417b8f7e0d329fb3ce71b595f0367f8ef** fixes a reproduced

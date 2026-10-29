@@ -2,7 +2,7 @@
   "schema": "forge-c/incremental-delivery-status/1",
   "handoff_revision": "5e89a2b",
   "milestones": {
-    "M1": "EXECUTED_BLOCKED_SWE1; PROSPECTIVE_QM_IMPLEMENTATION",
+    "M1": "HISTORICAL_BLOCKED_SWE1; QM_DEMONSTRATION_RUNNING; STRICT_M1_UNACCEPTED",
     "M2": "NOT_RUN",
     "M3": "NOT_RUN",
     "M4": "NOT_RUN",
@@ -19,21 +19,21 @@
   ],
   "formal_da_completed_tasks": 30,
   "formal_da_total_tasks": 58,
-  "live_authority": "F206_ONLY_UNTIL_2026-10-29T18:05:39Z; QM_SOURCE_ROLE_RECORDS_UNSIGNED",
+  "live_authority": "SIGNED_EXACT_DEMONSTRATION_SOURCE_PROFILE_UNTIL_2026-10-29T18:05:39Z",
   "requirements_review": "ORIGINAL_7_AND_SIMULATION_9_REQUIREMENT_PAYLOADS_REVIEWED",
   "product_acceptance": "BLOCKED",
-  "selected_profile": "local-rtx-v2-omniverse2-q38-qm-mtp",
+  "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
-  "production_revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
+  "latest_source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+  "production_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
-    "revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
-    "passed": 137,
-    "skipped": 1,
+    "revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+    "passed": 16,
+    "skipped": 0,
     "model_requests": 0,
-    "scope": "same twelve-module local/native deterministic and real-tool fixture cohort; no actual Qwen"
+    "scope": "three-module demonstration/QM/high-allowance cohort; local and isolated native; explicit semantic fixtures"
   },
   "reference_candidate": {
     "source": "WO-AFO-c2fd276494a54e7f-a1",
@@ -43,12 +43,12 @@
   },
   "partial_tasks": {},
   "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md",
-  "active_order_id": "afo-5ab4a2eb3e9de743",
-  "active_native_run_id": "01M63JC0YCPJFPSGHW04NG2W32",
+  "active_order_id": "afo-d9ddb6d7a1c4e025",
+  "active_native_run_id": "01M63V3YA87ENXA7052M8HS62X",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
-  "live_order_state": "BLOCKED",
+  "live_order_state": "RUNNING",
   "later_phases": "NOT_RUN",
-  "reported_output_tokens_completed_requests": 31353,
+  "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
   "learning_benefit": "NOT_MEASURED",
@@ -79,9 +79,89 @@
     "watchdog_timer": "ACTIVE",
     "finite_recorder": "ACTIVE",
     "operator_mode": "RUNNING",
-    "operator_epoch": 26
+    "operator_epoch": 28
   },
   "deployed_candidate": {
+    "revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+    "qualification": "16_PASS_LOCAL_AND_NATIVE; DEMONSTRATION_ACTIVATED; REAL_PIPELINE_RUNNING",
+    "qualification_model_requests": 0,
+    "purpose": "QM full-pipeline demonstration; quality outcomes observational; product unaccepted",
+    "local_tests": {
+      "passed": 16,
+      "skipped": 0,
+      "model_requests": 0,
+      "scope": "three-module demonstration/QM/high-allowance cohort"
+    }
+  },
+  "historical_order_id": "afo-cf20126621ac2673",
+  "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
+  "current_mission_snapshot": {
+    "attempts": 3,
+    "requests": 19,
+    "tools": 69,
+    "charged_tokens": 300000000,
+    "usage_unknown": true,
+    "captured_utc": "2026-10-29T12:55:33.099708Z"
+  },
+  "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
+  "prospective_purpose": "QM",
+  "prospective_qm_live_execution": "RUNNING_DEMONSTRATION; STRICT_M1_UNACCEPTED",
+  "current_runtime_purpose": "QM; PIPELINE_DEMONSTRATION_ONLY",
+  "qualification_evidence": "evidence/014-durable-local-autonomy/qm-development-20261029/README.md",
+  "current_production_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
+  "qm_activation": {
+    "status": "SUPERSEDED_UNSIGNED_NEVER_ACTIVATED",
+    "source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
+    "scope_sha256": "f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d",
+    "remote_packet": "/mnt/data/forge-c/production-local-014/deployment/idr-m1-qm-5b398d2-20261029",
+    "signatures_created": 0,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "deadline_changed": false,
+    "same_mission": true,
+    "pending_prerequisite": "Exact updated SSH-agent execution signing and activation approval; QM scope itself already owner-approved"
+  },
+  "historical_reported_output_tokens_completed_requests": 17340,
+  "active_inference_run": "01M63V3YA87ENXA7052M8HS62X",
+  "last_execution_liveness": "LIVE",
+  "last_inference_lease": "HELD",
+  "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
+  "source_status_captured_utc": "2026-10-29T12:55:33.099708Z",
+  "independent_archive_auditor": {
+    "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
+    "local_passed": 24,
+    "native_passed": 24,
+    "model_requests": 0,
+    "deployed": false,
+    "historical_archive_integrity": "PASS",
+    "historical_product_acceptance": "BLOCKED_UNCHANGED",
+    "evidence": "evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md"
+  },
+  "demonstration_evidence": "evidence/014-durable-local-autonomy/qm-pipeline-demonstration-20261029/README.md",
+  "demonstration_activation": {
+    "source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+    "scope_sha256": "252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0",
+    "state": "ACTIVATED_OWNER_APPROVED",
+    "signatures_created": 2,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "history_reset": false
+  },
+  "owner_execution_signing_delegation": "STANDING_OWNER_APPROVAL_20261029_FOR_THIS_DEVELOPMENT_MISSION; NO_REPEAT_CONFIRMATION_FOR_SAME_AUTHORIZED_ACTION_CLASS",
+  "local_outcome_collection": {
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen",
+    "status": "ACTIVE_MODEL_FREE_60_SECOND_POLL",
+    "ends_utc": "2026-10-29T18:35:39Z",
+    "historical_f206_archive": "COPIED_SHA_VERIFIED_86_FILES_EXTRACTED",
+    "current_demo_archive": "NOT_YET_FINALIZED"
+  },
+  "historical_f206_reported_usage": {
+    "prompt_tokens": 31688,
+    "completion_tokens": 31353,
+    "total_tokens": 63041,
+    "model_calls": 6,
+    "scope": "Six f206 continuation provider reports; completion may include reasoning; aggregate historical usage remains UNKNOWN"
+  },
+  "reported_usage_scope": "CURRENT_DEMONSTRATION_PARTIAL; historical f206 usage retained separately; aggregate remains UNKNOWN",
+  "historical_deployed_candidate": {
     "revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
     "purpose": "Reviewed simulation input; scoped independent unit recheck; shared accounting; explicit time-only continuation",
     "qualification": "DEPLOYED_AFTER_LOCAL_AND_NATIVE_FIXTURE_QUALIFICATION; REAL_M1_TERMINAL_BLOCKED_SWE1",
@@ -94,54 +174,19 @@
     "qualification_model_requests": 0,
     "live_model_requests": 6
   },
-  "historical_order_id": "afo-cf20126621ac2673",
-  "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
-  "current_mission_snapshot": {
-    "attempts": 2,
-    "requests": 12,
-    "tools": 68,
-    "charged_tokens": 200000000,
-    "usage_unknown": true,
-    "captured_utc": "2026-10-29T11:55:37.885736Z"
+  "demonstration_phase_progress": {
+    "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T12:55:24Z",
+    "SWE.2": "NATIVE_AUTHOR_REQUEST_IN_FLIGHT",
+    "SWE.3": "NOT_RUN",
+    "SWE.4": "NOT_RUN",
+    "SWE.5": "NOT_RUN",
+    "SWE.6": "NOT_RUN"
   },
-  "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
-  "prospective_purpose": "QM",
-  "prospective_qm_live_execution": "NOT_RUN",
-  "current_runtime_purpose": "ASPICE_ONLY; LAST_RUN_TERMINAL_BLOCKED",
-  "qualification_evidence": "evidence/014-durable-local-autonomy/qm-development-20261029/README.md",
-  "current_production_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
-  "qm_activation": {
-    "status": "PREPARED_UNSIGNED_NOT_ACTIVE",
-    "source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
-    "scope_sha256": "f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d",
-    "remote_packet": "/mnt/data/forge-c/production-local-014/deployment/idr-m1-qm-5b398d2-20261029",
-    "signatures_created": 0,
-    "deadline_utc": "2026-10-29T18:05:39Z",
-    "deadline_changed": false,
-    "same_mission": true,
-    "pending_prerequisite": "Exact updated SSH-agent execution signing and activation approval; QM scope itself already owner-approved"
-  },
-  "latest_trial_reported_usage": {
-    "prompt_tokens": 31688,
-    "completion_tokens": 31353,
-    "total_tokens": 63041,
-    "model_calls": 6,
-    "scope": "Six f206 continuation provider reports; completion may include reasoning; aggregate historical usage remains UNKNOWN"
-  },
-  "historical_reported_output_tokens_completed_requests": 17340,
-  "active_inference_run": null,
-  "last_execution_liveness": "QUIESCENT",
-  "last_inference_lease": "RELEASED",
-  "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T11:55:37.885736Z",
-  "independent_archive_auditor": {
-    "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
-    "local_passed": 24,
-    "native_passed": 24,
-    "model_requests": 0,
-    "deployed": false,
-    "historical_archive_integrity": "PASS",
-    "historical_product_acceptance": "BLOCKED_UNCHANGED",
-    "evidence": "evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md"
+  "current_trial_reported_usage_partial": {
+    "completed_requests": 6,
+    "pending_requests": 1,
+    "reported_total_tokens": 63513,
+    "prompt_completion_split": "Not exported by this observation",
+    "aggregate_historical_usage": "UNKNOWN"
   }
 }
