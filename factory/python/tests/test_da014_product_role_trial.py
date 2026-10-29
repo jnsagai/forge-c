@@ -92,6 +92,7 @@ def test_changed_job_scope_refuses_before_generation(trial, field, value):
 
 
 def test_request_configuration_and_context_remain_bounded(trial):
+    trial.job["reserved_tokens"] = 1000000  # Cumulative job allowance cannot enlarge a single context.
     T.bind(trial.publish(trial.doc), trial.job, trial.eff)
     changed = body()
     changed["temperature"] = 1

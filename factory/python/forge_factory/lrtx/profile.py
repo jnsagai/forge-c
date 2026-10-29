@@ -48,7 +48,9 @@ def role_job_tokens(prof: dict, role: str, registry_default: int) -> int:
 
     Profiles without an AFO override keep the role registry unchanged. The
     controller must separately bind the profile and enforce its signed policy
-    and cumulative mission. Never clamp an invalid configured envelope.
+    and cumulative mission. A multi-turn job may spend more than one context:
+    every individual request still passes independent context admission.
+    Never clamp an invalid configured envelope.
     """
     afo = prof.get("afo", {})
     if not isinstance(afo, dict):
@@ -59,8 +61,9 @@ def role_job_tokens(prof: dict, role: str, registry_default: int) -> int:
     except (KeyError, TypeError, ValueError) as exc:
         raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"]) from exc
     if (not isinstance(limits, dict)
+            or context < 1
             or not set(limits) <= {"afo-recovery-planner", "afo-factory-maintainer"}
-            or any(type(n) is not int or not 0 < n <= context for n in limits.values())):
+            or any(type(n) is not int or n <= 0 for n in limits.values())):
         raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"])
     return limits.get(role, registry_default)
 

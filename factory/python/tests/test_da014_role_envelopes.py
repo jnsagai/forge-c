@@ -131,7 +131,7 @@ def test_maintenance_uses_its_own_finite_envelope_and_keeps_sandbox_gate(local, 
     assert "initial_request_measurement" not in job  # native tool dialogue is checked per request
 
 
-@pytest.mark.parametrize("bad", [True, 0, -1, "65536", 65537])
+@pytest.mark.parametrize("bad", [True, 0, -1, "65536", None, float("inf"), float("nan")])
 def test_invalid_profile_envelope_is_not_coerced_or_silently_clamped(local, monkeypatch, bad):
     prof = P.load(PROFILE)
     prof.setdefault("afo", {})["role_job_tokens"] = {"afo-recovery-planner": bad}
@@ -140,6 +140,25 @@ def test_invalid_profile_envelope_is_not_coerced_or_silently_clamped(local, monk
     with pytest.raises(P.ProfileRefused, match="PROFILE_ROLE_ENVELOPE_INVALID"):
         prepare(local)
     assert not L.records(local[0], local[1]["order_id"])
+
+
+def test_multiturn_job_envelope_exceeds_one_context_but_keeps_mission_and_policy_caps(local, monkeypatch):
+    prof = P.load(PROFILE)
+    prof["afo"]["role_job_tokens"]["afo-recovery-planner"] = 1000000
+    select(local, prof)
+    monkeypatch.setattr(P, "load", lambda _: prof)
+    ledger, case = durable(local, tokens=2000000)
+    local[3].policy["budgets"]["max_model_tokens_per_order"] = 999999
+    with pytest.raises(QueueError, match="RECOVERY_PROFILE_ENVELOPE_EXCEEDS_POLICY"):
+        prepare(local, case=case)
+    assert ledger.snapshot("prospective")["charged_tokens"] == 0
+    local[3].policy["budgets"]["max_model_tokens_per_order"] = 1000000
+    job = prepare(local, case=case)
+    assert job["reserved_tokens"] == 1000000
+    assert job["initial_request_measurement"]["effective_output_cap"] == 34816
+    assert int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]) == 65536
+    assert ledger.snapshot("prospective")["charged_tokens"] == 1000000
+    assert prepare(local, case=case) == job  # No second reservation on retry/restart.
 
 
 def test_existing_legacy_job_cannot_be_rebound_by_selecting_new_profile(local):
