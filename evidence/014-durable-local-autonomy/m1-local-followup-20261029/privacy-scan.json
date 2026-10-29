@@ -1,6 +1,6 @@
 {
   "result": "PASS",
-  "files_checked": 17,
+  "files_checked": 22,
   "checks": [
     "private_key_markers",
     "provider_token_markers",

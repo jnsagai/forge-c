@@ -1,6 +1,12 @@
 # Implementation and qualification status
 
-Updated 2026-10-28. Current tested/deployed runtime: **fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61**, owner-scoped ASPICE-only development on Omniverse2. See the dated scope checkpoint below. Historical revisions remain separate; documentation commits do not qualify another deployment. Feature014 remains30/58, stacked on unmerged PR41.
+Updated2026-10-29. Local candidate **aac50fcb3b415e7ac35fa6525f885d986ab4ca71**
+passed178 checks,0failures/errors/skips; no model calls. Last confirmed deployed
+runtime was **e098b515a421900131b05a6763029d20b3a8b09d**. Omniverse2 is now
+owner-confirmed offline; no current service-availability claim. Former live grants
+expired at2026-10-29T05:00:00Z and were not renewed. The candidate is undeployed.
+Historical revisions remain separate; documentation commits do not qualify
+another runtime. Feature014 remains30/58, stacked on unmerged PR41.
 
 Historical Oct26 checkpoint: Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 
@@ -1189,7 +1195,7 @@ availability claim. Spec/contracts/design checks remain documentation evidence.
 
 ### 2026-10-29 local implementation checkpoint
 
-Candidate87287ba extends the current branch with bound inspector owner context,
+Candidateaac50fc extends the current branch with bound inspector owner context,
 generic simulation instruction/time evidence through Renode/Robot/release,
 an actual approved9-requirement input and signed time-only mission continuation.
 The normal owner-reviewed import/freeze leaves inspection REINSPECT and injection

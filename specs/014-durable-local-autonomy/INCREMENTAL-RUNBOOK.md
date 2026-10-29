@@ -7,7 +7,7 @@ new local files. Preserve the cloud benchmark terminal and its resources.
 
 ## Current source and review boundary — 2026-10-29
 
-Candidate87287ba is local and undeployed. Last confirmed runtime is e098b51.
+Candidateaac50fc is local and undeployed. Last confirmed runtime is e098b51.
 Omniverse2 is offline by owner confirmation. All actual Qwen execution belongs
 there. All former M1/role-trial grants expired29October05:00UTC. Do not infer
 authority from the owner's requirements approval.

@@ -135,7 +135,7 @@ retain separately signed role experiments and full live admission/quality checks
 
 ### Local recovery follow-up — 2026-10-29
 
-Source87287ba implements the owner-scope inspector view, optional generic
+Sourceaac50fc implements the owner-scope inspector view, optional generic
 per-function Renode/Robot/release performance verification and an operator-only
 time-window increment through existing AFO accounting. The approved separate
 9-requirement input imports/freezes normally but does not pass inspection by import.

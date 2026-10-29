@@ -1,6 +1,10 @@
 # Data model — durable local autonomy
 
-Status: **PROPOSED / NOT_IMPLEMENTED**. Base: PR #41, commit `f6ff873d5b4f3e9e46956ef26766181aaec2289d`; runtime findings were inspected at `36ed0fc70bd8765f0cc90a45b21bbf02924b0269`. These models specify future behavior, not migrations or deployed interfaces.
+Status: **PARTIALLY_IMPLEMENTED / QUALIFICATION_INCOMPLETE**. Authored design base:
+PR #41, commit f6ff873d5b4f3e9e46956ef26766181aaec2289d; original runtime findings
+were inspected at36ed0fc70bd8765f0cc90a45b21bbf02924b0269. Preserve that baseline;
+current implementation/evidence dispositions are in validation.md. The scoped
+2026-10-29 implementation note below does not qualify all entities or live paths.
 
 ## Ownership and existing contracts
 

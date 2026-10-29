@@ -14,7 +14,8 @@ Owner confirms Omniverse2 is **offline**. Prior live authority expired at
 request sent in this follow-up. The old M1 remains blocked and unaccepted.
 Runtime e098b51 is the last confirmed deployment, not a current availability claim.
 
-Candidate **87287ba** adds bound owner assessment context to both native and
+Clean candidate **aac50fc** passed178 local checks,0failures/errors/skips and0model
+requests. It adds bound owner assessment context to both native and
 structured inspector inputs without changing frozen criteria; generic measured
 simulation CPU/time evidence through Renode, Robot and release; and an
 operator-only signed time-window increment in the existing AFO ledger.

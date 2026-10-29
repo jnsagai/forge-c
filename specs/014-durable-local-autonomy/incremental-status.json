@@ -24,7 +24,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "87287baa366e3e4fae2493e7df443996e2084e26",
+  "latest_source_revision": "aac50fcb3b415e7ac35fa6525f885d986ab4ca71",
   "production_revision": "e098b515a421900131b05a6763029d20b3a8b09d",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -50,10 +50,15 @@
   "later_phases": "NOT_RUN",
   "reported_output_tokens_completed_requests": 17340,
   "undeployed_candidate": {
-    "revision": "87287baa366e3e4fae2493e7df443996e2084e26",
+    "revision": "aac50fcb3b415e7ac35fa6525f885d986ab4ca71",
     "model_requests": 0,
     "purpose": "Bound inspector scope; simulation performance proof; explicit time-only continuation",
-    "qualification": "LOCAL_DETERMINISTIC_ONLY; NATIVE_AND_QWEN_NOT_RUN"
+    "qualification": "LOCAL_DETERMINISTIC_ONLY; NATIVE_AND_QWEN_NOT_RUN",
+    "local_tests": {
+      "passed": 178,
+      "skipped": 0,
+      "model_requests": 0
+    }
   },
   "host_availability": "OFFLINE_OWNER_CONFIRMED_2026-10-29",
   "operational_availability": "NOT_QUALIFIED",

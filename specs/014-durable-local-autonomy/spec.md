@@ -2,7 +2,7 @@
 
 **Feature Branch**: `feat/014-durable-local-autonomy`  
 **Created**: 2026-10-25  
-**Status**: SPECIFIED — implementation and live qualification NOT_RUN  
+**Status**: PARTIALLY_IMPLEMENTED — formal ledger30/58; runtime/capability/product/learning/availability qualification tracked separately in validation.md
 **Implementation base**: `f6ff873d5b4f3e9e46956ef26766181aaec2289d` (PR #41, evidence head; runtime `36ed0fc70bd8765f0cc90a45b21bbf02924b0269`)  
 **Input**: Owner request to turn the reviewed Omniverse2 Qwen autonomy plan into a repository Spec Kit package for Codex implementation.
 

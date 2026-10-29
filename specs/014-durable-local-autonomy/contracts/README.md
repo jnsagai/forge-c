@@ -1,6 +1,6 @@
 # Proposed contracts — Feature 014
 
-Status: **NOT_IMPLEMENTED**. These files are design artifacts for Codex implementation. Passing their validator proves schema/fixture consistency only. It does not run Qwen, Fabro, MCP, recovery code or any production service.
+Status: **PARTIALLY_IMPLEMENTED / QUALIFICATION_INCOMPLETE**. These authored contracts have runtime consumers; current scoped evidence is tracked in ../validation.md. Passing their validator proves schema/fixture consistency only. It does not run Qwen, Fabro, MCP, recovery code or any production service.
 
 ## Interfaces and trust boundary
 

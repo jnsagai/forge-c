@@ -1,7 +1,7 @@
 # Local M1 recovery follow-up — 2026-10-29
 
-**175 PASS, zero failures/errors/skips** at exact source
-**87287baa366e3e4fae2493e7df443996e2084e26** on the local loop10 checkout.
+**178 PASS, zero failures/errors/skips** at exact source
+**aac50fcb3b415e7ac35fa6525f885d986ab4ca71** on the local loop10 checkout.
 This is local implementation/tool evidence with **zero model requests**.
 Omniverse2 is owner-confirmed offline. Previous execution grants expired at
 05:00UTC. No new grant, actual mission amendment, deployment, order or inference
@@ -32,14 +32,17 @@ adding64 instructions/call and100microseconds virtual time/call at100MIPS.
 The reviewed preview retains its historical PENDING banner; actual current
 review status is in the record and provided-requirements.json.
 
+e09b227 adds bounded refusal for missing, malformed or non-object grant records;
+three extra negative cases preserve the mission unchanged.
+
 ## Results and limits
 
-[XML](pytest-87287ba.xml), [console](pytest-87287ba.log) and
-[structured status](status.json) record175 checks in189.107seconds.
+[XML](pytest-aac50fc.xml), [console](pytest-aac50fc.log) and
+[structured status](status.json) record178 checks in209.709seconds.
 Checkout was clean at test launch; later edits are documentation/evidence only.
-Earlier overlapping cohorts are not added to that count.
+The earlier clean87287ba cohort passed175; it is retained separately and is not added to178.
 
-The [actual reviewed import](reviewed-preparation.json) validates, materializes
+The [actual reviewed import](reviewed-preparation-aac50fc.json) validates, materializes
 and freezes the approved input through ordinary code. SWE.1 remains REINSPECT;
 delivery injection is REFUSED and frozen code stays unavailable. All six
 structured inspector requests were serialized: maximum conservative UTF8 bound
@@ -61,6 +64,8 @@ does not accept a real Qwen product. Other negative cases reject missing direct
 calls, missing samples, inconsistent clock accounting and changed source inputs.
 A different driver namespace exercises the generic measurement planner.
 
+The exported counter reports are from the original87287ba cohort; the observer code
+and expected samples remain identical and pass again in the final178-case run.
 Detailed ELF and full raw logs remain in private loop10 content-addressed stores;
 their hashes are referenced in reports. Counter extracts are intentionally
 limited. No manual bodies, prompts, hidden reasoning or full workspace archives
@@ -68,9 +73,9 @@ are published.
 
 Initial failures/corrections are listed in status.json. Earlier local assessment
 regressions passed99 with one absent-SWE.2-baseline fixture skip. That cohort is
-separate from the new175/0-skip result. The release regression initially failed
+separate from the new178/0-skip result. The release regression initially failed
 when run without the pinned PlantUML/LLVM environment; it passed with that
-environment and passes again in the exact175-case cohort.
+environment and passes again in both exact final cohorts.
 
 ## Reproduce local tooling checks
 
