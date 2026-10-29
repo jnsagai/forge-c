@@ -147,6 +147,11 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     checks["target_verification"] = any(ok(r) for r in tgt)
     checks["safety_gaps_declared"] = True  # known_limitations.md is always generated from facts below
     findings: list[dict] = []
+    from ..development_demonstration import selected as demonstration
+
+    if demonstration(ws):
+        findings.append({"id": "QM_PIPELINE_DEMONSTRATION_ONLY", "severity": "major",
+                         "detail": "Full-pipeline demonstration; findings are observations, not accepted delivery."})
     for p in PHASES:
         ins = store.inspections(p)
         if ins and ins[-1]["verdict"] != "PASS":

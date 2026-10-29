@@ -316,3 +316,31 @@ review, and record the new explicit QM scope decision separately as a composite
 review of unchanged functional content plus owner reclassification. Do not claim
 a second full functional review. Current M1 still requires real six-phase execution
 and independently recomputable READY_FOR_OFFLINE_REVIEW; M2–M5 remain subsequent.
+
+## 12. Superseding owner demonstration decision — 2026-10-29
+
+Owner instruction: “by now lets relax so much quality constraints, i just want to
+see qwen running a full pipeline, let them do the quality improvements later on”.
+
+The immediate execution objective is a QM demonstration through every applicable
+SWE.1–SWE.6 author, inspector, build/test activity and final packaging stage.
+Use opt-in execution policy qm-pipeline-demonstration-v1 and the explicit local
+QM demonstration profile. Follow the existing workflow once; quality-gate failures
+are recorded observations and do not branch into repair loops or stop the next
+phase. Preserve actual failed/absent checks, provisional dependencies and artifacts.
+Freeze available real workproducts as unqualified snapshots without inventing
+missing artifacts or passing inspections. Frozen delivered code may enter after
+the intact requirements snapshot despite failed/missing quality inspection; record
+that provisional demonstration injection and retain original input/delivery hashes.
+
+Keep current authorization, operator intent, one admitted inference, tool permissions,
+source integrity, finite cumulative accounting and protocol boundaries. Technical
+failures are visible, with no fabricated artifacts or claims. Missing work may cause
+a role to report BLOCKED; the workflow still attempts the subsequent roles.
+
+The result is DEMONSTRATION_ONLY with truthful findings and a blocked/unaccepted
+product package. It cannot satisfy M1 acceptance, release production software,
+qualify the model or claim self-healing/learning benefit. Improve quality after the
+full demonstration. Later strict M1 and M2–M5 criteria remain separate and unproven.
+This scope supersedes the unactivated 5b398d2 QM runtime packet; prepare new exact
+source/profile execution records without resetting history or extending the window.

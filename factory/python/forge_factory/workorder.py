@@ -178,7 +178,7 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
-            *, purpose: str = "DEVELOPMENT") -> tuple[Path, dict]:
+            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None) -> tuple[Path, dict]:
     from .release import aspice, qm
     from .release.development import binding
 
@@ -188,7 +188,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     spec = json.loads((example / "workorder.json").read_text())
     from .development_execution import binding as execution_binding
 
-    execution = execution_binding(spec.get("development_execution_policy"), purpose)
+    execution = execution_binding(execution_policy or spec.get("development_execution_policy"), purpose)
     from .operation_scope import validate as validate_operation_scope
 
     if "operation_scope" in spec:
@@ -644,6 +644,10 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "timeout_s": st.get("timeout_s", 3600),
         "visit_time_s": st.get("visit_time_s", 1200),
     }
+    from .development_execution import DEMO
+
+    if (manifest.get("development_execution") or {}).get("name") == DEMO:
+        return {**out, "demonstration": True, "reinspect": False}
     if st.get("advisory_continue"):  # only when enabled, so records of profiles without it stay byte-identical (v1)
         out["advisory"] = True
     return out if out["phases"] or out["inspect_phases"] or out["reinspect"] or out.get("advisory") else None
@@ -786,6 +790,8 @@ def run(
         source_scope = json.loads((source_workspace(resume) / ".forge-run/manifest.json").read_text())
         evaluation_holdout = evaluation_holdout or bool(source_scope.get("evaluation_holdout"))
     purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
+    if profile and selected_profile.get("development_execution_policy"):
+        purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")

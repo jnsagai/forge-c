@@ -174,6 +174,11 @@ def packet(
         if record:
             p["assessment_scope"] = {"purpose": qm.PURPOSE, "binding_sha256": hashlib.sha256(canonical_json(record)).hexdigest(),
                                      "instruction": qm.prompt_scope(record)}
+        from ..development_demonstration import NOTE
+        from ..development_demonstration import selected as demonstration
+
+        if demonstration(scope_ws):
+            p["demonstration_scope"] = NOTE
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
@@ -245,6 +250,8 @@ def messages(p: dict, sk: dict | None, sources: list[dict], artifacts: list[dict
     qm_scope = (p.get("assessment_scope") or {}).get("purpose") == "QM"
     if qm_scope:
         sys_parts.append(p["assessment_scope"]["instruction"])
+    if p.get("demonstration_scope"):
+        sys_parts.append(p["demonstration_scope"])
     sys_parts.append(
         ("You work on ONE small task of a QM ASPICE engineering work order. " if qm_scope else
          "You work on ONE small task of a safety-oriented ASPICE work order. ") + "Answer with ONE JSON document "

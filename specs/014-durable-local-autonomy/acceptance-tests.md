@@ -736,3 +736,16 @@ identical lineage, deadline, caps and historical authority reference. Test
 deduplicated hash-bound admission receipts, tampering, wrong current authority,
 revocation, expiry, exhausted allowances, attempted cap refill and renamed mission
 refusal. Original mission rows/counters/time amendments must remain unchanged.
+
+### Owner-selected full-pipeline QM demonstration — 2026-10-29
+
+The owner's explicit request to relax quality constraints and see Qwen run the full
+pipeline selects the opt-in qm-pipeline-demonstration-v1 execution policy, as defined
+in section12 of IMPLEMENTATION-INCREMENTAL-E2E.md. Existing phases, model roles,
+checks and findings remain observable; control follows every applicable phase once
+without waiting for quality acceptance. Real snapshots and delivered inputs retain
+hash bindings; failed/missing evidence remains failed/missing. Demonstration output
+is explicitly unaccepted and cannot close IE-T008/009, M1 or formal qualification.
+Current authority/accounting/operator/inference boundaries remain. Strict existing
+profiles retain their gating and rework behavior. Qualify actual edge traversal,
+failed-check preservation, provisional injection, blocked release and compatibility.

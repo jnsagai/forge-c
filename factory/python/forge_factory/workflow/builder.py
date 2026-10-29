@@ -143,6 +143,12 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                 dot = re.sub(pattern, lambda m: m.group(1) + m.group(2) + extra + '"', dot, flags=re.S)
     if structured:
         dot = structured_authors(dot, structured)
+    from ..development_execution import DEMO
+
+    if execution_policy and execution_policy.get("name") == DEMO:
+        from ..development_demonstration import workflow
+
+        dot, nodes = workflow(dot, nodes, gate_cmd)
     if code_model:
         for n in CODE_NODES:
             if n in nodes:
@@ -231,6 +237,8 @@ def structured_authors(dot: str, structured: dict) -> str:
     def continuation(dot: str, node: str, gate_node: str, step: str, phase: str) -> str:
         """node -> check -[CONTINUE]-> more -> check ...; check -[done]-> gate. The continuation node has its own
         visit limit, so time boxes never consume the phase's authored visit/rework budget."""
+        if structured.get("demonstration"):
+            return dot
         chk, more = f"{node}_cont", f"{node}_more"
         cmd = f"{run} {step} --phase {phase} --workspace . --model {structured['model']} --time-budget {box} --resume"
         edge = f"  {node} -> {gate_node}\n"

@@ -640,7 +640,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
     ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream", "triage",
-                                                      "return", "advisory"])
+                                                      "return", "advisory", "demo-snapshot"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
@@ -657,6 +657,11 @@ def main(argv: list[str] | None = None) -> int:
 
 def _run_step(store: Store, a: argparse.Namespace) -> int:
     try:
+        if a.step == "demo-snapshot":
+            from ..development_demonstration import snapshot
+
+            print(json.dumps(snapshot(store, a.phase)))
+            return 0
         if a.step == "author":
             rc = step_author(store, a.phase, sys.stdin.read())
         elif a.step == "inspect":

@@ -11,13 +11,14 @@ from .common import REPO_ROOT, pretty_json, sha256_file, utc_now
 
 NAME = "incremental-delivery-v1"
 HIGH = "incremental-delivery-high-allowance-v2"
+DEMO = "qm-pipeline-demonstration-v1"
 DECISION = "specs/014-durable-local-autonomy/IMPLEMENTATION-INCREMENTAL-E2E.md"
 
 
 def binding(name, purpose):
     if name is None:
         return None
-    if name not in (NAME, HIGH) or purpose not in ("ASPICE_ONLY", "QM"):
+    if name not in (NAME, HIGH, DEMO) or purpose not in ("ASPICE_ONLY", "QM") or (name == DEMO and purpose != "QM"):
         raise ValueError("DEVELOPMENT_EXECUTION_POLICY_INVALID")
     result = {"schema": "forge-c/development-execution/1", "name": name, "max_phase_repair_passes": 1,
             "decision": {"path": DECISION, "sha256": sha256_file(REPO_ROOT / DECISION)},
@@ -27,6 +28,11 @@ def binding(name, purpose):
             "advisory_relaunch": "DEFERRED_BY_DEVELOPMENT_POLICY"}
     if purpose == "QM":
         result["purpose"] = purpose
+    if name == DEMO:
+        result.update(demonstration_only=True, quality_gates_block_workflow=False,
+                      max_phase_repair_passes=0, max_task_calls=1,
+                      max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
+                      max_upstream_loops=0)
     if name == HIGH:
         result.update(max_phase_repair_passes=1000, max_task_calls=1001,
                       max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
@@ -86,6 +92,11 @@ def reserve_call(ws, packet):
     repair_hint = bool(packet.get("repair_of") or packet.get("findings") or packet["task"].startswith("triage:"))
     with phase_state(ws, packet["phase"]) as state:
         n = state["calls"].get(key, 0)
+        if policy["name"] == DEMO:
+            if n >= policy["max_task_calls"]:
+                return False
+            state["calls"][key] = n + 1
+            return True
         if policy["name"] == HIGH:
             if n >= policy["max_task_calls"]:
                 return False
@@ -112,6 +123,8 @@ def reserve_phase_rework(ws, phase):
     if not policy:
         raise ValueError("DEVELOPMENT_POLICY_REQUIRED")
     with phase_state(ws, phase) as state:
+        if policy["name"] == DEMO:
+            return False
         if policy["name"] == HIGH:
             count = state.get("phase_reworks", 0)
             if count >= policy["max_phase_repair_passes"]:
@@ -167,7 +180,7 @@ def mutation_allowed(ws, phase, role, relative):
     with phase_state(ws, phase) as state:
         if not state.get("failed_checks") and state["repair_pass"] is None:
             return True
-        if state.get("verification_after_repair") and policy["name"] != HIGH:
+        if state.get("verification_after_repair") and policy["name"] not in (HIGH, DEMO):
             return False
         if state["repair_pass"] is None:
             state["repair_pass"] = {"origin": "native_check_failure", "at": utc_now()}
