@@ -1,0 +1,30 @@
+{
+  "captured_utc": "2026-10-29T14:06:23.680935Z",
+  "deadline_epoch": 1793297139.0,
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 32
+  },
+  "orders": [
+    {
+      "order_id": "afo-774900b297bdde37",
+      "state": "QUEUED",
+      "attempts": []
+    }
+  ],
+  "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
+  "requests": 141,
+  "native_ownership": [
+    {
+      "resource": "inference",
+      "holder": null,
+      "epoch": 26
+    },
+    {
+      "resource": "generation",
+      "holder": null,
+      "epoch": 282
+    }
+  ]
+}
