@@ -25,7 +25,7 @@ class ToolRefused(PermissionError):
 def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_id: str | None = None) -> dict:
     from importlib import import_module
 
-    from ..mcp.sdk import ToolContext
+    from ..mcp.sdk import ToolContext, ToolDenied, result
     from ..registry.mcp_registry import load_registry
 
     ws = Path(ws).resolve()
@@ -40,12 +40,28 @@ def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_
     validated = operation.model.model_validate(args)
     from ..afo.durable import Refused
     from ..afo.tool_accounting import charge
+    from ..development_execution import verification
 
+    verify = op.startswith(("run_", "check_", "compile", "build", "measure"))
+    debit = None
     try:
         debit = charge(ws, ctx.invocation_id)
-    except Refused as exc:
-        raise ToolRefused(exc.code) from exc
-    out = operation.handler(ctx, validated)
+        if verify and not verification(ws, phase, role, key):
+            raise ToolDenied("DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", key)
+    except (Refused, ToolDenied) as exc:
+        # Return the normal blocked MCP envelope, so callers record a phase failure
+        # rather than mistaking refusal for executed verification or an absent reply.
+        out = result(ctx, "BLOCKED", f"denied: {exc.code}", issues=[exc.code],
+                     metrics={"handler_executed": False})
+    else:
+        try:
+            out = operation.handler(ctx, validated)
+        except Exception:
+            if verify:
+                verification(ws, phase, role, key, "UNKNOWN")
+            raise
+        if verify:
+            verification(ws, phase, role, key, out["status"])
     rec = {"ts_utc": utc_now(), "server": server, "op": op, "role": role, "phase": phase, "run_id": run,
            "result": out, "caller": "lrtx-structured-runner"}
     if debit is not None:

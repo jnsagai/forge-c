@@ -74,8 +74,9 @@ def test_native_and_actual_structured_unit_tool_share_one_cumulative_allowance(m
     executions.dispatch_intent("native-job")
     executions.adopt("native-job", ["synthetic-native-identity"])
     executions.outcome("native-job", "BLOCKED", "synthetic terminal task with native work unresolved")
-    with pytest.raises(T.ToolRefused, match="MISSION_MAX_TOOLS_EXHAUSTED"):
-        run(m)
+    denied = run(m)
+    assert denied["status"] == "BLOCKED" and denied["issues"] == ["MISSION_MAX_TOOLS_EXHAUSTED"]
+    assert denied["metrics"]["handler_executed"] is False
     assert m.ledger.snapshot("mission")["tools"] == 2
     assert executions.get("native-job")["resource_lease"] == "HELD"
 
@@ -96,8 +97,9 @@ def test_handler_failure_is_charged_before_execution_and_restart_does_not_refund
     monkeypatch.setattr(op, "handler", actual)
     assert run(m)["status"] == "PASS"
     assert MissionLedger(Store()).snapshot("mission")["tools"] == 2
-    with pytest.raises(T.ToolRefused, match="MISSION_MAX_TOOLS_EXHAUSTED"):
-        run(m)
+    denied = run(m)
+    assert denied["status"] == "BLOCKED" and denied["issues"] == ["MISSION_MAX_TOOLS_EXHAUSTED"]
+    assert denied["metrics"]["handler_executed"] is False
     assert m.ledger.snapshot("mission")["charged_tokens"] == 100
 
 
@@ -107,10 +109,7 @@ def test_concurrent_hook_and_structured_debits_cannot_both_take_the_last_slot(mi
     def attempt(kind):
         if kind == "hook":
             return hook(m).allow
-        try:
-            return run(m)["status"] == "PASS"
-        except T.ToolRefused:
-            return False
+        return run(m)["status"] == "PASS"
     with ThreadPoolExecutor(max_workers=2) as pool:
         outcomes = list(pool.map(attempt, ["hook", "structured"]))
     assert sum(outcomes) == 1 and m.ledger.snapshot("mission")["tools"] == 2
@@ -126,8 +125,8 @@ def test_invalid_durable_binding_refuses_both_paths_without_handler_or_debit(mis
     m = mission
     m.path.write_text(raw)
     assert not hook(m).allow
-    with pytest.raises(T.ToolRefused, match=code):
-        run(m)
+    denied = run(m)
+    assert denied["status"] == "BLOCKED" and denied["issues"] == [code]
     assert m.ledger.snapshot("mission")["tools"] == 0 and not (m.ws / "build").exists()
 
 
@@ -138,8 +137,7 @@ def test_dangling_binding_symlink_is_not_a_legacy_workspace(mission):
     with pytest.raises(Refused, match="TOOL_MISSION_BINDING_UNSAFE"):
         tool_accounting.charge(m.ws, "event")
     assert not hook(m).allow
-    with pytest.raises(T.ToolRefused, match="TOOL_MISSION_BINDING_UNSAFE"):
-        run(m)
+    assert run(m)["issues"] == ["TOOL_MISSION_BINDING_UNSAFE"]
     assert m.ledger.snapshot("mission")["tools"] == 0
 
 
@@ -165,6 +163,38 @@ def test_real_failing_driver_and_subsequent_repair_both_consume_the_same_cap(mis
     records = [json.loads(line) for line in (m.ws / "evidence/tool-results.jsonl").read_text().splitlines()]
     assert [r["result"]["status"] for r in records] == ["FAIL", "PASS"]
     assert len({r["mission_tool_charge"]["event_id"] for r in records}) == 2
-    with pytest.raises(T.ToolRefused, match="MISSION_MAX_TOOLS_EXHAUSTED"):
-        run(m)
+    denied = run(m)
+    assert denied["status"] == "BLOCKED" and denied["issues"] == ["MISSION_MAX_TOOLS_EXHAUSTED"]
+    assert denied["metrics"]["handler_executed"] is False
     assert m.ledger.snapshot("mission")["tools"] == 2
+
+
+def test_structured_tools_share_native_development_verification_limits(mission, monkeypatch):
+    from forge_factory import development_execution as D
+    from forge_factory.common import pretty_json
+    from forge_factory.mcp import sdk
+    from forge_factory.release import aspice
+
+    m = mission
+    # Explicit development-policy fixture, not a deployment or product judgment.
+    doc = {"work_order": "WO-TOOL-ACCOUNTING", "purpose": "ASPICE_ONLY", "layer": "LL",
+           "aspice_development": aspice.binding()}
+    doc["development_execution"] = D.binding(D.NAME, "ASPICE_ONLY")
+    (m.ws / ".forge-run/manifest.json").write_text(pretty_json(doc))
+    m.path.unlink()  # Exercise the separate legacy per-phase limit, without a shared mission cap.
+    source = m.ws / "software/src/counter.c"
+    source.write_text("int counter_read(void) { return 8; }\n")
+    assert run(m)["status"] == "FAIL"
+    # The native SDK uses this same verification state; switching callers cannot refill it.
+    monkeypatch.setenv("FORGE_MCP_TRUST", "env")  # SDK test authorization fixture, never a production profile.
+    monkeypatch.setenv("FORGE_ROLE", "swe4-author")
+    monkeypatch.setenv("FORGE_PHASE", "SWE.4")
+    monkeypatch.setenv("FORGE_WORKSPACE", str(m.ws))
+    op = next(o for o in operations.OPERATIONS if o.name == "run_unit")
+    assert sdk.invoke("forge-tests-mcp", op, {})["status"] == "FAIL"
+    before = (m.ws / "build/tests-unit/results.json").read_bytes()
+    denied = run(m)
+    assert denied["status"] == "BLOCKED" and denied["issues"] == ["DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"]
+    assert denied["metrics"]["handler_executed"] is False
+    assert (m.ws / "build/tests-unit/results.json").read_bytes() == before
+    assert m.ledger.snapshot("mission")["tools"] == 0
