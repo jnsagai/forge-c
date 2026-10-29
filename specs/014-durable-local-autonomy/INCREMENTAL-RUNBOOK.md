@@ -5,6 +5,23 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
+## Context refusal diagnostics candidate — 2026-10-29
+
+Exact **a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0**, **not deployed**:
+the existing execution evidence now preserves complete serialized bounds/resolved
+role and bounded cause for rejected capability requests, with body-hash keys and
+no raw prompt/result/hidden reasoning. Accepted requests also record the detected
+native role. Rejections still spend/reserve no inference and call no provider.
+Three old-source counterexamples fail; exact candidate local89PASS,0failures/
+errors/skips,30.989s, zero Qwen calls. Native qualification NOT_RUN to give the
+active remote mission priority. Do not restart current production for telemetry.
+[Commands, counterexamples, exact XML/logs and scope](../../evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md).
+
+Current production remains **9b4c390**,262144context/MTP3/xhigh. Actual new run
+**01M63ZTJ5QM1R96484Y2KN97H6** passed SWE.1 at14:17:44UTC and is executing
+SWE.2 author tools. Later substantive completion remains unproven; previous failed
+packages remain BLOCKED. Full mission/quality/availability acceptance is unchanged.
+
 ## Larger-context Qwen continuation — 2026-10-29 14:08UTC
 
 Current deployed/tested source **9b4c390e1605d11c4865bdeea382df74a0078692**,

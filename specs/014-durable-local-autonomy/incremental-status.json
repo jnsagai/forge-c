@@ -25,7 +25,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "latest_source_revision": "a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0",
   "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -47,7 +47,7 @@
   "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
   "live_order_state": "RUNNING",
-  "later_phases": "CURRENT_RUN_NOT_YET_EXECUTED; PREVIOUS_DEMO_NATIVE_ROLES_FAILED_CAPABILITY_LIMIT",
+  "later_phases": "SWE2_NATIVE_AUTHOR_ACTIVE; LATER_SUBSTANTIVE_COMPLETION_UNPROVEN",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -109,11 +109,11 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 70,
-    "tools": 193,
+    "requests": 82,
+    "tools": 203,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T14:08:44.989263Z"
+    "captured_utc": "2026-10-29T14:18:52.171513Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -137,7 +137,7 @@
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T14:08:44.989263Z",
+  "source_status_captured_utc": "2026-10-29T14:18:52.171513Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -188,8 +188,9 @@
     "live_model_requests": 6
   },
   "demonstration_phase_progress": {
-    "SWE.1": "CURRENT_STRUCTURED_REQUEST_SENT",
-    "SWE.2_THROUGH_6": "NOT_YET_EXECUTED"
+    "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T14:17:44Z",
+    "SWE.2": "NATIVE_AUTHOR_EXECUTING_TOOLS; SUBSTANTIVE_WORKPRODUCT_NOT_YET_OBSERVED",
+    "SWE.3_THROUGH_6": "NOT_YET_EXECUTED"
   },
   "historical_demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS",
@@ -223,5 +224,18 @@
     "signatures_created": 2,
     "deadline_utc": "2026-10-29T18:05:39Z",
     "history_reset": false
+  },
+  "pending_diagnostics_candidate": {
+    "source_revision": "a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0",
+    "local_tests_passed": 89,
+    "native_tests": "NOT_RUN",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
+  },
+  "current_trial_reported_usage_partial": {
+    "completed_requests": 13,
+    "pending_requests": 0,
+    "reported_total_tokens": 222706,
+    "scope": "Cumulative provider reports for this262k run at observation timestamp; pending usage and historical aggregate remain UNKNOWN"
   }
 }
