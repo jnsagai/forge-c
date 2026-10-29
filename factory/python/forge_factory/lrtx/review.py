@@ -97,7 +97,7 @@ def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], mo
     return S.packet(phase=phase, task=f"inspect:{item['id']}", role=f"swe{phase[-1]}-inspector", instructions=instr,
                     sources=srcs, criteria=[f"{item['id']}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=VERDICT_SCHEMA, model=model, findings=findings, previous=previous,
-                    output_reserve=2048)
+                    output_reserve=2048, assessment_workspace=Path(ws))
 
 
 PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)

@@ -95,6 +95,7 @@ def packet(
     with_skill: bool = True,
     sampling: dict | None = None,
     with_lessons: bool = True,
+    assessment_workspace: Path | None = None,
 ) -> dict:
     original_sources, original_instructions, original_schema = list(sources), instructions, output_schema
     ws = RECOVERY_WORKSPACE.get()
@@ -165,6 +166,14 @@ def packet(
         p["lessons_offered"] = [x["lesson_id"] for x in exposed]
     if sampling:  # F011-T048: part of the input hash, so a checkpoint never crosses sampling settings
         p["sampling"] = {k: sampling[k] for k in ("temperature", "top_p", "seed") if sampling.get(k) is not None}
+    scope_ws = assessment_workspace or ws
+    if scope_ws is not None:
+        from ..release import qm
+
+        record = qm.workspace_record(scope_ws)
+        if record:
+            p["assessment_scope"] = {"purpose": qm.PURPOSE, "binding_sha256": hashlib.sha256(canonical_json(record)).hexdigest(),
+                                     "instruction": qm.prompt_scope(record)}
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
@@ -233,8 +242,12 @@ def messages(p: dict, sk: dict | None, sources: list[dict], artifacts: list[dict
     sys_parts = []
     if sk:
         sys_parts.append(f"ROLE SKILL ({sk['path']}, sha256 {sk['sha256'][:12]}):\n{sk['text']}")
+    qm_scope = (p.get("assessment_scope") or {}).get("purpose") == "QM"
+    if qm_scope:
+        sys_parts.append(p["assessment_scope"]["instruction"])
     sys_parts.append(
-        "You work on ONE small task of a safety-oriented ASPICE work order. Answer with ONE JSON document "
+        ("You work on ONE small task of a QM ASPICE engineering work order. " if qm_scope else
+         "You work on ONE small task of a safety-oriented ASPICE work order. ") + "Answer with ONE JSON document "
         "that matches the OUTPUT SCHEMA exactly - no prose, no markdown fences. Use only facts from the "
         "SOURCES; when something cannot be decided from them, say so in the fields provided for open points "
         "instead of inventing it."

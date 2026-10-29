@@ -110,7 +110,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
           delivery_style: str | None = None, structured: dict | None = None,
           recovery_plan: dict | None = None, operation_scope: dict | None = None,
-          execution_policy: dict | None = None) -> tuple[str, dict]:
+          execution_policy: dict | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -127,7 +127,9 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     from ..peripheral import load as load_profile
 
     prompts.PERIPHERAL["profile"] = scoped(load_profile(peripheral), operation_scope) if peripheral else None
-    dot, nodes = _build(work_order, phases, goal, sections)
+    if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
+        raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
     if recovery_plan is not None:
         import re
 
@@ -174,6 +176,17 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                     f'  {node} [shape=parallelogram, label="Provisional unchanged unit recheck", '
                     f'max_visits={visits}, timeout="1000s", script="{_q(cmd)}"]\n'
                     f'  {node} -> {edge.group(1)}\n') + dot[edge.end():]
+    if assessment_manifest and assessment_manifest.get("purpose") == "QM":
+        import re
+
+        from ..acp import statements
+        from ..release import qm
+
+        note = _q(qm.prompt_scope(qm.selected(assessment_manifest)))
+        edits = [(start, end, re.sub(r'(\bprompt=")', lambda m: m.group(1) + note + " ", dot[start:end], count=1))
+                 for start, end, _index, name, attrs in statements(dot) if name in nodes and 'prompt="' in attrs]
+        for start, end, text in reversed(edits):
+            dot = dot[:start] + text + dot[end:]
     return dot, nodes
 
 
@@ -291,7 +304,7 @@ def structured_authors(dot: str, structured: dict) -> str:
 
 
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
-           sections: dict[str, str] | None = None) -> tuple[str, dict]:
+           sections: dict[str, str] | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
     from . import prompts
 
     prompts.SECTIONS.clear()
@@ -314,10 +327,18 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                               f"swe{n}_route")
         nodes[a] = {"role": f"swe{n}-author", "phase": phase}
         nodes[ins] = {"role": f"swe{n}-inspector", "phase": phase}
+        resolved = None
+        if assessment_manifest and assessment_manifest.get("purpose") == "QM":
+            from ..inspection.assessment_context import checklist
+            from ..inspection.engine import load_checklist
+
+            resolved = checklist(assessment_manifest, load_checklist(phase, brownfield=bool(prompts.BROWNFIELD["mode"])))
+        inspection = prompts.inspector_prompt(phase, resolved) if resolved else inspector_prompt(n)
         L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
               f'  {ag} [shape=parallelogram, label="{phase} freeze gate", stdin_source="context.response.{a}", '
               f'script="{_q(gate_cmd(phase, "author"))}"]',
-              f'  {ins} [label="{phase} inspector", max_visits={MAX_VISITS}, timeout="900s", prompt="{_q(inspector_prompt(n))}"]',
+              f'  {ins} [label="{phase} inspector", max_visits={MAX_VISITS}, timeout="900s", '
+              f'prompt="{_q(inspection)}"]',
               f'  {ig} [shape=parallelogram, label="{phase} inspection gate", stdin_source="context.response.{ins}", '
               f'script="{_q(gate_cmd(phase, "inspect"))}"]',
               f'  {rt} [shape=parallelogram, label="{phase} bounded rework router", '

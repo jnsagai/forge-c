@@ -864,9 +864,9 @@ def author_prompt(phase: str) -> str:
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
-def inspector_prompt(phase: str) -> str:
+def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     n = phase[-1]
-    checks = load_checklist(phase, brownfield=bool(BROWNFIELD["mode"]))["checks"]  # OD-2026-10-20-02
+    checks = (checklist or load_checklist(phase, brownfield=bool(BROWNFIELD["mode"])))["checks"]  # OD-2026-10-20-02
     items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in checks)
     example = "; ".join(f"{c['id']}=PASS" for c in checks[:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",

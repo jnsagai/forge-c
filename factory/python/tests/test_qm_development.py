@@ -8,6 +8,8 @@ import yaml
 from forge_factory import development_execution as D
 from forge_factory import provided_requirements as P
 from forge_factory import workorder as W
+from forge_factory.acp import statements
+from forge_factory.afo.durable import digest
 from forge_factory.assurance import package, scope
 from forge_factory.brownfield import resume
 from forge_factory.brownfield.inject import inject
@@ -16,6 +18,7 @@ from forge_factory.inspection import gate
 from forge_factory.inspection.engine import Store, load_checklist
 from forge_factory.lrtx import profile, review, swe1
 from forge_factory.release import finalize, qm
+from forge_factory.workflow.builder import build
 from incremental_idr_anchor import Anchor
 from test_simulation_performance import TEST
 
@@ -136,6 +139,33 @@ def test_qm_profile_keeps_exact_inference_settings_and_explicit_lane():
             qm.validate_profile(purpose, prof)
     assert D.binding(D.HIGH, "QM")["purpose"] == "QM"
     assert "purpose" not in D.binding(D.HIGH, "ASPICE_ONLY")
+
+
+def test_native_and_structured_inspectors_receive_the_same_frozen_qm_criteria(prepared, monkeypatch):
+    ws, man = prepared
+    Anchor(ws, monkeypatch)
+    assert P.materialize(ws)["status"] == "PASS"
+    st = Store(ws)
+    st.freeze("SWE.1", "swe1-author")
+    baseline, sources = review.evidence(ws, "SWE.1")
+    criterion = next(c for c in st.checklist("SWE.1")["checks"] if c["id"] == "SWE1-03")
+    packet = review.item_packet(ws, "SWE.1", criterion, baseline, sources, "qwen3.8:27b-q8_0")
+    assert packet["criteria"] == ["SWE1-03: " + criterion["criterion"]]
+    assert packet["assessment_scope"]["binding_sha256"] == digest(qm.workspace_record(ws))
+    assert packet["assessment_scope"]["instruction"] in packet["_messages"][0]["content"]
+    assert "safety-oriented ASPICE work order" not in packet["_messages"][0]["content"]
+    graph, nodes = build(man["work_order"], layer="LL", brownfield="FROZEN", peripheral="crc",
+                         operation_scope=man["operation_scope"], execution_policy=man["development_execution"],
+                         assessment_manifest=man)
+    bodies = {name: graph[start:end] for start, end, _i, name, attrs in statements(graph) if 'prompt="' in attrs}
+    for n in (2, 6):
+        for check in st.checklist(f"SWE.{n}")["checks"]:
+            assert (check["id"] + ": " + check["criterion"][:70]) in bodies[f"swe{n}_inspector"]
+    for name in bodies:
+        if name in nodes:
+            assert qm.PROMPT_SCOPE in bodies[name]
+    with pytest.raises(ValueError, match="QM_ASSESSMENT_MANIFEST_REQUIRED"):
+        build(man["work_order"], execution_policy=man["development_execution"])
 
 
 @pytest.fixture(scope="module")

@@ -18,6 +18,16 @@ TAILORED = {"SWE1-01", "SWE1-03", "SWE2-04", "SWE6-03", "SWE6-06"}
 STATEMENT = ("OUT_OF_SCOPE: QM development selected by the owner. No software safety requirements, "
              "allocated safety safe state or safety assurance are required. Functional requirements, "
              "startup/error behavior, resource constraints, traceability and verification remain required.")
+PROMPT_SCOPE = ("This is an owner-selected QM work order. Use the frozen resolved checklist in "
+                ".forge-run/checklists/<your phase>.json and the supplied QM criterion. Generic role-skill "
+                "references to base checklists are subject to this bound QM tailoring. Safety allocation, "
+                "allocated safety safe states and safety assurance are outside this QM lane. Functional "
+                "startup/error/caller contracts, source support, resources, trace and real verification remain required. "
+                "Do not invent absent functionality or accept a required functional defect.")
+
+
+def prompt_scope(record):
+    return PROMPT_SCOPE + " Owner policy: " + record["policy_ref"]["path"] + " sha256=" + record["policy_ref"]["sha256"] + "."
 
 
 def binding(*, repo=None):

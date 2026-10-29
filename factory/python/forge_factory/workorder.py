@@ -842,6 +842,7 @@ def run(
         peripheral=manifest.get("peripheral"),
         operation_scope=manifest.get("operation_scope"),
         execution_policy=manifest.get("development_execution"),
+        assessment_manifest=manifest,
         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
         structured=local_profile_structured(local, manifest, model),
         recovery_plan=recovery_plan,
