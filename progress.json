@@ -1,10 +1,10 @@
 {
-  "captured_utc": "2026-10-29T16:23:56.308053Z",
+  "captured_utc": "2026-10-29T16:28:58.862779Z",
   "deadline_epoch": 1793297139.0,
   "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "intent": {
-    "mode": "RUNNING",
-    "epoch": 32
+    "mode": "STOPPED",
+    "epoch": 33
   },
   "orders": [
     {
@@ -20,17 +20,17 @@
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 413,
+  "requests": 417,
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": "afo-product-b715f920180f440b708e55a0",
-      "epoch": 27
+      "holder": null,
+      "epoch": 28
     },
     {
       "resource": "generation",
-      "holder": "native-request-e05dc13667f948ce87a2f0a2c9eaa05f",
-      "epoch": 825
+      "holder": null,
+      "epoch": 834
     }
   ]
 }
