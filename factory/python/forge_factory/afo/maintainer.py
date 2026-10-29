@@ -134,7 +134,7 @@ def case_dir(pid: str) -> Path:
     return state_dir() / "afo/maintainer" / pid
 
 
-def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT) -> dict:
+def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None) -> dict:
     """Detached worktree of `base`; everything the maintainer may not change is read-only (OS); one frozen case."""
     d = case_dir(pid)
     if (d / "case.json").exists():
@@ -156,6 +156,12 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT) -> dict
     case = {"proposal_id": pid, "base": base_rev, "src": str(src), "root": str(root), "repo": str(repo),
             "incident": {k: str(v)[:400] for k, v in incident.items()}, "allow": ALLOW, "deny": DENY,
             "hardened_files": hardened, "isolation": isolation.level(), "created_utc": utc_now()}
+    if retained_rework is not None:
+        case["retained_rework"] = retained_rework
+        if len(json.dumps(case).encode()) > 65536:
+            subprocess.run(["git", "worktree", "remove", "--force", str(src)], cwd=repo, capture_output=True)
+            isolation.discard(root)
+            raise MaintainerDenied("REWORK_CASE_TOO_LARGE")
     (d / "case.json").write_text(json.dumps(case, indent=2, sort_keys=True))
     (d / "case.json").chmod(0o400)
     return case

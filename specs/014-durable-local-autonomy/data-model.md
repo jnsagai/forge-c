@@ -147,3 +147,40 @@ composite original functional review plus explicit owner QM reclassification.
 Old failed evidence remains failed. Same mission/cost history is retained;
 current admission authority for a new policy does not refill or renew it.
 Real QM M1 execution/acceptance is NOT_RUN until separately recorded.
+
+
+### Bounded retained maintenance rework — implementation continuation
+
+The existing independent verification worker can prepare a child case after a
+safe, receipt-bound candidate is independently REJECTED. Optional signed policy
+`maintenance.max_retained_reworks` is0 by default, bounded0..8. This does not
+add another scheduler, database, model authority or deployment permission.
+
+Sealed `retained-intent.json`, `independent-feedback.json`, `retained-seed.json`
+and `retained-ready.json` live beside the existing case.json. They bind the
+parent job/case/submission receipt/candidate/proposal hashes, original root
+attempt/proposal, refinement index, inherited deadline, exact Git blob bytes
+and complete bounded independent reproducer facts. The child case embeds the
+untrusted feedback and its hash; the broker's fixed task instructions and Git
+inventory remain the only trusted work directive. Oversized feedback blocks
+explicitly instead of silently omitting evidence. Rejected/quarantined mutable
+worktrees need not survive because seeding reads the immutable receipted Git
+commit. Partial seeding resumes before publication; a published reference never
+rewrites an active child's edits.
+
+The same verification_jobs result stores `maintenance_rework` as READY,
+EXHAUSTED or BLOCKED. Its result hash and complete worker state are checked
+before Conductor follows the reference. The original product attempt remains;
+child maintenance job identities use a distinct root-attempt `-mrN` suffix.
+They are ordinary admitted local-agent jobs, charged to the same order/mission
+under existing prospective job/request budgets and resource fencing. No order,
+mission or old expenditure/deadline is reset. The inherited recovery deadline
+cannot be enlarged by rework. Native parent quiescence/released resources,
+current source/policy/authority and independent worker fencing are required.
+
+Independent eligibility and optional branch/PR publication are separate results.
+An unavailable publication transport preserves ELIGIBLE_FOR_OFFLINE_REVIEW and
+records a bounded publication failure code; it does not become an engineering
+rejection or start another repair. Existing independent gates, quarantine,
+post-evaluation authorization and verification publication fencing remain.
+This implementation description is not live Qwen or end-to-end qualification.

@@ -170,6 +170,14 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     if profile_reservation is not None:
         job["profile_initial_reservation"] = profile_reservation
     doc = json.loads(case.read_text())
+    if doc.get("retained_rework"):
+        # A refinement cannot restart the original recovery wall allowance.
+        inherited = doc["retained_rework"]["deadline_epoch"]
+        if type(inherited) not in (int, float) or not 0 < inherited < float("inf"):
+            raise QueueError("MAINTENANCE_REWORK_DEADLINE_INVALID", role)
+        job["deadline_epoch"] = min(job["deadline_epoch"], inherited)
+        if time.time() >= job["deadline_epoch"]:
+            raise QueueError("RECOVERY_WALL_BUDGET_EXHAUSTED", order["order_id"])
     if qualification_manifest is not None and not doc.get("packet_ref"):
         from .durable import Refused
 
@@ -737,13 +745,19 @@ def sweep_maintenance(store, eff) -> list[dict]:
         if not case.is_file() or not authorized(order, eff):
             continue
         try:
-            job = prepare(
-                store, order, atts[-1]["attempt_id"], "afo-factory-maintainer", case, runtime.workspace_of(atts[-1]), eff
-            )
-            job = poll(store, order, job, eff)
-            if job["state"] == "SUCCEEDED" and (case.parent / "submission.json").is_file():
-                launch_review(store, job)
-            out.append({"job_id": job["job_id"], "state": job["state"]})
+            from .maintenance_rework import MAX_REWORKS, next_binding
+
+            attempt = atts[-1]["attempt_id"]
+            for _ in range(MAX_REWORKS + 1):
+                job = prepare(store, order, attempt, "afo-factory-maintainer", case, runtime.workspace_of(atts[-1]), eff)
+                job = poll(store, order, job, eff)
+                if job["state"] == "SUCCEEDED" and (case.parent / "submission.json").is_file():
+                    launch_review(store, job)
+                out.append({"job_id": job["job_id"], "state": job["state"]})
+                following = next_binding(store, job, eff)
+                if following is None:
+                    break
+                case, attempt = following
         except (OSError, ValueError, QueueError) as exc:
             out.append({"order_id": order["order_id"], "state": "BLOCKED", "reason": type(exc).__name__})
     return out
@@ -786,6 +800,21 @@ def _review_projection(store, proposal_id: str, record: dict) -> dict:
     if current is None or current["record"] != record:
         raise RuntimeError("MAINTAINER_REVIEW_RECORD_MISMATCH")
     return {**record, "status": current["status"]}
+
+
+def _review_failure_code(exc):
+    code = getattr(exc, "code", type(exc).__name__)
+    return code if isinstance(code, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,160}", code) else "MAINTENANCE_REVIEW_FAILED"
+
+
+def review_followup(store, job, eff, *, verification_fence):
+    """Preparation failure never replaces the already recorded independent review disposition."""
+    from .maintenance_rework import prepare_next
+
+    try:
+        return prepare_next(store, job, eff, verification_fence=verification_fence)
+    except Exception as exc:  # noqa: BLE001 - a failed child preparation cannot grant dispatch or hide the review
+        return {"state": "BLOCKED", "reason": _review_failure_code(exc)}
 
 
 def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
@@ -837,7 +866,13 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
         ):
             if not verification_fence():
                 raise RuntimeError("VERIFICATION_PUBLICATION_FENCED")
-            result = _review_projection(store, case["proposal_id"], maintainer.publish(store, case["proposal_id"], latest))
+            try:
+                published = maintainer.publish(store, case["proposal_id"], latest)
+            except (maintainer.MaintainerDenied, OSError, subprocess.SubprocessError) as exc:
+                # Network/broker failure is not an independent engineering rejection.
+                result["publication"] = {"status": "BLOCKED", "code": _review_failure_code(exc)}
+            else:
+                result = _review_projection(store, case["proposal_id"], published)
         return result
     finally:
         signal.alarm(0)
@@ -882,16 +917,28 @@ def main(argv=None) -> int:
         with store.tx() as c:
             job = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (args.job,)).fetchone()[0])
         try:
+            followup = None
             with queue.keepalive(args.job, args.epoch):
                 result = review(store, job, load(), verification_fence=lambda: queue.current(args.job, args.epoch))
-            job["review_state"] = result["status"]
+                job["review_state"] = result["status"]
+                if result.get("publication"):
+                    job["review_publication"] = result["publication"]
+                if result["status"] == "REJECTED":
+                    followup = review_followup(
+                        store, job, load(), verification_fence=lambda: queue.current(args.job, args.epoch)
+                    )
         except Exception as exc:  # noqa: BLE001 - preserve failures, never turn an evaluator failure into eligibility
             job["review_state"], job["review_error"] = "BLOCKED", type(exc).__name__
-        queue.finish(args.job, args.epoch, {"status": job["review_state"], "error": job.get("review_error")})
+        finished = {"status": job["review_state"], "error": job.get("review_error")}
+        if followup is not None:
+            finished["maintenance_rework"] = followup
+        if job.get("review_publication"):
+            finished["publication"] = job["review_publication"]
+        queue.finish(args.job, args.epoch, finished)
         # Do not overwrite concurrent native/cancellation observations with the worker's stale job snapshot.
         with store.tx() as c:
             current = json.loads(c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (args.job,)).fetchone()[0])
-        current.update({k: job[k] for k in ("review_state", "review_error") if k in job})
+        current.update({k: job[k] for k in ("review_state", "review_error", "review_publication") if k in job})
         save(store, current)
         return 0 if job["review_state"] == "PUBLISHED" else 2
     from ..contracts.agent_output import parse

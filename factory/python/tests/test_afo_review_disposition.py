@@ -69,3 +69,15 @@ def test_changed_owner_policy_prevents_publication_but_preserves_eligible_record
     result = L.review(store, job, eff)
     assert result['status'] == 'ELIGIBLE_FOR_OFFLINE_REVIEW'
     assert not M._git('branch', '--list', 'afo/proposal/*', cwd=factory).strip()
+
+
+@pytest.mark.parametrize('failure', [M.MaintainerDenied('PUSH_FAILED', 'private transport detail'), OSError('private path')])
+def test_publication_failure_preserves_independent_eligibility_without_leaking_details(factory, monkeypatch, failure):
+    store, case, sub, eff, job = setup_review(factory, monkeypatch)
+    monkeypatch.setattr(M, 'publish', lambda *a: (_ for _ in ()).throw(failure))
+    result = L.review(store, job, eff)
+    assert result['status'] == 'ELIGIBLE_FOR_OFFLINE_REVIEW'
+    assert result['publication'] == {'status': 'BLOCKED', 'code': getattr(failure, 'code', type(failure).__name__)}
+    assert store.proposal(case['proposal_id'])['status'] == 'ELIGIBLE_FOR_OFFLINE_REVIEW'
+    assert 'private' not in str(result['publication'])
+    assert result['auto_deployment_allowed'] is False

@@ -81,3 +81,15 @@ receipts; MissionLedger validates a bounded8-record linked chain. Original
 allowances/accounting remain intact. This additional runtime interface does not
 change the six versioned qualification schemas or their structural fixtures.
 No amendment or grant is created by specification validation.
+
+
+## Optional bounded maintenance feedback
+
+The existing AFO policy schema accepts optional
+`maintenance.max_retained_reworks` (integer0..8, default0). Existing signed
+policies and their meaning remain unchanged when the key is absent. The case,
+sealed receipt/reference and verification-job result extensions are administrative
+bindings produced by the existing broker/worker, not semantic model fields or
+new capability/deployment grants. See afo.maintenance_rework and the retained
+maintenance section of data-model.md. All six qualification schemas and their
+structural fixtures remain distinct from native runtime qualification.

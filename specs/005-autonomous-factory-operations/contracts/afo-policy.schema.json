@@ -286,6 +286,13 @@
         },
         "protect_holdouts": {
           "const": true
+        },
+        "max_retained_reworks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 0,
+          "description": "Optional bounded same-order reworks after an independent safe-candidate rejection; default0 preserves legacy behavior."
         }
       }
     },
