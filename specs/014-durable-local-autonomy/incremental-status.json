@@ -25,7 +25,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "b1536d78bbfa23677c562a2e2e82aef4d27f423a",
+  "latest_source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
   "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -340,5 +340,26 @@
     "native_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
     "deployed": false,
     "evidence": "evidence/014-durable-local-autonomy/swe6-performance-contract-20261029/README.md"
+  },
+  "structured_swe6_measurement_followup": {
+    "revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+    "local_tests": {
+      "passed": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 197.299
+    },
+    "baseline_counterexamples": {
+      "tests": 3,
+      "failed": 3,
+      "runtime_revision": "91ce79069b04f8ddd808bf1591cce3366191955f",
+      "new_test_cases": true
+    },
+    "model_requests": 0,
+    "native_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
+    "native_preparation": "LOCAL_ONLY_NOT_UPLOADED; GUARDED_V3; NEW_RUNNING_EPOCH_REQUIRED",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md"
   }
 }

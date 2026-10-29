@@ -7,6 +7,30 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Structured SWE.6 measurement routing; local41PASS — 2026-10-29 16:48UTC
+
+Exact candidate **3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6**, undeployed,
+fixes a separate structured-path crash: SWE.1 emits task=budgets for CPU/time,
+but SWE.6 assumed every non-byte-budget task contained a colon. Three old-runtime
+counterexamples reproduce IndexError. The planner now routes only exact generated,
+owner-bound simulation allocations through the existing instrumented test/keyword.
+Changed or unbound timing statements retain all normal engineering obligations;
+no requirement disappears because of a key name or timing phrase.
+
+Exact local **41PASS,0failures/errors/skips,197.299s** includes real Robot/compiler/
+Renode, complete IDR scripted-artifact fixture, full inherited IWDG structured
+verification/unchanged gate, source-binding negatives and MCP root regressions.
+This is not a new Qwen run or M1 acceptance; the earlier native run failed on a
+different contract-visibility problem addressed byb1536d7.
+
+A combined exact-source bundle and bounded bootstrap-v3 are prepared **locally
+only, NOT_UPLOADED/NOT_RUN**. It requires explicitly supplied RUNNING epoch and
+quiescent resources, continuously fences changes, and runs zero-model tests and
+the two actual failed diagram cases in private PID namespaces. Namespace support
+and real execution are native prerequisites, not proven by local CLI/AST checks.
+**STOPPED epoch33 remains authoritative; no automatic18:00 resume or activation.**
+[Commands, XML, counterexamples and executable native preparation](../../evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md).
+
 ## SWE.6 performance contract fix; local37PASS — 2026-10-29 16:37UTC
 
 Candidate **b1536d78bbfa23677c562a2e2e82aef4d27f423a**, **not deployed**,
