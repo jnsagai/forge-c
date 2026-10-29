@@ -1,0 +1,15 @@
+{
+  "status": "INITIAL_STAGING_REFUSED_STALE_DRAFT_HASH; NO_QUALIFICATION_EXECUTED",
+  "frozen_baseline": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+  "draft_hashes": [
+    "d3113e49be3f26fa218d0b19990b7290592e0639a590116ac9f79c86ed7a694d",
+    "37fbdef1cca8ef462af59d98e09a4a46974654d8c2643daaa77ecad8e6d52a12"
+  ],
+  "actual_frozen_hashes": [
+    "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+    "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599"
+  ],
+  "corrected_stage_sha256": "9662dc86e2fc758603f3600c33611c87f979108210a2ebd845eaa2a85f4b679e",
+  "model_requests": 0,
+  "production_changed": false
+}

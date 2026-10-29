@@ -7,6 +7,16 @@ Candidate **9f9a93f174f46aa0add59c16a423be7d56988614** fixes the diagnosed root
 propagation defect and includes the previously local-qualified admission diagnostics;
 it is **not deployed**. No current service, grant or run was restarted/replaced.
 
+## Later complete SWE.4 phase and simulation result — 15:47UTC
+
+Actual SWE.4 inspection/current frozen baseline/deterministic gate PASS;17private
+local files hash/size verified. Renode subsequently reports27checks passed/0failed
+across two images on its behavioural CRC model after a performance-test build failure.
+SWE.5 author is active; phase inspection/full product pending. See
+[swe4-frozen evidence](swe4-frozen/README.md). The environment-fix native qualification
+is [staged but NOT_RUN](native-prepared/README.md); only bootstrap-v2.py is current.
+Current mission remains uninterrupted and original failures are preserved.
+
 ## Later SWE.4 host-unit result — 15:19UTC
 
 Actual host-unit results FAIL twice for duplicate test IDs, then PASS at15:18:27UTC,

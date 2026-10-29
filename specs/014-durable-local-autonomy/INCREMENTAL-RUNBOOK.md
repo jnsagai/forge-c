@@ -5,6 +5,28 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
+## Actual SWE.4 PASS; Renode checks pass — 2026-10-29 15:47UTC
+
+Production remains9b4c390. **INS-SWE.4-001 PASS at15:33:48UTC**, no findings;
+current frozen baseline/deterministic gate PASS. All17phase/report/test/coverage/
+inspection/tool-log files copied privately to loop10 with hashes/sizes verified.
+Upstream actual SWE.3 diagram-tool failures are unchanged.
+
+Renode v1.17.0 first recorded a performance-test compile failure, then **27checks
+PASS/0FAIL across two images at15:46:25UTC**, Cortex-M55 behavioural CRC model;
+silicon_verified=false. This is simulation/ordinary authoring feedback, not
+physical WCET, formal M3 repair or measured learning. At15:47:32UTC actual native
+01M63ZTJ5QM1R96484Y2KN97H6 is RUNNING in **SWE.5 author**,170requests in this run.
+[Actual phase/target/transfer evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md).
+
+Candidate9f9a93f native qualification is **staged, NOT_RUN**. Exact source bundle,
+bounded guard and actual frozen failed diagram cases are on Omniverse; current
+entrypoint bootstrap-v2.py refuses unless production quiescent and RUNNING epoch32.
+No source/service/grant/order changed. Initial staging rejected obsolete draft
+hashes; v2 binds the frozen failed baseline and preserves the first refusal.
+[Exact qualification tooling, hashes and next command](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/native-prepared/README.md).
+Current Qwen mission remains exclusive. Full product/strict M1 remains unaccepted.
+
 ## Actual host-unit feedback and pass — 2026-10-29 15:19UTC
 
 The current Qwen run remains on source9b4c390. Its SWE.4 host-unit tool records two
