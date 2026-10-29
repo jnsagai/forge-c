@@ -7,6 +7,18 @@ the real incomplete previous attempt, allocation and fixture qualification, exac
 signed scope, fenced activation and the new live run. It does not establish M1,
 full-pipeline product success, learning benefit or continuous-operation qualification.
 
+## Actual SWE.2 output — later14:29UTC snapshot
+
+The new run produced workproducts/SWE.2/software_architecture.md,8882bytes,
+SHA5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e.
+Its complete private local snapshot matches the actual remote size/hash. It contains
+scoped engineering sections, not only compact agent status. At14:29:39UTC the
+native workflow had reached swe2_inspector with31provider requests; no accepted
+SWE.2 verdict yet. See swe2-live/ for metadata, actual API/ledger observation and
+request-bound audit. A187774 byte-bound reservation was admitted, above the former
+131072cap; no new CAPABILITY_LIMIT refusal was present in the14:25audit.
+Full product/strict M1 completion remains unproven.
+
 ## Actual previous outcome
 
 Source15b0fa5 order **afo-d9ddb6d7a1c4e025**, native

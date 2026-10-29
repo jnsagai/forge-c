@@ -1,5 +1,21 @@
 # Implementation and qualification status
 
+## Actual SWE.2 artifact and inspection — 2026-10-29 14:29UTC
+
+On deployed **9b4c390**, Qwen wrote **workproducts/SWE.2/software_architecture.md**
+(8882bytes, SHA5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e).
+A private copy on local loop10 matches the independently observed remote hash/size.
+It contains components, interfaces, timing/error handling, memory, concurrency,
+requirement allocation and register tables. This is substantive author output,
+**not an accepted phase**. At14:29:39UTC actual native
+**01M63ZTJ5QM1R96484Y2KN97H6 RUNNING** had reached **swe2_inspector**,31provider
+requests, leaseHELD. SWE.1 passed at14:17:44UTC; SWE.2 inspection remains pending.
+The262k run admitted a187774 byte-bound reservation (above the former131072 limit);
+no new CAPABILITY_LIMIT refusal was recorded in the14:25audit.
+[Live artifact/transfer metadata](../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-live/transfer.json).
+The complete final archive is still pending; current outputs are provisional.
+Sourcea1c6ae5 diagnostics remains undeployed/native qualification NOT_RUN.
+
 ## Context refusal diagnostics candidate — 2026-10-29
 
 Exact **a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0**, **not deployed**:
