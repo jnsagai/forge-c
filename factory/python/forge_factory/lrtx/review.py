@@ -196,8 +196,7 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
 
 def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     from ..inspection.engine import Store
-    from ..mcp.sdk import ToolContext
-    from ..mcp.servers import evidence as EV
+    from . import tools as T
 
     ws = Path(ws)
     role = f"swe{phase[-1]}-inspector"
@@ -234,10 +233,9 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         return _reply(ws, phase, "FAILED", issues, budget)
     if st.latest_baseline(phase)["baseline_hash"] != bl["baseline_hash"]:
         return _reply(ws, phase, "FAILED", ["BASELINE_CHANGED_DURING_INSPECTION"], budget)
-    ctx = ToolContext(server="forge-evidence-mcp", op="check_inspection", role=role, phase=phase, workspace=ws,
-                      run_id=json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"])
     try:
-        res = EV.check_inspection(ctx, EV.InspectIn(phase=phase, baseline_id=bl["baseline_id"], verdicts=verdicts))
+        res = T.call(ws, "forge-evidence-mcp", "check_inspection",
+                     {"phase": phase, "baseline_id": bl["baseline_id"], "verdicts": verdicts}, role, phase)
     except ValueError as exc:  # pydantic ValidationError: a contract mismatch is a factory finding, not a crash
         return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
                       budget)

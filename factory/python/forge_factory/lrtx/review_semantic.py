@@ -1122,8 +1122,7 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
 
 def _visit(ws: Path, model: str, budget: dict) -> dict:
     from ..inspection.engine import Store
-    from ..mcp.sdk import ToolContext
-    from ..mcp.servers import evidence as EV
+    from . import tools as T
 
     st = Store(ws)
     try:
@@ -1277,10 +1276,10 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
         return R._reply(ws, "SWE.1", "FAILED", issues, budget)
     if st.latest_baseline("SWE.1")["baseline_hash"] != bl["baseline_hash"]:
         return R._reply(ws, "SWE.1", "FAILED", ["BASELINE_CHANGED_DURING_INSPECTION"], budget)
-    ctx = ToolContext(server="forge-evidence-mcp", op="check_inspection", role="swe1-inspector", phase="SWE.1",
-                      workspace=ws, run_id=json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"])
     try:
-        res = EV.check_inspection(ctx, EV.InspectIn(phase="SWE.1", baseline_id=bl["baseline_id"], verdicts=verdicts))
+        res = T.call(ws, "forge-evidence-mcp", "check_inspection",
+                     {"phase": "SWE.1", "baseline_id": bl["baseline_id"], "verdicts": verdicts},
+                     "swe1-inspector", "SWE.1")
     except ValueError as exc:
         return R._reply(ws, "SWE.1", "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
                         budget)
