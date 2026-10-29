@@ -1,8 +1,9 @@
 # Implementation and qualification status
 
-Updated2026-10-29. Local candidate **aac50fcb3b415e7ac35fa6525f885d986ab4ca71**
-passed178 checks,0failures/errors/skips; no model calls. Last confirmed deployed
-runtime was **e098b515a421900131b05a6763029d20b3a8b09d**. Omniverse2 is now
+Updated2026-10-29. Latest local candidate **c8daeb18d3b6afba51219d23562448ef17a56855**
+passed109 checks,1explicit live-Fabro skip,0failures/errors; no model calls.
+Earlier aac50fc passed178 in a separate overlapping cohort. Last confirmed
+deployed runtime was e098b515a421900131b05a6763029d20b3a8b09d. Omniverse2 is now
 owner-confirmed offline; no current service-availability claim. Former live grants
 expired at2026-10-29T05:00:00Z and were not renewed. The candidate is undeployed.
 Historical revisions remain separate; documentation commits do not qualify
@@ -1210,3 +1211,19 @@ Formal30/58 and incremental completion IDs remain unchanged. IE-T004 stays
 partial, IE-T008 blocked/unaccepted, IE-T009 unrun. Learning benefit and
 24/72/168-hour availability remain unqualified. Earlier dated checkpoints retain
 their historical missing-review/authority findings; current review is recorded.
+
+
+### Structured tool and inspection accounting — 2026-10-29
+
+c8daeb1 closes the direct structured-handler and standard/semantic inspection
+bypass of cumulative mission tool accounting. The same existing per-phase
+verification guard now covers structured calls. Recorded refusal is BLOCKED,
+never verification PASS; denied inspection creates no receipt. Concurrent
+native/structured calls share the cap, failed/crashed calls retain their debit,
+and an unresolved native lease stays held after task terminality.
+
+[Exact source, commands,109PASS/1liveSKIP XML, substitutions and historical uncertainty](../../evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md).
+No ledger backfill or budget reset occurred. Historical direct-tool counts may
+be incomplete and must be audited on host recovery. This is local tooling
+evidence, not native Qwen/product/learning/operational qualification. IE-T004
+remains partial and formal task counts are unchanged.

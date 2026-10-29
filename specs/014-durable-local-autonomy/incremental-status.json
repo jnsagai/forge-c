@@ -24,7 +24,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "aac50fcb3b415e7ac35fa6525f885d986ab4ca71",
+  "latest_source_revision": "c8daeb18d3b6afba51219d23562448ef17a56855",
   "production_revision": "e098b515a421900131b05a6763029d20b3a8b09d",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -50,14 +50,15 @@
   "later_phases": "NOT_RUN",
   "reported_output_tokens_completed_requests": 17340,
   "undeployed_candidate": {
-    "revision": "aac50fcb3b415e7ac35fa6525f885d986ab4ca71",
+    "revision": "c8daeb18d3b6afba51219d23562448ef17a56855",
     "model_requests": 0,
-    "purpose": "Bound inspector scope; simulation performance proof; explicit time-only continuation",
+    "purpose": "Reviewed simulation input; inspector scope; explicit time-only continuation; shared tool accounting",
     "qualification": "LOCAL_DETERMINISTIC_ONLY; NATIVE_AND_QWEN_NOT_RUN",
     "local_tests": {
-      "passed": 178,
-      "skipped": 0,
-      "model_requests": 0
+      "passed": 109,
+      "skipped": 1,
+      "model_requests": 0,
+      "scope": "tool_accounting_and_relevant_inherited_regressions"
     }
   },
   "host_availability": "OFFLINE_OWNER_CONFIRMED_2026-10-29",
@@ -72,5 +73,7 @@
     "microseconds_per_call": 100,
     "performance_mips": 100,
     "hardware_wcet": "NOT_MEASURED"
-  }
+  },
+  "tool_accounting_evidence": "evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md",
+  "historical_tool_accounting": "MAY_OMIT_DIRECT_STRUCTURED_CALLS; NOT_BACKFILLED"
 }

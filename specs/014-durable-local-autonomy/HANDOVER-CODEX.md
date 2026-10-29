@@ -7,6 +7,26 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Shared tool-accounting follow-up — 2026-10-29
+
+Candidate **c8daeb1** closes direct structured-tool/inspection accounting bypasses.
+Native hooks and structured calls share the existing MissionLedger debit before
+handler execution. Structured verification also uses the same failed-check guard
+as native MCP. Both standard and semantic inspection now enter that common path.
+Denied calls journal BLOCKED and create no inspection receipt; crash/failed work
+retains its charge. No inference lease is released by tool-budget exhaustion.
+
+Exact clean local qualification:109PASS,1explicit live-Fabro SKIP,0failures/errors,
+0model calls. No new task checkbox is ticked. IE-T004 remains partial; this does
+not qualify a positive independent continuation. See
+[accounting evidence](../../evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md).
+
+Historical counts can omit old direct structured calls. Do not invent or refund
+them; audit actual receipts/journals and the ledger after host recovery before
+any explicit deduplicated reconciliation. Omniverse2 remains owner-confirmed
+offline, grants expired, candidate undeployed. No native/Qwen qualification,
+product acceptance, learning benefit or availability claim.
+
 ## Local follow-up — 2026-10-29
 
 Owner confirms Omniverse2 is **offline**. Prior live authority expired at

@@ -7,7 +7,7 @@ new local files. Preserve the cloud benchmark terminal and its resources.
 
 ## Current source and review boundary — 2026-10-29
 
-Candidateaac50fc is local and undeployed. Last confirmed runtime is e098b51.
+Candidatec8daeb1 is local and undeployed. Last confirmed runtime is e098b51.
 Omniverse2 is offline by owner confirmation. All actual Qwen execution belongs
 there. All former M1/role-trial grants expired29October05:00UTC. Do not infer
 authority from the owner's requirements approval.
@@ -180,3 +180,19 @@ receipt without restoring execution authority. No order is submitted or resumed.
 
 Host recovery, current grants, native role qualification and real M1 execution
 are NOT_RUN here. This runbook creates no authority or claim of completion.
+
+
+## Tool-accounting reconciliation before live continuation
+
+Current source charges structured tool calls and standard/semantic inspection
+receipts to the same mission cap as native hooks, before handler execution.
+It also applies the existing development failed-verification guard. Denial is a
+recorded BLOCKED result; no tool or inspection PASS is synthesized.
+
+Historical direct structured calls may have been omitted from that count.
+After host recovery, retain original journals/inspection receipts and inspect
+the actual ledger. Establish unique operations and provable accounting identity
+before any explicit deduplicated backfill; retain UNKNOWN where linkage is
+missing. Do not silently reset expenditure or pretend the source fix reconstructed
+history. The current M1 token charge remains100m conservative with UNKNOWN
+aggregate actual usage. No historical ledger was changed in this local work.

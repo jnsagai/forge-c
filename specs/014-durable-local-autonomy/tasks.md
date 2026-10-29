@@ -173,3 +173,10 @@ general diagnosis qualification remains M3 and the frozen inspector remains unch
 No task is complete solely from implementation or a passing unrelated unit fixture.
 
 Incremental completion evidence (2026-10-28): [exact revisions, commands, XML and limitations](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md). IE-T004 remains partial pending a positive dependency-independent provisional path; IE-T007 now has captured complete native initial/SKILL requests, structured SWE.1 inspection packets, all-role admission and current signed source/profile/model authority in the M1 high-allowance evidence. Later tool histories remain subject to live admission. No M1 or formal DA task completion is inferred.
+
+
+2026-10-29 bounds follow-up: c8daeb1 closes shared tool-accounting and verification
+guard bypasses for structured runners and both inspector paths. See
+[109PASS/1liveSKIP local evidence](../../evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md).
+This supports DA-T011 and the bounds part of IE-T004; it does not qualify a
+positive dependency-independent continuation or tick any new task.
