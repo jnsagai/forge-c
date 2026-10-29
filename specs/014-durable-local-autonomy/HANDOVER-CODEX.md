@@ -7,6 +7,35 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Exact candidate native CPU qualification — 2026-10-29 17:19UTC
+
+**3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6** now has **130distinct checks
+PASS on each host**, zero failures/errors/skips in the final41+89cohorts; matching
+case IDs verified. Local41=197.299s/89=19.191s; Omniverse41=208.095s/89=276.914s.
+Both actual frozen Qwen unit diagrams also pass the real PlantUML SVG invocation
+through candidate-generated MCP context/JAR. This does not rewrite old inspections.
+
+The first native core cohort was88PASS/1FAIL: its real Conductor correctly refused
+an uninitialized qualification-only data root. V6 uses existing host.init on the
+actual mounted volume and verifies UUID/root/fsync preflight before execution.
+Storage guards were never disabled and the original failure is preserved.
+
+These are independent **CPU-only, zero-Qwen** checks in private PID/network
+namespaces,8CPU affinity/nice10, finite bounds. Stable **STOPPED epoch33** and
+provider quiescence are required/monitored. RUNNING intent was unnecessarily
+restrictive for independent CPU verification; no resume was needed or performed.
+V4/V6 are actual executed tooling; earlier V3 remains historical unrun preparation.
+Active production remains clean9b4c390, provider quiet, no outstanding requests,
+original execution QUIESCENT/lease RELEASED. Mission unchanged4attempts/345requests/
+596tools/400m conservative charge/UNKNOWN usage; existing18:05:39UTC expiry unchanged.
+
+**Do not restart Qwen automatically at18:00.** New explicit owner resume is needed
+before model/resource preflight, exact-source role/scope admission and a same-mission
+continuation. Preserve failed records/costs and validate any brownfield reuse.
+The current demo has no SWE.6 report/inspection or completed release package;
+strict M1/IE-T008 remains unaccepted. Formal30/58, IE-T001–007 unchanged, M2–M5unrun.
+[Exact commands/XML/provenance, preserved failure, guard code and source note](../../evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md).
+
 ## Structured SWE.6 measurement routing; local41PASS — 2026-10-29 16:48UTC
 
 Exact candidate **3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6**, undeployed,

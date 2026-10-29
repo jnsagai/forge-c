@@ -139,7 +139,7 @@
   "last_execution_liveness": "QUIESCENT",
   "last_inference_lease": "RELEASED",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T16:27:48.498573Z",
+  "source_status_captured_utc": "2026-10-29T17:24:31.282871Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -357,9 +357,37 @@
       "new_test_cases": true
     },
     "model_requests": 0,
-    "native_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
-    "native_preparation": "LOCAL_ONLY_NOT_UPLOADED; GUARDED_V3; NEW_RUNNING_EPOCH_REQUIRED",
+    "native_qualification": "PASS_EXACT_3015E47; 41_PLUS_89_DISTINCT_CPU_TESTS_AND_TWO_REAL_DIAGRAM_CASES",
+    "native_preparation": "V4_AND_V6_EXECUTED_UNDER_STOPPED_33; EARLIER_V3_UNRUN",
     "deployed": false,
-    "evidence": "evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md"
-  }
+    "evidence": "evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md",
+    "native_evidence": "evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md"
+  },
+  "native_cpu_qualification": {
+    "revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+    "local_distinct_passes": 130,
+    "native_distinct_passes": 130,
+    "cohorts": [
+      41,
+      89
+    ],
+    "final_failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "initial_native_core": {
+      "passed": 88,
+      "failed": 1,
+      "cause": "Isolated verification data root lacked volume sentinel; real Conductor refused correctly",
+      "corrected": "Existing host.init validates actual mounted volume UUID/root/fsync; production sentinel unchanged"
+    },
+    "actual_frozen_diagram_cases_passed": 2,
+    "model_requests": 0,
+    "operator_mode": "STOPPED",
+    "operator_epoch": 33,
+    "source_deployed": false,
+    "active_production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "mission_unchanged": true,
+    "evidence": "evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md"
+  },
+  "remaining_live_blocker": "EXPLICIT_OWNER_STOP_QWEN_EPOCH33; NO_AUTOMATIC_1800_RESUME; IE_T008_REQUIRES_REAL_MODEL_DELIVERY"
 }
