@@ -716,3 +716,23 @@ and pause/drain/stop refuse before tool execution. An input change during the
 check disqualifies its provisional result. Lost-receipt recovery records observed
 outcome with continuity UNPROVEN and never reruns or accepts a phase.
 [Local/native evidence](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md). These fixtures do not qualify Qwen.
+
+### QM scope regression controls — owner decision29October
+
+Prepare actual QM work orders for CRC and the existing RCC scope. Preserve prior
+ASIL history while recording current owner QM, standard scope dispositions and
+bound policy/checklist identities. Import the unchanged functional requirements
+with their original review plus explicit QM classification; no inspection is
+invented by import. Tailor only declared criterion clauses, retaining all required
+flags, severity, functional criteria and old-purpose behavior.
+
+A real-tool six-phase fixture with named semantic/provider substitutions must
+produce a sealed QM package. A functional inspection defect or independently
+broken required trace must block it. Missing/disabled/changed QM authority,
+classification, scope record or assessment context refuses.
+
+A current new-policy admission grant may continue an existing mission with
+identical lineage, deadline, caps and historical authority reference. Test
+deduplicated hash-bound admission receipts, tampering, wrong current authority,
+revocation, expiry, exhausted allowances, attempted cap refill and renamed mission
+refusal. Original mission rows/counters/time amendments must remain unchanged.

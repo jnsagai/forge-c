@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 
-def prepare(example, state_root, work_order, model):
+def prepare(example, state_root, work_order, model, purpose="ASPICE_ONLY"):
     from forge_factory import provided_requirements as P
     from forge_factory import workorder as W
     from forge_factory.afo.durable import digest
@@ -27,7 +27,7 @@ def prepare(example, state_root, work_order, model):
     state_root.mkdir(mode=0o700)  # Never reuse an existing prepared workspace.
     for name in ("STATE", "EVENTS", "ARCHIVE"):
         os.environ["FORGE_" + name + "_DIR"] = str(state_root / name.lower())
-    ws, man = W.prepare(example, work_order, purpose="ASPICE_ONLY")
+    ws, man = W.prepare(example, work_order, purpose=purpose)
     Binding(work_order, str(ws), {"swe1_author": {"role": "swe1-author", "phase": "SWE.1"}}).dump(
         ws / ".forge-run/binding.json")
     document, _ = P.validate(ws)
@@ -65,11 +65,12 @@ def main():
     parser.add_argument("--state-root", type=Path, required=True)
     parser.add_argument("--work-order", required=True)
     parser.add_argument("--model", default="local-rtx-v2-omniverse2-q38-aspice-mtp")
+    parser.add_argument("--purpose", choices=("ASPICE_ONLY", "QM"), default="ASPICE_ONLY")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if args.out.exists():
         parser.error("--out must be a new file")
-    result = prepare(args.example.resolve(), args.state_root.resolve(), args.work_order, args.model)
+    result = prepare(args.example.resolve(), args.state_root.resolve(), args.work_order, args.model, args.purpose)
     args.out.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({k: result[k] for k in ("source_revision", "model_requests", "import_status",
                                             "inspection_gate", "product_acceptance")}))

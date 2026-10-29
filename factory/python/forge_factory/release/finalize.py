@@ -608,7 +608,7 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
     import tempfile
 
     with tempfile.TemporaryDirectory() as dry:  # status under v0.4 rules (KPI files can only add, never remove gaps)
-        from .aspice import effective_policy
+        from .qm import effective_policy
 
         dry_status = pk.build(stage, Path(dry), run_id, effective_policy(POLICY_V04, ws, stage))["package_status"]
     kpi_snapshot_into(ws, stage, dry_status)

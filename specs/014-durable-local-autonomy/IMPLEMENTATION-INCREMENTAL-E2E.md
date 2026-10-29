@@ -282,3 +282,37 @@ This owner-authorized change preserves functional resource requirements, source
 coverage, independent checks, release gates, single inference, operator fencing,
 old mission expenditure and explicit deferred diagnosis/maintenance. It authorizes
 preparation and execution of the scoped M1 trial; it does not claim M1 acceptance.
+
+## 11. Superseding owner QM decision — 2026-10-29
+
+Owner instruction: **“Forget about safety now!!! implement as QM”**.
+For prospective development runs this supersedes section3.3's prohibition on QM
+classification and the earlier ASPICE_ONLY lane selection. Use explicit purpose
+**QM** and the owner-bound QM development policy for any declared driver.
+Preserve historical allocations, grants, failed runs, costs and packages unchanged.
+
+Keep the functional/ASPICE engineering obligations: source-supported requirements,
+startup/error behavior within the supported invocation domain, caller responsibilities,
+architecture/dependencies, code correctness, coding rules/static analysis, finite
+resource constraints, traceability, unit/integration/target-simulation/software tests,
+independent checks and complete packaging. QM does not demand safety allocations,
+allocated safety safe states, safety mechanisms, SSA/TAA or ISO safety assurance.
+
+Tailor only the safety-specific clauses of the prospective QM checklists through
+the versioned owner policy. Required flags, major/critical blocking, author/inspector
+separation and all functional checks remain. Preserve old checklist semantics and
+receipts for other purposes; a failed historical inspection cannot become PASS.
+An explicitly source-supported absence of error signaling or startup calls is a
+valid contract; missing required functional behavior remains a failure.
+
+Keep Qwen3.8 Q8 MTP3/xhigh and its measured inference/context settings unchanged.
+Use the existing same-M1 mission, normal serial AFO intake and current exact-source
+authority. A new policy's current admission grant may authorize a continuation
+without replacing the original mission grant, deadline, caps or spent counters.
+No silent time extension, allowance refill or automatic source promotion.
+
+The nine functional requirements remain unchanged. Preserve their original owner
+review, and record the new explicit QM scope decision separately as a composite
+review of unchanged functional content plus owner reclassification. Do not claim
+a second full functional review. Current M1 still requires real six-phase execution
+and independently recomputable READY_FOR_OFFLINE_REVIEW; M2–M5 remain subsequent.

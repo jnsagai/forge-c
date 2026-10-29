@@ -159,3 +159,21 @@ IE-T004 is complete for that declared recipe; unknown dependencies still block.
 Production stays e098b51. Verified historical inspection debits now total66;
 original100m charge, uncertainty and expired deadline remain. Prepare a current
 source-bound same-M1 window and reviewed9-requirement input before live continuation.
+
+### Owner-selected QM development — 2026-10-29
+
+The owner explicitly supersedes the earlier ASPICE_ONLY classification with
+purpose QM. The generic owner-bound policy creates a current QM scope through
+the existing assurance contract while retaining any old allocation as history.
+Its resolved checklist changes only the safety-specific clauses in SWE1-01/03,
+SWE2-04 and SWE6-03/06; every check remains required with the same severity.
+All other criteria, executable checks, resource/trace/release gates and
+author/inspector boundaries remain. Scope/checklist/policy hashes enter existing
+manifests, frozen inspection identities and prospective resume contracts.
+Legacy purposes keep their original checklist and release semantics.
+
+The fresh0014ffixture contains the unchanged nine functional requirements with
+composite original functional review plus explicit owner QM reclassification.
+Old failed evidence remains failed. Same mission/cost history is retained;
+current admission authority for a new policy does not refill or renew it.
+Real QM M1 execution/acceptance is NOT_RUN until separately recorded.

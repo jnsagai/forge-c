@@ -185,6 +185,12 @@ def workspace_scope_findings(ws, phase: str) -> list[str]:
     from pathlib import Path
 
     ws = Path(ws)
+    from ..release.qm import workspace_record as qm_record
+
+    try:
+        qm_record(ws)  # Validate the explicit owner classification before ordinary QM/ASIL checks.
+    except (ValueError, OSError, KeyError):
+        return ["QM_SCOPE_BINDING_CHANGED"]
     from ..release.aspice import workspace_record
 
     try:

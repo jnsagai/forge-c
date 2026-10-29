@@ -151,7 +151,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
 
         from .. import development_execution as development
 
-        if execution_policy != development.binding(execution_policy.get("name"), "ASPICE_ONLY"):
+        if execution_policy != development.binding(execution_policy.get("name"), execution_policy.get("purpose", "ASPICE_ONLY")):
             raise ValueError("DEVELOPMENT_EXECUTION_BINDING_CHANGED")
         if execution_policy["name"] == development.HIGH:
             visits = execution_policy["max_phase_repair_passes"] + 2

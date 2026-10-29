@@ -17,7 +17,7 @@ DECISION = "specs/014-durable-local-autonomy/IMPLEMENTATION-INCREMENTAL-E2E.md"
 def binding(name, purpose):
     if name is None:
         return None
-    if name not in (NAME, HIGH) or purpose != "ASPICE_ONLY":
+    if name not in (NAME, HIGH) or purpose not in ("ASPICE_ONLY", "QM"):
         raise ValueError("DEVELOPMENT_EXECUTION_POLICY_INVALID")
     result = {"schema": "forge-c/development-execution/1", "name": name, "max_phase_repair_passes": 1,
             "decision": {"path": DECISION, "sha256": sha256_file(REPO_ROOT / DECISION)},
@@ -25,6 +25,8 @@ def binding(name, purpose):
             "product_diagnosis": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "factory_maintenance": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "advisory_relaunch": "DEFERRED_BY_DEVELOPMENT_POLICY"}
+    if purpose == "QM":
+        result["purpose"] = purpose
     if name == HIGH:
         result.update(max_phase_repair_passes=1000, max_task_calls=1001,
                       max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,

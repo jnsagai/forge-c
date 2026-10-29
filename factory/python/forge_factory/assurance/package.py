@@ -90,6 +90,9 @@ def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:
 
 
 def scope_dispositions(ws: Path, stage: Path) -> dict:
+    from ..release.qm import workspace_record as qm_record
+
+    qm = qm_record(ws)
     from ..release.aspice import workspace_record
 
     aspice = workspace_record(ws)
@@ -137,6 +140,8 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
                              "and not a safety approval.\n")
     return {"status": ev["state"], "issues": ev["issues"], "dispositions": ev["dispositions"],
             "target_asil": sc.get("target_asil"),
+            **({"classification": "QM", "owner_scope_binding": qm, "assessed_aspice_compliance": None,
+                "safety_approval": None} if qm else {}),
             **({"development_signature_deferral": development, "safety_approval": None} if development else {})}
 
 

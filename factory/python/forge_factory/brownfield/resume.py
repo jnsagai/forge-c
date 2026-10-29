@@ -81,6 +81,18 @@ def runtime_identity() -> dict:
 def contract(man: dict) -> dict:
     historical = man.get("historical_safety_scope")
     version = {}
+    if "qm_resume_contract_version" in man:
+        if (type(man["qm_resume_contract_version"]) is not int or man["qm_resume_contract_version"] != 1
+                or man.get("purpose") != "QM" or not isinstance(man.get("qm_development"), dict)
+                or "aspice_resume_contract_version" in man):
+            raise ResumeRefused("RESUME_QM_CONTRACT_VERSION_INVALID")
+        version["qm_resume_contract_version"] = 1
+        if historical is not None:
+            historical = copy.deepcopy(historical)
+            scope = historical.get("scope") if isinstance(historical, dict) else None
+            if not isinstance(scope, dict) or scope.get("work_order_id") != man.get("work_order") or not man.get("work_order"):
+                raise ResumeRefused("RESUME_HISTORICAL_SCOPE_IDENTITY_MISMATCH")
+            del scope["work_order_id"]
     if "aspice_resume_contract_version" in man:
         if type(man["aspice_resume_contract_version"]) is not int or man["aspice_resume_contract_version"] != 2 or \
                 man.get("purpose") != "ASPICE_ONLY" or not isinstance(man.get("aspice_development"), dict):
@@ -96,7 +108,7 @@ def contract(man: dict) -> dict:
             # attempt ID is excluded from compatibility; allocation/policy/input provenance stays bound.
             del scope["work_order_id"]
     return {**{k: man.get(k) for k in CONTRACT_FIELDS},
-            **{k: man[k] for k in ("aspice_development",) if k in man},
+            **{k: man[k] for k in ("aspice_development", "qm_development") if k in man},
             **({"historical_safety_scope": historical} if "historical_safety_scope" in man else {}),
             **version,
             **{k: man[k] for k in ("development_execution", "operation_scope", "provided_requirements",

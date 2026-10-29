@@ -2,7 +2,7 @@
   "schema": "forge-c/incremental-delivery-status/1",
   "handoff_revision": "5e89a2b",
   "milestones": {
-    "M1": "LIVE_CONTINUATION_RUNNING_SWE1_NOT_ACCEPTED",
+    "M1": "EXECUTED_BLOCKED_SWE1; PROSPECTIVE_QM_IMPLEMENTATION",
     "M2": "NOT_RUN",
     "M3": "NOT_RUN",
     "M4": "NOT_RUN",
@@ -22,7 +22,7 @@
   "live_authority": "CURRENT_SCOPED_OWNER_APPROVED_UNTIL_2026-10-29T18:05:39Z",
   "requirements_review": "ORIGINAL_7_AND_SIMULATION_9_REQUIREMENT_PAYLOADS_REVIEWED",
   "product_acceptance": "BLOCKED",
-  "selected_profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
+  "selected_profile": "local-rtx-v2-omniverse2-q38-qm-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
   "latest_source_revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
@@ -46,7 +46,7 @@
   "active_order_id": "afo-5ab4a2eb3e9de743",
   "active_native_run_id": "01M63JC0YCPJFPSGHW04NG2W32",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
-  "live_order_state": "RUNNING",
+  "live_order_state": "BLOCKED",
   "later_phases": "NOT_RUN",
   "reported_output_tokens_completed_requests": 17340,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
@@ -97,11 +97,14 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 2,
-    "requests": 7,
-    "tools": 66,
+    "requests": 12,
+    "tools": 68,
     "charged_tokens": 200000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T10:13:33.941004Z"
+    "captured_utc": "2026-10-29T10:24:41.414268Z"
   },
-  "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md"
+  "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
+  "prospective_purpose": "QM",
+  "prospective_qm_live_execution": "NOT_RUN",
+  "current_runtime_purpose": "ASPICE_ONLY; LAST_RUN_TERMINAL_BLOCKED"
 }

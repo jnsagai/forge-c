@@ -188,3 +188,8 @@ and84PASS on Omniverse2,0failures/errors/skips,0model requests.
 [Evidence](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).
 IE-T001–007 are complete for their scoped implementation/harness obligations.
 IE-T008 remains BLOCKED/unaccepted, IE-T009 NOT_RUN, formal DA30/58 unchanged.
+
+29October owner amendment: implement purpose QM prospectively for the same M1,
+with generic scope/checklist/release tailoring and unchanged functional gates.
+This supports IE-T001/003/004/005/007; it does not complete IE-T008/009 or any
+additional DA task. Real QM execution and acceptance require their own evidence.

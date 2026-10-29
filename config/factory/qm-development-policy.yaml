@@ -1,0 +1,35 @@
+schema: forge-c/qm-development-policy/1
+purpose: QM
+enabled: true
+classification: QM
+approved_by: Jefferson
+approved_at: '2026-10-29'
+decision: OWNER-20261029-QM-DEVELOPMENT
+request: Forget about safety now!!! implement as QM
+scope: Prospective owner-selected QM development for any declared driver; retain functional
+  and ASPICE engineering gates. Historical allocations and failed runs remain unchanged.
+safety_approval: null
+assessed_aspice_compliance: null
+criterion_tailoring:
+  SWE1-01:
+    original_criterion_sha256: e4d43e56585176235f891a8666956d8947f93fd34ad42010a7b32ef18dea084b
+    criterion: The hardware/software interface and allocated functional software requirements
+      are baselined and traceable.
+  SWE1-03:
+    original_criterion_sha256: b468b8b01f6fab5f4f63a82c3c7081c4b9cb2c09da12eedde00181d677013ab9
+    criterion: Failure/error behavior, reset/startup actions and caller responsibilities
+      are source-supported within the declared invocation domain. An explicitly specified
+      absence of error signaling or startup actions is valid when supported by that
+      contract; behavior outside the domain is explicitly identified rather than invented.
+  SWE2-04:
+    original_criterion_sha256: 67f3ea7716e8cd193837a067abd636302d1e8f5e2066900c828aef54c03fb556
+    criterion: Functional error handling, any required degraded behavior and architecture
+      dependencies are defined within the declared supported invocation domain.
+  SWE6-03:
+    original_criterion_sha256: 910894cbd31888dad7f1e5d98641907829918bef44f23ec876cae54537280b7d
+    criterion: Required functional behavior, error responses and target-specific constraints
+      are addressed within the declared supported invocation domain.
+  SWE6-06:
+    original_criterion_sha256: c8eaf19bb1a231d04c3c70111c43e6123ccc9e63a95a7264f072f519152dbc6c
+    criterion: The final verification summary accurately states unverified hardware,
+      simulation fidelity and remaining functional limitations.

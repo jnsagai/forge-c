@@ -179,11 +179,12 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
             *, purpose: str = "DEVELOPMENT") -> tuple[Path, dict]:
-    from .release import aspice
+    from .release import aspice, qm
     from .release.development import binding
 
     aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
-    development = binding(purpose) if aspice_scope is None else None
+    qm_scope = qm.binding() if purpose == qm.PURPOSE else None
+    development = binding(purpose) if aspice_scope is None and qm_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
     from .development_execution import binding as execution_binding
 
@@ -275,6 +276,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         **({"development_execution": execution} if execution else {}),
         **({"operation_scope": spec["operation_scope"]} if "operation_scope" in spec else {}),
         **({"aspice_development": aspice_scope, "aspice_resume_contract_version": 2} if aspice_scope else {}),
+        **({"qm_development": qm_scope, "qm_resume_contract_version": 1, "safety_target": "QM"} if qm_scope else {}),
         **({"development_safety": development} if development else {}),
         "work_order": wo,
         "created_at": utc_now(),
@@ -330,7 +332,14 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         manifest["historical_safety_scope"] = sc
         manifest["target"]["safety_allocation"] = "NOT_ASSESSED: " + aspice.STATEMENT
         manifest["rules"].append(aspice.STATEMENT)
-    if sc and not aspice_scope:
+    if qm_scope:
+        manifest["historical_safety_scope"] = sc
+        manifest["target"]["safety_allocation"] = qm.STATEMENT
+        manifest["rules"].append(qm.STATEMENT)
+        current_scope = qm.scope_record(wo, sha256_bytes(canonical_json(sorted((i["path"], i.get("sha256")) for i in listed))))
+        (ws / ".forge-run/safety_scope.json").write_text(pretty_json(current_scope))
+        (ws / ".forge-run/safety_scope.json").chmod(0o444)
+    if sc and not aspice_scope and not qm_scope:
         from .assurance.scope import allocation_status
 
         manifest["safety_target"] = sc["scope"]["target_asil"]
@@ -376,7 +385,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         }
     from .inspection import assessment_context
 
-    if aspice_scope:
+    if aspice_scope or qm_scope:
         manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
@@ -391,6 +400,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
                     "version": cl["version"],
                     "sha256": cl["sha256"],
                     **({"assessment_context": cl["assessment_context"]} if "assessment_context" in cl else {}),
+                    **({"qm_tailoring": cl["qm_tailoring"]} if "qm_tailoring" in cl else {}),
                     "checks": [
                         {k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}
                         for c in cl["checks"]
@@ -400,7 +410,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         )
     (ws / "configuration").mkdir(exist_ok=True)
     (ws / "configuration/system_names.json").write_text(json.dumps(spec["system_names"]))
-    (ws / "configuration/target_baseline.json").write_text(pretty_json(spec["target"]))
+    (ws / "configuration/target_baseline.json").write_text(pretty_json(manifest["target"] if qm_scope else spec["target"]))
     if intake:
         from .brownfield.resume import initialize
 
@@ -666,23 +676,25 @@ def run(
     purpose: str = "DEVELOPMENT",
     evaluation_holdout: bool = False,
 ) -> dict:
+    from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
     from .release.aspice import validate_profile
     from .release.development import PURPOSES
 
-    if purpose not in (*PURPOSES, ASPICE_PURPOSE):
+    if purpose not in (*PURPOSES, ASPICE_PURPOSE, qm.PURPOSE):
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
     if type(evaluation_holdout) is not bool:
         raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
     local = None
-    if purpose == ASPICE_PURPOSE and not profile:
+    if purpose in (ASPICE_PURPOSE, qm.PURPOSE) and not profile:
         raise ValueError("ASPICE_SCOPE_PROFILE_MISMATCH")
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
 
-        validate_profile(purpose, local_profile.load(profile))
+        selected_profile = local_profile.load(profile)
+        (qm.validate_profile if purpose == qm.PURPOSE else validate_profile)(purpose, selected_profile)
         local = local_profile.select(
             profile, model=model, provider=provider, code_model=code_model, acp_authors=acp_authors, acp_inspectors=acp_inspectors
         )
@@ -931,8 +943,8 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--example", type=Path, required=True)
-    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW", "ASPICE_ONLY"), default="DEVELOPMENT",
-                    help="development defers SSA/TAA signatures; ASPICE_ONLY excludes safety assurance; "
+    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW", "ASPICE_ONLY", "QM"), default="DEVELOPMENT",
+                    help="development defers SSA/TAA signatures; QM selects owner-classified quality management; ASPICE_ONLY excludes safety assurance; "
                          "formal review retains strict policy")
     ap.add_argument("--wo", required=True)
     ap.add_argument("--detach", action="store_true")

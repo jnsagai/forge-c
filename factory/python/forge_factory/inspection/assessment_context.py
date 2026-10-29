@@ -5,13 +5,20 @@ from pathlib import Path
 
 from ..afo.durable import digest
 from ..common import sha256_file
-from ..release import aspice
+from ..release import aspice, qm
 
 FIELD = "inspection_assessment_context"
 FIELDS = ("purpose", "aspice_development", "target", "scope", "budgets", "layer", "operation_scope", "simulation_performance")
 
 
 def binding(manifest):
+    if manifest.get("purpose") == qm.PURPOSE:
+        if qm.selected(manifest) is None:
+            raise ValueError("QM_SCOPE_BINDING_CHANGED")
+        return {"schema": "forge-c/inspection-assessment-context/2", "purpose": qm.PURPOSE,
+                "scope_sha256": digest({**{k: manifest.get(k) for k in FIELDS},
+                                        qm.FIELD: manifest[qm.FIELD], "safety_target": manifest["safety_target"]}),
+                "renderer_sha256": sha256_file(Path(__file__))}
     if manifest.get("purpose") != aspice.PURPOSE or aspice.selected(manifest) is None:
         raise ValueError("INSPECTION_ASSESSMENT_SCOPE_INVALID")
     return {"schema": "forge-c/inspection-assessment-context/1",
@@ -22,9 +29,18 @@ def binding(manifest):
 def view(manifest):
     # Old work orders and their historical inspection identities are unchanged.
     if FIELD not in manifest:
+        if manifest.get("purpose") == qm.PURPOSE:
+            raise ValueError("QM_ASSESSMENT_CONTEXT_MISSING")
         return None
     if manifest[FIELD] != binding(manifest):
         raise ValueError("INSPECTION_ASSESSMENT_CONTEXT_CHANGED")
+    if manifest.get("purpose") == qm.PURPOSE:
+        record = qm.selected(manifest)
+        return {"schema": "forge-c/inspection-assessment-view/2", "purpose": qm.PURPOSE,
+                "classification": "QM", "binding": manifest[FIELD], "owner_policy_ref": record["policy_ref"],
+                "owner_request": record["owner_decision"]["request"], "statement": qm.STATEMENT,
+                "declared_work_order_scope": manifest["scope"],
+                "effect_on_verdict": "Judge the frozen QM-tailored criterion; retain every functional finding"}
     record = manifest["aspice_development"]
     return {"schema": "forge-c/inspection-assessment-view/1", "purpose": aspice.PURPOSE,
             "binding": manifest[FIELD], "owner_policy_ref": record["policy_ref"],
@@ -46,6 +62,7 @@ def view(manifest):
 
 
 def checklist(manifest, resolved):
+    resolved = qm.checklist(manifest, resolved)
     context = view(manifest)
     if context is None:
         return resolved
