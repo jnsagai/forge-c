@@ -1,0 +1,60 @@
+{
+  "schema": "forge-c/local-implementation-evidence/1",
+  "tested_revision": "87287baa366e3e4fae2493e7df443996e2084e26",
+  "checkout_clean_before_tests": true,
+  "host": "master/local_loop10",
+  "model_requests": 0,
+  "result": "PASS",
+  "tests": 175,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "seconds": 189.107,
+  "local_implementation": "PASS_SCOPED_DETERMINISTIC_AND_REAL_TOOLS",
+  "native_candidate_qualification": "NOT_RUN_HOST_OFFLINE",
+  "qwen_capability": "NOT_RUN",
+  "product_M1": "HISTORICAL_EXECUTED_BLOCKED_SWE1; NEW_CANDIDATE_NOT_RUN",
+  "learning_benefit": "NOT_MEASURED",
+  "operational_availability": "NOT_QUALIFIED",
+  "execution_authority": "EXPIRED_2026-10-29T05:00:00Z_NO_RENEWAL",
+  "mission_amendment_performed": false,
+  "source_deployed": false,
+  "formal_tasks": "30/58_UNCHANGED",
+  "new_task_checkboxes": [],
+  "existing_completed_incremental_tasks": [
+    "IE-T001",
+    "IE-T002",
+    "IE-T003",
+    "IE-T005",
+    "IE-T006",
+    "IE-T007"
+  ],
+  "partial_tasks": [
+    "IE-T004"
+  ],
+  "blocked_unaccepted": [
+    "IE-T008"
+  ],
+  "unrun": [
+    "IE-T009"
+  ],
+  "implementation_commits": [
+    "92a4d6ecc820a3abbde247ac84ba2ee7e8fb519f",
+    "7f150986d1d7eeaa7827ae11d046f6275abeb02d",
+    "d34e4ea063f5ebb8817b646138ab01255ce7a624",
+    "87287baa366e3e4fae2493e7df443996e2084e26"
+  ],
+  "prior_checks_not_added_to_175": {
+    "assessment_context": "99PASS/1SKIP before commits; absent SWE.2 frozen fixture",
+    "simulation_performance": "69PASS before7f15098",
+    "mission_deadline": "49PASS before final source commit"
+  },
+  "corrected_failures": [
+    "Initial test expected nested SDK metrics; detailed proof now uses content-addressed artifacts/scalar ref.",
+    "Native lease negative fixture initially lacked execution reservation, then valid nonce; fixed fixture.",
+    "Inherited recovery passed ws=None into development policy lookup; guarded absent workspace; inherited cases pass.",
+    "Release regression failed with incomplete tool PATH; correct pinned PlantUML/LLVM/Renode environment passes.",
+    "Documentation validation initially reported3links before this evidence directory existed; rerun after publication."
+  ],
+  "privacy": "No manual bodies, full prompts, hidden reasoning, private keys, ELF data or full workspace archives published."
+}

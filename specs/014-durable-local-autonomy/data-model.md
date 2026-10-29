@@ -107,3 +107,21 @@ execution time: campaign work exposure needs a new in-window attempt or captured
 in-window native activity. Historical audit evidence can verify an outcome without
 proving fresh campaign work. All primary source/artifact hashes remain bound; no
 ledger or finite mission allowance is reset by capture or replay.
+
+
+### Implemented time-only amendment — 2026-10-29
+
+The scoped operator API at afo.mission_deadline extends only an existing product
+mission's deadline and current authorization reference. It uses the existing
+afo_independent_decisions table with kind MISSION_DEADLINE_EXTENSION; no new store,
+scheduler or migration. Up to8 sealed receipts bind the initial mission record,
+previous deadline, exact current snapshot, complete signed request and grant hash.
+The original afo_missions row and every non-time allowance remain immutable.
+
+MissionLedger.snapshot overlays the validated deadline chain on that base before
+normal cumulative accounting. Unknown usage and conservative charges remain.
+No task outcome, replay, expiry or amendment releases inference. Held native work
+refuses the amendment. Only the authenticated state-owner CLI exposes it; agent
+MCP/proposals cannot call it. Each increment requires current recover_workorder
+authority specifically signed over mission-deadline-extension-014:<request digest>.
+Dispatch and any new order still need normal independent current authorization.

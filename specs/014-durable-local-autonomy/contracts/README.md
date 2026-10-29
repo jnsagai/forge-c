@@ -70,3 +70,14 @@ Implementation qualification additionally requires the following tests; they are
 | Release independence | Model success, accepted CLOSE_BLOCKED, a stored proposal and scoped verification can never produce a READY package without all unchanged release gates. |
 
 Schema checks cover static snapshot relationships only. Transition legality, external reference resolution, effect idempotency, cancellation, resource fencing, ledger arithmetic and genuine independent verification require tests against the implemented components and finally the qualified native local path.
+
+
+## Operator time-window amendment (2026-10-29 implementation)
+
+This is an administrative CLI input, not a semantic-proposal branch or model
+permission. See afo.mission_deadline.SCHEMA and the exact-field validation there,
+plus INCREMENTAL-RUNBOOK.md. The existing independent-decision table stores sealed
+receipts; MissionLedger validates a bounded8-record linked chain. Original
+allowances/accounting remain intact. This additional runtime interface does not
+change the six versioned qualification schemas or their structural fixtures.
+No amendment or grant is created by specification validation.

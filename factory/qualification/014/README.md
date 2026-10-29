@@ -512,3 +512,15 @@ becomes an explicit incomplete observation, not an oversized or healthy artifact
 This completes application-source ingestion, not native actor/write/service
 correlation or continuous host-audit verification. Global intervention count
 remains UNKNOWN until those independent channels and their coverage are verified.
+
+
+## Prepare a genuinely reviewed engineering input without inference
+
+prepare_reviewed_requirements.py uses a fresh private state directory and the
+existing workorder/provided-requirements/freeze path. It writes metadata and
+complete structured-request byte bounds only; it never calls a model, inserts
+an inspector verdict, injects delivery, submits an order or changes authority.
+The owner-reviewed simulation example and exact command are in the Feature014
+INCREMENTAL-RUNBOOK.md. Qwen runtime/role qualification remains on Omniverse2.
+Full live request measurement must include the normal gateway reasoning transform;
+this local preparation report is not role admission or native tokenizer evidence.

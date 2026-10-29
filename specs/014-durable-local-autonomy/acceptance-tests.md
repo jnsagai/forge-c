@@ -679,3 +679,26 @@ Evidence must identify the requirement, case, tested source revision, effective 
   Compiler-only/host-only, mocked or diagnostic-BLOCKED runs do not satisfy M1.
 - **IE-AT-009 (later):** M2 requires three accepted fresh unassisted author executions with
   reference answers excluded; M3–M5 retain their declared repair/expansion/cohort evidence.
+
+
+### Local follow-up controls — 2026-10-29
+
+These extend the existing scoped IE-AT-002/004/005 regression evidence, not the
+formal DA acceptance count or live M1 acceptance:
+
+- Reviewed9-requirement input passes normal validation/import/freeze; inspection
+  remains REINSPECT and delivery injection refuses before any inspector verdict.
+- Native/structured inspector inputs share the exact owner context. Old receipts
+  cannot pass a changed checklist/context; original full criteria stay intact.
+- Actual direct calls to every scoped API yield complete instruction/virtual-time
+  samples under a pinned100MIPS simulator. Missing/changed/over-budget evidence
+  fails, including a real slow-call negative control; Robot and final release
+  consume sealed hash-bound proof.
+- Explicit operator time-window extension preserves original mission row, caps,
+  expenditure and UNKNOWN usage. Wrong/revoked signature, stale snapshot, held
+  native lease, exhausted product allowance and ninth amendment refuse. Replay
+  creates no new authority; serial continuation links before queue visibility.
+
+Fixtures explicitly name substituted semantic review/provider outcomes. The
+actual owner-approved import has no substituted inspection. Native Qwen and
+operational qualification remain separate and unrun for this candidate.

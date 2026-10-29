@@ -5,41 +5,45 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
-## Prepared source and checks
+## Current source and review boundary — 2026-10-29
 
-- Runtime source41a6c28 is prospective, not deployed. Production remainsfcb15cb.
-- Example: `examples/0014d-st-cube-crc-idr-assisted/`, two original ST functions,
-  FROZEN; source-backed candidate requirements remain REVIEW_PENDING.
-- Selected prospective profile: `local-rtx-v2-omniverse2-q38-aspice-mtp`,v2,
-  Qwen3.8-27B Q8_0/xhigh/MTP3, one slot,131072 context, f16 KV, no empty-reply retries.
-  Profile v3 and the prospective high-quota development v2 follow the explicit owner
-  amendment in IMPLEMENTATION-INCREMENTAL-E2E.md section 10; activation still needs
-  current source-bound grants and exact-role admission, and proves no product result.
-- Independent tool fixture: real six-phase build/host/integration/Renode/Robot/
-  release; scripted semantic artifacts/review explicitly disclosed.
-- Latest native qualification source7a4bc51:169PASS,0skips,0Qwen calls.
-- Actual backend/MCP smoke atd3f0b28 passed two requests. It does not qualify every
-  role or permit inheriting a capability receipt across adapter revisions.
+Candidate87287ba is local and undeployed. Last confirmed runtime is e098b51.
+Omniverse2 is offline by owner confirmation. All actual Qwen execution belongs
+there. All former M1/role-trial grants expired29October05:00UTC. Do not infer
+authority from the owner's requirements approval.
 
-See the [exact evidence](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md).
+The original7-requirement IDR input was reviewed28October. The separate
+`examples/0014d-st-cube-crc-idr-assisted/proposals/simulation-performance/`
+contains the owner-reviewed9-requirement extension:64 instructions/call and
+100microseconds Renode virtualtime/call at100MIPS; no physical WCET claim.
+Payloadaf48340b…770463 has a real owner review record. Its preview preserves
+the historical PENDING banner as immutable review evidence.
 
-## Requirements review boundary
+The normal import/freeze checks pass and preserve external-assistance provenance.
+No inspection PASS is inserted: SWE.1 remains REINSPECT, delivery stays absent.
+Run the executable preparation tool in a fresh private directory:
 
-The supplied candidate specifies write/read of all32 IDR bits, no autonomous driver
-write before explicit calls, no status polling, and4096/64/128-byte flash/static
-RAM/stack budgets. Caller owns a valid accessible instance and its clock/power/
-security setup. No invalid-pointer behavior, safe state or error return is invented.
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=factory/python \
+  python factory/qualification/014/prepare_reviewed_requirements.py \
+  --example examples/0014d-st-cube-crc-idr-assisted/proposals/simulation-performance \
+  --state-root "$FC014_NEW_PRIVATE_STATE" --work-order WO-IDR-REVIEWED-UNIQUE \
+  --out "$FC014_NEW_REPORT"
+```
 
-The owner-review question is pending. Keep `review.status=PENDING` until an actual
-review arrives. Then record the actual reviewer/date/session reference and digest
-of `provided_requirements.payload(document)`. Do not sign a safety approval,
-attribute review to an agent or use the test's synthetic reviewer in live input.
-Commit the reviewed bundle and reprepare at the selected clean revision; old
-prepared manifests are not launch permissions after source/binding changes.
+Set FORGE_DATA_ROOT to the pinned ST/manual inputs. On the workstation use loop10
+for state, output and TMPDIR. This makes zero inference calls and grants no
+admission. Its complete structured-request byte bounds exclude the gateway
+reasoning transform and do not substitute for the full live role preflight below.
 
-Normal `provided_requirements.materialize` runs structural/semantic/primary-input
-checks and writes an external-assistance receipt. It does not forge a Qwen author
-or inspector outcome. Normal SWE.1 inspection remains required.
+Local real-tool fixtures exercise compile/analysis/host/Renode/Robot/trace/release,
+with explicitly scripted semantic inputs. The generic performance observer
+requires actual direct calls to every declared function, pins ELF/source/test/
+model/budget evidence and checks sealed raw instruction/time measurements again
+at release. Missing, changed or over-budget proof blocks release. This validates
+tooling; it does not qualify Qwen, a real product or continuous availability.
+
+See [exact local evidence](../../evidence/014-durable-local-autonomy/m1-local-followup-20261029/README.md).
 
 ## Complete role request preflight
 
@@ -74,7 +78,7 @@ does not check all live mission/operator conditions and grants no launch authori
 The gateway rechecks current authorization, cumulative allowance and every actual
 request under the existing admission path at execution time.
 
-The prepared41a6c28 report on loop10 is NOT_RUN with
+The historical prepared41a6c28 report on loop10 is NOT_RUN with
 `PROVIDED_REQUIREMENTS_REVIEW_MISSING_OR_UNBOUND`; actual live role requests are not
 captured. No order or mission was submitted, and no budget was reserved.
 
@@ -113,3 +117,66 @@ charges, wall time, repairs, assistance and package gaps. Only an independently
 recomputed READY_FOR_OFFLINE_REVIEW satisfies M1. Then attempt M2's three fresh
 unassisted requirements-author executions with reference answers withheld, followed
 by M3 repair and later broad/learning/availability qualification.
+
+
+## Resume the same M1 mission after host recovery
+
+1. Reconcile actual operator intent, provider/native liveness and resource leases.
+   Do not use a terminal order or offline host as evidence of quiescence.
+2. Inspect the real ledger for F014-IDR-M1-HIGH-20261028. Preserve its original
+   100m conservative charge, one attempt, six requests and UNKNOWN aggregate
+   usage. The old full-CRC3/3 mission is exhausted and remains ineligible.
+3. If the existing M1 deadline must change, prepare an explicit time-only request
+   from the **current full ledger snapshot**. The operator CLI accepts exactly:
+
+```json
+{
+  "schema": "forge-c/mission-deadline-extension/1",
+  "mission_id": "F014-IDR-M1-HIGH-20261028",
+  "snapshot_sha256": "<digest(current MissionLedger.snapshot)>",
+  "deadline_epoch": 0,
+  "authorization_ref": "<new specifically signed grant id>",
+  "request": {
+    "order_id": "<prospective envelope request_id>",
+    "driver_class": "LL",
+    "model": "local-rtx-v2-omniverse2-q38-aspice-mtp"
+  },
+  "reason": "<explicit finite prospective time window>"
+}
+```
+
+Replace0 with an actual future finite deadline within the signed grant and
+current policy wall limit. Compute the document digest with afo.durable.digest.
+A current owner grant must bind the exact active policy, recover_workorder
+action, requested scope and
+`signed_runbook_ref=mission-deadline-extension-014:<document digest>`.
+Ordinary production/role-trial authority alone is insufficient.
+No tool signs or renews that grant automatically.
+
+Authenticated state owner only, after review/signing:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=factory/python \
+  python -m forge_factory.afo.cli mission-extend-deadline \
+  "$FC014_EXTENSION_REQUEST" --reason "Apply the explicitly signed time-only window"
+```
+
+The existing AFO database stores a hash-sealed receipt in its decision table;
+original mission row and all non-time caps remain unchanged. At most8 explicit
+increments are accepted. Stale snapshot, exhausted product allowance, invalid
+signature/current scope or held native lease refuses. Replay returns a historical
+receipt without restoring execution authority. No order is submitted or resumed.
+
+4. Deploy only with actual current source-bound runtime and role-trial authority.
+   Reprepare the reviewed9-requirement example on that exact clean revision;
+   run the complete role preflight, including gateway reasoning/output overhead.
+5. Submit through the existing serial intake using the SAME mission and an
+   explicit continuation_of the old order. Normal Conductor dispatch/accounting/
+   inspections/release remain authoritative. No new scheduler or renamed budget.
+6. Record real Qwen SWE.1 results before attempting later phases. Stop this job
+   and rethink if unchanged failures recur; continue model-free supervision.
+   M1 is accepted only after independent six-phase/package evidence. M2–M5 follow
+   the existing milestone gates.
+
+Host recovery, current grants, native role qualification and real M1 execution
+are NOT_RUN here. This runbook creates no authority or claim of completion.

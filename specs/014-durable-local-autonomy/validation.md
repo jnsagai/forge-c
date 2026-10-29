@@ -1185,3 +1185,22 @@ availability claim. Spec/contracts/design checks remain documentation evidence.
 
 [Exact revisions, executable harnesses, XML, known failures and current blockers](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md).
 [Incremental runbook](INCREMENTAL-RUNBOOK.md).
+
+
+### 2026-10-29 local implementation checkpoint
+
+Candidate87287ba extends the current branch with bound inspector owner context,
+generic simulation instruction/time evidence through Renode/Robot/release,
+an actual approved9-requirement input and signed time-only mission continuation.
+The normal owner-reviewed import/freeze leaves inspection REINSPECT and injection
+REFUSED, with zero model calls. Actual local simulation and negative-control
+fixtures validate tooling; scripted semantic/provider fixtures prove no Qwen
+capability or product result. See the exact revision, commands, XML and limitations
+in [local follow-up evidence](../../evidence/014-durable-local-autonomy/m1-local-followup-20261029/README.md).
+
+Omniverse2 is owner-confirmed offline. The previous live grants expired at
+2026-10-29T05:00:00Z; none was renewed and no mission was amended or deployed here.
+Formal30/58 and incremental completion IDs remain unchanged. IE-T004 stays
+partial, IE-T008 blocked/unaccepted, IE-T009 unrun. Learning benefit and
+24/72/168-hour availability remain unqualified. Earlier dated checkpoints retain
+their historical missing-review/authority findings; current review is recorded.

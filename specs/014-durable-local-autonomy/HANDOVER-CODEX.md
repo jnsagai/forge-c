@@ -7,6 +7,33 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Local follow-up — 2026-10-29
+
+Owner confirms Omniverse2 is **offline**. Prior live authority expired at
+05:00 UTC; no grant was renewed, mission amended, deployment activated or Qwen
+request sent in this follow-up. The old M1 remains blocked and unaccepted.
+Runtime e098b51 is the last confirmed deployment, not a current availability claim.
+
+Candidate **87287ba** adds bound owner assessment context to both native and
+structured inspector inputs without changing frozen criteria; generic measured
+simulation CPU/time evidence through Renode, Robot and release; and an
+operator-only signed time-window increment in the existing AFO ledger.
+The latter preserves original allowances/costs/uncertainty and requires no held
+native lease. It is finite and idempotent; it performs no restart/dispatch.
+
+The owner approved the complete nine-requirement simulation payload
+af48340b…770463. Its real review record and separate example are committed;
+original seven-requirement inputs remain intact. Local normal import/freeze
+passes, SWE.1 remains REINSPECT and delivery is refused. Real target/Renode
+fixtures measure 2 instructions and20ns per function, five samples each at100MIPS;
+this is no physical WCET or Qwen product result. Explicit provider fixtures can
+exercise all nine requirements through real tools/release; they cannot accept M1.
+
+See [local follow-up evidence](../../evidence/014-durable-local-autonomy/m1-local-followup-20261029/README.md)
+and the updated [runbook](INCREMENTAL-RUNBOOK.md) for exact tests and next execution.
+Formal30/58 and incremental completion IDs are unchanged. IE-T004 is partial,
+IE-T008 blocked/unaccepted, IE-T009 unrun. Other dated entries below are historical.
+
 ## Latest run outcome — 2026-10-28 21:59Z
 
 M1 is **EXECUTED_BLOCKED_SWE1**, not accepted or still generating. Six real Qwen
@@ -17,7 +44,7 @@ requirements. Later phases were NOT_RUN. The unchanged assisted baseline then lo
 through cached inspections; the external engineer stopped this one stalled order under
 the owner's stop-and-rethink instruction. Native FAILED, order BLOCKED, requests and
 execution QUIESCENT, lease RELEASED through normal reconciliation. Services/recording
-and high limits remain active; historical missions unchanged. This is not self-healing.
+and high limits were active at that observation; historical missions unchanged. This is not self-healing.
 
 Candidate1dd54a0 adds an unchanged-failed-baseline progress guard (3 local and3 native
 fixture passes, zero model calls), not deployed to
@@ -46,7 +73,7 @@ Evidence, exact commands and monitoring:
 [high-allowance deployment](../../evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md).
 Native79PASS, exact local29PASS; allocation and static request admission are separate
 from runtime/model/product qualification. IE-T007 is complete for the preparation
-harness; IE-T004 remains partial, IE-T008 running/unaccepted, IE-T009 NOT_RUN.
+harness; IE-T004 remains partial, IE-T008 blocked/unaccepted, IE-T009 NOT_RUN.
 Formal Feature014 completion remains30/58. The older checkpoints below are historical.
 
 ## Active implementation brief — incremental IDR delivery
@@ -59,7 +86,7 @@ MTP explicitly (2026-10-28: "no, go with MTP"); the tiny xhigh/MCP backend smoke
 passed. Full role qualification, deployment, general recovery and broader qualification
 remain incomplete. Preserve all historical
 expenditure, quality gates, model-free supervision and exact runtime authority.
-See incremental-status.json and incremental-traceability.csv for the current running M1; later milestones remain NOT_RUN.
+See incremental-status.json and incremental-traceability.csv for the last blocked M1; later milestones remain NOT_RUN.
 
 ## Incremental implementation checkpoint — 2026-10-28 19:50Z
 

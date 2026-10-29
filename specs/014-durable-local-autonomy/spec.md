@@ -268,3 +268,15 @@ slot/admitted request. Preserve evidence of the old no-thinking microbenchmark;
 it does not qualify xhigh role/tool behavior. Exact native backend and per-role
 admission/capability checks remain prerequisites. No old authority, allowance or
 qualification receipt is silently reused. All other incremental boundaries remain.
+
+
+### Reviewed simulation allocations — 2026-10-29
+
+The separate prospective IDR input now has real owner review of the complete
+nine-requirement payload af48340b…770463. Two added project allocations limit
+observed calls to64 target instructions and100microseconds of Renode virtual
+time at100MIPS. These are simulation-only development targets, not physical
+WCET or safety claims. Original functional scope/review/history remain intact.
+Inspection receives hash-bound existing owner scope in both native and structured
+paths; original criteria and verdict authority stay unchanged. Missing constraints
+remain gaps rather than inferred facts. Real Qwen inspection is still required.

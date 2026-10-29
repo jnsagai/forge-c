@@ -131,3 +131,20 @@ Implement the explicit high-quota owner amendment in section 10 of the increment
 brief as opt-in v2, preserving v1 behavior and historical mission accounting.
 Use the measured 131,072-context allocation only to bind the experimental profile;
 retain separately signed role experiments and full live admission/quality checks.
+
+
+### Local recovery follow-up — 2026-10-29
+
+Source87287ba implements the owner-scope inspector view, optional generic
+per-function Renode/Robot/release performance verification and an operator-only
+time-window increment through existing AFO accounting. The approved separate
+9-requirement input imports/freezes normally but does not pass inspection by import.
+The increment requires a specifically signed request, exact ledger snapshot and
+native quiescence; it neither refills non-time allowances nor activates work.
+
+Omniverse2 is owner-confirmed offline; previous execution grants expired05:00UTC.
+Finish local source/test/evidence preparation while preserving all spent history.
+After host recovery: reconcile liveness/operator intent, obtain valid exact-source
+authority, apply an explicit time-only increment if needed, reprepare the reviewed
+input, qualify/admit actual role requests and continue the same M1 mission.
+Do not advance milestone acceptance from deterministic fixtures.
