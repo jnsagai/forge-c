@@ -1,5 +1,22 @@
 # Implementation and qualification status
 
+## Owner stopped Qwen — 2026-10-29 16:27UTC
+
+Owner explicitly requested immediate stop. Durable intent is **STOPPED, epoch33,
+effective_stop=true**. Actual provider private PID namespace ended; `nvidia-smi`
+reports no compute processes. Native01M63ZTJ5QM1R96484Y2KN97H6 is FAILED after
+cancellation, sandbox stop completed; execution QUIESCENT and lease RELEASED.
+Task outcome BLOCKED/OPERATOR_SHUTDOWN. The parent order still reads RUNNING in
+SQLite at16:27:48UTC; that is unsettled orchestration state, not live inference.
+
+**Do not automatically resume at18:00.** The newer stop supersedes the earlier
+request to wait until18:00 for another run. Prepared qualification requires old
+epoch32 and must refuse epoch33; it remains NOT_RUN. Local fixes may continue.
+Existing18:05:39UTC expiry and all cumulative costs remain unchanged. Current
+mission4attempts/345requests/596tools/400m conservative charge, aggregate usage
+UNKNOWN. Strict M1 remains unaccepted; SWE.6 last Robot result7/9, no inspection.
+[Stop proof and limitations](../../evidence/014-durable-local-autonomy/owner-stop-20261029/README.md).
+
 ## Actual SWE.5 PASS; SWE.6 running — 2026-10-29 16:01UTC
 
 Production remains9b4c390. **INS-SWE.5-001 PASS at15:59:17UTC**, no findings;

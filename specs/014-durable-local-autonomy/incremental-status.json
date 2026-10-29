@@ -2,7 +2,7 @@
   "schema": "forge-c/incremental-delivery-status/1",
   "handoff_revision": "5e89a2b",
   "milestones": {
-    "M1": "HISTORICAL_BLOCKED_SWE1; QM_DEMONSTRATION_RUNNING; STRICT_M1_UNACCEPTED",
+    "M1": "QM_DEMONSTRATION_INTERRUPTED_BY_OWNER; STRICT_M1_UNACCEPTED",
     "M2": "NOT_RUN",
     "M3": "NOT_RUN",
     "M4": "NOT_RUN",
@@ -19,7 +19,7 @@
   ],
   "formal_da_completed_tasks": 30,
   "formal_da_total_tasks": 58,
-  "live_authority": "SIGNED_EXACT_DEMONSTRATION_SOURCE_PROFILE_UNTIL_2026-10-29T18:05:39Z",
+  "live_authority": "OPERATOR_STOPPED_EPOCH33; EXISTING_GRANT_EXPIRES_2026-10-29T18:05:39Z",
   "requirements_review": "ORIGINAL_7_AND_SIMULATION_9_REQUIREMENT_PAYLOADS_REVIEWED",
   "product_acceptance": "BLOCKED",
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
@@ -46,8 +46,8 @@
   "active_order_id": "afo-774900b297bdde37",
   "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
-  "live_order_state": "RUNNING",
-  "later_phases": "SWE5_INSPECTION_PASS; SWE6_TEST_AUTHOR_ACTIVE; FULL_RELEASE_PENDING",
+  "live_order_state": "RUNNING_PARENT_ORCHESTRATION_UNSETTLED; NATIVE_FAILED",
+  "later_phases": "SWE6_INTERRUPTED_BY_OWNER; LAST_ROBOT_7_OF_9; NO_INSPECTION",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -78,8 +78,10 @@
     "conductor": "ACTIVE",
     "watchdog_timer": "ACTIVE",
     "finite_recorder": "ACTIVE",
-    "operator_mode": "RUNNING",
-    "operator_epoch": 32
+    "operator_mode": "STOPPED",
+    "operator_epoch": 33,
+    "effective_stop": true,
+    "captured_utc": "2026-10-29T16:27:48.498573Z"
   },
   "deployed_candidate": {
     "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
@@ -109,15 +111,15 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 283,
-    "tools": 513,
+    "requests": 345,
+    "tools": 596,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T16:01:52.404391Z"
+    "captured_utc": "2026-10-29T16:27:48.498573Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
-  "prospective_qm_live_execution": "RUNNING_DEMONSTRATION; STRICT_M1_UNACCEPTED",
+  "prospective_qm_live_execution": "STOPPED_BY_OWNER; NO_AUTO_RESUME",
   "current_runtime_purpose": "QM; PIPELINE_DEMONSTRATION_ONLY",
   "qualification_evidence": "evidence/014-durable-local-autonomy/qm-development-20261029/README.md",
   "current_production_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
@@ -133,11 +135,11 @@
     "pending_prerequisite": "NONE; SUPERSEDED HISTORICAL UNSIGNED PACKET, DO NOT ACTIVATE"
   },
   "historical_reported_output_tokens_completed_requests": 17340,
-  "active_inference_run": "01M63ZTJ5QM1R96484Y2KN97H6",
-  "last_execution_liveness": "LIVE",
-  "last_inference_lease": "HELD",
+  "active_inference_run": null,
+  "last_execution_liveness": "QUIESCENT",
+  "last_inference_lease": "RELEASED",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T16:01:52.404391Z",
+  "source_status_captured_utc": "2026-10-29T16:27:48.498573Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -198,7 +200,7 @@
     "SWE.3": "FROZEN_DESIGN_AND_TARGET_BUILD_PRESENT; TWO_INSPECTIONS_FAIL_PLANTUML_NOT_AVAILABLE; MCP_DATA_ROOT_MISSING_CONFIRMED",
     "SWE.4": "REAL_INSPECTION_PASS_2026-10-29T15:33:48Z; CURRENT_BASELINE_GATE_PASS; 17_LOCAL_FILES_VERIFIED",
     "SWE.5": "REAL_INSPECTION_PASS_2026-10-29T15:59:17Z; CURRENT_GATE_PASS; 23_LOCAL_FILES_VERIFIED",
-    "SWE.6": "NATIVE_TEST_AUTHOR_ACTIVE; INSPECTION_PENDING"
+    "SWE.6": "AUTHOR_INTERRUPTED_BY_OWNER; LAST_ROBOT_7_OF_9; NO_INSPECTION"
   },
   "historical_demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS",
@@ -321,5 +323,6 @@
     "hardware_wcet": "NOT_MEASURED",
     "artifact_sha256": "9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f",
     "scope": "Complete observed calls in pinned Renode instruction/time model; no silicon claim"
-  }
+  },
+  "owner_stop_evidence": "evidence/014-durable-local-autonomy/owner-stop-20261029/README.md"
 }
