@@ -109,11 +109,11 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 153,
-    "tools": 320,
+    "requests": 173,
+    "tools": 343,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T15:07:03.016484Z"
+    "captured_utc": "2026-10-29T15:19:19.977750Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -137,7 +137,7 @@
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T15:07:03.016484Z",
+  "source_status_captured_utc": "2026-10-29T15:19:19.977750Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -194,7 +194,7 @@
     "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T14:17:44Z",
     "SWE.2": "REAL_INSPECTION_PASS_2026-10-29T14:32:20Z; CURRENT_BASELINE_AND_DETERMINISTIC_GATE_PASS",
     "SWE.3": "FROZEN_DESIGN_AND_TARGET_BUILD_PRESENT; TWO_INSPECTIONS_FAIL_PLANTUML_NOT_AVAILABLE; MCP_DATA_ROOT_MISSING_CONFIRMED",
-    "SWE.4": "NATIVE_TEST_AUTHOR_ACTIVE; INSPECTION_NOT_YET_RUN",
+    "SWE.4": "HOST_UNIT_PASS_AFTER_TWO_DUPLICATE_ID_FAILURES; SCOPED_FUNCTION_REGION_COVERAGE_100; INSPECTION_PENDING",
     "SWE.5_THROUGH_6": "NOT_YET_EXECUTED"
   },
   "historical_demonstration_phase_progress": {
@@ -238,10 +238,10 @@
     "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
   },
   "current_trial_reported_usage_partial": {
-    "completed_requests": 83,
+    "completed_requests": 103,
     "pending_requests": 1,
-    "reported_total_tokens": 2812176,
-    "scope": "Current262k provider reports at15:07UTC; pending and historical aggregate remain UNKNOWN"
+    "reported_total_tokens": 4141995,
+    "scope": "Current262k provider reports at15:19UTC; pending and historical aggregate remain UNKNOWN"
   },
   "swe2_independent_verification": {
     "structure": "PASS_9_OF_9_REQUIREMENTS_ALLOCATED",
@@ -280,5 +280,17 @@
     "instructions_per_measurement_wrapper": 2,
     "virtual_runtime_timing": "NOT_RUN_BY_THIS_AUDIT",
     "physical_wcet": "NOT_MEASURED"
+  },
+  "swe4_host_feedback": {
+    "failed_attempts": 2,
+    "pass_utc": "2026-10-29T15:18:27Z",
+    "tool_exit_code": 0,
+    "scope_functions": 2,
+    "scope_function_pct": 100.0,
+    "scope_region_pct": 100.0,
+    "whole_file_line_pct": 6.76,
+    "target_evidence": false,
+    "formal_M3_repair": "NOT_RUN",
+    "learning_benefit": "NOT_MEASURED"
   }
 }

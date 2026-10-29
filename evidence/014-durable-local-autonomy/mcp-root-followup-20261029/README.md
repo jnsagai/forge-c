@@ -7,6 +7,15 @@ Candidate **9f9a93f174f46aa0add59c16a423be7d56988614** fixes the diagnosed root
 propagation defect and includes the previously local-qualified admission diagnostics;
 it is **not deployed**. No current service, grant or run was restarted/replaced.
 
+## Later SWE.4 host-unit result — 15:19UTC
+
+Actual host-unit results FAIL twice for duplicate test IDs, then PASS at15:18:27UTC,
+exit0. Scoped two-function LLVM function/region coverage100%; whole-file line6.76%/
+function8.33%, target evidencefalse. This is ordinary authoring feedback, not M3,
+measured learning or factory-self-healing qualification. SWE.4 test author remains
+active at15:19:19UTC with104requests; phase inspection/full product pending.
+See swe4-host/ for actual failed/passing tool records, coverage and live observation.
+
 ## Actual SWE.3 outcome and diagnosis
 
 Qwen produced detailed_design.md (5811bytes), unit_specifications.md (3315bytes),

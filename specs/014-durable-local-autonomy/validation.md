@@ -1,5 +1,18 @@
 # Implementation and qualification status
 
+## Actual host-unit feedback and pass — 2026-10-29 15:19UTC
+
+The current Qwen run remains on source9b4c390. Its SWE.4 host-unit tool records two
+actual FAIL results for duplicate UT-001/002/003 IDs, followed by **PASS at15:18:27UTC**,
+exit0. LLVM coverage then reports100%functions/regions for the declared two-function
+scope; whole delivered-file coverage remains6.76%lines/8.33%functions. Target evidence
+is explicitly false. This is ordinary authoring feedback, not a seeded M3 repair,
+measured learning benefit or factory self-healing proof. No failing test result was
+overwritten. At15:19:19UTC SWE.4 test author is still active,104requests in this run;
+phase inspection/full product remain pending.
+[Actual tool/ledger evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-host/actual-tools.json).
+The13-test local environment fix is still undeployed/nativeNOT_RUN.
+
 ## Actual SWE.3 FAIL; context fix prepared — 2026-10-29 15:07UTC
 
 Production stays **9b4c390**, current Qwen run uninterrupted. SWE.3 produced detailed
