@@ -41,7 +41,8 @@ def _call(fn, *a):
 
 
 class NoIn(ToolInput):
-    offset: int = Field(default=0, ge=0, le=4 * 1024 * 1024, description="Page offset; continue at metrics.next_offset if present.")
+    offset: int = Field(default=0, ge=0, le=4 * 1024 * 1024,
+                        description="Page offset; continue at metrics.next_offset if present.")
 
 
 class PathIn(NoIn):
@@ -58,9 +59,11 @@ class TestsIn(ToolInput):
 
 
 class SubmitIn(ToolInput):
-    summary: str = Field(min_length=10, max_length=300)
-    reproducer: str = Field(min_length=10, max_length=200)
-    symptom_signature: str = Field(min_length=8, max_length=160)
+    summary: str = Field(min_length=10, max_length=300, description="Compact repair summary, at most 300 characters.")
+    reproducer: str = Field(min_length=10, max_length=200,
+                            description="Plain candidate-owned relative .py path only; no prose or annotations.")
+    symptom_signature: str = Field(min_length=8, max_length=160,
+                                   description="Exact signature following SYMPTOM_PRESENT: on the baseline.")
 
 
 def read_case(ctx: ToolContext, a: NoIn) -> dict:

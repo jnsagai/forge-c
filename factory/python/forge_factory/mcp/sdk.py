@@ -24,7 +24,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -348,11 +348,13 @@ def build_server(server_id: str, operations: list[Operation]):
             return tool
 
         fn = make(op)
-        # Expose the pydantic model's fields as the MCP input schema.
-        fn.__annotations__ = {**{k: f.annotation for k, f in op.model.model_fields.items()}, "return": str}
+        # Preserve FieldInfo: bare annotations lose bounds/descriptions when MCP
+        # rebuilds its argument model from this callable signature.
+        annotations = {k: Annotated[f.annotation, f] for k, f in op.model.model_fields.items()}
+        fn.__annotations__ = {**annotations, "return": str}
         import inspect
 
-        params = [inspect.Parameter(k, inspect.Parameter.KEYWORD_ONLY, annotation=f.annotation,
+        params = [inspect.Parameter(k, inspect.Parameter.KEYWORD_ONLY, annotation=annotations[k],
                                     default=(inspect.Parameter.empty if f.is_required() else f.default))
                   for k, f in op.model.model_fields.items()]
         fn.__signature__ = inspect.Signature(params, return_annotation=str)  # type: ignore[attr-defined]
