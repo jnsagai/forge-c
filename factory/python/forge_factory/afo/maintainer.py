@@ -162,8 +162,13 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, reta
             subprocess.run(["git", "worktree", "remove", "--force", str(src)], cwd=repo, capture_output=True)
             isolation.discard(root)
             raise MaintainerDenied("REWORK_CASE_TOO_LARGE")
-    (d / "case.json").write_text(json.dumps(case, indent=2, sort_keys=True))
-    (d / "case.json").chmod(0o400)
+    if retained_rework is not None:
+        from .durable import immutable_json
+
+        immutable_json(d / "case.json", case)
+    else:
+        (d / "case.json").write_text(json.dumps(case, indent=2, sort_keys=True))
+        (d / "case.json").chmod(0o400)
     return case
 
 
