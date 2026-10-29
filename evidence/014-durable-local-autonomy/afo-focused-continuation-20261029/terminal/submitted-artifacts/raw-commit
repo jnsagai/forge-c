@@ -1,0 +1,6 @@
+tree 28d8cd412946198cd02641fcc156ba9514700ed0
+parent 9b4c390e1605d11c4865bdeea382df74a0078692
+author afo-factory-maintainer <afo-maintainer@forge-c.invalid> 1793314952 +0000
+committer afo-factory-maintainer <afo-maintainer@forge-c.invalid> 1793314952 +0000
+
+AFO maintainer candidate mnt-48c5fa011f42b339-a1: Pin FORGE_DATA_ROOT to the host declared root in the generated isolated MCP env table and policy hook; a declared server spec value overrides the default and each key is emitted once, so strict tomlli

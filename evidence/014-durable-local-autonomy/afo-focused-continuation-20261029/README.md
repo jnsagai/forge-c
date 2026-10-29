@@ -1,5 +1,45 @@
 # Focused actual-Qwen repair continuation, four-hour scope
 
+## Terminal result; previous running checkpoints preserved below
+
+V6 native **01M64XB91FXAQSK9KWNKGSSTN0** completed9admitted requests,
+237020reported tokens, and a valid durable candidate submission/receipt. All9
+requests are QUIESCENT, execution QUIESCENT/RELEASED. Candidate
+**2ae98542928369aca3cfb8cc05cb5374fc3ce6bf** contains the two exact Qwen-written
+files, matching native write event hashes. Receipt-bound Git exports preserve
+both files and the raw commit after quarantine. Operator authored no repair code.
+
+Independent frozen checks: **1PASS/1FAIL**, no errors/skips. Default tool context
+and quoting now work; explicit MCP override parses and works in its child, but
+the hook's later default assignment shadows the explicit root. Independent
+original-diagram comparison: unchanged baseline fails both with
+PLANTUML_NOT_AVAILABLE; Qwen candidate renders both original diagrams to nonempty
+SVGs. **Scoped historical diagram-path recovery is proven.** This is a historical
+failure replay, not recovery of a newly induced live outage or a complete pipeline.
+The actual rendered SVGs are copied locally and preserved here.
+
+The complete original SWE.3 replay is **FAIL_OR_INCOMPLETE**: two diagram findings
+are removed; two TRACE_MAP_FUNCTION_NOT_IN_SCOPE findings remain on both baseline
+and candidate. Their product-versus-replay-context origin is not established here.
+No clean SWE.3 phase or full SWE.1–6 success is claimed.
+
+CRE triage **REJECTED / REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR**. The sealed
+baseline script actually exits1 and prints the correct protocol line. However,
+Qwen registered the whole line including SYMPTOM_PRESENT: as symptom_signature;
+CRE compares only the suffix, so the metadata mismatch correctly rejects it.
+Separately, the review worker raised KeyError because the proposal record has
+outcome and its store projection has status. New external sourcef9e7f54 fixes
+that reporting contract without accepting this candidate. Original BLOCKED /
+KeyError verification result remains historical; it was not replayed/relabelled.
+
+Same mission terminal checkpoint:4product attempts/6maintenance jobs/416requests,
+405131072conservative charged tokens; aggregate historical usage UNKNOWN. No
+allowance reset, candidate deployment, accepted repair lesson or task completion.
+The next exact-artifact continuation is recorded in
+[receipt-bound rework](../afo-receipted-rework-20261029/README.md).
+
+## Historical running and activation checkpoint
+
 Omniverse2 runtime **c1f1378733af388b50ba1d6e5de37c16f3c0a9ee** is active,
 operator **RUNNING epoch46**. External controller bootstrap passed85local and
 9native checks before activation. The loaded Qwen3.8 alias/Q8_0/f16/MTP3/xhigh

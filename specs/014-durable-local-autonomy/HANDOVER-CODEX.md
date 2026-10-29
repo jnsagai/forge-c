@@ -1,6 +1,56 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — Qwen focused repair live; full ASPICE pair prepared
+## Latest state — V6 receipted scoped recovery; V7 actual Qwen rework running
+
+**Runtimef9e7f54b1838be2560d00117c1725f8d1d74d4c8, RUNNING epoch48.** New
+external review-projection fix:89local/13native PASS, qualified before activation.
+It preserves the actual independent disposition instead of raising KeyError from
+missing proposal-record status; source does not accept or deploy Qwen repairs.
+
+V6 native01M64XB91FXAQSK9KWNKGSSTN0 completed9requests/237020reported tokens,
+valid candidate2ae98542928369aca3cfb8cc05cb5374fc3ce6bf and durable receipt.
+QUIESCENT/RELEASED. Frozen checks1PASS1FAIL (hook override shadowed); original
+baseline diagrams both fail while Qwen candidate renders both SVGs successfully.
+**Scoped historical diagram-path recovery measured**, not full self-healing.
+Whole SWE.3 replay remains FAIL_OR_INCOMPLETE with two trace-map findings on both
+variants; origin unresolved. CRE rejected a submitted signature containing the
+literal marker rather than its suffix; baseline script otherwise correctly
+exits1/prints the protocol line. Original errors/charges/quarantine remain.
+[Terminal V6 evidence](../../evidence/014-durable-local-autonomy/afo-focused-continuation-20261029/README.md).
+
+**V7 native01M64Z8NA11GPWQP2DEKEQW3G4** / job
+**afo-agent-64eb264a0be0ab8584ea42da** / order **afo-dba0cf206b8b0f2b** is
+confirmed RUNNING. Exact V6 receipt-bound code seeded; measured remaining findings
+provided, no operator repair code/reference oracle. Existing signing delegation
+used for exact new primary/role records; same mission and**30Oct02:40:24UTC**
+expiry, no extension/refill. One inference, same262144/Q8_0/f16/MTP3/xhigh provider.
+[Current scope/tools/checkpoint](../../evidence/014-durable-local-autonomy/afo-receipted-rework-20261029/README.md).
+Same existing recorder/branch publishes every300seconds and preserves V6 history:
+https://github.com/jnsagai/forge-c/tree/overnight/2026-10-29-local-qwen-afo.
+
+Full ASPICE profile/source preparation1237081 remains prospective/unactivated;
+54local checks and both six-phase routes pass; HAL requires new verified LL.
+Historical RCC is the same0002a example: old mission120000cap/86000charge, not
+a fresh workload with unspent limits. No new-order reset. Reconcile valid capacity
+and lineage before full RCC LL/HAL intake. Formal30/58 unchanged; no new tasks.
+
+Next: await the same V7 native handle, independently verify actual receipt/causal
+baseline/frozen checks/CRE/affected path after quiescence, then integrate only
+verified Qwen changes atop current qualified controller. Complete full ASPICE LL
+and HAL runs and genuine Qwen-authored correction cycles; do not stop at a narrow
+repair trial. External experiment setup remains disclosed; general/end-to-end
+autonomy, full product success, learning benefit and availability remain unproven.
+Keep the complete owner goal active. Never duplicate a live run from a timeout.
+
+Next software priority for actual autonomy: sweep_maintenance currently reuses
+one stable job per product-attempt/role and does not automatically dispatch
+retained rework after an independent rejection. Extend the existing Conductor /
+Maintainer path with a bounded same-order/mission feedback cycle and receipt-bound
+artifacts, preserving old jobs/expenditure and native/verification fencing. The
+externally enrolled V7 study is not proof of that missing loop. Do not keep
+substituting manual fresh-order studies for the requested unattended behavior.
+
+## Historical checkpoint — Qwen focused repair live; full ASPICE pair prepared
 
 **Runtimec1f1378733af388b50ba1d6e5de37c16f3c0a9ee, RUNNING epoch46.** Qualified
 external SDK/trusted retained-task bootstrap activated after85local/9native PASS.
