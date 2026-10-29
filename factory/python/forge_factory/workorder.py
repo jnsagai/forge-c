@@ -369,18 +369,23 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             "build_check": intake["build_check"]["status"],
             "store": str(BD.store_dir(wo)),
         }
+    from .inspection import assessment_context
+
+    if aspice_scope:
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 
     (ws / ".forge-run/checklists").mkdir(parents=True, exist_ok=True)
     for ph in PHASES:  # read-only copy of the resolved (hash-pinned) checklist for inspectors
-        cl = load_checklist(ph, brownfield=bool(spec.get("delivery")))
+        cl = assessment_context.checklist(manifest, load_checklist(ph, brownfield=bool(spec.get("delivery"))))
         (ws / f".forge-run/checklists/{ph}.json").write_text(
             pretty_json(
                 {
                     "phase": ph,
                     "version": cl["version"],
                     "sha256": cl["sha256"],
+                    **({"assessment_context": cl["assessment_context"]} if "assessment_context" in cl else {}),
                     "checks": [
                         {k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}
                         for c in cl["checks"]

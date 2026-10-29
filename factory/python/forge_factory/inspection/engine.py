@@ -337,8 +337,10 @@ class Store:
     def checklist(self, phase: str) -> dict:
         """The checklist of this work order: v0.4-brownfield for a delivery (OD-2026-10-20-02), else v0.4."""
         from ..brownfield import is_brownfield, manifest_of
+        from .assessment_context import checklist
 
-        return load_checklist(phase, brownfield=is_brownfield(manifest_of(self.workspace)))
+        manifest = manifest_of(self.workspace)
+        return checklist(manifest, load_checklist(phase, brownfield=is_brownfield(manifest)))
 
     def applicable(self, checklist: dict) -> dict:
         """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in."""
@@ -366,6 +368,8 @@ class Store:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:
                 decision, reason = "REINSPECT", "NO_INSPECTION_FOR_CURRENT_BASELINE"
+            elif "assessment_context" in checklist and last.get("checklist_sha256") != checklist["sha256"]:
+                decision, reason = "REINSPECT", "INSPECTION_ASSESSMENT_CONTEXT_CHANGED"
             elif last["verdict"] == "PASS":
                 decision, reason = "PASS", last["inspection_id"]
             else:

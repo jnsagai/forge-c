@@ -76,6 +76,13 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
                       "budgets": m["budgets"], "upstream": m.get("upstream")}, indent=1)
     srcs.append({"path": ".forge-run/manifest.json#scope-target-budgets", "text": ctx,
                  "sha256": sha256_bytes(ctx.encode())})
+    from ..inspection.assessment_context import view
+
+    context = view(m)
+    if context is not None:
+        text = json.dumps(context, sort_keys=True)
+        srcs.append({"path": ".forge-run/manifest.json#inspection-assessment-context", "text": text,
+                     "sha256": sha256_bytes(text.encode())})
     return bl, srcs
 
 
