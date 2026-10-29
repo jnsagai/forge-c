@@ -1,0 +1,5 @@
+SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED
+  - generated MCP env block does not pin FORGE_DATA_ROOT
+  - generated policy hook does not pin FORGE_DATA_ROOT
+  - isolated MCP child resolves a different data root (/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c)
+  - plantuml jar invisible to the child -> PLANTUML_NOT_AVAILABLE

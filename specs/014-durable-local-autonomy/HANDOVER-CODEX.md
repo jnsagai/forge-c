@@ -1,6 +1,34 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest activation — 2026-10-29 native maximum context, AFO trial live
+## Latest state — Qwen-authored partial repair, independent rejection and retained rework
+
+**Runtime92c49a6 / RUNNING epoch44**, same262144 Q8_0/f16/MTP3/xhigh profile,
+one inference and unchanged22:25:58UTC expiry. V4 native
+**01M64RG1FV5Y0B7M0VGN213D42** is terminal, QUIESCENT/RELEASED,19admitted
+requests/763063reported tokens. Actual Qwen native writes produced runconfig and
+reproducer; own tests baseline5FAIL/fix5PASS. Two malformed submissions (summaries
+956/371>300; annotated reproducer strings280/259>200) then1m job exhaustion;
+no broker receipt. Independent frozen tests **2FAIL** on candidate (hook quoting,
+duplicate TOML overrides); sealed baseline reproducer violates final-line contract.
+Patch is NOT accepted. Raw bytes/hashes and original failures are preserved.
+
+**Retained-artifact rework RUNNING:** order **afo-f516373e837db572**, job
+**afo-agent-97d070852addbf37acf1b7c9**, native **01M64TQWV0QAJ69YGBJSS2STN3**.
+Existing Conductor/Maintainer APIs copied exact prior Qwen-written bytes with a
+signed provenance/check binding and seed receipt; operator wrote no repair code.
+Only independent failure facts/contract bounds provided; reference fix/grader
+withheld. Same mission,4product attempts/5maintenance jobs; no old charge/reset.
+[Artifacts, independent checks and signed continuation](../../evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md).
+Self-healing remains **UNPROVEN**; do not mark formal tasks complete.
+
+**SDK implementation6cd2380 is NOT deployed.** Actual native MCP input schemas
+dropped Pydantic FieldInfo (bounds/descriptions); registration now retains it.
+3regressions fail before/pass after; exact local73PASS/1SKIP (live Fabro disabled),
+Ruff/static design PASS. Native corrected-source qualification is prepared and
+must wait for inference/CRE workers to be quiet. Do not hot-edit92c49a6 beneath
+its running signed trial. [SDK evidence](../../evidence/014-durable-local-autonomy/mcp-schema-metadata-20261029/README.md).
+
+## Historical activation — 2026-10-29 native maximum context, AFO trial live
 
 Owner requested maximum context after a measured native admission refusal.
 **Omniverse2 runtime92c49a6adde181737af19bb32a5efbd2130e9cd4**, operator
