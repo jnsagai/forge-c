@@ -391,10 +391,14 @@ def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
     if reasoning not in ("on", "off", "auto") or effort not in (None, "low", "medium", "high", "xhigh"):
         raise RuntimeError("LLAMA_SERVER_REASONING_CONFIGURATION_INVALID")
     ctx, kv = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), prof["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"]
+    batch, microbatch = ls.get("batch_tokens", 2048), ls.get("microbatch_tokens", 2048)
+    if (type(batch) is not int or type(microbatch) is not int
+            or not 1 <= microbatch <= batch <= 65536):
+        raise RuntimeError("LLAMA_SERVER_BATCH_CONFIGURATION_INVALID")
     argv = [str(lib / "llama-server"), "--model", str(blob), "--alias", model, "--host", "127.0.0.1",
             "--port", str(p["llama"]), "--no-webui", "--offline", "-c", str(ctx * slots), "-np", str(slots),
             "--jinja", "--reasoning", reasoning, "--cache-type-k", kv, "--cache-type-v", kv, "--flash-attn", "on",
-            "-b", "2048", "-ub", "2048"]
+            "-b", str(batch), "-ub", str(microbatch)]
     if "mtp_draft" in ls:
         if type(ls["mtp_draft"]) is not int or not 1 <= ls["mtp_draft"] <= 8:
             raise RuntimeError("LLAMA_SERVER_MTP_CONFIGURATION_INVALID")

@@ -81,6 +81,25 @@ def test_the_server_command_comes_from_the_profile_and_the_verified_model_file(t
     assert stack.llama_server_spec(r, lp.load("local-rtx-v2-omniverse2-q36-noreason"), {}, {}) is None
 
 
+def test_larger_context_uses_bound_batches_without_changing_precision_or_legacy_defaults(tmp_path):
+    r, prof = _root(tmp_path)
+    before, *_ = stack.llama_server_spec(r, prof, prof["deployment"]["ports"], {})
+    assert before[before.index("-b") + 1] == before[before.index("-ub") + 1] == "2048"
+    prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"] = "262144"
+    prof["runtime"]["llama_server"].update(slots=1, batch_tokens=1024, microbatch_tokens=512)
+    argv, *_ = stack.llama_server_spec(r, prof, prof["deployment"]["ports"], {})
+    assert argv[argv.index("-c") + 1] == "262144" and argv[argv.index("-np") + 1] == "1"
+    assert argv[argv.index("-b") + 1] == "1024" and argv[argv.index("-ub") + 1] == "512"
+    assert argv[argv.index("--cache-type-k") + 1] == before[before.index("--cache-type-k") + 1]
+    assert argv[argv.index("--cache-type-v") + 1] == before[before.index("--cache-type-v") + 1]
+    for values in ({"batch_tokens": True}, {"microbatch_tokens": 2048}, {"batch_tokens": 65537},
+                   {"microbatch_tokens": 0}):
+        invalid = copy.deepcopy(prof)
+        invalid["runtime"]["llama_server"].update(values)
+        with pytest.raises(RuntimeError, match="BATCH_CONFIGURATION_INVALID"):
+            stack.llama_server_spec(r, invalid, invalid["deployment"]["ports"], {})
+
+
 def test_another_model_file_or_a_truncated_blob_is_refused(tmp_path):
     r, prof = _root(tmp_path)
     bad = copy.deepcopy(prof)
