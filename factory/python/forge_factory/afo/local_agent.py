@@ -780,6 +780,14 @@ def launch_review(store, job: dict) -> None:
             c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(current), job["job_id"]))
 
 
+def _review_projection(store, proposal_id: str, record: dict) -> dict:
+    """The worker status is the durable projection, not a field in the versioned proposal record."""
+    current = store.proposal(proposal_id)
+    if current is None or current["record"] != record:
+        raise RuntimeError("MAINTAINER_REVIEW_RECORD_MISMATCH")
+    return {**record, "status": current["status"]}
+
+
 def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
     """Existing veto, baseline reproducer, CRE evaluator and draft-only broker. No source deployment."""
     import signal
@@ -816,6 +824,7 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
             fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
             tests_ref=f"local-agent:{job['job_id']}",
         )
+        result = _review_projection(store, case["proposal_id"], result)
         # Authority must still hold after the potentially long independent evaluation.
         from .policy import load
 
@@ -828,7 +837,7 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
         ):
             if not verification_fence():
                 raise RuntimeError("VERIFICATION_PUBLICATION_FENCED")
-            result = maintainer.publish(store, case["proposal_id"], latest)
+            result = _review_projection(store, case["proposal_id"], maintainer.publish(store, case["proposal_id"], latest))
         return result
     finally:
         signal.alarm(0)
