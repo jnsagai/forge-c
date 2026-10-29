@@ -1,0 +1,17 @@
+{
+  "runtime_revision": "3f1ef1b734f72e868a75488d980a2b4ac7c63998",
+  "local_recovery_command": "env PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 FORGE_FABRO_LIVE=0 PYTHONPATH=factory/python FORGE_DATA_ROOT='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c' TMPDIR='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029' PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/plantuml:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable:/usr/bin:/bin' '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python' -m pytest -q factory/python/tests/test_da014_integration.py factory/python/tests/test_da014_maintenance.py factory/python/tests/test_da014_role_envelopes.py factory/python/tests/test_da014_product_role_trial.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/afo-budget-local.xml",
+  "local_profile_command": "env PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 FORGE_FABRO_LIVE=0 PYTHONPATH=factory/python FORGE_DATA_ROOT='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c' TMPDIR='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029' PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/plantuml:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable:/usr/bin:/bin' '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python' -m pytest -q factory/python/tests/test_lrtx_profile.py factory/python/tests/test_lrtx_v2_profile.py factory/python/tests/test_da014_q38_quality_profile.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/afo-budget-profile-local.xml",
+  "native_command": "See qualification/native/provenance.json and bootstrap.py",
+  "static_commands": [
+    "specs/014-durable-local-autonomy/validate_spec.py",
+    "specs/014-durable-local-autonomy/contracts/validate_contracts.py",
+    "tests/spec/validate_design.py"
+  ],
+  "ruff": "python -m ruff check --select E9,F,B factory/python/forge_factory/lrtx/profile.py factory/python/tests/test_da014_role_envelopes.py factory/python/tests/test_da014_product_role_trial.py",
+  "candidate_verifier": {
+    "exit_code": 4,
+    "result": "NO_SUBMITTED_CANDIDATE",
+    "candidate_tests_executed": 0
+  }
+}

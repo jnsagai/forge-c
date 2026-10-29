@@ -1,0 +1,52 @@
+{
+  "source_revision": "3f1ef1b734f72e868a75488d980a2b4ac7c63998",
+  "source_activation": true,
+  "local_recovery_admission": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "92",
+    "time": "21.284",
+    "timestamp": "2026-10-29T18:36:59.064173+00:00",
+    "hostname": "master"
+  },
+  "native_recovery_admission": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "92",
+    "time": "313.230",
+    "timestamp": "2026-10-29T18:38:00.031271+00:00",
+    "hostname": "omniverse2"
+  },
+  "matching_case_ids": 92,
+  "local_profiles": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "35",
+    "time": "0.995",
+    "timestamp": "2026-10-29T18:37:27.286125+00:00",
+    "hostname": "master"
+  },
+  "first_model_job_result": "FAILED_BEFORE_AUTHORING_INITIAL_JOB_ENVELOPE_EXHAUSTED",
+  "first_model_job_tokens_reserved": 131072,
+  "first_model_job_tokens_reported": 54018,
+  "first_model_requests": 8,
+  "first_model_job_charge_preserved": true,
+  "prospective_next_job_tokens": 1000000,
+  "per_request_context_unchanged": 131072,
+  "old_mission_preserved": true,
+  "deadline_utc": "2026-10-29T22:25:58Z",
+  "continuation_native_run_id": "01M64FPV6Y2DYK3BKRRJQSR0NC",
+  "self_healing": "NOT_DEMONSTRATED",
+  "candidate_frozen_verifier": "NOT_RUN_NO_CANDIDATE",
+  "feature_tasks_newly_closed": [],
+  "candidate_verifier_invocation_exit_code": 4,
+  "continuation_result": "MODEL_BLOCKED_MCP_TOOL_BUDGET_EXHAUSTED_22_GT_20_NO_SUBMISSION",
+  "continuation_output_contract_valid": false,
+  "automatic_third_trial": false
+}

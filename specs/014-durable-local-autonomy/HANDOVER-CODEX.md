@@ -1,5 +1,47 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest live status — 2026-10-29 owner resumed Qwen
+
+**Final18:52UTC: Qwen still loaded and Conductor active; both maintenance trials
+are terminal without a candidate. Self-healing NOT_DEMONSTRATED.** Continuation
+18requests ended with Qwen BLOCKED/MCP tool budget exhausted22>20 and invalid
+free-text next_action. No patch/test/submission; record refused and durable task
+FAILED_PROTOCOL despite native traversal SUCCEEDED. Parent now BLOCKED with the
+actual reason, inference independently QUIESCENT/RELEASED, zero pending requests.
+Mission4product attempts/2maintenance jobs/371requests/401131072conservative tokens;
+original uncertainty retained. Maintenance tools remain separately observed in
+native facts, not silently added to the596mission-tool ledger count.
+No third automatic retry. Before another trial: bounded source inventory,
+prospective pagination-aware tool allowance, valid compact output; preserve all
+failed identities/reservations. External candidate-check invocation exit4 correctly
+reports NO_SUBMITTED_CANDIDATE. CRE/candidate tests NOT_RUN, no acceptance claimed.
+
+Owner: “you can load again the qwen model on omniverse and use it”. Exact signed
+four-hour window ends **22:25:58UTC**, same M1 mission/non-time limits/history.
+Latest production **3f1ef1b734f72e868a75488d980a2b4ac7c63998**, profile
+`local-rtx-v2-omniverse2-q38-afo-repair-mtp` v1, Qwen3.8Q8/MTP3/xhigh/f16,
+131072per-request context,1000000prospective maintenance-job tokens, one inference.
+Operator **RUNNING epoch36** supersedes the earlier STOPPED epoch33 below.
+Order **afo-2cd016a83d71c57d**, native **01M64FPV6Y2DYK3BKRRJQSR0NC** is the
+isolated historical maintenance replay; existing Conductor owned its execution.
+[Signed scopes, native results, setup limitations and next verifier](../../evidence/014-durable-local-autonomy/afo-repair-live-20261029/README.md).
+
+First real maintenance job at3015e47 read case/source successfully but hit
+JOB_TOKEN_ENVELOPE_EXHAUSTED after8requests/54018reported tokens, before patching.
+FAILED_PROTOCOL/no receipt is factual despite native traversal SUCCEEDED.
+Its131072initial reservation, failed evidence and DEFERRED_BUDGET experience remain.
+3f1ef1b separates cumulative job allowance from single-request context; it never
+refills old jobs or relaxes context/policy/mission/identity checks.92affected PASS
+locally and natively,35local profile regressions PASS, zero failures/errors/skips.
+Native source/time/commands and protected no-model execution are published.
+Strict/demo profiles are unchanged. No new task acceptance or self-healing proof.
+Original stopped driver parent is now factually BLOCKED/OPERATOR_SHUTDOWN.
+
+Next for a newly prepared trial: actual maintenance submission/native quiescence
+and existing CRE review; run frozen independent candidate check, inspect narrow
+changes, and copy real results to loop10. No candidate auto-deployment, deadline renewal, job refill or
+unbounded retry. Keep model/service health separate from repair/product acceptance.
+
 ## Latest preparation — 2026-10-29 AFO historical maintenance replay
 
 The owner requested preparation of a new Qwen self-healing check. Trial
