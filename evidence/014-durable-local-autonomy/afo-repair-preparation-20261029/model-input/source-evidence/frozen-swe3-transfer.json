@@ -1,0 +1,68 @@
+{
+  "schema": "forge-c/frozen-phase-snapshot/1",
+  "at": "2026-10-29T14:57:11.237473Z",
+  "order_id": "afo-774900b297bdde37",
+  "job_id": "afo-product-b715f920180f440b708e55a0",
+  "phase": "SWE.3",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "dirty": false
+  },
+  "baseline": {
+    "author_role": "swe3-author",
+    "baseline_hash": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+    "baseline_id": "BL-SWE.3-001",
+    "files": {
+      "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b",
+      "workproducts/SWE.3/code_trace_map.json": "c9ccf25dff92b34409409ec4b31cc95c7b759b96dec955c8c0e4c70f82fb4bc6",
+      "workproducts/SWE.3/code_trace_map.seed.json": "ab2d18b92dabe95ef5efed8346f13716fa91bed42d91d8cdcbdc919f99ed574c",
+      "workproducts/SWE.3/delivered_code_facts.json": "abd982a9e23af07dbb8b010addd525b657c3e30d1c80f8d549b0f854759e064a",
+      "workproducts/SWE.3/detailed_design.md": "bd9aa216f0964cfc6b1c950b90f0e51ef5deb37abd5096c0749f4d22d23f2034",
+      "workproducts/SWE.3/detailed_design/SWU-LL-01.puml": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+      "workproducts/SWE.3/detailed_design/SWU-LL-02.puml": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599",
+      "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv": "54dabb3871127976b72ca4272b612530d36ea14e1fb4db48175eb58a28b3fcf7",
+      "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.md": "ceb2e344374b9c5d07b054926f6ef4ded24d7be3bb3e3d33917d1de43af80f0f",
+      "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.csv": "73659445b54397456b87c0c0ae63352888781d38215d8175a3189f3c7710e8eb",
+      "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.md": "caaa91c1eedd45fb81c481768896108e323cf642f2a72e9252574df29d2e0172",
+      "workproducts/SWE.3/unit_specifications.md": "9c057a7863e673a13f7e62f30cf189a228bebed9de9451237a5437bf5a5a150a",
+      "workproducts/SWE.3/unit_specifications/SWU-LL-01.reqif": "afe9156dbe7e12cdb30d260911673bcbf39d4a90473105ea2ed2b3a0d2ca9fa1",
+      "workproducts/SWE.3/unit_specifications/SWU-LL-02.reqif": "88b99c7bde121515437b00a4b898c47913cdbd236826513885e35f4548037f4e"
+    },
+    "frozen_at": "2026-10-29T14:46:38.427129Z",
+    "phase": "SWE.3",
+    "schema": "forge-c/baseline/0.4",
+    "upstream": {
+      "SWE.1": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+      "SWE.2": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6"
+    }
+  },
+  "actual_inspection": {
+    "inspection_id": "INS-SWE.3-002",
+    "recorded_at": "2026-10-29T14:56:30.293370Z",
+    "verdict": "FAIL",
+    "baseline_hash": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5"
+  },
+  "phase_completion": "RECORDED_FAIL",
+  "current_baseline_verified": true,
+  "deterministic_gate": {
+    "phase": "SWE.3",
+    "decision": "REWORK",
+    "reason": "INS-SWE.3-002",
+    "failed_inspections": 2,
+    "max_rework_cycles": 3
+  },
+  "additional_checks": {
+    "status": "NOT_RERUN_IN_READONLY_COLLECTION"
+  },
+  "generation_requests": 0,
+  "read_only": true,
+  "product_acceptance": "NOT_ESTABLISHED",
+  "local_transfer": {
+    "status": "ALL_MEMBER_HASHES_AND_SIZES_VERIFIED",
+    "files": 36,
+    "archive_sha256": "988b51d28add5440590434af3baf2ba1d505c60e29d06ce6a6c767879fecdd7c",
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.3"
+  }
+}

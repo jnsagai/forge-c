@@ -1,5 +1,10 @@
 # Feature 014 qualification inputs
 
+For the historical AFO maintenance experiment, see
+[prepared trial and native controls](../../../evidence/014-durable-local-autonomy/afo-repair-preparation-20261029/README.md).
+`prepare_afo_repair.py --help` describes its preparation-only interface. The packet
+lists authority, resource and enrolment work still required before execution.
+
 Prepare concrete source cases in a new private data directory before freezing
 and signing a campaign. This command requires a real C compiler and creates no
 grant, mission, order, runtime job or inference request:

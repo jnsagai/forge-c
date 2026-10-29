@@ -1,0 +1,10 @@
+{
+  "schema": "forge-c/maintenance-sandbox-smoke/1",
+  "backend": "bubblewrap",
+  "isolation": "bubblewrap-userns-scoped-mounts",
+  "exit_code": 0,
+  "model_requests": 0,
+  "scope": "SYNTHETIC_CANARY_AND_READONLY_SOURCE_NO_OWNER_CREDENTIAL_ACCESS",
+  "stdout": "{\"uid\": 2003, \"source_readable\": true, \"gpu_devices\": [], \"source_write_refused\": true, \"private_canary_hidden\": true, \"scratch_writable\": true}\n",
+  "stderr": ""
+}

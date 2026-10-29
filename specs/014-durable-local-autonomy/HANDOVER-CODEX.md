@@ -1,5 +1,21 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest preparation — 2026-10-29 AFO historical maintenance replay
+
+The owner requested preparation of a new Qwen self-healing check. Trial
+`F014-AFO-MCP-ROOT-REPAIR-20261029` is **PREPARED, NOT ENROLLED, NOT RUN**.
+See [runbook, native controls and remaining activation work](../../evidence/014-durable-local-autonomy/afo-repair-preparation-20261029/README.md).
+The executable preparation helper exports hash-bound historical evidence and
+withheld controls. On Omniverse2 the frozen checker gives2FAIL on9b4c390 and2PASS
+on3015e47; actual maintenance bubblewrap smoke passes. All1488 listed packet
+members were copied/verified on loop10. No Qwen request or order was created.
+Existing STOPPED epoch33 remains effective; prior18:05:39UTC expiry is not renewed.
+Exact signed role/admission records, a current window, native resource/preflight
+checks, factual old-parent settlement and existing-AFO enrolment remain required.
+Last free GPU memory21519MiB is insufficient for the requested Q8 allocation.
+No runtime capability, self-healing, product or milestone acceptance is claimed;
+formal task completion is unchanged. Production source remains9b4c390.
+
 The owner asked Claude to finish the work in flight, stop, and hand over to Codex. Continue
 implementation, evidence and qualification from here; do not produce another plan or recreate the
 specification. Feature 014 is still INCOMPLETE: **30/58 tasks** are ticked from passing evidence records.
