@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-29T20:41:13.164268Z",
+  "source_revision": "979dcb406353b5c779cd7b61964e3e5f39add454",
+  "source_clean": true,
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 38,
+    "effective_stop": false
+  },
+  "conductor": {
+    "Result": "success",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled",
+    "Job": ""
+  },
+  "stack": {
+    "status": "UP",
+    "holder_pid": 263980,
+    "netns": "net:[4026533268]",
+    "health": {
+      "fabro": true,
+      "gateway": true,
+      "llama_server": true,
+      "ollama": true
+    }
+  },
+  "mission": {
+    "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793312758,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      },
+      {
+        "old_deadline": 1793297139.0,
+        "deadline_epoch": 1793312758,
+        "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+        "accepted_at": "2026-10-29T18:28:19.647876Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 2,
+    "requests": 371,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 401131072,
+    "usage_unknown": true,
+    "unique_executions": 6,
+    "unbounded_historical_usage": false
+  },
+  "pending_requests": 0,
+  "new_model_requests": 0,
+  "read_only": true
+}

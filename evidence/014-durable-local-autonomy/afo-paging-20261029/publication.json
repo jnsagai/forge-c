@@ -1,0 +1,17 @@
+{
+  "scope": "Presentation-only normalization of initial local failure transcript/XML text",
+  "files": [
+    {
+      "path": "local-initial.xml",
+      "raw_sha256": "6760e1f303c51a3a6fdeafe4651b5f331dd92c87adec8bc5de2c95ed2491fd35",
+      "published_sha256": "eaabe0143f654db67825523ea55e53a6faa2e817d02c0dd0194248e08633bee6",
+      "change": "Trailing ASCII whitespace removed for Git publication; original retained in private loop10 operations directory"
+    },
+    {
+      "path": "local-initial.log",
+      "raw_sha256": "15b98ec01e134e161d5f6da8a90a557ce865028ddb639ac9bbc4d1848adc6fcd",
+      "published_sha256": "af7a8c04720a1fef8da0bb9c276bd607d307b81e649268792b873798872188e2",
+      "change": "Trailing ASCII whitespace removed for Git publication; original retained in private loop10 operations directory"
+    }
+  ]
+}

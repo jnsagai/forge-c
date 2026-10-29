@@ -1,5 +1,31 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest activation — 2026-10-29 measured AFO paging/call allowances
+
+Owner requested larger limits and sizing from Codex-workflow driver files.
+**Active Omniverse2 runtime979dcb406353b5c779cd7b61964e3e5f39add454**;
+operator **RUNNING epoch38**, Conductor active, same loaded Qwen provider retained.
+AFO pages target32768characters within65536serialized bytes; both AFO roles have
+200tool calls; source reads are bounded at4MiB with matching offset reachability.
+Registry, token policy, SKILL metadata/instructions and hash lock agree. Existing
+per-request context131072, selected prospective job allowance1m, path/write/
+review gates, mission history and22:25:58UTC expiry are preserved.
+
+Census:92local Codex-author workspaces,882source-file observations; largest
+workflow-output driver7278bytes, delivered RCC LL340069bytes, copied device test
+header3599048bytes. Source origin and product acceptance remain separate.
+Corrected native cohort **152PASS/2explicit SKIP**,302.052s; local reconciled
+**153PASS/1SKIP**, matching154case IDs. Source/boundary/actual200→201hook checks
+pass. Original missing-Fabro-env local failure, root-mapped native permission
+failure and incomplete staging checksum refusal remain in evidence. Mapping tests
+to actual UID1000 fixed the runner; no permission test or guard was weakened.
+[Census, commands, original failures, native evidence and activation](../../evidence/014-durable-local-autonomy/afo-paging-20261029/README.md).
+
+No new grant/order/model request or repair trial was created. Previous failed
+trials remain terminal; self-healing not demonstrated, formal completion unchanged.
+Next trial needs current exact-source intake/role records and independent checks;
+do not revive/refill either failed job or extend the existing expiry silently.
+
 ## Latest live status — 2026-10-29 owner resumed Qwen
 
 **Final18:52UTC: Qwen still loaded and Conductor active; both maintenance trials

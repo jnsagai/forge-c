@@ -1,5 +1,10 @@
 # Feature 014 qualification inputs
 
+Size AFO reads from recorded Codex-author workspaces without contacting a model:
+`python factory/qualification/014/measure_codex_driver_files.py --state-root <workorders> --out <new-json>`.
+The [measured census, active limits and native checks](../../../evidence/014-durable-local-autonomy/afo-paging-20261029/README.md)
+distinguish workflow outputs, delivered ST driver files and test dependencies.
+
 For the historical AFO maintenance experiment, see
 [prepared trial and native controls](../../../evidence/014-durable-local-autonomy/afo-repair-preparation-20261029/README.md).
 `prepare_afo_repair.py --help` describes its preparation-only interface. The packet

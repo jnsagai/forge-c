@@ -1,0 +1,8 @@
+usage: measure_codex_driver_files.py [-h] --state-root STATE_ROOT --out OUT
+
+Read-only size census of workspaces with recorded Codex author provenance.
+
+options:
+  -h, --help            show this help message and exit
+  --state-root STATE_ROOT
+  --out OUT

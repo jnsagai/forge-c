@@ -1,0 +1,55 @@
+{
+  "schema": "forge-c/afo-paging-qualification/1",
+  "runtime_revision": "979dcb406353b5c779cd7b61964e3e5f39add454",
+  "local_reconciled": {
+    "distinct_tests": 154,
+    "passed": 153,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "method": "152PASS/1FAIL/1SKIP initial cohort; corrected Fabro binary environment, reran exactly failed case PASS; no runtime code changed"
+  },
+  "native_final": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "2",
+    "tests": "154",
+    "time": "302.052",
+    "timestamp": "2026-10-29T20:34:09.649466+00:00",
+    "hostname": "omniverse2"
+  },
+  "matching_case_ids": 154,
+  "native_initial": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "1",
+    "skipped": "2",
+    "tests": "154",
+    "time": "296.417",
+    "timestamp": "2026-10-29T20:27:42.899689+00:00",
+    "hostname": "omniverse2"
+  },
+  "limits": {
+    "page_target_characters": 32768,
+    "max_response_bytes": 65536,
+    "afo_tool_calls": 200,
+    "max_source_read_bytes": 4194304
+  },
+  "source_size_census": {
+    "workspaces": 92,
+    "source_files": 882,
+    "workflow_output_driver_max_bytes": 7278,
+    "delivered_driver_max_bytes": 340069,
+    "test_header_max_bytes": 3599048
+  },
+  "activated": true,
+  "operator_epoch": 38,
+  "provider_retained": true,
+  "new_model_requests": 0,
+  "mission_reset": false,
+  "deadline_changed": false,
+  "model_role_qualification": "NOT_RUN",
+  "self_healing": "NOT_DEMONSTRATED",
+  "feature_tasks_newly_accepted": []
+}
