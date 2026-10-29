@@ -1,0 +1,23 @@
+{
+  "schema": "forge-c/scoped-primary-reference-crosscheck/1",
+  "at": "2026-10-29T14:37:28.439761Z",
+  "source": {
+    "path": "inputs/RM0486-rev4-ch26-crc.md",
+    "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+    "section": "26.4.2 CRC independent data register"
+  },
+  "artifact": {
+    "path": "workproducts/SWE.2/software_architecture.md",
+    "sha256": "5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e"
+  },
+  "register": "CRC_IDR",
+  "primary_offset": "0x4",
+  "architecture_offset": "0x4",
+  "status": "PASS_SCOPED_OFFSET_MATCH",
+  "registers_crosschecked": 1,
+  "scope": "One actual CRC_IDR offset only; not all hardware semantics, base addresses or product acceptance",
+  "production_checker_offset_coverage": 0,
+  "production_checker_limitation": "No matching dedicated register section file/name in this workspace; existing structure PASS does not prove offset checking",
+  "read_only": true,
+  "generation_requests": 0
+}

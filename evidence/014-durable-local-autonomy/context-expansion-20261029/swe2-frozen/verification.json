@@ -1,0 +1,67 @@
+{
+  "schema": "forge-c/frozen-phase-snapshot/1",
+  "at": "2026-10-29T14:34:40.126540Z",
+  "order_id": "afo-774900b297bdde37",
+  "job_id": "afo-product-b715f920180f440b708e55a0",
+  "phase": "SWE.2",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "dirty": false
+  },
+  "baseline": {
+    "author_role": "swe2-author",
+    "baseline_hash": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6",
+    "baseline_id": "BL-SWE.2-001",
+    "files": {
+      "workproducts/SWE.2/api_calls.json": "dbcc801aa390285e8b13a27120d6fbab311703aa04404fc188d3bd8ab20f0e5b",
+      "workproducts/SWE.2/architecture_dynamic.puml": "0234af58db60b7ee4e9321310d14f41851b27a844edc38d31b02db5377a3615d",
+      "workproducts/SWE.2/architecture_dynamic.svg": "df284b213562989243a2c31fa22a4394abe7366e896d9a1a19964398ccb3bb4e",
+      "workproducts/SWE.2/architecture_static.puml": "8ab1ceb9fdb54f6ee9dd8d1c1a2d3105de693cedad30120c977583765362bc31",
+      "workproducts/SWE.2/architecture_static.svg": "d1630dad649b006153cf5478ca6597381a85daa2a5a8d25d1b71fa1495f95e10",
+      "workproducts/SWE.2/software_architecture.md": "5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e",
+      "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv": "f98a3043b20b5006a81e7161b0dc88687fbbeb13edddef059e5aa13601fba803",
+      "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.md": "5f7a236a327c29b7f91eb40b10c7de05546679cc9c38b2b55615313ac28326bc"
+    },
+    "frozen_at": "2026-10-29T14:29:25.289483Z",
+    "phase": "SWE.2",
+    "schema": "forge-c/baseline/0.4",
+    "upstream": {
+      "SWE.1": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd"
+    }
+  },
+  "actual_inspection": {
+    "inspection_id": "INS-SWE.2-001",
+    "recorded_at": "2026-10-29T14:32:20.122477Z",
+    "verdict": "PASS",
+    "baseline_hash": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6"
+  },
+  "current_baseline_verified": true,
+  "deterministic_gate": {
+    "phase": "SWE.2",
+    "decision": "PASS",
+    "reason": "INS-SWE.2-001",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "model_free_architecture_check": {
+    "verdict": "PASS",
+    "major_findings": [],
+    "stats": {
+      "swr_known": 9,
+      "swr_allocated": 9,
+      "registers": 1,
+      "registers_checked_against_rm": 0
+    }
+  },
+  "generation_requests": 0,
+  "read_only": true,
+  "product_acceptance": "NOT_ESTABLISHED",
+  "local_transfer": {
+    "status": "ALL_MEMBER_HASHES_AND_SIZES_VERIFIED",
+    "files": 13,
+    "archive_sha256": "624489fc92a1245bf67a6d5aa65c420318e96a0b6429f9f320bb179baaaad5fa",
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.2"
+  }
+}

@@ -7,6 +7,16 @@ the real incomplete previous attempt, allocation and fixture qualification, exac
 signed scope, fenced activation and the new live run. It does not establish M1,
 full-pipeline product success, learning benefit or continuous-operation qualification.
 
+## Actual frozen SWE.2 PASS — later14:37UTC snapshot
+
+At14:32:20UTC actual inspection INS-SWE.2-001 PASS, no findings. Frozen baseline
+and deterministic gate independently current/PASS at14:34:40UTC;13downloaded
+phase/baseline/inspection files match all remote hashes/sizes. Structure check
+allocates9/9requirements but checks zero offsets; a separate pinned-primary audit
+confirms actual CRC_IDR offset0x04 only. SWE.3 author is active,50provider requests,
+detailed design and later phases pending at14:37UTC. See [complete phase evidence
+and limits](swe2-frozen/README.md). Full product/strict M1 remains unaccepted.
+
 ## Actual SWE.2 output — later14:29UTC snapshot
 
 The new run produced workproducts/SWE.2/software_architecture.md,8882bytes,

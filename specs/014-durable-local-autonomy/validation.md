@@ -1,5 +1,24 @@
 # Implementation and qualification status
 
+## Actual SWE.2 PASS; SWE.3 running — 2026-10-29 14:37UTC
+
+Runtime remains **9b4c390**, current native **01M63ZTJ5QM1R96484Y2KN97H6**.
+Actual **INS-SWE.2-001 PASS at14:32:20UTC**, no findings; current frozen baseline
+and deterministic gate independently rechecked PASS at14:34:40UTC. Architecture,
+rendered static/dynamic diagrams, API calls and trace tables are present; all13
+downloaded phase/baseline/inspection files match remote hashes and sizes.
+The model-free structure check allocates9/9requirements but checked zero offsets.
+A separate actual pinned-primary-reference audit confirms CRC_IDR offset0x04 only;
+other hardware semantics are not thereby qualified. The inherited generic offset
+coverage gap remains open for later quality work.
+[Actual phase evidence, limits and verified local transfer](../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md).
+
+At14:37:29UTC **SWE.3 author active**,50provider requests in this run; only its
+deterministic code facts/seed are present so far, substantive detailed design and
+SWE.4–6 pending. Full product/strict M1 still unaccepted. Local loop10 frozen phase:
+inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.2.
+Candidatea1c6ae5 remains undeployed; native qualification NOT_RUN during this run.
+
 ## Actual SWE.2 artifact and inspection — 2026-10-29 14:29UTC
 
 On deployed **9b4c390**, Qwen wrote **workproducts/SWE.2/software_architecture.md**

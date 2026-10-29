@@ -47,7 +47,7 @@
   "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
   "live_order_state": "RUNNING",
-  "later_phases": "SWE2_ARCHITECTURE_PRESENT_INSPECTOR_ACTIVE; SWE3_THROUGH6_NOT_YET_EXECUTED",
+  "later_phases": "SWE2_INSPECTION_PASS; SWE3_AUTHOR_ACTIVE; SWE4_THROUGH6_NOT_YET_EXECUTED",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -109,11 +109,11 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 100,
-    "tools": 223,
+    "requests": 119,
+    "tools": 259,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T14:29:39.651655Z"
+    "captured_utc": "2026-10-29T14:37:29.015598Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -137,7 +137,7 @@
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T14:29:39.651655Z",
+  "source_status_captured_utc": "2026-10-29T14:37:29.015598Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -165,7 +165,8 @@
     "historical_f206_archive": "COPIED_SHA_VERIFIED_86_FILES_EXTRACTED",
     "current_demo_archive": "COPIED_SHA_AND_FULL_INVENTORY_VERIFIED; 46_GAPS; INCOMPLETE_PRODUCT",
     "current_context262_archive": "NOT_YET_FINALIZED",
-    "current_context262_live_swe2_snapshot": "COPIED_8882_BYTES_SHA256_VERIFIED; INSPECTION_PENDING"
+    "current_context262_live_swe2_snapshot": "COPIED_8882_BYTES_SHA256_VERIFIED; INSPECTION_PENDING",
+    "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED"
   },
   "historical_f206_reported_usage": {
     "prompt_tokens": 31688,
@@ -190,8 +191,9 @@
   },
   "demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T14:17:44Z",
-    "SWE.2": "REAL_ARCHITECTURE_WRITTEN_8882_BYTES; NATIVE_INSPECTOR_ACTIVE; VERDICT_PENDING",
-    "SWE.3_THROUGH_6": "NOT_YET_EXECUTED"
+    "SWE.2": "REAL_INSPECTION_PASS_2026-10-29T14:32:20Z; CURRENT_BASELINE_AND_DETERMINISTIC_GATE_PASS",
+    "SWE.3": "NATIVE_AUTHOR_ACTIVE; ONLY_DETERMINISTIC_SEED_FACTS_PRESENT_AT_14:37",
+    "SWE.4_THROUGH_6": "NOT_YET_EXECUTED"
   },
   "historical_demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS",
@@ -234,9 +236,15 @@
     "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
   },
   "current_trial_reported_usage_partial": {
-    "completed_requests": 30,
+    "completed_requests": 49,
     "pending_requests": 1,
-    "reported_total_tokens": 998003,
-    "scope": "Provider reports for current262k run at observation timestamp; pending and historical aggregate remain UNKNOWN"
+    "reported_total_tokens": 1551250,
+    "scope": "Provider reports for current262k run at14:37 observation; pending and historical aggregate remain UNKNOWN"
+  },
+  "swe2_independent_verification": {
+    "structure": "PASS_9_OF_9_REQUIREMENTS_ALLOCATED",
+    "generic_rm_offset_coverage": 0,
+    "external_scoped_idr_offset": "PASS_0x04_MATCH_PINNED_RM0486_26.4.2",
+    "qualified_product": "NOT_ESTABLISHED"
   }
 }
