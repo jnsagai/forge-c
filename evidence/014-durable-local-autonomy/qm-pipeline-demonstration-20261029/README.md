@@ -1,5 +1,14 @@
 # Owner-selected full-pipeline QM demonstration
 
+## Terminal correction — 2026-10-29 13:15UTC
+
+The live snapshot below is historical. This attempt finished **BLOCKED,46gaps**.
+SWE.1 passed; all14later native roles errored CAPABILITY_LIMIT and failed to create
+substantive later workproducts. Native SUCCEEDED means graph traversal, not complete
+engineering or acceptance. Archive integrity and private local transfer PASS.
+See [terminal evidence and subsequent262k continuation](../context-expansion-20261029/README.md).
+Do not present the earlier RUNNING/SWE.2 request snapshot as a completed phase.
+
 ## Live activation — 2026-10-29 12:45UTC
 
 The owner approved exact signing/activation and added: “always approve it for now on

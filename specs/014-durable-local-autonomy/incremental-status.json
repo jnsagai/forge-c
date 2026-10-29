@@ -25,8 +25,8 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
-  "production_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+  "latest_source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
     "revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
@@ -43,11 +43,11 @@
   },
   "partial_tasks": {},
   "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md",
-  "active_order_id": "afo-d9ddb6d7a1c4e025",
-  "active_native_run_id": "01M63V3YA87ENXA7052M8HS62X",
+  "active_order_id": "afo-774900b297bdde37",
+  "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
   "live_order_state": "RUNNING",
-  "later_phases": "NOT_RUN",
+  "later_phases": "CURRENT_RUN_NOT_YET_EXECUTED; PREVIOUS_DEMO_NATIVE_ROLES_FAILED_CAPABILITY_LIMIT",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -79,29 +79,41 @@
     "watchdog_timer": "ACTIVE",
     "finite_recorder": "ACTIVE",
     "operator_mode": "RUNNING",
-    "operator_epoch": 28
+    "operator_epoch": 32
   },
   "deployed_candidate": {
-    "revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
-    "qualification": "16_PASS_LOCAL_AND_NATIVE; DEMONSTRATION_ACTIVATED; REAL_PIPELINE_RUNNING",
+    "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "qualification": "28_PASS_PER_HOST; ALLOCATION_PASS; STATIC_ADMISSION_PASS; REAL_RUN_LIVE",
     "qualification_model_requests": 0,
-    "purpose": "QM full-pipeline demonstration; quality outcomes observational; product unaccepted",
+    "purpose": "QM full-pipeline demonstration, context262144, quality outcomes observational, product unaccepted",
     "local_tests": {
-      "passed": 16,
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
       "skipped": 0,
-      "model_requests": 0,
-      "scope": "three-module demonstration/QM/high-allowance cohort"
+      "duration_seconds": 4.303,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
+    },
+    "native_tests": {
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 13.057,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
     }
   },
   "historical_order_id": "afo-cf20126621ac2673",
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
-    "attempts": 3,
-    "requests": 19,
-    "tools": 69,
-    "charged_tokens": 300000000,
+    "attempts": 4,
+    "requests": 70,
+    "tools": 193,
+    "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T12:55:33.099708Z"
+    "captured_utc": "2026-10-29T14:08:44.989263Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -118,20 +130,20 @@
     "deadline_utc": "2026-10-29T18:05:39Z",
     "deadline_changed": false,
     "same_mission": true,
-    "pending_prerequisite": "Exact updated SSH-agent execution signing and activation approval; QM scope itself already owner-approved"
+    "pending_prerequisite": "NONE; SUPERSEDED HISTORICAL UNSIGNED PACKET, DO NOT ACTIVATE"
   },
   "historical_reported_output_tokens_completed_requests": 17340,
-  "active_inference_run": "01M63V3YA87ENXA7052M8HS62X",
+  "active_inference_run": "01M63ZTJ5QM1R96484Y2KN97H6",
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T12:55:33.099708Z",
+  "source_status_captured_utc": "2026-10-29T14:08:44.989263Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
     "native_passed": 24,
     "model_requests": 0,
-    "deployed": false,
+    "deployed": true,
     "historical_archive_integrity": "PASS",
     "historical_product_acceptance": "BLOCKED_UNCHANGED",
     "evidence": "evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md"
@@ -140,7 +152,7 @@
   "demonstration_activation": {
     "source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
     "scope_sha256": "252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0",
-    "state": "ACTIVATED_OWNER_APPROVED",
+    "state": "HISTORICAL_TERMINAL_BLOCKED",
     "signatures_created": 2,
     "deadline_utc": "2026-10-29T18:05:39Z",
     "history_reset": false
@@ -151,7 +163,8 @@
     "status": "ACTIVE_MODEL_FREE_60_SECOND_POLL",
     "ends_utc": "2026-10-29T18:35:39Z",
     "historical_f206_archive": "COPIED_SHA_VERIFIED_86_FILES_EXTRACTED",
-    "current_demo_archive": "NOT_YET_FINALIZED"
+    "current_demo_archive": "COPIED_SHA_AND_FULL_INVENTORY_VERIFIED; 46_GAPS; INCOMPLETE_PRODUCT",
+    "current_context262_archive": "NOT_YET_FINALIZED"
   },
   "historical_f206_reported_usage": {
     "prompt_tokens": 31688,
@@ -160,7 +173,7 @@
     "model_calls": 6,
     "scope": "Six f206 continuation provider reports; completion may include reasoning; aggregate historical usage remains UNKNOWN"
   },
-  "reported_usage_scope": "CURRENT_DEMONSTRATION_PARTIAL; historical f206 usage retained separately; aggregate remains UNKNOWN",
+  "reported_usage_scope": "CURRENT262_RUN_FIRST_REQUEST_PENDING; HISTORICAL_USAGE_RETAINED; AGGREGATE_UNKNOWN",
   "historical_deployed_candidate": {
     "revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
     "purpose": "Reviewed simulation input; scoped independent unit recheck; shared accounting; explicit time-only continuation",
@@ -175,18 +188,40 @@
     "live_model_requests": 6
   },
   "demonstration_phase_progress": {
-    "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T12:55:24Z",
-    "SWE.2": "NATIVE_AUTHOR_REQUEST_IN_FLIGHT",
-    "SWE.3": "NOT_RUN",
-    "SWE.4": "NOT_RUN",
-    "SWE.5": "NOT_RUN",
-    "SWE.6": "NOT_RUN"
+    "SWE.1": "CURRENT_STRUCTURED_REQUEST_SENT",
+    "SWE.2_THROUGH_6": "NOT_YET_EXECUTED"
   },
-  "current_trial_reported_usage_partial": {
+  "historical_demonstration_phase_progress": {
+    "SWE.1": "REAL_INSPECTION_PASS",
+    "SWE.2_THROUGH_6": "NATIVE_AGENT_ERRORS_CAPABILITY_LIMIT; NO_SUBSTANTIVE_COMPLETION"
+  },
+  "historical_demo_terminal": {
+    "order_id": "afo-d9ddb6d7a1c4e025",
+    "native_run_id": "01M63V3YA87ENXA7052M8HS62X",
+    "native_status": "SUCCEEDED",
+    "product_status": "BLOCKED",
+    "gaps": 46,
+    "failed_native_roles": 14,
+    "archive_sha256": "5eb4c3c7912fe9d30e40117e38de4312b618080818d8b92abe4bda9e66960196",
+    "full_pipeline_productive_completion": false
+  },
+  "historical_demo_reported_usage_partial": {
     "completed_requests": 6,
     "pending_requests": 1,
     "reported_total_tokens": 63513,
     "prompt_completion_split": "Not exported by this observation",
-    "aggregate_historical_usage": "UNKNOWN"
+    "aggregate_historical_usage": "UNKNOWN",
+    "scope": "Historical12:55 checkpoint, not terminal total"
+  },
+  "context262_activation": {
+    "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "operator_epoch": 32,
+    "context_tokens": 262144,
+    "profile_version": 4,
+    "scope_sha256": "71b48d33283655a68d9fc33dd65b750a6e1be1aa9bd81188a232d3e1a6ac5759",
+    "evidence": "evidence/014-durable-local-autonomy/context-expansion-20261029/README.md",
+    "signatures_created": 2,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "history_reset": false
   }
 }

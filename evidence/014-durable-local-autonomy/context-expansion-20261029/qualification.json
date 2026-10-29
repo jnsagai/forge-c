@@ -1,0 +1,41 @@
+{
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "tests": {
+    "local": {
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 4.303,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
+    },
+    "omniverse2": {
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 13.057,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
+    }
+  },
+  "qualification_generation_requests": 0,
+  "native_nodes": 14,
+  "captured_bodies": 56,
+  "maximum_native_initial_and_skill_bound": 77488,
+  "complete_role_preflight_rows": 63,
+  "maximum_complete_role_bound": 77488,
+  "measurement": "utf8_byte_upper_bound, not native tokenizer tokens",
+  "model_context_tokens": 262144,
+  "profile_version": 4,
+  "batch_tokens": 1024,
+  "microbatch_tokens": 512,
+  "allocation": "PASS_ALLOCATION_ONLY",
+  "allocation_generation_requests": 0,
+  "runtime_qualification": "LIVE_RUN_IN_PROGRESS",
+  "local_model_capability": "NOT_ESTABLISHED",
+  "product_acceptance": "NOT_ESTABLISHED",
+  "operational_availability": "NOT_QUALIFIED",
+  "learning_benefit": "NOT_MEASURED"
+}

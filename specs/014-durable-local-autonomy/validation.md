@@ -1,5 +1,37 @@
 # Implementation and qualification status
 
+## Larger-context Qwen continuation — 2026-10-29 14:08UTC
+
+Current deployed/tested source **9b4c390e1605d11c4865bdeea382df74a0078692**,
+profile local-rtx-v2-omniverse2-q38-qm-demo-mtp v4: **262144context**, GPU batch1024/
+microbatch512, same Q8/f16KV/MTP3/xhigh and one inference. Allocation on Omniverse
+PASS with1966MiB GPU free and zero generation; exact local/native cohort28PASS
+each,0failures/errors/skips, one pre-existing six-phase fixture deselected. Full
+native workflow validation and63role admission rows PASS, maximum byte-bound77488.
+See [qualification, prior failure, signatures and actual activation](../../evidence/014-durable-local-autonomy/context-expansion-20261029/README.md).
+
+The earlier15b0fa5 demonstration **finished BLOCKED,46gaps**. Native SUCCEEDED
+meant42-node traversal: all14later native roles errored HTTP429/CAPABILITY_LIMIT,
+so later substantive artifacts were not completed. SWE.1 passed; SWE.3 files were
+deterministic facts/seed only. Complete failed package is copied/verified locally.
+Largest accepted byte reservation130842/131072 strongly indicates context pressure;
+the exact refused body bounds were not retained. Do not label this model quality
+failure or a complete productive pipeline.
+
+Standing owner signing/activation delegation remains valid for this mission.
+Exact scope71b48d33 signed twice; fenced31/32 activation preserved all prior history
+and the existing18:05:39UTC deadline. New order **afo-774900b297bdde37 RUNNING**,
+native **01M63ZTJ5QM1R96484Y2KN97H6 RUNNING**, launch identityCONFIRMED,
+executionLIVE/leaseHELD. At14:08:44UTC first structured request SENT; cumulative
+4attempts/70requests/193tools/400m conservative charges and UNKNOWN aggregate usage.
+Actual graph contains all six phase authors/inspectors/checks. Product success
+remains unproven and demonstration outputs remain explicitly unaccepted.
+
+Recorder branch e2e/2026-10-29-idr-m1-qm-demo-ctx262. The existing model-free local
+collector will fetch the new outcome after finalization; prior demo already copied.
+Formal30/58, IE-T001–007 complete; IE-T008 unaccepted, IE-T009/M2–M5 unrun.
+Entries below are historical snapshots, including earlier RUNNING/pending states.
+
 ## Live full-pipeline QM demonstration — 2026-10-29 12:50UTC
 
 Owner explicitly relaxed quality stopping criteria and approved exact15b0fa5 signing/

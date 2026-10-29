@@ -1,0 +1,11 @@
+{
+  "expected_remote_package_sha256": "5eb4c3c7912fe9d30e40117e38de4312b618080818d8b92abe4bda9e66960196",
+  "integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/afo-product-7be7e1ce209aafb7a169c2c2/forge-c-WO-AFO-d9ddb6d7a1c4e025-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "copied_at": "2026-10-29T14:10:08.175170+00:00",
+  "private_local_copy": true,
+  "model_requests": 0
+}
