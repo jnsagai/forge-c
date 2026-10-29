@@ -95,9 +95,68 @@ def test_real_simulator_reports_each_function_and_robot_uses_the_measurement(mea
     robot = module.ForgeTarget(str(ws))
     robot.run_target_scenario(F.TEST)
     robot.simulation_performance_should_meet_budget()
-    robot.last["performance"]["status"] = "FAIL"
-    with pytest.raises(AssertionError, match="no complete passing"):
+    original = copy.deepcopy(robot.last)
+    robot.last_src = ws / "software/tests/software/scn_performance.c"
+    with pytest.raises(AssertionError, match="SIM_PERF_WRONG_SCENARIO.*" + F.TEST):
         robot.simulation_performance_should_meet_budget()
+    robot.last_src = ws / F.TEST
+    robot.last["performance"]["budget_sha256"] = "0" * 64
+    with pytest.raises(AssertionError, match="SIM_PERF_BUDGET_CHANGED"):
+        robot.simulation_performance_should_meet_budget()
+    robot.last = copy.deepcopy(original)
+    del robot.last["performance"]
+    with pytest.raises(AssertionError, match="SIM_PERF_MEASUREMENT_MISSING"):
+        robot.simulation_performance_should_meet_budget()
+    robot.last = copy.deepcopy(original)
+    robot.last["performance"]["status"] = "FAIL"
+    with pytest.raises(AssertionError, match="SIM_PERF_MEASUREMENT_FAILED"):
+        robot.simulation_performance_should_meet_budget()
+    robot.last = copy.deepcopy(original)
+    robot.last["failed"] = 1
+    with pytest.raises(AssertionError, match="1 failed"):
+        robot.simulation_performance_should_meet_budget()
+
+
+@pytest.mark.parametrize("declared_source", [False, True])
+def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measured, monkeypatch, declared_source):
+    """Actual Robot/compiler/Renode, synthetic two-budget requirement fixture; no model or live review."""
+    ws, _ = measured
+    from forge_factory.lrtx.swe1 import system_name
+    from forge_factory.mcp.servers import tests
+    from forge_factory.workflow.robot_scaffold import build_suite
+
+    reqs = [r for r in swe1.budget_requirements(ws, system_name(ws))
+            if r["upstream"] == "WO-SIMULATION-PERFORMANCE"]
+    markdown = "\n".join(f"- **SWR-{i:03d}** {r['statement']}" for i, r in enumerate(reqs, 1)) + "\n"
+    req = ws / "workproducts/SWE.1/software_requirements.md"
+    req.chmod(0o644)
+    req.write_text(markdown)
+    source = F.TEST if declared_source else "software/tests/software/scn_performance.c"
+    # Same functional checks in a different file are not an instrumented measurement.
+    other = ws / "software/tests/software/scn_performance.c"
+    other.parent.mkdir(parents=True, exist_ok=True)
+    other.write_text(TEST.replace('"forge_performance_calls.h"', '"stm32n6xx_ll_crc.h"')
+                    .replace("forge_measure_LL_", "LL_"))
+    suite = build_suite(markdown, ws)
+    for i in range(1, 3):
+        suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
+                              f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+    (other.parent / "test_crc_requirements.robot").write_text(suite)
+    for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
+                       "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
+        monkeypatch.setenv(key, value)
+    result = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+    contract = json.loads(result["metrics"]["simulation_performance_contract"])
+    assert F.validate({k: contract[k] for k in BUDGET}) == BUDGET
+    assert contract["test_source"] == F.TEST and "status" not in contract  # Contract is never a measured PASS.
+    if declared_source:
+        assert result["status"] == "PASS", result
+        assert result["metrics"]["requirements_verified"] == 2
+    else:
+        assert result["status"] == "FAIL", result
+        assert result["metrics"]["requirements_verified"] == 0
+        failures = [i for i in result["issues"] if i.startswith("ROBOT_FAIL:")]
+        assert len(failures) == 2 and all("SIM_PERF_WRONG_SCENARIO" in i and F.TEST in i for i in failures)
 
 
 def test_incomplete_and_over_budget_measurements_are_not_passes(measured):

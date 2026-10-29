@@ -58,12 +58,24 @@ def header(ws: Path | None = None) -> str:
     from ..layer import profile
 
     pr = profile(ws)
+    from ..simulation_performance import selected
+
+    budget = selected(ws) if ws is not None else None
+    text = HEADER
+    if budget:
+        text = text.replace("*** Settings ***", (
+            "# Simulation-only performance: use the declared instrumented test, not a copied scenario.\n"
+            f"#   Run Target Scenario    {budget['test_source']}\n"
+            "#   Simulation Performance Should Meet Budget\n"
+            "# The factory generates forge_performance_calls.h and links scoped wrappers for that test only.\n"
+            "# Missing/incomplete/over-budget measurements fail; physical hardware WCET is not measured.\n"
+            "*** Settings ***"))
     if pr["id"] == "rcc":
-        return HEADER
+        return text
     d, blk = pr["ll"]["function_prefix"], pr["ll"]["register_block"]
     rcc_model = ("(RCC model: RCC_SR reads RCC_CR & 0xF1F, read-only;\n#" + " " * 62 +
                  "other registers plain storage starting at 0)")
-    return (HEADER.replace(rcc_model, f"({pr['register_prefix']} behavioural model: see {pr['sim']['model']})")
+    return (text.replace(rcc_model, f"({pr['register_prefix']} behavioural model: see {pr['sim']['model']})")
             .replace("(ready flags never set: waits time out)", "(update flags never clear: waits time out)")
             .replace("ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)",
                      f"{blk}[{d}<REG>_OFFSET / 4U] & {d}<REG>_<FIELD>_MSK (e.g. "

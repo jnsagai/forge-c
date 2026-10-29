@@ -107,9 +107,18 @@ class ForgeTarget:
 
         budget = selected(self.ws)
         measurement = self._need().get("performance") or {}
-        if (not budget or self.last_src != self.ws / budget["test_source"]
-                or measurement.get("status") != "PASS" or measurement.get("budget_sha256") != digest(budget)):
-            raise AssertionError("no complete passing measurement for the declared simulation-only performance budget")
+        if not budget:
+            raise AssertionError("SIM_PERF_NO_DECLARED_BUDGET")
+        if self.last_src != self.ws / budget["test_source"]:
+            raise AssertionError(f"SIM_PERF_WRONG_SCENARIO: Run Target Scenario    {budget['test_source']}; "
+                                 "only the declared test receives entry/return instrumentation")
+        if not measurement:
+            raise AssertionError("SIM_PERF_MEASUREMENT_MISSING: rerun the declared instrumented target test")
+        if measurement.get("budget_sha256") != digest(budget):
+            raise AssertionError("SIM_PERF_BUDGET_CHANGED: rerun the declared test with the current budget")
+        if measurement.get("status") != "PASS":
+            raise AssertionError("SIM_PERF_MEASUREMENT_FAILED: no complete passing measurement; "
+                                 "inspect the independent entry/return measurement issues")
         self.all_target_checks_should_pass()
 
     def _objects(self, extra: list[str] | None = None, sub: str = "size") -> list[str]:

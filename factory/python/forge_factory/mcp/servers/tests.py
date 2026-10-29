@@ -371,6 +371,13 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                       "build_failed": sorted(builds), "unobserved": sorted(
                           {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_robot") if ok else []
+    from ...simulation_performance import selected
+    from ...afo.durable import digest
+
+    performance = selected(ctx.workspace)
+    contract = {"simulation_performance_contract": json.dumps({
+        **performance, "budget_sha256": digest(performance),
+        "scope": "DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT"}, separators=(",", ":"))} if performance else {}
     return result(ctx, "PASS" if ok and not undeclared else "FAIL",
                   f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
                   "verified (Renode STM32N6 model + host measurements)"
@@ -378,7 +385,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                   [ctx.store(xml.read_bytes(), "xml")], (undeclared + issues)[:30],
                   {"tests": len(tests), "passed": passed, "failed": len(tests) - passed, "requirements": len(reqs),
                    "requirements_verified": len(covered & set(reqs)), "environment": "robotframework 6.1 + renode "
-                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False},
+                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False, **contract},
                   "robotframework", tool_version(py, ("-m", "robot", "--version")), r.exit_code, r.duration_ms,
                   a.model_dump(), r.stdout + r.stderr)
 
