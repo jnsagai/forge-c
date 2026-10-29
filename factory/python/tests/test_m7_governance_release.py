@@ -233,6 +233,15 @@ def test_t045_ready_requires_every_check_and_tamper_detected(env, tmp_path):
             data = zin.read(n)
             zout.writestr(n, data + b"tamper" if n.endswith("final-gates.json") else data)
     assert F.verify_archive(t)["integrity"] == "FAIL"
+    missing = tmp_path / "missing-evidence.zip"
+    required = "evidence/quality/final-gates.json"
+    with zipfile.ZipFile(a) as zin, zipfile.ZipFile(missing, "w") as zout:
+        assert required in zin.namelist()
+        for name in zin.namelist():
+            if name != required:
+                zout.writestr(name, zin.read(name))
+    result = F.verify_archive(missing)
+    assert result["integrity"] == "FAIL" and "MEMBER_MISSING:" + required in result["issues"]
 
 
 # ---------------- T046 ------------------------------------------------------------------------------------

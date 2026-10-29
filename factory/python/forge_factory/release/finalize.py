@@ -747,26 +747,48 @@ def cross_check_kpis(archive: Path) -> dict:
 
 
 def verify_archive(archive: Path) -> dict:
-    """AT-25: recompute every member hash against the embedded SHA256SUMS and the external .sha256."""
+    """AT-25: verify the complete, unambiguous inventory and any external checksum.
+
+    Integrity is separate from package readiness: a complete BLOCKED archive can
+    pass integrity; a missing indexed member can never do so.
+    """
     import hashlib
     import zipfile
+    from collections import Counter
 
     issues = []
-    side = archive.with_name(archive.name + ".sha256")
-    if side.is_file() and side.read_text().split()[0] != hashlib.sha256(archive.read_bytes()).hexdigest():
-        issues.append("ARCHIVE_SHA256_MISMATCH")
     try:
+        side = archive.with_name(archive.name + ".sha256")
+        if side.is_file():
+            fields = side.read_text().split()
+            if not fields or fields[0] != sha256_file(archive):
+                issues.append("ARCHIVE_SHA256_MISMATCH")
         with zipfile.ZipFile(archive) as z:
+            names = Counter(z.namelist())
+            issues += [f"DUPLICATE_ARCHIVE_MEMBER:{name}" for name in sorted(names) if names[name] != 1]
             sums: dict[str, str] = {}
             for line in z.read("SHA256SUMS.txt").decode().splitlines():
-                digest, member = line.split("  ", 1)
-                sums[member] = digest
-            for name in z.namelist():
+                value, separator, member = line.partition("  ")
+                if not separator or not member or len(value) != 64 or set(value) - set("0123456789abcdef"):
+                    issues.append("CHECKSUM_INDEX_MALFORMED")
+                    continue
+                if member in sums:
+                    issues.append(f"DUPLICATE_CHECKSUM_MEMBER:{member}")
+                sums[member] = value
+            if not sums:
+                issues.append("CHECKSUM_INDEX_EMPTY")
+            issues += [f"MEMBER_MISSING:{name}" for name in sorted(set(sums) - (set(names) - {"SHA256SUMS.txt"}))]
+            for info in z.infolist():
+                name = info.filename
                 if name == "SHA256SUMS.txt":
                     continue
-                if sums.get(name) != hashlib.sha256(z.read(name)).hexdigest():
+                h = hashlib.sha256()
+                with z.open(info) as stream:
+                    for chunk in iter(lambda: stream.read(1 << 20), b""):
+                        h.update(chunk)
+                if sums.get(name) != h.hexdigest():
                     issues.append(f"MEMBER_HASH_MISMATCH:{name}")
-    except (zipfile.BadZipFile, KeyError) as exc:
+    except (OSError, zipfile.BadZipFile, KeyError, ValueError, RuntimeError) as exc:
         issues.append(f"ARCHIVE_UNREADABLE:{type(exc).__name__}")
     return {"archive": str(archive), "integrity": "PASS" if not issues else "FAIL", "issues": issues}
 
