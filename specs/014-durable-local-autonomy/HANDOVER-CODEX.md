@@ -7,6 +7,68 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Real Qwen continuation active — 2026-10-29 10:13UTC
+
+The owner approved the exact prepared scope, three new SSH-agent signatures and
+activation. Production is now **f206e3aa26837f892c2267ec67c46dcc61844c60**.
+Finite authority expires **18:05:39UTC** today; no further renewal is implied.
+Same mission F014-IDR-M1-HIGH-20261028, continuation_of afo-cf20126621ac2673.
+
+New order **afo-5ab4a2eb3e9de743**, native **01M63JC0YCPJFPSGHW04NG2W32**:
+RUNNING, first structured SWE.1 request SENT, execution LIVE/CONFIRMED, leaseHELD.
+At10:13:33UTC cumulative2attempts,7requests,66tools,200m conservative charge,
+UNKNOWN actual usage. Original mission row/non-timecaps and full-CRC3/3 remain.
+The accepted time-only extension is append-only. Operator RUNNING26;
+Conductor/watchdog/finite recorder active. All75role preflight rows pass;
+initial/SKILL contexts are measured, later histories remain live-admitted.
+
+Progress branch **e2e/2026-10-29-idr-m1-f206e3a**. Exact source qualification is
+84PASS per host,0model calls; live launch is a separate evidence item.
+No M1 acceptance, learning benefit or operational qualification is claimed.
+See [live scope/signatures/receipts/observation](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md).
+Older undeployed/expired/offline checkpoints below are historical.
+
+## Current checkpoint — 2026-10-29, source f206e3a
+
+**M1 remains BLOCKED/unaccepted; formal progress remains30/58.**
+Candidate f206e3aa26837f892c2267ec67c46dcc61844c60 passed the same84-check
+deterministic/tool integration cohort locally (317.958s) and in an isolated
+Omniverse2 checkout (344.373s), no failures/errors/skips and zero model requests.
+Production remains e098b51; this candidate is not activated.
+
+IE-T004 now has a qualified positive dependency-independent recipe: after SWE.3
+failure, the opt-in high policy can rerun unchanged previously accepted unit
+tests/code once, preserving the failed inspection, stale downstream status and
+BLOCKED release. Exact source/checklist/author/oracle inputs, mission allowance,
+native liveness and operator intent are required; unknown independence blocks.
+Completed incremental IDs are IE-T001–007. IE-T008 remains unaccepted; IE-T009 unrun.
+
+Omniverse2 is reachable. Conductor and its user watchdog are active; the finite
+recorder is inactive. Read-only investigation found the same boot since24September,
+overnight Wi-Fi/internet loss and connectivity restoration29October09:02:56UTC;
+this was not a host shutdown. There is no long-duration availability qualification.
+
+The old M1 is QUIESCENT with lease RELEASED. Its66 actual inspection receipt
+hashes were verified and deduplicated TOOL debits appended in the existing ledger,
+after private SQLite backup. Snapshot:1attempt,6requests,66tools,100m conservative
+tokens, UNKNOWN aggregate actual usage. Original mission/execution rows and
+non-time caps are unchanged. Other historical tool use is not inferred complete.
+
+Use examples/0014e-st-cube-crc-idr-simulation for fresh preparation. It contains
+the exact owner-reviewed9-requirement payload and reuses the existing naming
+disposition only for the identical frozen header. Original review snapshots remain.
+Old7-requirement downstream evidence cannot be reused as accepted9-requirement work.
+
+Live grants expired05:00UTC. Existing SSH-agent delegation is
+EXACT_PREPARED_PRODUCTION_GRANT_ONLY for the old go-live grant; it cannot silently
+authorize a new source/window. Prepare the exact same-M1 continuation, time-only
+extension and role trial for review before new signing/activation. Do not reset
+the mission, infer current authority or start another order to evade it.
+
+See [exact source, native/local evidence and historical receipt accounting](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).
+Learning benefit, Qwen competence, real M1 acceptance and operational availability
+remain separate and unproven. The dated checkpoints below are historical.
+
 ## Shared tool-accounting follow-up — 2026-10-29
 
 Candidate **c8daeb1** closes direct structured-tool/inspection accounting bypasses.

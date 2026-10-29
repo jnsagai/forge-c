@@ -1,13 +1,40 @@
 # Implementation and qualification status
 
-Updated2026-10-29. Latest local candidate **c8daeb18d3b6afba51219d23562448ef17a56855**
-passed109 checks,1explicit live-Fabro skip,0failures/errors; no model calls.
-Earlier aac50fc passed178 in a separate overlapping cohort. Last confirmed
-deployed runtime was e098b515a421900131b05a6763029d20b3a8b09d. Omniverse2 is now
-owner-confirmed offline; no current service-availability claim. Former live grants
-expired at2026-10-29T05:00:00Z and were not renewed. The candidate is undeployed.
-Historical revisions remain separate; documentation commits do not qualify
-another runtime. Feature014 remains30/58, stacked on unmerged PR41.
+## Real Qwen continuation active — 2026-10-29 10:13UTC
+
+The owner approved the exact prepared scope, three new SSH-agent signatures and
+activation. Production is now **f206e3aa26837f892c2267ec67c46dcc61844c60**.
+Finite authority expires **18:05:39UTC** today; no further renewal is implied.
+Same mission F014-IDR-M1-HIGH-20261028, continuation_of afo-cf20126621ac2673.
+
+New order **afo-5ab4a2eb3e9de743**, native **01M63JC0YCPJFPSGHW04NG2W32**:
+RUNNING, first structured SWE.1 request SENT, execution LIVE/CONFIRMED, leaseHELD.
+At10:13:33UTC cumulative2attempts,7requests,66tools,200m conservative charge,
+UNKNOWN actual usage. Original mission row/non-timecaps and full-CRC3/3 remain.
+The accepted time-only extension is append-only. Operator RUNNING26;
+Conductor/watchdog/finite recorder active. All75role preflight rows pass;
+initial/SKILL contexts are measured, later histories remain live-admitted.
+
+Progress branch **e2e/2026-10-29-idr-m1-f206e3a**. Exact source qualification is
+84PASS per host,0model calls; live launch is a separate evidence item.
+No M1 acceptance, learning benefit or operational qualification is claimed.
+See [live scope/signatures/receipts/observation](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md).
+Older undeployed/expired/offline checkpoints below are historical.
+
+Historical pre-activation checkpoint: Updated2026-10-29. Latest tested candidate **f206e3aa26837f892c2267ec67c46dcc61844c60**
+passed84 checks locally and84 on Omniverse2 in the same deterministic/tool
+integration cohort,0failures/errors/skips and0model requests. Production remains
+e098b51 and the candidate is undeployed. Host is reachable; Conductor/watchdog
+active, finite recorder inactive. Actual M1 root is QUIESCENT/lease RELEASED.
+The identified66 historical inspection tool operations were reconciled with
+verified original hashes and no allowance reset. Grants expired05:00UTC.
+IE-T004 is now complete for the declared positive independent-input recheck;
+IE-T001–007 complete, IE-T008 unaccepted, IE-T009 unrun. Formal30/58 unchanged.
+[Exact qualification and limits](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).
+
+Earlier dated checkpoints below remain historical; documentation commits do not
+qualify a different runtime. Learning benefit and operational availability are
+unproven; no fixture result establishes real Qwen M1 acceptance.
 
 Historical Oct26 checkpoint: Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
 

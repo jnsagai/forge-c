@@ -1,0 +1,9 @@
+Exact clean source: f206e3aa26837f892c2267ec67c46dcc61844c60
+
+Local environment:
+PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 FORGE_FABRO_LIVE=0
+PYTHONPATH=<checkout>/factory/python FORGE_DATA_ROOT=<loop10>/forge-c TMPDIR=<loop10>/operations/feature014/incremental-m1-followup-20261029
+PATH=<loop10>/toolchains/LLVM-19.1.7-Linux-X64/bin:<loop10>/toolchains/plantuml:<loop10>/toolchains/renode/renode_1.17.0-portable:/usr/bin:/bin
+<loop10>/venv/bin/python -m pytest -q factory/python/tests/test_development_diagnostics.py factory/python/tests/test_incremental_delivery.py factory/python/tests/test_lrtx_tool_accounting.py factory/python/tests/test_lrtx_inspection_accounting.py factory/python/tests/test_incremental_incident_resume.py factory/python/tests/test_lrtx_compat.py factory/python/tests/test_da014_high_allowance.py factory/python/tests/test_aspice_development.py --junitxml=<loop10>/exact-independent-unit-recheck.xml
+
+Omniverse2 command/environment: native-provenance.json. Corrected in-checkout private primary inputs, source clean before and after; isolated state/data/tmp. No Qwen/provider request.

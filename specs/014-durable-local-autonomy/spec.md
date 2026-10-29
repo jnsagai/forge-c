@@ -280,3 +280,14 @@ WCET or safety claims. Original functional scope/review/history remain intact.
 Inspection receives hash-bound existing owner scope in both native and structured
 paths; original criteria and verdict authority stay unchanged. Missing constraints
 remain gaps rather than inferred facts. Real Qwen inspection is still required.
+
+### Scoped independent diagnostic continuation — 2026-10-29
+
+The opt-in high development policy may rerun an existing accepted unit executable
+check once after a SWE.3 failure only when its hash-bound code, unit oracle, tests,
+requirements/architecture and primary sources are unchanged from prior acceptance.
+Require current mission/native/operator admission and enough bounded tool time.
+Reserve durably before execution; crashes/re-entry do not refill the allowance.
+Changed or unknown independence refuses. Preserve the failed inspection, findings,
+stale downstream status and BLOCKED release; this is a diagnostic observation,
+not a phase advance or new correctness authority. Legacy profiles remain unchanged.

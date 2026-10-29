@@ -5,15 +5,38 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
-## Current source and review boundary — 2026-10-29
+## Real Qwen continuation active — 2026-10-29 10:13UTC
 
-Candidatec8daeb1 is local and undeployed. Last confirmed runtime is e098b51.
-Omniverse2 is offline by owner confirmation. All actual Qwen execution belongs
-there. All former M1/role-trial grants expired29October05:00UTC. Do not infer
-authority from the owner's requirements approval.
+The owner approved the exact prepared scope, three new SSH-agent signatures and
+activation. Production is now **f206e3aa26837f892c2267ec67c46dcc61844c60**.
+Finite authority expires **18:05:39UTC** today; no further renewal is implied.
+Same mission F014-IDR-M1-HIGH-20261028, continuation_of afo-cf20126621ac2673.
+
+New order **afo-5ab4a2eb3e9de743**, native **01M63JC0YCPJFPSGHW04NG2W32**:
+RUNNING, first structured SWE.1 request SENT, execution LIVE/CONFIRMED, leaseHELD.
+At10:13:33UTC cumulative2attempts,7requests,66tools,200m conservative charge,
+UNKNOWN actual usage. Original mission row/non-timecaps and full-CRC3/3 remain.
+The accepted time-only extension is append-only. Operator RUNNING26;
+Conductor/watchdog/finite recorder active. All75role preflight rows pass;
+initial/SKILL contexts are measured, later histories remain live-admitted.
+
+Progress branch **e2e/2026-10-29-idr-m1-f206e3a**. Exact source qualification is
+84PASS per host,0model calls; live launch is a separate evidence item.
+No M1 acceptance, learning benefit or operational qualification is claimed.
+See [live scope/signatures/receipts/observation](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md).
+Older undeployed/expired/offline checkpoints below are historical.
+
+## Pre-activation source and review boundary — 2026-10-29
+
+Candidatef206e3a passed84 deterministic/tool checks both locally and in an isolated
+Omniverse2 checkout, with0model calls; production remains e098b51, unchanged.
+Host is reachable and local Conductor/watchdog services are active. All actual
+Qwen execution belongs there. Former M1/role-trial grants expired29October05:00UTC.
+The existing agent-signing delegation covers only the old prepared production
+grant, not a new window/source. Obtain explicit review of the prepared continuation.
 
 The original7-requirement IDR input was reviewed28October. The separate
-`examples/0014d-st-cube-crc-idr-assisted/proposals/simulation-performance/`
+`examples/0014e-st-cube-crc-idr-simulation/`
 contains the owner-reviewed9-requirement extension:64 instructions/call and
 100microseconds Renode virtualtime/call at100MIPS; no physical WCET claim.
 Payloadaf48340b…770463 has a real owner review record. Its preview preserves
@@ -26,7 +49,7 @@ Run the executable preparation tool in a fresh private directory:
 ```sh
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=factory/python \
   python factory/qualification/014/prepare_reviewed_requirements.py \
-  --example examples/0014d-st-cube-crc-idr-assisted/proposals/simulation-performance \
+  --example examples/0014e-st-cube-crc-idr-simulation \
   --state-root "$FC014_NEW_PRIVATE_STATE" --work-order WO-IDR-REVIEWED-UNIQUE \
   --out "$FC014_NEW_REPORT"
 ```
@@ -106,8 +129,10 @@ fencing. Stop only this experiment's processes if its own finite scope ends.
 For M1, keep general product diagnosis, advisory relaunch and maintenance explicitly
 DEFERRED_BY_DEVELOPMENT_POLICY. A reservation is not an executed inference. The
 shared initial-plus-one-repair bound survives task/phase re-entry. Current routing
-blocks when dependency independence is unproven; a positive, independently verified
-provisional-continuation path still needs implementation/qualification (IE-T004).
+blocks when dependency independence is unproven. The high policy has one qualified
+model-free unchanged-accepted-unit recheck after SWE.3 failure (IE-T004). It returns
+to the original failure route, retains findings and cannot advance/accept a phase.
+The current first-time SWE.1 block has no accepted downstream oracle for this recipe.
 Unresolved required findings always prevent final acceptance.
 
 After an authorized run, recompute the package through the ordinary finalizer and
@@ -124,7 +149,7 @@ by M3 repair and later broad/learning/availability qualification.
 1. Reconcile actual operator intent, provider/native liveness and resource leases.
    Do not use a terminal order or offline host as evidence of quiescence.
 2. Inspect the real ledger for F014-IDR-M1-HIGH-20261028. Preserve its original
-   100m conservative charge, one attempt, six requests and UNKNOWN aggregate
+   100m conservative charge, one attempt, six requests,66tools and UNKNOWN aggregate
    usage. The old full-CRC3/3 mission is exhausted and remains ineligible.
 3. If the existing M1 deadline must change, prepare an explicit time-only request
    from the **current full ledger snapshot**. The operator CLI accepts exactly:
@@ -178,8 +203,8 @@ receipt without restoring execution authority. No order is submitted or resumed.
    M1 is accepted only after independent six-phase/package evidence. M2–M5 follow
    the existing milestone gates.
 
-Host recovery, current grants, native role qualification and real M1 execution
-are NOT_RUN here. This runbook creates no authority or claim of completion.
+Host recovery and native deterministic/tool qualification are recorded. Current
+grants, new-source Qwen role qualification and real M1 acceptance are NOT_RUN here. This runbook creates no authority or claim of completion.
 
 
 ## Tool-accounting reconciliation before live continuation
@@ -196,3 +221,12 @@ before any explicit deduplicated backfill; retain UNKNOWN where linkage is
 missing. Do not silently reset expenditure or pretend the source fix reconstructed
 history. The current M1 token charge remains100m conservative with UNKNOWN
 aggregate actual usage. No historical ledger was changed in this local work.
+
+### Reconciliation completed29October
+
+The66 original structured inspection receipt hashes were verified, privately
+backed up and charged idempotently through the existing mission ledger. Original
+mission/execution rows, token charges, caps, findings and expired deadline remain
+unchanged. Use the post-reconciliation snapshot (tools66) for any time-extension
+request; the earlier tools0 snapshot is stale. Other historical usage remains
+unreconstructed. [Qualification/receipt evidence](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).

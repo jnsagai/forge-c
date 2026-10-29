@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "requirements": 58,
+  "tasks": 58,
+  "acceptance_tests": 58,
+  "contracts": {
+    "result": "PASS",
+    "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+    "schemas": 6,
+    "fixtures": 38,
+    "positive": 16,
+    "negative": 22,
+    "errors": []
+  },
+  "errors": []
+}

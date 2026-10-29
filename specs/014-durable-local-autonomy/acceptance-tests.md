@@ -702,3 +702,17 @@ formal DA acceptance count or live M1 acceptance:
 Fixtures explicitly name substituted semantic review/provider outcomes. The
 actual owner-approved import has no substituted inspection. Native Qwen and
 operational qualification remain separate and unrun for this candidate.
+
+### IE-AT-003 positive independence control — 2026-10-29
+
+Starting from real accepted tool evidence with explicit semantic/provider fixtures,
+change only the SWE.3 design workproduct and record a genuine failed gate route.
+The high policy may execute one unchanged accepted host-unit check through the
+existing dispatcher. Assert a real PASS tool result, one durable charge, unchanged
+failed inspection, stale SWE.4 and final BLOCKED package. No second execution
+after re-entry/crash. Changed code/oracle/tests/primary input/author contract,
+unconfirmed or terminal execution, insufficient time, exhausted tool allowance
+and pause/drain/stop refuse before tool execution. An input change during the
+check disqualifies its provisional result. Lost-receipt recovery records observed
+outcome with continuity UNPROVEN and never reruns or accepts a phase.
+[Local/native evidence](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md). These fixtures do not qualify Qwen.

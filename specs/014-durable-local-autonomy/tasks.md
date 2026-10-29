@@ -163,7 +163,7 @@ general diagnosis qualification remains M3 and the frozen inspector remains unch
 - [X] **IE-T001:** Reconcile milestone/execution-policy specification, plan, acceptance and trace/status records. Serves IE-AT-001..009.
 - [X] **IE-T002:** Freeze prospective IDR work order, original delivery/source pins, requirements candidate and negative oracle. Serves IE-AT-001/005.
 - [X] **IE-T003:** Implement legitimate assisted import, ordinary validation and tamper/invalidation provenance. Serves IE-AT-002.
-- [ ] **IE-T004:** Implement compatible versioned development routing and durable shared repair limits; record real deferred ladder steps. Serves IE-AT-003.
+- [X] **IE-T004:** Implement compatible versioned development routing and durable shared repair limits; record real deferred ladder steps. Serves IE-AT-003.
 - [X] **IE-T005:** Complete fast end-to-end integration anchor and independently rejected negative control. Serves IE-AT-004/005.
 - [X] **IE-T006:** Add exact incident-route resume regression while preserving98d066d coverage. Serves IE-AT-006.
 - [X] **IE-T007:** Prepare bounded live harness, per-role admission and exact source/profile/model/authority report. Serves IE-AT-007.
@@ -172,7 +172,7 @@ general diagnosis qualification remains M3 and the frozen inspector remains unch
 
 No task is complete solely from implementation or a passing unrelated unit fixture.
 
-Incremental completion evidence (2026-10-28): [exact revisions, commands, XML and limitations](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md). IE-T004 remains partial pending a positive dependency-independent provisional path; IE-T007 now has captured complete native initial/SKILL requests, structured SWE.1 inspection packets, all-role admission and current signed source/profile/model authority in the M1 high-allowance evidence. Later tool histories remain subject to live admission. No M1 or formal DA task completion is inferred.
+Historical incremental completion evidence (2026-10-28): [exact revisions, commands, XML and limitations](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md). IE-T004 remains partial pending a positive dependency-independent provisional path; IE-T007 now has captured complete native initial/SKILL requests, structured SWE.1 inspection packets, all-role admission and current signed source/profile/model authority in the M1 high-allowance evidence. Later tool histories remain subject to live admission. No M1 or formal DA task completion is inferred.
 
 
 2026-10-29 bounds follow-up: c8daeb1 closes shared tool-accounting and verification
@@ -180,3 +180,11 @@ guard bypasses for structured runners and both inspector paths. See
 [109PASS/1liveSKIP local evidence](../../evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md).
 This supports DA-T011 and the bounds part of IE-T004; it does not qualify a
 positive dependency-independent continuation or tick any new task.
+
+2026-10-29 independent continuation qualification: **IE-T004 complete for the
+declared development policy**, including the positive unchanged-accepted-unit
+recheck and refusing unknown/changed dependencies. Exact f206e3a:84PASS locally
+and84PASS on Omniverse2,0failures/errors/skips,0model requests.
+[Evidence](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).
+IE-T001–007 are complete for their scoped implementation/harness obligations.
+IE-T008 remains BLOCKED/unaccepted, IE-T009 NOT_RUN, formal DA30/58 unchanged.

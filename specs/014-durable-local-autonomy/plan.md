@@ -148,3 +148,14 @@ After host recovery: reconcile liveness/operator intent, obtain valid exact-sour
 authority, apply an explicit time-only increment if needed, reprepare the reviewed
 input, qualify/admit actual role requests and continue the same M1 mission.
 Do not advance milestone acceptance from deterministic fixtures.
+
+### Host-return implementation checkpoint — 2026-10-29
+
+Candidate f206e3a adds one model-free independent-input unit recheck through the
+existing workflow failure route, durable phase state, mission counter and MCP
+dispatcher. No phase advance or alternative scheduler.84deterministic/tool checks
+pass on both local loop10 and isolated Omniverse2 checkouts; zero model requests.
+IE-T004 is complete for that declared recipe; unknown dependencies still block.
+Production stays e098b51. Verified historical inspection debits now total66;
+original100m charge, uncertainty and expired deadline remain. Prepare a current
+source-bound same-M1 window and reviewed9-requirement input before live continuation.
