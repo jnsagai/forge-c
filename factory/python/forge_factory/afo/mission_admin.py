@@ -7,8 +7,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from .durable import Refused
-from .mission_ledger import MissionLedger
+from ..common import utc_now
+from .durable import Refused, canonical, digest
+from .mission_ledger import MissionLedger, validate_limits
 
 
 def register(store, document, eff):
@@ -17,14 +18,27 @@ def register(store, document, eff):
     if eff.mode not in ("PILOT", "ACTIVE"):
         raise Refused("MISSION_ACTIVE_AUTHORITY_REQUIRED")
     required = {"mission_id", "lineage", "limits", "authorization_ref", "request", "orders"}
-    if set(document) != required:
+    if not required <= set(document) or set(document) - required - {"admission_authorization_ref"}:
         raise Refused("MISSION_ADMIN_INPUT_INVALID")
     limits = document["limits"]
     ref = document["authorization_ref"]
-    grant = authz.find(eff.mode, eff.sha256 or "", ref=ref, action="recover_workorder", request=document["request"])
+    current = document.get("admission_authorization_ref")
+    if "admission_authorization_ref" in document and (not isinstance(current, str) or not current
+                                                    or current != eff.authorization_id):
+        raise Refused("MISSION_CONTINUATION_AUTHORITY_INVALID")
+    active_ref = current or ref
+    grant = authz.find(eff.mode, eff.sha256 or "", ref=active_ref, action="recover_workorder", request=document["request"])
     if not grant.allow:
         raise Refused(grant.code)
-    auth = json.loads((authz.AUTH_DIR / f"{ref}.json").read_text())
+    auth = json.loads((authz.AUTH_DIR / f"{active_ref}.json").read_text())
+    if current:
+        if auth.get("authorization_id") != current:
+            raise Refused("AUTH_ID_MISMATCH")
+        validate_limits(limits)
+        check = authz.verify(auth, policy_sha256=eff.sha256 or "", mode=eff.mode,
+                             action="recover_workorder", request=document["request"])
+        if not check.allow:
+            raise Refused(check.code)
     expiry = datetime.fromisoformat(auth["expires_utc"].replace("Z", "+00:00")).timestamp()
     caps = {
         "max_attempts": int(eff.get("budgets.max_order_attempts")),
@@ -49,7 +63,30 @@ def register(store, document, eff):
         rec = ledger.snapshot(document["mission_id"])
         if rec["lineage"] != document["lineage"] or rec["limits"] != limits or rec["authorization_ref"] != ref:
             raise Refused("MISSION_ALLOWANCE_RESET_FORBIDDEN")
+        if current:
+            if (time.time() >= limits["deadline"] or rec["attempts"] >= limits["max_attempts"]
+                    or rec["requests"] >= limits["max_requests"]
+                    or rec["tools"] >= limits["max_tools"] or rec["charged_tokens"] >= limits["max_tokens"]
+                    or rec["unbounded_historical_usage"]):
+                raise Refused("MISSION_ALLOWANCE_EXHAUSTED")
+            # New current authority can admit a continuation; it cannot rewrite the
+            # old grant, mission row, explicit time amendments or spent counters.
+            ident = "mission-continuation-" + digest([document, digest(auth), eff.sha256])
+            record = {"schema": "forge-c/mission-continuation-authority/1", "document": document,
+                      "grant_sha256": digest(auth), "policy_sha256": eff.sha256, "accepted_at": utc_now(),
+                      "mission_snapshot_sha256": digest(rec), "allowances_reset": False, "deadline_changed": False}
+            with store.tx() as c:
+                prior = c.execute("SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=?", (ident,)).fetchone()
+                if prior:
+                    saved = json.loads(prior["record"])
+                    if (digest(saved) != prior["sha256"] or saved.get("document") != document
+                            or saved.get("grant_sha256") != digest(auth) or saved.get("policy_sha256") != eff.sha256):
+                        raise Refused("MISSION_CONTINUATION_RECEIPT_CHANGED")
+                c.execute("INSERT OR IGNORE INTO afo_independent_decisions VALUES (?,?,?,?)",
+                          (ident, "MISSION_CONTINUATION_AUTHORITY", canonical(record).decode(), digest(record)))
     else:
+        if current:
+            raise Refused("MISSION_CONTINUATION_REQUIRES_EXISTING_MISSION")
         rec = ledger.register(document["mission_id"], document["lineage"], limits, ref, authorize=lambda *_: grant.allow)
     for entry in document["orders"]:
         order = store.order(entry["order_id"])
@@ -59,7 +96,7 @@ def register(store, document, eff):
         allowed = authz.find(
             eff.mode,
             eff.sha256 or "",
-            ref=ref,
+            ref=active_ref,
             action="recover_workorder",
             request={"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]},
         )

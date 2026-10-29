@@ -2,6 +2,7 @@
 import json
 import subprocess
 import time
+from dataclasses import replace
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
@@ -82,6 +83,54 @@ def test_existing_mission_registration_accepts_only_the_explicit_effective_windo
     document["limits"] = {**document["limits"],"max_attempts":4}
     with pytest.raises(Refused):
         mission_admin.register(m.store,document,m.eff)
+
+
+@pytest.mark.parametrize("fault", [None, "reset", "missing-mission", "wrong-current-authority", "exhausted", "expired", "denied"])
+def test_new_policy_continuation_preserves_existing_mission_authority_and_costs(mission, monkeypatch, fault):
+    m = mission
+    D.extend(m.store, m.doc, m.eff)
+    before = m.ledger.snapshot("m1")
+    original_ref = before["authorization_ref"]
+    current_ref = "AUTH-CURRENT-QM-FIXTURE"
+    m.eff = replace(m.eff, authorization_id=current_ref)
+    record = {"authorization_id": current_ref, "expires_utc": datetime.fromtimestamp(time.time()+1200, UTC).isoformat()}
+    (m.root/(current_ref+'.json')).write_text(json.dumps(record))
+    document = dict(mission_id="m1",lineage=before["lineage"],limits=before["limits"],
+                    authorization_ref=original_ref,admission_authorization_ref=current_ref,
+                    request=m.doc["request"],orders=[])
+    if fault == "reset":
+        document["limits"] = {**document["limits"], "max_attempts": 4}
+    elif fault == "missing-mission":
+        document["mission_id"] = "renamed-objective"
+    elif fault == "wrong-current-authority":
+        document["admission_authorization_ref"] = original_ref
+    elif fault == "exhausted":
+        for i in range(2):
+            m.ledger.execution("m1",f"spent-{i}","PRODUCT",reserved_tokens=1,imported=True)
+        before = m.ledger.snapshot("m1")
+    elif fault == "expired":
+        monkeypatch.setattr(mission_admin.time,"time",lambda:before["limits"]["deadline"]+1)
+    elif fault == "denied":
+        monkeypatch.setattr(authz,"verify",lambda *a,**k:SimpleNamespace(allow=False,code="AUTH_REVOKED"))
+    # Old grant cannot authorize the current policy; only the current signed primary can.
+    monkeypatch.setattr(authz,"find",lambda *a,**k:SimpleNamespace(
+        allow=k.get("ref")==current_ref,code="FIXTURE_CURRENT_AUTH" if k.get("ref")==current_ref else "AUTH_POLICY_MISMATCH"))
+    with m.store.tx() as c:
+        raw = c.execute("SELECT record FROM afo_missions WHERE mission_id='m1'").fetchone()[0]
+    if fault:
+        with pytest.raises(Refused):
+            mission_admin.register(m.store,document,m.eff)
+    else:
+        assert mission_admin.register(m.store,document,m.eff) == before
+        assert mission_admin.register(m.store,document,m.eff) == before
+        with m.store.tx() as c:
+            assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind='MISSION_CONTINUATION_AUTHORITY'").fetchone()[0] == 1
+            c.execute("UPDATE afo_independent_decisions SET sha256=? WHERE kind='MISSION_CONTINUATION_AUTHORITY'", ("0"*64,))
+        with pytest.raises(Refused, match="MISSION_CONTINUATION_RECEIPT_CHANGED"):
+            mission_admin.register(m.store,document,m.eff)
+    assert m.ledger.snapshot("m1") == before
+    with m.store.tx() as c:
+        assert c.execute("SELECT record FROM afo_missions WHERE mission_id='m1'").fetchone()[0] == raw
 
 
 @pytest.mark.parametrize("failure", ["ordinary_grant", "stale_snapshot", "outside_expiry", "extra_cap", "live_native"])
