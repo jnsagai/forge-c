@@ -113,7 +113,7 @@ class Anchor:
         return result
 
     def finish(self, phase):
-        reply = {"status": "PASS", "artifacts": [], "issues": [], "next_action": "inspect"}
+        reply = {"status": "PASS", "artifacts": [], "issues": [], "next_action": "next"}
         assert gate.step_author(self.store, phase, json.dumps(reply)) == 0, (
             self.ws / ".forge-run/gates/gate-log.jsonl").read_text()[-6000:]
         baseline = self.store.latest_baseline(phase)

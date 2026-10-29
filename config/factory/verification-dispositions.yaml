@@ -31,7 +31,9 @@ dispositions:
   - id: OD-2026-10-25-01
     # 0014d is a subset of 0014c with the identical frozen CRC header; the existing
     # owner's "All 5 LL headers" naming disposition covers the same findings.
-    examples: [0010c-st-cube-gpio, 0011c-st-cube-spi, 0012c-st-cube-usart, 0013c-st-cube-tim, 0014c-st-cube-crc, 0014d-st-cube-crc-idr-assisted]
+    # 0014e retains that exact frozen header/API scope and adds only reviewed
+    # simulation performance targets; the existing naming approval also applies.
+    examples: [0010c-st-cube-gpio, 0011c-st-cube-spi, 0012c-st-cube-usart, 0013c-st-cube-tim, 0014c-st-cube-crc, 0014d-st-cube-crc-idr-assisted, 0014e-st-cube-crc-idr-simulation]
     # feature 015 benchmark: DELIVERED-CODE findings (FROZEN vendor code) of GL-ARG-01 on ST's five LL headers
     delivered_finding_regex: '^GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_(crc|spi|usart|gpio|tim)\.h:\d+$'
     disposition: ACCEPTED_VENDOR_NAMING_STYLE
