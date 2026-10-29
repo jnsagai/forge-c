@@ -121,18 +121,19 @@ def test_no_experiment_keeps_ordinary_capability_requirement(trial):
         C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())
 
 
-def test_larger_context_requires_pinned_profile_and_actual_allocation_proof(trial, monkeypatch):
+@pytest.mark.parametrize("context", [131072, 262144])
+def test_larger_context_requires_pinned_profile_and_actual_allocation_proof(trial, monkeypatch, context):
     from forge_factory.common import sha256_file
     from forge_factory.lrtx import profile
 
-    trial.doc["roles"]["swe1-author"][0]["context_tokens"] = 131072
-    prof = {"_sha256": "e" * 64, "runtime": {"fabro_context_tokens": 131072,
-            "context_limit_tokens": 131072, "ollama": {"OLLAMA_CONTEXT_LENGTH": "131072"}}}
+    trial.doc["roles"]["swe1-author"][0]["context_tokens"] = context
+    prof = {"_sha256": "e" * 64, "runtime": {"fabro_context_tokens": context,
+            "context_limit_tokens": context, "ollama": {"OLLAMA_CONTEXT_LENGTH": str(context)}}}
     monkeypatch.setattr(profile, "load", lambda _: prof)
     with pytest.raises(Refused, match="CONTEXT_ALLOCATION_UNBOUND"):
         T.bind(trial.publish(trial.doc), trial.job, trial.eff)
     allocation = trial.root / "allocation.json"
-    allocation.write_text(json.dumps({"status": "PASS_ALLOCATION_ONLY", "provider_context_tokens": 131072,
+    allocation.write_text(json.dumps({"status": "PASS_ALLOCATION_ONLY", "provider_context_tokens": context,
                                      "model_digest": "a" * 64, "precision": "Q4_K_M",
                                      "provider_slot_count": 1, "kv_precision": "f16"}))
     trial.doc.update(profile_sha256=prof["_sha256"], context_allocation_ref={"path": str(allocation),
@@ -140,6 +141,14 @@ def test_larger_context_requires_pinned_profile_and_actual_allocation_proof(tria
     T.bind(trial.publish(trial.doc), trial.job, trial.eff)
     assert C.admit_job(trial.job, "swe1-author", input_tokens=70000, output_tokens=34816, body=body()) == {
         "qualification_only": True, "qualified": False}
+    # Exact previous AFO refusal: 89824 byte-bound input +49152 output reserve.
+    if context == 131072:
+        with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
+            C.admit_job(trial.job, "swe1-author", input_tokens=89824, output_tokens=49152, body=body())
+    else:
+        assert C.admit_job(trial.job, "swe1-author", input_tokens=89824, output_tokens=49152, body=body())["qualification_only"]
+    with pytest.raises(Refused, match="CAPABILITY_LIMIT"):
+        C.admit_job(trial.job, "swe1-author", input_tokens=context - 49151, output_tokens=49152, body=body())
     allocation.write_text("{}")
     with pytest.raises(Refused, match="CONTEXT_ALLOCATION_UNBOUND"):
         C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())

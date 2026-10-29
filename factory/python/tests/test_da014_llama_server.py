@@ -38,22 +38,27 @@ def test_the_variant_profile_serves_the_pinned_model_with_two_slots():
     assert prof["models"] == base["models"] and prof["structured"] == base["structured"]  # one serving factor only
     assert prof["deployment"]["ports"]["llama"] not in prof["deployment"]["forbidden_ports"]
 
-def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path):
+@pytest.mark.parametrize("profile_id,context", [
+    ("local-rtx-v2-omniverse2-q38-aspice-mtp", 131072),
+    ("local-rtx-v2-omniverse2-q38-afo-repair-mtp", 131072),
+    ("local-rtx-v2-omniverse2-q38-afo-max-mtp", 262144),
+])
+def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path, profile_id, context):
     r, old = _root(tmp_path)
     source = r / "ollama-models/manifests/registry.ollama.ai/library/qwen3.6/35b-a3b"
     target = source.parents[1] / "qwen3.8/27b-q8_0"
     target.parent.mkdir()
     target.write_bytes(source.read_bytes())
-    p = copy.deepcopy(lp.load("local-rtx-v2-omniverse2-q38-aspice-mtp"))
+    p = copy.deepcopy(lp.load(profile_id))
     model = "qwen3.8:27b-q8_0"
     p["models"]["allowed"][model]["digest"] = old["models"]["allowed"][MODEL]["digest"]
     assert p["admission"]["max_inflight"] == 1
     argv, _, _, models = stack.llama_server_spec(r, p, p["deployment"]["ports"], {})
     assert models == [model]
     assert argv[argv.index("-np") + 1] == "1"
-    assert argv[argv.index("-c") + 1] == "131072"
+    assert argv[argv.index("-c") + 1] == str(context)
     config = stack.fabro_config({"root": r, "profile": p, "ports": p["deployment"]["ports"]})
-    assert "context_tokens = 131072" in config and "max_output_tokens = 16384" in config
+    assert f"context_tokens = {context}" in config and "max_output_tokens = 16384" in config
     assert argv[argv.index("--reasoning") + 1] == "on"
     assert argv[argv.index("--reasoning-effort") + 1] == "xhigh"
     assert argv[argv.index("--reasoning-format") + 1] == "deepseek"
