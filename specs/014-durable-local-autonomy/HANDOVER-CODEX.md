@@ -7,6 +7,32 @@ No completion, product-success, learning-benefit or 24/7 claim is justified.
 
 
 
+## Actual SWE.3 FAIL; context fix prepared — 2026-10-29 15:07UTC
+
+Production stays **9b4c390**, current Qwen run uninterrupted. SWE.3 produced detailed
+design/unit contracts/diagrams/trace and a target driver ELF. Both actual inspections
+**FAIL** with SWE3-10/PLANTUML_NOT_AVAILABLE. A read-only audit confirms all9MCP
+children lack FORGE_DATA_ROOT despite Java/JAR being installed. SWE.2 has a fallback,
+SWE.3 does not. The failed records and all36phase/build/inspection/tool-log files
+are copied/verified privately on loop10; no failure is changed to PASS.
+
+Candidate **9f9a93f174f46aa0add59c16a423be7d56988614**, **not deployed**, fixes
+explicit MCP/hook root propagation, path quoting and duplicate-key-safe overrides.
+Exact local13PASS,0failures/errors/skips,9.959s; two old-source counterexamples fail.
+Native qualification NOT_RUN while the active mission has priority. It includes
+the earliera1c6ae5 diagnostics. Qualify the combined source natively before later
+signed/fenced continuation; preserve current18:05:39UTC expiry/history/operator intent.
+[Actual failures, source fix, exact qualification and binary/transfer evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/README.md).
+
+Actual target compile/static tools/measurements report PASS after two preliminary
+measurement blocks. Relocatable driver text8bytes, static RAM0, max function frame0;
+independent disassembly shows two instructions per IDR measurement wrapper. These
+are static/driver-level facts, not runtime timing, full-image resources or WCET.
+Zero conformance findings, three delivered guideline findings retained.
+At15:07UTC the demonstration continues at **SWE.4 test author**,84requests.
+Strict M1 remains unaccepted; this externally implemented fix is not local-Qwen
+self-healing evidence. Older entries below retain their historical timestamps.
+
 ## Actual SWE.2 PASS; SWE.3 running — 2026-10-29 14:37UTC
 
 Runtime remains **9b4c390**, current native **01M63ZTJ5QM1R96484Y2KN97H6**.

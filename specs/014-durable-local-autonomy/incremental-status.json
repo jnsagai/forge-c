@@ -25,7 +25,7 @@
   "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
   "backend_owner_decision": "2026-10-28: no, go with MTP",
   "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
-  "latest_source_revision": "a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0",
+  "latest_source_revision": "9f9a93f174f46aa0add59c16a423be7d56988614",
   "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
   "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
   "native_fixture": {
@@ -47,7 +47,7 @@
   "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
   "live_order_state": "RUNNING",
-  "later_phases": "SWE2_INSPECTION_PASS; SWE3_AUTHOR_ACTIVE; SWE4_THROUGH6_NOT_YET_EXECUTED",
+  "later_phases": "SWE3_REAL_FAILED_INSPECTIONS_PRESERVED; SWE4_TEST_AUTHOR_ACTIVE",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -109,11 +109,11 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 119,
-    "tools": 259,
+    "requests": 153,
+    "tools": 320,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T14:37:29.015598Z"
+    "captured_utc": "2026-10-29T15:07:03.016484Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -137,7 +137,7 @@
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T14:37:29.015598Z",
+  "source_status_captured_utc": "2026-10-29T15:07:03.016484Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -166,7 +166,8 @@
     "current_demo_archive": "COPIED_SHA_AND_FULL_INVENTORY_VERIFIED; 46_GAPS; INCOMPLETE_PRODUCT",
     "current_context262_archive": "NOT_YET_FINALIZED",
     "current_context262_live_swe2_snapshot": "COPIED_8882_BYTES_SHA256_VERIFIED; INSPECTION_PENDING",
-    "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED"
+    "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED",
+    "current_context262_frozen_swe3": "COPIED_36_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; REAL_FAIL_PRESERVED"
   },
   "historical_f206_reported_usage": {
     "prompt_tokens": 31688,
@@ -192,8 +193,9 @@
   "demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T14:17:44Z",
     "SWE.2": "REAL_INSPECTION_PASS_2026-10-29T14:32:20Z; CURRENT_BASELINE_AND_DETERMINISTIC_GATE_PASS",
-    "SWE.3": "NATIVE_AUTHOR_ACTIVE; ONLY_DETERMINISTIC_SEED_FACTS_PRESENT_AT_14:37",
-    "SWE.4_THROUGH_6": "NOT_YET_EXECUTED"
+    "SWE.3": "FROZEN_DESIGN_AND_TARGET_BUILD_PRESENT; TWO_INSPECTIONS_FAIL_PLANTUML_NOT_AVAILABLE; MCP_DATA_ROOT_MISSING_CONFIRMED",
+    "SWE.4": "NATIVE_TEST_AUTHOR_ACTIVE; INSPECTION_NOT_YET_RUN",
+    "SWE.5_THROUGH_6": "NOT_YET_EXECUTED"
   },
   "historical_demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS",
@@ -236,15 +238,47 @@
     "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
   },
   "current_trial_reported_usage_partial": {
-    "completed_requests": 49,
+    "completed_requests": 83,
     "pending_requests": 1,
-    "reported_total_tokens": 1551250,
-    "scope": "Provider reports for current262k run at14:37 observation; pending and historical aggregate remain UNKNOWN"
+    "reported_total_tokens": 2812176,
+    "scope": "Current262k provider reports at15:07UTC; pending and historical aggregate remain UNKNOWN"
   },
   "swe2_independent_verification": {
     "structure": "PASS_9_OF_9_REQUIREMENTS_ALLOCATED",
     "generic_rm_offset_coverage": 0,
     "external_scoped_idr_offset": "PASS_0x04_MATCH_PINNED_RM0486_26.4.2",
     "qualified_product": "NOT_ESTABLISHED"
+  },
+  "pending_mcp_environment_candidate": {
+    "source_revision": "9f9a93f174f46aa0add59c16a423be7d56988614",
+    "baseline_revision": "49add27",
+    "local": {
+      "passed": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.959,
+      "scope": "isolated MCP/hook root/quoting/override subprocesses, inherited native context, actual MCP protocol handshakes"
+    },
+    "baseline_counterexample": {
+      "tests": 2,
+      "failed": 2,
+      "scope": "new focused tests on unchanged old runconfig"
+    },
+    "native_qualification": "NOT_RUN_WHILE_REMOTE_QWEN_MISSION_ACTIVE",
+    "deployed": false,
+    "current_production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "generation_requests": 0,
+    "services_or_authority_changed": false,
+    "evidence": "evidence/014-durable-local-autonomy/mcp-root-followup-20261029/README.md"
+  },
+  "swe3_static_binary_evidence": {
+    "target_relocatable_elf": "PASS",
+    "flash_text_bytes": 8,
+    "static_ram_bytes": 0,
+    "maximum_per_function_frame_bytes": 0,
+    "instructions_per_measurement_wrapper": 2,
+    "virtual_runtime_timing": "NOT_RUN_BY_THIS_AUDIT",
+    "physical_wcet": "NOT_MEASURED"
   }
 }

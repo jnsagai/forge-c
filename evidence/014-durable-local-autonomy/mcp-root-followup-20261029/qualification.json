@@ -1,0 +1,22 @@
+{
+  "source_revision": "9f9a93f174f46aa0add59c16a423be7d56988614",
+  "baseline_revision": "49add27",
+  "local": {
+    "passed": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 9.959,
+    "scope": "isolated MCP/hook root/quoting/override subprocesses, inherited native context, actual MCP protocol handshakes"
+  },
+  "baseline_counterexample": {
+    "tests": 2,
+    "failed": 2,
+    "scope": "new focused tests on unchanged old runconfig"
+  },
+  "native_qualification": "NOT_RUN_WHILE_REMOTE_QWEN_MISSION_ACTIVE",
+  "deployed": false,
+  "current_production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "generation_requests": 0,
+  "services_or_authority_changed": false
+}

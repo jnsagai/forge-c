@@ -1,0 +1,473 @@
+{
+  "at": "2026-10-29T14:52:04.246197Z",
+  "phase": "SWE.3",
+  "baseline": {
+    "author_role": "swe3-author",
+    "baseline_hash": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+    "baseline_id": "BL-SWE.3-001",
+    "files": {
+      "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b",
+      "workproducts/SWE.3/code_trace_map.json": "c9ccf25dff92b34409409ec4b31cc95c7b759b96dec955c8c0e4c70f82fb4bc6",
+      "workproducts/SWE.3/code_trace_map.seed.json": "ab2d18b92dabe95ef5efed8346f13716fa91bed42d91d8cdcbdc919f99ed574c",
+      "workproducts/SWE.3/delivered_code_facts.json": "abd982a9e23af07dbb8b010addd525b657c3e30d1c80f8d549b0f854759e064a",
+      "workproducts/SWE.3/detailed_design.md": "bd9aa216f0964cfc6b1c950b90f0e51ef5deb37abd5096c0749f4d22d23f2034",
+      "workproducts/SWE.3/detailed_design/SWU-LL-01.puml": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+      "workproducts/SWE.3/detailed_design/SWU-LL-02.puml": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599",
+      "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv": "54dabb3871127976b72ca4272b612530d36ea14e1fb4db48175eb58a28b3fcf7",
+      "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.md": "ceb2e344374b9c5d07b054926f6ef4ded24d7be3bb3e3d33917d1de43af80f0f",
+      "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.csv": "73659445b54397456b87c0c0ae63352888781d38215d8175a3189f3c7710e8eb",
+      "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.md": "caaa91c1eedd45fb81c481768896108e323cf642f2a72e9252574df29d2e0172",
+      "workproducts/SWE.3/unit_specifications.md": "9c057a7863e673a13f7e62f30cf189a228bebed9de9451237a5437bf5a5a150a",
+      "workproducts/SWE.3/unit_specifications/SWU-LL-01.reqif": "afe9156dbe7e12cdb30d260911673bcbf39d4a90473105ea2ed2b3a0d2ca9fa1",
+      "workproducts/SWE.3/unit_specifications/SWU-LL-02.reqif": "88b99c7bde121515437b00a4b898c47913cdbd236826513885e35f4548037f4e"
+    },
+    "frozen_at": "2026-10-29T14:46:38.427129Z",
+    "phase": "SWE.3",
+    "schema": "forge-c/baseline/0.4",
+    "upstream": {
+      "SWE.1": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+      "SWE.2": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6"
+    }
+  },
+  "current_baseline": true,
+  "gate": {
+    "phase": "SWE.3",
+    "decision": "REINSPECT",
+    "reason": "NO_INSPECTION_FOR_CURRENT_BASELINE",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "gates": [
+    {
+      "issues": [],
+      "phase": "SWE.3",
+      "result": "UNCHANGED",
+      "step": "delivery_check"
+    },
+    {
+      "baseline_id": "BL-SWE.3-001",
+      "phase": "SWE.3",
+      "result": "FROZEN",
+      "step": "author"
+    },
+    {
+      "baseline_id": "BL-SWE.3-001",
+      "phase": "SWE.3",
+      "step": "demonstration_snapshot"
+    },
+    {
+      "check": "delivery",
+      "code_findings": 3,
+      "code_mode": "FROZEN",
+      "conformance_findings": 0,
+      "delivery": "UNCHANGED",
+      "phase": "SWE.3",
+      "step": "verify",
+      "verdict": "PASS"
+    }
+  ],
+  "tools": [
+    {
+      "at": "2026-10-29T14:35:16.270468Z",
+      "server": "forge-analysis-mcp",
+      "op": "clang_analyze",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "clang analyzer: 0 diagnostics",
+      "provenance": {
+        "duration_ms": 24.7,
+        "exit_code": 0,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-1f23597881c14f73",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tool": "clang --analyze",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029"
+      },
+      "artifact_refs": [
+        "artifact:sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      ],
+      "metric_fields": [
+        "delivered_findings",
+        "diagnostics",
+        "files"
+      ],
+      "measured_dimensions": {
+        "delivered_findings": 0,
+        "diagnostics": 0,
+        "files": 1
+      }
+    },
+    {
+      "at": "2026-10-29T14:35:16.354350Z",
+      "server": "forge-analysis-mcp",
+      "op": "cppcheck",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "cppcheck: 0 general, 0 MISRA rules hit (subset only)",
+      "provenance": {
+        "duration_ms": 54.7,
+        "exit_code": 0,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-74f1e1dce1074f6e",
+        "output_sha256": "84677b7b03a30761db88f0f40d7c12153cb09afb91ff158d7972017df6607b79",
+        "tool": "cppcheck",
+        "version": "Cppcheck 2.7"
+      },
+      "artifact_refs": [
+        "artifact:sha256:f0265c4df5ea0208faaf30474ea37fa896da5071310143c5bd9a9e7cee35ebf3"
+      ],
+      "metric_fields": [
+        "general_findings",
+        "misra_compliance",
+        "misra_coverage_note",
+        "misra_rules_in_standard_body",
+        "misra_rules_violated"
+      ],
+      "measured_dimensions": {
+        "general_findings": 0,
+        "misra_rules_in_standard_body": 158,
+        "misra_rules_violated": 0
+      }
+    },
+    {
+      "at": "2026-10-29T14:35:16.731452Z",
+      "server": "forge-build-mcp",
+      "op": "measure_elf",
+      "role": "swe3-author",
+      "status": "BLOCKED",
+      "issues": [
+        "NO_OBJECTS"
+      ],
+      "summary": "no objects; compile first",
+      "provenance": {
+        "invocation_id": "inv-f4d19a4d17ae4fed",
+        "tool": "arm-none-eabi-size",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [],
+      "measured_dimensions": {}
+    },
+    {
+      "at": "2026-10-29T14:35:16.947953Z",
+      "server": "forge-build-mcp",
+      "op": "stack_usage",
+      "role": "swe3-author",
+      "status": "BLOCKED",
+      "issues": [
+        "NO_STACK_USAGE"
+      ],
+      "summary": "no .su files; compile first",
+      "provenance": {
+        "invocation_id": "inv-6a28e98ee26a4c73",
+        "tool": "-fstack-usage",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [],
+      "measured_dimensions": {}
+    },
+    {
+      "at": "2026-10-29T14:35:23.397461Z",
+      "server": "forge-build-mcp",
+      "op": "configure",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "profile target-cm55-gcc: 1 sources",
+      "provenance": {
+        "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+        "invocation_id": "inv-846594867d60429a",
+        "tool": "arm-none-eabi-gcc",
+        "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "include_dirs",
+        "sources"
+      ],
+      "measured_dimensions": {
+        "include_dirs": 5,
+        "sources": 1
+      }
+    },
+    {
+      "at": "2026-10-29T14:35:34.778860Z",
+      "server": "forge-build-mcp",
+      "op": "compile",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "1/1 units compiled (target-cm55-gcc)",
+      "provenance": {
+        "duration_ms": 36.7,
+        "exit_code": 0,
+        "input_sha256": "81b2fd8c0a276f979ce8d480cb7d2d13a065c9d8c56e429b4f9ba0489482cb0a",
+        "invocation_id": "inv-051250db0ae44ed8",
+        "output_sha256": "1bd08c463c3dad7f7ac198eb5b1c609681371af7c0a2c48a0c0119b497fba064",
+        "tool": "arm-none-eabi-gcc",
+        "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+      },
+      "artifact_refs": [
+        "artifact:sha256:1bd08c463c3dad7f7ac198eb5b1c609681371af7c0a2c48a0c0119b497fba064"
+      ],
+      "metric_fields": [
+        "failed_units",
+        "relocatable_elf",
+        "units"
+      ],
+      "measured_dimensions": {
+        "failed_units": 0,
+        "relocatable_elf": true,
+        "units": 1
+      }
+    },
+    {
+      "at": "2026-10-29T14:35:37.916502Z",
+      "server": "forge-build-mcp",
+      "op": "measure_elf",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "text=8 data=0 bss=0 (target-cm55-gcc)",
+      "provenance": {
+        "duration_ms": 4.0,
+        "exit_code": 0,
+        "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+        "invocation_id": "inv-8da8ff2c697843f5",
+        "output_sha256": "cd76661009e29a551a9074e65f372529c1bc1d80f44eba93a85239e41836fc72",
+        "tool": "arm-none-eabi-size",
+        "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+      },
+      "artifact_refs": [
+        "artifact:sha256:cd76661009e29a551a9074e65f372529c1bc1d80f44eba93a85239e41836fc72"
+      ],
+      "metric_fields": [
+        "bss",
+        "data",
+        "flash_bytes",
+        "objects",
+        "ram_bytes",
+        "scope",
+        "text"
+      ],
+      "measured_dimensions": {
+        "bss": 0,
+        "data": 0,
+        "flash_bytes": 8,
+        "objects": 1,
+        "ram_bytes": 0,
+        "scope": "object-level, not linked image",
+        "text": 8
+      }
+    },
+    {
+      "at": "2026-10-29T14:35:38.014945Z",
+      "server": "forge-build-mcp",
+      "op": "stack_usage",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "max frame 0 B in forge_measure_LL_CRC_Write_IDR (target-cm55-gcc)",
+      "provenance": {
+        "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+        "invocation_id": "inv-2adac9024bbb42c4",
+        "tool": "gcc/clang -fstack-usage",
+        "version": "profile:target-cm55-gcc"
+      },
+      "artifact_refs": [
+        "artifact:sha256:185f5f61c6ec0ed1a52ef26e7ca7f7b1b5d86e8682f39ae182d0753ab03f7747"
+      ],
+      "metric_fields": [
+        "functions",
+        "max_frame_bytes",
+        "scope"
+      ],
+      "measured_dimensions": {
+        "functions": 2,
+        "max_frame_bytes": 0,
+        "scope": "per-function frames; call-graph worst case not computed"
+      }
+    },
+    {
+      "at": "2026-10-29T14:40:17.010762Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [
+        "DELIVERED_FINDING(recorded for the owner):GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:497",
+        "DELIVERED_FINDING(recorded for the owner):GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:510",
+        "DELIVERED_FINDING(recorded for the owner):GUIDELINE:GL-ARG-01:software/ll/stm32n6xx_ll_crc.h:510"
+      ],
+      "summary": "SWE.3 delivered-code checks (hal_guideline): 0 blocking, 3 recorded findings",
+      "provenance": {
+        "input_sha256": "52747bbf67a64368b116a5da7ba52278163249a0a364b213368e03a6ccc5a674",
+        "invocation_id": "inv-472d5a424f804c6d",
+        "tool": "forge-brownfield-checks",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [
+        "artifact:sha256:2bba9beaa8afa20a836884c1f94185704b1e8628f452ef374fb99a9394ef8bee"
+      ],
+      "metric_fields": [
+        "blocking",
+        "recorded_findings"
+      ],
+      "measured_dimensions": {
+        "blocking": 0,
+        "recorded_findings": 3
+      }
+    },
+    {
+      "at": "2026-10-29T14:46:28.028300Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "json: 0 issues",
+      "provenance": {
+        "input_sha256": "3801b71c2c06b94f590cc80ef6b8db54cb001ce0d05957b7fc023a6b228c2965",
+        "invocation_id": "inv-e3d5a3c6312e4462",
+        "tool": "forge-artifact-check",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "bytes"
+      ],
+      "measured_dimensions": {
+        "bytes": 790
+      }
+    },
+    {
+      "at": "2026-10-29T14:46:28.233877Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "PlantUML views: 0 findings",
+      "provenance": {
+        "input_sha256": "a2c452b7f83ebb8f7eac108979d5320322d07079d9dc1780fe29741ff9687d2b",
+        "invocation_id": "inv-618ac75ad7344c89",
+        "tool": "plantuml",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "allocated_apis",
+        "apis_in_dynamic_view",
+        "syntax"
+      ],
+      "measured_dimensions": {
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      }
+    },
+    {
+      "at": "2026-10-29T14:46:28.238007Z",
+      "server": "forge-evidence-mcp",
+      "op": "validate_trace",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "9/9 requirements traced; 9 test links planned (test files are due at SWE.4)",
+      "provenance": {
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-d324b8e9e01346bb",
+        "tool": "forge-trace-gate",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "planned_test_links",
+        "requirements",
+        "rows",
+        "test_files_required",
+        "traced"
+      ],
+      "measured_dimensions": {
+        "planned_test_links": 9,
+        "requirements": 9,
+        "rows": 9,
+        "test_files_required": false,
+        "traced": 9
+      }
+    },
+    {
+      "at": "2026-10-29T14:46:28.303498Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "PlantUML views: 0 findings",
+      "provenance": {
+        "input_sha256": "faa88b50de8ae0c7aec1a5cf0ee75e8e9583bd53c92619948536fb2898a8521f",
+        "invocation_id": "inv-31cfe6223cd74a23",
+        "tool": "plantuml",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "allocated_apis",
+        "apis_in_dynamic_view",
+        "syntax"
+      ],
+      "measured_dimensions": {
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      }
+    },
+    {
+      "at": "2026-10-29T14:46:28.813054Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe3-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "markdown: 0 issues",
+      "provenance": {
+        "input_sha256": "05aa8d0aeb5c46936a62b3b97cea6bbbb901817f3852034b533676834b9e8b45",
+        "invocation_id": "inv-e33793ad7035473a",
+        "tool": "forge-artifact-check",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "bytes"
+      ],
+      "measured_dimensions": {
+        "bytes": 5811
+      }
+    }
+  ],
+  "build_files": [
+    {
+      "path": "build/target-cm55-gcc/driver.elf",
+      "bytes": 1056,
+      "sha256": "730855b86d4618bf10103ef086b846b9298daa5f0ff829c7e3741a5eb9849b0d"
+    },
+    {
+      "path": "build/target-cm55-gcc/driver.map",
+      "bytes": 5371,
+      "sha256": "f3699d08e3e02c32823e8ff35099285256230f853f1b2ff88d492be85927bc43"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.o",
+      "bytes": 1056,
+      "sha256": "8cadbc7a843f983be74e9e5d4f968870490be105952a9200f303c56e880d8ba3"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.su",
+      "bytes": 352,
+      "sha256": "185f5f61c6ec0ed1a52ef26e7ca7f7b1b5d86e8682f39ae182d0753ab03f7747"
+    }
+  ],
+  "read_only": true,
+  "generation_requests": 0
+}
