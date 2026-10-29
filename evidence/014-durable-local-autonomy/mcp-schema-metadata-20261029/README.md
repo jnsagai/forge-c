@@ -1,5 +1,9 @@
 # Preserve constraints in the schema actually served by MCP
 
+> Later activation: the qualified bootstrap is now deployed as sourcec1f1378 in the
+> [focused continuation](../afo-focused-continuation-20261029/README.md).
+> The NOT_DEPLOYED statements below describe the preserved earlier checkpoint.
+
 Source **6cd238088b84ec67df3b59e88a22b6576e0d9412** fixes a broker-contract mismatch:
 `build_server` constructed callable annotations/signatures from bare field types,
 dropping Pydantic FieldInfo. The actual native submit_candidate schema exposed

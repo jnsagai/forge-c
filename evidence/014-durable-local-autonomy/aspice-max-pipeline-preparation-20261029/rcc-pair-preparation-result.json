@@ -1,0 +1,116 @@
+{
+  "schema": "forge-c/ll-hal-pipeline-preparation/1",
+  "source_revision": "1237081af4336f479151d60083cd69d1f616bd39",
+  "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+  "profile_sha256": "60cc304536226bc91155ad77bce12a956d38938fb4393bcffc32e839773d4906",
+  "purpose": "ASPICE_ONLY",
+  "model_requests": 0,
+  "live_activation": false,
+  "functional_gates_blocking": true,
+  "safety_approval": null,
+  "assessed_aspice_compliance": null,
+  "ll_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-pair-preparation-state/workorders/WO-F014-RCC-LL-INPUT-PREFLIGHT/workspace",
+  "ll_manifest_sha256": "645a59ff3fd16e5ee89b1fc94b838732288f08163c62eb9cebbfefb16ecf1dd1",
+  "ll_input_hashes": [
+    {
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "bytes": 1056393
+    },
+    {
+      "path": "inputs/RM0486-rev4-ch14-rcc.md",
+      "role": "reference_manual_rcc_chapter",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+      "bytes": 2203410
+    },
+    {
+      "path": "inputs/RM0486-rev4-memory-map-excerpt.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb",
+      "bytes": 3472
+    },
+    {
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "0d6165ae2aaa911eef0dd245a3d93d1dce6e31916871615995f70a0caeb24a2a",
+      "bytes": 1980
+    },
+    {
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+      "bytes": 455865
+    }
+  ],
+  "ll_upstream_status": "NOT_PROVIDED",
+  "routes": {
+    "LL": {
+      "phase_roles": [
+        "release-manager",
+        "swe1-author",
+        "swe1-inspector",
+        "swe2-author",
+        "swe2-inspector",
+        "swe3-author",
+        "swe3-inspector",
+        "swe4-author",
+        "swe4-inspector",
+        "swe5-author",
+        "swe5-inspector",
+        "swe6-author",
+        "swe6-inspector"
+      ],
+      "all_six_author_and_inspector_roles_present": true,
+      "structured_author_phases": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ],
+      "structured_inspector_phases": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ],
+      "routing": "existing structured local obligations",
+      "graph_sha256": "cb12b489d873cf5e2c7c21f2cab1661dccbe9522709b54d21be75b20c76137d5",
+      "native_execution": "NOT_RUN"
+    },
+    "HAL": {
+      "phase_roles": [
+        "release-manager",
+        "swe1-author",
+        "swe1-inspector",
+        "swe2-author",
+        "swe2-inspector",
+        "swe3-author",
+        "swe3-inspector",
+        "swe4-author",
+        "swe4-inspector",
+        "swe5-author",
+        "swe5-inspector",
+        "swe6-author",
+        "swe6-inspector"
+      ],
+      "all_six_author_and_inspector_roles_present": true,
+      "structured_author_phases": [],
+      "structured_inspector_phases": [],
+      "routing": "existing Fabro SKILL/MCP agents; no unsupported structured HAL path enabled",
+      "graph_sha256": "6eedd309c14c3cabe3e2538ae5e0aa7129c7c3cac1ac1634b615da9111ba4a83",
+      "native_execution": "NOT_RUN"
+    }
+  },
+  "HAL": {
+    "status": "WAITING_FOR_NEW_QWEN_LL_VERIFIED_OUTPUT",
+    "guard": "HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>",
+    "verified_source_substituted": false
+  },
+  "runtime_success": "NOT_RUN",
+  "qwen_self_healing": "UNPROVEN"
+}

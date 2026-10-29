@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/activate-afo-v6-recorder.py", line 21, in <module>
+    git('remote','set-url','origin','git@github.com:jnsagai/forge-c.git');assert not git('ls-remote','--heads','origin',branch).stdout.strip(),'EXISTING_BRANCH_REQUIRES_RECONCILIATION'
+                                                                                     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/forge-c/production-local-014/deployment/activate-afo-v6-recorder.py", line 20, in git
+    def git(*args):return subprocess.run(['git','-C',str(out),*args],check=True,capture_output=True,text=True,timeout=30)
+                          ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', '-C', '/mnt/data/forge-c/production-local-014/progress-afo-focused-20261029-v6', 'ls-remote', '--heads', 'origin', 'overnight/2026-10-29-local-qwen-afo']' returned non-zero exit status 128.

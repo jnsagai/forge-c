@@ -1,6 +1,50 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — external bootstrap qualified, Qwen V5 independently rejected
+## Latest state — Qwen focused repair live; full ASPICE pair prepared
+
+**Runtimec1f1378733af388b50ba1d6e5de37c16f3c0a9ee, RUNNING epoch46.** Qualified
+external SDK/trusted retained-task bootstrap activated after85local/9native PASS.
+Loaded Qwen Q8_0/f16/MTP3/xhigh/262144 provider retained, one inference. Standing
+delegated SSH-agent signing issued a disclosed prospective four-hour scope through
+**30Oct02:40:24UTC**; append-only deadline extension, all non-time limits/charges
+and failed jobs retained. Old grants/jobs were not renewed/refilled.
+
+**Qwen native01M64XB91FXAQSK9KWNKGSSTN0**, job
+**afo-agent-d36861d7eff8a7369497c014**, order **afo-48c5fa011f42b339** is actually
+RUNNING at the saved API checkpoint. Starts from exact V5 Qwen bytes and measured
+failure facts, no reference fix/grader/operator repair edits. Native events show
+skill/case and both retained files read, then relevant helper/checker reads;
+builtin shell/grep attempts correctly denied. At22:59:14Z Qwen wrote6310-byte
+runconfig.py through native event62, SHAf33c75b9...; write PASS, not independent
+acceptance. Next model request live. No valid submitted candidate yet.
+Do not duplicate/restart based on observation timeout or a quiet event interval.
+Scope/receipts/counters and executable independent verifiers:
+[focused continuation](../../evidence/014-durable-local-autonomy/afo-focused-continuation-20261029/README.md).
+
+Existing Git progress recorder active/published every300seconds on
+https://github.com/jnsagai/forge-c/tree/overnight/2026-10-29-local-qwen-afo.
+It observes the existing order only; no second scheduler/model call/intake payload.
+First matching local/remote commita5500c1. Recorder ends at scope expiry without
+stopping factory supervision. Old plans/history and initial admission/Git failures
+preserved. Raw prompts/reasoning/secrets/private ST inputs are excluded.
+
+**Prospective full ASPICE profile1237081 is NOT_DEPLOYED**.54local regressions PASS;
+real LL input preparation and both six-phase author/inspector routes verified,
+HAL guard refuses without new verified LL output. Existing targets0002a RCC LL
+then0002b RCC HAL retained. HAL uses existing native Fabro roles. Functional
+findings block; no demonstration policy selected. Historical RCC120000cap /
+86000charge must be reconciled with scope/lineage before any product intake;
+new order IDs cannot refill it. [Preparation evidence](../../evidence/014-durable-local-autonomy/aspice-max-pipeline-preparation-20261029/README.md).
+
+Next: poll same live native handle; on actual receipt and native/request/verifier
+quiescence run frozen external, causal CRE and original diagram/SWE.3 checks.
+Any accepted Qwen patch integrates onto current controller without rolling back
+SDK/accounting changes; independently qualify before exact delegated activation.
+Then execute complete LL and HAL pipelines and Qwen-authored corrections until
+independent gates clean. Self-healing UNPROVEN; full pipeline NOT_RUN; learning
+benefit/availability unqualified; formal30/58 unchanged. Keep full owner goal active.
+
+## Historical checkpoint — external bootstrap qualified, Qwen V5 independently rejected
 
 **Runtime92c49a6 / RUNNING epoch44**, provider retained and idle; previous
 **22:25:58UTC authority window expired**. No extension or new generation issued.

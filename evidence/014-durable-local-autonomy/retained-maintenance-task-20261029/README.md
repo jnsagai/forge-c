@@ -1,5 +1,9 @@
 # Trusted retained-maintenance task metadata
 
+> Later activation: the qualified bootstrap is now deployed as sourcec1f1378 in the
+> [focused continuation](../afo-focused-continuation-20261029/README.md).
+> The NOT_DEPLOYED statements below describe the preserved earlier checkpoint.
+
 External controller implementation: `0da4616a4084b98899af63b6e494b0b2343bedc1`.
 Canonical integration fixture correction / tested revision:
 `c1f1378733af388b50ba1d6e5de37c16f3c0a9ee`.
