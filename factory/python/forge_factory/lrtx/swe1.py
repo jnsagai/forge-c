@@ -253,8 +253,8 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              f"the subject 'the {sysname}', and ends with a period. "
              "verification states the test and its explicit pass criterion ('... passes when ...'). "
              "source_page is the RM0486 page supporting the requirement, from the provided sources. "
-             "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a named "
-             "field. not_covered stays empty.")
+             "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a "
+             "named field. not_covered stays empty.")
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
     from ..layer import profile
@@ -410,7 +410,7 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
     b = _manifest(ws)["budgets"]
     src = "work-order budget (owner development target)"
     robot = "SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver image; "
-    return [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
+    requirements = [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
              "source": src, "verification": robot + f"passes when the driver flash usage is at most {b['flash_bytes']} "
              "bytes.", "verified_by": "target_robot_test", "effects": [], "upstream": "WO-BUDGET"},
             {"key": "budget_static_ram", "statement": f"The {sysname} shall use at most {b['static_ram_bytes']} bytes "
@@ -421,6 +421,23 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
              "for any public API call.", "source": src, "verification": robot + "passes when the worst-case stack usage "
              f"of every public API call chain is at most {b['stack_bytes']} bytes.", "verified_by": "target_robot_test",
              "effects": [], "upstream": "WO-BUDGET"}]
+    from ..simulation_performance import selected
+
+    performance = selected(ws)
+    if performance:
+        source = "work-order simulation-only performance allocation; not a reference-manual or silicon timing claim"
+        for key, limit, units in (("cpu", performance["instructions_per_call"], "executed target instructions"),
+                                  ("time", performance["microseconds_per_call"], "microseconds of virtual time")):
+            requirements.append({"key": "budget_simulation_" + key,
+                                 "statement": f"When a scoped API is measured in the pinned Renode profile at "
+                                 f"{performance['performance_mips']} MIPS without injected interrupts or bus stalls, "
+                                 f"the {sysname} shall complete each measured call within {limit} {units}.",
+                                 "source": source, "verification": "SWE.6 Robot checks the independent Renode entry/return "
+                                 "instruction and virtual-time records for every scoped function; missing, incomplete or "
+                                 "over-budget measurements fail. Run Target Scenario on the declared test, then "
+                                 "Simulation Performance Should Meet Budget; no hardware WCET is established.",
+                                 "verified_by": "target_robot_test", "effects": [], "upstream": "WO-SIMULATION-PERFORMANCE"})
+    return requirements
 
 
 def _scope_ids(alloc: str) -> tuple[str, str]:
@@ -506,8 +523,9 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for r in rows:
         by_up.setdefault(r["upstream"], []).append(r["swr"])
     t = m["target"]
-    reg_swr = [r["swr"] for r in rows if r["upstream"] != "WO-BUDGET"]
-    bud_swr = [r["swr"] for r in rows if r["upstream"] == "WO-BUDGET"]
+    budget_origins = ("WO-BUDGET", "WO-SIMULATION-PERFORMANCE")
+    reg_swr = [r["swr"] for r in rows if r["upstream"] not in budget_origins]
+    bud_swr = [r["swr"] for r in rows if r["upstream"] in budget_origins]
     gaps = ["# Upstream coverage", "", "| Input | Status as stated in the manifest | Affected SWR IDs |",
             "| --- | --- | --- |",
             f"| HSI contract | {t.get('hsi_contract', 'NOT_PROVIDED')}; upstream.status: {up} | {', '.join(reg_swr)} |",

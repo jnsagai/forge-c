@@ -100,7 +100,7 @@ def contract(man: dict) -> dict:
             **({"historical_safety_scope": historical} if "historical_safety_scope" in man else {}),
             **version,
             **{k: man[k] for k in ("development_execution", "operation_scope", "provided_requirements",
-                                  "inspection_assessment_context") if k in man},
+                                  "inspection_assessment_context", "simulation_performance") if k in man},
             **({"semantic_required_operations": man["semantic_required_operations"]}
                if "semantic_required_operations" in man else {}),
             "inputs": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("inputs", [])),

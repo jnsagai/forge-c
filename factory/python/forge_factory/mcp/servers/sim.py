@@ -12,6 +12,7 @@ that host integration tests may consume through the driver's host register hook;
 """
 from __future__ import annotations
 
+import base64
 import json
 import os
 import random
@@ -22,7 +23,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from ...common import REPO_ROOT
+from ...common import REPO_ROOT, canonical_json, sha256_file
 from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
@@ -69,6 +70,19 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
     from ...brownfield.cmsis import target_flags
 
     incs += target_flags(ws)  # feature 008 (ST pilot): vendor includes, defines, -mcmse (RCC_S at the secure base)
+    from ... import simulation_performance as performance
+
+    budget = performance.selected(ws)
+    performance_inputs = None
+    unit = None
+    if budget and test == ws / budget["test_source"]:
+        try:
+            unit = performance.prepare(ws, elf.parent)
+        except ValueError as exc:
+            return False, str(exc).encode(), [str(exc)]
+        srcs.append(str(unit))
+        incs.append("-I" + str(elf.parent))
+        performance_inputs = performance.inputs(ws)
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
                   str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
     lines = b.stderr.decode(errors="replace").splitlines()
@@ -78,6 +92,11 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
             and "collect2" not in ln][:8]
     if not errs:
         errs = [ln[:140] for ln in lines if "error" in ln][:4]
+    if b.exit_code == 0 and performance_inputs:
+        if performance.inputs(ws) != performance_inputs:
+            return False, b.stdout + b.stderr, ["SIMULATION_PERFORMANCE_BUILD_INPUT_CHANGED"]
+        elf.with_suffix(".performance-inputs.json").write_bytes(
+            canonical_json({**performance_inputs, "elf_sha256": sha256_file(elf), "wrapper_sha256": sha256_file(unit)}))
     return b.exit_code == 0, b.stdout + b.stderr, errs
 
 
@@ -112,17 +131,51 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
                                                                           str(model)))
     words = "\n".join(f"sysbus ReadDoubleWord {MAILBOX + 4 * k:#x}" for k in range(12))
     resc = wd / f"run_{elf.stem}.resc"
+    from ... import simulation_performance as performance
+
+    budget = performance.selected(ws) if ws is not None else None
+    instrumentation = None
+    extra = ""
+    if budget and elf.stem in (Path(budget["test_source"]).stem, Path(budget["test_source"]).stem + "_default"):
+        if scenario != "default":
+            return None, b"SIMULATION_PERFORMANCE_PROFILE_REQUIRES_DEFAULT_SCENARIO"
+        try:
+            receipt = json.loads(elf.with_suffix(".performance-inputs.json").read_text())
+            if (any(receipt[k] != v for k, v in performance.inputs(ws).items())
+                    or receipt["elf_sha256"] != sha256_file(elf)):
+                return None, b"SIMULATION_PERFORMANCE_BUILD_INPUT_CHANGED"
+        except (OSError, ValueError, KeyError, TypeError):
+            return None, b"SIMULATION_PERFORMANCE_BUILD_INPUT_UNAVAILABLE"
+        listing = run_argv(["arm-none-eabi-objdump", "-d", str(elf)], wd, 30, {"arm-none-eabi-objdump"})
+        if listing.exit_code:
+            return None, b"SIMULATION_PERFORMANCE_DISASSEMBLY_FAILED\n" + listing.stdout + listing.stderr
+        try:
+            instrumentation = performance.plan(ws, listing.stdout.decode())
+        except ValueError as exc:
+            return None, str(exc).encode()
+        extra = "\n".join(instrumentation["commands"]) + "\n"
+        instrumentation.update(receipt)
+        instrumentation["observer_sha256"] = sha256_file(Path(performance.__file__))
+        instrumentation["source_files"] = performance.source_files(Path(ws))
+        instrumentation["platform_sha256"] = sha256_file(repl)
+        instrumentation["model_sha256"] = sha256_file(model)
     resc.write_text(f'mach create "stm32n6"\nmachine LoadPlatformDescription @{repl}\nsysbus LoadELF @{elf}\n'
-                    f'cpu VectorTableOffset 0x34000000\nemulation RunFor "0.2"\n{words}\nquit\n')
+                    f'cpu VectorTableOffset 0x34000000\n{extra}emulation RunFor "0.2"\n{words}\nquit\n')
     # .NET under the sandbox rlimits: no W^X double-mapping file (RLIMIT_FSIZE) and a bounded GC heap (RLIMIT_AS)
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000"}
     r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
                  {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
+    if instrumentation and (any(instrumentation[k] != v for k, v in performance.inputs(ws).items())
+                            or instrumentation["elf_sha256"] != sha256_file(elf)):
+        return None, r.stdout + r.stderr + b"\nSIMULATION_PERFORMANCE_EXECUTION_INPUT_CHANGED"
     vals = [int(x, 16) for x in re.findall(r"^(0x[0-9A-Fa-f]{8})\s*$", r.stdout.decode(errors="replace"), re.M)]
     if len(vals) < 4:
         return None, r.stdout + r.stderr
-    return {"magic_ok": vals[0] == MAGIC, "passed": vals[1], "failed": vals[2], "done": vals[3] == 1,
-            "failed_ids": [v for v in vals[4:4 + min(vals[2], 8)]]}, r.stdout + r.stderr
+    observation = {"magic_ok": vals[0] == MAGIC, "passed": vals[1], "failed": vals[2], "done": vals[3] == 1,
+                   "failed_ids": [v for v in vals[4:4 + min(vals[2], 8)]]}
+    if instrumentation:
+        observation["performance"] = performance.report(ws, instrumentation, r.stdout.decode(errors="replace"))
+    return observation, r.stdout + r.stderr
 
 
 def run_renode(ctx: ToolContext, a: SimIn) -> dict:
@@ -135,6 +188,12 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
         return result(ctx, "UNAVAILABLE", "GNU Arm toolchain missing", issues=["TOOL_MISSING:arm-none-eabi-gcc"],
                       tool="renode")
     tests = sorted((ctx.workspace / "software/tests/target").glob("test_*.c"))
+    from ... import simulation_performance as performance
+
+    budget = performance.selected(ctx.workspace)
+    if budget and ctx.workspace / budget["test_source"] not in tests:
+        return result(ctx, "BLOCKED", "declared simulation performance test is missing",
+                      issues=["SIMULATION_PERFORMANCE_TEST_MISSING"], tool="renode")
     if not tests:
         return result(ctx, "BLOCKED", "no target tests", issues=["NO_TESTS:software/tests/target"], tool="renode")
     wd = ctx.workspace / "build" / "renode"
@@ -161,6 +220,11 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
             failed += 1
             continue
         per[t.name] = {**res, "scenario": scenario}
+        if budget and t == ctx.workspace / budget["test_source"]:
+            measurement = res.get("performance") or {}
+            if measurement.get("status") != "PASS":
+                issues.append("SIMULATION_PERFORMANCE_NOT_PASS:" + t.name)
+                issues += measurement.get("issues", [])
         passed += res["passed"]
         failed += res["failed"]
         issues += [f"TARGET_FAIL:{t.name}:check {i}" for i in res["failed_ids"]]
@@ -175,13 +239,28 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     from ...layer import register_prefix
 
     pfx = register_prefix(ctx.workspace)  # feature 009 (i003 said "RCC model" for the IWDG model)
+    log_ref = ctx.store(log)
+    artifact_refs = [log_ref]
+    performance_metrics = {}
+    if budget:
+        measured = per.get(Path(budget["test_source"]).name, {}).get("performance")
+        if measured:
+            elf = wd / (Path(budget["test_source"]).stem + ".elf")
+            binary_ref = ctx.store(canonical_json({"schema": "forge-c/elf-evidence/1", "encoding": "base64",
+                                                   "sha256": sha256_file(elf),
+                                                   "data": base64.b64encode(elf.read_bytes()).decode("ascii")}), "json")
+            artifact_refs.append(binary_ref)
+            proof = {**measured, "raw_log_ref": log_ref, "elf_artifact_ref": binary_ref}
+            proof_ref = ctx.store(canonical_json(proof), "json")
+            artifact_refs.append(proof_ref)
+            performance_metrics = {"simulation_performance_report": proof_ref}
     return result(ctx, "PASS" if ok and not undeclared else "FAIL", f"renode cortex-m55: {passed} checks passed, "
                   f"{failed} failed ({len(tests)} images; behavioural {pfx} model)"
-                  + ("; undeclared test change - declare it" if undeclared else ""), [ctx.store(log)],
+                  + ("; undeclared test change - declare it" if undeclared else ""), artifact_refs,
                   (undeclared + issues)[:30],
                   {"passed": passed, "failed": failed, "images": per, "cpu": "cortex-m55",
                    "platform": f"forge-stm32n6-{pfx.lower()}-min (CPU+NVIC+AXISRAM+behavioural {pfx})",
-                   "target_evidence": "simulated", "silicon_verified": False}, "renode",
+                   "target_evidence": "simulated", "silicon_verified": False, **performance_metrics}, "renode",
                   tool_version(renode), 0 if ok else 1, None, a.model_dump(), log)
 
 

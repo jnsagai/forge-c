@@ -131,6 +131,18 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
         and fp["ram_bytes"] <= budgets.get("static_ram_bytes", -1)
         and fp["max_frame_bytes"] <= budgets.get("stack_bytes", -1)
     )
+    from .. import simulation_performance
+
+    performance_budget = simulation_performance.selected(ws)
+    if performance_budget:
+        simulation = latest(res, "forge-sim-mcp", "run_renode")
+        try:
+            measurement = simulation_performance.verify_result(ws, (simulation or {}).get("result", {}))
+        except (OSError, ValueError, KeyError, TypeError):
+            measurement = {"status": "NOT_VERIFIED", "issues": ["SIMULATION_PERFORMANCE_EVIDENCE_UNAVAILABLE_OR_CHANGED"]}
+        fp["simulation_performance"] = measurement
+        checks["resource_budgets"] = bool(checks["resource_budgets"] and ok(simulation)
+                                          and measurement.get("status") == "PASS")
     tgt = [r for r in res if r["server"] == "forge-sim-mcp" and r["op"] in ("run_renode", "run_hwsim")]
     checks["target_verification"] = any(ok(r) for r in tgt)
     checks["safety_gaps_declared"] = True  # known_limitations.md is always generated from facts below

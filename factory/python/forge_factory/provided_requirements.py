@@ -11,7 +11,8 @@ from .common import sha256_file
 
 
 def scope_identity(man):
-    return digest({k: man.get(k) for k in ("peripheral", "operation_scope", "scope", "budgets", "target", "layer")})
+    return digest({**{k: man.get(k) for k in ("peripheral", "operation_scope", "scope", "budgets", "target", "layer")},
+                   **({"simulation_performance": man["simulation_performance"]} if "simulation_performance" in man else {})})
 
 
 def payload(doc):

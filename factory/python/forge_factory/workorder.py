@@ -224,6 +224,10 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
 
     upstream = load_upstream(example)  # human-approved HSI/safety allocation/budgets, else NOT_PROVIDED
     target, budgets = dict(spec["target"]), dict(spec["budgets"])
+    from . import simulation_performance
+
+    performance = simulation_performance.validate(spec[simulation_performance.FIELD]) \
+        if simulation_performance.FIELD in spec else None
     if upstream["status"] == "APPROVED":
         d = upstream["data"]
         inputs["inputs/upstream-inputs.yaml"] = (example / UPSTREAM_FILE).read_bytes()
@@ -286,6 +290,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
         "scope": spec["scope"],
         "budgets": budgets,
+        **({simulation_performance.FIELD: performance} if performance else {}),
         "inputs": listed,
         "guideline": spec.get("guideline"),
         "system_names": spec["system_names"],

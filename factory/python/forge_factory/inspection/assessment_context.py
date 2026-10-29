@@ -8,7 +8,7 @@ from ..common import sha256_file
 from ..release import aspice
 
 FIELD = "inspection_assessment_context"
-FIELDS = ("purpose", "aspice_development", "target", "scope", "budgets", "layer", "operation_scope")
+FIELDS = ("purpose", "aspice_development", "target", "scope", "budgets", "layer", "operation_scope", "simulation_performance")
 
 
 def binding(manifest):
@@ -41,6 +41,7 @@ def view(manifest):
             "unsupported_invocation_behavior": "NOT_INFERRED_FROM_EXCLUDED_DOMAIN",
             "declared_work_order_scope": manifest["scope"],
             "constraints_ref": ".forge-run/manifest.json#budgets",
+            **({"simulation_performance": manifest["simulation_performance"]} if "simulation_performance" in manifest else {}),
             "effect_on_verdict": "NONE; inspector judges the original full criterion against this bound owner scope"}
 
 

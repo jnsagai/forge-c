@@ -83,7 +83,19 @@ def component_constraints(ws: Path) -> set[str]:
     (SWE.3 tools, SWE.6 'Should Be At Most'), not refined into a software unit.
     CAPA-034 (r116): initial-state invariants ('While no ... has been called ..., shall not write ...') constrain the
     whole SWC too (no start-up code); they are verified by the SWE.4/SWE.6 reset-state tests."""
-    return {sid for sid, text in swr_texts(ws).items() if BUDGET_RX.search(text) or INITIAL_STATE_RX.search(text)}
+    texts = swr_texts(ws)
+    constraints = {sid for sid, text in texts.items() if BUDGET_RX.search(text) or INITIAL_STATE_RX.search(text)}
+    from ..simulation_performance import selected
+
+    if selected(ws):
+        from ..lrtx.swe1 import budget_requirements, system_name
+
+        # Only the exact generated, owner-bound simulation allocations are component
+        # constraints. An arbitrary functional requirement mentioning time is not exempted.
+        expected = {r["statement"] for r in budget_requirements(ws, system_name(ws))
+                    if r["upstream"] == "WO-SIMULATION-PERFORMANCE"}
+        constraints.update(sid for sid, text in texts.items() if text in expected)
+    return constraints
 
 
 def requirement_ids(ws: Path) -> list[str]:

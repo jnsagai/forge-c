@@ -100,6 +100,18 @@ class ForgeTarget:
             raise AssertionError(f"{self.last_name}: {r['passed']} passed, {r['failed']} failed "
                                  f"(failed ids {r['failed_ids']})")
 
+    @keyword("Simulation Performance Should Meet Budget")
+    def simulation_performance_should_meet_budget(self) -> None:
+        from forge_factory.afo.durable import digest
+        from forge_factory.simulation_performance import selected
+
+        budget = selected(self.ws)
+        measurement = self._need().get("performance") or {}
+        if (not budget or self.last_src != self.ws / budget["test_source"]
+                or measurement.get("status") != "PASS" or measurement.get("budget_sha256") != digest(budget)):
+            raise AssertionError("no complete passing measurement for the declared simulation-only performance budget")
+        self.all_target_checks_should_pass()
+
     def _objects(self, extra: list[str] | None = None, sub: str = "size") -> list[str]:
         cc = shutil.which("arm-none-eabi-gcc")
         if not cc:

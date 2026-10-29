@@ -285,7 +285,7 @@ Compiler/tool identities, exit codes and size/stack limits are in the recorded t
         text = path.read_text()
         marker = "    " + robot_scaffold.PLACEHOLDER + ": "
         parts = text.split(marker)
-        # The seven requirements are fixed by the independently supplied fixture.
+        # Seven baseline requirements; the explicit simulation extension adds two measured allocations.
         actions = [
             "Run Target Scenario    scn_idr.c\n    Target Check Should Pass    2",
             "Run Target Scenario    scn_idr.c\n    Target Check Should Pass    4",
@@ -294,6 +294,11 @@ Compiler/tool identities, exit codes and size/stack limits are in the recorded t
             "Driver Flash Size Should Be At Most    4096",
             "Driver Static RAM Should Be At Most    64",
             "Driver Stack Should Be At Most    128"]
+        from forge_factory.simulation_performance import selected
+
+        if selected(self.ws):
+            actions += ["Run Target Scenario    software/tests/target/test_performance.c\n"
+                        "    Simulation Performance Should Meet Budget"] * 2
         assert len(parts) == len(actions) + 1, "fixture requirements changed; update and requalify the oracle"
         output = parts[0]
         for action, tail in zip(actions, parts[1:], strict=True):
