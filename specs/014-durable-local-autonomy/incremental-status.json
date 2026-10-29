@@ -47,7 +47,7 @@
   "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
   "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
   "live_order_state": "RUNNING",
-  "later_phases": "SWE4_INSPECTION_PASS; SWE5_TARGET_CHECKS_PASS_AUTHOR_ACTIVE; SWE6_PENDING",
+  "later_phases": "SWE5_INSPECTION_PASS; SWE6_TEST_AUTHOR_ACTIVE; FULL_RELEASE_PENDING",
   "reported_output_tokens_completed_requests": null,
   "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
   "operational_availability": "NOT_QUALIFIED",
@@ -109,11 +109,11 @@
   "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
   "current_mission_snapshot": {
     "attempts": 4,
-    "requests": 239,
-    "tools": 447,
+    "requests": 283,
+    "tools": 513,
     "charged_tokens": 400000000,
     "usage_unknown": true,
-    "captured_utc": "2026-10-29T15:47:32.592091Z"
+    "captured_utc": "2026-10-29T16:01:52.404391Z"
   },
   "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
   "prospective_purpose": "QM",
@@ -137,7 +137,7 @@
   "last_execution_liveness": "LIVE",
   "last_inference_lease": "HELD",
   "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
-  "source_status_captured_utc": "2026-10-29T15:47:32.592091Z",
+  "source_status_captured_utc": "2026-10-29T16:01:52.404391Z",
   "independent_archive_auditor": {
     "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
     "local_passed": 24,
@@ -168,7 +168,8 @@
     "current_context262_live_swe2_snapshot": "COPIED_8882_BYTES_SHA256_VERIFIED; INSPECTION_PENDING",
     "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED",
     "current_context262_frozen_swe3": "COPIED_36_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; REAL_FAIL_PRESERVED",
-    "current_context262_frozen_swe4": "COPIED_17_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS"
+    "current_context262_frozen_swe4": "COPIED_17_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS",
+    "current_context262_frozen_swe5": "COPIED_23_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS"
   },
   "historical_f206_reported_usage": {
     "prompt_tokens": 31688,
@@ -196,8 +197,8 @@
     "SWE.2": "REAL_INSPECTION_PASS_2026-10-29T14:32:20Z; CURRENT_BASELINE_AND_DETERMINISTIC_GATE_PASS",
     "SWE.3": "FROZEN_DESIGN_AND_TARGET_BUILD_PRESENT; TWO_INSPECTIONS_FAIL_PLANTUML_NOT_AVAILABLE; MCP_DATA_ROOT_MISSING_CONFIRMED",
     "SWE.4": "REAL_INSPECTION_PASS_2026-10-29T15:33:48Z; CURRENT_BASELINE_GATE_PASS; 17_LOCAL_FILES_VERIFIED",
-    "SWE.5": "RENODE_27_CHECKS_PASS_AFTER_PERFORMANCE_TEST_BUILD_FAIL; NATIVE_AUTHOR_ACTIVE; PHASE_INSPECTION_PENDING",
-    "SWE.6": "NOT_YET_EXECUTED"
+    "SWE.5": "REAL_INSPECTION_PASS_2026-10-29T15:59:17Z; CURRENT_GATE_PASS; 23_LOCAL_FILES_VERIFIED",
+    "SWE.6": "NATIVE_TEST_AUTHOR_ACTIVE; INSPECTION_PENDING"
   },
   "historical_demonstration_phase_progress": {
     "SWE.1": "REAL_INSPECTION_PASS",
@@ -240,10 +241,10 @@
     "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
   },
   "current_trial_reported_usage_partial": {
-    "completed_requests": 170,
-    "pending_requests": 0,
-    "reported_total_tokens": 6564814,
-    "scope": "Current262k provider reports at15:47UTC; pending and historical aggregate remain UNKNOWN"
+    "completed_requests": 213,
+    "pending_requests": 1,
+    "reported_total_tokens": 8284314,
+    "scope": "Current262k provider reports at16:01UTC; pending and historical aggregate remain UNKNOWN"
   },
   "swe2_independent_verification": {
     "structure": "PASS_9_OF_9_REQUIREMENTS_ALLOCATED",
@@ -310,5 +311,15 @@
     "phase_inspection": "PENDING",
     "formal_M3": "NOT_RUN",
     "learning_benefit": "NOT_MEASURED"
+  },
+  "simulation_performance_observed": {
+    "status": "PASS",
+    "performance_mips": 100,
+    "samples_per_function": 2,
+    "instructions_per_call": 2,
+    "virtual_nanoseconds_per_call": 20,
+    "hardware_wcet": "NOT_MEASURED",
+    "artifact_sha256": "9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f",
+    "scope": "Complete observed calls in pinned Renode instruction/time model; no silicon claim"
   }
 }

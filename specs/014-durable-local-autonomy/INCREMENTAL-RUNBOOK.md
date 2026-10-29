@@ -5,6 +5,24 @@ This runbook and its static tools do not deploy source, grant authority, reserve
 inference or submit an order. Use Omniverse2 for all Qwen execution and loop10 for
 new local files. Preserve the cloud benchmark terminal and its resources.
 
+## Actual SWE.5 PASS; SWE.6 running — 2026-10-29 16:01UTC
+
+Production remains9b4c390. **INS-SWE.5-001 PASS at15:59:17UTC**, no findings;
+current frozen baseline/deterministic gate rechecked PASS. All23phase/report/test/
+tool/inspection files copied privately to loop10 and all hashes/sizes verified.
+
+The rehashed simulation-performance artifact records two complete-call samples per
+function, each **2instructions/20ns virtual time at100MIPS**. It binds budget, ELF,
+disassembly, source/test/wrapper/model/platform/observer/hooks by hash. Explicit
+hardware_wcet=NOT_MEASURED; no silicon or physical timing claim. The approved64-
+instruction/100microsecond simulation-only requirement is unchanged.
+[Actual phase/transfer/performance evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md).
+
+At16:01:52UTC current native01M63ZTJ5QM1R96484Y2KN97H6 is RUNNING in **SWE.6
+test authoring**,214requests. Full product/strict M1 remains unaccepted; the actual
+SWE.3 failures remain. Source9f9a93f qualification is staged **NOT_RUN**, v2 entrypoint
+only, after current execution/resources release and unchanged operator intent.
+
 ## Actual SWE.4 PASS; Renode checks pass — 2026-10-29 15:47UTC
 
 Production remains9b4c390. **INS-SWE.4-001 PASS at15:33:48UTC**, no findings;
