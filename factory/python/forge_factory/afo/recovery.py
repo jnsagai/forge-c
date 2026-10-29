@@ -339,7 +339,7 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     source = "RULE"
     from ..development_execution import selected as development_execution
 
-    if development_execution(ws):
+    if ws is not None and development_execution(ws):
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "DEFERRED_BY_DEVELOPMENT_POLICY")
     if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
         n = budget_snapshot(store, order, eff)["transient_retries"] + 1
@@ -498,7 +498,7 @@ def advisory_final(decision: dict, b: dict, ws) -> bool:
     from ..development_execution import selected as development_execution
     from ..inspection.gate import advisory_enabled
 
-    if development_execution(ws):
+    if ws is not None and development_execution(ws):
         return False
 
     plan = decision["plan"]

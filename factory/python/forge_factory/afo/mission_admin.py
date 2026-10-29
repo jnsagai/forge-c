@@ -43,7 +43,14 @@ def register(store, document, eff):
     ):
         raise Refused("MISSION_LIMIT_EXCEEDS_CURRENT_AUTHORITY_OR_POLICY")
     ledger = MissionLedger(store)
-    rec = ledger.register(document["mission_id"], document["lineage"], limits, ref, authorize=lambda *_: grant.allow)
+    with store.tx() as c:
+        existing = c.execute("SELECT 1 FROM afo_missions WHERE mission_id=?", (document["mission_id"],)).fetchone()
+    if existing:
+        rec = ledger.snapshot(document["mission_id"])
+        if rec["lineage"] != document["lineage"] or rec["limits"] != limits or rec["authorization_ref"] != ref:
+            raise Refused("MISSION_ALLOWANCE_RESET_FORBIDDEN")
+    else:
+        rec = ledger.register(document["mission_id"], document["lineage"], limits, ref, authorize=lambda *_: grant.allow)
     for entry in document["orders"]:
         order = store.order(entry["order_id"])
         if not order:

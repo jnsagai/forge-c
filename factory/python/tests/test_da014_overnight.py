@@ -22,7 +22,8 @@ def test_mission_link_precedes_visible_order_and_restart_keeps_original_deadline
 
     monkeypatch.setattr(mission_admin, "register", register)
     monkeypatch.setattr(
-        mission_ledger, "MissionLedger", lambda store: SimpleNamespace(link=lambda *a: calls.append("link-before-queue"))
+        mission_ledger, "MissionLedger", lambda store: SimpleNamespace(snapshot=lambda mid: {"limits": old_limits},
+                                     link=lambda *a, **kw: calls.append("link-before-queue"))
     )
     entry = {
         "order_id": "order",

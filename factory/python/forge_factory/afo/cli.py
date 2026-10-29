@@ -70,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
             "dead-letter-close",
             "shutdown",
             "mission-register",
+            "mission-extend-deadline",
         ],
     )
     ap.add_argument("arg", nargs="?")
@@ -123,12 +124,14 @@ def main(argv: list[str] | None = None) -> int:
         print("refused: give --reason", file=sys.stderr)
         return 3
     actor = getpass.getuser()
-    if a.cmd == "mission-register":
+    if a.cmd in ("mission-register", "mission-extend-deadline"):
         from .durable import Refused
         from .mission_admin import register
+        from .mission_deadline import extend
 
         try:
-            result = register(store, json.loads(Path(a.arg).read_text()), load())
+            operation = extend if a.cmd == "mission-extend-deadline" else register
+            result = operation(store, json.loads(Path(a.arg).read_text()), load())
         except Refused as exc:
             print(json.dumps({"refused": exc.code, "detail": exc.detail}))
             return 1

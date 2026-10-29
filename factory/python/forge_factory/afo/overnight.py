@@ -35,11 +35,11 @@ def provision_order(store, entry, eff, deadline):
     with store.tx() as c:
         existing = c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (mission["mission_id"],)).fetchone()
     if existing:
-        mission["limits"] = json.loads(existing[0])["limits"]
+        mission["limits"] = MissionLedger(store).snapshot(mission["mission_id"])["limits"]
     # Same proven ordering as qualification_intake: an order can never become
     # visible to the scheduler before its immutable mission binding exists.
     register(store, {**mission, "orders": []}, eff)
-    MissionLedger(store).link(mission["mission_id"], entry["order_id"])
+    MissionLedger(store).link(mission["mission_id"], entry["order_id"], continuation_of=entry.get("continuation_of"))
     oid, _ = store.submit(
         env, repo=REPO_ROOT, max_queued=int(eff.get("queue.max_queued_orders")), approve=lambda item: approve(item, eff)
     )
