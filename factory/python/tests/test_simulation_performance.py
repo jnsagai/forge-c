@@ -141,6 +141,17 @@ def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measure
     for i in range(1, 3):
         suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
                               f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+    if declared_source:
+        from forge_factory.lrtx import swe6
+
+        assembly = ws / ".forge-run/lrtx/SWE.1/assembly.json"
+        assembly.parent.mkdir(parents=True, exist_ok=True)
+        assembly.write_text(json.dumps({"swr": {f"SWR-{i:03d}": {"task": "budgets", "key": r["key"]}
+                                               for i, r in enumerate(reqs, 1)}}))
+        plan = swe6.plan(ws)
+        assert not plan["topics"], "Measured budgets must not ask a model to invent functional TCHECKs"
+        assert set(plan["budgets"]) == {"SWR-001", "SWR-002"}
+        suite = swe6.render_suite(ws, plan, {})
     (other.parent / "test_crc_requirements.robot").write_text(suite)
     for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
                        "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
@@ -157,6 +168,37 @@ def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measure
         assert result["metrics"]["requirements_verified"] == 0
         failures = [i for i in result["issues"] if i.startswith("ROBOT_FAIL:")]
         assert len(failures) == 2 and all("SIM_PERF_WRONG_SCENARIO" in i and F.TEST in i for i in failures)
+
+
+@pytest.mark.parametrize("mutation", ["changed_text", "no_budget"])
+def test_structured_measurement_route_cannot_exempt_an_unbound_requirement(measured, mutation):
+    """A budget-like key or timing prose is insufficient; retain every unmatched engineering obligation."""
+    ws, _ = measured
+    from forge_factory.lrtx import swe6
+    from forge_factory.lrtx.swe1 import system_name
+
+    row = next(r for r in swe1.budget_requirements(ws, system_name(ws))
+               if r["key"] == "budget_simulation_cpu")
+    statement = row["statement"]
+    if mutation == "changed_text":
+        statement = statement.replace("64 executed target instructions", "63 executed target instructions")
+        assert statement != row["statement"]
+    else:
+        path = ws / ".forge-run/manifest.json"
+        manifest = json.loads(path.read_text())
+        del manifest[F.FIELD]
+        path.write_text(pretty_json(manifest))
+    req = ws / "workproducts/SWE.1/software_requirements.md"
+    req.chmod(0o644)
+    req.write_text(f"- **SWR-001** {statement}\n"
+                   "- **SWR-002** The CRC driver shall preserve IDR during a caller's 100 microsecond delay.\n")
+    assembly = ws / ".forge-run/lrtx/SWE.1/assembly.json"
+    assembly.parent.mkdir(parents=True, exist_ok=True)
+    assembly.write_text(json.dumps({"swr": {s: {"task": "budgets", "key": row["key"]}
+                                           for s in ("SWR-001", "SWR-002")}}))
+    plan = swe6.plan(ws)
+    assert not plan["budgets"]
+    assert {s for rows in plan["topics"].values() for s in rows} == {"SWR-001", "SWR-002"}
 
 
 def test_incomplete_and_over_budget_measurements_are_not_passes(measured):

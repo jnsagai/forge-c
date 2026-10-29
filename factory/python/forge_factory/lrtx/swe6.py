@@ -3,6 +3,8 @@
 The generated Robot suite (one test case per SWE.1 requirement, `robot_scaffold`) gets its bodies from two sources:
 - **Budget requirements** (flash, static RAM, stack): their ForgeTarget keyword with the bytes the requirement
   states, rendered deterministically.
+- **Declared simulation performance allocations**: run the bound instrumented target test and independent
+  measurement keyword; never ask the model to invent an instruction/time TCHECK.
 - **Every other requirement**: a TCHECK in a target scenario program written by the model. There is one task per
   register group of the structured SWE.1, plus the cross-cutting group. Each requirement's check number is its SWR
   number, so the suite line `Target Check Should Pass <n>` is fixed. A task returns a default-scenario program and,
@@ -52,13 +54,27 @@ def plan(ws: Path) -> dict:
     """Requirement -> scenario topic (register group of SWE.1) or budget keyword; check number = SWR number."""
     from ..assurance.register_contract import _requirements
     from ..inspection.swtrace import BUDGET_RX
+    from ..simulation_performance import selected
 
     ws = Path(ws)
     reqs = _requirements(ws)
     amap = json.loads((ws / ".forge-run/lrtx/SWE.1/assembly.json").read_text())["swr"]
     topics: dict[str, list[str]] = {}
     budgets: dict[str, str] = {}
+    performance = selected(ws)
+    measured_statements = set()
+    if performance:
+        from .swe1 import budget_requirements, system_name
+
+        measured_statements = {r["statement"] for r in budget_requirements(ws, system_name(ws))
+                               if r["upstream"] == "WO-SIMULATION-PERFORMANCE"}
     for s, text in reqs.items():
+        # A matching key or timing phrase is insufficient: only the exact owner-bound
+        # allocation uses the deterministic measurement route (same boundary as SWE.3).
+        if text in measured_statements:
+            budgets[s] = (f"Run Target Scenario    {performance['test_source']}\n"
+                          "    Simulation Performance Should Meet Budget")
+            continue
         b = BUDGET_RX.search(text)
         kw = next((k for rx, k in BUDGET if rx.search(text)), None)
         if b and kw:
@@ -66,7 +82,7 @@ def plan(ws: Path) -> dict:
             continue
         task = amap.get(s, {}).get("task", "requirements:crosscutting")
         topic = "startup" if task.endswith("crosscutting") else re.sub(r"[^a-z0-9]+", "_",
-                                                                         task.split(":", 1)[1].lower())
+                                                                         (task.partition(":")[2] or task).lower())
         topics.setdefault(topic, []).append(s)
     return {"topics": topics, "budgets": budgets}
 
