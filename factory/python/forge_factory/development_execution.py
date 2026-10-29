@@ -29,6 +29,10 @@ def binding(name, purpose):
         result.update(max_phase_repair_passes=1000, max_task_calls=1001,
                       max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
                       max_upstream_loops=1000)
+        from .development_diagnostics import RECIPE
+
+        result["independent_unit_recheck"] = {"recipe": RECIPE, "max_executions": 1,
+            "validator_sha256": sha256_file(Path(__file__).with_name("development_diagnostics.py"))}
     return result
 
 

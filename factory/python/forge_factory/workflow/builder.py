@@ -158,6 +158,22 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
             dot = re.sub(r"max_visits=(\d+)", lambda m: "max_visits=" +
                          str(visits if int(m[1]) > 1 else 1), dot)
             dot = dot.replace('loop_restart_signature_limit="8"', 'loop_restart_signature_limit="10000"')
+            # One bounded model-free downstream activity; the failed phase still follows
+            # its original upstream/finalize chain. There is no acceptance/phase-skip edge.
+            edge = re.search(r"^  swe3_route -> (\w+)\n", dot, re.M)
+            if edge:
+                node = "swe3_independent_unit_recheck"
+                import os
+                import shlex
+
+                operator = os.environ.get("FORGE_OPERATIONS_INTENT")
+                op_env = f" FORGE_OPERATIONS_INTENT={shlex.quote(operator)}" if operator else ""
+                cmd = f"{_env()}{op_env} {sys.executable} -m forge_factory.development_diagnostics --workspace ."
+                dot = dot[:edge.start()] + (
+                    f'  swe3_route -> {node}\n'
+                    f'  {node} [shape=parallelogram, label="Provisional unchanged unit recheck", '
+                    f'max_visits={visits}, timeout="1000s", script="{_q(cmd)}"]\n'
+                    f'  {node} -> {edge.group(1)}\n') + dot[edge.end():]
     return dot, nodes
 
 

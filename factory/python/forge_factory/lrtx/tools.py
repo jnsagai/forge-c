@@ -22,7 +22,8 @@ class ToolRefused(PermissionError):
     pass
 
 
-def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_id: str | None = None) -> dict:
+def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_id: str | None = None,
+         *, invocation_id: str | None = None) -> dict:
     from importlib import import_module
 
     from ..mcp.sdk import ToolContext, ToolDenied, result
@@ -37,6 +38,8 @@ def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_
     operation = next(o for o in mod.OPERATIONS if o.name == op)
     run = run_id or json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"]
     ctx = ToolContext(server, op, role, phase, ws, run)
+    if invocation_id is not None:
+        ctx.invocation_id = invocation_id  # Trusted controller correlation, never a model field.
     validated = operation.model.model_validate(args)
     from ..afo.durable import Refused
     from ..afo.tool_accounting import charge
