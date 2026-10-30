@@ -36,3 +36,23 @@ Runtime source: 37c0c354629312a70eb6a199989477036bb674d9.
 - Small diagnosis-only cohort; not author/inspector or pipeline qualification
 - Serial xhigh-first order and thermal/cache differences are recorded; not randomized
 - Model reasoning tokens included; no hidden reasoning content collected
+
+## Paired latency versus full trial time
+
+[Recompute](analyze-paired-speed.py) with `python3 analyze-paired-speed.py`;
+[all input hashes, paired rows, exclusions and totals](paired-speed-analysis.json).
+Six cases generated in both cohorts. Two original xhigh setup failures are excluded
+only from paired timing, retained in the eight-case quality denominator.
+
+| Six matched diagnosis trials | xhigh | medium | Speedup |
+|---|---:|---:|---:|
+| Gateway request seconds | 948.5801 | 118.2134 | 8.024x |
+| Complete trial wall seconds | 1344.2748 | 383.0418 | 3.510x |
+| Completion tokens, including reasoning | 58538 | 8053 | 7.269x fewer |
+
+Full trial wall includes orchestration/polling/verification, excludes initial model
+activation, and is still not full-pipeline performance. Much of the gateway gain
+comes from fewer generated tokens rather than faster token decoding. Missing-primary
+cases improved17–24x in gateway time, while upstream-owner cases improved3–4x and
+medium's upstream-owner proposals were structurally rejected. Neither setting is
+qualified for production by these timings. No hidden reasoning content was collected.
