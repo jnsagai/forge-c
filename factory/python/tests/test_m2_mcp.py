@@ -382,6 +382,41 @@ def test_verdict_string_parsed_by_item_ids_any_separator():
     assert parse_verdict_string("SWE5-01=Looks fine") == {}
 
 
+def test_t016_native_flat_inspection_keeps_late_findings_in_durable_record(ws):
+    """A summary may be short; the actual source IDs for rework must survive."""
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall enable the selected peripheral clock.\n")
+    from test_swe2_architecture import add_reqif
+
+    add_reqif(ws)
+    frozen = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-author", "SWE.1")
+    assert frozen["status"] == "PASS"
+    note = "Source mapping omitted: " + "factual context α; " * 300 + "late required source HW-TAIL-042"
+    text = "; ".join(f"SWE1-0{i}=" + ("FAIL:" + note if i == 5 else "PASS") for i in range(1, 7))
+    assert len(text) > 4000  # full multi-criterion findings exceeded the former request bound
+    out = call(evidence, "forge-evidence-mcp", "check_inspection",
+               {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001", "verdicts": text}, "swe1-inspector", "SWE.1")
+    assert out["status"] == "FAIL" and out["artifact_refs"]
+    record = json.loads((ws / out["artifact_refs"][0]).read_text())
+    assert record["items"]["SWE1-05"]["findings"] == [note]
+    assert "HW-TAIL-042" in record["items"]["SWE1-05"]["findings"][0]
+    # Display summaries stay bounded; the complete item above is the authoritative feedback.
+    summary = next(f["detail"] for f in record["findings"] if f["id"] == "SWE1-05")
+    assert len(summary) == 200 and summary == note[:200]
+
+
+def test_native_verdict_string_remains_bounded_and_legacy_map_limit_is_unchanged():
+    from pydantic import ValidationError
+
+    base = {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001"}
+    assert evidence.InspectIn(**base, verdicts="x" * 65536).verdicts == "x" * 65536
+    with pytest.raises(ValidationError):
+        evidence.InspectIn(**base, verdicts="x" * 65537)
+    with pytest.raises(ValidationError):
+        evidence.InspectIn(**base, verdicts={f"item-{i}": "PASS" for i in range(4001)})
+
+
 def test_an_analyzer_warning_in_frozen_delivered_code_is_a_dispositionable_delivered_finding(ws, monkeypatch):
     """Owner 2026-10-26 ("Dispositionable"): BENCH-GPIO-ST-R4 - clang flags ST's LL_GPIO_SetAFPin_8_15 (shift by 128 for
     an out-of-contract pin below 8). In FROZEN/vendor delivered code such a warning is a DELIVERED_CODE finding the

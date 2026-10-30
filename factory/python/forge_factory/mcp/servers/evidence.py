@@ -9,7 +9,7 @@ from __future__ import annotations
 import csv
 import io
 import re
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -38,7 +38,10 @@ class InspectIn(ToolInput):
     phase: Phase
     baseline_id: str = Field(pattern=r"^BL-SWE\.[1-6]-\d{3}$")
     # Small models often send bare verdict strings; accepted and normalised (evidence = inspected baseline record).
-    verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] | str = Field(max_length=4000)
+    verdicts: (
+        Annotated[dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]], Field(max_length=4000)]
+        | Annotated[str, Field(max_length=65536)]
+    )
 
 
 # r56: DeepSeek wrote "SWE5-05=Rework finding: ..." - a failure in other words. Fail synonyms map to FAIL (the
@@ -58,7 +61,7 @@ def parse_verdict_string(text: str) -> dict[str, dict]:
         note = text[m.end():end].strip().lstrip(":").strip().rstrip(";.,").strip()
         word = m.group(2).upper()
         out[m.group(1).upper()] = {"verdict": word if word in ("PASS", "NOT_APPLICABLE") else "FAIL", "evidence_refs": [],
-                                   "findings": [note[:120]] if note else []}
+                                   "findings": [note] if note else []}
     return out
 
 
