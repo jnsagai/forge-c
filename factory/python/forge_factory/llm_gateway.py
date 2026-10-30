@@ -454,7 +454,13 @@ def create_app(
             except (Refused, ValueError, OSError) as exc:
                 code = exc.code if isinstance(exc, Refused) else "NATIVE_MEASUREMENT_UNAVAILABLE"
                 meter.refusal(body.get("model"), code)
-                return JSONResponse({"error": {"type": code}}, status_code=429)
+                permanent = code in {"NATIVE_CONTEXT_DOES_NOT_FIT", "NATIVE_CONTEXT_CONFIGURATION_INVALID",
+                                     "NATIVE_MEASUREMENT_TEMPLATE_INVALID", "NATIVE_MEASUREMENT_TOKENS_INVALID",
+                                     "NATIVE_MEASUREMENT_REQUEST_TOO_LARGE"}
+                # A permanent context/configuration defect is not a rate limit.
+                # Preserve the actionable cause and avoid native transient retries.
+                return JSONResponse({"error": {"type": code, "message": code}},
+                                    status_code=400 if permanent else 503)
         if adm is not None:
             return await admitted(request, body, headers)
         if body.get("stream"):

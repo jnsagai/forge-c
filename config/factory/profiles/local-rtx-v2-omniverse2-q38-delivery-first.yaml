@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-delivery-first
-version: 2
+version: 3
 work_order_purpose: QM
 status: DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED
 description: Opt-in Qwen-authored delivery-first two-function development experiment;
@@ -22,15 +22,15 @@ models:
         separately
       license_source: https://huggingface.co/Qwen/Qwen3.8-27B
 runtime:
-  context_limit_tokens: 65536
-  fabro_context_tokens: 65536
+  context_limit_tokens: 262144
+  fabro_context_tokens: 262144
   fabro_max_output_tokens: 16384
   ollama:
     OLLAMA_NUM_PARALLEL: '1'
     OLLAMA_MAX_LOADED_MODELS: '1'
     OLLAMA_FLASH_ATTENTION: '1'
     OLLAMA_KV_CACHE_TYPE: f16
-    OLLAMA_CONTEXT_LENGTH: '65536'
+    OLLAMA_CONTEXT_LENGTH: '262144'
     OLLAMA_NOPRUNE: '1'
   timeout_scale: 1
   llama_server:

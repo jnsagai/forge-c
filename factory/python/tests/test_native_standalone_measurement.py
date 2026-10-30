@@ -19,10 +19,11 @@ def test_delivery_profile_reserve_fits_measured_native_initial_request():
     effective = G.sanitize_request({"model": MODEL, "max_tokens": profile["runtime"]["fabro_max_output_tokens"],
                                    "messages": [{"role": "user", "content": "two-function engineering contract"}]},
                                   policy=profile["gateway"]["reasoning"])
-    # Frozen real initial request/template/control measurement from the failed
-    # fixture (2f60aa9a): do not clip inputs to make its output allowance fit.
+    # Frozen real fixture/author/inspector bounds:64K fit the first request but
+    # refused later coherent evidence. Keep the actual loaded262K capacity.
     assert effective["max_tokens"] == 24576
-    assert 17586 + effective["max_tokens"] <= profile["runtime"]["context_limit_tokens"] == 65536
+    for input_bound in (17586, 42404, 47917):
+        assert input_bound + effective["max_tokens"] <= profile["runtime"]["context_limit_tokens"] == 262144
 
 
 @pytest.mark.parametrize("stream", [False, True])
@@ -67,11 +68,12 @@ def test_standalone_full_effective_body_is_measured_without_mission_binding(tmp_
     assert len(rows) == 1 and rows[0]["tokens_output"] == 1
 
 
-@pytest.mark.parametrize("ceiling,invalid,expected", [
-    ("100", False, "NATIVE_CONTEXT_DOES_NOT_FIT"),
-    ("65536", True, "NATIVE_MEASUREMENT_TEMPLATE_INVALID"),
+@pytest.mark.parametrize("ceiling,invalid,expected,http_status", [
+    ("100", False, "NATIVE_CONTEXT_DOES_NOT_FIT", 400),
+    ("65536", True, "NATIVE_MEASUREMENT_TEMPLATE_INVALID", 400),
+    ("65536", "unavailable", "NATIVE_MEASUREMENT_UNAVAILABLE", 503),
 ])
-def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkeypatch, ceiling, invalid, expected):
+def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkeypatch, ceiling, invalid, expected, http_status):
     monkeypatch.setenv("FORGE_GATEWAY_ROUTES", json.dumps({MODEL: "http://native"}))
     monkeypatch.setenv("FORGE_GATEWAY_REQUEST_MEASUREMENT", json.dumps({MODEL: METHOD}))
     monkeypatch.setenv("FORGE_GATEWAY_MEASURE_UNBOUND", "1")
@@ -82,6 +84,8 @@ def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkey
     def handle(request):
         seen.append(request.url.path)
         assert request.url.path != "/v1/chat/completions", "must refuse before inference"
+        if invalid == "unavailable":
+            return httpx.Response(503, json={"error": "native template transport unavailable"})
         if request.url.path == "/apply-template":
             return httpx.Response(200, json={} if invalid else {"prompt": "complete"})
         return httpx.Response(200, json={"tokens": list(range(20))})
@@ -91,6 +95,7 @@ def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkey
     with TestClient(app) as client:
         r = client.post("/v1/chat/completions", json={"model": MODEL, "max_tokens": 4096,
                         "messages": [{"role": "user", "content": "retain this entire evidence"}]})
-    assert r.status_code == 429 and r.json()["error"]["type"] == expected
+    assert r.status_code == http_status and r.json()["error"]["type"] == expected
+    assert r.json()["error"]["message"] == expected
     assert seen and all(p != "/v1/chat/completions" for p in seen)
 
