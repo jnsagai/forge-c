@@ -32,7 +32,7 @@ runtime:
     OLLAMA_KV_CACHE_TYPE: f16
     OLLAMA_CONTEXT_LENGTH: '65536'
     OLLAMA_NOPRUNE: '1'
-  timeout_scale: 10
+  timeout_scale: 1
   llama_server:
     model: qwen3.8:27b-q8_0
     slots: 1
@@ -83,8 +83,8 @@ deployment:
   default_root: /mnt/data/forge-c/delivery-first-014-20261030-v1
   ports:
     ollama: 11455
-    gateway: 11458
-    fabro: 32401
+    gateway: 11459
+    fabro: 32402
     llama: 11457
   forbidden_ports:
   - 8765
@@ -98,6 +98,8 @@ deployment:
   - 32290
   - 32291
   - 32390
+  - 11458
+  - 32401
   writable_env:
   - FORGE_DATA_ROOT
   - FORGE_STATE_DIR
