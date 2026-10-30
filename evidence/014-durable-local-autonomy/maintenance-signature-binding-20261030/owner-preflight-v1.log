@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/rcc-signature-binding-20261030-v1/apply.py", line 41, in <module>
+    allowed=authz.verify(g,policy_sha256=eff.sha256,mode=eff.mode,action='recover_workorder',request={'order_id':s['request_id'],'driver_class':'LL','model':j['model']});assert allowed.allow,allowed
+                                                                                                                                                                                 ^^^^^^^^^^^^^
+AssertionError: AuthDecision(allow=False, code='AUTH_SIGNATURE_INVALID', reason='no valid forge-afo-authorization signature by jefferson', authorization_id='AUTH-014-RCC-SIGNATURE-BIND-20261030-V1')

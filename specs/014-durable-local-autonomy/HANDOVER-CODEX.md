@@ -1,6 +1,36 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — second/final actual Qwen rework running; administrative kernel qualified
+## Latest state — 03:59 UTC: Qwen candidate passes all independent CRE gates
+
+Global implementation **5a288206f8b64c2435375f0e4b943f295ea8e14d**:
+**107 local / 96 isolated Omniverse tests PASS**. Runtime remains **ab46545**, RUNNING epoch56.
+Final automatic child completed: candidate **bc931bd9274b0e1361bcc3d2b5e0ad23110d8db1**,
+9 requests / 200044 reported tokens. Root plus two bounded engineering reworks exhausted;
+do not create r3 or refill by changing order/mission.
+
+The registered symptom has one redundant literal prefix. Exact owner-signed scope
+**362cc3f…f793b0**, expires **07:05:39 UTC**, applies deterministic binding with the
+existing mission's single CORRECTION. Raw source, proof, candidate, receipt, manifest
+and failures remain unchanged. No new model calls or engineering attempts.
+
+Real CRE **pd-147c6b8bc7d09c7ab490**: protected files, policy integrity and causal
+reproducer PASS; prevention FAIL in eight frozen cases; later gates NOT_RUN.
+Logs identify missing installed Arm/LLVM tools in PATH and Java reservation failure.
+Baseline-first environment requalification: all eight cases PASS on unchanged baseline.
+Full unchanged CRE then returned **ELIGIBLE_FOR_OFFLINE_REVIEW**, decision
+**pd-10fb16d25a325ea0cb6e**, all seven hard gates PASS including all 72 frozen
+prevention cases, quality, golden benchmark and holdout. Historical failed decision remains.
+Frozen original context/settled-usage verification is running on a separate detached checkout.
+This is external bootstrap, not fully unattended self-healing proof.
+[Evidence and exact commands](../../evidence/014-durable-local-autonomy/maintenance-signature-binding-20261030/README.md).
+
+Next: inspect requalification under deployment/rcc-signature-binding-20261030-v1;
+only if independently eligible run the frozen original context checker and inherited
+regressions, integrate exact Qwen candidate, qualify and activate a source-bound
+continuation including actual temp0/seedNone. Full LL/HAL remain unaccepted.
+Same RCC mission/caps and 08:11:56 UTC expiry. No newly completed task IDs: formal 30/58.
+
+## Historical checkpoint — second/final actual Qwen rework running
 
 Runtime **ab46545c1cfb7ffd90fb09715b6715b7d21ad242, RUNNING epoch56**.
 Current job**afo-agent-60d77f8751d27b8fe746cde3**, native
