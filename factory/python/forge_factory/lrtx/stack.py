@@ -600,6 +600,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
     from .request_measurement import policy as request_measurement_policy
 
     gw_env["FORGE_GATEWAY_REQUEST_MEASUREMENT"] = json.dumps(request_measurement_policy(prof))
+    if prof.get("gateway", {}).get("measure_unbound_requests") is True:
+        gw_env["FORGE_GATEWAY_MEASURE_UNBOUND"] = "1"
+        gw_env["FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT"] = str(prof["runtime"]["context_limit_tokens"])
     gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
     if "drop_retries" in prof.get("gateway", {}):
         retries = prof["gateway"]["drop_retries"]

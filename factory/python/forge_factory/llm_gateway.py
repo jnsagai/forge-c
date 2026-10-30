@@ -425,6 +425,36 @@ def create_app(
 
             if not unbound_allowed(Store()):
                 return JSONResponse({"error": {"type": "durable_execution_busy_or_unbound"}}, status_code=429)
+        if os.environ.get("FORGE_GATEWAY_MEASURE_UNBOUND") == "1" and body.get("model") in measurement_policy:
+            # Standalone native development still measures its entire effective
+            # request. This is metadata, not a durable mission reservation or
+            # evidence of generation. Non-opted-in legacy routes are unchanged.
+            from .afo.durable import Refused
+            from .lrtx.request_measurement import measure
+
+            if body.get("stream"):
+                body.setdefault("stream_options", {"include_usage": True})
+            try:
+                measured = await measure(cl(body), body)
+                reserve = body.get("max_completion_tokens", body.get("max_tokens", 0))
+                ceiling = int(os.environ.get("FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT", "0"))
+                if type(reserve) is not int or reserve <= 0 or ceiling <= 0:
+                    raise Refused("NATIVE_CONTEXT_CONFIGURATION_INVALID")
+                fits = measured["input_tokens"] + reserve <= ceiling
+                metadata = {"ts_utc": utc_now(), "model": body["model"], "kind": "REQUEST_MEASUREMENT",
+                            "measurement": measured, "output_reserve_tokens": reserve,
+                            "context_limit_tokens": ceiling, "fits": fits, "generation_dispatched": False,
+                            "scope": "STANDALONE_NO_DURABLE_ACCOUNTING"}
+                # Separate from provider-usage rows so counts cannot imply a
+                # model response or fabricate zero-token success from metadata.
+                with meter.path.with_name("request-measurements.jsonl").open("a", encoding="utf-8") as f:
+                    f.write(json.dumps(metadata, sort_keys=True) + "\n")
+                if not fits:
+                    raise Refused("NATIVE_CONTEXT_DOES_NOT_FIT")
+            except (Refused, ValueError, OSError) as exc:
+                code = exc.code if isinstance(exc, Refused) else "NATIVE_MEASUREMENT_UNAVAILABLE"
+                meter.refusal(body.get("model"), code)
+                return JSONResponse({"error": {"type": code}}, status_code=429)
         if adm is not None:
             return await admitted(request, body, headers)
         if body.get("stream"):

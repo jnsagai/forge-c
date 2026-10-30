@@ -68,6 +68,7 @@ gateway:
       system_message_order: merge_first
       extra_output_tokens: 32768
       role_efforts: {}
+  measure_unbound_requests: true
 afo:
   role_job_tokens:
     afo-recovery-planner: 1048576
