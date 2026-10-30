@@ -211,6 +211,18 @@ def route_findings(findings: list[str], amap: dict | None, default: str) -> dict
         for case, swr in (amap or {}).get("case", {}).items():
             if re.search(rf"\b{re.escape(case)}\b", f) and swr in (amap or {}).get("swr", {}):
                 tasks.add(amap["swr"][swr]["task"])
+        points = (amap or {}).get("open_points") or {}
+        mentions_points = re.search(r"\bopen[\s_-]+points?\b", f, re.I)
+        owners = set()
+        for ident, origin in points.items():
+            register = origin.get("register")
+            if (ident in f or origin.get("text") and origin["text"] in f
+                    or mentions_points and register and re.search(rf"\b{re.escape(register)}\b", f)):
+                owners.add(origin["task"])
+        if mentions_points and not owners:
+            # Unknown note location conservatively reaches all known note origins, never just a cited SWR task.
+            owners = {origin["task"] for origin in points.values()}
+        tasks.update(owners)
         for t in tasks or {default}:
             if t != "budgets":
                 out.setdefault(t, []).append(f)

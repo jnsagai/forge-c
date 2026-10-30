@@ -488,9 +488,26 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
     for n, r in enumerate(rows, 1):
         r["swr"] = f"SWR-{n:03d}"
-    opens = []
-    for _g, rec in results + [(None, cross)]:
-        opens += [o.strip() for o in rec["doc"]["open_points"] if o.strip() and o.strip() not in opens]
+    opens, open_points = [], {}
+    for group, rec in results + [(None, cross)]:
+        for raw in rec["doc"]["open_points"]:
+            text = raw.strip()
+            if not text:
+                continue
+            ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+            origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+                      "packet_input_hash": rec["base_hash"]}
+            if group is not None:
+                origin.update(register=group["register"], source_section=group["section"], source_file=group["file"])
+                scope = f"{group['register']}; source section {group['section']}"
+            else:
+                scope = "cross-cutting requirements"
+            if ident in open_points:
+                if open_points[ident] != origin:
+                    raise ValueError("OPEN_POINT_ID_COLLISION")
+                continue
+            open_points[ident] = origin
+            opens.append(f"**{ident}** (input scope: {scope}): {text}")
     up = m.get("upstream", {}).get("status", "NOT_PROVIDED")
     opens += [f"Upstream inputs (HSI contract, safety allocation, budgets): {up}.",
               f"Safety allocation as stated in the manifest: {m['target'].get('safety_allocation', 'UNSPECIFIED')}.",
@@ -551,7 +568,7 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     write_scoped(ws, files)
     amap = {"schema": "forge-c/lrtx-swe1-assembly/1", "at": utc_now(),
             "swr": {r["swr"]: {"task": r["task"], "key": r["key"]} for r in rows},
-            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files)}
+            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files), "open_points": open_points}
     S.record(ws, "SWE.1/assembly.json", amap)
     return amap
 
