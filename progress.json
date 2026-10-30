@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-30T09:08:28.072409Z",
+  "captured_utc": "2026-10-30T09:13:35.180792Z",
   "deadline_epoch": 1793368372,
   "source_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
   "intent": {
@@ -75,12 +75,12 @@
     },
     {
       "order_id": "afo-f3ad027406784ef7",
-      "state": "RUNNING",
+      "state": "BLOCKED",
       "attempts": [
         {
           "attempt_id": "afo-f3ad027406784ef7-a1",
           "seq": 1,
-          "state": "RUNNING"
+          "state": "FAILED"
         }
       ]
     }
