@@ -1,5 +1,29 @@
 # Implementation and qualification status
 
+## Current native source and actual ASPICE experiment — 2026-10-30
+
+Runtime **b713e354b5c50744c549b1a9cada491c3ca017bd**, RUNNING epoch50:
+199local/51native PASS for current capacity/accounting changes. Native sandbox
+fixture failure48PASS/3FAIL is retained, corrected with synthetic passwd/group;
+no production signature/ownership checks removed. Inherited retained maintenance
+rework at8f21511:151local/34native PASS, opt-in now max2, live loop unproven.
+
+Full RCC LL **01M652TG29PWJYG7QSCQHZXVKC** actually RUNNING on local
+Qwen Q8_0/f16/MTP3/xhigh/262144, one inference, strict ASPICE_ONLY gates.
+Same RCC lineage/history with separately signed prospective capacity/time
+amendments through **30Oct08:11:56UTC**; no historical counter/grant reset.
+At00:25:18UTC two requests complete/21474reported tokens, third live; two packet
+outcomes VALID, no independent phase acceptance yet. HAL NOT_SUBMITTED and requires
+new verified LL. Outputs copied/hash-checked on loop10; Git recorder publishing.
+
+[Exact actual scope/evidence](../../evidence/014-durable-local-autonomy/aspice-rcc-pair-20261030/README.md),
+[capacity qualification](../../evidence/014-durable-local-autonomy/mission-capacity-20261030/README.md).
+Static validation is separate from runtime/model/product/availability results.
+Formal30/58 unchanged; no new task IDs completed. Historical checkpoints below
+retain their original operator epochs and restrictions; current epoch50/scope
+supersedes old temporary stops without erasing their evidence.
+
+
 ## Exact candidate native CPU qualification — 2026-10-29 17:19UTC
 
 **3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6** now has **130distinct checks

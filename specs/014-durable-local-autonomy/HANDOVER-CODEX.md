@@ -1,6 +1,39 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — Qwen V7 scoped acceptance; bounded unattended rework qualified
+## Latest state — full Qwen ASPICE RCC LL actually running, epoch50
+
+**Runtime b713e354b5c50744c549b1a9cada491c3ca017bd, RUNNING epoch50.**
+Full RCC LL native **01M652TG29PWJYG7QSCQHZXVKC**, order **afo-83276a5a34a47931**.
+Current source199local/51Omniverse2 PASS; inherited retained-rework34native PASS.
+Current policy enables max2retained maintenance reworks; actual live loop unproven.
+Same Qwen Q8_0/f16/MTP3/xhigh/262144, one inference; full ASPICE_ONLY profile,
+all functional gates blocking. At00:25:18UTC two completed requests/21474reported
+tokens, third live; two requirements packets VALID/no errors. No phase acceptance.
+
+Under standing owner signing delegation, exact new primary/source, capacity, time
+and role records are signed/verified; finite deadline **30Oct08:11:56UTC**.
+Original RCC mission/lineage preserved: old86000charge/UNKNOWN and expired limits
+retained. Explicit append-only operator amendments, not new-order refill or an
+exhausted mission reset. Active product1b reservation is conservative accounting,
+not actual generated tokens. Old IDR deadline02:40:24unchanged.
+
+[Live scope, signed receipts, tools, observations](../../evidence/014-durable-local-autonomy/aspice-rcc-pair-20261030/README.md).
+[Capacity tests and preserved fixture failures](../../evidence/014-durable-local-autonomy/mission-capacity-20261030/README.md).
+Two completed Qwen packet outputs copied/hash-checked to loop10 inspection path
+inspection/feature014/2026-10-30-qwen/rcc-ll-in-progress/START-HERE.md.
+[Five-minute Git progress](https://github.com/jnsagai/forge-c/blob/overnight/2026-10-30-local-qwen-aspice/progress.json)
+confirmed through GitHub connector; recorder runs on host, no model-network change,
+no new scheduler/intake payload. Initial namespace publication/API observation
+mistakes corrected, native run never restarted. All earlier evidence retained.
+
+Next: monitor same native handle through independent SWE.1-SWE.6 gates, let Qwen
+correct engineering findings, preserve every failed result/charge and copy outcomes
+locally. Then0002b HAL from newly verified LL only, with exact dependency and scoped
+role/order/mission binding. **HAL NOT_SUBMITTED**; no old LL substitution.
+Formal30/58 unchanged; no new task IDs complete. Full LL/HAL, broad self-healing,
+learning benefit and availability remain unproven; owner goal stays active.
+
+## Historical checkpoint — scoped repair accepted, retained rework qualified
 
 **Runtime f9e7f54, RUNNING epoch48**, loaded262144/Q8_0/f16/MTP3/xhigh provider
 unchanged. V7 native **01M64Z8NA11GPWQP2DEKEQW3G4** finished25requests/
