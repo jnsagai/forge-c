@@ -89,3 +89,24 @@ def test_existing_valid_checkpoint_still_rechecks_current_validator(task, monkey
     result = V.run_task(child, "SWE.1", record["task"], lambda *a: base,
                         lambda doc: [] if doc["effect"] == 4 else ["wrong effect"], {"calls": 0, "max_calls": 1})
     assert result["status"] == "VALID" and result["doc"] == {"effect": 4} and len(called) == 1
+
+
+@pytest.mark.parametrize("mode", ["explicit", "default-off", "changed-source", "missing-hash"])
+def test_fresh_revision_requires_explicit_revalidation_and_bound_source_manifest(task, mode):
+    parent, child, _, base, record, check = task
+    source = parent / ".forge-run/manifest.json"
+    source.write_text(json.dumps({"work_order": "WO-PARENT", "factory_revision": {"commit": "a" * 40}}))
+    fresh = {"work_order": "WO-PARENT", "source_manifest_sha256": sha256_bytes(source.read_bytes())}
+    if mode != "default-off":
+        fresh["revalidate_author_tasks"] = True
+    if mode == "changed-source":
+        source.write_text(source.read_text() + "\n")
+    if mode == "missing-hash":
+        fresh.pop("source_manifest_sha256")
+    (child / ".forge-run/manifest.json").write_text(json.dumps({"fresh_recovery_from": fresh}))
+    result = V.inherited_task(child, "SWE.1", record["task"], base, check)
+    if mode == "explicit":
+        assert result["doc"] == record["doc"] and result["inherited_from"]["source_work_order"] == "WO-PARENT"
+    else:
+        assert result is None
+    assert not (child / "inspection").exists() and not (child / "configuration/baselines").exists()

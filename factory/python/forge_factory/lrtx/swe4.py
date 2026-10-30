@@ -153,7 +153,7 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     if f"@test {c['ut']}" not in tags:
         out.append(f"the block above the test needs '@test {c['ut']}'")
     specs = {s["id"] for s in _unit_specs(ws, c["unit"])}
-    ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2}-\d{2}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
+    ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2,}-\d{2,}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
     if not ver:
         out.append("'@verifies' must list the USPEC ids this test verifies")
     out += [f"@verifies {v} is not a specification item of {c['unit']['id']}" for v in ver if v not in specs]

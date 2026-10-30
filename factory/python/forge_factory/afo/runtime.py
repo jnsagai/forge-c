@@ -88,6 +88,8 @@ def _launcher(manifest: dict, wo: str, labels: dict, *, before_native_launch=Non
         else:
             manifest = {**manifest, **PROFILES[manifest["model_profile"]]}
     resume = manifest.get("resume_from")
+    if "revalidate_author_tasks" in manifest and type(manifest["revalidate_author_tasks"]) is not bool:
+        raise ValueError("AUTHOR_TASK_REVALIDATION_FLAG_INVALID")
     fresh = None
     approved = manifest.get("approved_factory_revision")
     if resume and approved and approved == factory_revision()["commit"]:
@@ -128,7 +130,7 @@ def _launcher(manifest: dict, wo: str, labels: dict, *, before_native_launch=Non
         fresh_recovery_from=fresh,
         acp_inspectors=manifest.get("acp_inspectors"),
         profile=manifest.get("profile"),
-        resume_upto=manifest.get("resume_upto"),
+        resume_upto=manifest.get("resume_upto") if resume else None,
         labels=labels,
         resume_max_attempts=manifest.get("resume_max_attempts"),
         resume_max_wall_seconds=manifest.get("resume_max_wall_seconds"),
@@ -137,6 +139,7 @@ def _launcher(manifest: dict, wo: str, labels: dict, *, before_native_launch=Non
         recovery_exhausted=manifest.get("recovery_exhausted"),
         **({"evaluation_holdout": True} if manifest.get("evaluation_holdout") else {}),
         **({"purpose": manifest["purpose"]} if "purpose" in manifest else {}),
+        **({"revalidate_author_tasks": True} if manifest.get("revalidate_author_tasks") is True else {}),
         **({"before_native_launch": before_native_launch} if before_native_launch is not None else {}),
     )
     if not r.get("fabro_run_id"):

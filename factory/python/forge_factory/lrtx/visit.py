@@ -112,11 +112,18 @@ def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict |
     if base.get("role") != f"swe{phase[-1]}-author":
         return None
     from ..brownfield.resume import source_workspace
-    from ..common import sha256_bytes, state_dir
+    from ..common import sha256_bytes, sha256_file, state_dir
 
     manifest = Path(ws) / ".forge-run/manifest.json"
-    lineage = json.loads(manifest.read_text()).get("resumed_from") if manifest.is_file() else None
+    metadata = json.loads(manifest.read_text()) if manifest.is_file() else {}
+    lineage = metadata.get("resumed_from")
+    fresh = metadata.get("fresh_recovery_from") or {}
     source = (lineage or {}).get("source_work_order")
+    fresh_bound = None
+    if not source and fresh.get("revalidate_author_tasks") is True:
+        source, fresh_bound = fresh.get("work_order"), fresh.get("source_manifest_sha256")
+        if not isinstance(fresh_bound, str) or len(fresh_bound) != 64:
+            return None
     if not source:
         return None
     try:
@@ -127,6 +134,8 @@ def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict |
         root = state_dir() / "workorders"
         if (not parent.resolve().is_relative_to(root.resolve()) or not candidate.resolve().is_relative_to(parent.resolve())
                 or any(p.is_symlink() for p in [candidate, *candidate.parents] if p == root or root in p.parents)):
+            return None
+        if fresh_bound and sha256_file(parent / ".forge-run/manifest.json") != fresh_bound:
             return None
         raw = candidate.read_bytes()
         old = json.loads(raw)

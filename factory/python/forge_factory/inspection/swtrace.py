@@ -48,8 +48,8 @@ MATRIX_DIRS = {1: "workproducts/SWE.2/traceability", 2: "workproducts/SWE.3/trac
                5: "workproducts/SWE.5/traceability", 6: "workproducts/SWE.6/traceability"}
 DOXY_OUT = "build/doxygen"
 SWR_RX = re.compile(r"\bSWR-\d{3}\b")
-USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2}-\d{2}\b")
-SWU_RX = re.compile(r"\bSWU-(?:LL|HAL)-\d{2}\b")
+USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2,}-\d{2,}\b")
+SWU_RX = re.compile(r"\bSWU-(?:LL|HAL)-\d{2,}\b")
 IF_RX = re.compile(r"\bIF-\d{2}\b")
 MATRICES = {1: ("swr_to_architecture", ["swr", "swc", "status"]),
             2: ("unitspec_to_swr", ["uspec", "unit", "swc", "swr", "status"]),
@@ -161,7 +161,7 @@ def check_architecture_model(ws: Path) -> dict:
 def parse_units(text: str) -> list[dict]:
     units, cur = [], None
     for line in text.splitlines():
-        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2})\s*[:\-–]?\s*(.*)$", line)
+        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2,})\s*[:\-–]?\s*(.*)$", line)
         if h:
             cur = {"id": h.group(1), "name": h.group(2).strip(), "swc": None, "functions": [], "design": None,
                    "specs": []}
@@ -184,7 +184,7 @@ def parse_units(text: str) -> list[dict]:
             else:
                 cur["design"] = v.strip("`")
             continue
-        s = re.match(r"^\s*[-*]\s*\*\*(USPEC-[A-Z]+-\d{2}-\d{2})\*\*\s*(.*)$", line)
+        s = re.match(r"^\s*[-*]\s*\*\*(USPEC-[A-Z]+-\d{2,}-\d{2,})\*\*\s*(.*)$", line)
         if s:
             body = s.group(2)
             tr = re.search(r"Traces?\s*:\s*(.*)$", body, re.I)

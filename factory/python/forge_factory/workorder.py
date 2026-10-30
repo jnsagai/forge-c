@@ -684,6 +684,7 @@ def run(
     resume_max_wall_seconds: int | None = None,
     recovery_plan: dict | None = None,
     fresh_recovery_from: str | None = None,
+    revalidate_author_tasks: bool = False,
     durable_binding: dict | None = None,
     before_native_launch=None,
     recovery_exhausted: dict | None = None,
@@ -697,6 +698,10 @@ def run(
 
     if purpose not in (*PURPOSES, ASPICE_PURPOSE, qm.PURPOSE):
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
+    if type(revalidate_author_tasks) is not bool:
+        raise ValueError("AUTHOR_TASK_REVALIDATION_FLAG_INVALID")
+    if revalidate_author_tasks and not (fresh_recovery_from or resume):
+        raise ValueError("AUTHOR_TASK_REVALIDATION_SOURCE_REQUIRED")
     if type(evaluation_holdout) is not bool:
         raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
@@ -766,6 +771,13 @@ def run(
             "basis": "fresh revalidation after externally approved factory change; "
             "no prior phase evidence or delivered-code corrections carried",
         }
+        if revalidate_author_tasks:
+            fresh_origin["revalidate_author_tasks"] = True
+            fresh_origin["basis"] = (
+                "fresh independent phase validation after externally approved factory change; "
+                "no old phase artifacts, inspections, PASS verdicts or delivered-code corrections carried; "
+                "individual author task proposals may be reused only after exact input/schema/task revalidation"
+            )
         evaluation_holdout = evaluation_holdout or bool(old.get("evaluation_holdout"))
     resume_limits = {
         "max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],

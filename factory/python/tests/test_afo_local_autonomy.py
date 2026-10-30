@@ -506,10 +506,12 @@ def test_legacy_fresh_revalidation_requires_the_owner_approved_exact_revision(lo
     calls = []
     monkeypatch.setattr(workorder, "run", lambda *a, **kw: calls.append(kw) or {"fabro_run_id": "NEW-RUN"})
     man = {"example": "unused", "profile": "local-rtx-v2-omniverse2", "model": "qwen3.6:35b-a3b",
-           "resume_from": "WO-legacy", "approved_factory_revision": "1" * 40}
+           "resume_from": "WO-legacy", "approved_factory_revision": "1" * 40,
+           "resume_upto": "SWE.1", "revalidate_author_tasks": True}
     if approved:
         runtime.launcher(man, "WO-new", {"afo_attempt": b["attempt_id"]})
         assert calls[0]["resume"] is None and calls[0]["fresh_recovery_from"] == "WO-legacy"
+        assert calls[0]["resume_upto"] is None and calls[0]["revalidate_author_tasks"] is True
     else:
         with pytest.raises(RuntimeError, match="NOT_OWNER_AUTHORIZED"):
             runtime.launcher(man, "WO-new", {"afo_attempt": b["attempt_id"]})
