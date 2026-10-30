@@ -37,7 +37,9 @@ REPLY_INSTRUCTIONS = (
     "Write the requested engineering artifacts to their authorized files and check them with the assigned tools. "
     "Do not emit introductory text, progress updates, commentary, plans, explanations or markdown fences. "
     "Your final response must be exactly one JSON object with status, artifacts, issues and next_action, "
-    "using the task's output schema. Preserve unresolved issues; report BLOCKED when work cannot complete. "
+    "using the task's output schema. next_action is one literal enum value: next, rework, halt, package, "
+    "escalate, none or retry; put any explanation in issues. Preserve unresolved issues; "
+    "report BLOCKED when work cannot complete. "
     "Never claim a test or verification passed without its tool evidence."
 )
 

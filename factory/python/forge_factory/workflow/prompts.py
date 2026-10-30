@@ -13,13 +13,17 @@ from ..inspection.engine import load_checklist
 READ = ("When you write_file, put real line breaks in the content (one C statement per line); never write \\n escape "
         "sequences as text. Work step by step. After every tool result, immediately continue with the next numbered step; never summarize or "
         "explain tool output. Never read inputs/index.md or the large inputs/*.md documents; read only the section files "
-        "named in these steps, each at most once.")
+        "named in these steps, each at most once. For existing artifacts, use edit_file or apply_patch directly on "
+        "the affected output files and retain the other content. These file tools write or patch text; they do not "
+        "execute Python helpers. Use the tools actually exposed to your role for the complete transformation.")
 SECTIONS: dict[str, str] = {}  # section number -> section file path, set by the workflow builder per work order
 
 
 def sec(*nums: str) -> str:
     return ", ".join(SECTIONS.get(n, f"(section {n} unavailable)") for n in nums)
-REPLY = 'Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],"issues":[],"next_action":"next"}'
+REPLY = ('Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],'
+         '"issues":[],"next_action":"next"}. next_action is one literal enum value: next, rework, halt, package, '
+         'escalate, none or retry; put any explanation in issues.')
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
@@ -228,7 +232,8 @@ def small() -> str:
                 "function group and continue with the next group after each result. Never call freeze_baseline in "
                 "this step.")
     return (f"Keep every write_file/edit_file content under {n} lines and put SEVERAL function groups into one call "
-            "(you have at most 20 tool calls in this step). Never call freeze_baseline in this step.")
+            "when coherent. Continue until the complete assigned scope is covered; the active role policy supplies "
+            "the tool-call allowance. Never call freeze_baseline in this step.")
 REENTRY = ("If the file you are about to write already contains functions (an upstream defect sent the run back "
            "here), keep every existing function: only add or change what the defects in .forge-run/defects (status "
            "IN_FIX) and the changed architecture require; never duplicate a function.")
@@ -934,10 +939,11 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     example = "; ".join(f"{c['id']}=PASS" for c in checks[:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
-             "read_file each listed workproduct (use offset/limit for long files). Never edit any file. You have at most 20 "
-             "tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed "
-             "automatically; their reports are in verification/static/ and inspection/<phase>/deterministic/), and call "
-             "check_inspection no later than your 15th tool call.",
+             "read_file each listed workproduct (use offset/limit for long files). Never edit any file. Use the active "
+             "role policy's tool-call allowance, reserving calls to submit the complete inspection. Reuse recorded "
+             "analyzer/validator results: items with a deterministic_check are recomputed automatically; their reports "
+             "are in verification/static/ and inspection/<phase>/deterministic/. Call check_inspection after examining "
+             "the required evidence; retain an explicit finding for evidence you could not examine.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),

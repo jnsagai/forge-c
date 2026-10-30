@@ -21,7 +21,7 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
     # Builder-only test: a HAL execution still requires independently verified LL.
     manifest["scope"] = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())["scope"]
     sections = {key: value["file"] for key, value in swe1._section_files(ws).items()}
-    graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral=manifest.get("peripheral"), sections=sections,
+    graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral=manifest.get("peripheral"), sections=sections, chunk_lines=150,
                      assessment_manifest=manifest)
     p = prompts(graph)
     selected = scope_sections(manifest["scope"], "RM0486", ["14.10.1", "14.10.2", "14.10.79", "14.10.64"])
@@ -40,6 +40,9 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
         assert "explicit simulation_performance allocation: at most 64" in p[node]
         assert "not a bound for unmeasured timeout paths or physical hardware WCET" in p[node]
     assert "Simulation Performance Should Meet Budget" in p["swe6_author"]
+    # Native ACP and QM roles obtain their allowance from policy. The old prompt
+    # invented a20-call stop even when the actual role had4096/10000 calls.
+    assert "at most 20 tool calls" not in graph
     assert "Include every read/query requirement too" in p["swe1_author"]
     if layer == "LL":
         assert "queries return the specified value, not void" in p["swe1_author"]
