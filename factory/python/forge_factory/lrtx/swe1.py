@@ -18,7 +18,7 @@ import json
 import re
 from pathlib import Path
 
-from ..common import sha256_bytes, utc_now
+from ..common import canonical_json, sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
 
@@ -496,7 +496,10 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
                 continue
             ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
             origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
-                      "packet_input_hash": rec["base_hash"]}
+                      "packet_input_hash": rec.get("base_hash"), "record_sha256": sha256_bytes(canonical_json(rec))}
+            # Reviewed provided requirements have a materialized record, not a model packet.
+            if m.get("provided_requirements"):
+                origin["provided_input_sha256"] = m["provided_requirements"]["sha256"]
             if group is not None:
                 origin.update(register=group["register"], source_section=group["section"], source_file=group["file"])
                 scope = f"{group['register']}; source section {group['section']}"

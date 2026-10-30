@@ -1,6 +1,8 @@
 """Published independent findings reach rework intact; compact summaries are not the repair input."""
 import json
 
+import pytest
+
 from forge_factory.lrtx import review, visit
 from forge_factory.lrtx import structured as S
 from test_lrtx_p3 import Answers
@@ -8,20 +10,22 @@ from test_lrtx_swe1 import _scripted, pytestmark, ws  # noqa: F401 - inherited i
 from test_lrtx_swe2 import ws1  # noqa: F401 - frozen independent workproduct fixture
 
 
-def _publish(tmp_path, items, summaries):
-    directory = tmp_path / 'inspection/SWE.1'
+def _publish(tmp_path, items, summaries, phase='SWE.1'):
+    directory = tmp_path / 'inspection' / phase
     directory.mkdir(parents=True)
     (directory / 'INS-SWE.1-001.json').write_text(json.dumps({
         'recorded_at': '2026-10-30T00:00:00Z', 'verdict': 'FAIL', 'items': items, 'findings': summaries,
     }))
 
 
-def test_rework_reads_each_complete_published_finding(tmp_path):
+@pytest.mark.parametrize('phase', [f'SWE.{number}' for number in range(1, 7)])
+def test_rework_reads_each_complete_published_finding(tmp_path, phase):
+    item = f'SWE{phase[-1]}-02'
     first = 'SWR-001: ' + 'first independent observation; ' * 20 + 'FIRST_END'
     second = 'SWR-002: distinct second issue requiring a different author obligation.'
-    _publish(tmp_path, {'SWE1-02': {'verdict': 'FAIL', 'findings': [first, second]}},
-             [{'id': 'SWE1-02', 'detail': first[:200]}])
-    assert visit.rework_findings(tmp_path, 'SWE.1', '') == ['SWE1-02: ' + first, 'SWE1-02: ' + second]
+    _publish(tmp_path, {item: {'verdict': 'FAIL', 'findings': [first, second]}},
+             [{'id': item, 'detail': first[:200]}], phase)
+    assert visit.rework_findings(tmp_path, phase, '') == [item + ': ' + first, item + ': ' + second]
 
 
 def test_legacy_summary_and_additional_non_item_finding_remain_compatible(tmp_path):
