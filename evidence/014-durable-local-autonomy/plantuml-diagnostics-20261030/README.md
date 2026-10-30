@@ -18,7 +18,10 @@ lacked its file name, and debug-path feedback did not disclose the real scope.
 Afterwards all three pass; the inherited real PlantUML valid/render/broken-view
 test also passed. The broader cohort has58PASS/one disabled live Fabro skip,
 zero failures/errors. Counts overlap; do not add cohorts. Lint and source diff
-checks pass. Source-specific post-commit evidence is recorded separately.
+checks pass. The exact clean implementation revision
+**cad31b1b0c4ee26e7d0b8c70f400a94fa2da3c40** repeated the broader cohort:
+58PASS/one disabled live Fabro skip, zero failures/errors; see
+[tested revision](tested-revision.json) and [JUnit receipt](exact.xml).
 
 ```text
 python -m pytest factory/python/tests/test_plantuml_diagnostics.py -q

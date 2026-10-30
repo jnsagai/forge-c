@@ -1,5 +1,30 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 30 October23:15UTC
+
+Real AFO native01M67ETTPXS1Q73QPMQ98DNJX0 has reached SWE.3 author.
+Its source remains cleana34fdd85, candidateSHA855f53a6... unchanged at the
+last observation, and full attempt0 functionalPASS remains the only native
+verification round so far. Terminal final-byte recheck/package/DF-M1 are pending.
+No post-launch candidate/source/model steering was supplied. Keep the same live
+handles, epoch4, guardian deadline07:57:59 and collector described below.
+
+New local implementation **cad31b1b0c4ee26e7d0b8c70f400a94fa2da3c40** improves
+PlantUML diagnostic scope only: checks identify the actual failing canonical
+view, and MCP explicitly says it checks both canonical files even for a debug
+path. Three failed-before regressions retained; exact clean revision58PASS/
+one disabled live Fabro skip, zero failures/errors. No gate weakened. This is
+**NOT_DEPLOYED**, not a fix applied to the active job or measured model benefit.
+See [diagnostic evidence](../../evidence/014-durable-local-autonomy/plantuml-diagnostics-20261030/README.md).
+
+SWE.1 gate correctly rejected generated CR/INIT field aliases absent from the
+manual's indexed fields; no parser defect was found. SWE.2 wrote architecture,
+API mappings and diagrams; its generic PlantUML failures prompted the diagnostic
+fix above. Preserve those original findings. Prepared three-run cohort04/05/06
+is sourcea34fdd85 and **NOT_SUBMITTED**; records are in overnight evidence and
+A3/repeatability-prepared-20261030. Do not silently change their source/grants,
+submit before DF-M1 audit or count preparation as a repeatability result.
+
 ## Active ten-hour window — 30 October22:35UTC
 
 Owner explicitly requested ten hours at21:57:59UTC. Inference authority ends
