@@ -1,0 +1,166 @@
+{
+  "matched": {
+    "scope": true,
+    "target": true,
+    "budgets": true,
+    "criteria": true,
+    "input_hashes": true
+  },
+  "same_functional_contract": true,
+  "qwen_source": "20dccfcbd9ecea639d1d0b0a80deb9a8d920af71",
+  "control_source": "344b70513efc0c58b5458fcb488a46dab9e00eec",
+  "execution_path_difference": "Structured Qwen versus native Codex/Claude",
+  "remote": {
+    "scope": [
+      "LL (header-only, static inline, (void) functions): read/write RCC registers through the generated register-block array ll_rcc_regs (extern; placed at the RCC base by the linker, defined in RAM by host tests), indexed by the generated LL_RCC_<REG>_OFFSET / 4U",
+      "HSI and HSE oscillator enable/disable (RCC_CR HSION/HSEON or their set/clear registers) and ready-flag query in RCC_SR (no waiting: the caller bounds its polling)",
+      "Peripheral clock enable/disable/is-enabled for AHB1-5 and APB1L/1H/2/4L/4H/5 enable registers (RCC_xxxENR, RM0486 14.10.79-14.10.90)",
+      "Peripheral reset assert/release via RCC_xxxRSTR (RM0486 14.10.64-14.10.74)",
+      "Out of scope: HAL API (status codes, parameter checks, timeouts - work order 0002b), PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+    ],
+    "target": {
+      "core": "Arm Cortex-M55",
+      "hsi_contract": "RM0486 Rev 4 ch.14 RCC register interface + memory map p.176 (owner decision 2026-10-15)",
+      "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+      "safety_allocation": "NOT_ASSESSED: ASPICE-only engineering development. Safety assurance is not assessed in this lane. No safety approval, ASIL classification or formally assessed ASPICE compliance is claimed.",
+      "silicon_revision": "UNSPECIFIED",
+      "source_documents": [
+        "DS14791 Rev 9",
+        "RM0486 Rev 4 chapter 14 + memory map p.176"
+      ]
+    },
+    "budgets": {
+      "flash_bytes": 4096,
+      "stack_bytes": 128,
+      "static_ram_bytes": 64,
+      "status": "development targets set by the work-order owner (2026-10-15)"
+    },
+    "criteria": {
+      "SWE.1": {
+        "checks_sha256": "57bfbdce3de29442b64fe87b5dd0164d5ec43c920d11cda7bf0e418e444f245f",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.2": {
+        "checks_sha256": "47d6442c9d7102a18d5542465ed246a223babdd2ff3ef49a20e4103bd99025fa",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.3": {
+        "checks_sha256": "96b618ef918efde4c7e7461e9d2993cd7a822c81cf252b41c66f072e3467372b",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.4": {
+        "checks_sha256": "f71d3eafba73d9e56a0bf762030e6d41aaebebed04d32f319781f626fc98b352",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.5": {
+        "checks_sha256": "f44d1492c3b2b008f69b009fc4e87a17eff9f6a1f6a5d6de3233a02873d2962c",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.6": {
+        "checks_sha256": "a853c369308b0a5151616a8c5ecdf9382dfb790ca2fe13426785ae1f9e453f8f",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      }
+    },
+    "input_hashes": [
+      {
+        "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+        "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+      },
+      {
+        "path": "inputs/RM0486-rev4-ch14-rcc.md",
+        "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+      },
+      {
+        "path": "inputs/RM0486-rev4-memory-map-excerpt.md",
+        "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+      },
+      {
+        "path": "inputs/inputs-manifest.json",
+        "sha256": "0d6165ae2aaa911eef0dd245a3d93d1dce6e31916871615995f70a0caeb24a2a"
+      },
+      {
+        "path": "inputs/hal_driver_guideline.md",
+        "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+      }
+    ]
+  },
+  "local": {
+    "all_agents_native_acp": true,
+    "at": "2026-10-30T16:52:27.416027Z",
+    "budgets": {
+      "flash_bytes": 4096,
+      "stack_bytes": 128,
+      "static_ram_bytes": 64,
+      "status": "development targets set by the work-order owner (2026-10-15)"
+    },
+    "criteria": {
+      "SWE.1": {
+        "checks_sha256": "57bfbdce3de29442b64fe87b5dd0164d5ec43c920d11cda7bf0e418e444f245f",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.2": {
+        "checks_sha256": "47d6442c9d7102a18d5542465ed246a223babdd2ff3ef49a20e4103bd99025fa",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.3": {
+        "checks_sha256": "96b618ef918efde4c7e7461e9d2993cd7a822c81cf252b41c66f072e3467372b",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.4": {
+        "checks_sha256": "f71d3eafba73d9e56a0bf762030e6d41aaebebed04d32f319781f626fc98b352",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.5": {
+        "checks_sha256": "f44d1492c3b2b008f69b009fc4e87a17eff9f6a1f6a5d6de3233a02873d2962c",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      },
+      "SWE.6": {
+        "checks_sha256": "a853c369308b0a5151616a8c5ecdf9382dfb790ca2fe13426785ae1f9e453f8f",
+        "policy_sha256": "895b0c529b9ada4541d529194e97cfbc5bbcddaec987d38aeee84de66b45eb91"
+      }
+    },
+    "input_hashes": [
+      {
+        "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+        "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+      },
+      {
+        "path": "inputs/RM0486-rev4-ch14-rcc.md",
+        "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+      },
+      {
+        "path": "inputs/RM0486-rev4-memory-map-excerpt.md",
+        "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+      },
+      {
+        "path": "inputs/inputs-manifest.json",
+        "sha256": "0d6165ae2aaa911eef0dd245a3d93d1dce6e31916871615995f70a0caeb24a2a"
+      },
+      {
+        "path": "inputs/hal_driver_guideline.md",
+        "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+      }
+    ],
+    "purpose": "ASPICE_ONLY",
+    "remote_inference_requests": 0,
+    "scope": [
+      "LL (header-only, static inline, (void) functions): read/write RCC registers through the generated register-block array ll_rcc_regs (extern; placed at the RCC base by the linker, defined in RAM by host tests), indexed by the generated LL_RCC_<REG>_OFFSET / 4U",
+      "HSI and HSE oscillator enable/disable (RCC_CR HSION/HSEON or their set/clear registers) and ready-flag query in RCC_SR (no waiting: the caller bounds its polling)",
+      "Peripheral clock enable/disable/is-enabled for AHB1-5 and APB1L/1H/2/4L/4H/5 enable registers (RCC_xxxENR, RM0486 14.10.79-14.10.90)",
+      "Peripheral reset assert/release via RCC_xxxRSTR (RM0486 14.10.64-14.10.74)",
+      "Out of scope: HAL API (status codes, parameter checks, timeouts - work order 0002b), PLL configuration, clock tree switching, security/privilege configuration, interrupts, low-power modes"
+    ],
+    "source_revision": "344b70513efc0c58b5458fcb488a46dab9e00eec",
+    "target": {
+      "core": "Arm Cortex-M55",
+      "hsi_contract": "RM0486 Rev 4 ch.14 RCC register interface + memory map p.176 (owner decision 2026-10-15)",
+      "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+      "safety_allocation": "NOT_ASSESSED: ASPICE-only engineering development. Safety assurance is not assessed in this lane. No safety approval, ASIL classification or formally assessed ASPICE compliance is claimed.",
+      "silicon_revision": "UNSPECIFIED",
+      "source_documents": [
+        "DS14791 Rev 9",
+        "RM0486 Rev 4 chapter 14 + memory map p.176"
+      ]
+    }
+  }
+}

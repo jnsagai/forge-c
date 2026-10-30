@@ -1,5 +1,38 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Current review entry point — 30 October 2026, 18:33 UTC snapshot
+
+Read [the three-day Astra review](ASTRA-REVIEW-20261028-30.md) first. It reconciles
+28–30 October changes, failures, constraints, test revisions, scope limits and
+unrun qualification. Historical "latest" sections below are dated checkpoints.
+Reviewed branch source is c221b65ebc011cbed488db83af3e2804790c1129; actual remote
+runtime is451038c4776db8e52c248148848d0f734af8b70b. Formal progress remains30/58.
+
+At18:33UTC Qwen order afo-f2a638a42fadd518/native01M66YFFN0CJSFWVEMX0C89RHY
+is RUNNING/LIVE/HELD, intentRUNNING110. SWE.1 has62valid author packets,
+637requirements and four valid PASS inspection packets; no full phase verdict yet.
+Cloud control r4/native01M66YMZK9JTMZCF2PNV4JRGCY finished transportSUCCEEDED,
+productBLOCKED atSWE.3/30gaps afterSWE.1/SWE.2 passed. HAL remains dependent and
+NOT_SUBMITTED. See the review's dated JSON snapshots; re-observe before acting.
+
+The owner now requests common native Qwen/Codex/Claude workflow/schema and relaxed
+development controls: prioritize artifacts with deterministic checks, without
+trusted generation-role admission, AFO token enforcement or cancellation/admission
+friction for the standalone QM trial. This is authorized development scope, not
+completed robustness or qualified release. Preserve prior histories and findings.
+Profile/graph c221 is tested31PASS, but **native Qwen trial NOT_STARTED**. Draft
+A3/run-native-qwen-artifacts-20261030-v1.py needs the correct Fabro auth.json
+servers/dev-token shape, isolated source/private inputs and single-GPU handoff.
+Do not run it unchanged or claim it was activated. Current structured Qwen has
+not been stopped by this report task. Do not add another GPU inference workload.
+
+Local operational roots: B=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c;
+A3=B/operations/feature014/incremental-m1-followup-20261029. Remote production
+P=/mnt/data/forge-c/production-local-014. Use existing pinned venvs; system Python
+may lack dependencies. The review publishes the requested offline record without
+deployment or new inference. Next: audit cloud r4's actual SWE.3 gate failure,
+complete the prepared native QM trial, then independently evaluate full artifacts.
+
 ## Latest state — watchdog/context corrections deployed, LL RUNNING, 30 October 15:55 UTC
 
 Actual runtime **20dccfcbd9ecea639d1d0b0a80deb9a8d920af71**; profile

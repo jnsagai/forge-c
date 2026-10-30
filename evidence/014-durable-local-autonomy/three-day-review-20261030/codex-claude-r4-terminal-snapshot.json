@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-30T18:33:30.165399Z",
+  "source_revision": "f5e07c9e844b9ee09c391f50f74b2d30e4888246",
+  "work_order": "WO-F014-CC-20261030-LL-r4",
+  "native_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+  "native_status": "SUCCEEDED",
+  "package": {
+    "archive_sha256": "86df0bb2d0e0bbc98ac20b1fdb1bb706a7f07da53f9284eac633691e703627a8",
+    "blocked_at": "SWE.3",
+    "finalized_at": "2026-10-30T18:16:04.421739Z",
+    "gap_count": 30,
+    "package_status": "BLOCKED",
+    "phases_passed": [
+      "SWE.1",
+      "SWE.2"
+    ]
+  },
+  "last_upstream_routing_checks": [
+    {
+      "target": "SWE.2",
+      "defects": [],
+      "exit_code": 1
+    },
+    {
+      "target": "SWE.3",
+      "defects": [],
+      "exit_code": 1
+    }
+  ],
+  "root_cause_status": "Needs artifact/gate-level triage; routing-check output alone does not establish cause",
+  "capture_method": "Read-only observer using existing Fabro API and benchmark.queue.outcome; no model generation. Observer is an older helper checkout, while execution source is separately pinned above."
+}

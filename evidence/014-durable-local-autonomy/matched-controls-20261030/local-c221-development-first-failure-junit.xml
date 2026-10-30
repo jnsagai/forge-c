@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="33" time="121.475" timestamp="2026-10-30T18:20:53.806940+00:00" hostname="master"><testcase classname="factory.python.tests.test_native_artifact_trial" name="test_native_artifact_trial_keeps_full_scope_and_no_structured_substitution" time="0.553" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_real_owner_scope_reaches_author_and_inspector[LL-0002a-arm_55_rcc_ll]" time="0.425" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_real_owner_scope_reaches_author_and_inspector[HAL-0002b-arm_55_rcc_hal]" time="0.419" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_missing_literal_section_refuses_before_native_submission" time="0.005" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_non_rcc_scope_and_domain_rules_are_preserved[LL]" time="0.041" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_non_rcc_scope_and_domain_rules_are_preserved[HAL]" time="0.035" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_scope_does_not_leak_into_the_next_legacy_build" time="0.061" /><testcase classname="factory.python.tests.test_pipeline_demonstration" name="test_every_phase_and_real_check_is_attempted_without_quality_branching" time="0.679"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:26.4.2">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+
+    def test_every_phase_and_real_check_is_attempted_without_quality_branching(prepared):
+        ws, man = prepared
+        prof = profile.load(PROFILE)
+        settings = W.local_profile_structured(prof, man, prof["models"]["default"])
+        assert settings["demonstration"] and not settings["reinspect"]
+&gt;       graph, nodes = build(man["work_order"], layer="LL", trace=True, brownfield="FROZEN", peripheral="crc",
+                             delivery_style="cmsis", operation_scope=man["operation_scope"],
+                             execution_policy=man["development_execution"], assessment_manifest=man, structured=settings)
+
+factory/python/tests/test_pipeline_demonstration.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['26.4.2']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:26.4.2
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_pipeline_demonstration" name="test_intact_failed_requirements_are_provisional_not_accepted_and_tamper_refuses" time="1.505" /><testcase classname="factory.python.tests.test_pipeline_demonstration" name="test_full_six_phase_tools_can_finish_with_failed_quality_and_never_release" time="42.324" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_graph_has_real_bounded_author_return_paths_for_every_phase[rcc-LL]" time="0.664"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:14.10.1,14.10.2,14.10.79,14.10.64">kind = 'LL', peripheral = 'rcc'
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+
+    @pytest.mark.parametrize("kind", ["LL", "HAL"])
+    @pytest.mark.parametrize("peripheral", ["rcc", "iwdg"])
+    def test_graph_has_real_bounded_author_return_paths_for_every_phase(kind, peripheral, prepared):
+        import os
+        import re
+        import subprocess
+        from pathlib import Path
+    
+        policy = D.binding(D.DEMO_REPAIR, "QM")
+        prof = profile.load("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp")
+        manifest = {**prepared[1], "layer": kind, "peripheral": peripheral, "development_execution": policy}
+        from forge_factory.inspection import assessment_context
+    
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+        settings = W.local_profile_structured(prof, manifest, prof["models"]["default"])
+&gt;       graph, nodes = build("WO-DEMO-GRAPH", layer=kind, peripheral=peripheral,
+                             execution_policy=policy, structured=settings, assessment_manifest=manifest)
+
+factory/python/tests/test_demonstration_repair.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['14.10.1', '14.10.2', '14.10.79', '14.10.64']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:14.10.1,14.10.2,14.10.79,14.10.64
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_demonstration_repair" name="test_graph_has_real_bounded_author_return_paths_for_every_phase[rcc-HAL]" time="0.634"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:14.10.1,14.10.2,14.10.79,14.10.64">kind = 'HAL', peripheral = 'rcc'
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+
+    @pytest.mark.parametrize("kind", ["LL", "HAL"])
+    @pytest.mark.parametrize("peripheral", ["rcc", "iwdg"])
+    def test_graph_has_real_bounded_author_return_paths_for_every_phase(kind, peripheral, prepared):
+        import os
+        import re
+        import subprocess
+        from pathlib import Path
+    
+        policy = D.binding(D.DEMO_REPAIR, "QM")
+        prof = profile.load("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp")
+        manifest = {**prepared[1], "layer": kind, "peripheral": peripheral, "development_execution": policy}
+        from forge_factory.inspection import assessment_context
+    
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+        settings = W.local_profile_structured(prof, manifest, prof["models"]["default"])
+&gt;       graph, nodes = build("WO-DEMO-GRAPH", layer=kind, peripheral=peripheral,
+                             execution_policy=policy, structured=settings, assessment_manifest=manifest)
+
+factory/python/tests/test_demonstration_repair.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['14.10.1', '14.10.2', '14.10.79', '14.10.64']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:14.10.1,14.10.2,14.10.79,14.10.64
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_demonstration_repair" name="test_graph_has_real_bounded_author_return_paths_for_every_phase[iwdg-LL]" time="0.637"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:59.7.1,59.7.2,59.7.3,59.7.4">kind = 'LL', peripheral = 'iwdg'
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+
+    @pytest.mark.parametrize("kind", ["LL", "HAL"])
+    @pytest.mark.parametrize("peripheral", ["rcc", "iwdg"])
+    def test_graph_has_real_bounded_author_return_paths_for_every_phase(kind, peripheral, prepared):
+        import os
+        import re
+        import subprocess
+        from pathlib import Path
+    
+        policy = D.binding(D.DEMO_REPAIR, "QM")
+        prof = profile.load("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp")
+        manifest = {**prepared[1], "layer": kind, "peripheral": peripheral, "development_execution": policy}
+        from forge_factory.inspection import assessment_context
+    
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+        settings = W.local_profile_structured(prof, manifest, prof["models"]["default"])
+&gt;       graph, nodes = build("WO-DEMO-GRAPH", layer=kind, peripheral=peripheral,
+                             execution_policy=policy, structured=settings, assessment_manifest=manifest)
+
+factory/python/tests/test_demonstration_repair.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['59.7.1', '59.7.2', '59.7.3', '59.7.4']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:59.7.1,59.7.2,59.7.3,59.7.4
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_demonstration_repair" name="test_graph_has_real_bounded_author_return_paths_for_every_phase[iwdg-HAL]" time="0.705"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:59.7.1,59.7.2,59.7.3,59.7.4">kind = 'HAL', peripheral = 'iwdg'
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+
+    @pytest.mark.parametrize("kind", ["LL", "HAL"])
+    @pytest.mark.parametrize("peripheral", ["rcc", "iwdg"])
+    def test_graph_has_real_bounded_author_return_paths_for_every_phase(kind, peripheral, prepared):
+        import os
+        import re
+        import subprocess
+        from pathlib import Path
+    
+        policy = D.binding(D.DEMO_REPAIR, "QM")
+        prof = profile.load("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp")
+        manifest = {**prepared[1], "layer": kind, "peripheral": peripheral, "development_execution": policy}
+        from forge_factory.inspection import assessment_context
+    
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+        settings = W.local_profile_structured(prof, manifest, prof["models"]["default"])
+&gt;       graph, nodes = build("WO-DEMO-GRAPH", layer=kind, peripheral=peripheral,
+                             execution_policy=policy, structured=settings, assessment_manifest=manifest)
+
+factory/python/tests/test_demonstration_repair.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['59.7.1', '59.7.2', '59.7.3', '59.7.4']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:59.7.1,59.7.2,59.7.3,59.7.4
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_demonstration_repair" name="test_failed_review_gets_two_repairs_then_advances_with_original_failure_preserved" time="1.685" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_missing_outputs_still_exhaust_two_repairs_and_advance" time="0.800" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_pass_does_not_spend_repairs_but_failed_author_or_tool_requires_correction" time="0.644" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_route_replay_does_not_spend_a_second_correction_cycle" time="0.666" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_task_call_accounting_is_durable_and_legacy_bindings_remain_exact" time="0.665" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_provisional_ll_import_is_sealed_read_only_and_never_a_formal_acceptance" time="14.083" /><testcase classname="factory.python.tests.test_demonstration_repair" name="test_actual_hal_intake_limits_provisional_component_to_qm_demonstrations" time="1.153" /><testcase classname="factory.python.tests.test_qm_development" name="test_actual_review_and_new_owner_classification_import_without_inference" time="1.066" /><testcase classname="factory.python.tests.test_qm_development" name="test_qm_tailors_only_safety_clauses_and_does_not_accept_a_functional_failure" time="1.352" /><testcase classname="factory.python.tests.test_qm_development" name="test_missing_changed_or_mislabeled_qm_scope_refuses[missing-binding]" time="0.620" /><testcase classname="factory.python.tests.test_qm_development" name="test_missing_changed_or_mislabeled_qm_scope_refuses[classification]" time="0.634" /><testcase classname="factory.python.tests.test_qm_development" name="test_missing_changed_or_mislabeled_qm_scope_refuses[scope-record]" time="0.625" /><testcase classname="factory.python.tests.test_qm_development" name="test_missing_changed_or_mislabeled_qm_scope_refuses[context]" time="0.632" /><testcase classname="factory.python.tests.test_qm_development" name="test_missing_changed_or_mislabeled_qm_scope_refuses[purpose]" time="0.618" /><testcase classname="factory.python.tests.test_qm_development" name="test_generic_qm_on_existing_rcc_preserves_previous_asil_history" time="0.434" /><testcase classname="factory.python.tests.test_qm_development" name="test_qm_profile_keeps_exact_inference_settings_and_explicit_lane" time="0.014" /><testcase classname="factory.python.tests.test_qm_development" name="test_native_and_structured_inspectors_receive_the_same_frozen_qm_criteria" time="0.802"><failure message="ValueError: WORKFLOW_SCOPE_SECTION_MISSING:26.4.2">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...s shipped in STMicroelectronics STM32CubeN6 v1.4.0', 'path': 'inputs/vendor/include/cmsis_version.h', ...}, ...], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x794564e9cf30&gt;
+
+    def test_native_and_structured_inspectors_receive_the_same_frozen_qm_criteria(prepared, monkeypatch):
+        ws, man = prepared
+        Anchor(ws, monkeypatch)
+        assert P.materialize(ws)["status"] == "PASS"
+        st = Store(ws)
+        st.freeze("SWE.1", "swe1-author")
+        baseline, sources = review.evidence(ws, "SWE.1")
+        criterion = next(c for c in st.checklist("SWE.1")["checks"] if c["id"] == "SWE1-03")
+        packet = review.item_packet(ws, "SWE.1", criterion, baseline, sources, "qwen3.8:27b-q8_0")
+        assert packet["criteria"] == ["SWE1-03: " + criterion["criterion"]]
+        assert packet["assessment_scope"]["binding_sha256"] == digest(qm.workspace_record(ws))
+        assert packet["assessment_scope"]["instruction"] in packet["_messages"][0]["content"]
+        assert "safety-oriented ASPICE work order" not in packet["_messages"][0]["content"]
+&gt;       graph, nodes = build(man["work_order"], layer="LL", brownfield="FROZEN", peripheral="crc",
+                             operation_scope=man["operation_scope"], execution_policy=man["development_execution"],
+                             assessment_manifest=man)
+
+factory/python/tests/test_qm_development.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/workflow/builder.py:135: in build
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:361: in _build
+    L += [f'  {a} [label="{phase} author", max_visits={MAX_VISITS}, timeout="1500s", prompt="{_q(author_prompt(n))}"]',
+                                                                                                 ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/builder.py:63: in author_prompt
+    return ap(f"SWE.{n}")
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:1140: in &lt;lambda&gt;
+    globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+                                                                                      ^^^^^^^^^^^
+factory/python/forge_factory/workflow/prompts.py:889: in author_prompt
+    keys = complete_scope_sections(keys)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+keys = ['26.4.2']
+
+    def complete_scope_sections(keys: list[str]) -&gt; list[str]:
+        manifest = ASSESSMENT["manifest"] or {}
+        if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+            return keys
+        from ..lrtx.obligations import scope_sections
+        from ..peripheral import load
+    
+        pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+        selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+        missing = [key for key in selected if key not in SECTIONS]
+        if missing:
+&gt;           raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+E           ValueError: WORKFLOW_SCOPE_SECTION_MISSING:26.4.2
+
+factory/python/forge_factory/workflow/prompts.py:857: ValueError</failure></testcase><testcase classname="factory.python.tests.test_qm_development" name="test_real_six_phase_qm_fixture_and_independent_missing_trace_negative" time="44.855" /><testcase classname="factory.python.tests.test_qm_development" name="test_disabled_qm_policy_does_not_remove_required_gates" time="0.625" /></testsuite></testsuites>
