@@ -239,3 +239,13 @@ def test_corrupt_retained_feedback_is_refused_instead_of_silently_delivered(case
     ctx = ToolContext('forge-maintainer-mcp', 'read_case', 'afo-factory-maintainer', None, Path(case['src']), 'fixture')
     with pytest.raises(ToolDenied, match='REWORK_FEEDBACK_CHANGED'):
         server.read_case(ctx, server.NoIn())
+
+
+def test_native_submit_rejects_marker_prefix_before_any_broker_effect():
+    from pydantic import ValidationError
+
+    valid = {'summary': 'exact reproducer fixture', 'reproducer': M.CANDIDATE_TESTS + 'proof.py',
+             'symptom_signature': 'measured-defect'}
+    assert server.SubmitIn(**valid).symptom_signature == 'measured-defect'
+    with pytest.raises(ValidationError, match='bare signature suffix'):
+        server.SubmitIn(**{**valid, 'symptom_signature': 'SYMPTOM_PRESENT:measured-defect'})

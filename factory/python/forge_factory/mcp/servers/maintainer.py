@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from ...common import state_dir
 from ..sdk import Operation, ToolContext, ToolDenied, ToolInput, build_server, result
@@ -79,6 +79,14 @@ class SubmitIn(ToolInput):
                                                "no extra diagnostic text on that line.")
 
 
+    @field_validator("symptom_signature")
+    @classmethod
+    def bare_signature(cls, value: str) -> str:
+        if value.startswith("SYMPTOM_PRESENT:"):
+            raise ValueError("Use the bare signature suffix, without SYMPTOM_PRESENT: prefix")
+        return value
+
+
 def list_sources(ctx: ToolContext, a: InventoryIn) -> dict:
     from ...afo import maintainer as M
 
@@ -100,6 +108,13 @@ def read_case(ctx: ToolContext, a: NoIn) -> dict:
         if digest(rework["feedback"]) != rework["feedback_sha256"]:
             raise ToolDenied("REWORK_FEEDBACK_CHANGED", "frozen independent feedback hash mismatch")
         body["retained_rework"] = rework
+    body["reproducer_protocol"] = {
+        "registered_signature": "BARE_SUFFIX_WITHOUT_SYMPTOM_PRESENT_PREFIX",
+        "baseline_exit_code": 1, "baseline_last_nonempty_stdout_line": "SYMPTOM_PRESENT:<registered_signature>",
+        "candidate_exit_code": 0, "candidate_last_nonempty_stdout_line": "SYMPTOM_ABSENT",
+        "diagnostics": "BEFORE_FINAL_CONTRACT_LINE; never append to marker",
+        "legacy_validation": "UNCHANGED",
+    }
     selected = os.environ.get("FORGE_LRTX_PROFILE")
     if selected:
         from ...common import REPO_ROOT
