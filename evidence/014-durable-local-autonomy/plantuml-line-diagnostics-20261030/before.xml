@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="0.205" timestamp="2026-10-30T23:26:07.120124+00:00" hostname="master"><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_static.puml]" time="0.041" /><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_dynamic.puml]" time="0.001" /><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_debug_path_does_not_misattribute_canonical_view_failure" time="0.006" /><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_parser_line_is_included_for_a_failing_canonical_view" time="0.001"><failure message="AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...: component)']&#10;  &#10;  At index 0 diff: 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:line 4:Syntax Error? (Assumed diagram type: component)'&#10;  Use -v to get more diff">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-257/test_parser_line_is_included_f0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a58681a6030&gt;
+
+    def test_parser_line_is_included_for_a_failing_canonical_view(diagrams, monkeypatch):
+        def run(args, cwd, **kwargs):
+            if args == ["-syntax"]:
+                return CompletedProcess(args, 200, "ERROR\n3\nSyntax Error? (Assumed diagram type: component)\n", "")
+            failed = views.STATIC in args
+            return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
+    
+        monkeypatch.setattr(views, "_plantuml", run)
+        report = views.check_views(diagrams)
+        assert report["verdict"] == "FAIL"
+&gt;       assert report["major_findings"] == [
+            "VIEWS:SYNTAX:" + views.STATIC + ":line 4:Syntax Error? (Assumed diagram type: component)"]
+E       AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...: component)']
+E         
+E         At index 0 diff: 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:line 4:Syntax Error? (Assumed diagram type: component)'
+E         Use -v to get more diff
+
+factory/python/tests/test_plantuml_diagnostics.py:65: AssertionError</failure></testcase></testsuite></testsuites>

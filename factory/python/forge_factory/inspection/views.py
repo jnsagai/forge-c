@@ -30,12 +30,13 @@ def plantuml_jar() -> Path | None:
     return None
 
 
-def _plantuml(args: list[str], cwd: Path) -> subprocess.CompletedProcess:
+def _plantuml(args: list[str], cwd: Path, *, source: str | None = None) -> subprocess.CompletedProcess:
     jar = plantuml_jar()
     if jar is None:
         raise FileNotFoundError("plantuml jar")
     return subprocess.run(["java", "-Djava.awt.headless=true", "-Xmx512m", "-jar", str(jar), *args], cwd=cwd,
-                          capture_output=True, text=True, timeout=120, check=False)
+                          input=source, capture_output=True, text=True,
+                          timeout=15 if source is not None else 120, check=False)
 
 
 def check_views(ws: Path, render: bool = False) -> dict:
@@ -77,6 +78,18 @@ def check_views(ws: Path, render: bool = False) -> dict:
             syntax_by_view[name] = "PASS" if r.returncode == 0 else "FAIL"
             if r.returncode != 0:
                 detail = (r.stdout + r.stderr).strip().replace("\n", " ")[:200]
+                # The pinned CLI's stdin syntax mode reports a zero-based line.
+                # This extra diagnostic cannot turn the failed file check into PASS.
+                text = path.read_text(errors="replace")
+                try:
+                    diagnostic = _plantuml(["-syntax"], path.parent, source=text)
+                    lines = diagnostic.stdout.splitlines()
+                    if (diagnostic.returncode != 0 and len(lines) >= 3 and lines[0] == "ERROR"
+                            and re.fullmatch(r"[0-9]{1,8}", lines[1])
+                            and 0 <= int(lines[1]) < len(text.splitlines())):
+                        detail = f"line {int(lines[1]) + 1}:" + lines[2][:160]
+                except (OSError, subprocess.SubprocessError):
+                    pass  # retain the original failure when optional diagnostics are unavailable
                 findings.append("VIEWS:SYNTAX:" + rel + ":" + detail)
         syntax = "PASS" if all(v == "PASS" for v in syntax_by_view.values()) else "FAIL"
         if syntax == "PASS" and render:

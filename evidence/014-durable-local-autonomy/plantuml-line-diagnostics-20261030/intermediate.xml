@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="6" time="3.329" timestamp="2026-10-30T23:26:36.907956+00:00" hostname="master"><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_static.puml]" time="0.042"><failure message="assert False&#10; +  where False = all(&lt;generator object test_syntax_failure_names_actual_view_and_does_not_render.&lt;locals&gt;.&lt;genexpr&gt; at 0x7b5d0fa4cee0&gt;)">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-258/test_syntax_failure_names_actu0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5d0fd235c0&gt;
+bad = 'workproducts/SWE.2/architecture_static.puml'
+
+    @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
+    def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
+        calls = []
+    
+        def run(args, cwd, **kwargs):
+            calls.append(args)
+            failed = bad in args
+            return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
+    
+        monkeypatch.setattr(views, "_plantuml", run)
+        report = views.check_views(diagrams, render=True)
+        assert report["verdict"] == "FAIL"
+        assert report["major_findings"] == ["VIEWS:SYNTAX:" + bad + ":Some diagram description contains errors"]
+        assert report["stats"]["syntax"] == "FAIL"
+&gt;       assert all(c[0] == "-checkonly" for c in calls)
+E       assert False
+E        +  where False = all(&lt;generator object test_syntax_failure_names_actual_view_and_does_not_render.&lt;locals&gt;.&lt;genexpr&gt; at 0x7b5d0fa4cee0&gt;)
+
+factory/python/tests/test_plantuml_diagnostics.py:35: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_dynamic.puml]" time="0.001"><failure message="assert False&#10; +  where False = all(&lt;generator object test_syntax_failure_names_actual_view_and_does_not_render.&lt;locals&gt;.&lt;genexpr&gt; at 0x7b5d0fa4e4d0&gt;)">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-258/test_syntax_failure_names_actu1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5d10e59a70&gt;
+bad = 'workproducts/SWE.2/architecture_dynamic.puml'
+
+    @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
+    def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
+        calls = []
+    
+        def run(args, cwd, **kwargs):
+            calls.append(args)
+            failed = bad in args
+            return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
+    
+        monkeypatch.setattr(views, "_plantuml", run)
+        report = views.check_views(diagrams, render=True)
+        assert report["verdict"] == "FAIL"
+        assert report["major_findings"] == ["VIEWS:SYNTAX:" + bad + ":Some diagram description contains errors"]
+        assert report["stats"]["syntax"] == "FAIL"
+&gt;       assert all(c[0] == "-checkonly" for c in calls)
+E       assert False
+E        +  where False = all(&lt;generator object test_syntax_failure_names_actual_view_and_does_not_render.&lt;locals&gt;.&lt;genexpr&gt; at 0x7b5d0fa4e4d0&gt;)
+
+factory/python/tests/test_plantuml_diagnostics.py:35: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_debug_path_does_not_misattribute_canonical_view_failure" time="0.006" /><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_parser_line_is_included_for_a_failing_canonical_view" time="0.001" /><testcase classname="factory.python.tests.test_reqif_plantuml" name="test_reqif_export_is_xsd_valid_with_trace_relations" time="0.766" /><testcase classname="factory.python.tests.test_reqif_plantuml" name="test_plantuml_views_valid_render_and_broken_views_fail" time="2.295" /></testsuite></testsuites>

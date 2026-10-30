@@ -74,6 +74,20 @@ identical launch configuration and no candidate reuse. Status remains
 **PREPARED_NOT_SUBMITTED**: no follow-up is admitted before an independently
 audited DF-M1 terminal PASS. These records establish no repeatability result.
 
+At23:29:40UTC the unchanged run reached SWE.3 inspection. A read-only
+[mission snapshot](runtime-checkpoint/mission-preserved-20261030-2321.json)
+confirms all three attempts and original historical counts/charges remain;
+uncertain usage is still unknown. These charges are reservations, not generated
+token measurements. The provider independently reported one busy262144-token
+slot. No global stop or additional inference was requested.
+
+[SWE.3 tool observations](runtime-checkpoint/swe3-style-observation-20261030.json)
+retain both naming findings and legacy register-array checks applied to the
+declared typed-device-pointer API. They are process/checker-adapter gaps, not
+failed independent IDR behavior. No criterion was waived or working C replaced.
+The later [bounded error-line diagnostic fix](../plantuml-line-diagnostics-20261030/README.md)
+is local and undeployed; it cannot change this run's original findings.
+
 ## Specific fixes and reproduced failures
 
 **5440c474d0a64ccd69be97518cb987d98d390119**: history import previously preserved

@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-30T23:31:48.604279Z",
+  "read_only": true,
+  "new_model_calls": 0,
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "candidate_sha256": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173",
+  "observed_checks": [
+    {
+      "at": "2026-10-30T23:26:36.029097727Z",
+      "tool_call_id": "ApWCDWTOyY493QxeraEPH7O0CyEh5gUJ",
+      "arguments": {
+        "path": "workproducts/SWE.3",
+        "check": "swe3_all"
+      },
+      "status": "FAIL",
+      "summary": "SWE.3 checks: guideline FAIL (3), register map FAIL, implementation FAIL",
+      "issues": [
+        "GL-ARG-01:stm32n6xx_ll_crc.h:36:LL_CRC_Write_IDR: parameter CRCx not lower case",
+        "GL-ARG-01:stm32n6xx_ll_crc.h:36:LL_CRC_Write_IDR: parameter InData not lower case",
+        "GL-ARG-01:stm32n6xx_ll_crc.h:48:LL_CRC_Read_IDR: parameter CRCx not lower case",
+        "REGMAP:NO_REGISTER_DEFINES",
+        "IMPL:LL_REG_BLOCK_DECLARATION_MISSING"
+      ],
+      "provenance": {
+        "tool": "forge-swe3-checks",
+        "version": "0.4.0",
+        "invocation_id": "inv-9ead14ab40064fee",
+        "input_sha256": "9d6b2dc4136d0526434a879b85afd4bc8b2faf2b1d668ffae019153c88d47198"
+      }
+    },
+    {
+      "at": "2026-10-30T23:29:07.174653983Z",
+      "tool_call_id": "nCoxm1YlXcTuMToToDozTvsHKR90kFh8",
+      "arguments": {
+        "path": "workproducts/SWE.3",
+        "check": "swe3_all"
+      },
+      "status": "FAIL",
+      "summary": "SWE.3 checks: guideline FAIL (3), register map FAIL, implementation FAIL",
+      "issues": [
+        "GL-ARG-01:stm32n6xx_ll_crc.h:36:LL_CRC_Write_IDR: parameter CRCx not lower case",
+        "GL-ARG-01:stm32n6xx_ll_crc.h:36:LL_CRC_Write_IDR: parameter InData not lower case",
+        "GL-ARG-01:stm32n6xx_ll_crc.h:48:LL_CRC_Read_IDR: parameter CRCx not lower case",
+        "REGMAP:NO_REGISTER_DEFINES",
+        "IMPL:LL_REG_BLOCK_DECLARATION_MISSING"
+      ],
+      "provenance": {
+        "tool": "forge-swe3-checks",
+        "version": "0.4.0",
+        "invocation_id": "inv-dcc312c8eafd4a63",
+        "input_sha256": "9d6b2dc4136d0526434a879b85afd4bc8b2faf2b1d668ffae019153c88d47198"
+      }
+    }
+  ],
+  "observation": "The frozen work-order contract declares typed-device-pointer functions; legacy checks require a register-block array and generated register defines. Naming findings remain separate. No check was waived and no code was changed."
+}
