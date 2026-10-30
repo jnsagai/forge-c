@@ -51,6 +51,18 @@ No post-launch source, candidate or model steering was supplied to this job.
 Dashboard retargeting and outcome collection are disclosed observation activities,
 not engineering repairs or evidence of autonomous self-healing.
 
+Read-only update at22:52UTC: SWE.1 author completed; its deterministic contract
+gate found four unsupported field names (`CRC_CR.CR`, `CRC_INIT.INIT`) in
+preservation cases. Those findings are retained; the demonstration graph
+continued to SWE.1 inspection. The EARS tool separately reported10requirements,
+zero major findings, PASS. Neither observation changes the independent driver
+verdict or establishes process acceptance. See the [live checkpoint](runtime-checkpoint/progress-20261030-2252.json).
+
+The [actual profile preflight receipt](runtime-checkpoint/control/profile-preflight-v3.json)
+is now included for offline model-digest/network verification. Its separate
+remote/local hash comparison is recorded in the transfer addendum; the original
+23-file transfer manifest remains unchanged.
+
 ## Specific fixes and reproduced failures
 
 **5440c474d0a64ccd69be97518cb987d98d390119**: history import previously preserved

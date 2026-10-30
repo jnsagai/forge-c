@@ -6,7 +6,8 @@
     "raw_hidden_reasoning_absent": true,
     "authoritative_manual_contents_excluded": true,
     "transfer_hashes_match": true,
-    "all_publication_files_tracked_in_git": true
+    "all_publication_files_tracked_in_git": true,
+    "profile_preflight_addendum_hash_matches": true
   },
   "issues": []
 }

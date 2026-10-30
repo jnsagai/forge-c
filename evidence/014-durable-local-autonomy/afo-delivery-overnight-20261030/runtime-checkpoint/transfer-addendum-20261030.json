@@ -1,0 +1,8 @@
+{
+  "scope": "READ_ONLY_PROFILE_RECEIPT_TRANSFER",
+  "remote_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/profile-preflight-v3.json",
+  "local_path": "control/profile-preflight-v3.json",
+  "sha256": "8cdc5bab91d274de5b6f015e5ad3ba5ff4c724acfcc586a8795fb73df5aa3900",
+  "comparison": "REMOTE_SHA256SUM_AND_LOCAL_BYTES_MUST_MATCH",
+  "original_23_file_manifest_unchanged": true
+}
