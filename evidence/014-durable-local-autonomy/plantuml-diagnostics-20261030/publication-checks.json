@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_NOT_RUNTIME",
+  "issues": [],
+  "checks": {
+    "all_publication_files_tracked_in_git": true
+  }
+}

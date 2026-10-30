@@ -2,7 +2,7 @@
 
 **Implementation specification + execution plan (Codex handoff)**  
 **Date:** 2026-10-30  
-**Status:** DEVELOPMENT_IMPLEMENTED / NATIVE_TRIAL_BLOCKED / DF-M1_NOT_PROVEN
+**Status:** DEVELOPMENT_IMPLEMENTED / AFO_NATIVE_TRIAL_RUNNING / DF-M1_NOT_PROVEN
 **Repository:** [`jnsagai/forge-c`](https://github.com/jnsagai/forge-c)  
 **Target integration line:** `feat/014-durable-local-autonomy` (stacked Feature 014 / PR #42; verify current HEAD and PR state before coding)  
 **Proposed repository destination:** `specs/014-durable-local-autonomy/DELIVERY-FIRST-E2E.md`  

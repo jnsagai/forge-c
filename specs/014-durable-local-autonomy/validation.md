@@ -1854,3 +1854,16 @@ refusals; its history/reservation remain. Full namespace retirement and actual
 worker configuration verification corrected the setup. This is disclosed
 external engineering, not model self-healing. The owner-requested window ends
 31October07:57:59UTC; no automatic grant renewal. Formal DA ledger remains30/58.
+
+## PlantUML feedback scope — 30 October23:12UTC
+
+[Actual native feedback and before/after regressions](../../evidence/014-durable-local-autonomy/plantuml-diagnostics-20261030/README.md)
+show nine generic failures, including four debug-path calls that still checked
+the canonical architecture files. Three diagnostic regressions failed before
+the change. The checker now names each actual failing view and MCP makes the
+workspace-wide scope explicit. No gate was relaxed. Focused cohort5PASS;
+inherited architecture/MCP/delivery cohort58PASS/one disabled live Fabro skip,
+zero failures/errors. Ruff/diff/spec-contract checks PASS; cohorts overlap.
+The active AFO native remains unchanged at a34fdd85 and has reached SWE.2
+inspection. The fix is not deployed or qualified for model benefit; current
+terminal DF-M1 and fresh repeatability remain pending.

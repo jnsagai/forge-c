@@ -90,8 +90,10 @@ def validate_artifact(ctx: ToolContext, a: ValidateIn) -> dict:
         from ...inspection.views import check_views
 
         rep = check_views(ctx.workspace)
-        return result(ctx, rep["verdict"], f"PlantUML views: {len(rep['major_findings'])} findings",
-                      [], rep["major_findings"][:30], rep["stats"], "plantuml", input_obj=a.model_dump())
+        summary = f"Canonical architecture views (static + dynamic): {len(rep['major_findings'])} findings"
+        metrics = {**rep["stats"], "requested_path": a.path, "validation_scope": "CANONICAL_ARCHITECTURE_VIEWS"}
+        return result(ctx, rep["verdict"], summary, [], rep["major_findings"][:30], metrics,
+                      "plantuml", input_obj=a.model_dump())
     if a.check == "implementation":
         rep = check_implementation(ctx.workspace)
         return result(ctx, rep["verdict"], f"SWE.3 implementation completeness: {len(rep['major_findings'])} findings",

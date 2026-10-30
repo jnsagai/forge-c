@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="0.204" timestamp="2026-10-30T23:10:52.556705+00:00" hostname="master"><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_static.puml]" time="0.041"><failure message="AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...tains errors']&#10;  &#10;  At index 0 diff: 'VIEWS:SYNTAX:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:Some diagram description contains errors'&#10;  Use -v to get more diff">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-253/test_syntax_failure_names_actu0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d9183151940&gt;
+bad = 'workproducts/SWE.2/architecture_static.puml'
+
+    @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
+    def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
+        calls = []
+    
+        def run(args, cwd):
+            calls.append(args)
+            failed = bad in args
+            return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
+    
+        monkeypatch.setattr(views, "_plantuml", run)
+        report = views.check_views(diagrams, render=True)
+        assert report["verdict"] == "FAIL"
+&gt;       assert report["major_findings"] == ["VIEWS:SYNTAX:" + bad + ":Some diagram description contains errors"]
+E       AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...tains errors']
+E         
+E         At index 0 diff: 'VIEWS:SYNTAX:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:Some diagram description contains errors'
+E         Use -v to get more diff
+
+factory/python/tests/test_plantuml_diagnostics.py:33: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_syntax_failure_names_actual_view_and_does_not_render[workproducts/SWE.2/architecture_dynamic.puml]" time="0.001"><failure message="AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...tains errors']&#10;  &#10;  At index 0 diff: 'VIEWS:SYNTAX:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_dynamic.puml:Some diagram description contains errors'&#10;  Use -v to get more diff">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-253/test_syntax_failure_names_actu1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d9183151a70&gt;
+bad = 'workproducts/SWE.2/architecture_dynamic.puml'
+
+    @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
+    def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
+        calls = []
+    
+        def run(args, cwd):
+            calls.append(args)
+            failed = bad in args
+            return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
+    
+        monkeypatch.setattr(views, "_plantuml", run)
+        report = views.check_views(diagrams, render=True)
+        assert report["verdict"] == "FAIL"
+&gt;       assert report["major_findings"] == ["VIEWS:SYNTAX:" + bad + ":Some diagram description contains errors"]
+E       AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...tains errors']
+E         
+E         At index 0 diff: 'VIEWS:SYNTAX:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_dynamic.puml:Some diagram description contains errors'
+E         Use -v to get more diff
+
+factory/python/tests/test_plantuml_diagnostics.py:33: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_plantuml_diagnostics" name="test_debug_path_does_not_misattribute_canonical_view_failure" time="0.006"><failure message="AssertionError: assert 'workproducts/SWE.2/architecture_static.puml' in 'VIEWS:SYNTAX:Some diagram description contains errors'&#10; +  where 'workproducts/SWE.2/architecture_static.puml' = views.STATIC">diagrams = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-253/test_debug_path_does_not_misat0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d9181e00290&gt;
+
+    def test_debug_path_does_not_misattribute_canonical_view_failure(diagrams, monkeypatch):
+        debug = "workproducts/SWE.2/_debug.puml"
+        (diagrams / debug).write_text("@startuml\nAlice -&gt; Bob : hello\n@enduml\n")
+        monkeypatch.setattr(views, "_plantuml", lambda args, cwd: CompletedProcess(
+            args, int(views.STATIC in args), "", "Some diagram description contains errors"))
+        ctx = ToolContext("forge-docs-mcp", "validate_artifact", "swe2-author", "SWE.2", diagrams, "diagnostic-test")
+        report = docs.validate_artifact(ctx, docs.ValidateIn(path=debug, check="plantuml"))
+        assert report["status"] == "FAIL"  # no waiver of the actual bad canonical view
+&gt;       assert views.STATIC in report["issues"][0]
+E       AssertionError: assert 'workproducts/SWE.2/architecture_static.puml' in 'VIEWS:SYNTAX:Some diagram description contains errors'
+E        +  where 'workproducts/SWE.2/architecture_static.puml' = views.STATIC
+
+factory/python/tests/test_plantuml_diagnostics.py:46: AssertionError</failure></testcase></testsuite></testsuites>

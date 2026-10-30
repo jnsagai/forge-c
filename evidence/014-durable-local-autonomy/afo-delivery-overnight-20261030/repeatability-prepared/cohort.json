@@ -1,0 +1,35 @@
+{
+  "status": "PREPARED_NOT_SUBMITTED",
+  "prerequisite": "INDEPENDENT_DF_M1_TERMINAL_AUDIT_PASS_REQUIRED",
+  "trials": 3,
+  "items": [
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-04",
+      "order_id": "afo-002d8ed0e31b5cc1",
+      "launch_path": "DF-AFO-CRC-IDR-20261030-04-launch.json",
+      "launch_file_sha256": "a7b4db39d32c8490744fe0fc290da3e436cd01c3aec3713587be3635a2f62359"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-05",
+      "order_id": "afo-ee4282b25001a15d",
+      "launch_path": "DF-AFO-CRC-IDR-20261030-05-launch.json",
+      "launch_file_sha256": "a7b4db39d32c8490744fe0fc290da3e436cd01c3aec3713587be3635a2f62359"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-06",
+      "order_id": "afo-7f71565db57f0a76",
+      "launch_path": "DF-AFO-CRC-IDR-20261030-06-launch.json",
+      "launch_file_sha256": "a7b4db39d32c8490744fe0fc290da3e436cd01c3aec3713587be3635a2f62359"
+    }
+  ],
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "scope_canonical_sha256": "0fe46b9d80ac8fe680b2de88304a4621fdcdb3b3beeff5dbe37a50de98a1f3b2",
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "same_cumulative_mission": true,
+  "candidate_reuse": false,
+  "new_jobs_submitted": 0,
+  "model_calls": 0
+}

@@ -63,6 +63,17 @@ is now included for offline model-digest/network verification. Its separate
 remote/local hash comparison is recorded in the transfer addendum; the original
 23-file transfer manifest remains unchanged.
 
+Read-only [register-contract diagnosis](runtime-checkpoint/swe1-contract-diagnosis-20261030.json)
+confirmed the index contains the actual manual fields: the generated aliases
+`CR` and `INIT` are absent. This is generated contract content rejected by the
+existing gate; no shared-engine parser defect was identified.
+
+The three follow-up [cohort and launch records](repeatability-prepared/cohort.json)
+are prepared before their first run. They have fresh request/order identities,
+identical launch configuration and no candidate reuse. Status remains
+**PREPARED_NOT_SUBMITTED**: no follow-up is admitted before an independently
+audited DF-M1 terminal PASS. These records establish no repeatability result.
+
 ## Specific fixes and reproduced failures
 
 **5440c474d0a64ccd69be97518cb987d98d390119**: history import previously preserved

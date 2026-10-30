@@ -65,16 +65,25 @@ def check_views(ws: Path, render: bool = False) -> dict:
     if layer != "LL" and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"
+    syntax_by_view = {name: "NOT_RUN" for name in files}
     if plantuml_jar() is None:
         findings.append("VIEWS:TOOL_MISSING:plantuml")
     else:
-        r = _plantuml(["-checkonly", STATIC, DYNAMIC], ws)
-        syntax = "PASS" if r.returncode == 0 else "FAIL"
-        if r.returncode != 0:
-            findings.append("VIEWS:SYNTAX:" + (r.stdout + r.stderr).strip().replace("\n", " ")[:200])
-        elif render:
+        # PlantUML can report only a generic error for a multi-file invocation.
+        # Name the failing source without weakening the complete workspace check.
+        for name, path in files.items():
+            rel = path.relative_to(ws).as_posix()
+            r = _plantuml(["-checkonly", rel], ws)
+            syntax_by_view[name] = "PASS" if r.returncode == 0 else "FAIL"
+            if r.returncode != 0:
+                detail = (r.stdout + r.stderr).strip().replace("\n", " ")[:200]
+                findings.append("VIEWS:SYNTAX:" + rel + ":" + detail)
+        syntax = "PASS" if all(v == "PASS" for v in syntax_by_view.values()) else "FAIL"
+        if syntax == "PASS" and render:
             rr = _plantuml(["-tsvg", STATIC, DYNAMIC], ws)
             if rr.returncode != 0:
                 findings.append("VIEWS:RENDER_FAILED")
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
-            "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown)}}
+            "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown),
+                      "checked_static": STATIC, "checked_dynamic": DYNAMIC,
+                      **{"syntax_" + name: status for name, status in syntax_by_view.items()}}}
