@@ -62,6 +62,34 @@ TRACE_EXTRA_TURNS = 8
 LOOP_EXTRA_TURNS = 15
 
 
+def native_capacity_binding() -> dict:
+    from ..common import CONFIG_DIR, load_yaml, sha256_file
+
+    path = CONFIG_DIR / "token-policy.yaml"
+    limit = load_yaml(path)["native_aspice_author_tool_calls_per_visit"]
+    if type(limit) is not int or not 1 <= limit <= 10000:
+        raise ValueError("NATIVE_ASPICE_TOOL_BUDGET_INVALID")
+    return {"schema": "forge-c/native-aspice-tool-budget/1", "policy_sha256": sha256_file(path),
+            "author_calls_per_visit": limit}
+
+
+def _native_author_limit(role: str, workspace: str) -> int | None:
+    if role not in {f"swe{n}-author" for n in range(1, 7)}:
+        return None
+    path = Path(workspace) / ".forge-run/manifest.json"
+    if not path.is_file():
+        return None
+    manifest = json.loads(path.read_text())
+    native = manifest.get("native_aspice_backends") or {}
+    binding = native.get("tool_budget")
+    if binding is None:
+        return None  # Existing native jobs retain their recorded registry budget.
+    if (manifest.get("purpose") != "ASPICE_ONLY" or native.get("authors") != "codex"
+            or native.get("inspectors") != "claude" or binding != native_capacity_binding()):
+        raise ValueError("NATIVE_ASPICE_TOOL_BUDGET_BINDING_CHANGED")
+    return binding["author_calls_per_visit"]
+
+
 def _in_fix_loop(workspace: str, role: str) -> bool:
     phase = {"swe1-author": "SWE.1", "swe2-author": "SWE.2", "swe3-author": "SWE.3"}.get(role)
     if not phase:
@@ -87,6 +115,9 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
         policy = selected(workspace)
         if policy and policy.get("max_tool_calls_per_visit"):
             return policy["max_tool_calls_per_visit"]
+        native = _native_author_limit(role, workspace)
+        if native is not None:
+            return native
     base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled

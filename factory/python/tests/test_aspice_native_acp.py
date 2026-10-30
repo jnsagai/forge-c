@@ -6,6 +6,7 @@ from forge_factory import acp
 from forge_factory import workorder as W
 from forge_factory.acp import claude_home, codex_home
 from forge_factory.common import REPO_ROOT
+from forge_factory.policy.governor import native_capacity_binding
 from forge_factory.release import aspice
 
 
@@ -53,6 +54,7 @@ def test_native_aspice_keeps_resolved_scope_and_cannot_fall_back_to_a_run_model(
         manifest = json.loads((ws / ".forge-run/manifest.json").read_text())
         assert aspice.selected(manifest) and manifest["purpose"] == "ASPICE_ONLY"
         assert manifest["native_aspice_backends"] == {
-            "authors": "codex", "inspectors": "claude", "native_model_agent_nodes": [], "local_inference_requests": 0}
+            "authors": "codex", "inspectors": "claude", "native_model_agent_nodes": [], "local_inference_requests": 0,
+            "tool_budget": native_capacity_binding()}
         assert acp.native_agent_nodes(graph) == []
         assert "local_profile" not in manifest and "development_execution" not in manifest

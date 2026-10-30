@@ -19,5 +19,8 @@ compact_response_top_level_keys:
 suppress_explanatory_narrative: true
 always_count_model_usage: true
 reject_on_budget_exhaustion: true
+# Explicit native ASPICE controls cover the full owner scope, rather than the
+# historical small example. Other lanes keep their authored registry limits.
+native_aspice_author_tool_calls_per_visit: 4096
 notes: Total budgets per role in agents.yaml; provider token counters may be unavailable
   and must be explicitly labeled estimated/unknown.

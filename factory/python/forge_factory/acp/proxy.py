@@ -110,6 +110,7 @@ class Proxy:
         from ..policy.authz import Binding
 
         self.binding_path, self.node, self.kind = binding, node, agent
+        self.visit_budget_started = False
         self.prompts = set()  # ids of session/prompt requests whose results carry usage (feature 007)
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
@@ -159,6 +160,21 @@ class Proxy:
                               "disableBuiltInTools": True}
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
+            if getattr(self, "visit_budget_started", None) is False:
+                # ACP tool calls bypass Fabro's native pre-tool hook. Start the
+                # existing per-visit counter once for this proxy lifetime, not
+                # once per prompt/retry. Shared mission charges are untouched.
+                from ..policy.authz import Binding
+                from ..policy.fabro_hook import handle
+
+                binding = Binding.load(self.binding_path)
+                run = self.ws / ".forge-run/fabro_run_id"
+                rid = run.read_text().strip() if run.is_file() else "acp"
+                result = handle({"event": "stage_start", "run_id": rid, "node_id": self.node}, binding)
+                if not result.allow:
+                    raise ValueError("ACP_VISIT_BUDGET_START_REFUSED")
+                self.visit_budget_started = True
+                self._log({"event": "visit_budget_started", "run_id": rid, "node": self.node})
             if "id" in m:
                 if self.prompts is None:
                     self.prompts = set()

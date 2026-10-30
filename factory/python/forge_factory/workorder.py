@@ -934,8 +934,11 @@ def run(
             f"{model} ({provider}) serves no agent node; every model stage uses the explicit ACP backend"
         )
         if native_aspice:
+            from .policy.governor import native_capacity_binding
+
             manifest["native_aspice_backends"] = {"authors": "codex", "inspectors": "claude",
-                                                 "native_model_agent_nodes": [], "local_inference_requests": 0}
+                                                 "native_model_agent_nodes": [], "local_inference_requests": 0,
+                                                 "tool_budget": native_capacity_binding()}
             (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
