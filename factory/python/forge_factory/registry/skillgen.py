@@ -125,7 +125,9 @@ ROLE_SPECIFIC["afo-factory-maintainer"] = [
     "reproducer/test/submission obligations.",
     "Write ONE reproducer under factory/python/tests/afo_candidate/ that exits 1 printing "
     "`SYMPTOM_PRESENT:<signature>` while the defect exists and exits 0 printing `SYMPTOM_ABSENT` once fixed, plus a "
-    "pytest test of the fix; run them with `forge-maintainer-mcp.run_candidate_tests`.",
+    "pytest test of the fix; run them with `forge-maintainer-mcp.run_candidate_tests`. The entire suffix on the "
+    "`SYMPTOM_PRESENT:<signature>` line must exactly match submit_candidate.symptom_signature; put diagnostic "
+    "details on separate lines.",
     "Never edit tests/reliability, holdouts, evidence, policies, checklists, requirements, skills, registries or the "
     "AFO/CRE/supervisor code, and never disable, skip or relax a gate, threshold or check.",
     "Submit with `forge-maintainer-mcp.submit_candidate`. Submitted is not accepted: the git-diff veto, the baseline "

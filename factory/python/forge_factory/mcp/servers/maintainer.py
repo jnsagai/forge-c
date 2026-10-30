@@ -75,7 +75,8 @@ class SubmitIn(ToolInput):
     reproducer: str = Field(min_length=10, max_length=200,
                             description="Plain candidate-owned relative .py path only; no prose or annotations.")
     symptom_signature: str = Field(min_length=8, max_length=160,
-                                   description="Exact signature following SYMPTOM_PRESENT: on the baseline.")
+                                   description="Exact entire line suffix after SYMPTOM_PRESENT: on baseline; "
+                                               "no extra diagnostic text on that line.")
 
 
 def list_sources(ctx: ToolContext, a: InventoryIn) -> dict:
