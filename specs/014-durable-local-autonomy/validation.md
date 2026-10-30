@@ -1,5 +1,18 @@
 # Implementation and qualification status
 
+## Current correction — 2026-10-30 01:14UTC
+
+Full RCC LL is BLOCKED after7first-attempt VALID requirements packets/88317reported
+tokens; inspector not generated/context24576default, diagnosis not generated/
+undeclared0/None sampling. Subsequent phases unrun; actual incomplete package copied
+locally. Qwen maintenance01M655FBXJ3WW9R29ZT9YK9SKA now RUNNING atb713e35,
+epoch52, same08:11:56UTC/RCCmission/caps. Frozen original oraclev2 baseline2FAIL/
+legacy1PASS before candidate; candidate evaluation NOT_RUN. No operator repair code.
+[Exact current evidence](../../evidence/014-durable-local-autonomy/rcc-inspector-context-repair-20261030/README.md).
+Historical RUNNING checkpoints below retain their original timestamps, not current
+acceptance. Formal30/58 unchanged; complete pipeline and broad autonomy unproven.
+
+
 ## Current native source and actual ASPICE experiment — 2026-10-30
 
 Runtime **b713e354b5c50744c549b1a9cada491c3ca017bd**, RUNNING epoch50:

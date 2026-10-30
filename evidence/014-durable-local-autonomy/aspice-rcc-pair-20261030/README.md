@@ -1,18 +1,41 @@
-# Actual full ASPICE RCC LL experiment running on local Qwen
+# Full ASPICE RCC LL attempt: blocked before independent inspection
 
-**Runtime b713e354b5c50744c549b1a9cada491c3ca017bd, RUNNING epoch50.**
-Full native **01M652TG29PWJYG7QSCQHZXVKC**; order **afo-83276a5a34a47931**;
-product **afo-product-d62627253f6b28e69543c4c2**. Actual Fabro API confirms RUNNING.
-This is the full0002a RCC LL six-phase route, not a standalone maintenance trial.
+Source **b713e354b5c50744c549b1a9cada491c3ca017bd**. Full six-phase LL native
+**01M652TG29PWJYG7QSCQHZXVKC**, order **afo-83276a5a34a47931**, product
+afo-product-d62627253f6b28e69543c4c2 launched under epoch50.
+**Current product result BLOCKED**, native SUCCEEDED/QUIESCENT/RELEASED.
+Qwen authored all7requirements packets; independent inspection did not generate.
 
-Local Qwen3.8-27B Q8_0/f16, MTP3/xhigh, native262144context and one inference slot.
-Profile local-rtx-v2-omniverse2-q38-aspice-max-mtp,
-SHA60cc304536226bc91155ad77bce12a956d38938fb4393bcffc32e839773d4906.
-Fresh actual provider props confirm262144/one slot. Functional gates block;
-advisory_continue=false, ASPICE_ONLY/safety NOT_ASSESSED, offline review only.
-Signed experimental configurations cover author, inspector, diagnosis and maintenance
-separately; **no production role capability receipt is invented**. Same-model
-inspection is not independent correctness; native deterministic gates remain.
+Current factory runtime remainsb713e35, **RUNNING epoch52**, with a separate
+[actual Qwen repair task](../rcc-inspector-context-repair-20261030/README.md).
+The launch/progress checkpoints below are historical, not product acceptance.
+
+## Terminal correction — 00:39UTC
+
+The full LL attempt is **BLOCKED**, native SUCCEEDED/QUIESCENT with capacity
+RELEASED. All7SWE.1author packets VALID on first attempt, author visit PASS,
+7requests/88317reported tokens. **Independent inspection never reached generation**:
+LRTX_RUNNER_ERROR:PacketRefused:PACKET_TOO_LARGE:inspect:SWE1-01:11858+2048>24576.
+The selected profile/native allocation is262144, but structured runtime retained
+its24576default. The error prints a character estimate; complete serialized input
+also participates in the bound. No bound should be disabled to accept it.
+
+Subsequent diagnosis failed before model generation with
+GATEWAY_HTTP_429:PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED: its temperature0 /
+seedNone was missing from the signed experimental configurations. This was an
+external configuration omission; Qwen did not produce a diagnosis.
+Its failed job afo-agent-2ae4c086f6e5cb032903e2a4 and all charges remain.
+
+The actual BLOCKED/INCOMPLETE archive (49coverage gaps, mostly unrun downstream
+phases) SHA4bbc50a5dee56d99ced976f18e5980f11017304e544a9de84312ec64d78f3ab9
+is copied/hash-checked privately to loop10:
+inspection/feature014/2026-10-30-qwen/rcc-ll-blocked/START-HERE.md.
+Its generated requirements remain available for validated reuse and reinspection.
+
+[Qwen current-defect repair scope](../rcc-inspector-context-repair-20261030/README.md)
+is now active, same RCC mission/deadline/caps; runtime source unchangedb713e35,
+new operator epoch52. No automatic rerun or stale HAL intake was performed.
+The historical RUNNING checkpoints below remain factual at their timestamps.
 
 ## Disclosed finite scope and preserved history
 
