@@ -102,12 +102,15 @@ their actual native preparation/tool preflight, dashboard API and blocked HAL
 check are separate evidence. No new formal task ID is completed;30/58 unchanged.
 
 The local eight-hour read-only outcome collector is
-A3/collect-native-qwen-artifact-outcomes-20261030-v1.py, launched execsession29654.
-It copies a terminal native LL package to loop10, verifies SHA256/archive inventory
-and extracts it for private inspection. It submits zero jobs. It currently tracks
-LL only; add the actual HAL handle when that continuation starts. A3 denotes the
-existing loop10 operations/feature014/incremental-m1-followup-20261029 directory.
-Do not assume an old shell session remains live; revalidate its process/handle.
+A3/collect-native-qwen-artifact-outcomes-20261030-v2.py, execsession29998.
+It dynamically observes the recorded LL and HAL launch handles, copies terminal
+packages to loop10, verifies SHA256/archive inventory and extracts them privately.
+Its real --once smoke check passed while LL was RUNNING; no terminal archive exists
+for this new trial yet. It submits zero jobs. The original observation end remains
+31October02:46:24UTC; no execution grant was extended. The v1 observer was stopped
+by its exact local Python PID758031; no remote/model process was signalled. A3 is
+the loop10 operations/feature014/incremental-m1-followup-20261029 directory.
+Revalidate the current process/session before relying on it.
 
 ## Shared cloud defect diagnosis
 

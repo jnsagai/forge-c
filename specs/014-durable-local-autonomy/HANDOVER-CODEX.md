@@ -28,12 +28,14 @@ recording PAUSED111 was corrected without another operator transition.
 
 Dashboard: http://100.118.28.92:8786, existing local/trusted-device access policy;
 SSH -L8786:127.0.0.1:8786 permits local browser viewing. New read-only local
-collector A3/collect-native-qwen-artifact-outcomes-20261030-v1.py, execsession29654,
-copies LL outcomes to B/inspection/feature014/2026-10-30-qwen/full-pipeline-native-qm-artifacts/.
+collector A3/collect-native-qwen-artifact-outcomes-20261030-v2.py, execsession29998,
+dynamically follows LL and HAL launch handles and copies outcomes to B/inspection/feature014/2026-10-30-qwen/full-pipeline-native-qm-artifacts/.
 Revalidate process/session before relying on it. N/prepare-hal.py defaults check-only
 and returned NOT_RUN_LL_STILL_LIVE. It uses this run's own sealed provisional LL,
 all six actual phase attempts and archive integrity before optional --prepare/--start.
-No HAL is launched yet; add its actual handle to outcome collection after launch.
+No HAL is launched yet; the v2 observer discovers launch-hal.json automatically.
+Its original observation end is31October02:46:24UTC; old local observer PID758031
+was stopped without any remote/model signal.
 
 Cloud r4's exact failure is now audited:11216B in the generated per-function LL
 measurement object,0B in the include-only TU, vs4096Bdeclared. Not a linked-image
