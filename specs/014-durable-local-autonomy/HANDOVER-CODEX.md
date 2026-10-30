@@ -3,6 +3,13 @@
 ## Latest state — bounded edit qualified; retained Qwen completion running
 
 Runtime **ab46545c1cfb7ffd90fb09715b6715b7d21ad242, RUNNING epoch54**.
+Branch now also contains **09704db** source inventory/controller-bound profile metadata:
+[62local PASS; native NOT_RUN, NOT_DEPLOYED](../../evidence/014-durable-local-autonomy/maintenance-source-inventory-20261030/README.md).
+Actual Qwen job repeatedly guesses missing profiles; at02:21:24UTC19requests complete/
+one live,575430reported tokens and no correction/submission. Do not label this repair
+progress. Native qualification helper/bundle is prepared but waits for actual quiet.
+Current model remains onab46545 and loaded provider unchanged.
+
 Qwen native **01M658M4VK71P2MSD82NX9V5A0**, job
 **afo-agent-433bdaaac774faf5577c758c**, order **afo-7e653513a54375a5**.
 At02:02:15UTC2requests complete/one live,12433reported tokens, no valid receipt.

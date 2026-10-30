@@ -1,0 +1,2 @@
+98 %, 46638 MiB, 299.39 W
+{"slots": [{"keys": ["id", "n_ctx", "speculative", "is_processing", "id_task", "n_prompt_tokens", "n_prompt_tokens_processed", "n_prompt_tokens_cache", "params", "next_token"], "id": 0, "n_ctx": 262144, "speculative": true, "is_processing": true, "id_task": 53614, "n_prompt_tokens": 57175, "n_prompt_tokens_processed": 208, "n_prompt_tokens_cache": 43605}], "model_requests": 0, "prompt_or_reasoning_saved": false}

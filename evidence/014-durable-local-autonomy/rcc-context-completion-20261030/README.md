@@ -31,8 +31,10 @@ mutations; bounded read-only wait used its expiry, never forced ownership.
 
 Existing five-minute host Git recorder now observes original LL, failed repair and
 this completion job, with no intake payload. Initial observer configuration used
-the wrong previous-plan filename; failure preserved, corrected before publication;
-model execution was unchanged. Source/receipt artifacts copied to loop10 for review.
+the wrong previous-plan filename, then retained the previous source revision; both
+failures are preserved. V5 binds exact ab46545 before service activation. GitHub
+connector independently confirmed published snapshot02:07:56UTC, epoch54/all3
+orders. Model execution was unchanged. Source/receipt artifacts copied to loop10 for review.
 
 Next: await valid receipt and native/request/verifier quiescence. Frozen original
 context oracle plus inherited regression and CRE gates decide; bounded receipted
