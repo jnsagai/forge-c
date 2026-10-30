@@ -77,7 +77,7 @@ def scope_tools(body: dict) -> dict:
     return {**body, "tools": kept}
 
 
-EFFORTS = ("low", "medium", "high", "xhigh")
+EFFORTS = ("none", "low", "medium", "high", "xhigh")
 
 
 def reasoning_policy() -> dict[str, dict]:
@@ -95,6 +95,13 @@ def sanitize_request(body: dict, *, policy=None) -> dict:
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
     pol = (reasoning_policy() if policy is None else policy).get(out.get("model"))
     out["reasoning_effort"] = pol["effort"] if pol else "none"
+    if pol and pol["effort"] == "none":
+        # Explicit profile opt-in: close Qwen's thinking block, not merely hide
+        # reasoning text. Preserve the legacy wire shape for models without it.
+        kwargs = out.get("chat_template_kwargs")
+        out["chat_template_kwargs"] = {
+            **(kwargs if isinstance(kwargs, dict) else {}), "enable_thinking": False,
+        }
     if pol and pol.get("extra_output_tokens"):  # the reasoning would otherwise use up the answer's reserve
         for key in ("max_tokens", "max_completion_tokens"):
             if type(out.get(key)) is int and out[key] > 0:

@@ -11,6 +11,7 @@ import argparse
 import copy
 import json
 import os
+import re
 import time
 from pathlib import Path
 
@@ -28,14 +29,16 @@ MODEL = "qwen3.8:27b-q8_0"
 
 
 def selected_profile(effort):
+    if effort == "none":
+        return BASE + "-nothink-trial"
     if effort not in EFFORTS:
         raise Refused("REASONING_COMPARISON_EFFORT_INVALID")
     return BASE if effort == "xhigh" else BASE + "-" + effort + "-trial"
 
 
-def comparable_profiles():
+def comparable_profiles(efforts=EFFORTS):
     """Only the two actual effort controls and non-execution metadata may differ."""
-    found = {effort: profile.load(selected_profile(effort)) for effort in EFFORTS}
+    found = {effort: profile.load(selected_profile(effort)) for effort in efforts}
     normalized = {}
     for effort, original in found.items():
         p = copy.deepcopy(original)
@@ -43,12 +46,14 @@ def comparable_profiles():
                 or p["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"] != "f16"
                 or int(p["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]) != 262144
                 or p["runtime"]["llama_server"]["slots"] != 1
-                or p["runtime"]["llama_server"]["reasoning_effort"] != effort
+                or p["runtime"]["llama_server"].get("reasoning_effort") != (None if effort == "none" else effort)
+                or p["runtime"]["llama_server"].get("reasoning") != ("off" if effort == "none" else "on")
                 or p["gateway"]["reasoning"][MODEL]["effort"] != effort):
             raise Refused("REASONING_COMPARISON_EFFECTIVE_CONTROLS_CHANGED", effort)
         for key in ("id", "status", "description", "_path", "_sha256"):
             p.pop(key, None)
         p["runtime"]["llama_server"]["reasoning_effort"] = "CONTROLLED_FACTOR"
+        p["runtime"]["llama_server"]["reasoning"] = "CONTROLLED_FACTOR"
         p["gateway"]["reasoning"][MODEL]["effort"] = "CONTROLLED_FACTOR"
         normalized[effort] = p
     if any(p != normalized["xhigh"] for p in normalized.values()):
@@ -83,12 +88,29 @@ def validate_template_preflight(ref, model_digest):
     return capabilities
 
 
-def prepare(root, *, compiler, capabilities_ref):
+def prepare(root, *, compiler, capabilities_ref, non_thinking_ref=None, campaign_prefix="q38-reasoning"):
     """Freeze actual cases/measurements and preregistration; native results remain NOT_RUN."""
-    profiles = comparable_profiles()
+    if not isinstance(campaign_prefix, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", campaign_prefix):
+        raise Refused("REASONING_COMPARISON_CAMPAIGN_PREFIX_INVALID")
+    efforts = (*EFFORTS, "none") if non_thinking_ref else EFFORTS
+    profiles = comparable_profiles(efforts)
     capabilities = validate_template_preflight(
         capabilities_ref, profiles["xhigh"]["models"]["allowed"][MODEL]["digest"]
     )
+    if non_thinking_ref:
+        path = Path(non_thinking_ref["path"])
+        if path.is_symlink() or sha256_file(path) != non_thinking_ref["sha256"]:
+            raise Refused("NON_THINKING_TEMPLATE_PREFLIGHT_CHANGED")
+        proof = json.loads(path.read_text())
+        rows = {r.get("variant"): r for r in proof.get("rows", [])}
+        row = rows.get("thinking_disabled", {})
+        if (proof.get("test_kind") != "NATIVE_TEMPLATE_RENDER_ONLY_NO_INFERENCE"
+                or proof.get("template_sha256") != capabilities["template_sha256"]
+                or proof.get("model_generation_requests") != 0
+                or proof.get("configuration_changed") is not False
+                or row.get("http_status") != 200 or row.get("ends_closed_empty_thinking") is not True
+                or row.get("ends_open_thinking") is not False):
+            raise Refused("NON_THINKING_TEMPLATE_PREFLIGHT_INCOMPATIBLE")
     root = Path(root).resolve()
     if root.exists():
         raise Refused("REASONING_COMPARISON_ROOT_ALREADY_EXISTS")
@@ -98,9 +120,9 @@ def prepare(root, *, compiler, capabilities_ref):
     try:
         os.environ["FORGE_STATE_DIR"] = str(root / "preparation-state")
         os.environ["FORGE_EVENTS_DIR"] = str(root / "preparation-events")
-        for effort in EFFORTS:
+        for effort in efforts:
             prepared[effort] = inputs.prepare(
-                root / effort, compiler=compiler, campaign_id="q38-reasoning-" + effort,
+                root / effort, compiler=compiler, campaign_id=campaign_prefix + "-" + effort,
                 authorization_ref="AUTH-014-REASONING-" + effort.upper() + "-DRAFT",
                 model=MODEL, profile=selected_profile(effort),
                 qualification_job_tokens=262144, stage="targeted",
@@ -131,6 +153,7 @@ def prepare(root, *, compiler, capabilities_ref):
                     "skill_sha256": skill("afo-recovery-planner")["sha256"],
                     "case_catalogue_sha256": baseline["template_sha256"],
                     "native_template_preflight_ref": capabilities_ref,
+                    **({"non_thinking_template_preflight_ref": non_thinking_ref} if non_thinking_ref else {}),
                     "native_chat_template_sha256": capabilities["template_sha256"],
                     "administrative_order_and_artifact_bindings": "distinct per trial; never normalized out of admission"},
         "oracles": {"checker_sha256": digest(inputs.CHECKER), "contract_sha256": digest(inputs.CONTRACT),
@@ -148,7 +171,9 @@ def prepare(root, *, compiler, capabilities_ref):
                         "wall_time": "gateway latency plus job/retry/load time separately",
                         "decode_rate": "native backend output tokens / native eval seconds; UNKNOWN if uncorrelated",
                         "reasoning_tokens": "included in reported completion tokens; content not collected",
-                        "thermal_order": "serial, baseline xhigh first; same case order; temperature/power recorded",
+                        "thermal_order": ("serial none, medium, xhigh; same case order; temperature/power recorded"
+                                          if non_thinking_ref else
+                                          "serial, baseline xhigh first; same case order; temperature/power recorded"),
                         "effective_effort": "verify gateway-transformed request and actual native settings",
                         "artifact_policy": "designated proposals only; no raw prompts or hidden reasoning in public results"},
         "quality_gates": {"expected_outcomes": "existing targeted catalogue",
@@ -162,10 +187,10 @@ def prepare(root, *, compiler, capabilities_ref):
                  "precision": "Q8_0", "reasoning": effort, "schema_mode": "json_schema",
                  "adapter_revision": revision, "context_tokens": 262144,
                  "sampling": {"temperature": 0}, "task_class": "PROTOCOL_DIAGNOSIS"}
-        for effort in EFFORTS
+        for effort in efforts
     }
     plans = {}
-    for effort in ("medium",):
+    for effort in efforts[1:]:
         plan = {"schema": "forge-c/configuration-comparison-plan/1", "comparison_factor": "reasoning",
                 "baseline_identity": identities["xhigh"], "candidate_identity": identities[effort],
                 "case_ids": cases, "controls": refs, "registered_at": time.time()}
@@ -183,18 +208,20 @@ def prepare(root, *, compiler, capabilities_ref):
         )
     report = {"schema": "forge-c/reasoning-comparison-preparation/1", "status": "PREPARED_NOT_RUN",
               "source_revision": revision, "source_dirty": baseline["generator_revision"]["dirty"],
-              "requested_efforts": ["xhigh", "high", "medium"], "efforts": list(EFFORTS),
+              "requested_efforts": ["xhigh", "high", "medium", *(["none"] if non_thinking_ref else [])], "efforts": list(efforts),
               "unsupported": {"high": {"status": "UNSUPPORTED_MODEL_TEMPLATE", "native_preflight_ref": capabilities_ref,
                                         "model_requests": 0, "speed": None, "silently_mapped": False}},
               "case_count_per_effort": len(cases), "case_ids": cases,
               "native_host": "omniverse2", "start_requires_current_ll_native_quiescent_and_resources_released": True,
               "inputs": {e: {"path": str(root / e / "inputs.json"),
-                             "sha256": sha256_file(root / e / "inputs.json")} for e in EFFORTS},
+                             "sha256": sha256_file(root / e / "inputs.json")} for e in efforts},
               "manifest_sha256": {e: digest(m) for e, m in manifests.items()},
               "signed_grants_created": 0, "mission_or_job_created": False, "model_requests": 0,
-              "product_pipeline_comparison": "NOT_RUN; separate author-medium/inspector-xhigh evaluation; high unsupported by pinned template",
+              "product_pipeline_comparison": ("NOT_RUN; separate author-medium/inspector-xhigh evaluation; "
+                                              "high unsupported by pinned template"),
               "mtp_comparison": "NEXT_SEPARATE_FACTOR; no simultaneous reasoning/MTP change",
-              "native_blockers": ["CURRENT_LL_QUIESCENCE_NOT_OBSERVED_BY_THIS_PREPARER", "NATIVE_CLEAN_REVISION_PREPARATION_REQUIRED",
+              "native_blockers": ["CURRENT_LL_QUIESCENCE_NOT_OBSERVED_BY_THIS_PREPARER",
+                                  "NATIVE_CLEAN_REVISION_PREPARATION_REQUIRED",
                                   "EXACT_FINITE_CAMPAIGN_SIGNING_AND_PROVISIONING_REQUIRED",
                                   "INDEPENDENT_NATIVE_AUDIT_AND_OBSERVED_SETTINGS_NOT_RUN"]}
     _put(root / "preparation.json", report)
@@ -206,8 +233,14 @@ def main(argv=None):
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--compiler", required=True, type=Path)
     p.add_argument("--capabilities", required=True, type=Path, help="actual native zero-inference template preflight JSON")
+    p.add_argument("--non-thinking-proof", type=Path, help="include explicitly disabled thinking after native render proof")
+    p.add_argument("--campaign-prefix", default="q38-reasoning")
     args = p.parse_args(argv)
-    result = prepare(args.out, compiler=args.compiler, capabilities_ref={"path": str(args.capabilities.resolve()), "sha256": sha256_file(args.capabilities)})
+    result = prepare(args.out, compiler=args.compiler,
+                     capabilities_ref={"path": str(args.capabilities.resolve()), "sha256": sha256_file(args.capabilities)},
+                     non_thinking_ref=({"path": str(args.non_thinking_proof.resolve()),
+                                        "sha256": sha256_file(args.non_thinking_proof)} if args.non_thinking_proof else None),
+                     campaign_prefix=args.campaign_prefix)
     print(json.dumps(result, sort_keys=True))
     return 0
 
