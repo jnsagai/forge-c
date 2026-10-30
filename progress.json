@@ -1,27 +1,16 @@
 {
-  "captured_utc": "2026-10-30T15:48:15.215805Z",
+  "captured_utc": "2026-10-30T15:52:11.328461Z",
   "deadline_epoch": 1793389200.0,
-  "source_revision": "7fbefc40e0912e15aabeb70ca6b85932085b1b27",
+  "source_revision": "20dccfcbd9ecea639d1d0b0a80deb9a8d920af71",
   "intent": {
-    "mode": "PAUSED",
-    "epoch": 105
+    "mode": "RUNNING",
+    "epoch": 106
   },
   "orders": [
     {
-      "order_id": "afo-c9331219520d5237",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-c9331219520d5237-a1",
-          "seq": 1,
-          "state": "FAILED"
-        },
-        {
-          "attempt_id": "afo-c9331219520d5237-a2",
-          "seq": 2,
-          "state": "CANCELLED"
-        }
-      ]
+      "order_id": "afo-2cb9c4fd0989c741",
+      "state": "QUEUED",
+      "attempts": []
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
