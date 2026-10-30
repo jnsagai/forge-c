@@ -1,0 +1,33 @@
+{
+  "cause": "OWNER_ABORT_FOR_SPEED_BENCHMARK",
+  "native_terminal": "FAILED_AFTER_OWNER_STOP",
+  "operator_epoch": 73,
+  "reconcile": [
+    {
+      "order_id": "afo-f3ad027406784ef7",
+      "action": "validating",
+      "run": "FAILED"
+    }
+  ],
+  "package": {
+    "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-f3ad027406784ef7-a1/forge-c-WO-AFO-f3ad027406784ef7-a1-review.zip",
+    "archive_sha256": "a9d94406e768259955c501fc6d33fed0354b8c48fe3837124707f2986db5e8c0",
+    "package_status": "BLOCKED",
+    "gap_count": 49
+  },
+  "archive_integrity": {
+    "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-f3ad027406784ef7-a1/forge-c-WO-AFO-f3ad027406784ef7-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "validation": [
+    {
+      "order_id": "afo-f3ad027406784ef7",
+      "action": "BLOCKED",
+      "archive_sha256": "a9d94406e768259955c501fc6d33fed0354b8c48fe3837124707f2986db5e8c0"
+    }
+  ],
+  "order_state": "BLOCKED",
+  "model_requests": 0,
+  "product_accepted": false
+}

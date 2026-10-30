@@ -1,6 +1,47 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 08:57UTC: second author return live; combined future source37c0 prepared
+## Latest state — owner abort saved; model-speed pilot active (30 October, 09:29 UTC)
+
+**Owner changed priority: abort LL, save all results, focus on model speed.** This
+supersedes every older “finish LL first” instruction below. HAL must not be submitted.
+Product order afo-f3ad027406784ef7 is BLOCKED after owner shutdown; native
+01M65TR9K7DRDTM8AX8ZTP445G FAILED after stop, execution QUIESCENT/RELEASED,
+all 36 requests QUIESCENT. Sealed BLOCKED package integrity PASS, copied locally.
+Complete private workspace/Git/packet/visit/ledger snapshot: 835 members, all hashes
+verified on loop10. Historical RCC budgets, failed runs, uncertainty and existing
+13:52:52 UTC deadline remain unchanged. No clean product/repair proof.
+
+Runtime is now qualified **37c0c354629312a70eb6a199989477036bb674d9**, activated
+for benchmark-only scopes through delegated agent signing. Native isolated cohorts
+96 PASS and 92 PASS (overlap), no skips/errors/failures, no model calls. RAM temporary
+fixtures shortened journal waits; persisted JUnit/provenance on project storage.
+The cancelled disk-backed attempt is preserved. STOPPED73 was maintained during checks.
+
+Benchmark O=/mnt/data/forge-c/production-local-014/deployment/q38-reasoning-speed-20261030-v1.
+One inference, Q8/f16/MTP3/262144, xhigh first then medium, 8 frozen diagnosis cases each.
+High truly UNSUPPORTED, never alias it. Exact finite new missions/grants; old RCC mission
+untouched. Current intent RUNNING76 after a setup pause75. Two initial xhigh cases were
+rejected pre-inference because the host driver called qualification.step. Preserve those
+FAILED_PROTOCOL rows/costs. Corrected driver only enrolls/provisions/records; isolated
+Conductor exclusively dispatches/polls. First actual native job
+01M6626QG8D2KVYX691Z3CTDWQ is RUNNING. No measured winner yet.
+
+Local A3/run-q38-reasoning-speed.py runs remotely via SSH; current long exec session76200,
+stdout q38-reasoning-speed-xhigh-live-v3.log. Do not run a second driver concurrently.
+For progress read O/xhigh/progress.json; metrics and independent audit references accrue
+under O/xhigh/metrics. First two setup-failed cases remain in the denominator.
+After xhigh completion and actual request/native quiescence, use the prepared
+activate-q38-reasoning-speed.py --effort medium --epoch 76, then the same finite
+run-q38-reasoning-speed.py --effort medium. Activation fences newer intent and requires
+all resources quiet; it pauses, retires the exact provider, updates the profile/policy,
+then starts a truthfully captured medium provider. No product retry. Do not silently
+renew authority after 13:52:52 UTC. MTP settings are the next separate factor.
+
+[Abort receipts, local inspection paths, exact native tests and executable tools](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+Formal30/58 unchanged; no task newly complete; product/role/learning/availability claims
+remain separate. Medium speed and MTP-factor comparison are still NOT_RUN at this checkpoint.
+
+## Historical checkpoint — superseded 08:57UTC state — 08:57UTC: second author return live; combined future source37c0 prepared
 
 Owner still requires **finish current LL, then reasoning/MTP comparison before HAL**.
 No stop command was sent after the superseded brief stop request. Runtime remains

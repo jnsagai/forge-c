@@ -1,3 +1,17 @@
+# Latest operational checkpoint: owner abort and speed pilot, 30 October 2026
+
+Owner-aborted LL is saved as a sealed BLOCKED package plus complete private local
+engineering/accounting snapshot (835 verified members). Native code37c0c35 passed
+96 reasoning/gateway and 92 context/workflow checks on Omniverse2; overlapping
+cohorts, no model calls, no failure/error/skip. Benchmark-only xhigh/medium missions
+are separately signed and finite; first two xhigh trials had pre-inference host
+isolation refusals, preserved. Corrected driver delegates all dispatch/poll to the
+existing isolated Conductor. Actual xhigh native generation is running; medium,
+MTP-factor comparison and a speed winner remain NOT_RUN at this checkpoint.
+[Commands, JUnit, receipts, private copy paths and limits](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+No task newly complete; formal30/58 unchanged. Product/learning/availability remain
+unproven. The historical record below is retained and superseded by this checkpoint.
+
 # Implementation and qualification status
 ## Latest prospective C-notation correction — 2026-10-30 08:57UTC
 
