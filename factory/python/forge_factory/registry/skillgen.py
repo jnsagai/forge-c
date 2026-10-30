@@ -57,6 +57,15 @@ PHASE_EXTRA = {
     "SWE.5": ["Report UNSUPPORTED when no target/simulator MCP is available; never fabricate target results."],
     "SWE.6": ["Verify against every SWE.1 requirement; list untested requirements as issues."],
 }
+PHASE_EXTRA["SWE.5"].append("""If the input manifest declares `simulation_performance`, also author its bound `test_source` in the existing
+   target-test output directory. Include `forge_performance_calls.h` and the usual mailbox harness. For authored
+   LL, call each public API through `forge_measure_<API>` with the original parameters/return type; for authored
+   HAL, call the public HAL functions directly. Use valid bounded inputs and setup from the requirements and
+   declared target model, with a functional TCHECK. `run_renode` generates build-only declarations/wrappers and
+   measures every scoped API's completed calls. Missing/unsupported scope, absent calls or excess measured cost
+   blocks acceptance; do not invent an allocation or a timing TCHECK. These measurements describe the pinned
+   simulation only, never physical hardware WCET. Keep all ordinary functional/integration tests.""")
+
 ROLE_SPECIFIC = {
     "intake-analyst": ["Inventory input completeness (HSI, manuals, errata, safety allocation, profile).",
                        "Missing authoritative input → BLOCKED with the exact missing item IDs."],

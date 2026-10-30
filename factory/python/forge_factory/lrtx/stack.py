@@ -58,6 +58,7 @@ def envmap(s: dict) -> dict[str, str]:
     existing deployment's forge-env.sh)."""
     r, p = s["root"], s["ports"]
     fabro_bin = os.environ.get("FORGE_FABRO_BIN") or str(Path.home() / ".fabro/bin/fabro")  # shared binary, read-only
+    optional_tools = [r / "toolchains" / name for name in ("plantuml", "renode/renode_1.17.0-portable")]
     env = {
         "FORGE_LRTX_ROOT": str(r),
         "FORGE_LRTX_PROFILE": s["profile"]["id"],
@@ -83,7 +84,8 @@ def envmap(s: dict) -> dict[str, str]:
         "LANG": os.environ.get("LANG", "C.UTF-8"),
         "TERM": "dumb",
         "PATH": ":".join(
-            [str(r / "venv/bin"), str(r / "toolchains/LLVM-19.1.7-Linux-X64/bin"), SYSTEM_PATH,
+            [str(r / "venv/bin"), str(r / "toolchains/LLVM-19.1.7-Linux-X64/bin"),
+             *[str(path) for path in optional_tools if path.is_dir()], SYSTEM_PATH,
              str(r / "toolchains/formal/bin"), str(r / "toolchains/sysroot/usr/bin")]
         ),
     }
