@@ -1,3 +1,16 @@
+# Non-thinking comparison preparation — 30 October2026,11:45UTC
+
+Prospective runtime12e601e4f53ab71b6d184ae19379faa1dd8f6e97, NOT_DEPLOYED.
+Owner-requested enable_thinking=false is profile-enforced, server reasoning off;
+Q8/f16/MTP3/context262144/one inference/output ceiling34816 remain fixed.
+Exact-source73PASS, no failure/error/skip, clean CLI24 frozen reference-backed inputs,
+zero model/grant/job/mission/service effects. Native CPU checks queued after MTP,
+then native preparation; no native model/quality/product/learning benefit claimed.
+Old017/cc6 waiters were superseded before native testing, not passed. All history
+and expiry13:52:52UTC preserved. Formal30/58 unchanged, no new task complete.
+[Exact evidence and tooling](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+Historical checkpoints below remain preserved.
+
 # Prospective diagnosis context correction — 30 October 2026, 11:15 UTC
 
 Source017e68da015390c60abb8ca46b7dfdd40a0afa79 is NOT_DEPLOYED. Global requirement/

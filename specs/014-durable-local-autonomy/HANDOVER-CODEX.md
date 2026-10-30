@@ -1,5 +1,42 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest state — 11:45UTC: owner-requested non-thinking trial prepared
+
+Owner explicitly requested enable_thinking=false. Prospective source
+**12e601e4f53ab71b6d184ae19379faa1dd8f6e97**, NOT_DEPLOYED: opt-in non-thinking
+profile, explicit false template control enforced by the gateway, native reasoning
+off; Q8/f16/MTP3/262144/one inference/output ceiling34816 preserved. Optional existing
+reasoning preparer adds none with native render proof and unique fresh grant/mission/
+job identities. Diagnosis-context correction is shared across all new cohorts.
+Exact-source local73PASS/no failure/error/skip; clean CLI24 reference-backed inputs,
+no grant/job/mission/model/service effects. Ruff/diff pass. Native tests/model benefit
+NOT_RUN at this checkpoint. No task IDs newly closed; formal30/58 unchanged.
+
+Live MTP runtime stilla9b2ddf, RUNNING86, coordinatorMainPID3297794 confirmed active.
+Draft3median63.44/draft256.94/draft465.91; draft6 still running. Do not modify the
+three signed MTP activation/driver/continuation tools or dispatch a competing GPU job.
+The read-only result exporter was extended to include frozen packet JSON, preserving
+all experiment inputs/verdicts; automatic local hash verification remains active.
+
+The old017 context-only and prospectivecc6 QA waiters were replaced before testing.
+No native passes are claimed for them. Corrected owner-requested source12e601e4 is now
+queued behind MTP via forge-non-thinking-qa-after-mtp-12e-v1.service/MainPID3358815,
+then native preparation via forge-non-thinking-prepare-after-qa-12e-v1/MainPID3358820.
+The window requires all frozen MTP completion receipts, true quiescence and unchanged
+RUNNING86; pause87, bounded isolated CPU verifier, then resume only own unchanged
+pause88. No source activation/model call by these two tools. Newer intent preserved.
+Local read-only QA collectorPID205980; revalidate argv before signalling.
+
+Next: native QA, native24-case preparation, exact finite delegated signing, then
+none→medium→xhigh serially, eight exposed cases each. Existing13:52:52UTC expiry is
+unchanged; no historical grant/mission reset and no silent renewal. LL/HAL remain
+owner-aborted/deferred until speed investigation is finished. Do not treat new
+context+reasoning results as an isolated comparison with old-source scores, or
+previously exposed cases as fresh qualification holdouts/lessons.
+[Source, exact test commands/JUnit, clean CLI and executable native tooling](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+
+## Historical checkpoint — superseded context-only preparation
+
 ## Latest state — 11:15UTC: MTP4 live; generic context fix local-tested, NOT_DEPLOYED
 
 Owner priority remains model-speed benchmarking; **do not restart LL/HAL**.

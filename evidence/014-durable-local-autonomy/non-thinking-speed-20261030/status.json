@@ -1,0 +1,24 @@
+{
+  "source_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "local_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "73",
+    "time": "9.425",
+    "timestamp": "2026-10-30T11:42:40.808562+00:00",
+    "hostname": "master"
+  },
+  "preparation": "PASS_24_COMPILED_REFERENCE_BACKED_INPUTS_ZERO_MODEL_AUTH_JOB_MISSION_EFFECTS",
+  "native_qualification": "QUEUED_AFTER_MTP_NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "model_requests": 0,
+  "model_speed_quality": "NOT_RUN",
+  "LL_HAL": "OWNER_ABORTED_DEFERRED",
+  "feature_tasks_complete": "30/58_UNCHANGED",
+  "native_qa_unit": "forge-non-thinking-qa-after-mtp-12e-v1.service",
+  "native_qa_main_pid": 3358815,
+  "native_preparation_unit": "forge-non-thinking-prepare-after-qa-12e-v1.service",
+  "native_preparation_main_pid": 3358820
+}
