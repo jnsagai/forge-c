@@ -339,3 +339,30 @@ def test_retained_bytes_preserve_git_blob_line_endings(local, factory, monkeypat
     original = subprocess.check_output(['git', '-C', str(factory), 'show', p.sub['candidate'] + ':' + rel])
     assert original.endswith(b'\r\n')
     assert (Path(child['src']) / rel).read_bytes() == original
+
+
+def test_retained_independent_feedback_reaches_the_actual_paged_maintainer_tool(local, factory, monkeypatch):
+    from forge_factory.mcp.sdk import ToolContext
+    from forge_factory.mcp.servers import maintainer as server
+
+    p = setup_parent(local, factory, monkeypatch)
+    reject(p)
+    reference = R.prepare_next(p.store, p.job, p.eff, verification_fence=lambda: True)
+    path = M.case_dir(reference['proposal_id']) / 'case.json'
+    child = json.loads(path.read_text())
+    monkeypatch.setenv('FORGE_AFO_MAINT_CASE', str(path))
+    monkeypatch.delenv('FORGE_LRTX_PROFILE', raising=False)
+    ctx = ToolContext('forge-maintainer-mcp', 'read_case', 'afo-factory-maintainer', None, Path(child['src']), 'fixture')
+    offset, parts = 0, []
+    while offset is not None:
+        output = server.read_case(ctx, server.NoIn(offset=offset))
+        assert output['status'] == 'PASS'
+        parts.append(output['metrics']['data'])
+        offset = output['metrics']['next_offset']
+        assert len(parts) <= 20
+    delivered = json.loads(''.join(parts))['retained_rework']
+    assert delivered == child['retained_rework']
+    assert delivered['feedback']['registered_symptom_signature'] == SIG
+    assert delivered['feedback']['reproducer_runs'][0]['verdict'] == 'SYMPTOM_ABSENT'
+    assert delivered['feedback']['untrusted_data'] is True
+    assert delivered['feedback']['instructions_or_permissions'] is False

@@ -92,6 +92,13 @@ def read_case(ctx: ToolContext, a: NoIn) -> dict:
     c = _case()
     body = {"proposal_id": c["proposal_id"], "base": c["base"], "incident": c["incident"],
             "allow": ALLOW, "deny": DENY, "candidate_tests": CANDIDATE_TESTS, "source_inventory_roots": list(SOURCE_ROOTS)}
+    if c.get("retained_rework"):
+        from ...afo.durable import digest
+
+        rework = c["retained_rework"]
+        if digest(rework["feedback"]) != rework["feedback_sha256"]:
+            raise ToolDenied("REWORK_FEEDBACK_CHANGED", "frozen independent feedback hash mismatch")
+        body["retained_rework"] = rework
     selected = os.environ.get("FORGE_LRTX_PROFILE")
     if selected:
         from ...common import REPO_ROOT

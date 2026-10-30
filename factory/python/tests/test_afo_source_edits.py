@@ -224,3 +224,18 @@ def test_inventory_pagination_is_complete_and_hash_bound(case, monkeypatch):
     raw = ''.join(chunks)
     assert hashes == {sha(raw.encode())}
     assert json.loads(raw)['count'] == 8 and len(chunks) > 1
+
+
+def test_corrupt_retained_feedback_is_refused_instead_of_silently_delivered(case, monkeypatch):
+    import json
+
+    from forge_factory.mcp.sdk import ToolContext, ToolDenied
+
+    case['retained_rework'] = {'feedback': {'evidence': 'changed'}, 'feedback_sha256': '0' * 64}
+    path = M.case_dir(case['proposal_id']) / 'case.json'
+    path.chmod(0o600)
+    path.write_text(json.dumps(case))
+    monkeypatch.setenv('FORGE_AFO_MAINT_CASE', str(path))
+    ctx = ToolContext('forge-maintainer-mcp', 'read_case', 'afo-factory-maintainer', None, Path(case['src']), 'fixture')
+    with pytest.raises(ToolDenied, match='REWORK_FEEDBACK_CHANGED'):
+        server.read_case(ctx, server.NoIn())
