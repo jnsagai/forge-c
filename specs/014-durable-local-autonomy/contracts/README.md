@@ -82,6 +82,30 @@ allowances/accounting remain intact. This additional runtime interface does not
 change the six versioned qualification schemas or their structural fixtures.
 No amendment or grant is created by specification validation.
 
+## Explicit operator capacity amendment (2026-10-30 implementation)
+
+`afo mission-amend-capacity FILE --reason TEXT` is an authenticated operator-only
+CLI command, never an agent MCP operation. `afo.mission_capacity.SCHEMA` defines
+the exact input: mission and complete current snapshot hash, six finite non-time
+ceilings, exact signed authorization reference/request, operator intent epoch and
+reason. The grant must bind `mission-capacity-amendment-014:` plus the canonical
+document hash. Ordinary execution authority cannot amend capacity.
+
+This implements the owner's explicit high-allowance request while preserving the
+same immutable initial mission, lineage, expenditure, uncertainty and original
+limits. At most eight append-only amendments are stored in the existing independent
+decision table. Ceilings must increase monotonically within current policy;
+the protocol correction ceiling cannot change. An exhausted non-time allowance
+or unbounded historical usage prevents amendment. The old deadline is unchanged:
+a separate exact signed time-window decision is still required where expired.
+
+The command checks native quiescence and holds the existing operator intent lock
+through its database transaction. A newer pause/stop/epoch fences application.
+No order is reopened, job admitted or grant renewed by this operation; historical
+receipt replay has no effects or present dispatch authority. Existing admission,
+capability, resource and quality gates remain mandatory. Model-free factory
+supervision continues when the affected mission remains blocked.
+
 
 ## Optional bounded maintenance feedback
 

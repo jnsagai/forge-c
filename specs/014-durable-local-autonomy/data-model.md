@@ -130,6 +130,20 @@ MCP/proposals cannot call it. Each increment requires current recover_workorder
 authority specifically signed over mission-deadline-extension-014:<request digest>.
 Dispatch and any new order still need normal independent current authorization.
 
+### Explicit prospective capacity — 2026-10-30
+
+The existing independent-decision table also stores MISSION_CAPACITY_AMENDMENT
+receipts, independently signed over exact pre-amendment snapshot and ceilings.
+The original mission row, lineage and all charged counters remain immutable.
+MissionLedger validates at most eight monotonic amendments when projecting the
+effective non-time ceilings. It retains initial_limits, initial_authorization_ref
+and capacity_amendments beside any separate deadline_extensions. Capacity cannot
+change time, protocol correction limits or exhausted non-time allowances.
+Historical uncertainty remains visible. Only authenticated operator CLI can append
+these receipts under current grant/policy and the operator epoch lock; no agent,
+recovery loop or new order ID can increase allowances. This is an explicit owner
+administrative decision, not autonomous mission renewal or engineering success.
+
 ### Owner-selected QM development — 2026-10-29
 
 The owner explicitly supersedes the earlier ASPICE_ONLY classification with

@@ -76,9 +76,10 @@ class MissionLedger:
         if not row:
             raise Refused("MISSION_NOT_REGISTERED")
         m = json.loads(row[0])
+        from .mission_capacity import effective as capacity_effective
         from .mission_deadline import effective
 
-        m = effective(c, m)
+        m = capacity_effective(c, m, effective(c, m))
         ex = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_mission_executions WHERE mission_id=?", (mission_id,))]
         req = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_request_ledger WHERE mission_id=?", (mission_id,))]
         # An imported native job and its observed requests must not both charge the same tokens.
