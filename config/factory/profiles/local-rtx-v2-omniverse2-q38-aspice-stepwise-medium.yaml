@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-aspice-stepwise-medium
-version: 1
+version: 2
 work_order_purpose: ASPICE_ONLY
 status: EXPERIMENT_ONLY_NOT_QUALIFIED
 description: 'ASPICE-only product experiment: Qwen Q8/f16/MTP3/262144, medium, blocking
@@ -45,6 +45,9 @@ runtime:
     microbatch_tokens: 512
 structured:
   coherent_scope_groups: true
+  complete_scope_sections: true
+  author_max_calls_by_phase:
+    SWE.1: 256
   phases_by_layer:
     LL:
     - SWE.1

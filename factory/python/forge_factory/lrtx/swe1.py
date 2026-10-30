@@ -88,8 +88,20 @@ def inventory(ws: Path) -> dict:
 
     ws = Path(ws)
     prof, pfx, secs = profile(ws), register_prefix(ws), _section_files(ws)
+    manifest = _manifest(ws)
+    local = manifest.get("local_profile") or {}
+    structured = {}
+    if local.get("id"):
+        from .profile import load
+
+        structured = load(local["id"]).get("structured") or {}
+    selected = list(prof["rm"]["key_sections"])
+    if structured.get("complete_scope_sections") is True:
+        from .obligations import scope_sections
+
+        selected = scope_sections(manifest["scope"], prof["rm"]["doc"], selected)
     regs, missing = [], []
-    for num in prof["rm"]["key_sections"]:
+    for num in selected:
         s = secs.get(num)
         if s is None:
             missing.append(num)
@@ -110,15 +122,13 @@ def inventory(ws: Path) -> dict:
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
     inv = {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
            "generated_at": utc_now()}
-    local = _manifest(ws).get("local_profile") or {}
-    if local.get("id"):
-        from .profile import load
+    if structured.get("complete_scope_sections") is True:
+        inv["scope_sections"] = {"document": prof["rm"]["doc"], "catalog_seeds": prof["rm"]["key_sections"],
+                                 "required_sections": selected, "basis": "LITERAL_OWNER_REFERENCES_AND_CATALOG"}
+    if structured.get("coherent_scope_groups") is True:
+        from .obligations import scope_field_sets
 
-        structured = load(local["id"]).get("structured") or {}
-        if structured.get("coherent_scope_groups") is True:
-            from .obligations import scope_field_sets
-
-            inv["coherent_field_sets"] = scope_field_sets(_manifest(ws)["scope"])
+        inv["coherent_field_sets"] = scope_field_sets(manifest["scope"])
     return inv
 
 
@@ -682,7 +692,7 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap_p = ws / ".forge-run/lrtx/SWE.1/assembly.json"
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: rework_findings(ws, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, "SWE.1", role.max_turns, max_calls), time_budget_s)
     try:
         return _visit(ws, model, budget, route_findings(findings, amap) if findings else {})
     except V.Continue as c:
@@ -712,13 +722,15 @@ def _repair_rounds(ws: Path, model: str, results: list[tuple[dict, dict]], budge
 
 def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> dict:
     from ..assurance.hardware import index
+    from .obligations import CoherentScopeRefused
 
-    inv = inventory(ws)
+    try:
+        inv = inventory(ws)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     S.record(ws, "SWE.1/inventory.json", inv)
     if inv["missing_sections"]:
         return reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
-    from .obligations import CoherentScopeRefused
-
     try:
         obligations = groups(inv)
     except CoherentScopeRefused as exc:

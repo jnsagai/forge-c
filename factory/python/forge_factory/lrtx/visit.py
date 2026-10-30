@@ -26,6 +26,28 @@ def _ckpt(ws: Path, phase: str, task: str) -> Path:
     return Path(ws) / ".forge-run/lrtx" / phase / "packets" / (task.replace(":", "__") + ".json")
 
 
+def author_call_limit(ws: Path, phase: str, default: int, explicit: int | None = None) -> int:
+    """A pinned profile may size this existing visit for more coherent obligations.
+
+    The request/job/mission admission limits still apply independently. This does
+    not change the role registry, individual context, inference slots or retries.
+    """
+    manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    selected = manifest.get("local_profile") or {}
+    limits = {}
+    if selected.get("id"):
+        from .profile import load
+
+        limits = (load(selected["id"]).get("structured") or {}).get("author_max_calls_by_phase") or {}
+    if (not isinstance(limits, dict) or any(k not in {f"SWE.{n}" for n in range(1, 7)}
+            or type(v) is not int or not 1 <= v <= 4096 for k, v in limits.items())):
+        raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
+    value = explicit if explicit is not None else limits.get(phase, default)
+    if type(value) is not int or not 1 <= value <= 4096:
+        raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
+    return value
+
+
 class Continue(Exception):  # noqa: N818 - control flow: the visit's time box is used up, resume in a new node
     """Fabro 0.362 ends a command node with no activity for 1800 s (probes 2026-10-21; stdout does not count). A visit
     therefore stops before a model call that could cross its time box and continues in the next node execution."""
