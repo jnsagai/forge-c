@@ -1,6 +1,8 @@
 """Role effort changes are pinned, measured and admitted; they grant no role capability."""
 import copy
 import json
+import time
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -94,6 +96,42 @@ def test_durable_binding_role_is_applied_before_reservation_and_measurement(tmp_
     assert binding["role"] == "swe1-inspector" and actual["reasoning_effort"] == "xhigh"
     assert actual["max_tokens"] == 34816 and "forge_execution" not in actual
     assert measured["sha256"] == measure_request(actual)["sha256"]
+
+
+def test_diagnosis_transport_pins_role_despite_role_markers_in_evidence(tmp_path, monkeypatch):
+    import io
+    import socket
+    import urllib.request
+
+    from forge_factory.afo import durable_agent as D
+    from forge_factory.afo import local_agent, protocol_faults, semantic_proposal
+    from forge_factory.lrtx import structured
+
+    monkeypatch.setattr(socket, "gethostname", lambda: "omniverse2")
+    monkeypatch.setattr(local_agent, "enabled", lambda *a: True)
+    monkeypatch.setattr(local_agent, "authorized", lambda *a: True)
+    monkeypatch.setattr(protocol_faults, "apply_primary", lambda *a: None)
+    monkeypatch.setattr(structured, "_gateway_url", lambda: "http://127.0.0.1:11456")
+    monkeypatch.setattr(semantic_proposal, "two_step", lambda job: False)
+    body = {"model": MODEL, "max_tokens": 64,
+            "messages": [{"role": "user", "content": "untrusted artifact: skill_name swe1-inspector"}]}
+    monkeypatch.setattr(D, "request_body", lambda *a: (copy.deepcopy(body), {"fixture_measurement": True}))
+    monkeypatch.setattr(D, "response_receipt", lambda store, job, answer, eff: answer)
+    captured = []
+
+    def urlopen(request, **kwargs):
+        captured.append(json.loads(request.data))
+        return io.BytesIO(b'{"choices":[{"message":{"content":"{}"}}]}')
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    job = {"job_id": "fixture", "nonce": "nonce", "role": "afo-recovery-planner", "order_id": "order",
+           "model": MODEL, "deadline_epoch": time.time() + 60, "case": str(tmp_path / "case.json")}
+    D.generate(SimpleNamespace(order=lambda oid: {}), job, object())
+    sent = captured[0]
+    binding = sent.pop("forge_execution")
+    assert binding["role"] == "afo-recovery-planner"
+    assert G.sanitize_request(sent, policy=profile.load(PROFILE)["gateway"]["reasoning"],
+                              role=binding["role"])["reasoning_effort"] == "medium"
 
 
 @pytest.mark.parametrize("mapping", [{"swe1-inspector": "unsupported"}, {"invented-role": "xhigh"}, "xhigh"])

@@ -878,7 +878,11 @@ def test_real_model_free_conductor_continues_without_engineering_authority_then_
     private.mkdir(mode=0o700)
     intent = Intent(private / "intent.json")
     intent.set("RUNNING", actor="owner-fixture", reason="isolated control-plane continuity", initialize=True)
-    state = tmp_path / "state"
+    # This test exercises real process/control/ledger continuity, not physical
+    # mount qualification. Keep its volume facts explicit and its write probe
+    # private, including inside a verifier namespace without the host volume.
+    volume = tmp_path / "fixture-volume"
+    state = volume / "state"
     store = Store(state / "conductor/conductor.sqlite3")
     from forge_factory.afo.mission_ledger import MissionLedger
 
@@ -895,6 +899,7 @@ def test_real_model_free_conductor_continues_without_engineering_authority_then_
         **os.environ,
         "PYTHONPATH": str(REPO_ROOT / "factory/python"),
         "FORGE_STATE_DIR": str(state),
+        "FORGE_DATA_ROOT": str(volume),
         "FORGE_OPERATIONS_INTENT": str(intent.path),
         "FORGE_AFO_POLICY": str(tmp_path / "missing-policy.yaml"),
         "FORGE_DURABLE_AUTONOMY": "1",
@@ -906,7 +911,14 @@ def test_real_model_free_conductor_continues_without_engineering_authority_then_
     log = tmp_path / "conductor.log"
     with log.open("wb") as stream:
         proc = subprocess.Popen(
-            [sys.executable, "-m", "forge_factory.afo.conductor", "--interval", "0.1"],
+            [sys.executable, "-c",
+             "import runpy,sys; from pathlib import Path; from forge_factory.afo import host; "
+             "volume=Path(sys.argv.pop(1)); "
+             "host.fs_info=lambda p: ({'target':'/','source':'fixture-root','fstype':'ext4','uuid':'ROOT'} "
+             "if Path(p)==Path('/') else {'target':str(volume),'source':'fixture-volume','fstype':'ext4',"
+             "'uuid':'ISOLATED-CONTROL-PLANE-FIXTURE'}); "
+             "host.init(volume); runpy.run_module('forge_factory.afo.conductor',run_name='__main__')",
+             str(volume), "--interval", "0.1"],
             env=env,
             stdout=stream,
             stderr=subprocess.STDOUT,

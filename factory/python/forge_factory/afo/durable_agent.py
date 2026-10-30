@@ -513,7 +513,7 @@ def generate(store, job, eff):
 
     def send(body, measured, index):
         rid = "request-" + digest([job["job_id"], job["nonce"], index])[:24]
-        body["forge_execution"] = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": rid}
+        body["forge_execution"] = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": rid, "role": job["role"]}
         request = urllib.request.Request(url, data=canonical(body), headers={"Content-Type": "application/json"})  # noqa: S310
         # Gateway owns request reservation and usage reconciliation, including crashes/disconnects.
         with urllib.request.urlopen(request, timeout=max(1, min(3600, job["deadline_epoch"] - time.time()))) as response:  # noqa: S310
