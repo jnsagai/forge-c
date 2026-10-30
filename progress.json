@@ -1,10 +1,10 @@
 {
-  "captured_utc": "2026-10-30T05:37:51.682731Z",
+  "captured_utc": "2026-10-30T05:43:03.403555Z",
   "deadline_epoch": 1793347916,
   "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
   "intent": {
-    "mode": "RUNNING",
-    "epoch": 58
+    "mode": "PAUSED",
+    "epoch": 59
   },
   "orders": [
     {
@@ -42,7 +42,7 @@
     },
     {
       "order_id": "afo-6bde501adad6a2bf",
-      "state": "RUNNING",
+      "state": "BLOCKED",
       "attempts": [
         {
           "attempt_id": "afo-6bde501adad6a2bf-a1",
@@ -57,13 +57,13 @@
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": "afo-agent-e2d3e5df3c5757358d0b1a6b",
-      "epoch": 57
+      "holder": null,
+      "epoch": 58
     },
     {
       "resource": "generation",
-      "holder": "request-ad5cdf792775fd55d38328a0",
-      "epoch": 1225
+      "holder": null,
+      "epoch": 1226
     }
   ]
 }
