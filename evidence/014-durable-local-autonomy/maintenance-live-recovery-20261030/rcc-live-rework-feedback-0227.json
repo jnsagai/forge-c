@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-30T02:26:36.137880Z",
+  "rows": [
+    {
+      "job_id": "afo-agent-433bdaaac774faf5577c758c",
+      "run_id": "01M658M4VK71P2MSD82NX9V5A0",
+      "state": "SUCCEEDED",
+      "case_sha256": "d294f3120e97778856b0065d6a22cebb2eae0c6d968fb9db9ef672739cf2fc4e",
+      "proposal_id": "mnt-7e653513a54375a5-a1",
+      "base": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+      "retained_rework": null,
+      "proposal": {
+        "seq": 3,
+        "proposal_id": "mnt-7e653513a54375a5-a1",
+        "order_id": "afo-7e653513a54375a5",
+        "status": "REJECTED",
+        "record": {
+          "authorization_ref": null,
+          "auto_deployment_allowed": false,
+          "baseline_commit": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+          "branch_ref": null,
+          "candidate_commit": "87c0922e09f84701d6ee3a7bd70a875af9983fd7",
+          "capa_id": null,
+          "changed_paths": [
+            "factory/python/forge_factory/lrtx/structured.py",
+            "factory/python/tests/afo_candidate/test_lrtx_profile_context_repro.py"
+          ],
+          "cre_promotion_id": "NOT_EVALUATED:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR",
+          "evidence_refs": [
+            "triage:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR"
+          ],
+          "outcome": "REJECTED",
+          "pr_url": null,
+          "proposal_id": "mnt-7e653513a54375a5-a1",
+          "protected_changes_count": 0,
+          "reproducer_id": "AFO-mnt-7e653513a54375a5-a1",
+          "schema_version": "1.0",
+          "source_incident_id": "afo-7e653513a54375a5",
+          "tests_ref": "local-agent:afo-agent-433bdaaac774faf5577c758c"
+        },
+        "record_sha256": "bb8658ab4677bc46b23ee43a6e7eb0e2d818dd6187cfb7ce1c618656a76e5148",
+        "recorded_utc": "2026-10-30T02:24:54.277865Z"
+      },
+      "submission": {
+        "candidate": "87c0922e09f84701d6ee3a7bd70a875af9983fd7",
+        "proposal_id": "mnt-7e653513a54375a5-a1",
+        "staged": {
+          "id": "AFO-mnt-7e653513a54375a5-a1",
+          "manifest": "/mnt/data/forge-c/production-local-014/state/afo/maintainer/mnt-7e653513a54375a5-a1/reproducer/manifest.yaml",
+          "sha256": "36f95034c690730686a7ecfd77ca2ca9972fcc62163a9db1b0731f067694ed75"
+        },
+        "submitted_utc": "2026-10-30T02:24:44.851515Z",
+        "summary": "Preserved retained profile_context_tokens repair in lrtx/structured.py; restored pre-request HTTP429 path via time.monotonic (time.monetic regression that crashed the inherited refusal test). Added candidate reproducer failing on baseline, passing on fix; candidate tests exit 0.",
+        "veto": []
+      },
+      "receipt": {
+        "candidate": "87c0922e09f84701d6ee3a7bd70a875af9983fd7",
+        "case_sha256": "d294f3120e97778856b0065d6a22cebb2eae0c6d968fb9db9ef672739cf2fc4e",
+        "manifest_sha256": "c427f7a07c75c1b04ed6350636c0a74422b8f3c7a202f62dfcff7199c2e0c9b8",
+        "reproducer_sha256": "36f95034c690730686a7ecfd77ca2ca9972fcc62163a9db1b0731f067694ed75",
+        "request_sha256": "d705e0f5396d2081b6af682e5fb855ddf9c4a4212294d07559effb239e85467e",
+        "schema_version": "1.0",
+        "submission_sha256": "b75bc8dfa3f9bf35ad7a969bf85c4f377f0671f3792bf3d1a2382b7528dc2808"
+      },
+      "deadline_epoch": 1793343939.31334
+    },
+    {
+      "job_id": "afo-agent-61401956787984d8c097bc36",
+      "run_id": "01M65A075HQ97KJXSG6A1Z9KC6",
+      "state": "RUNNING",
+      "case_sha256": "a0f3a498f75a848210c824126536a883f58b515bc4031fce01ea5a64eb452063",
+      "proposal_id": "mnt-7e653513a54375a5-a1-r1",
+      "base": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+      "retained_rework": {
+        "deadline_epoch": 1793343939.31334,
+        "feedback": {
+          "instructions_or_permissions": false,
+          "proposal": {
+            "authorization_ref": null,
+            "auto_deployment_allowed": false,
+            "baseline_commit": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+            "branch_ref": null,
+            "candidate_commit": "87c0922e09f84701d6ee3a7bd70a875af9983fd7",
+            "capa_id": null,
+            "changed_paths": [
+              "factory/python/forge_factory/lrtx/structured.py",
+              "factory/python/tests/afo_candidate/test_lrtx_profile_context_repro.py"
+            ],
+            "cre_promotion_id": "NOT_EVALUATED:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR",
+            "evidence_refs": [
+              "triage:REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:ERROR"
+            ],
+            "outcome": "REJECTED",
+            "pr_url": null,
+            "proposal_id": "mnt-7e653513a54375a5-a1",
+            "protected_changes_count": 0,
+            "reproducer_id": "AFO-mnt-7e653513a54375a5-a1",
+            "schema_version": "1.0",
+            "source_incident_id": "afo-7e653513a54375a5",
+            "tests_ref": "local-agent:afo-agent-433bdaaac774faf5577c758c"
+          },
+          "proposal_record_sha256": "bb8658ab4677bc46b23ee43a6e7eb0e2d818dd6187cfb7ce1c618656a76e5148",
+          "registered_symptom_signature": "lrtx-profile-context-24576-legacy-despite-selected-262144",
+          "reproducer_runs": [
+            {
+              "at": "2026-10-30T02:24:53.364865Z",
+              "exit_code": 1,
+              "log": "SYMPTOM_PRESENT:lrtx-profile-context-24576-legacy-despite-selected-262144 observed=24576 basis=<absent> expected=profile:afo-cand-profile\n\n--- stderr ---\n",
+              "log_sha256": "3e4e88b5bb683f9fd901d50b96f89f5b64e23feca422b8da701903f9f3c036b2",
+              "reproducer_id": "AFO-mnt-7e653513a54375a5-a1",
+              "revision": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+              "role": "BASELINE",
+              "run_id": "rr-78f88c1cd83100291f77",
+              "signature": "SYMPTOM_PRESENT:lrtx-profile-context-24576-legacy-despite-selected-262144 observed=24576 basis=<absent> expected=profile:afo-cand-profile",
+              "verdict": "ERROR"
+            }
+          ],
+          "schema": "forge-c/maintenance-independent-feedback/1",
+          "staged_manifest_sha256": "c427f7a07c75c1b04ed6350636c0a74422b8f3c7a202f62dfcff7199c2e0c9b8",
+          "untrusted_data": true
+        },
+        "feedback_sha256": "0d9a6de67cf70f0d1fbb9c7872d24c094957a244c47fdd2a213b757ab658af97",
+        "files": [
+          {
+            "bytes": 25809,
+            "path": "factory/python/forge_factory/lrtx/structured.py",
+            "sha256": "48c5b9dc713fc8bc8174de2695d9e0033133a00090c439c84e7ac9e883edf0f1"
+          },
+          {
+            "bytes": 5510,
+            "path": "factory/python/tests/afo_candidate/test_lrtx_profile_context_repro.py",
+            "sha256": "36f95034c690730686a7ecfd77ca2ca9972fcc62163a9db1b0731f067694ed75"
+          }
+        ],
+        "index": 1,
+        "mission_id": "F014-NIGHT-20261027-RCC",
+        "order_id": "afo-7e653513a54375a5",
+        "parent_candidate": "87c0922e09f84701d6ee3a7bd70a875af9983fd7",
+        "parent_case_sha256": "d294f3120e97778856b0065d6a22cebb2eae0c6d968fb9db9ef672739cf2fc4e",
+        "parent_job_id": "afo-agent-433bdaaac774faf5577c758c",
+        "parent_proposal_sha256": "bb8658ab4677bc46b23ee43a6e7eb0e2d818dd6187cfb7ce1c618656a76e5148",
+        "parent_receipt_sha256": "598d4cc504707d5a972fdb54879bbe6d8761eca5aca0f391962351e81617e3bf",
+        "root_attempt_id": "afo-7e653513a54375a5-a1",
+        "root_proposal_id": "mnt-7e653513a54375a5-a1",
+        "schema": "forge-c/maintenance-retained-intent/1"
+      },
+      "proposal": null,
+      "submission": null,
+      "receipt": null,
+      "deadline_epoch": 1793343939.31334
+    }
+  ],
+  "model_requests": 0,
+  "read_only": true
+}

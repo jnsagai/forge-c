@@ -1,0 +1,3 @@
+Signing file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-canonical-reconcile-signing/authorization-message.bin
+Write signature to /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-canonical-reconcile-signing/authorization-message.bin.sig
+{"status": "EXACT_EXISTING_EFFECT_RECOVERY_SIGNED", "scope_sha256": "a90483bdac34e445e72544fd6d92752af0c89e5114a351ae422ba1b97932870d", "expires_utc": "2026-10-30T07:05:39Z", "deployment": false, "model_requests": 0}

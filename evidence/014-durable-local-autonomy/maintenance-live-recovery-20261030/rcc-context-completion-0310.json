@@ -1,0 +1,273 @@
+{
+  "at": "2026-10-30T03:09:24.070615Z",
+  "trial_id": "RCC-CONTEXT-COMPLETION-20261030",
+  "source_revision": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 56,
+    "effective_stop": false
+  },
+  "deadline_utc": "2026-10-30T08:11:56Z",
+  "order": {
+    "order_id": "afo-7e653513a54375a5",
+    "state": "WAITING_EXTERNAL_CHANGE",
+    "terminal_reason": "HISTORICAL_FACTORY_CODE_DEFECT_REPLAY"
+  },
+  "original_order": {
+    "order_id": "afo-83276a5a34a47931",
+    "state": "BLOCKED",
+    "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-2ae4c086f6e5cb032903e2a4"
+  },
+  "jobs": [
+    {
+      "job_id": "afo-agent-433bdaaac774faf5577c758c",
+      "state": "SUCCEEDED",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+      "factory_revision": {
+        "commit": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M658M4VK71P2MSD82NX9V5A0",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": 778178,
+      "deadline_epoch": 1793343939.31334,
+      "review_state": "REJECTED",
+      "error": null,
+      "request_states": {
+        "QUIESCENT": 23
+      },
+      "candidate_uncommitted_diff_stat": "",
+      "candidate_submission_present": true,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-c036949672f159e74fdf108c",
+        "execution_liveness": "QUIESCENT",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-433bdaaac774faf5577c758c",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-30T02:24:51.598234Z",
+        "launch_nonce": "f482de04f5eda37ea43be955a304df63",
+        "lease_epoch": 49,
+        "mission_id": "F014-NIGHT-20261027-RCC",
+        "native_run_ids": [
+          "01M658M4VK71P2MSD82NX9V5A0"
+        ],
+        "outcome_evidence_ref": "maintainer-receipt:598d4cc504707d5a972fdb54879bbe6d8761eca5aca0f391962351e81617e3bf",
+        "quiescence_evidence_ref": "native-terminals:3dec5713114c77cd6e576a886838b12e415d595607175c7cf8dc3aac2842c17f",
+        "resource_lease": "RELEASED",
+        "revision": 162,
+        "schema_version": "1.0",
+        "task_outcome": "BLOCKED",
+        "terminal_reason": "CANDIDATE_REQUIRES_INDEPENDENT_REVIEW"
+      },
+      "verification_state": "COMPLETE",
+      "native_status_now": "SUCCEEDED"
+    },
+    {
+      "job_id": "afo-agent-61401956787984d8c097bc36",
+      "state": "SUCCEEDED",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+      "factory_revision": {
+        "commit": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M65A075HQ97KJXSG6A1Z9KC6",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": 412715,
+      "deadline_epoch": 1793343939.31334,
+      "review_state": "REJECTED",
+      "error": null,
+      "request_states": {
+        "QUIESCENT": 14
+      },
+      "candidate_uncommitted_diff_stat": "",
+      "candidate_submission_present": true,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 1,
+        "cancellation_state": "QUIESCENCE_CONFIRMED",
+        "execution_id": "execution-b94aee193b24ae98b9f3431d",
+        "execution_liveness": "QUIESCENT",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-61401956787984d8c097bc36",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-30T03:01:45.426482Z",
+        "launch_nonce": "b4be728eab5f48c64d9f61ccf8814271",
+        "lease_epoch": 51,
+        "mission_id": "F014-NIGHT-20261027-RCC",
+        "native_run_ids": [
+          "01M65A075HQ97KJXSG6A1Z9KC6"
+        ],
+        "outcome_evidence_ref": "maintainer-receipt:0b2c89509fe02e7da406666719aa77e9ef548d1d8dcc9f34d21a04891dfc4eca",
+        "quiescence_evidence_ref": "native-terminals:88fb88cfc370737850a5783b349bef1dee2130f794ecb904f44a66c0cb0ae6dd",
+        "resource_lease": "RELEASED",
+        "revision": 167,
+        "schema_version": "1.0",
+        "task_outcome": "BLOCKED",
+        "terminal_reason": "CANDIDATE_REQUIRES_INDEPENDENT_REVIEW"
+      },
+      "verification_state": "COMPLETE",
+      "native_status_now": "FAILED"
+    },
+    {
+      "job_id": "afo-agent-60d77f8751d27b8fe746cde3",
+      "state": "RUNNING",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+      "factory_revision": {
+        "commit": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M65C3V9WXGV6077TJH4E26Z3",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": 67928,
+      "deadline_epoch": 1793343939.31334,
+      "review_state": null,
+      "error": null,
+      "request_states": {
+        "QUIESCENT": 4,
+        "SENT": 1
+      },
+      "candidate_uncommitted_diff_stat": " factory/python/forge_factory/lrtx/structured.py | 27 +++++++++++++++++++++----\n 1 file changed, 23 insertions(+), 4 deletions(-)\n",
+      "candidate_submission_present": false,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-ebe260cda8e8d1c91707f607",
+        "execution_liveness": "LIVE",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-60d77f8751d27b8fe746cde3",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-30T03:09:15.933561Z",
+        "launch_nonce": "0cfaea1cc2b3033bf98917baf9fa8682",
+        "lease_epoch": 53,
+        "mission_id": "F014-NIGHT-20261027-RCC",
+        "native_run_ids": [
+          "01M65C3V9WXGV6077TJH4E26Z3"
+        ],
+        "outcome_evidence_ref": null,
+        "quiescence_evidence_ref": null,
+        "resource_lease": "HELD",
+        "revision": 49,
+        "schema_version": "1.0",
+        "task_outcome": "ACTIVE",
+        "terminal_reason": null
+      },
+      "verification_state": null,
+      "native_status_now": "RUNNING"
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+    "created_at": "2026-10-27T22:31:02.178374Z",
+    "limits": {
+      "deadline": 1793347916,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "F014-ROLE-EXPERIMENT-20261027-RCC",
+    "mission_id": "F014-NIGHT-20261027-RCC",
+    "initial_limits": {
+      "deadline": 1793161857.1740136,
+      "max_attempts": 3,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 120000,
+      "max_tools": 32
+    },
+    "initial_authorization_ref": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793161857.1740136,
+        "deadline_epoch": 1793347916,
+        "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+        "accepted_at": "2026-10-30T00:15:57.142624Z"
+      }
+    ],
+    "capacity_amendments": [
+      {
+        "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+        "old_limits": {
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 32,
+          "max_tokens": 120000,
+          "max_tools": 32
+        },
+        "document": {
+          "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+          "limits": {
+            "max_attempts": 1000,
+            "max_corrections": 1,
+            "max_jobs": 1000,
+            "max_requests": 100000,
+            "max_tokens": 100000000000,
+            "max_tools": 1000000
+          },
+          "mission_id": "F014-NIGHT-20261027-RCC",
+          "operator_epoch": 50,
+          "reason": "Owner explicitly requested extraordinary high finite limits; same RCC lineage, old charges and uncertainty, no exhausted mission reset",
+          "request": {
+            "driver_class": "LL",
+            "model": "qwen3.8:27b-q8_0",
+            "order_id": "f014-rcc-ll-aspice-20261030-v1"
+          },
+          "schema": "forge-c/mission-capacity-amendment/1",
+          "snapshot_sha256": "2875dbb11d2de75585243868b5b0ca4fdc5c11662253455141019d75fb51b6ad"
+        },
+        "accepted_at": "2026-10-30T00:15:45.195395Z"
+      }
+    ],
+    "attempts": 3,
+    "jobs": 6,
+    "requests": 67,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 1004217072,
+    "usage_unknown": true,
+    "unique_executions": 9,
+    "unbounded_historical_usage": false
+  },
+  "proposals": [
+    {
+      "status": "REJECTED",
+      "record_sha256": "bb8658ab4677bc46b23ee43a6e7eb0e2d818dd6187cfb7ce1c618656a76e5148"
+    },
+    {
+      "status": "REJECTED",
+      "record_sha256": "205353af61e113444bae7f97a66c748e5af8fa44eafddc0b2178ab3e288b63e9"
+    }
+  ],
+  "read_only": true,
+  "model_requests_by_observer": 0,
+  "independent_frozen_candidate_verification": "NOT_RUN"
+}

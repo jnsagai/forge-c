@@ -1,44 +1,39 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — bounded edit qualified; retained Qwen completion running
+## Latest state — second/final actual Qwen rework running; administrative kernel qualified
 
-Runtime **ab46545c1cfb7ffd90fb09715b6715b7d21ad242, RUNNING epoch54**.
-Branch now also contains **09704db** source inventory/controller-bound profile metadata:
-[62local PASS; native NOT_RUN, NOT_DEPLOYED](../../evidence/014-durable-local-autonomy/maintenance-source-inventory-20261030/README.md).
-Actual Qwen job repeatedly guesses missing profiles; at02:21:24UTC19requests complete/
-one live,575430reported tokens and no correction/submission. Do not label this repair
-progress. Native qualification helper/bundle is prepared but waits for actual quiet.
-Current model remains onab46545 and loaded provider unchanged.
+Runtime **ab46545c1cfb7ffd90fb09715b6715b7d21ad242, RUNNING epoch56**.
+Current job**afo-agent-60d77f8751d27b8fe746cde3**, native
+**01M65C3V9WXGV6077TJH4E26Z3**, same order**afo-7e653513a54375a5**.
+This is automatic retained rework index2/max2; no r3/new-order allowance refill.
+At03:09:24UTC4requests complete/one live,67928reported tokens, no receipt yet.
+[Full live history, concrete blockers, native tests and reconciliation evidence](../../evidence/014-durable-local-autonomy/maintenance-live-recovery-20261030/README.md).
 
-Qwen native **01M658M4VK71P2MSD82NX9V5A0**, job
-**afo-agent-433bdaaac774faf5577c758c**, order **afo-7e653513a54375a5**.
-At02:02:15UTC2requests complete/one live,12433reported tokens, no valid receipt.
-[Exact scope, execution helpers, retained seed provenance and live observations](../../evidence/014-durable-local-autonomy/rcc-context-completion-20261030/README.md).
-[Bounded edit tool:61local maintenance/41registry/66native PASS atab46545](../../evidence/014-durable-local-autonomy/maintenance-source-edits-20261030/README.md).
+Qualified isolated broker/source **53e1234**:94local/83native PASS; global runtime
+stillab46545. Newer **a7d5432** prefix guard/I/O metadata:79local PASS, native NOT_RUN.
+Feedback projection now exposes complete hash-bound retained feedback; source listing
+and exact controller profile metadata prevent guessed paths. The old running jobs
+still useab46545, so sealed feedback was delivered through the authenticated native
+steering API. R2 injection03:08:23UTC includes the source-verified legacy I/O contract.
+Fully unattended recovery is not proved; disclose these external bridges.
 
-Earlier repair01M655FBXJ3WW9R29ZT9YK9SKA ended FAILED/no valid maintenance receipt,
-16requests QUIESCENT/537639reported tokens, CAPABILITY_LIMIT after source write.
-Its exact f543f709…b3c9 file passes3frozen context cases but fails inherited call
-regression on time.monetic. Qwen bytes retained unchanged in a new case; external
-bounded edit MCP bootstrap lets Qwen correct/test/submit without another full-file
-rewrite. No accepted/deployed engineering repair; old failure and costs retained.
-[Original terminal evidence and local outcomes](../../evidence/014-durable-local-autonomy/rcc-inspector-context-repair-20261030/README.md).
+Root87c0922submitted/testPASS, then REJECTED baseline marker diagnostics. Child1
+b64f64da fixed marker but stranded receipt on Git trimming one summary space; exact
+parent/tree/request remained. Owner pause55/cancel/quiescence, qualified source53
+and signed scope a90483bd… recovered the original model commit's receipt0b2c8950…
+without rewriting intent/code/commit/history or generating another request.
+Resumed56; independent triage REJECTED child1 for registering the marker prefix.
+Legacy runner uses LAST nonempty stdout line; registration is bare suffix; candidate
+success line exactly SYMPTOM_ABSENT without suffix. Initial case guidance on absence
+suffix was wrong; new contract metadata/prefix rejection correct that interface.
+Qwen source stays48c5b9dc…f0f1, not deployed/accepted yet. Native cancellation retained.
 
-Same RCC mission/lineage/caps and08:11:56UTC deadline. Child recovery deadline
-1793343939.31334 is earlier than parent1793343962.5058517. No grant/allowance reset.
-Exact delegated activation kept loaded provider unchanged, one inference/one verifier.
-Host Git recorder observes all3orders. External one-shot qualification preparation
-is disclosed; this does not prove autonomous unfinished-draft recovery.
-
-Original full LL01M652TG29PWJYG7QSCQHZXVKC BLOCKED after7first-attempt VALID SWE.1
-packets,88317reported tokens. Inspection refused24576default vs262144 profile;
-diagnosis actual0/None config absent from signed trial, no model diagnosis generated.
-49-gap incomplete package copied/hash-checked locally. Next: valid Qwen receipt,
-independent frozen oracle/regressions/CRE, qualified integration/activation; validate
-retained author packets for reuse/reinspection; full LL then newly verified HAL.
-Future role trial must include actual temperature0/seedNone. Formal30/58 unchanged,
-no new task IDs complete. Full LL/HAL, learning benefit, broad autonomy and measured
-availability remain unproven; goal stays active.
+Same RCC mission/caps/08:11:56UTC deadline; all reworks retain07:05:39.31334UTC
+deadline. Next: R2 valid receipt/CRE + actual quiescence, frozen original oracle and
+inherited regressions; qualify integrated Qwen bytes then exact delegated activation;
+full LL/HAL with actual temp0/seedNone trial. LL remainsBLOCKED after7VALID author
+packets/88317tokens; HAL NOT_RUN. Formal30/58 unchanged, no newly completed task IDs.
+General autonomy, learning benefit and measured availability remain unproven.
 
 ## Historical checkpoint — full LL launch and initial progress
 
