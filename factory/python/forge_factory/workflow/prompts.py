@@ -849,12 +849,24 @@ def assessment_scope_note() -> str:
     manifest = ASSESSMENT["manifest"] or {}
     if manifest.get("purpose") != "ASPICE_ONLY":
         return ""
-    return ("The full work-order scope in .forge-run/manifest.json is authoritative. Catalog seed sections and "
+    note = ("The full work-order scope in .forge-run/manifest.json is authoritative. Catalog seed sections and "
             "example requirement counts do not narrow it. Account for every requested source section and field; "
             "record justified exclusions against the actual out-of-scope text, never an omitted catalog entry. "
-            "Missing coverage is a finding, not a completed reduced product. CPU/timing limits must come from an "
-            "explicit work-order allocation; never invent a target cycle bound or substitute a host watchdog. "
-            "Record a missing allocation as an unresolved input gap; do not claim its verification passed.")
+            "Missing coverage is a finding, not a completed reduced product. ")
+    from ..simulation_performance import FIELD, validate
+
+    if FIELD in manifest:
+        perf = validate(manifest[FIELD])
+        return note + (f"Use the explicit simulation_performance allocation: at most {perf['instructions_per_call']} "
+                       f"executed target instructions and {perf['microseconds_per_call']} microseconds of virtual "
+                       f"time per measured API call at {perf['performance_mips']} MIPS. State the measured scenario "
+                       "inputs; this is not a bound for unmeasured timeout paths or physical hardware WCET. "
+                       "SWE.6 must run the declared instrumented target test and Simulation Performance Should Meet "
+                       "Budget. Independent instruction/time records must cover every scoped API; missing or "
+                       "over-budget measurements fail. Preserve the separate functional timeout tests.")
+    return note + ("CPU/timing limits must come from an explicit work-order allocation; never invent a target cycle "
+                   "bound or substitute a host watchdog. Record a missing allocation as an unresolved input gap; "
+                   "do not claim its verification passed.")
 
 
 def author_prompt(phase: str) -> str:

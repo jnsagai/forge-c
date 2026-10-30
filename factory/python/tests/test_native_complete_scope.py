@@ -25,7 +25,10 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
                      assessment_manifest=manifest)
     p = prompts(graph)
     selected = scope_sections(manifest["scope"], "RM0486", ["14.10.1", "14.10.2", "14.10.79", "14.10.64"])
-    assert len(selected) == 25 if layer == "LL" else selected
+    if layer == "LL":
+        assert len(selected) == 25
+    else:
+        assert selected
     for section in selected:
         path = sections[section]
         assert path in p["swe1_author"] and path in p["swe2_author"]
@@ -34,7 +37,9 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
     assert "enough atomic requirements to cover the full scope" in p["swe1_author"]
     for node in ("swe1_author", "swe1_inspector"):
         assert "Missing coverage is a finding" in p[node]
-        assert "never invent a target cycle bound" in p[node]
+        assert "explicit simulation_performance allocation: at most 64" in p[node]
+        assert "not a bound for unmeasured timeout paths or physical hardware WCET" in p[node]
+    assert "Simulation Performance Should Meet Budget" in p["swe6_author"]
 
 
 def test_missing_literal_section_refuses_before_native_submission():
@@ -53,6 +58,7 @@ def test_non_rcc_scope_and_domain_rules_are_preserved(layer):
     assert "inputs/section-59.7.5.md" in p["swe1_author"]
     assert "IWDG" in p["swe1_author"] and "RCC_" not in p["swe1_author"]
     assert "write the start key" in p["swe1_author"] if layer == "LL" else "HAL_IWDG" in p["swe2_author"]
+    assert "never invent a target cycle bound" in p["swe1_author"]
 
 
 def test_scope_does_not_leak_into_the_next_legacy_build():
