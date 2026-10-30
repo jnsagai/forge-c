@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.520" timestamp="2026-10-30T21:55:37.415292+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_historical_counts" name="test_imported_counters_are_idempotent_and_deduplicate_later_observations" time="0.177"><failure message="assert (0, 0, 0) == (3, 4, 1)&#10;  &#10;  At index 0 diff: 0 != 3&#10;  Use -v to get more diff">protocol = namespace(store=&lt;forge_factory.afo.queue.Store object at 0x77a8f21430e0&gt;, order={'order_id': 'afo-8d8ec7d9d84edf67', '...orted_counters_are_ide0/case.json', 'case_sha256': 'eb6aefb71f8a0aa162ae1db6b1bfa57a05d6b717b08be807a9465f08cd35abe4'})
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-245/test_imported_counters_are_ide0')
+
+    def test_imported_counters_are_idempotent_and_deduplicate_later_observations(protocol, tmp_path):  # noqa: F811
+        p = protocol
+        counts = {"requests": 3, "tools": 4, "corrections": 1}
+        for _ in range(2):
+            import_history(p, tmp_path, counts)
+        snap = p.ledger.snapshot("mission-test")
+&gt;       assert (snap["requests"], snap["tools"], snap["corrections"]) == (3, 4, 1)
+E       assert (0, 0, 0) == (3, 4, 1)
+E         
+E         At index 0 diff: 0 != 3
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_historical_counts.py:26: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_historical_counts" name="test_historical_request_reservation_prevents_new_admission_after_exhaustion" time="0.113"><failure message="Failed: DID NOT RAISE &lt;class 'forge_factory.afo.durable.Refused'&gt;">protocol = namespace(store=&lt;forge_factory.afo.queue.Store object at 0x77a8f0754190&gt;, order={'order_id': 'afo-8d8ec7d9d84edf67', '...torical_request_reserv0/case.json', 'case_sha256': 'acfe10ab08225f37c2d3fb0acb7ee8da30579828dce8110ccc987c07ba0f49e4'})
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-245/test_historical_request_reserv0')
+
+    def test_historical_request_reservation_prevents_new_admission_after_exhaustion(protocol, tmp_path):  # noqa: F811
+        p = protocol
+        import_history(p, tmp_path, {"requests": 8, "tools": 0, "corrections": 0})
+        p.ledger.acquire_inference(p.ctx.job_id, "mission-test")
+&gt;       with pytest.raises(Refused, match="MISSION_REQUESTS_EXHAUSTED"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'forge_factory.afo.durable.Refused'&gt;
+
+factory/python/tests/test_da014_historical_counts.py:45: Failed</failure></testcase></testsuite></testsuites>

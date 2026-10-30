@@ -1835,3 +1835,22 @@ Original DA task progress remains30/58; no DA acceptance was closed here.
 - Runtime source/model-role competence, AFO delivery admission, autonomousDF-M1,
   repeatability, HAL, learning benefit and continuous operation remain distinct
   unproven qualifications. Spec validation is SPEC_CONTRACTS_ONLY_NOT_RUNTIME.
+## Ten-hour real AFO qualification — 30 October22:35UTC
+
+The [overnight evidence record](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md)
+preserves two new implementation fixes and the actual admission sequence.
+History-count preservation at5440c474 passed134exact regression cases;
+initial fast-author role binding ata34fdd85 passed104cases with one disabled
+live Fabro skip. Failed-before receipts are retained; cohorts overlap.
+
+Actual native01M67ETTPXS1Q73QPMQ98DNJX0 at cleana34fdd85 is AFO-admitted,
+with a held inference lease and live durable request records. Its new candidate
+passed the full preregistered functional slice in-loop at22:31:19, correction0,
+including630host and351target assertions. Final package/all-six outcomes remain
+pending; DF-M1 and the full ASPICE LL/HAL goal are not declared achieved.
+
+The preceding zero-inference AFO trial was BLOCKED56 after stale-worker policy
+refusals; its history/reservation remain. Full namespace retirement and actual
+worker configuration verification corrected the setup. This is disclosed
+external engineering, not model self-healing. The owner-requested window ends
+31October07:57:59UTC; no automatic grant renewal. Formal DA ledger remains30/58.

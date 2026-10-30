@@ -1,5 +1,11 @@
 # Delivery-First implementation and evidence ledger
 
+Latest execution: [ten-hour AFO qualification](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md).
+Clean sourcea34fdd85 now runs through real AFO admission/accounting. Native
+01M67ETTPXS1Q73QPMQ98DNJX0 passed the preregistered full functional slice at
+22:31:19UTC, correction0, and continues its six-phase journey. Terminal DF-M1
+remains pending; this supersedes the earlier standalone-only checkpoint below.
+
 This is the bounded implementation amendment to [DELIVERY-FIRST-E2E.md](DELIVERY-FIRST-E2E.md).
 It does not replace the original 58-task Feature 014 ledger or close its runtime
 qualification tasks. Source and native execution are separate: the first real

@@ -1,5 +1,66 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Active ten-hour window — 30 October22:35UTC
+
+Owner explicitly requested ten hours at21:57:59UTC. Inference authority ends
+**31October07:57:59UTC**, without automatic renewal. Continue the existing goal;
+DF-M1 first, then the three fresh comparable trials, then LL/HAL expansion under
+the delivery specification. Do not redefine the full ASPICE LL/HAL goal as done.
+
+Read [overnight source/test/runtime evidence](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md).
+Current clean remote source **a34fdd859af47d1ca6cba2633b3ccb672c7cb690**.
+New runtime E=/mnt/data/forge-c/delivery-first-afo-014-20261030-v1; own existing
+AFO/Conductor/Fabro stack in an actually denied user/net namespace. Production
+remainsPAUSED111, its model-free Conductor active, no pending native owners.
+
+**Actual AFO/native run:** orderafo-5faf7b5e42e6d55f;
+jobafo-product-221ded78874865909a532471;
+native01M67ETTPXS1Q73QPMQ98DNJX0, launched22:28:06;
+workspace E/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace.
+One admitted inference, request rows SENT→QUIESCENT, execution leaseHELD.
+At22:31:19 the new Qwen header passed attempt0 host/target compilation,
+630host assertions,351target assertions, simulation cost and resource bounds.
+Correction0;16Bobject flash,0Bstatic RAM/max frame. HeaderSHA
+855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173,
+2044bytes. Native write provenance CONFIRMED. This is in-loop verification with
+the frozen oracle; no external candidate repair/test result injection. It moved
+to SWE.1; terminal package/final recheck/all-six outcomes remain pending.
+
+Live settings/handles (revalidate, never infer liveness from these records):
+- E/control/runtime-env-v5.json; scope control/delivery-first-afo-authority-20261030-v3/scope.json.
+- OperationsRUNNING4; holder1086712; Conductor1088365; window guard1087535;
+  dashboard1090098. All have pinned process records. Physical provider instance
+  is in E/run/services.json; actual gateway worker1086914 checked with policy-v3.
+- Fabro inside namespace32402; inbound-only host bridge32404. Host metadata
+  clients must use32404; workspace-local APIs must run in the native namespace.
+- Dashboard http://100.118.28.92:8786 follows E; access unchanged.
+- Local read-only collector session30497, script A3/collect-overnight-afo-delivery-20261030-v2.py,
+  destination B/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/.
+  It copied the failed predecessor. Observation grace ends08:12:59UTC; no inference extension.
+
+Important fixes:5440c474 preserves evidence-bound imported request/tool counts
+(134exact casesPASS); a34fdd85 adds initial fast-author role binding required by
+the existing gateway (104PASS/one disabled live skip). Before-change regressions
+retained. No original DA checkbox closed;30/58 remains.
+
+Failed AFO predecessor01M67E5YEMFM4F5GR62AM0F9EM at the same source: native
+SUCCEEDED/productBLOCKED56, zero admitted requests/reported inference tokens;
+all57refusals AUTH_POLICY_MISMATCH before upstream. A setup helper had stopped
+the wrapper, leaving its old worker alive. Full managed namespace retirement,
+kernel quiescence and actual worker-env checks corrected it. This was external
+setup repair, not Qwen self-healing. Preserve its charge and failure. Current
+mission keeps the original standalone failure plus this failed AFO attempt;
+never reset limits or treat reserved charges as measured generated tokens.
+
+V3 grants cover eight predeclared CRC order IDs03..10 at sourcea34fdd85 within
+the original cumulative ten-attempt mission and fixed deadline. Only03 is queued
+initially. Additional clean trials require independently measured DF-M1 first.
+If a source/config change is needed, preserve/pin each failed attempt, reconcile
+the same actual native/physical handles, and sign only the exact new qualification
+record under existing delegation. Never extend this deadline silently. Retire
+the **entire managed provider instance**, not a namespace-entry wrapper, before
+replacement. Do not hot-patch the live source or inject code into this job.
+
 ## Terminal update — 30 October21:43UTC
 
 Native01M6788GYKREQSS1YTZHS9N3TV/sourcebeb48b49 completed21:43:09: transport
