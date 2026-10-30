@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_onboarding_authoring.py",
+    "factory/python/tests/test_onboarding_model_sandbox.py"
+  ],
+  "duration_s": 2.574,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-MODEL-CONTROLS/20261027T160205.log",
+  "log_sha256": "dd8416ef1c0a81994a1eb554d1c2a1e284192c9068763b19dfc1903152ebe1e7",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-MODEL-CONTROLS",
+  "ts_utc": "2026-10-27T16:02:05.780812Z"
+}

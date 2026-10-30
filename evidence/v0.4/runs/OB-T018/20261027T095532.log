@@ -1,0 +1,35 @@
+EE                                                                       [100%]
+==================================== ERRORS ====================================
+____ ERROR at setup of test_same_inputs_same_hash_any_input_change_new_hash ____
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/d')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/d'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+___________ ERROR at setup of test_derivation_loads_no_model_client ____________
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/d')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/d'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_onboarding_derive.py::test_same_inputs_same_hash_any_input_change_new_hash
+ERROR factory/python/tests/test_onboarding_derive.py::test_derivation_loads_no_model_client
+
+--- stderr ---

@@ -141,7 +141,8 @@ def register_definitions(ws: Path, m: dict) -> dict:
     rm = rm_registers(ws)
     defs = _defs(ws, m)
     bodies = "\n".join(d.body for d in _reached([f["name"] for f in _scope(ws)], defs))
-    regs = sorted(set(re.findall(rf"\b{pfx}\s*->\s*([A-Z][A-Z0-9_]*)", bodies)))
+    regs = sorted(set(re.findall(rf"\b{pfx}\s*->\s*([A-Z][A-Z0-9_]*)", bodies))  # LL: CRCx->CR; ST HAL: the
+                  | set(re.findall(r"->\s*Instance\s*->\s*([A-Z][A-Z0-9_]*)", bodies)))  # handle, hcrc->Instance->CR
     tokens = sorted(set(re.findall(rf"\b({pfx}_[A-Z][A-Z0-9]*_[A-Za-z0-9_]+)\b", bodies)))
     findings, probes = [], []
     for r in regs:

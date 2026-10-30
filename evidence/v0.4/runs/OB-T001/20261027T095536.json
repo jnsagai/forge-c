@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.onboarding",
+    "derive",
+    "examples/0014d-st-cube-crc-hal"
+  ],
+  "duration_s": 0.02,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "64d6d61b83c2e7b6954825391799841db25f7db7",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T001/20261027T095536.log",
+  "log_sha256": "736f408f78830f00d3c0248ea00c98ef5b112c66d2fc40afed810446b23c04e9",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "OB-T001",
+  "ts_utc": "2026-10-27T09:55:36.322350Z"
+}

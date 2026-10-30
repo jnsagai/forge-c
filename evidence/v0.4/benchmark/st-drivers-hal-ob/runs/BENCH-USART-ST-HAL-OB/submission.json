@@ -1,0 +1,72 @@
+{
+  "recorded_at": "2026-10-27T14:38:09.089628Z",
+  "request_id": "BENCH-USART-ST-HAL-OB",
+  "order_id": "afo-91b7e28a3bab37e5",
+  "attempt": {
+    "attempt_id": "afo-91b7e28a3bab37e5-a1",
+    "order_id": "afo-91b7e28a3bab37e5",
+    "seq": 1,
+    "state": "RUNNING",
+    "record": "{\"schema_version\": \"1.0\", \"order_id\": \"afo-91b7e28a3bab37e5\", \"attempt_id\": \"afo-91b7e28a3bab37e5-a1\", \"attempt_seq\": 1, \"state\": \"RUNNING\", \"workspace_ref\": \"workorder:WO-AFO-91b7e28a3bab37e5-a1\", \"factory_revision\": \"9dd5b713dd5e8fc92b86b1055cb3d52295f578cc\", \"created_utc\": \"2026-10-27T14:36:52.172852Z\", \"fabro_run_id\": \"01M5YWP523TFRK5NR9SH74KTJ6\", \"fabro_server\": null, \"recovery_plan_id\": null, \"exit_status\": null, \"terminal_package_status\": null, \"checkpoint_refs\": [], \"evidence_refs\": [\"nonce:66bdd46d6b110906\", \"dispatched_epoch:1793111812\"], \"finished_utc\": null}",
+    "created_utc": "2026-10-27T14:36:52.172852Z",
+    "finished_utc": null
+  },
+  "onboarding": {
+    "approval_id": "OA-2026-10-27-03",
+    "key": "0012e-st-cube-usart-hal-ob",
+    "package": "state/onboarding/0012e-st-cube-usart-hal-ob/onboarding/package.json",
+    "profile_sha256": "7a4b78028878f36f81d3505ad08241de1ad2253a40228622be34713ef63a22f8",
+    "sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9"
+  },
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+    "dirty": false
+  },
+  "inputs": [
+    {
+      "bytes": 1056393,
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "bytes": 395644,
+      "path": "inputs/RM0486-rev4-ch65-usart.md",
+      "role": "reference_manual_usart_chapter",
+      "sha256": "199e047f0faf51a7057ca3eeaeb33537d57b04baf18b1b5f3c6c39cb04b1605b"
+    },
+    {
+      "bytes": 4467,
+      "path": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "1cc1a1e027a5a18f9ad9e5404d1157a1123581a65c3b01068356c026c010ecbc"
+    },
+    {
+      "bytes": 3358,
+      "path": "inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "bytes": 697,
+      "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "bytes": 1366,
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "f1ad402fd1bd387a75c8f6bd9ecc1ab8b28537568c8af528ebedf1871e7ee4ba"
+    },
+    {
+      "bytes": 455865,
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+  ],
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace"
+}

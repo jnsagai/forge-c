@@ -1,0 +1,174 @@
+{
+  "schema": "forge-c/onboarding-package/0.1",
+  "work_order": "WO-AFO-example-usart-hal-a1",
+  "inputs": [
+    {
+      "path": "inputs/RM0486-rev4-ch65-usart.md",
+      "role": "reference_manual_usart_chapter",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "path": "delivered/stm32n6xx-hal-driver-v1.4.0/Src/stm32n6xx_hal_uart.c",
+      "role": "delivered_code",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "factory_revision": "3effb17",
+  "driver_style": "HAL_STANDALONE",
+  "facts": [
+    {
+      "name": "base_address",
+      "value": "0x52001000",
+      "status": "DERIVED",
+      "method": "cmsis_base_chain",
+      "sources": [
+        {
+          "kind": "file",
+          "ref": "inputs/vendor/include/stm32n657xx.h",
+          "line": 3412,
+          "value": "0x52001000"
+        },
+        {
+          "kind": "doc",
+          "ref": "inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+          "page": 180,
+          "value": "0x52001000"
+        }
+      ]
+    },
+    {
+      "name": "instance",
+      "value": "USART1",
+      "status": "DERIVED",
+      "method": "workorder_target_instance",
+      "sources": [
+        {
+          "kind": "workorder",
+          "ref": "target.instance"
+        }
+      ]
+    },
+    {
+      "name": "time_base",
+      "value": "HAL_GetTick",
+      "status": "DERIVED",
+      "method": "reached_call",
+      "sources": [
+        {
+          "kind": "file",
+          "ref": "software/hal/stm32n6xx_hal_uart.c",
+          "line": 1188
+        }
+      ]
+    },
+    {
+      "name": "undelivered_externals",
+      "value": [
+        {
+          "symbol": "HAL_RCCEx_GetPeriphCLKFreq",
+          "prototype": "uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t PeriphClk)",
+          "feeds": [
+            "USART_BRR"
+          ]
+        }
+      ],
+      "status": "DERIVED",
+      "method": "link_undefined",
+      "sources": [
+        {
+          "kind": "log",
+          "ref": "onboarding/logs/link-host.log"
+        },
+        {
+          "kind": "file",
+          "ref": "software/hal/stm32n6xx_hal_uart.c",
+          "line": 3254
+        }
+      ]
+    },
+    {
+      "name": "mm_page",
+      "value": null,
+      "status": "NOT_DERIVED",
+      "method": "mm_table_row",
+      "sources": [],
+      "owner_question": "The memory-map excerpt has no page marker for the USART1 row; give the RM0486 page."
+    }
+  ],
+  "authored": [
+    {
+      "id": "model",
+      "role": "onboard-model-author",
+      "path": "onboarding/model/usart_model.py",
+      "attempts": 0,
+      "gate": {
+        "verdict": "PASS",
+        "findings": [],
+        "tool": "forge-sim-mcp/check_model",
+        "version": "0.1",
+        "invocation_id": "inv-example"
+      },
+      "inspection": {
+        "verdict": "PASS",
+        "findings": [],
+        "inspector_role": "onboard-model-inspector"
+      },
+      "limits": [
+        "FIFO mode not modelled",
+        "no baud-rate timing: a transmitted value is received at once"
+      ],
+      "status": "ACCEPTED",
+      "reused": true
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "ASM-CLOCK-USART1",
+      "symbol": "HAL_RCCEx_GetPeriphCLKFreq",
+      "reason": "the RCC HAL is not delivered; its kernel-clock result feeds USART_BRR",
+      "affects": [
+        "USART_BRR",
+        "SWE.4 baud-rate cases",
+        "SWE.5/SWE.6 target cases"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "GAP-OB-001",
+      "kind": "NOT_DERIVED",
+      "ref": "mm_page",
+      "effect": "SWE.2 base-address citation has no page",
+      "blocks_approval": false
+    },
+    {
+      "id": "GAP-OB-002",
+      "kind": "ASSUMPTION_UNCONFIRMED",
+      "ref": "ASM-CLOCK-USART1",
+      "effect": "host and target tests cannot fix the kernel clock",
+      "blocks_approval": true
+    }
+  ],
+  "profile": {
+    "derived_from": {
+      "package": "onboarding/package.json"
+    },
+    "id": "usart",
+    "register_prefix": "USART"
+  },
+  "texts": {
+    "prompt_st_hal": {
+      "hal_api": {
+        "text": "Interfaces (the delivered ST HAL API exactly as declared in software/hal/stm32n6xx_hal_uart.h ...)",
+        "from": "template:st_hal.hal_api"
+      },
+      "hal_requirement_example": {
+        "text": "When the UART initialisation is requested with ...",
+        "from": "authored:text:requirement_example"
+      }
+    }
+  },
+  "status": "READY_FOR_OWNER",
+  "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+  "created_at": "2026-10-27T09:00:00Z"
+}

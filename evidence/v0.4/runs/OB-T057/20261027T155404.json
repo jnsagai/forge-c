@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py",
+    "check",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/runs/BENCH-TIM-ST-HAL-OB/outcome.json",
+    "--peripheral",
+    "tim"
+  ],
+  "duration_s": 0.097,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T057/20261027T155404.log",
+  "log_sha256": "e6c0fdf012e30a61ced5c9cf7e9677b87c2c8272c8a6d11c5e1f6dac007652cb",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-T057",
+  "ts_utc": "2026-10-27T15:54:04.829147Z"
+}

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_hardware_discrete_fields.py",
+    "factory/python/tests/test_onboarding_identity.py",
+    "factory/python/tests/test_peripheral_fields.py",
+    "factory/python/tests/test_easa_register_contract.py",
+    "factory/python/tests/test_regmap_multi_instance.py"
+  ],
+  "duration_s": 9.967,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "e8e5f7ced93d2502366445da46d276bb6b41b5ab",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-DISCRETE-FIELDS/20261027T121126.log",
+  "log_sha256": "aced48bd08a60dd16f90a839e2882656bb43c245be663df784ca6d90b71b3fdc",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-DISCRETE-FIELDS",
+  "ts_utc": "2026-10-27T12:11:26.260483Z"
+}

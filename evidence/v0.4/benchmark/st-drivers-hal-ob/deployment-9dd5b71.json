@@ -1,0 +1,11 @@
+{
+  "runtime": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+  "decision_id": "pd-8fdefc372c5e6a0f2943",
+  "oracle_commit": "61020fa",
+  "backup": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/unit-backup-f016-contract-20261027T135503Z",
+  "working_directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-afo-conductor-9dd5b71",
+  "main_pid": 774170,
+  "recorded_at": "2026-10-27T13:55:05.031760+00:00",
+  "cloud_gateway_active": false,
+  "cloud_gateway_enabled": "disabled"
+}

@@ -1,0 +1,345 @@
+FF.F.F......                                                             [100%]
+=================================== FAILURES ===================================
+_____ test_derivation_reproduces_the_hand_written_facts[0008c-st-cube-rcc] _____
+
+example = '0008c-st-cube-rcc'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev2/o/test_derivation_reproduces_the0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x732c7400c8a0>
+
+    @pytest.mark.parametrize("example", O.ORACLE_EXAMPLES)
+    def test_derivation_reproduces_the_hand_written_facts(example, tmp_path, monkeypatch):
+        if not _have_inputs():
+            pytest.skip("ST inputs or the Arm GNU toolchain not on this host")
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        exc = O.exceptions()
+>       for d in O.compare(REPO_ROOT / "examples" / example):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_onboarding_oracle.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/onboarding/oracle.py:108: in compare
+    pkg = derive(src, wo)
+          ^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:92: in derive
+    item = model_item(wo, pkg, Path(example))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:136: in model_item
+    rec = {"key": k, "result": check(key, pkg=pkg, example=example)}
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/model_gate.py:188: in check
+    findings += smoke(key, pkg, renode, confirmed or {}, example)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'WO-ORACLE'
+pkg = {'assumptions': [], 'authored': [], 'created_at': '2026-10-27T09:57:01.958899Z', 'driver_style': 'LL', ...}
+renode = '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode'
+confirmed = {}
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/examples/0008c-st-cube-rcc')
+
+    def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
+        """Build and run the delivered code on the model through the simulator's own build/run path."""
+        from ..mcp.servers import sim
+    
+        fm = value(pkg, "file_map") or {}
+        api = value(pkg, "api") or {}
+        inst = value(pkg, "instance")
+        spec = json.loads(((example or REPO_ROOT / "examples" / key) / "workorder.json").read_text())
+        with tempfile.TemporaryDirectory(prefix="forge-ob-smoke-") as td:
+            ws = Path(td) / "ws"
+            for f in fm.get("files", []):
+                src = Path(os.path.expandvars(spec["delivery"]["source"])) / f["from"]
+                (ws / f["to"]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, ws / f["to"])
+            for d in fm.get("dependencies", []):
+                src = Path(os.path.expandvars(d["source"])) / d["from"]
+                (ws / d["to"]).parent.mkdir(parents=True, exist_ok=True)
+                data = src.read_bytes()
+                if d.get("configure"):
+                    from ..brownfield.delivery import configure_hal_conf
+    
+                    data = configure_hal_conf(data, d["configure"]["hal_modules"])
+                (ws / d["to"]).write_bytes(data)
+            (ws / ".forge-run").mkdir(parents=True)
+            (ws / ".forge-run/manifest.json").write_text(json.dumps(
+                {"layer": "HAL", "hal_standalone": True, "peripheral": f"onboarding-preview:{key}",
+                 "code_mode": "FROZEN", "delivery": {"build": spec["delivery"]["build"]}}))
+            stubs = []
+            for e in value(pkg, "undelivered_externals") or []:
+                if not e.get("prototype"):
+                    return [f"MODEL_SMOKE:no prototype for the undelivered {e['symbol']}"]
+                ret = "void" if e["prototype"].startswith("void ") else None
+                if e["role"] == "time_base":
+                    body = "static uint32_t t; t++; return t;"
+                elif ret:
+                    body = ""
+                else:
+                    body = f"return {confirmed.get(e['symbol'], 1)}U;"
+                args = [a.split()[-1].lstrip("*") for a in e["prototype"].split("(", 1)[1].rstrip(")").split(",")
+                        if a.strip() and a.strip() != "void"]
+                stubs.append(f"{e['prototype']} {{ {''.join(f'(void){a}; ' for a in args)}{body} }}")
+            fns = list(api.get("prototypes") or {})
+>           init = next((f for f in fns if f.endswith("_Init")), fns[0])
+                                                                 ^^^^^^
+E           IndexError: list index out of range
+
+factory/python/forge_factory/onboarding/model_gate.py:142: IndexError
+____ test_derivation_reproduces_the_hand_written_facts[0010c-st-cube-gpio] _____
+
+example = '0010c-st-cube-gpio'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev2/o/test_derivation_reproduces_the1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x732c74253ce0>
+
+    @pytest.mark.parametrize("example", O.ORACLE_EXAMPLES)
+    def test_derivation_reproduces_the_hand_written_facts(example, tmp_path, monkeypatch):
+        if not _have_inputs():
+            pytest.skip("ST inputs or the Arm GNU toolchain not on this host")
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        exc = O.exceptions()
+>       for d in O.compare(REPO_ROOT / "examples" / example):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_onboarding_oracle.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/onboarding/oracle.py:108: in compare
+    pkg = derive(src, wo)
+          ^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:92: in derive
+    item = model_item(wo, pkg, Path(example))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:136: in model_item
+    rec = {"key": k, "result": check(key, pkg=pkg, example=example)}
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/model_gate.py:188: in check
+    findings += smoke(key, pkg, renode, confirmed or {}, example)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'WO-ORACLE'
+pkg = {'assumptions': [], 'authored': [], 'created_at': '2026-10-27T09:57:06.852266Z', 'driver_style': 'LL', ...}
+renode = '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode'
+confirmed = {}
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/examples/0010c-st-cube-gpio')
+
+    def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
+        """Build and run the delivered code on the model through the simulator's own build/run path."""
+        from ..mcp.servers import sim
+    
+        fm = value(pkg, "file_map") or {}
+        api = value(pkg, "api") or {}
+        inst = value(pkg, "instance")
+        spec = json.loads(((example or REPO_ROOT / "examples" / key) / "workorder.json").read_text())
+        with tempfile.TemporaryDirectory(prefix="forge-ob-smoke-") as td:
+            ws = Path(td) / "ws"
+            for f in fm.get("files", []):
+                src = Path(os.path.expandvars(spec["delivery"]["source"])) / f["from"]
+                (ws / f["to"]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, ws / f["to"])
+            for d in fm.get("dependencies", []):
+                src = Path(os.path.expandvars(d["source"])) / d["from"]
+                (ws / d["to"]).parent.mkdir(parents=True, exist_ok=True)
+                data = src.read_bytes()
+                if d.get("configure"):
+                    from ..brownfield.delivery import configure_hal_conf
+    
+                    data = configure_hal_conf(data, d["configure"]["hal_modules"])
+                (ws / d["to"]).write_bytes(data)
+            (ws / ".forge-run").mkdir(parents=True)
+            (ws / ".forge-run/manifest.json").write_text(json.dumps(
+                {"layer": "HAL", "hal_standalone": True, "peripheral": f"onboarding-preview:{key}",
+                 "code_mode": "FROZEN", "delivery": {"build": spec["delivery"]["build"]}}))
+            stubs = []
+            for e in value(pkg, "undelivered_externals") or []:
+                if not e.get("prototype"):
+                    return [f"MODEL_SMOKE:no prototype for the undelivered {e['symbol']}"]
+                ret = "void" if e["prototype"].startswith("void ") else None
+                if e["role"] == "time_base":
+                    body = "static uint32_t t; t++; return t;"
+                elif ret:
+                    body = ""
+                else:
+                    body = f"return {confirmed.get(e['symbol'], 1)}U;"
+                args = [a.split()[-1].lstrip("*") for a in e["prototype"].split("(", 1)[1].rstrip(")").split(",")
+                        if a.strip() and a.strip() != "void"]
+                stubs.append(f"{e['prototype']} {{ {''.join(f'(void){a}; ' for a in args)}{body} }}")
+            fns = list(api.get("prototypes") or {})
+>           init = next((f for f in fns if f.endswith("_Init")), fns[0])
+                                                                 ^^^^^^
+E           IndexError: list index out of range
+
+factory/python/forge_factory/onboarding/model_gate.py:142: IndexError
+____ test_derivation_reproduces_the_hand_written_facts[0012c-st-cube-usart] ____
+
+example = '0012c-st-cube-usart'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev2/o/test_derivation_reproduces_the3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x732c74183ac0>
+
+    @pytest.mark.parametrize("example", O.ORACLE_EXAMPLES)
+    def test_derivation_reproduces_the_hand_written_facts(example, tmp_path, monkeypatch):
+        if not _have_inputs():
+            pytest.skip("ST inputs or the Arm GNU toolchain not on this host")
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        exc = O.exceptions()
+>       for d in O.compare(REPO_ROOT / "examples" / example):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_onboarding_oracle.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/onboarding/oracle.py:108: in compare
+    pkg = derive(src, wo)
+          ^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:92: in derive
+    item = model_item(wo, pkg, Path(example))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:136: in model_item
+    rec = {"key": k, "result": check(key, pkg=pkg, example=example)}
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/model_gate.py:188: in check
+    findings += smoke(key, pkg, renode, confirmed or {}, example)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'WO-ORACLE'
+pkg = {'assumptions': [], 'authored': [], 'created_at': '2026-10-27T09:57:17.507323Z', 'driver_style': 'LL', ...}
+renode = '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode'
+confirmed = {}
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/examples/0012c-st-cube-usart')
+
+    def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
+        """Build and run the delivered code on the model through the simulator's own build/run path."""
+        from ..mcp.servers import sim
+    
+        fm = value(pkg, "file_map") or {}
+        api = value(pkg, "api") or {}
+        inst = value(pkg, "instance")
+        spec = json.loads(((example or REPO_ROOT / "examples" / key) / "workorder.json").read_text())
+        with tempfile.TemporaryDirectory(prefix="forge-ob-smoke-") as td:
+            ws = Path(td) / "ws"
+            for f in fm.get("files", []):
+                src = Path(os.path.expandvars(spec["delivery"]["source"])) / f["from"]
+                (ws / f["to"]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, ws / f["to"])
+            for d in fm.get("dependencies", []):
+                src = Path(os.path.expandvars(d["source"])) / d["from"]
+                (ws / d["to"]).parent.mkdir(parents=True, exist_ok=True)
+                data = src.read_bytes()
+                if d.get("configure"):
+                    from ..brownfield.delivery import configure_hal_conf
+    
+                    data = configure_hal_conf(data, d["configure"]["hal_modules"])
+                (ws / d["to"]).write_bytes(data)
+            (ws / ".forge-run").mkdir(parents=True)
+            (ws / ".forge-run/manifest.json").write_text(json.dumps(
+                {"layer": "HAL", "hal_standalone": True, "peripheral": f"onboarding-preview:{key}",
+                 "code_mode": "FROZEN", "delivery": {"build": spec["delivery"]["build"]}}))
+            stubs = []
+            for e in value(pkg, "undelivered_externals") or []:
+                if not e.get("prototype"):
+                    return [f"MODEL_SMOKE:no prototype for the undelivered {e['symbol']}"]
+                ret = "void" if e["prototype"].startswith("void ") else None
+                if e["role"] == "time_base":
+                    body = "static uint32_t t; t++; return t;"
+                elif ret:
+                    body = ""
+                else:
+                    body = f"return {confirmed.get(e['symbol'], 1)}U;"
+                args = [a.split()[-1].lstrip("*") for a in e["prototype"].split("(", 1)[1].rstrip(")").split(",")
+                        if a.strip() and a.strip() != "void"]
+                stubs.append(f"{e['prototype']} {{ {''.join(f'(void){a}; ' for a in args)}{body} }}")
+            fns = list(api.get("prototypes") or {})
+>           init = next((f for f in fns if f.endswith("_Init")), fns[0])
+                                                                 ^^^^^^
+E           IndexError: list index out of range
+
+factory/python/forge_factory/onboarding/model_gate.py:142: IndexError
+_____ test_derivation_reproduces_the_hand_written_facts[0014c-st-cube-crc] _____
+
+example = '0014c-st-cube-crc'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev2/o/test_derivation_reproduces_the5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x732c739b4c50>
+
+    @pytest.mark.parametrize("example", O.ORACLE_EXAMPLES)
+    def test_derivation_reproduces_the_hand_written_facts(example, tmp_path, monkeypatch):
+        if not _have_inputs():
+            pytest.skip("ST inputs or the Arm GNU toolchain not on this host")
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        exc = O.exceptions()
+>       for d in O.compare(REPO_ROOT / "examples" / example):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_onboarding_oracle.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/onboarding/oracle.py:108: in compare
+    pkg = derive(src, wo)
+          ^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:92: in derive
+    item = model_item(wo, pkg, Path(example))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/__init__.py:136: in model_item
+    rec = {"key": k, "result": check(key, pkg=pkg, example=example)}
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/onboarding/model_gate.py:188: in check
+    findings += smoke(key, pkg, renode, confirmed or {}, example)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'WO-ORACLE'
+pkg = {'assumptions': [], 'authored': [], 'created_at': '2026-10-27T09:57:27.749069Z', 'driver_style': 'LL', ...}
+renode = '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode'
+confirmed = {}
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/examples/0014c-st-cube-crc')
+
+    def smoke(key: str, pkg: dict, renode: str, confirmed: dict, example: Path | None = None) -> list[str]:
+        """Build and run the delivered code on the model through the simulator's own build/run path."""
+        from ..mcp.servers import sim
+    
+        fm = value(pkg, "file_map") or {}
+        api = value(pkg, "api") or {}
+        inst = value(pkg, "instance")
+        spec = json.loads(((example or REPO_ROOT / "examples" / key) / "workorder.json").read_text())
+        with tempfile.TemporaryDirectory(prefix="forge-ob-smoke-") as td:
+            ws = Path(td) / "ws"
+            for f in fm.get("files", []):
+                src = Path(os.path.expandvars(spec["delivery"]["source"])) / f["from"]
+                (ws / f["to"]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, ws / f["to"])
+            for d in fm.get("dependencies", []):
+                src = Path(os.path.expandvars(d["source"])) / d["from"]
+                (ws / d["to"]).parent.mkdir(parents=True, exist_ok=True)
+                data = src.read_bytes()
+                if d.get("configure"):
+                    from ..brownfield.delivery import configure_hal_conf
+    
+                    data = configure_hal_conf(data, d["configure"]["hal_modules"])
+                (ws / d["to"]).write_bytes(data)
+            (ws / ".forge-run").mkdir(parents=True)
+            (ws / ".forge-run/manifest.json").write_text(json.dumps(
+                {"layer": "HAL", "hal_standalone": True, "peripheral": f"onboarding-preview:{key}",
+                 "code_mode": "FROZEN", "delivery": {"build": spec["delivery"]["build"]}}))
+            stubs = []
+            for e in value(pkg, "undelivered_externals") or []:
+                if not e.get("prototype"):
+                    return [f"MODEL_SMOKE:no prototype for the undelivered {e['symbol']}"]
+                ret = "void" if e["prototype"].startswith("void ") else None
+                if e["role"] == "time_base":
+                    body = "static uint32_t t; t++; return t;"
+                elif ret:
+                    body = ""
+                else:
+                    body = f"return {confirmed.get(e['symbol'], 1)}U;"
+                args = [a.split()[-1].lstrip("*") for a in e["prototype"].split("(", 1)[1].rstrip(")").split(",")
+                        if a.strip() and a.strip() != "void"]
+                stubs.append(f"{e['prototype']} {{ {''.join(f'(void){a}; ' for a in args)}{body} }}")
+            fns = list(api.get("prototypes") or {})
+>           init = next((f for f in fns if f.endswith("_Init")), fns[0])
+                                                                 ^^^^^^
+E           IndexError: list index out of range
+
+factory/python/forge_factory/onboarding/model_gate.py:142: IndexError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0008c-st-cube-rcc]
+FAILED factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0010c-st-cube-gpio]
+FAILED factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0012c-st-cube-usart]
+FAILED factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0014c-st-cube-crc]
+
+--- stderr ---

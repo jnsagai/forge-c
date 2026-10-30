@@ -1,0 +1,170 @@
+EEEEEEEEEEE.                                                             [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0008c-st-cube-rcc] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0010c-st-cube-gpio] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0011c-st-cube-spi] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0012c-st-cube-usart] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0013c-st-cube-tim] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0014c-st-cube-crc] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0010d-st-cube-gpio-hal] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0011d-st-cube-spi-hal] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0012d-st-cube-usart-hal] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0013d-st-cube-tim-hal] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_derivation_reproduces_the_hand_written_facts[0014d-st-cube-crc-hal] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/o'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0008c-st-cube-rcc]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0010c-st-cube-gpio]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0011c-st-cube-spi]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0012c-st-cube-usart]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0013c-st-cube-tim]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0014c-st-cube-crc]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0010d-st-cube-gpio-hal]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0011d-st-cube-spi-hal]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0012d-st-cube-usart-hal]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0013d-st-cube-tim-hal]
+ERROR factory/python/tests/test_onboarding_oracle.py::test_derivation_reproduces_the_hand_written_facts[0014d-st-cube-crc-hal]
+
+--- stderr ---

@@ -1,0 +1,63 @@
+{
+  "schema": "forge-c/onboarding-deployment/0.1",
+  "deployed_at": "2026-10-27T11:32:41.811618Z",
+  "revision": "5fb0a8673944c7e919ceffc78daaf6f3b782d71e",
+  "cre_decision": "pd-fcc8a2759b12bdd516ac",
+  "oracle_commit": "5d9987f",
+  "backup": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/unit-backup-f016-2026-10-27T113138315725Z",
+  "backup_manifest": {
+    "before_revision": "11482e39be03f55f086116b9d4ccfd030f98b691",
+    "after_revision": "5fb0a8673944c7e919ceffc78daaf6f3b782d71e",
+    "cre_decision": "pd-fcc8a2759b12bdd516ac",
+    "unit_sha256": {
+      "forge-ollama.service": "05a3a1c17b6261460ffd86ccc394c549261131ca1ab12d9918341abb55d2b790",
+      "forge-llm-gateway.service": "8e8a549a7c5953acc831ad4511b8e6d439858c09d57c642d25e009d33c86d1b5",
+      "forge-llm-gateway-cloud.service": "cc6eef7f25d0579288daae0110950a47f70a4ab9a83a0365f92ae321c5d1dbed",
+      "forge-fabro.service": "505697aae5195c35d04bd123241adcd7ae0fc8accfdf08265d27923bbbd82dde",
+      "forge-fabro-cloud.service": "a86b55d8f9181ea0f09db473116472472b456c074d6eff1357cb68145d9eec2d",
+      "forge-dashboard.service": "d39c26dbe9af105bf7fe8821cb1627e3e93b90d9d2486b1775045a3435fb113e",
+      "forge-conductor.service": "1e988d571940dc2cebed7879b686a4eb12ff48bcfaf13485f6ebcc798ba0ab4d",
+      "forge-afo-watchdog.service": "248d75d91ca79b5f045916a37d429c995e897b871b31e07cb1d111f253ea9850",
+      "forge-afo-watchdog.timer": "9b98d26c4a0cc021e09becde544a3f089eb3c94ff96e721adb0d89b26bf033fe"
+    },
+    "active_orders": [],
+    "pending_commands": 0,
+    "backup_at": "2026-10-27T11:31:38.371024Z"
+  },
+  "backup_manifest_sha256": "4f77dd0167c1a46111b7c07e6ba1e0d5b9f4b6797d4678d54b26528c83ce8548",
+  "verification": "evidence/v0.4/runs/OB-T046/latest.json",
+  "full_suite": "evidence/v0.4/runs/OB-FULL-SUITE/latest.json",
+  "failure_set_comparison": "evidence/v0.4/runs/OB-NO-REGRESSIONS/latest.json",
+  "cloud_gateway": "inactive, disabled",
+  "acceptance_submitted": false,
+  "packages": [
+    {
+      "key": "0010e-st-cube-gpio-hal-ob",
+      "sha256": "1b940650471a28ac7980c741bb36d73a113640d752221be66ff83b694933cb2b",
+      "approval_verification": "APPROVAL_MISSING",
+      "summary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0010e-st-cube-gpio-hal-ob/onboarding/summary.md",
+      "unsigned_approval": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0010e-st-cube-gpio-hal-ob/onboarding/approval.UNSIGNED.json"
+    },
+    {
+      "key": "0011e-st-cube-spi-hal-ob",
+      "sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523",
+      "approval_verification": "APPROVAL_MISSING",
+      "summary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0011e-st-cube-spi-hal-ob/onboarding/summary.md",
+      "unsigned_approval": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0011e-st-cube-spi-hal-ob/onboarding/approval.UNSIGNED.json"
+    },
+    {
+      "key": "0012e-st-cube-usart-hal-ob",
+      "sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9",
+      "approval_verification": "APPROVAL_MISSING",
+      "summary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0012e-st-cube-usart-hal-ob/onboarding/summary.md",
+      "unsigned_approval": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0012e-st-cube-usart-hal-ob/onboarding/approval.UNSIGNED.json"
+    },
+    {
+      "key": "0013e-st-cube-tim-hal-ob",
+      "sha256": "cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804",
+      "approval_verification": "APPROVAL_MISSING",
+      "summary": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0013e-st-cube-tim-hal-ob/onboarding/summary.md",
+      "unsigned_approval": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/0013e-st-cube-tim-hal-ob/onboarding/approval.UNSIGNED.json"
+    }
+  ]
+}

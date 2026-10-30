@@ -25,6 +25,9 @@ hal:
   header: stm32n6xx_hal_uart.h
   source: stm32n6xx_hal_uart.c
   function_prefix: HAL_UART_
+  time_base: HAL_GetTick
+  clock_stub: {prototype: "uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t PeriphClk)", hz: 64000000}
+  host_instance: USART1
 sim:
   model: usart_model.py
   platform: stm32n6_usart.repl

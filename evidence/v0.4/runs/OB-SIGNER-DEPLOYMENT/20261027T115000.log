@@ -1,0 +1,7 @@
+0010e-st-cube-gpio-hal-ob APPROVAL_OK OA-2026-10-27-01
+0011e-st-cube-spi-hal-ob APPROVAL_OK OA-2026-10-27-02
+0012e-st-cube-usart-hal-ob APPROVAL_OK OA-2026-10-27-03
+0013e-st-cube-tim-hal-ob APPROVAL_OK OA-2026-10-27-04
+PASS deployed revision 9fa4664; owner signatures accepted; cloud gateway disabled
+
+--- stderr ---

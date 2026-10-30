@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/check_owner_review.py"
+  ],
+  "duration_s": 0.318,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "c5dec7065713b472155180482160fca3d763da35",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-OWNER-REVIEW/20261027T163725.log",
+  "log_sha256": "d732dd5e291d1b294fddb58fa9bac4e08857b55f853a4e425c0871290bef14a4",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-OWNER-REVIEW",
+  "ts_utc": "2026-10-27T16:37:25.464906Z"
+}

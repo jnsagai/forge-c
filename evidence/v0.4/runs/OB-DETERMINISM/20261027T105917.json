@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "import json,time; from pathlib import Path; from forge_factory.onboarding import derive,onboarding_dir; from forge_factory.benchmark.queue import load; from forge_factory.common import REPO_ROOT; q=load(REPO_ROOT/\"config/factory/benchmark/st-driver-onboarding-queue.yaml\");\nfor item in q[\"items\"]:\n key=Path(item[\"example\"]).name; old=json.loads((onboarding_dir(key)/\"onboarding/package.json\").read_text())[\"sha256\"]; start=time.monotonic(); new=derive(REPO_ROOT/item[\"example\"]); duration=time.monotonic()-start; assert new[\"sha256\"]==old, key; assert duration<600, duration; print(\"PASS\",key,\"sha256\",old,\"duration_s\",round(duration,3))"
+  ],
+  "duration_s": 21.883,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a2709bd56c1b46647360f1fdb958012a5ef4df67",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-DETERMINISM/20261027T105917.log",
+  "log_sha256": "59fdff04e6118b0c6b13ce99b44cde17c9488cc2f148332c81a5caa40218afcc",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-DETERMINISM",
+  "ts_utc": "2026-10-27T10:59:17.548695Z"
+}

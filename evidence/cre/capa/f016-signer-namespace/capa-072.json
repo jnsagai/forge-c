@@ -1,0 +1,115 @@
+{
+  "record": {
+    "affected_versions": [],
+    "candidate_patch_sha256": null,
+    "capa_id": "CAPA-072",
+    "created_at": "2026-10-27T11:41:27.887136Z",
+    "event_ids": [],
+    "incident_ids": [
+      "CAPA-072"
+    ],
+    "lesson_ids": [],
+    "observation_window_end": null,
+    "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+    "prevention_test_id": null,
+    "reproducer_id": null,
+    "root_cause_evidence_refs": [],
+    "root_cause_status": "HYPOTHESIS",
+    "root_cause_summary": "The shipped public-key signer entry restricts signatures to the AFO namespace, while onboarding verifies a distinct namespace.",
+    "schema_version": "1.0",
+    "state": "TRIAGED",
+    "updated_at": "2026-10-27T11:41:27.961160Z"
+  },
+  "history": [
+    {
+      "seq": 559,
+      "capa_id": "CAPA-072",
+      "from_state": null,
+      "to_state": "OPEN",
+      "at": "2026-10-27T11:41:27.887136Z",
+      "reason": "CONFIG_INVALID: signer namespace forge-onboarding-approval is absent from afo-allowed-signers; four correct owner signatures refused",
+      "evidence": "[\"CAPA-072\"]"
+    },
+    {
+      "seq": 560,
+      "capa_id": "CAPA-072",
+      "from_state": "OPEN",
+      "to_state": "TRIAGED",
+      "at": "2026-10-27T11:41:27.961160Z",
+      "reason": "triage by ENGINEERING",
+      "evidence": "[]"
+    }
+  ],
+  "links": [
+    "cfp1-20ad72892a51b50ade47ae216d3a64a2c2fa98c8",
+    "AFO-OB-SIGNER-NAMESPACE",
+    "cre-812e4971a8d92e4197e2aebad24b453356e56402",
+    "AFO-OB-SIGNER-NAMESPACE-V2",
+    "pd-ce451fe3fb21267bbb0d",
+    "pd-7a8a64cfe226c1e41adb",
+    "9fa4664798183218184a6cf1a650ab1985087ea4",
+    "rr-a714c5db8a532e8c7be5,rr-cbe0af30351412fb5bda"
+  ],
+  "plan": {
+    "source": "26e13238e85a7787fc15b2e541dd2d275d0797ca",
+    "baseline": "5fb0a8673944c7e919ceffc78daaf6f3b782d71e",
+    "candidate": "9fa4664798183218184a6cf1a650ab1985087ea4",
+    "capa_id": "CAPA-072",
+    "staged_manifest": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/cre-signer-namespace-v2/manifest.yaml",
+    "observation": {
+      "obs_id": "cre-812e4971a8d92e4197e2aebad24b453356e56402",
+      "obs_key": "OB-APPROVAL-INTAKE-20261027|state/onboarding/*/onboarding/approval.json.sig|df64022aca739b7863c05c3f99d0cf28de850d72ad2fb917557b16396a2efbd8|INFRASTRUCTURE|CONFIG_INVALID",
+      "fingerprint": "cfp1-20ad72892a51b50ade47ae216d3a64a2c2fa98c8",
+      "failure_class": "INFRASTRUCTURE",
+      "category": "INFRASTRUCTURE",
+      "component": "onboarding/approval",
+      "error_code": "CONFIG_INVALID",
+      "operation": "-/verify",
+      "order_id": null,
+      "attempt_id": "OB-APPROVAL-INTAKE-20261027",
+      "run_id": null,
+      "phase": null,
+      "ts_utc": "2026-10-27T11:41:27.731613Z",
+      "disposition": "ACTIVE",
+      "outcome": "BLOCKED",
+      "cohort": "driver=ST_HAL|stage=onboarding|model=none",
+      "factory_version": "5fb0a8673944",
+      "source_ref": "state/onboarding/*/onboarding/approval.json.sig",
+      "evidence_sha256": "df64022aca739b7863c05c3f99d0cf28de850d72ad2fb917557b16396a2efbd8",
+      "excerpt": "CONFIG_INVALID: signer namespace forge-onboarding-approval is absent from afo-allowed-signers; four correct owner signatures refused",
+      "route": "REPAIR_ELIGIBLE",
+      "rule": 5,
+      "source_kind": "DETERMINISTIC_TOOL",
+      "factory_revision_basis": "deployed_revision"
+    },
+    "signed_package_hashes_unchanged": true,
+    "previous_decision": "pd-ce451fe3fb21267bbb0d",
+    "reproducer_id": "AFO-OB-SIGNER-NAMESPACE-V2",
+    "decision_id": "pd-7a8a64cfe226c1e41adb"
+  },
+  "contrast": [
+    {
+      "run_id": "rr-a714c5db8a532e8c7be5",
+      "reproducer_id": "AFO-OB-SIGNER-NAMESPACE-V2",
+      "revision": "5fb0a8673944c7e919ceffc78daaf6f3b782d71e",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "factory signer policy rejects the onboarding approval namespace",
+      "log_sha256": "46ba122e20991416721c39aa04f54e86404f787e715b73e7c759e92ed966da77",
+      "at": "2026-10-27T11:43:48.722670Z"
+    },
+    {
+      "run_id": "rr-cbe0af30351412fb5bda",
+      "reproducer_id": "AFO-OB-SIGNER-NAMESPACE-V2",
+      "revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-10-27T11:43:49.458440Z"
+    }
+  ],
+  "note": "Native staged-reproducer path, as used by afo.maintainer: CAPA stays TRIAGED/HYPOTHESIS until the reproducer is admitted to the frozen manifest; the independent promotion gate verifies the causal contrast. No EFFECTIVE claim."
+}

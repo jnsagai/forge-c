@@ -1,0 +1,65 @@
+{
+  "schema": "forge-c/owner-decision/0.1",
+  "decided_on": "2026-10-27",
+  "recorded_at": "2026-10-27T16:36:45.030040Z",
+  "decided_by": "Jefferson Nascimento (owner)",
+  "authority": "Explicit owner response in this session; recorded without generating a signature.",
+  "decision_id": "OD-2026-10-27-01",
+  "subject": "Offline evidence acceptance of the four current feature 016 BLOCKED ST HAL handovers",
+  "statement": "Accept all four BLOCKED handovers; keep findings open",
+  "decision": "ACCEPT_BLOCKED_HANDOVERS_WITH_OPEN_FINDINGS",
+  "owner_response_ref": "request_user_input_async call_35af58f6cd0c4fa6b3752ac71b21b57d question 0",
+  "record_sha256": "1995d030d3156a47e315c19ae26d104cec198eef8c87cc11cfa510d06301ce61",
+  "review_brief_sha256": "5009ba6ae49af45072feb314755f80fd5946a8ea8ad3355823e0bd8f9f97aafc",
+  "packages": [
+    {
+      "peripheral": "gpio",
+      "request_id": "BENCH-GPIO-ST-HAL-OB-R1",
+      "attempt_id": "afo-3043541c6afd38b1-a1",
+      "work_order": "WO-AFO-3043541c6afd38b1-a1",
+      "package_status": "BLOCKED",
+      "gap_count": 709,
+      "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-3043541c6afd38b1-a1/forge-c-WO-AFO-3043541c6afd38b1-a1-review.zip",
+      "archive_sha256": "9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b",
+      "factory_revision": "557e920daa540a47461958c1e62842ac6bb709fd"
+    },
+    {
+      "peripheral": "spi",
+      "request_id": "BENCH-SPI-ST-HAL-OB-R1",
+      "attempt_id": "afo-d5622d4914a0ac9d-a1",
+      "work_order": "WO-AFO-d5622d4914a0ac9d-a1",
+      "package_status": "BLOCKED",
+      "gap_count": 310,
+      "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-d5622d4914a0ac9d-a1/forge-c-WO-AFO-d5622d4914a0ac9d-a1-review.zip",
+      "archive_sha256": "858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458",
+      "factory_revision": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc"
+    },
+    {
+      "peripheral": "usart",
+      "request_id": "BENCH-USART-ST-HAL-OB",
+      "attempt_id": "afo-91b7e28a3bab37e5-a1",
+      "work_order": "WO-AFO-91b7e28a3bab37e5-a1",
+      "package_status": "BLOCKED",
+      "gap_count": 711,
+      "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-91b7e28a3bab37e5-a1/forge-c-WO-AFO-91b7e28a3bab37e5-a1-review.zip",
+      "archive_sha256": "c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8",
+      "factory_revision": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc"
+    },
+    {
+      "peripheral": "tim",
+      "request_id": "BENCH-TIM-ST-HAL-OB",
+      "attempt_id": "afo-a06f0cfbf6e556cc-a1",
+      "work_order": "WO-AFO-a06f0cfbf6e556cc-a1",
+      "package_status": "BLOCKED",
+      "gap_count": 230,
+      "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-a06f0cfbf6e556cc-a1/forge-c-WO-AFO-a06f0cfbf6e556cc-a1-review.zip",
+      "archive_sha256": "ae6059eaac1475bab029d74918423b61a6cecb591053a13b64328d2e42c75749",
+      "factory_revision": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc"
+    }
+  ],
+  "limitations": [
+    "Every named finding remains open.",
+    "No driver acceptance, safety approval, change to a gate/package status or merge is authorized.",
+    "Held-out CRC model authoring/inspection remains NOT_RUN because Claude quota is exhausted."
+  ]
+}

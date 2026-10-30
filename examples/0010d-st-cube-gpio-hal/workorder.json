@@ -1,0 +1,219 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 general-purpose I/O (GPIOA) hardware abstraction layer (HAL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 15 (GPIO) + memory map p.176"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.15 GPIO register interface + memory map p.176 (GPIOA secure base 0x56020000)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the GPIO benchmark work orders"
+  },
+  "scope": [
+    "HAL (classic) as delivered by ST: functions taking the port (the CMSIS device structure GPIOA, stm32n6xx.h) and a GPIO_InitTypeDef configuration (Pin, Mode, Pull, Speed, Alternate); the HAL framework headers stm32n6xx_hal.h / stm32n6xx_hal_def.h and ST's stm32n6xx_hal_conf_template.h configured with the GPIO module only (USE_FULL_ASSERT off, as delivered)",
+    "Pin configuration from GPIO_InitTypeDef: input, output push-pull/open-drain, alternate function and analog modes (GPIO_MODER, GPIO_OTYPER), speed (GPIO_OSPEEDR), pull-up/pull-down (GPIO_PUPDR) and alternate function (GPIO_AFRL/GPIO_AFRH) of the selected pins of port A",
+    "Pin data: read a pin (GPIO_IDR), write a pin set/reset (GPIO_BSRR / GPIO_BRR), toggle pins, write several pins to set and reset states at once; the configuration lock sequence (GPIO_LCKR, HAL_GPIO_LockPin)",
+    "Out of scope: EXTI modes and callbacks (HAL_GPIO_EXTI_*), HAL_GPIO_DeInit (it also resets the pin's EXTI configuration), retime/delay (HAL_GPIO_SetRetime/SetDelay and getters), pin attributes (secure/privilege), other ports"
+  ],
+  "system_names": [
+    "GPIO HAL driver",
+    "GPIO driver",
+    "STM32N6 GPIO HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0010-gpio-st/inputs/RM0486-rev4-ch15-gpio.md",
+      "role": "reference_manual_gpio_chapter"
+    },
+    {
+      "path": "../0010-gpio-st/inputs/RM0486-rev4-memory-map-excerpt-gpio.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0010-gpio-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "Feature 015 F015-T065 (owner 2026-10-27 \"do the same work done for LL, do it now for HAL\"): ST's existing STM32CubeN6 GPIO HAL code (stm32n6xx-hal-driver v1.4.0), FROZEN, built on ST's HAL framework headers; requirements are derived from RM0486 independently of the code; secure build.",
+  "delivery": {
+    "code_mode": "FROZEN",
+    "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+    "licence": "BSD-3-Clause",
+    "licence_allows_modification": true,
+    "provided_ll": false,
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+    "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+    "files": [
+      {
+        "from": "Src/stm32n6xx_hal_gpio.c",
+        "to": "software/hal/stm32n6xx_hal_gpio.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_gpio.h",
+        "to": "software/hal/stm32n6xx_hal_gpio.h"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_gpio_ex.h",
+        "to": "software/hal/stm32n6xx_hal_gpio_ex.h"
+      }
+    ],
+    "scope": {
+      "functions": [
+        "HAL_GPIO_Init",
+        "HAL_GPIO_ReadPin",
+        "HAL_GPIO_WritePin",
+        "HAL_GPIO_TogglePin",
+        "HAL_GPIO_WriteMultipleStatePin",
+        "HAL_GPIO_LockPin"
+      ],
+      "note": "blocking/polling HAL API of the scope; MSP hooks, interrupt/DMA paths excluded"
+    },
+    "dependencies": [
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n6xx.h",
+        "to": "inputs/vendor/include/stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n657xx.h",
+        "to": "inputs/vendor/include/stm32n657xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/system_stm32n6xx.h",
+        "to": "inputs/vendor/include/system_stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "core_cm55.h",
+        "to": "inputs/vendor/include/core_cm55.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_version.h",
+        "to": "inputs/vendor/include/cmsis_version.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_compiler.h",
+        "to": "inputs/vendor/include/cmsis_compiler.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_gcc.h",
+        "to": "inputs/vendor/include/cmsis_gcc.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/cmsis_gcc_m.h",
+        "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_mpu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_pmu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv7m_cachel1.h",
+        "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_def.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_def.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/Legacy/stm32_hal_legacy.h",
+        "to": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_conf_template.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause",
+        "configure": {
+          "hal_modules": [
+            "GPIO"
+          ]
+        }
+      }
+    ],
+    "build": {
+      "style": "cmsis",
+      "defines": [
+        "STM32N657xx"
+      ],
+      "secure": true
+    }
+  },
+  "peripheral": "gpio"
+}

@@ -25,9 +25,10 @@ TENANT = "forge-c-benchmark-015"
 MANIFEST_DIR = "config/factory/benchmark/afo"
 
 
-def driver_class(item_id: str) -> str:
-    """e.g. crc-st -> STM32N6_CRC_LL_ST (the authorization scope lists these)."""
-    return f"STM32N6_{item_id.split('-')[0].upper()}_LL_ST"
+def driver_class(item_id: str, layer: str = "LL") -> str:
+    """e.g. crc-st -> STM32N6_CRC_LL_ST, crc-st-hal (layer HAL) -> STM32N6_CRC_HAL_ST (the authorization scope lists
+    these; F015-T065: ST's HAL items are their own driver classes)."""
+    return f"STM32N6_{item_id.split('-')[0].upper()}_{'HAL' if layer == 'HAL' else 'LL'}_ST"
 
 
 def envelopes(q: dict, approved_by: str, authorization_ref: str) -> list[dict]:
@@ -41,7 +42,7 @@ def envelopes(q: dict, approved_by: str, authorization_ref: str) -> list[dict]:
         out.append({"schema_version": "1.0", "request_id": f"BENCH-{i['id'].upper()}", "tenant_scope": TENANT,
                     "manifest_sha256": hashlib.sha256((REPO_ROOT / ref).read_bytes()).hexdigest(),
                     "input_manifest_ref": ref, "approved_by": approved_by, "authorization_ref": authorization_ref,
-                    "driver_class": driver_class(i["id"]), "target": "STM32N657X0 (RM0486 Rev 4)",
+                    "driver_class": driver_class(i["id"], i.get("layer", "LL")), "target": "STM32N657X0 (RM0486 Rev 4)",
                     "safety_scope": "NOT_PROVIDED (offline review candidate only)", "model_profile": m["model_profile"],
                     "submitted_utc": utc_now(), "priority": "NORMAL", **({"git_revision": rev} if rev else {})})
     return out

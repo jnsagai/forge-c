@@ -26,6 +26,7 @@ hal:
   header: stm32n6xx_hal_tim.h
   source: stm32n6xx_hal_tim.c
   function_prefix: HAL_TIM_
+  host_instance: TIM2
 sim:
   model: tim_model.py
   platform: stm32n6_tim.repl

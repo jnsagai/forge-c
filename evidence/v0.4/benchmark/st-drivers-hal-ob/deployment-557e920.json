@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-27T12:32:44.733865Z",
+  "runtime_revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+  "cre_decision": "pd-29aa710d612f9cbae9e3",
+  "oracle_commit": "e17da23",
+  "backup": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/unit-backup-f016-fields-2026-10-27T122409.407534Z",
+  "packages": [
+    {
+      "key": "0010e-st-cube-gpio-hal-ob",
+      "sha256": "e7eeec3c04d48ad30d4b6ef2d178bee17131299a7e4bff094d8caaab9edb9891",
+      "approval": "APPROVAL_MISSING"
+    },
+    {
+      "key": "0011e-st-cube-spi-hal-ob",
+      "sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523",
+      "approval": "APPROVAL_OK"
+    },
+    {
+      "key": "0012e-st-cube-usart-hal-ob",
+      "sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9",
+      "approval": "APPROVAL_OK"
+    },
+    {
+      "key": "0013e-st-cube-tim-hal-ob",
+      "sha256": "cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804",
+      "approval": "APPROVAL_OK"
+    }
+  ],
+  "gpio_initial_sc005": "FAIL: the initial derived index omitted real RM fields; original BLOCKED package retained; corrected package needs new owner signature",
+  "full_suite_job": "logs/f016-557e920-full-tests.log"
+}

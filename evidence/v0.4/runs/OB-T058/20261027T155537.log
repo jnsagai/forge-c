@@ -1,0 +1,7 @@
+gpio BLOCKED gaps 709 archive 9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b
+spi BLOCKED gaps 310 archive 858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458
+usart BLOCKED gaps 711 archive c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8
+tim BLOCKED gaps 230 archive ae6059eaac1475bab029d74918423b61a6cecb591053a13b64328d2e42c75749
+PASS terminal outcomes and approved package bindings; gap-cause/SC-005 review remains separate
+
+--- stderr ---

@@ -1,0 +1,4 @@
+gpio BLOCKED gaps 709 archive 9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b
+PASS terminal outcomes and approved package bindings; gap-cause/SC-005 review remains separate
+
+--- stderr ---

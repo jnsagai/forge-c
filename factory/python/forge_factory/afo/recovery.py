@@ -26,6 +26,7 @@ import hashlib
 import json
 import re
 import time
+from pathlib import Path
 
 from ..common import canonical_json, utc_now
 from . import contracts
@@ -148,10 +149,50 @@ def _new_lessons(bundle: dict, since_utc: str) -> list[str]:
     return sorted(x["lesson_id"] for x in out.get("lessons", []) if str(x.get("validated_at", "")) > since_utc)
 
 
-def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_models: list[str] | None) -> list[str]:
+CODE_DIRS = ("software/ll/", "software/hal/", "software/src/", "software/include/")
+
+
+def frozen_issues(plan: dict, bundle: dict, ws) -> list[str]:
+    """Feature 016 OB-T061: what a recovery cannot do to a FROZEN delivery. The CRC HAL shake-down showed both: a
+    planner rework that would have created LL headers to satisfy a gate (afo-plan-97c64dc37304a1b2), and reworks of a
+    phase whose failing tests reproduce the delivered code's own defects (WO-AFO-071ffed673bf5df5-a1: DEF-002/003/004
+    escalated) - only the owner's disposition changes that outcome."""
+    if ws is None or plan["strategy"] in ("CLOSE_BLOCKED", "DEFER_TRANSIENT_DEPENDENCY"):
+        return []
+    from ..brownfield import code_mode, manifest_of
+
+    if code_mode(manifest_of(ws)) != "FROZEN":
+        return []
+    out = [f"FROZEN_CODE_SCOPE:{p}" for p in plan.get("artifact_scope") or []
+           if (str(p).rstrip("/") + "/").startswith(CODE_DIRS)]
+    log = Path(ws) / ".forge-run/gates/gate-log.jsonl"
+    last = ""
+    if log.is_file():
+        for ln in log.read_text().splitlines():
+            if '"BLOCKED"' in ln and f'"{bundle["phase"]}"' in ln:
+                last = ln
+    for m in re.finditer(r"MISSING_REQUIRED_OUTPUT:(software/(?:ll|hal|src|include)/[^,;\s\")]*)", last):
+        out.append(f"STYLE_OUTPUT:{m.group(1)}")
+    escalated = []
+    for f in sorted((Path(ws) / ".forge-run/defects").glob("DEF-*.json")):
+        try:
+            d = json.loads(f.read_text())
+        except ValueError:
+            continue
+        if d.get("kind") == "CODE" and d.get("status") == "ESCALATED" and d.get("detected_phase") == bundle["phase"] \
+                and d.get("target_kind") == "DELIVERED_CODE":
+            escalated.append(d["id"])
+    if escalated and "REQUIRED_TOOL_NOT_PASS" in last:
+        out.append("FROZEN_DEFECTS_NEED_OWNER:" + ",".join(escalated[:8]))
+    return out
+
+
+def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_models: list[str] | None,
+             ws=None) -> list[str]:
     issues = contracts.errors("recovery-plan", plan)
     if issues:
         return issues
+    issues += frozen_issues(plan, bundle, ws)
     if plan["strategy"] not in STRATEGIES_FOR.get(bundle["failure_class"], set()):
         issues.append(f"STRATEGY_NOT_LEGAL_FOR_CLASS:{plan['strategy']}:{bundle['failure_class']}")
     m = plan.get("model_profile")
@@ -230,7 +271,7 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
                 return {"plan": None, "status": "PENDING", "source": source, "reasons": []}
     if plan is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "NO_MATERIALLY_DIFFERENT_STRATEGY")
-    reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models)
+    reasons = validate(plan, bundle, store=store, order=order, eff=eff, auth_models=auth_models, ws=ws)
     if reasons and plan["strategy"] != "CLOSE_BLOCKED":
         record_plan(store, plan, source=source, status="REJECTED", reasons=reasons,
                     budget=budget_snapshot(store, order, eff))

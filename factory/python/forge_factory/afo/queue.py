@@ -218,6 +218,11 @@ class Store:
             raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
         if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
             raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
+        from ..onboarding import intake_check  # feature 016 (FR-016): onboarding work orders need the approval first
+
+        ob = intake_check(repo, json.loads(mpath.read_text()))
+        if ob:
+            raise QueueError("INTAKE_ONBOARDING_NOT_APPROVED", ob)
         if approve is not None:
             ok, code = approve(env)
             if not ok:

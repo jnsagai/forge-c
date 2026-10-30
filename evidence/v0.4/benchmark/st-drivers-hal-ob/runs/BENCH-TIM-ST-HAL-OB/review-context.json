@@ -1,0 +1,209 @@
+{
+  "recorded_at": "2026-10-27T15:54:04.761328Z",
+  "request_id": "BENCH-TIM-ST-HAL-OB",
+  "order_id": "afo-a06f0cfbf6e556cc",
+  "attempt_id": "afo-a06f0cfbf6e556cc-a1",
+  "archive_integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-a06f0cfbf6e556cc-a1/forge-c-WO-AFO-a06f0cfbf6e556cc-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "phases": {
+    "SWE.1": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 3,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.1-001"
+    },
+    "SWE.2": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 2,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.2-001"
+    },
+    "SWE.3": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.3-001"
+    },
+    "SWE.4": {
+      "inspections_passed": 0,
+      "inspections_failed": 0,
+      "reworks": 1,
+      "upstream_returns": 0,
+      "final": "BLOCKED",
+      "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-05, UT:SPEC_NOT_VERIFIED:USPEC-HAL-05-03); stopped early"
+    }
+  },
+  "gap_count": 230,
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding": 208
+  },
+  "defects": [
+    {
+      "id": "DEF-001",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN Base_Init and GenerateEvent have no runtime HAL_ERROR validation for required invalid values. assert_param is disabled in delivered configuration; enabling assertions would call assert_failed, not return HAL_ERROR. Prescaler has no assertion and event assertion permits TIM2 reserved bits. Owner correction required.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_tim.c:281-286",
+        "software/hal/stm32n6xx_hal_tim.c:313",
+        "software/hal/stm32n6xx_hal_tim.c:5510-5531",
+        "software/hal/stm32n6xx_hal_tim.h:1883",
+        "inputs/vendor/include/stm32n6xx_hal_conf.h:493-507",
+        "workproducts/SWE.1/register_effects.json:BASE_INIT_INVALID_*,GENERATE_EVENT_INVALID_*"
+      ]
+    },
+    {
+      "id": "DEF-002",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN Base_DeInit, Base_Start, Base_Stop and GenerateEvent lack NULL guards and dereference the handle instead of returning HAL_ERROR; only Base_Init checks NULL. Owner correction required.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_tim.c:333",
+        "software/hal/stm32n6xx_hal_tim.c:415",
+        "software/hal/stm32n6xx_hal_tim.c:452",
+        "software/hal/stm32n6xx_hal_tim.c:5517",
+        "software/hal/stm32n6xx_hal_tim.h:1285",
+        "workproducts/SWE.1/software_requirements.md:35"
+      ]
+    },
+    {
+      "id": "DEF-003",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN TIM_Base_SetConfig temporarily sets CR1.URS before EGR.UG and restores saved CR1 afterward. With URS initially 0 its intermediate CR1 write changes URS to 1 instead of preserving it. Final CR1 does preserve saved URS. Owner correction required.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_tim.c:7270",
+        "software/hal/stm32n6xx_hal_tim.c:7279",
+        "workproducts/SWE.1/software_requirements.md:11"
+      ]
+    },
+    {
+      "id": "DEF-004",
+      "kind": "TEST",
+      "status": "DECLARED",
+      "summary": "The single host run reported duplicate CHECK identifiers. Corrected source CHECK identifiers to unique UT-001 through UT-060, with matching USPEC-only owner annotations. Primary UT-007 now labels the isolated NULL-call outcome rather than process creation. No expected value or rejection condition changed. Correction has not been rerun because this step explicitly permits one run_unit call.",
+      "evidence_refs": [
+        "artifact:sha256:e35bea697848bff9c64622f8150912a24eacbb83eac29ee44ad9098e57effeb3"
+      ]
+    },
+    {
+      "id": "DEF-005",
+      "kind": "TEST",
+      "status": "DECLARED",
+      "summary": "Corrected test-only TIM2 mapping: separately compiled driver capability predicates used vendor addresses, unlike test handles. Anonymous RAM now backs TIM2_BASE. No expected values changed. UT-013 and UT-032 now pass; NULL and invalid-value rejection still fail.",
+      "evidence_refs": [
+        "artifact:sha256:d231174d21bbe97705a623dcda5e768fe060cf145b4e9f3661642283de9d3555"
+      ]
+    },
+    {
+      "id": "DEF-006",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-007 fails for NULL Base_Start, Base_Stop, Base_DeInit and GenerateEvent: isolated children terminate instead of returning HAL_ERROR. Base_Init(NULL) passes. Reproduces ESCALATED DEF-002 in unchanged FROZEN delivery; retain checks and request owner disposition.",
+      "evidence_refs": [
+        "artifact:sha256:d231174d21bbe97705a623dcda5e768fe060cf145b4e9f3661642283de9d3555"
+      ]
+    },
+    {
+      "id": "DEF-007",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-008/021 and UT-056/057 fail: Base_Init accepts five invalid configurations and GenerateEvent accepts zero/reserved event masks, returning HAL_OK and changing RAM registers. Assertions are disabled. Reproduces ESCALATED DEF-001 in FROZEN delivery; retain rejection checks for owner disposition.",
+      "evidence_refs": [
+        "artifact:sha256:d231174d21bbe97705a623dcda5e768fe060cf145b4e9f3661642283de9d3555"
+      ]
+    },
+    {
+      "id": "DEF-008",
+      "kind": "FACTORY",
+      "status": "ESCALATED",
+      "summary": "llvm_coverage fails with COV_PARSE and empty metrics. Raw llvm-cov output says test_tim has truncated coverage data. Reproduced after corrected host fixture rerun. Coverage goal cannot be measured with the fixed tool invocation.",
+      "evidence_refs": [
+        "artifact:sha256:a45d73da2b515870be7c5a1c1190de6a6341c087bd771669ab6b324a8d4d4fb3"
+      ]
+    },
+    {
+      "id": "DEF-009",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-007 still fails: NULL Start, Stop, DeInit and GenerateEvent terminate instead of returning HAL_ERROR. Reproduces escalated DEF-006 in FROZEN code. Tests match SWR-007 and remain unchanged; owner action required.",
+      "evidence_refs": [
+        "artifact:sha256:d231174d21bbe97705a623dcda5e768fe060cf145b4e9f3661642283de9d3555"
+      ]
+    },
+    {
+      "id": "DEF-010",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-008/021/056/057 still fail: invalid Init values and zero/reserved events are accepted and modify registers. Reproduces escalated DEF-007 in FROZEN code. Tests match SWR-008 and remain unchanged; owner action required.",
+      "evidence_refs": [
+        "artifact:sha256:d231174d21bbe97705a623dcda5e768fe060cf145b4e9f3661642283de9d3555"
+      ]
+    }
+  ],
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "23ad53eabca4058d9e743b85bbd4d73a63310f766e7833d0cb4877aa4ae5a0aa"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/package.json",
+      "sha256": "f9009fb62b6792c11596d1c26393c9ca39ff23e2692b6838b4ebf6d57dbb9d37"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "d895a6edafca3d8bd201bf301f61bfc875a6a2db0c95cb833671779b0b06abff"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "db257c87e43f7b53ebb319a3b5c00ff39b795fe7e16d29d4a4a88bbc1696f491"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "5dfe5bb14c1bdcfb40a86f6ad51d9805c59f91ac538c5732be80c8cc7f277f31"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b0077229594b6b5a412151746ebce4a9d7de79a39ffd28a5fd43801f74aaba31"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "0fc3c406c444712a7bd00390ef0be334271a7e22cd8691156a7aacfffb97d6c5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "2b0960fe64d36478e889b81710a57579b1ce6282f18257e3b25f514255f9eedd"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "64388069295dbe05605c1690a2cf5c9af0088f673859698ee1ad0f74c74f9904"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "4da3102b5c1e2d9a993e977fad5ab9f280ccd4478a8804225cdbf09de6cbca3b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-009.json",
+      "sha256": "3997a83626f9b32d211de2627957a58925e02b7b9c06a68f5b577eafbae69937"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/.forge-run/defects/DEF-010.json",
+      "sha256": "f0b0a048b7d90702a5cb58cdb551e1345caf9d366a24232675981d4a9f2f020a"
+    }
+  ],
+  "review_status": "PENDING_CAUSE_REVIEW",
+  "note": "Context capture is not an SC-005 or owner disposition claim."
+}

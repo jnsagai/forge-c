@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "scripts/onboarding_acceptance_checks.py",
+    "packages"
+  ],
+  "duration_s": 1.799,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "bb7a04a867ec2df4a954bb67970dd1e70194c389",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-PACKAGES/20261027T105524.log",
+  "log_sha256": "f9cb4395a3ce386a41d8db4961de2be30893339965868eeca5fd51836777eca4",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-PACKAGES",
+  "ts_utc": "2026-10-27T10:55:24.448420Z"
+}

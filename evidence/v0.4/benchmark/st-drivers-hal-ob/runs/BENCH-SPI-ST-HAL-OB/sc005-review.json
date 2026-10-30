@@ -1,0 +1,68 @@
+{
+  "schema": "forge-c/onboarding-gap-review/0.1",
+  "recorded_at": "2026-10-27T14:20:20.661423Z",
+  "status": "REVIEWED",
+  "reviewer": "Codex implementation review, source-cited; owner adjudication pending",
+  "request_id": "BENCH-SPI-ST-HAL-OB",
+  "attempt_id": "afo-cbde5111bd5eeaf6-a1",
+  "archive_sha256": "49fb2d523a83c84e5e08c2fc00a5bfd5824da4e1d399618990bb92e641f77574",
+  "gap_count": 1495,
+  "gap_list_sha256": "df00e9e350f65276b8e511f0aa7f0607d6389b7b97826e75570804e0f7ad463d",
+  "gap_groups": {
+    "failed_or_missing_quality_check": 11,
+    "missing_or_empty_file": 9,
+    "missing_or_empty_section": 7,
+    "run_not_completed": 1,
+    "unresolved_finding:CONFORMANCE": 1455,
+    "unresolved_finding:SWE.3": 1,
+    "unresolved_finding:SWE.4": 1,
+    "unresolved_finding:SWE.5": 1,
+    "unresolved_finding:SWE.6": 1,
+    "unresolved_finding:escalated_defect": 8
+  },
+  "onboarding_fact_causes_identified": [],
+  "assessment": "Initial SPI passed SWE.1/2 but blocked on the factory contract-probe include context (DEF-008). Named conformance/CODE findings and downstream missing artifacts remain. No package fact or delivered dependency needed changing for the include-context correction.",
+  "interpretation_limit": "This reviews causes of named gaps against the onboarding subject. It is not owner acceptance or independent adjudication of every generated CODE/requirement finding. Earlier unsuccessful attempts remain explicit.",
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "470f5539dff5b263ebbae17942b078419757c5773e8dd729c2986a3d6b8e3e3a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/package.json",
+      "sha256": "23f1d6dcd5c0d865286f684105a3547c6c33dc7fd520fa9d93b458661966d3b4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "53469b18d51f1ee7e9df0f3d92eac4a194e96d4b6d28313e2ebf6eda1d2c6d77"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "96a95c4982af5d013c9961380d93d15c350beb2ab786614ee589a272ae93793b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "6739b6cb9023b58afefc1fd50b0a73aa03ba664e6ff4c42c97496cc0e4543a63"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "985a1076aa564839b6a20439874b3909d0bb87db810ab450408db6c9e98ef68e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "ace816525a59f33aac236b33805522262fae34a8ac8d62cd35f02cfac05535c1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "50604f6a1ca2a7979fc186f48830418a48f3f27f2fc7d07104c46c93ddcb246d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "dd21ccd19707a73fa4ed451fc4eeebe6ed1918e030b067443737af69a798506c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "900ee428e07619d3aca5a312bf4e63ea2cd1db53b08ffe6dc690be72ba20e920"
+    }
+  ]
+}

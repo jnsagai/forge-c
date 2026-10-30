@@ -1,0 +1,19 @@
+BENCH-GPIO-ST-HAL-OB onboarding-fact causes identified: 1 named gaps: 52
+BENCH-GPIO-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 709
+BENCH-SPI-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 1495
+BENCH-SPI-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 310
+BENCH-USART-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 711
+BENCH-TIM-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 230
+
+--- stderr ---
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py", line 241, in <module>
+    main()
+    ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py", line 237, in main
+    check_causes(read(args.record), history=args.history)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py", line 209, in check_causes
+    assert not causes, f"SC-005 onboarding-fact causes retained: {causes}"
+           ^^^^^^^^^^
+AssertionError: SC-005 onboarding-fact causes retained: [('BENCH-GPIO-ST-HAL-OB', {'fact': 'register_index', 'cause': 'RM comma-separated advanced-configuration fields, including RET0/RET8, were omitted; native gate rejected those fields. Corrected under CAPA-073 with a baseline/candidate causal contrast.'})]

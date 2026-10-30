@@ -1,0 +1,7 @@
+{
+ "benchmark_item": "crc-st-hal",
+ "example": "examples/0014d-st-cube-crc-hal",
+ "model_profile": "codex-claude",
+ "note": "Feature 015 F015-T065 (owner 2026-10-27): ST HAL code delivered FROZEN (classic, handle-based HAL; no LL), ASPICE SWE work products by Codex authors and Claude inspectors",
+ "schema": "forge-c/afo-launch-manifest/0.1"
+}

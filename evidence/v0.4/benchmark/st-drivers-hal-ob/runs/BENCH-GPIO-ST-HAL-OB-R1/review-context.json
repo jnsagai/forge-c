@@ -1,0 +1,301 @@
+{
+  "recorded_at": "2026-10-27T13:50:33.488489Z",
+  "request_id": "BENCH-GPIO-ST-HAL-OB-R1",
+  "order_id": "afo-3043541c6afd38b1",
+  "attempt_id": "afo-3043541c6afd38b1-a1",
+  "archive_integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-3043541c6afd38b1-a1/forge-c-WO-AFO-3043541c6afd38b1-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "phases": {
+    "SWE.1": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 3,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.1-001"
+    },
+    "SWE.2": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.2-001"
+    },
+    "SWE.3": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.3-001"
+    },
+    "SWE.4": {
+      "inspections_passed": 0,
+      "inspections_failed": 0,
+      "reworks": 2,
+      "upstream_returns": 0,
+      "final": "BLOCKED",
+      "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-05, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-06, UT:SPE); stopped early"
+    }
+  },
+  "gap_count": 709,
+  "gap_groups": {
+    "failed_or_missing_quality_check": 8,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding": 688
+  },
+  "defects": [
+    {
+      "id": "DEF-001",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_GPIO_Init skips PUPDR update for GPIO_MODE_ANALOG with GPIO_PULLUP. SWR-001 requires the selected pull-up; the code preserves the previous PUPDR field.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_gpio.c:206",
+        "workproducts/SWE.1/register_effects.json:INIT_PIN0_MODE3_PULL1_TYPE0_SPEED0_AF0_PULL"
+      ]
+    },
+    {
+      "id": "DEF-002",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_GPIO_WritePin writes BRR for reset rather than the GPIO_BSRR.BRy fields explicitly demanded by SWR-004. Hardware output reset is equivalent, but the required register command is absent.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_gpio.c:425",
+        "workproducts/SWE.1/register_effects.json:WRITE_PIN0_RESET"
+      ]
+    },
+    {
+      "id": "DEF-003",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN in-scope APIs have no invalid-argument HAL_ERROR/no-access path. Four return void and ReadPin returns GPIO_PinState; LockPin checks confirmation only after register writes. NULL pointers are unchecked, and assert_param is disabled by the delivered configuration.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_gpio.c:166",
+        "software/hal/stm32n6xx_hal_gpio.h:in-scope prototypes",
+        "inputs/vendor/include/stm32n6xx_hal_conf.h:174"
+      ]
+    },
+    {
+      "id": "DEF-004",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_GPIO_WritePin, TogglePin, WriteMultipleStatePin and LockPin write GPIO registers when called before the first HAL_GPIO_Init. No initialisation state or guard is delivered; startup without calls is passive, but the full SWR-008 interval is not enforced.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_gpio.c:419",
+        "software/hal/stm32n6xx_hal_gpio.c:447",
+        "software/hal/stm32n6xx_hal_gpio.c:472",
+        "software/hal/stm32n6xx_hal_gpio.c:496",
+        "workproducts/SWE.1/software_requirements.md:SWR-008",
+        "workproducts/SWE.2/software_architecture.md:Requirement allocation table"
+      ]
+    },
+    {
+      "id": "DEF-005",
+      "kind": "TEST",
+      "status": "DECLARED",
+      "summary": "Corrected repeated CHECK IDs to one CHECK per UT-001..UT-011. Duplicate IDs made evidence ambiguous. Required expected values remain unchanged. Corrected revision unverified: owner permits one run only.",
+      "evidence_refs": [
+        "artifact:sha256:77fb53ca0522200451dd215ed7290c601f3f150d93ccd9223dbe252ab48351d4"
+      ]
+    },
+    {
+      "id": "DEF-006",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Invalid mode changes PUPDR and zero-pin LockPin writes LCKR and returns HAL_OK. Required rejection is absent (existing DEF-003). Other required failures remain covered by existing DEF-001/002. Sole host run failed; duplicate-ID correction declared separately.",
+      "evidence_refs": [
+        "artifact:sha256:77fb53ca0522200451dd215ed7290c601f3f150d93ccd9223dbe252ab48351d4"
+      ]
+    },
+    {
+      "id": "DEF-007",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-001 fails in the current host run: delivered HAL_GPIO_Init omits the PUPDR update for analog mode plus GPIO_PULLUP, retaining the seeded pull-down field. The required pull-up expectation is unchanged. Confirms existing escalated DEF-001; FROZEN delivered code cannot be edited.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:206",
+        ".forge-run/defects/DEF-001.json"
+      ]
+    },
+    {
+      "id": "DEF-008",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Current run confirms UT-008 and UT-009 failures: zero-pin LockPin writes LCKR and returns HAL_OK; invalid Init mode 4 changes PUPDR. These violate the required rejection/no-access behavior. Expectations remain unchanged. Confirms escalated DEF-003 and DEF-006, neither rejected. FROZEN driver cannot be edited.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:166",
+        "software/hal/stm32n6xx_hal_gpio.c:496",
+        ".forge-run/defects/DEF-006.json"
+      ]
+    },
+    {
+      "id": "DEF-009",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-004 fails in current host run: HAL_GPIO_WritePin RESET writes BRR, but SWR-004 explicitly requires GPIO_BSRR.BR0 through BR15. The test retains the required BSRR reset command. Confirms escalated DEF-002. FROZEN delivered code unchanged.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:425",
+        ".forge-run/defects/DEF-002.json"
+      ]
+    },
+    {
+      "id": "DEF-010",
+      "kind": "TEST",
+      "status": "DECLARED",
+      "summary": "Corrected UT-003 through UT-006 owner trace annotations: semicolon-separated SWR and SWU citations followed @verifies and were parsed as invalid specification IDs. Moved those citations into separate comments so @verifies contains only USPEC IDs. Test statements and expected values are unchanged. This metadata correction does not resolve any delivered-code discrepancy.",
+      "evidence_refs": []
+    },
+    {
+      "id": "DEF-011",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Current run inv-abd46d566e624d94 fails UT-001. HAL_GPIO_Init lines 205-206 skip the selected PUPDR update for analog mode with GPIO_PULLUP, retaining the seeded pull-down field. Requirement-based expected values remain unchanged. Confirms escalated DEF-001/DEF-007; the annotation-only TEST correction DEF-010 does not resolve this FROZEN delivered-code defect.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:205",
+        ".forge-run/defects/DEF-007.json"
+      ]
+    },
+    {
+      "id": "DEF-012",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-004 fails in inv-abd46d566e624d94: RESET writes BRR at driver line 425 rather than the BSRR.BRy fields explicitly named by SWR-004. The required BSRR expectation is retained. Confirms escalated DEF-002/DEF-009; DEF-010 fixes annotations only. FROZEN delivered code is unchanged.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:425"
+      ]
+    },
+    {
+      "id": "DEF-013",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-008/009 fail in inv-abd46d566e624d94: zero-pin LockPin writes LCKR and returns HAL_OK; Init with invalid Mode=4 changes PUPDR. Required rejection is absent; the void Init API cannot return HAL_ERROR. Tests call declared functions. Confirms escalated DEF-003/006/008. DEF-010 fixes metadata only. Keep required expectations and route FROZEN driver defects to owner.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:212",
+        "software/hal/stm32n6xx_hal_gpio.c:496"
+      ]
+    },
+    {
+      "id": "DEF-014",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Run inv-68aaa0b93eae4ad6 confirms UT-001 failure: analog/PULLUP skips the PUPDR update at driver lines 205-206 and retains seeded pull-down. Requirement-based expected values are unchanged. Confirms ESCALATED DEF-001/007/011, with no rejected disposition. FROZEN code requires owner resolution.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:205",
+        ".forge-run/defects/DEF-011.json"
+      ]
+    },
+    {
+      "id": "DEF-015",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Run inv-68aaa0b93eae4ad6 confirms UT-004 failure: RESET writes BRR at driver line 425 instead of the BSRR.BRy fields required by SWR-004. The test uses the declared API and retains its required BSRR expectation. Confirms ESCALATED DEF-002/009/012. FROZEN delivered code requires owner resolution.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:425",
+        ".forge-run/defects/DEF-012.json"
+      ]
+    },
+    {
+      "id": "DEF-016",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Run inv-68aaa0b93eae4ad6 confirms UT-008/009 failures: zero-pin LockPin writes LCKR and returns HAL_OK; Init Mode=4 changes PUPDR. Required rejection is absent; Init returns void. Tests use declared functions and retain required expectations. Confirms ESCALATED DEF-003/006/008/013. FROZEN code requires owner resolution.",
+      "evidence_refs": [
+        "artifact:sha256:1002aeabc99d498ab4404fbbcf95d180a01f21722769db48f20febc31896e547",
+        "software/hal/stm32n6xx_hal_gpio.c:212",
+        "software/hal/stm32n6xx_hal_gpio.c:496",
+        ".forge-run/defects/DEF-013.json"
+      ]
+    }
+  ],
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "1ab8b796db983c8e3a30c9f26439f314a1220e522f78a8009fe79520e7cdf8e9"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/package.json",
+      "sha256": "62a58ef6d883784e1ef4063386542e408605f67e9ed152d779fa1db39e25b41c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "f295e3af0ae2d002f08594d8e17e9e1d70ba9ecccef540723d2a992a98a5df08"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "c721a472bc64f835f73d440ce940d16a115b2ba4e1c4ac7a6b4d451bc22b2afc"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "bb16853ab370dc6f68fe713475d0649a9db5a6923df5ea3deb28c9ab91faa313"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "8c89060acc2bd6bba37d9c8b2849f79a02c03b997f3a2259c676011b2b254ba5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "74a05a9afba2957659617723c5002d457a2fea78f019ab4d14d694135f5f23a6"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "cee075533ea7923a3d95007bd02cc655dbf48ca8f923b614ececd985eeb7b79d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "1c247350b5c10f3614e66b0060f55084dc7f4d6a0579bcba231398a9b53c9acb"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "474092f6823a15bfa43e7e61467c8320bdcb2a739d1bcda4879a7c41d4fbe77a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-009.json",
+      "sha256": "1e87852fcf7698acc451606f7287d088c97457d82e6048df3696fa77652400ca"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-010.json",
+      "sha256": "dcdc26c0223add83a36633ae3c77f160ddc0e7a211dae5c46a991051990f0836"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-011.json",
+      "sha256": "8d73871780d38162a9f23c16b4a1be6f8a1492a443099dae6f37e03bf54d77db"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-012.json",
+      "sha256": "e781c4ecbb769152e53151bcdedbbfd2fb602b2f521443b11b7e2c15eb995820"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-013.json",
+      "sha256": "a885a891d74529528da9833bd1612ba9346198381d061572558a10568f41fda0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-014.json",
+      "sha256": "9e366ffa3fcc393b0dc912a58c1b9d2dca29bff0032f984b3f1aa626c825b562"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-015.json",
+      "sha256": "dcad2b7b98f073317a0f3b816154d270b25ae41031ad9b19f02d3d32c24d75f1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-3043541c6afd38b1-a1/workspace/.forge-run/defects/DEF-016.json",
+      "sha256": "6162452c4c34ef15e2b248024347e891118b10df99ed1637d6c908275614d6ca"
+    }
+  ],
+  "review_status": "PENDING_CAUSE_REVIEW",
+  "note": "Context capture is not an SC-005 or owner disposition claim."
+}

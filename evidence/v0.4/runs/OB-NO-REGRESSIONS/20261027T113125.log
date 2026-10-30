@@ -1,0 +1,8 @@
+JUnit sha256: 9c583dc2ec67391ab1a8aa955a7dc2e01367021a54bd7b2420c6f8bccc53dc99
+Total: 1429, passed: 1399, skipped: 27, failed/error: 3
+FAILED test_cre_d7_e2e.test_latest_local_qwen_work_order_has_real_terminal_evidence
+FAILED test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege
+FAILED test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence
+PASS: exactly the three previously recorded baseline failures; no additional failures
+
+--- stderr ---

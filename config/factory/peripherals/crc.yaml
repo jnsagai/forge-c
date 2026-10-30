@@ -196,3 +196,119 @@ prompt:
     32-bit size, initial value 0xFFFFFFFF, no reversal - then HAL_CRC_Calculate over the single word 0x12345678 gives
     0xDF8A8A2B, and HAL_CRC_Accumulate continues from that CRC) and software/tests/target/test_crc_target_errors.c (each
     invalid parameter returns HAL_ERROR and leaves CRC_POL, CRC_INIT and CRC_CR unchanged)
+# ---- ST's classic HAL delivered FROZEN (feature 015 F015-T065, owner 2026-10-27 "do the same work done for LL, do it
+# now for HAL"): these texts replace the factory-HAL texts above when the work order delivers ST's handle-based HAL
+# (delivery provided_ll: false). Requirements still come from RM0486 and the scope, independently of the code. --------
+prompt_st_hal:
+  hal_requirement_example: >-
+    When the CRC initialisation is requested with the default polynomial selected in the handle configuration, the CRC
+    driver shall write 0x04C11DB7 to CRC_POL.POL.
+  hal_failure_responses: >-
+    one requirement per failure response of the scope: a NULL handle -> HAL_ERROR without CRC register access; a user
+    polynomial that is even (RM0486 26.3.3: even polynomials are not supported) or whose degree does not fit the
+    selected polynomial size -> HAL_ERROR without writing CRC_POL; and one timing requirement: no CRC driver function
+    waits on a CRC flag (a fed word is processed within 4 AHB clock cycles, RM0486 26.3.3)
+  hal_contract_rule: >-
+    HAL_CRC_Init with a valid handle configuration gets op write entries for CRC_POL.POL, CRC_INIT.INIT and
+    CRC_CR.POLYSIZE (the configured or default values) and for the configured reversal fields, status HAL_OK; a NULL
+    handle gets op no_write without register/field and status HAL_ERROR; an even or oversized user polynomial gets op
+    no_write on CRC_POL and status HAL_ERROR; HAL_CRC_Calculate gets op set on CRC_CR.RESET (the calculation unit is
+    reset before the words) with status HAL_OK; the returned CRC value is verified by the unit and target tests, not
+    by the contract. Every case id is unique UPPER_CASE. Never add an entry the requirement text does not state.
+  hal_api: >-
+    Interfaces (the delivered ST HAL API exactly as declared in software/hal/stm32n6xx_hal_crc.h and
+    stm32n6xx_hal_crc_ex.h: HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef *hcrc) and HAL_CRC_DeInit(CRC_HandleTypeDef
+    *hcrc); uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef *hcrc, uint32_t pBuffer[], uint32_t BufferLength) and
+    HAL_CRC_Accumulate(...) returning the CRC; HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef *hcrc);
+    HAL_CRCEx_Polynomial_Set, HAL_CRCEx_Input_Data_Reverse, HAL_CRCEx_Output_Data_Reverse; the handle
+    CRC_HandleTypeDef (Instance = CRC, Init = CRC_InitTypeDef with DefaultPolynomialUse, DefaultInitValueUse,
+    GeneratingPolynomial, CRCLength, InitValue, InputDataInversionMode, OutputDataInversionMode; InputDataFormat;
+    Lock; State) - describe what the delivered declarations are, never a different API)
+  hal_dynamic_view: >-
+    showing HAL_CRC_Init (handle configuration written: polynomial, size, initial value, reversal), HAL_CRC_Calculate
+    (calculation unit reset, words fed, CRC_DR read and returned) and HAL_CRC_Accumulate (words fed, CRC read), and a
+    NULL handle returning HAL_ERROR without register access, using the delivered HAL_CRC_ function names
+  hal_args_example: >-
+    , e.g. "&(CRC_HandleTypeDef){ .Instance = CRC, .Init = { .DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE,
+    .DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE, .InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE,
+    .OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE }, .InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS }" (a
+    handle is ALWAYS such a compound literal with .Instance = CRC and the .Init fields the case needs: the gates bind
+    them to the delivered code), a buffer "(uint32_t[]){0x12345678U}" and a length "1U"; invalid cases pass the
+    invalid value (NULL, an even polynomial such as 0x9AU with CRC_POLYLENGTH_8B)
+  hal_ut_example: |-
+    static void ut_crc_init_default(void)
+    {
+        static CRC_HandleTypeDef h;
+        ut_reset_regs();
+        h.Instance = CRC;
+        h.State = HAL_CRC_STATE_RESET;
+        h.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+        h.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+        h.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+        h.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+        h.InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS;
+        CHECK("UT-001", HAL_CRC_Init(&h) == HAL_OK);
+        CHECK("UT-002", forge_host_crc.POL == 0x04C11DB7U);
+        CHECK("UT-003", forge_host_crc.INIT == 0xFFFFFFFFU);
+        CHECK("UT-004", HAL_CRC_Init(NULL) == HAL_ERROR);
+    }
+  hal_ut_rule: >-
+    Each case configures a handle (static, its fields assigned: Instance = CRC, State = HAL_CRC_STATE_RESET, the Init
+    fields) and checks the HAL return value and the register values of forge_host_crc (on the host every CRC register
+    is plain RAM: CRC_DR keeps the last written word, CRC_CR.RESET stays set once written); invalid-parameter cases
+    check HAL_ERROR and unchanged registers; the CRC value itself is verified on the target model
+  hal_integration: >-
+    (HAL_CRC_Init with the default and with a user configuration, then HAL_CRC_Calculate and HAL_CRC_Accumulate over
+    word buffers, and HAL_CRC_DeInit; the extended API changing the reversal between calculations)
+  hal_target_tests: >-
+    write software/tests/target/test_crc_target.c (HAL_CRC_Init with the default configuration - polynomial
+    0x04C11DB7, 32-bit size, initial value 0xFFFFFFFF, no reversal - then HAL_CRC_Calculate over the single word
+    0x12345678 returns 0xDF8A8A2B and HAL_CRC_Accumulate continues from that CRC) and
+    software/tests/target/test_crc_target_errors.c (a NULL handle and an even polynomial return HAL_ERROR and leave
+    CRC_POL unchanged)
+  ut_example: |-
+    static void ut_crc_init_default(void)
+    {
+        static CRC_HandleTypeDef h;
+        ut_reset_regs();
+        h.Instance = CRC;
+        h.State = HAL_CRC_STATE_RESET;
+        h.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+        h.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+        h.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+        h.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+        h.InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS;
+        CHECK("UT-001", HAL_CRC_Init(&h) == HAL_OK);
+        CHECK("UT-002", forge_host_crc.POL == 0x04C11DB7U);
+        CHECK("UT-003", forge_host_crc.INIT == 0xFFFFFFFFU);
+        CHECK("UT-004", HAL_CRC_Init(NULL) == HAL_ERROR);
+    }
+  ut_rule: |-
+    Each case configures a handle (static, its fields assigned: Instance = CRC, State = HAL_CRC_STATE_RESET, the Init fields) and checks the HAL return value and the register values of forge_host_crc (on the host every CRC register is plain RAM: CRC_DR keeps the last written word, CRC_CR.RESET stays set once written); invalid-parameter cases check HAL_ERROR and unchanged registers; the CRC value itself is verified on the target model
+  integration: |-
+    HAL_CRC_Init with the default and with a user configuration, then HAL_CRC_Calculate and HAL_CRC_Accumulate over word buffers and HAL_CRC_DeInit, and the extended API changing the reversal between calculations (on the host the data register keeps the last written word)
+  target_tests: |-
+    write software/tests/target/test_crc_target.c (HAL_CRC_Init with the default configuration - polynomial 0x04C11DB7, 32-bit size, initial value 0xFFFFFFFF, no reversal - then HAL_CRC_Calculate over the single word 0x12345678 returns 0xDF8A8A2B and HAL_CRC_Accumulate continues from that CRC) and software/tests/target/test_crc_target_errors.c (a NULL handle and an even polynomial return HAL_ERROR and leave CRC_POL unchanged)
+  query_example: 'HAL_CRC_GetState(&hcrc)'
+  replace:
+    - ["and one measurable timing requirement (every wait is bounded by HAL_CRC_TIMEOUT_VALUE = 1000 polling iterations)", ""]
+    - ["the pass criterion uses the requirement's own bound, e.g. 'at most HAL_CRC_TIMEOUT_VALUE polling iterations', never", "the pass criterion uses the requirement's own bound, never"]
+    - ["Register access (extern volatile uint32_t register-block array placed at the CRC base by the linker, indexed by offset/4; no integer-to-pointer casts; host tests define the array)", "Register access (the delivered design: the HAL reaches the registers through its handle, hcrc->Instance->REG, with Instance the CMSIS device structure CRC of stm32n6xx.h at the secure base 0x56024C00; host tests map CRC to a RAM struct, forge_host_device.h)"]
+    - ["components named stm32n6xx_hal_crc (HAL) and stm32n6xx_ll_crc (LL, header-only), the CRC register block (0x56024C00) and their dependencies (HAL -> LL -> registers)", "the component stm32n6xx_hal_crc (HAL, delivered, FROZEN), the CRC register block (0x56024C00, RM0486 p.176) and their dependency (HAL -> registers, through the handle's Instance)"]
+    - ["participants Caller, stm32n6xx_hal_crc, stm32n6xx_ll_crc, CRC,", "participants Caller, stm32n6xx_hal_crc, CRC,"]
+    - ["'SWC_HAL --> SWC_LL : IF-01 LL_CRC_* accessors'", "'Caller --> SWC_HAL : IF-02 HAL_CRC_ API'"]
+    - ["using only the interface types and constants you define in Interfaces", "using only the delivered types and constants (CRC_HandleTypeDef, CRC_InitTypeDef and the stm32n6xx_hal_crc.h constants)"]
+    - ["SWE.3 must implement the interface so that these calls compile.", "The calls must compile against the delivered headers."]
+    - ["'#include \"stm32n6xx_hal_crc.h\"', '#include \"forge_target_test.h\"'", "'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle is a static variable with its fields assigned - no '= {0}' initialiser: the target image has no memset)"]
+    - ["with conditions on HAL return values and ll_crc_regs[LL_CRC_<REG>_OFFSET / 4U] & LL_CRC_<REG>_<FIELD>_MSK bits (always the _MSK macro, e.g. LL_CRC_CR_POLYSIZE_MSK; never the field name without _MSK). No printf, no stdlib, no ll_crc_regs definition.", "with conditions on HAL return values and CRC-><REG> & CRC_<REG>_<FIELD> bits of the vendor header stm32n657xx.h (e.g. CRC->CR & CRC_CR_POLYSIZE). No printf, no stdlib."]
+    - ["on HAL return values and ll_crc_regs[LL_CRC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_crc_regs definition (the linker places it).", "on HAL return values and CRC-><REG> & CRC_<REG>_<FIELD> bits of the vendor header stm32n657xx.h (e.g. CRC->CR & CRC_CR_POLYSIZE). No printf, no stdlib."]
+    - ["the LL_CRC_ functions to test", "the HAL_CRC_ functions to test (their declarations; the handle CRC_HandleTypeDef and the Init constants)"]
+    - ["For EACH LL_CRC_ function group", "For EACH HAL_CRC_ function group"]
+    - ["on LL return values and", "on HAL return values and"]
+    - ["LL functions return nothing: no status and no ready.", "HAL functions return HAL_StatusTypeDef (or the CRC value / the handle state)."]
+    - ["software/ll/stm32n6xx_ll_crc.h (the LL API and its exact names)", "software/hal/stm32n6xx_hal_crc.h and stm32n6xx_hal_crc_ex.h (the delivered HAL API, the handle and its exact names)"]
+    - ["software/ll/stm32n6xx_ll_crc.h (exact LL names)", "software/hal/stm32n6xx_hal_crc.h and stm32n6xx_hal_crc_ex.h (exact HAL names)"]
+    - ["Read workproducts/SWE.2/software_architecture.md, software/ll/stm32n6xx_ll_crc.h and", "Read workproducts/SWE.2/software_architecture.md, software/hal/stm32n6xx_hal_crc.h and"]
+    - ["'#include \"stm32n6xx_ll_crc.h\"', '#include \"forge_target_test.h\"'", "'#include \"stm32n6xx_hal.h\"', '#include \"forge_target_test.h\"' (a handle is a static variable with its fields assigned - no '= {0}' initialiser: the target image has no memset)"]
+    - ["exercising the LL sequences a caller will use", "exercising the HAL sequences a caller will use"]
+    - ["the LL and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype", "the delivered HAL is exactly ONE element with the <<SWC>> stereotype"]

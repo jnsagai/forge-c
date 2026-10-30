@@ -38,6 +38,16 @@ def hal_unit_isolation(ws: Path) -> bool:
     return m.get("layer") == "HAL" and m.get("hal_unit_isolation") == HAL_UNIT_ISOLATION
 
 
+def hal_standalone(ws: Path) -> bool:
+    """Feature 015 (ST HAL): a delivered HAL that accesses the registers itself (ST's classic, handle-based HAL) - no
+    provided LL, no LL test double; the manifest says so (workorder.prepare, delivery provided_ll: false)."""
+    try:
+        m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    except (OSError, ValueError):
+        return False
+    return m.get("layer") == "HAL" and bool(m.get("hal_standalone"))
+
+
 def register_contract_enabled(ws: Path) -> bool:
     """Work orders prepared after 2026-10-19 carry `register_contract`; older runs keep the sentence-parsing oracle."""
     try:
@@ -107,6 +117,8 @@ def api_prefix(layer: str, ws: Path | None = None) -> str:
 def components(layer: str, ws: Path | None = None) -> tuple[str, ...]:
     p = profile(ws)
     ll, hal = Path(p["ll"]["header"]).stem, Path(p["hal"]["header"]).stem
+    if layer != "LL" and ws is not None and hal_standalone(ws):  # F015: ST's classic HAL, no LL component
+        return (hal,)
     return (ll,) if layer == "LL" else (hal, ll)
 
 

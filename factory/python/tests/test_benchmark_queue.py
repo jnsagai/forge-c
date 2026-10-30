@@ -24,7 +24,9 @@ def _finish(ws, status, passed, blocked=None):
 
 def test_the_repository_queue_lists_the_five_st_ll_items_in_order():
     q = Q.load()
-    assert [i["id"] for i in q["items"]] == ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st"]
+    ids = ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st"]
+    assert [i["id"] for i in q["items"]] == ids + [f"{x}-hal" for x in ids]  # F015-T065: ST HAL after the LL items
+    assert all(i["layer"] == ("HAL" if i["id"].endswith("-hal") else "LL") for i in q["items"])
     assert Q.LINE[:4] == ["--acp-authors", "codex", "--acp-inspectors", "claude"]
     from forge_factory.afo.runtime import PROFILES
 
@@ -43,7 +45,7 @@ def test_items_run_in_order_skip_missing_examples_and_record_outcomes(env):
 
     q["items"].append({"id": "later-st", "example": "examples/0099c-not-onboarded"})  # a peripheral not onboarded
     onboarded = [i for i in q["items"] if (Q.REPO_ROOT / i["example"] / "workorder.json").is_file()]
-    assert [i["id"] for i in onboarded] == ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st"]
+    assert [i["id"] for i in onboarded][:6] == ["crc-st", "spi-st", "usart-st", "gpio-st", "tim-st", "crc-st-hal"]
     st = Q.run(q, launcher=launcher, sleep=lambda s: None)
     assert launched == [Q.work_order_id(q, i, 1) for i in onboarded]  # queue order, one at a time
     assert st["items"]["crc-st"]["status"] == "READY_FOR_OFFLINE_REVIEW"
@@ -102,6 +104,8 @@ def test_every_benchmark_work_order_has_the_rm0486_register_conventions_input():
     returns the reset value, so on the device ST's code writes exactly the flag; the convention was not an input."""
     q = Q.load()
     for item in q["items"]:
+        if not (Q.REPO_ROOT / item["example"] / "workorder.json").is_file():
+            continue  # an item not onboarded yet (F015-T065 HAL items follow one by one)
         spec = json.loads((Q.REPO_ROOT / item["example"] / "workorder.json").read_text())
         roles = {i["role"]: i["path"] for i in spec["inputs"]}
         assert roles["reference_manual_register_conventions"].endswith("RM0486-rev4-register-conventions.md"), item

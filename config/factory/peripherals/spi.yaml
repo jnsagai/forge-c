@@ -24,6 +24,8 @@ hal:
   header: stm32n6xx_hal_spi.h
   source: stm32n6xx_hal_spi.c
   function_prefix: HAL_SPI_
+  time_base: HAL_GetTick
+  host_instance: SPI1
 sim:
   model: spi_model.py
   platform: stm32n6_spi.repl

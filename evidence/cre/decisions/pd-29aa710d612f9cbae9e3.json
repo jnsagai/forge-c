@@ -1,0 +1,163 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "9fa4664798183218184a6cf1a650ab1985087ea4",
+  "baseline_sha256": "c518821e05ac6c3ca4667b28b380b05d544b643a3f6dc886911c7e83af931961",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+  "candidate_sha256": "9fcbbe3b14c1245972fb0a1395e03ea29053b30675f3c40311bc0035ad87243c",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "decision_id": "pd-29aa710d612f9cbae9e3",
+  "evaluated_at": "2026-10-27T12:21:25.235890Z",
+  "evaluator_id": "cre-promotion-runner@b7516220b58e",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:9fa466479818..557e920daa54"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-b92e2bdbea048abe51e6",
+        "reproducer-run:rr-1ab5a2bd9e6c1214f2f4",
+        "reproducer-run:rr-9c94efb4d96d79d2115b",
+        "reproducer-run:rr-d4dbb012e5820019a9f0"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-ddd8b9c95227ffb97c93",
+        "reproducer-run:rr-6cc56c91ca398083fc4a",
+        "reproducer-run:rr-9480687651028e525d2e",
+        "reproducer-run:rr-378eb4ddc7cb319e183b",
+        "reproducer-run:rr-84593edaf7b2cd47020f",
+        "reproducer-run:rr-6540b875945492bb3db3",
+        "reproducer-run:rr-2b4089e6d376c9b09ddf",
+        "reproducer-run:rr-4f37a44d63871937112a",
+        "reproducer-run:rr-eb2b974f51a590fffee4",
+        "reproducer-run:rr-aa4ff2712c2a50c92c0e",
+        "reproducer-run:rr-178e622afea454250248",
+        "reproducer-run:rr-b545e7dc38f352e83148",
+        "reproducer-run:rr-a980d5a9605258115d7a",
+        "reproducer-run:rr-812966ddc9c0fbd7b2a0",
+        "reproducer-run:rr-c46744a0b8bf4cf44ce3",
+        "reproducer-run:rr-1fc1ce5f30d140c42312",
+        "reproducer-run:rr-5f725f79d13a71a354c3",
+        "reproducer-run:rr-31487bdc306fd98e6c4c",
+        "reproducer-run:rr-fbd7f81c8d1d84ed1161",
+        "reproducer-run:rr-d240f7bda9f5bbd9de0d",
+        "reproducer-run:rr-ffe1d59e9a87b8364087",
+        "reproducer-run:rr-788609b09ae4dbaa2a4c",
+        "reproducer-run:rr-08ace59ea7f4f2210dc6",
+        "reproducer-run:rr-4c72494639d480f3e630",
+        "reproducer-run:rr-a0d2c343309595716832",
+        "reproducer-run:rr-9a0bac166adf8c631d9c",
+        "reproducer-run:rr-6a2a602e127bc59dd3e3",
+        "reproducer-run:rr-1e3a56c23575119fad81",
+        "reproducer-run:rr-0bf5a3610e5fe8d82457",
+        "reproducer-run:rr-708e9e5dd1e1888420ee",
+        "reproducer-run:rr-6c36164de945d4b144bd",
+        "reproducer-run:rr-f142484bcc3ac03d427a",
+        "reproducer-run:rr-62a168105bc570501d6d",
+        "reproducer-run:rr-184f63c2d964408bbd15",
+        "reproducer-run:rr-185909d1bff97a340e0a",
+        "reproducer-run:rr-b4d9781d3883b5a307ad",
+        "reproducer-run:rr-926d242b5b78a1a87979",
+        "reproducer-run:rr-0e8f374b5ebe35ff9408",
+        "reproducer-run:rr-710792aed6d2fce79487",
+        "reproducer-run:rr-6bb3d113d01ca56d9c28",
+        "reproducer-run:rr-146346de8e78bd33ed42",
+        "reproducer-run:rr-e5aecebde81fb2b67e32",
+        "reproducer-run:rr-60b48d493845f9ad685a",
+        "reproducer-run:rr-0c04a51475e46ccad9fa",
+        "reproducer-run:rr-adeda95b31f3c70af510",
+        "reproducer-run:rr-3270703e22e096cbfa8f",
+        "reproducer-run:rr-fcb9e806d262ebd1636d",
+        "reproducer-run:rr-2b4b967252b79e7b2f95",
+        "reproducer-run:rr-0cceb6592643aab0184c",
+        "reproducer-run:rr-75baf3e440cedc61957d",
+        "reproducer-run:rr-94cf7f33b15ac8551291",
+        "reproducer-run:rr-02620ce650e91dd00ee0",
+        "reproducer-run:rr-eb987350fdde878e0685",
+        "reproducer-run:rr-aaa4efd1035ea74b348a",
+        "reproducer-run:rr-1306e553845fcf522607",
+        "reproducer-run:rr-69c3bcbabb1a899e8d23",
+        "reproducer-run:rr-60d75a2e632c5e70d91c",
+        "reproducer-run:rr-f8e6e958cb0a10aaba45",
+        "reproducer-run:rr-58afaeea68da98b93576",
+        "reproducer-run:rr-175632a4052bcd961b83",
+        "reproducer-run:rr-c88bf7d0f4050905d7e6",
+        "reproducer-run:rr-0ac1bbf997553ccd5a92",
+        "reproducer-run:rr-f2634f93d026df3afada",
+        "reproducer-run:rr-55807c3a2f0c3452b55d",
+        "reproducer-run:rr-0a29b90a862f4a59d262",
+        "reproducer-run:rr-4779463c7c264ebd2dab",
+        "reproducer-run:rr-2e7ee4d83407fc81b229",
+        "reproducer-run:rr-0f39f07721b81cdbd06b",
+        "reproducer-run:rr-9a7deac52ee147367897",
+        "reproducer-run:rr-75330e45f5c8614ff8a3",
+        "reproducer-run:rr-2f17cf6d66384778a616",
+        "reproducer-run:rr-e4a76f27f298e43e222f"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:71fe35d048c4187e",
+        "baseline-tests:exit0:sha256:71fe35d048c4187e",
+        "design:exit0"
+      ],
+      "name": "quality_process",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-1b659b67ec595f0106dd",
+        "benchmark-run:br-2235b052718119b6afbc"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-b59bb94b8f745ea82598",
+        "benchmark-run:br-a4aeab78c9c39b6ba770"
+      ],
+      "name": "holdout",
+      "reason_code": null,
+      "result": "PASS"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 6010 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "efficiency (informational, n=1 run each, not a gate): golden duration 9.5s -> 8.5s; model tokens 0 -> 0",
+    "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-b92e2bdbea048abe51e6",
+    "reproducer-run:rr-1ab5a2bd9e6c1214f2f4",
+    "reproducer-run:rr-9c94efb4d96d79d2115b",
+    "reproducer-run:rr-d4dbb012e5820019a9f0"
+  ],
+  "schema_version": "1.0"
+}

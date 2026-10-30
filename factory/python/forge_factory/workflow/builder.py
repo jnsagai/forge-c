@@ -104,7 +104,8 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           sections: dict[str, str] | None = None, code_model: str | None = None,
           chunk_lines: int = 40, layer: str = "LL+HAL", trace: bool = False,
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
-          delivery_style: str | None = None, structured: dict | None = None) -> tuple[str, dict]:
+          delivery_style: str | None = None, structured: dict | None = None,
+          hal_standalone: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -115,6 +116,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
+    prompts.STANDALONE["on"] = hal_standalone and layer == "HAL"  # F015: ST's classic HAL, no provided LL
     prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     prompts.BROWNFIELD["style"] = delivery_style if brownfield else None  # ST pilot: "cmsis" test prompts
     from ..peripheral import load as load_profile
@@ -380,3 +382,10 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
 
 def binding_for(work_order: str, workspace: str, nodes: dict) -> Binding:
     return Binding(work_order, workspace, nodes)
+
+
+def build_onboarding(workspace):
+    """Separate opt-in model graph; SWE workflows and their canonical roles remain unchanged."""
+    from ..onboarding.authoring import graph
+
+    return graph(workspace)

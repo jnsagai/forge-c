@@ -26,6 +26,7 @@ hal:
   header: stm32n6xx_hal_gpio.h
   source: stm32n6xx_hal_gpio.c
   function_prefix: HAL_GPIO_
+  host_instance: GPIOA
 sim:
   model: gpio_model.py
   platform: stm32n6_gpio.repl
@@ -96,7 +97,7 @@ prompt:
     the GPIO_BSRR/GPIO_BRR value written; queries get a set and a clear case; port read/write check the register value.
   target_model: >-
     The simulated GPIOA (factory/sim/stm32n6/gpio_model.py) is a behavioural port model with the RM0486 port A reset
-    values (GPIO_MODER 0xABFFEFFF, GPIO_OSPEEDR 0x0C000000, GPIO_PUPDR 0x64000000, the others 0); GPIO_BSRR (write-only)
+    values (GPIO_MODER 0xABFFEFFF, GPIO_OSPEEDR 0x0C000000, GPIO_PUPDR 0x64000000, GPIO_SECCFGR and GPIO_PRIVCFGR 0x0000FFFF, the others 0); GPIO_BSRR (write-only)
     sets the GPIO_ODR bits of BSy and clears those of BRy (BSy wins when both are set); GPIO_BRR (write-only) clears
     GPIO_ODR bits; GPIO_IDR (read-only) reads back GPIO_ODR for pins in output or alternate function mode, 1 for input
     pins with pull-up, 0 otherwise. Expected values in target checks follow this model.

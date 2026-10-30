@@ -313,6 +313,48 @@ def _prune(body: str, macros: dict[str, str]) -> str:
     return "".join(out) + body[pos:]
 
 
+def _prune_switch(body: str, macros: dict[str, str]) -> str:
+    """Keep only the case a decidable 'switch (expr) { case A: ... break; ... }' takes (ST HAL HAL_CRC_Calculate:
+    switch (hcrc->InputDataFormat) once the handle is bound): the statements from the matching label (or default:)
+    to the first top-level 'break;', through fall-through labels. An undecidable selector keeps the whole switch."""
+    out, pos = [], 0
+    for m in re.finditer(r"(?<![\w])switch\s*\(", body):
+        if m.start() < pos:
+            continue
+        c0 = m.end() - 1
+        c1 = _balanced(body, c0, "(", ")")
+        b0 = c1 + len(body[c1:]) - len(body[c1:].lstrip()) if c1 > 0 else -1
+        if c1 < 0 or b0 >= len(body) or body[b0] != "{":
+            continue
+        b1 = _balanced(body, b0, "{", "}")
+        sel = evaluate(body[c0 + 1:c1 - 1], macros, intrinsics=True)
+        if b1 < 0 or sel is None:
+            continue
+        inner, labels, depth, i = body[b0 + 1:b1 - 1], [], 0, 0
+        for lm in re.finditer(r"\b(case\s+([^:]+?)|default)\s*:", inner):
+            depth = sum(1 for ch in inner[:lm.start()] if ch in "({") - sum(1 for ch in inner[:lm.start()] if ch in ")}")
+            if depth == 0:
+                labels.append((lm.start(), lm.end(), lm.group(2)))
+        start = next((e for _, e, v in labels if v is not None and evaluate(v, macros, intrinsics=True) == sel), None)
+        if start is None:
+            start = next((e for _, e, v in labels if v is None), None)
+        if any(v is not None and evaluate(v, macros, intrinsics=True) is None for _, _, v in labels):
+            continue  # a label we cannot evaluate: keep the switch
+        kept = ""
+        if start is not None:
+            rest, depth, j = inner[start:], 0, 0
+            while j < len(rest):
+                depth += rest[j] in "({"
+                depth -= rest[j] in ")}"
+                if depth == 0 and re.match(r"break\s*;", rest[j:]):
+                    break
+                j += 1
+            kept = re.sub(r"\b(case\s+[^:]+?|default)\s*:", " ", rest[:j])
+        out.append(body[pos:m.start()] + "{" + kept + "}")
+        pos = b1
+    return "".join(out) + body[pos:]
+
+
 ALIAS = [(re.compile(r"^RCC_CSR$"), "RCC_CR", "set"), (re.compile(r"^RCC_CCR$"), "RCC_CR", "clear"),
          (re.compile(r"^(RCC_\w+EN)SR$"), r"\1R", "set"), (re.compile(r"^(RCC_\w+EN)CR$"), r"\1R", "clear"),
          (re.compile(r"^(RCC_\w+RST)SR$"), r"\1R", "set"), (re.compile(r"^(RCC_\w+RST)CR$"), r"\1R", "clear")]
@@ -343,8 +385,64 @@ class Effect:
     clear: int | None = None   # MODIFY_REG's clear mask (op modify; mask is then the value written)
 
 
+HANDLE_RX = re.compile(r"^\s*&\s*\(\s*(?:const\s+)?(\w+)\s*\)\s*\{(.*)\}\s*$", re.S)
+
+
+def _split_top(s: str) -> list[str]:
+    """Top-level comma split that respects (), {} and []."""
+    out, depth, cur = [], 0, []
+    for ch in s:
+        if ch == "," and depth == 0:
+            out.append("".join(cur).strip())
+            cur = []
+            continue
+        depth += ch in "({["
+        depth -= ch in ")}]"
+        cur.append(ch)
+    if "".join(cur).strip():
+        out.append("".join(cur).strip())
+    return out
+
+
+def handle_fields(arg: str) -> dict[str, str] | None:
+    """Feature 015 (ST HAL): the designated initializers of a handle compound literal - the contract's C argument for a
+    HAL handle, e.g. '&(CRC_HandleTypeDef){ .Instance = CRC, .Init = { .DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE
+    } }' -> {'Instance': 'CRC', 'Init.DefaultPolynomialUse': 'DEFAULT_POLYNOMIAL_ENABLE'}; None for any other argument."""
+    m = HANDLE_RX.match(arg if isinstance(arg, str) else "")
+    if not m:
+        return None
+    out: dict[str, str] = {}
+
+    def walk(body: str, prefix: str) -> None:
+        for item in _split_top(body):
+            d = re.match(r"^\.\s*([\w.\s]+?)\s*=\s*(.+)$", item, re.S)
+            if not d:
+                continue
+            key = prefix + re.sub(r"\s+", "", d.group(1))
+            val = d.group(2).strip()
+            if val.startswith("{") and val.endswith("}"):
+                walk(val[1:-1], key + ".")
+            else:
+                out[key] = val
+    walk(m.group(2), "")
+    return out
+
+
+def _bind_handle(body: str, p: str, h: dict[str, str]) -> str:
+    """p->Instance, p->Init.X (also (p)->...) become the bound values; unbound fields (p->State, ...) stay."""
+    def field(m: re.Match) -> str:
+        key = re.sub(r"\s+", "", m.group(1))
+        return f"({h[key]})" if key in h else m.group(0)
+    name = rf"(?:\(\s*\b{re.escape(p)}\b\s*\)|\b{re.escape(p)}\b)"  # p or (p) - never the '(' of 'if (p->...'
+    return re.sub(rf"{name}\s*->\s*(\w+(?:\s*\.\s*\w+)*)", field, body)
+
+
 def _bind(body: str, params: list[str], args: list[str]) -> str:
     for p, a in zip(params, args, strict=False):  # fewer args than params: the rest stay unbound
+        h = handle_fields(a)
+        if h is not None:  # a HAL handle: bind its fields, keep the name (NULL checks stay undecidable)
+            body = _bind_handle(body, p, h)
+            continue
         body = re.sub(rf"\b{re.escape(p)}\b", f"({a})", body)
     return body
 
@@ -371,11 +469,17 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
     the RCC-only patterns missed ST's CRC/SPI code, which reaches the registers through an instance pointer such as
     `CRCx->CR` or `(CRC)->CR` once the argument is bound, and writes 8/16-bit data registers through a cast)."""
     body = _bind(defn.body, defn.params, args or [])
+    handles = {p: a for p, a in zip(defn.params, args or [], strict=False) if handle_fields(a) is not None}
+    if prefix != "RCC" and defn.kind == "macro":  # an expression macro is one statement (ST HAL __HAL_CRC_DR_RESET(h):
+        e = body.strip()                          # ((h)->Instance->CR |= CRC_CR_RESET), no ';' for the patterns)
+        while e.startswith("(") and e.endswith(")") and _balanced(e, 0, "(", ")") == len(e):
+            e = e[1:-1].strip()
+        body = e if e.endswith(";") else e + ";"
     pfx = prefix
     effects: list[Effect] = []
     if pfx != "RCC" and args:  # feature 015: the branch the bound arguments select (RCC extraction unchanged)
         for _ in range(8):
-            pruned = _prune(body, macros)
+            pruned = _prune_switch(_prune(body, macros), macros)
             if pruned == body:
                 break
             body = pruned
@@ -460,8 +564,10 @@ def register_effects(defn: Definition, macros: dict[str, str], style: str, args:
             while j < len(body) and d:
                 d += {"(": 1, ")": -1}.get(body[j], 0)
                 j += 1
-            effects += register_effects(callee, macros, style, _split_args(body[m.end():j - 1]), defs, depth + 1,
-                                        prefix)
+            sub = _split_args(body[m.end():j - 1])
+            if handles:  # the handle passed on (HAL_CRCEx_Polynomial_Set(hcrc, ...), __HAL_CRC_DR_RESET(hcrc))
+                sub = [handles.get(a.strip().strip("()").strip(), a) for a in sub]
+            effects += register_effects(callee, macros, style, sub, defs, depth + 1, prefix)
     return effects
 
 

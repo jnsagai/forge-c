@@ -115,6 +115,8 @@ def _outputs(role: dict) -> list[str]:
     if phase and rid.endswith("-inspector"):
         return [f"inspection/{phase}/INS-<id>.json (recorded via forge-evidence-mcp.check_inspection)"]
     return {"release-manager": ["release archive via forge-evidence-mcp.build_package"],
+            "onboard-model-author": ["onboarding/model/model.py (pure request arithmetic; no host access)"],
+            "onboard-model-inspector": ["compact verdict with model:sha256:<inspected hash>; no file writes"],
             "fabric-repair": ["repair worktree commit via forge-repo-mcp.commit_candidate"],
             "lessons-curator": ["lesson proposal via forge-knowledge-mcp.propose_lesson"],
             "afo-recovery-planner": ["PROPOSED recovery plan via forge-afo-mcp.submit_recovery_plan"],
@@ -249,6 +251,19 @@ def main(argv: list[str] | None = None) -> int:
         (CONFIG_DIR / "skills.afo.lock.json").write_text(pretty_json(
             {"schema": "forge-c/skills-lock-afo/0.1", "skill_version": SKILL_VERSION, "skills": afo_skills}),
             encoding="utf-8")
+    overlay = CONFIG_DIR / "agents.onboarding.yaml"
+    onboarding = (yaml.safe_load(overlay.read_text()) or {}).get("agents", []) if overlay.is_file() else []
+    onboarding_skills = {}
+    for role in onboarding:
+        path = REPO_ROOT / role["skill"]
+        if a.write:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(render(role), encoding="utf-8")
+        onboarding_skills[role["id"]] = {"path": role["skill"], "sha256": sha256_file(path)}
+    if a.write and onboarding:
+        (CONFIG_DIR / "skills.onboarding.lock.json").write_text(pretty_json(
+            {"schema": "forge-c/skills-lock-onboarding/0.1", "skill_version": SKILL_VERSION,
+             "skills": onboarding_skills}), encoding="utf-8")
     print(json.dumps({"skills": len(skills), "written": a.write}))
     return 0
 
