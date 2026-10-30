@@ -129,5 +129,6 @@ def import_snapshot(store, mission_id, path, sha256):
             reported_tokens=row.get("reported_tokens"),
             imported=True,
             evidence_refs=row["evidence_refs"],
+            historical_counts=row.get("historical_counts"),
         )
     return ledger.snapshot(mission_id)

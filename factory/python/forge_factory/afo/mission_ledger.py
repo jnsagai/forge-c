@@ -86,19 +86,30 @@ class MissionLedger:
         jobs_with_requests = {r["job_id"] for r in req}
         request_charges = {job: sum(r["charge"] for r in req if r["job_id"] == job) for job in jobs_with_requests}
         tokens = sum(max(r["charge"], request_charges.pop(r["identity"], 0)) for r in ex) + sum(request_charges.values())
+        from collections import Counter
+
+        counters = c.execute("SELECT job_id,kind,COUNT(*) AS n FROM afo_mission_counters WHERE mission_id=? "
+                             "GROUP BY job_id,kind", (mission_id,)).fetchall()
+
+        def count(kind, observed):
+            # Later ingestion of the same native history replaces an aggregate
+            # reservation, rather than adding it twice or making it disappear.
+            total = 0
+            for execution in ex:
+                imported = (execution.get("historical_counts") or {}).get(kind, execution.get(kind, 0))
+                total += max(imported, observed.pop(execution["identity"], 0))
+            return total + sum(observed.values())
+
+        requests = count("requests", dict(Counter(r["job_id"] for r in req)))
+        tools = count("tools", {r["job_id"]: r["n"] for r in counters if r["kind"] == "TOOL"})
+        corrections = count("corrections", {r["job_id"]: r["n"] for r in counters if r["kind"] == "CORRECTION"})
         return {
             **m,
             "attempts": sum(r["kind"] == "PRODUCT" for r in ex),
             "jobs": sum(r["kind"] in ("DIAGNOSIS", "MAINTENANCE", "LEARNING") for r in ex),
-            "requests": len(req),
-            "tools": sum(r.get("tools", 0) for r in ex)
-            + c.execute("SELECT COUNT(*) FROM afo_mission_counters WHERE mission_id=? AND kind='TOOL'", (mission_id,)).fetchone()[
-                0
-            ],
-            "corrections": sum(r.get("corrections", 0) for r in ex)
-            + c.execute(
-                "SELECT COUNT(*) FROM afo_mission_counters WHERE mission_id=? AND kind='CORRECTION'", (mission_id,)
-            ).fetchone()[0],
+            "requests": requests,
+            "tools": tools,
+            "corrections": corrections,
             "charged_tokens": tokens,
             "usage_unknown": any(r.get("reported_tokens") is None for r in ex + req),
             "unique_executions": len(ex),
@@ -121,6 +132,7 @@ class MissionLedger:
         reported_tokens: int | None = None,
         imported=False,
         evidence_refs=(),
+        historical_counts=None,
         now=None,
     ) -> dict:
         if (
@@ -131,6 +143,12 @@ class MissionLedger:
             raise Refused("EXECUTION_ACCOUNTING_INVALID")
         if reported_tokens is not None and (type(reported_tokens) is not int or reported_tokens < 0):
             raise Refused("REPORTED_USAGE_INVALID")
+        if historical_counts is not None and (
+            not imported or not evidence_refs or not isinstance(historical_counts, dict)
+            or set(historical_counts) != {"requests", "tools", "corrections"}
+            or any(type(n) is not int or n < 0 for n in historical_counts.values())
+        ):
+            raise Refused("HISTORY_COUNTERS_INVALID")
         with self.store.tx() as c:
             row = c.execute("SELECT mission_id,record FROM afo_mission_executions WHERE identity=?", (identity,)).fetchone()
             if row:
@@ -139,6 +157,13 @@ class MissionLedger:
                     raise Refused("EXECUTION_IDENTITY_REBOUND")
                 if reserved_tokens != rec["reserved_tokens"]:
                     raise Refused("EXECUTION_RESERVATION_REBOUND")
+                if historical_counts is not None:
+                    if not rec.get("imported"):
+                        raise Refused("HISTORY_COUNTERS_INVALID")
+                    if "historical_counts" in rec and rec["historical_counts"] != historical_counts:
+                        raise Refused("HISTORY_COUNTERS_REBOUND")
+                    rec["historical_counts"] = dict(historical_counts)
+                    rec["evidence_refs"] = list(dict.fromkeys([*rec.get("evidence_refs", []), *evidence_refs]))
                 if reported_tokens is not None:
                     rec["reported_tokens"] = max(reported_tokens, rec.get("reported_tokens") or 0)
                 rec["charge"] = max(rec["charge"], rec.get("reported_tokens") or 0)
@@ -163,6 +188,7 @@ class MissionLedger:
                 "imported": bool(imported),
                 "evidence_refs": list(evidence_refs),
                 "created_at": utc_now(),
+                **({"historical_counts": dict(historical_counts)} if historical_counts is not None else {}),
             }
             c.execute(
                 "INSERT INTO afo_mission_executions VALUES (?,?,?,?)", (identity, mission_id, kind, canonical(rec).decode())
