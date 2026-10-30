@@ -1,4 +1,24 @@
 # Implementation and qualification status
+## Latest prospective C-notation correction — 2026-10-30 08:57UTC
+
+Candidate **37c0c354629312a70eb6a199989477036bb674d9**, NOT_DEPLOYED: an explicit profile flag
+supplies the same generic parameter-list clarification to native/structured SWE.1 authors and inspectors.
+Real C compiler positive/negative cases distinguish (void) parameters from an actual void return type.
+No gate, criterion, permission or verdict filtering changes. Inherited five RCC graph hashes remain unchanged.
+Local19PASS initial and92PASS full affected cohort, zero skips/errors/failures, four actual Fabro parsers.
+Clean exact37c0 reasoning-comparison preparation CLI PASS/no inference/queue/job/mission.
+Native top-level-only effort rendering confirms medium supported/high unsupported, without model generation.
+Combined native96(reasoning)/92(context) cohorts prepared/uploaded; check-only correctly refuses LIVE/RUNNING.
+Native candidate test qualification and speed comparison remain NOT_RUN; static spec validation is separate.
+
+Runtime899865d/RUNNING72 unchanged. Current LL native01M65TR9K7DRDTM8AX8ZTP445G remains LIVE/HELD:
+second author correction completed and baselinead64dceaa4f94435 is being reviewed at08:57UTC.
+The first re-review still had4model criteriaPASS/2FAIL. Full clean product remains unproven.
+Owner still requires current run finish before reasoning/MTP benchmark and dependent HAL.
+Same RCC mission/history/counters/uncertainty and13:52:52UTC deadline; no new grants or resets.
+Formal30/58 unchanged, no newly completed task IDs.
+[Exact source, original findings, tests and executable native tooling](../../evidence/014-durable-local-autonomy/c-parameter-context-20261030/README.md).
+
 ## Latest reasoning comparison preparation — 2026-10-30 08:23UTC
 
 Runtime899865d/RUNNING72 continues LL01M65TR9K7DRDTM8AX8ZTP445G; first review4PASS/2FAIL,

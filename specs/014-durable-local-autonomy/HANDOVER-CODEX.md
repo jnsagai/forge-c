@@ -1,6 +1,56 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 08:28UTC: LL repairing automatically; high unsupported, medium pilot prepared
+## Latest state — 08:57UTC: second author return live; combined future source37c0 prepared
+
+Owner still requires **finish current LL, then reasoning/MTP comparison before HAL**.
+No stop command was sent after the superseded brief stop request. Runtime remains
+**899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f**, RUNNING72,
+LL afo-f3ad027406784ef7/native01M65TR9K7DRDTM8AX8ZTP445G RUNNING/LIVE/HELD,
+Q8_0/f16/MTP3/xhigh/262144/one inference/QM/SafeC disabled.
+At08:57:03UTC34 requests complete/oneSENT; second bounded author return completed.
+New baseline ad64dceaa4f94435 is being reviewed, first criterionPASS.
+First re-review four model criteriaPASS/twoFAIL; SWE1-02 findings6→3, not clean.
+Remaining review includes a potential C-notation false conflict, real set-bit test ambiguity,
+and missing authoritative CPU allocation. No allocation invented; no live artifact/serving change.
+Same mission/counters/failures/uncertainty/spent correction and13:52:52UTC deadline remain.
+
+Candidate **37c0c354629312a70eb6a199989477036bb674d9**, NOT_DEPLOYED, combines94b5
+reasoning-pilot preparation with optional C parameter-list context. In C, query(void) can
+return uint32_t; (void) alone does not establish a void return type. Real compiler positive
+and genuine void-return conflict negative testsPASS. Same note reaches structured/native
+SWE.1 author and inspector, all driver namespaces, LL/HAL, only explicitly enabled profiles.
+Full context/hash accounting includes it. No criteria/gates/permissions/verdict filters changed;
+original FAIL remains valid. Legacy profiles/five frozen RCC graph hashes unchanged.
+
+Local initial19PASS; combined context cohort92PASS/no failures/errors/skips, including four actual
+Fabro parsers. Earlier reasoning96PASS/final31 affectedPASS and five local verifier-fence tests retained.
+Clean exact37c0 CLI preparationPASS/no inference/queue/job/mission. Native qualification NOT_RUN.
+Native top-level-only effort wire shape additionally rendered: xhigh200,medium200,high500;
+hashes agree with explicit-template-kwargs proof, zero inference. High is genuinely unsupported,
+no silent medium alias. Medium speed and mixed medium-author/xhigh-review evaluation remain unrun.
+
+**Superseding prepared native qualification:** A3 and remote P/deployment:
+qualify-native-reasoning-context-37c0c35.py,
+qualify-reasoning-context-maintenance-window.py,
+reasoning-context-37c0c35.bundle.
+Use these, not94b5-only scripts. Two serial cohorts at exact37c0: reasoning96/context92
+(overlap; not a distinct-test sum). Check-only correctly refuses current LIVE/RUNNING.
+Window requires RUNNING72 plus actual quiescence/no resource holds, pauses73/resumes74 only
+without newer intent, settles owned scopes and cancels verifier on changed/unobservable intent.
+No deployment or model calls. After LL completion/local copy, run this exact native window,
+then exact-source/profile-bound signed pilot through existing qualification/Conductor/gateway/
+ledger/independent audit. Current RCC xhigh grant cannot authorize medium; standing signing
+delegation permits preparing the concrete finite benchmark scope. No old-mission reset/renewal.
+
+Cumulative factual progress: rework retains valid unaffected groups when their base inputs match.
+Targeted groups receive previous output+findings; changed dependencies can regenerate a group.
+The changed phase is fully re-verified/re-reviewed, not the whole pipeline. First repair's full
+seven findings reached author visit; current second return is bounded by max2 phase corrections.
+
+Formal30/58 unchanged, no new task IDs. Clean LL/HAL, independent learning benefit and24/72/168h
+availability remain unproven. [Combined source, tests, actual findings and native tooling](../../evidence/014-durable-local-autonomy/c-parameter-context-20261030/README.md).
+
+## Historical checkpoint — 08:28UTC: LL repairing automatically; high unsupported, medium pilot prepared
 
 Latest owner instruction is **finish current run, then compare reasoning and MTP settings**.
 It superseded the brief stop request before any stop command was sent. RUNNING epoch72 remains.
