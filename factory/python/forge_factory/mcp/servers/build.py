@@ -64,6 +64,17 @@ def sources(ctx: ToolContext) -> list[Path]:
         p = ctx.workspace / d
         if p.is_dir():
             out += sorted(x for x in p.glob("*.c") if not x.is_symlink())
+    if not out:
+        from ...delivery_first import selected
+
+        cfg, _ = selected(ctx.workspace)
+        if cfg and all(ctx.path(raw, must_exist=False).is_file() for raw in cfg["candidate_files"]):
+            from ...development_demonstration import validate_inputs
+
+            # Compile the declared build-only probe against the authored header.
+            # It contains wrappers, never a substituted driver implementation.
+            validate_inputs(ctx.workspace)
+            out = [ctx.path(cfg["target_probe"], kind="file")]
     if not out:  # feature 008 (ST pilot): a header-only delivery gets a generated build-only unit (outside the delivery)
         from ...brownfield.cmsis import delivered_unit
 

@@ -157,6 +157,21 @@ def test_declared_target_harness_reuses_pointer_api_in_existing_tools(prepared):
     assert elf.is_file()
 
 
+def test_generated_header_uses_declared_probe_in_normal_build_tools(prepared):
+    from forge_factory.mcp.servers import build as compiler
+
+    ws, _ = prepared
+    candidate(ws)
+    ctx = D.context(ws)
+    configured = compiler.configure(ctx, compiler.ConfigureIn())
+    assert configured["status"] == "PASS", configured
+    assert compiler.sources(ctx) == [ws / "inputs/idr_target_probe.c"]
+    built = compiler.compile_(ctx, compiler.CompileIn())
+    assert built["status"] == "PASS", built
+    candidate(ws, "invalid C")
+    assert compiler.compile_(ctx, compiler.CompileIn())["status"] == "FAIL"
+
+
 def test_unselected_tool_workspaces_retain_empty_adapter_flags(tmp_path):
     assert D.selected(tmp_path) == (None, {})
     assert D.include_flags(tmp_path) == []
