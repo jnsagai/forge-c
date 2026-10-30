@@ -1,0 +1,11 @@
+{
+  "syntax_json_xml": "PASS",
+  "credential_pattern_scan": "PASS",
+  "transfer_files_verified": 32,
+  "files_checked": 60,
+  "vendor_primary_content_included": false,
+  "hidden_reasoning_included": false,
+  "source_test_revision": "433254aabb1a5c421dcc773d8bad319e6586ef31",
+  "raw_failed_logs_preserved": true,
+  "evidence_whitespace_check": "allow captured blank-at-eol/blank-at-eof; source changes checked separately"
+}

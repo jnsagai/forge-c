@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-30T19:22:53.679871Z",
+  "source_revision": "719060396f3b9172465af7fab2d81e9987024842",
+  "profile_version": 2,
+  "gateway_source_sha256": "6842c6182e2fb9083b798696224ea710afcaeea4e386d97a65ed5aaa399d6c41",
+  "native_endpoint": "/apply-template",
+  "generation_endpoints_called": 0,
+  "fixture": "synthetic text-only late-system compaction shape",
+  "initial_probe_guard": {
+    "expected_http": 400,
+    "observed_http": 500,
+    "correction": "accept actual native template rejection; no candidate/source change"
+  },
+  "baseline_http": 500,
+  "baseline_error": "System message must be at the beginning",
+  "candidate_http": 200,
+  "all_synthetic_system_text_retained": true,
+  "non_system_order_and_content_unchanged": true,
+  "baseline_body_sha256": "5b538188d64d3bd4996767f565881f20f9056f60ae49b46ce71b0000cb3cfa9e",
+  "candidate_body_sha256": "b923f57535a4f2907c2d2a7a8d846fe8409717149be11a3f4fe9ea27e2a3acbf",
+  "native_template_sha256": "6c813c97bb61f4cffea69828177105bd14e5c838689f4a17f4e36437cfe57cc6",
+  "result": "PASS",
+  "live_run_restarted": false,
+  "source_clean_after": true
+}

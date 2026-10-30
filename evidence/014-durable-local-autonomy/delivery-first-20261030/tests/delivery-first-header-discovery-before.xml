@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.447" timestamp="2026-10-30T20:36:40.689207+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first" name="test_generated_header_uses_declared_probe_in_normal_build_tools" time="0.247"><failure message="AssertionError: {'artifact_refs': [], 'issues': ['NO_SOURCES:software/hal|software/src'], 'metrics': {'include_dirs': 5, 'sources': 0}...4338', 'tool': 'arm-none-eabi-gcc', 'version': 'arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)'}, ...}&#10;assert 'BLOCKED' == 'PASS'&#10;  &#10;  - PASS&#10;  + BLOCKED">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...7c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_generated_header_uses_declared_probe_in_normal_build_tools(prepared):
+        from forge_factory.mcp.servers import build as compiler
+    
+        ws, _ = prepared
+        candidate(ws)
+        ctx = D.context(ws)
+        configured = compiler.configure(ctx, compiler.ConfigureIn())
+&gt;       assert configured["status"] == "PASS", configured
+E       AssertionError: {'artifact_refs': [], 'issues': ['NO_SOURCES:software/hal|software/src'], 'metrics': {'include_dirs': 5, 'sources': 0}...4338', 'tool': 'arm-none-eabi-gcc', 'version': 'arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)'}, ...}
+E       assert 'BLOCKED' == 'PASS'
+E         
+E         - PASS
+E         + BLOCKED
+
+factory/python/tests/test_delivery_first.py:167: AssertionError</failure></testcase></testsuite></testsuites>

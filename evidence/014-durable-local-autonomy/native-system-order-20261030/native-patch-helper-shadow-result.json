@@ -1,0 +1,43 @@
+{
+  "script_sha256": "3f1fdd369838180a37a59fde9caa98fd57f201639381505a3f61d942dd0e0e68",
+  "model_authored_script": true,
+  "exit_code": 1,
+  "wall_ms": 33.6,
+  "namespace": "private network/PID/user namespace; no host home or GPU mounted",
+  "scope": "ISOLATED_COPY_ONLY_NOT_ACTIVE_ARTIFACTS",
+  "active_hashes_unchanged_during_probe": true,
+  "changes": [
+    {
+      "path": "workproducts/SWE.1/software_requirements.md",
+      "before_sha256": "602814ad616f05643f6d7597f04ce1cb772a2149c92d7157142f71ef759afced",
+      "after_sha256": "602814ad616f05643f6d7597f04ce1cb772a2149c92d7157142f71ef759afced",
+      "changed": false,
+      "bytes_after": 310560
+    },
+    {
+      "path": "workproducts/SWE.1/register_effects.json",
+      "before_sha256": "5b08fa09e573ecb3210700c66ef2cb5ea61a93a8a1213e4118a997486ab3c45e",
+      "after_sha256": "5b08fa09e573ecb3210700c66ef2cb5ea61a93a8a1213e4118a997486ab3c45e",
+      "changed": false,
+      "bytes_after": 98052
+    },
+    {
+      "path": "traceability/requirements_to_tests.csv",
+      "before_sha256": "ec1cf1b4159730c2cfe261d2c0840be9fe324e69f77c70772cc02a00398acf88",
+      "after_sha256": "ec1cf1b4159730c2cfe261d2c0840be9fe324e69f77c70772cc02a00398acf88",
+      "changed": false,
+      "bytes_after": 29697
+    },
+    {
+      "path": "traceability/upstream_gaps.md",
+      "before_sha256": "10ed713c152cad2849592ff1d044d585bb5453c2560b7493c93c5ea1b7c8f706",
+      "after_sha256": "10ed713c152cad2849592ff1d044d585bb5453c2560b7493c93c5ea1b7c8f706",
+      "changed": false,
+      "bytes_after": 32317
+    }
+  ],
+  "new_model_calls": 0,
+  "stdout_bytes": 27,
+  "stderr_bytes": 330,
+  "script_outputs_independently_validated": false
+}

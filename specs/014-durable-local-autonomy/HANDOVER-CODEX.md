@@ -1,5 +1,63 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Current checkpoint — genuine Qwen C passed independent host checks, 30 October20:40UTC
+
+Read [delivery-first evidence](../../evidence/014-durable-local-autonomy/delivery-first-20261030/README.md).
+Incorporated eeed84f5 DELIVERY-FIRST-E2E.md without discarding5222996d or older
+recovery work. Latest tested local source **433254aabb1a5c421dcc773d8bad319e6586ef31**;
+50focused cases PASS, no skip/failure/error. It includes prospective header-only
+build discovery. Actual remote source remains **beb48b49d4ed7588798b964bc9da99ec47ff7251**,
+clean, profile local-rtx-v2-omniverse2-q38-delivery-first v2.
+
+Current real Qwen native **01M6788GYKREQSS1YTZHS9N3TV**, order
+WO-F014-QWEN-CRC-IDR-DELIVERY-20261030-01, root
+R=/mnt/data/forge-c/delivery-first-014-20261030-v1; API32402/gateway11459.
+Launched20:33:15. Candidate was absent; successful native write and tested header
+share SHA511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5.
+At20:35:55 the first candidate passed Clang, Cortex-M55 compilation and630frozen
+independent host checks, correction0. This is a limited functional result,
+**not** full nine-requirement qualification, ASPICE acceptance, HAL or AFO integration.
+
+The author node still failed on HTTP429/context growth; its valid C survived and
+the real graph advanced to SWE.1. At saved20:40checkpoint RUNNING; revalidate.
+A native shell denial and missing header-only build discovery are preserved.
+Do not hot-patch this running source or supply an undisclosed reference repair.
+433254aa fixes normal MCP build discovery for a future source-pinned retry.
+Future work: actual simulation/performance/startup/resource evidence, six-phase
+terminal product, final-code re-verification, then fresh repeats and LL/HAL.
+Original broad RCC obligations remain open; this is a separately scoped new job.
+
+Native fixture01M6785DZFM30CS67KYZ9JNVWR attempted all six actual author/inspector
+stages, terminalSUCCEEDED/productBLOCKED51/integrityPASS, **zero Qwen generations**.
+Earlier fixture01M6780ZA26M4GMCBT2YBFZDFK exposed17586+49152>65536; retained
+FAILED/BLOCKED54 package. Profile2 reserves24576without clipping inputs.
+New standalone gateway measurement is opted-in and separate from usage rows.
+
+Prior RCC native01M671YCDV672HSSY5QDGH4SNT externally superseded20:32 after all four
+seed hashes remained unchanged. NativeFAILED after cancellation, retired gateway
+SIGTERM thenSIGKILL, model never signalled. Provider initially busy, then verified
+idle20:33:10 **before** new Qwen launch. Preserved BLOCKED50/integrityPASS package
+SHA0a6dcb488f1e961a3fa421587a98a41d39fe5cf84d1f2f1bc66dd6ff609314ae
+copied/hash-verified privately on loop10. Historical failures/charges were not reset.
+Its parser/template fixes and failed isolated helper are in
+[native-system evidence](../../evidence/014-durable-local-autonomy/native-system-order-20261030/README.md).
+
+Production Conductor remains PAUSED111. Do not resume it against the current
+standalone GPU job. Physical model remains Q8/f16/draft-MTP/one262144slot; new
+experimental Fabro context65536, all-role medium reasoning. Ordinary role/file/MCP
+permissions remain. No production authorization/grant was silently renewed.
+The prior dashboard8786 still follows the old N trial until deliberately repointed.
+New read-only collector A3/collect-delivery-first-outcomes-20261030-v1.py,
+session62942, copies terminal outcomes to
+B/inspection/feature014/2026-10-30-qwen/full-pipeline-delivery-first/.
+Observation end remains31October02:46:24UTC. Old collector29998 remains for N;
+revalidate sessions/processes, do not infer liveness from static records.
+
+Report-only main publication remainsbf3f1eb9; all implementation stays on the
+Feature014 branch. Formal progress30/58 unchanged. No full clean LL/HAL or
+24/7, learning-benefit, production or general-target qualification is claimed.
+
+
 ## Current execution — native shared Qwen workflow started 30 October 18:42 UTC
 
 Native **01M671YCDV672HSSY5QDGH4SNT**, work order

@@ -1,0 +1,1 @@
+{"at":"2026-10-30T20:30:59.553928Z","model_server_signalled":false,"services":[{"pid":188896,"service":"fixture_backend","status":"SIGTERM_EXACT_PID"},{"pid":189026,"service":"gateway","status":"SIGTERM_EXACT_PID"},{"pid":189154,"service":"fabro","status":"SIGTERM_EXACT_PID"}]}

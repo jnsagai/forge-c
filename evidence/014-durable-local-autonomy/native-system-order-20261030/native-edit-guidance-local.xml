@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="1" tests="26" time="5.526" timestamp="2026-10-30T19:11:54.456374+00:00" hostname="master"><testcase classname="factory.python.tests.test_native_complete_scope" name="test_real_owner_scope_reaches_author_and_inspector[LL-0002a-arm_55_rcc_ll]" time="0.503"><failure message="AssertionError: assert 'at most 20 tool calls' not in 'digraph For...-&gt; exit\n}\n'&#10;  &#10;  'at most 20 tool calls' is contained here:&#10;     You have at most 20 tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed automatically; their reports are in verification/static/ and inspection/&lt;phase&gt;/deterministic/), and call check_inspection no later than your 15th tool call. 5) read_file .forge-run/checklists/SWE.1.json once (the full checklist; it is NOT elsewhere, do not search for it). Judge each checklist item: SWE1-01: HSI and allocated software safety requirements are baselined and trace; SWE1-02: Requirements are atomic, c...&#10;  &#10;  ...Full output truncated (150 lines hidden), use '-vv' to show">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-210/test_real_owner_scope_reaches_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x730e2b8f5940&gt;
+layer = 'LL', example = '0002a-arm_55_rcc_ll'
+
+    @pytest.mark.parametrize("layer,example", [("LL", "0002a-arm_55_rcc_ll"), ("HAL", "0002b-arm_55_rcc_hal")])
+    def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, layer, example):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        ws, manifest = workorder.prepare(REPO_ROOT / "examples/0002a-arm_55_rcc_ll", "WO-COMPLETE-SCOPE", purpose="ASPICE_ONLY")
+        # Builder-only test: a HAL execution still requires independently verified LL.
+        manifest["scope"] = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())["scope"]
+        sections = {key: value["file"] for key, value in swe1._section_files(ws).items()}
+        graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral=manifest.get("peripheral"), sections=sections, chunk_lines=150,
+                         assessment_manifest=manifest)
+        p = prompts(graph)
+        selected = scope_sections(manifest["scope"], "RM0486", ["14.10.1", "14.10.2", "14.10.79", "14.10.64"])
+        if layer == "LL":
+            assert len(selected) == 25
+        else:
+            assert selected
+        for section in selected:
+            path = sections[section]
+            assert path in p["swe1_author"] and path in p["swe2_author"]
+        assert "12-26 requirements" not in p["swe1_author"]
+        assert "8-15 requirements" not in p["swe1_author"]
+        assert "enough atomic requirements to cover the full scope" in p["swe1_author"]
+        for node in ("swe1_author", "swe1_inspector"):
+            assert "Missing coverage is a finding" in p[node]
+            assert "explicit simulation_performance allocation: at most 64" in p[node]
+            assert "not a bound for unmeasured timeout paths or physical hardware WCET" in p[node]
+        assert "Simulation Performance Should Meet Budget" in p["swe6_author"]
+        # Native ACP and QM roles obtain their allowance from policy. The old prompt
+        # invented a20-call stop even when the actual role had4096/10000 calls.
+&gt;       assert "at most 20 tool calls" not in graph
+E       AssertionError: assert 'at most 20 tool calls' not in 'digraph For...-&gt; exit\n}\n'
+E         
+E         'at most 20 tool calls' is contained here:
+E            You have at most 20 tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed automatically; their reports are in verification/static/ and inspection/&lt;phase&gt;/deterministic/), and call check_inspection no later than your 15th tool call. 5) read_file .forge-run/checklists/SWE.1.json once (the full checklist; it is NOT elsewhere, do not search for it). Judge each checklist item: SWE1-01: HSI and allocated software safety requirements are baselined and trace; SWE1-02: Requirements are atomic, c...
+E         
+E         ...Full output truncated (150 lines hidden), use '-vv' to show
+
+factory/python/tests/test_native_complete_scope.py:45: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_native_complete_scope" name="test_real_owner_scope_reaches_author_and_inspector[HAL-0002b-arm_55_rcc_hal]" time="0.452"><failure message="AssertionError: assert 'at most 20 tool calls' not in 'digraph For...-&gt; exit\n}\n'&#10;  &#10;  'at most 20 tool calls' is contained here:&#10;     You have at most 20 tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed automatically; their reports are in verification/static/ and inspection/&lt;phase&gt;/deterministic/), and call check_inspection no later than your 15th tool call. 5) read_file .forge-run/checklists/SWE.1.json once (the full checklist; it is NOT elsewhere, do not search for it). Judge each checklist item: SWE1-01: HSI and allocated software safety requirements are baselined and trace; SWE1-02: Requirements are atomic, c...&#10;  &#10;  ...Full output truncated (157 lines hidden), use '-vv' to show">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-210/test_real_owner_scope_reaches_1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x730e2cd29810&gt;
+layer = 'HAL', example = '0002b-arm_55_rcc_hal'
+
+    @pytest.mark.parametrize("layer,example", [("LL", "0002a-arm_55_rcc_ll"), ("HAL", "0002b-arm_55_rcc_hal")])
+    def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, layer, example):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        ws, manifest = workorder.prepare(REPO_ROOT / "examples/0002a-arm_55_rcc_ll", "WO-COMPLETE-SCOPE", purpose="ASPICE_ONLY")
+        # Builder-only test: a HAL execution still requires independently verified LL.
+        manifest["scope"] = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())["scope"]
+        sections = {key: value["file"] for key, value in swe1._section_files(ws).items()}
+        graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral=manifest.get("peripheral"), sections=sections, chunk_lines=150,
+                         assessment_manifest=manifest)
+        p = prompts(graph)
+        selected = scope_sections(manifest["scope"], "RM0486", ["14.10.1", "14.10.2", "14.10.79", "14.10.64"])
+        if layer == "LL":
+            assert len(selected) == 25
+        else:
+            assert selected
+        for section in selected:
+            path = sections[section]
+            assert path in p["swe1_author"] and path in p["swe2_author"]
+        assert "12-26 requirements" not in p["swe1_author"]
+        assert "8-15 requirements" not in p["swe1_author"]
+        assert "enough atomic requirements to cover the full scope" in p["swe1_author"]
+        for node in ("swe1_author", "swe1_inspector"):
+            assert "Missing coverage is a finding" in p[node]
+            assert "explicit simulation_performance allocation: at most 64" in p[node]
+            assert "not a bound for unmeasured timeout paths or physical hardware WCET" in p[node]
+        assert "Simulation Performance Should Meet Budget" in p["swe6_author"]
+        # Native ACP and QM roles obtain their allowance from policy. The old prompt
+        # invented a20-call stop even when the actual role had4096/10000 calls.
+&gt;       assert "at most 20 tool calls" not in graph
+E       AssertionError: assert 'at most 20 tool calls' not in 'digraph For...-&gt; exit\n}\n'
+E         
+E         'at most 20 tool calls' is contained here:
+E            You have at most 20 tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed automatically; their reports are in verification/static/ and inspection/&lt;phase&gt;/deterministic/), and call check_inspection no later than your 15th tool call. 5) read_file .forge-run/checklists/SWE.1.json once (the full checklist; it is NOT elsewhere, do not search for it). Judge each checklist item: SWE1-01: HSI and allocated software safety requirements are baselined and trace; SWE1-02: Requirements are atomic, c...
+E         
+E         ...Full output truncated (157 lines hidden), use '-vv' to show
+
+factory/python/tests/test_native_complete_scope.py:45: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_native_complete_scope" name="test_missing_literal_section_refuses_before_native_submission" time="0.005" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_non_rcc_scope_and_domain_rules_are_preserved[LL]" time="0.042" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_non_rcc_scope_and_domain_rules_are_preserved[HAL]" time="0.035" /><testcase classname="factory.python.tests.test_native_complete_scope" name="test_scope_does_not_leak_into_the_next_legacy_build" time="0.061" /><testcase classname="factory.python.tests.test_native_artifact_trial" name="test_native_artifact_trial_keeps_full_scope_and_no_structured_substitution" time="0.535" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_proxy_enforces_the_boundary" time="1.226" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_factory_config_declares_the_same_reply_contract_without_enabling_other_tools" time="0.001" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_attach_converts_author_nodes_only_and_drops_api_only_attributes" time="0.001" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_attestation_sees_codex_authors_and_run_model_inspectors" time="0.010" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_capa049_a_denied_permission_rejects_and_never_cancels_the_turn" time="0.000" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_claude_proxy_gets_gate_servers_only_no_builtin_tools_and_no_api_key" time="1.212" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_attach_claude_converts_inspectors_and_release_manager_only" time="0.002" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_attestation_sees_claude_inspectors" time="0.002" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_cr_t027_usage_is_recorded_per_prompt_result_without_content" time="0.002" /><testcase classname="factory.python.tests.test_acp_proxy" name="test_a_prompt_that_ends_in_an_error_is_logged_redacted" time="0.002" /><testcase classname="factory.python.tests.test_t007_policy" name="test_inspector_cannot_edit_workproducts_or_shell" time="0.051" /><testcase classname="factory.python.tests.test_t007_policy" name="test_author_write_scope_and_protected_paths" time="0.044" /><testcase classname="factory.python.tests.test_t007_policy" name="test_escaped_newline_content_rejected_with_actionable_reason" time="0.043" /><testcase classname="factory.python.tests.test_t007_policy" name="test_swe5_author_may_write_renode_target_tests_only_in_its_scope" time="0.043" /><testcase classname="factory.python.tests.test_t007_policy" name="test_release_manager_cannot_waive_or_mutate" time="0.043" /><testcase classname="factory.python.tests.test_t007_policy" name="test_repair_agent_cannot_access_product_baselines" time="0.043" /><testcase classname="factory.python.tests.test_t007_policy" name="test_skill_subagent_network_unbound_and_phase" time="0.043" /><testcase classname="factory.python.tests.test_t007_policy" name="test_hook_process_fail_closed_and_audited" time="0.699" /><testcase classname="factory.python.tests.test_t007_policy" name="test_live_fabro_native_bypass_denied" time="0.000"><skipped type="pytest.skip" message="live Fabro test disabled">/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python/tests/test_t007_policy.py:130: live Fabro test disabled</skipped></testcase></testsuite></testsuites>
