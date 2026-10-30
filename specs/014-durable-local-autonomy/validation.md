@@ -1,4 +1,17 @@
 # Implementation and qualification status
+## Latest reasoning comparison preparation — 2026-10-30 08:23UTC
+
+Runtime899865d/RUNNING72 continues LL01M65TR9K7DRDTM8AX8ZTP445G; first review4PASS/2FAIL,
+automatic author return and seven complete feedback strings observed. Source candidate94b5a68 is
+NOT_DEPLOYED: medium pilot tooling/profile and honest completion-versus-decode reporting.
+Native zero-inference template preflight proves **high unsupported**, medium/xhigh accepted, ledger650→650.
+Local96PASS regression +31 final affected checksPASS, exact clean94b5 preparation CLI PASS.
+Five real local verifier-child cancellation testsPASS. Native candidate CPU qualification and model
+comparison NOT_RUN; check-only correctly refuses while LL live. No source hot-change or new grants.
+The initial pilot measures diagnosis only; author/inspector competence and full mixed pipeline remain pending.
+Same RCC mission/history/counters/uncertainty and existing13:52:52UTC deadline remain.
+Formal30/58 unchanged, no newly completed tasks; clean full LL/HAL/learning benefit/operational soaks unproven.
+[Exact evidence and prepared executable native paths](../../evidence/014-durable-local-autonomy/reasoning-speed-20261030/README.md).
 
 ## Latest actual execution — 2026-10-30 07:38UTC
 

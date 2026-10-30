@@ -1,6 +1,57 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 07:38 UTC: corrected launch active; bounded-repair LL running
+## Latest state — 08:28UTC: LL repairing automatically; high unsupported, medium pilot prepared
+
+Latest owner instruction is **finish current run, then compare reasoning and MTP settings**.
+It superseded the brief stop request before any stop command was sent. RUNNING epoch72 remains.
+No model/CPU qualification competes with Qwen. Do not automatically submit HAL ahead of this comparison.
+
+Runtime **899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f** remains unchanged:
+LL afo-f3ad027406784ef7/native01M65TR9K7DRDTM8AX8ZTP445G RUNNING/LIVE/HELD,
+Q8_0/f16/MTP3/xhigh/262144/one inference, QM/SafeC disabled.
+At08:28:41UTC23 requests complete/oneSENT. First author return completed; new baseline
+e1df47dbf49cb165 is being re-reviewed and its first criterionPASS. First review four model criteriaPASS,
+SWE1-02FAIL/six findings, SWE1-04FAIL/missing CPU allocation. Automatic first author return
+occurred; durable phase_reworks=1. All seven complete findings verified in author visit,
+rather than only the200-character display summaries. Revised packets validate; full re-review pending.
+Same RCC mission/history/counters/uncertainty/spent correction and13:52:52UTC deadline unchanged.
+
+**Native discovery:** pinned installed template accepts xhigh,medium,low and rejects **high**.
+Actual apply-template: xhigh200,medium200,high500/unsupported,low200; ledger650→650,
+zero inference, rendered prompts not retained. Do not map high to another level or claim its speed.
+My earlier high recommendation was premature. Supported proposed mixed lane is medium authors/xhigh
+review/repair, still NOT_IMPLEMENTED/NOT_RUN as a pipeline evaluation.
+
+Candidate **94b5a68d22e88c010a04ca5d4356422551790a52**, NOT_DEPLOYED:
+opt-in medium profile, existing targeted qualification catalogue (four cases ×two repeats),
+executable reasoning_comparison preparation using existing Q/input/compiled oracle/comparison paths.
+Pilot covers **diagnosis only**, not authors/inspectors or complete product performance.
+Model/Q8/f16/MTP3/context/sampling/gates fixed; medium/xhigh requests measured after actual gateway
+transformation. High explicitly UNSUPPORTED, no inference or silent substitution.
+Local96PASS regression; final31 affected checksPASS after report-rate addition; exact clean94b5 CLI
+preparationPASS/zero model calls/no queue/job/mission. Five real local child-process verifier-fence testsPASS.
+Static validation is separate. Native qualification NOT_RUN while current run live.
+
+A3/qualify-native-reasoning-comparison-94b5a68.py,
+A3/qualify-reasoning-comparison-maintenance-window.py and small source bundle prepared/uploaded.
+Remote same filenames under P/deployment. Check-only correctly refused LIVE/RUNNING.
+After LL finishes and archive copied, fenced window requires RUNNING72 plus actual native/resource
+quiescence, pauses73/resumes74 only without newer operator intent. It tests exact94b5, no deployment/
+model calls. Its worker continuously cancels its owned verifier group if operator intent changes.
+Then prepare/sign exact finite benchmark authority under standing delegation and execute serial native
+xhigh/medium comparison through existing qualification intake/Conductor/gateway/accounting/audits.
+Existing RCC xhigh role grant cannot authorize medium. No old-mission reset or silent renewal.
+MTP is a subsequent separate factor; full mixed-author/reviewer evaluation stays pending.
+HAL needs then-current source/profile authority and actual sealed provisional LL; old fixed899 intake
+is not to be submitted ahead of the requested benchmark.
+
+Observer, Git recorder and local outcome collector remain active; no collector for old failed admission
+is needed (verified archive copied, old local reader4156471 retired). Current collector4166538 remains.
+Formal30/58 unchanged, no task IDs completed. Clean full LL/HAL, broad role qualification,
+independent learning benefit and24/72/168h operation remain UNPROVEN.
+[Native control evidence, exact commands, tests and executable qualification](../../evidence/014-durable-local-autonomy/reasoning-speed-20261030/README.md).
+
+## Historical checkpoint — 07:38 UTC: corrected launch active; bounded-repair LL running
 
 Owner requests complete QM artifacts first, two author corrections then advisory advance.
 **Do not resume historical checkpoints below as current instructions.**

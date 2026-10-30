@@ -1,0 +1,153 @@
+{
+  "native_run_id": "01M65TR9K7DRDTM8AX8ZTP445G",
+  "source_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
+  "phase": "SWE.1",
+  "first_inspection": {
+    "author_role": "swe1-author",
+    "baseline_hash": "e38d4043d555b5d6e46126abf6fe23a2c4148ff08886422ce4420ee003994b4d",
+    "baseline_id": "BL-SWE.1-001",
+    "checklist_sha256": "4afc1dd9dbce82abfacde503f260bc806335999b4d28cc2956bd356fefb26353",
+    "checklist_version": "0.4",
+    "findings": [
+      {
+        "detail": "SWR-025 in workproducts/SWE.1/software_requirements.md is not objectively verifiable as written: it applies to an unspecified 'ready-flag query' and its verification uses 'measure execution' and 'retu",
+        "id": "SWE1-02",
+        "severity": "major"
+      },
+      {
+        "detail": "CPU constraint missing: workproducts/SWE.1/software_requirements.md and .forge-run/manifest.json#scope-target-budgets define measurable flash, static-RAM, and stack limits, but they do not state an ex",
+        "id": "SWE1-04",
+        "severity": "major"
+      }
+    ],
+    "inspection_id": "INS-SWE.1-001",
+    "inspector_role": "swe1-inspector",
+    "items": {
+      "SWE1-01": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "safety/software_safety_requirements.md",
+          "traceability/requirements_to_tests.csv",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "SWE1-02": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "safety/software_safety_requirements.md",
+          "traceability/requirements_to_tests.csv",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [
+          "SWR-025 in workproducts/SWE.1/software_requirements.md is not objectively verifiable as written: it applies to an unspecified 'ready-flag query' and its verification uses 'measure execution' and 'returns 0U immediately' without an objective measurement method, threshold, or defined way to observe that only a single read occurs.",
+          "SWR-026 in workproducts/SWE.1/software_requirements.md is not atomic and not objectively verifiable as written: it covers any 'named RCC register bit' without naming a register, bit, or function, and its verification refers to 'the target RCC register' and 'the named bit' as placeholders, so a single test cannot objectively verify the requirement.",
+          "SWR-024 in workproducts/SWE.1/software_requirements.md is not objectively verified by the stated robot test: comparing read-back RCC register values against reset defaults cannot detect a write that leaves the register value equal to the reset default, so the test cannot objectively verify 'shall not write any RCC register'.",
+          "The verification texts in workproducts/SWE.1/software_requirements.md are inconsistent about the register-block array index required by .forge-run/manifest.json#scope-target-budgets: SWR-001/002 use LL_RCC_CR_OFFSET/4U, SWR-003/004 use LL_RCC_RCC_CR_OFFSET/4U, SWR-014-019 use LL_RCC_RCC_AHB1ENR_OFFSET/4U, and SWR-020-023 use ll_rcc_regs[RCC_AHB1RSTR], leaving the exact element to initialize and check undefined.",
+          "SWR-010, SWR-011, SWR-012, and SWR-013 in workproducts/SWE.1/software_requirements.md use field-like access on an array element such as ll_rcc_regs[RCC_SR].HSIRDY, which is inconsistent with ll_rcc_regs being a register-block array and does not specify the generated offset or bit position to set and check, so the verification is not objectively executable as written.",
+          "SWR-001, SWR-002, SWR-003, and SWR-004 in workproducts/SWE.1/software_requirements.md have verification steps that do not objectively verify preservation of all other RCC_CR bits: the tests initialize the other RCC_CR bits to 0 and would still pass if the function cleared or corrupted other bits that were initially set."
+        ],
+        "verdict": "FAIL"
+      },
+      "SWE1-03": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context",
+          "safety/software_safety_requirements.md",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "traceability/requirements_to_tests.csv"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "SWE1-04": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          "traceability/upstream_gaps.md",
+          "safety/software_safety_requirements.md",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [
+          "CPU constraint missing: workproducts/SWE.1/software_requirements.md and .forge-run/manifest.json#scope-target-budgets define measurable flash, static-RAM, and stack limits, but they do not state an explicit measurable CPU/cycle constraint for the RCC LL public API calls (SWR-001 through SWR-026)."
+        ],
+        "verdict": "FAIL"
+      },
+      "SWE1-05": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "traceability/upstream_gaps.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context",
+          "workproducts/SWE.1/software_requirements.md",
+          "safety/software_safety_requirements.md"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "SWE1-06": {
+        "evidence_refs": [
+          "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+          "safety/software_safety_requirements.md",
+          "traceability/requirements_to_tests.csv",
+          "traceability/upstream_gaps.md",
+          "workproducts/SWE.1/register_effects.json",
+          "workproducts/SWE.1/software_requirements.md",
+          ".forge-run/manifest.json#scope-target-budgets",
+          ".forge-run/manifest.json#inspection-assessment-context"
+        ],
+        "findings": [],
+        "verdict": "PASS"
+      },
+      "SWE1-07": {
+        "evidence_refs": [
+          "inspection/SWE.1/deterministic/SWE1-07-2026-10-30T075929.299341Z.json"
+        ],
+        "findings": [],
+        "source": "deterministic",
+        "verdict": "PASS"
+      },
+      "SWE1-08": {
+        "evidence_refs": [
+          "inspection/SWE.1/deterministic/SWE1-08-2026-10-30T075929.479081Z.json"
+        ],
+        "findings": [],
+        "source": "deterministic",
+        "verdict": "PASS"
+      }
+    },
+    "phase": "SWE.1",
+    "recorded_at": "2026-10-30T07:59:29.479320Z",
+    "schema": "forge-c/inspection/0.4",
+    "stale_reason": null,
+    "verdict": "FAIL"
+  },
+  "complete_published_findings": 7,
+  "complete_findings_in_author_visit": true,
+  "author_visit_findings": [
+    "SWE1-02: SWR-025 in workproducts/SWE.1/software_requirements.md is not objectively verifiable as written: it applies to an unspecified 'ready-flag query' and its verification uses 'measure execution' and 'returns 0U immediately' without an objective measurement method, threshold, or defined way to observe that only a single read occurs.",
+    "SWE1-02: SWR-026 in workproducts/SWE.1/software_requirements.md is not atomic and not objectively verifiable as written: it covers any 'named RCC register bit' without naming a register, bit, or function, and its verification refers to 'the target RCC register' and 'the named bit' as placeholders, so a single test cannot objectively verify the requirement.",
+    "SWE1-02: SWR-024 in workproducts/SWE.1/software_requirements.md is not objectively verified by the stated robot test: comparing read-back RCC register values against reset defaults cannot detect a write that leaves the register value equal to the reset default, so the test cannot objectively verify 'shall not write any RCC register'.",
+    "SWE1-02: The verification texts in workproducts/SWE.1/software_requirements.md are inconsistent about the register-block array index required by .forge-run/manifest.json#scope-target-budgets: SWR-001/002 use LL_RCC_CR_OFFSET/4U, SWR-003/004 use LL_RCC_RCC_CR_OFFSET/4U, SWR-014-019 use LL_RCC_RCC_AHB1ENR_OFFSET/4U, and SWR-020-023 use ll_rcc_regs[RCC_AHB1RSTR], leaving the exact element to initialize and check undefined.",
+    "SWE1-02: SWR-010, SWR-011, SWR-012, and SWR-013 in workproducts/SWE.1/software_requirements.md use field-like access on an array element such as ll_rcc_regs[RCC_SR].HSIRDY, which is inconsistent with ll_rcc_regs being a register-block array and does not specify the generated offset or bit position to set and check, so the verification is not objectively executable as written.",
+    "SWE1-02: SWR-001, SWR-002, SWR-003, and SWR-004 in workproducts/SWE.1/software_requirements.md have verification steps that do not objectively verify preservation of all other RCC_CR bits: the tests initialize the other RCC_CR bits to 0 and would still pass if the function cleared or corrupted other bits that were initially set.",
+    "SWE1-04: CPU constraint missing: workproducts/SWE.1/software_requirements.md and .forge-run/manifest.json#scope-target-budgets define measurable flash, static-RAM, and stack limits, but they do not state an explicit measurable CPU/cycle constraint for the RCC LL public API calls (SWR-001 through SWR-026)."
+  ],
+  "phase_reworks": 1,
+  "manual_workproduct_edits_by_this_observer": 0,
+  "model_requests_by_this_observer": 0,
+  "claim": "Automated author loop and complete feedback demonstrated; final correction/product success still unproven"
+}
