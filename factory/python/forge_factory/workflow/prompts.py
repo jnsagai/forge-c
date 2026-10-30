@@ -828,13 +828,51 @@ def brownfield_fix3_steps() -> list[str]:
             "for the owner, never a code change).", "Reply PASS when every work-product finding is fixed."]
 
 
+ASSESSMENT = {"manifest": None}
+
+
+def complete_scope_sections(keys: list[str]) -> list[str]:
+    manifest = ASSESSMENT["manifest"] or {}
+    pr = PERIPHERAL["profile"]
+    if manifest.get("purpose") != "ASPICE_ONLY" or not pr:
+        return keys
+    from ..lrtx.obligations import scope_sections
+
+    selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+    missing = [key for key in selected if key not in SECTIONS]
+    if missing:
+        raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+    return selected
+
+
+def assessment_scope_note() -> str:
+    manifest = ASSESSMENT["manifest"] or {}
+    if manifest.get("purpose") != "ASPICE_ONLY":
+        return ""
+    return ("The full work-order scope in .forge-run/manifest.json is authoritative. Catalog seed sections and "
+            "example requirement counts do not narrow it. Account for every requested source section and field; "
+            "record justified exclusions against the actual out-of-scope text, never an omitted catalog entry. "
+            "Missing coverage is a finding, not a completed reduced product. CPU/timing limits must come from an "
+            "explicit work-order allocation; never invent a target cycle bound or substitute a host watchdog. "
+            "Record a missing allocation as an unresolved input gap; do not claim its verification passed.")
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
     keys = pr["rm"]["key_sections"] if pr else ["14.10.1", "14.10.2", "14.10.79", "14.10.64"]
+    keys = complete_scope_sections(keys)
     fills = {"s1": sec(*keys)}
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
+    scope_note = assessment_scope_note()
+    if scope_note and phase == "SWE.1":
+        body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
+                .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
+                .replace("RCC_AHB1ENR and RCC_AHB1RSTR section files",
+                         "in-scope clock-enable and reset register section files" if pr and pr["id"] == "rcc"
+                         else "RCC_AHB1ENR and RCC_AHB1RSTR section files")
+                for x in body]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
         body = brownfield_swe3_steps()
     elif BROWNFIELD["mode"] and phase == "SWE.2":
@@ -859,7 +897,7 @@ def author_prompt(phase: str) -> str:
         body = body[:-1] + trace_step(tr) + body[-1:]
     if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
         body = body[:-1] + contract_step(phase) + body[-1:]
-    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
+    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
@@ -887,6 +925,8 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
              "Items decided by deterministic tools are recomputed automatically.",
              'Finish with ONLY JSON: {"status":"PASS" or "REWORK","artifacts":["inspection/' + phase +
              '/<INS id>.json"],"issues":["<item id: finding>"],"next_action":"next" or "rework"}']
+    if phase == "SWE.1" and assessment_scope_note():
+        steps.insert(1, assessment_scope_note())
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 

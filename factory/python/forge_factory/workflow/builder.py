@@ -127,6 +127,9 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     from ..peripheral import load as load_profile
 
     prompts.PERIPHERAL["profile"] = scoped(load_profile(peripheral), operation_scope) if peripheral else None
+    # The peripheral catalog is a seed, not authority to omit literal owner scope.
+    # Reset on every build so another work order cannot inherit this scope.
+    prompts.ASSESSMENT["manifest"] = assessment_manifest
     if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
     dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
