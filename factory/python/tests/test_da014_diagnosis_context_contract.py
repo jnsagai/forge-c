@@ -67,11 +67,14 @@ def test_scope_classification_cannot_leak_expected_outcomes_or_invent_authority(
     assert "INVENTORY_ONLY" in context["coverage_status"]
 
 
-def test_genuine_missing_primary_evidence_stays_missing_and_proposal_rules_stay_strict(tmp_path, monkeypatch):
-    job, _, packet = case_job(tmp_path, monkeypatch, missing=True)
+@pytest.mark.parametrize("fixture", [False, True])
+def test_genuine_missing_primary_evidence_stays_missing_and_proposal_rules_stay_strict(tmp_path, monkeypatch, fixture):
+    job, _, packet = case_job(tmp_path, monkeypatch, fixture=fixture, missing=True)
     body, _ = D.request_material(job)
     doc = json.loads(body["messages"][1]["content"])
     assert doc["packet"]["complete"] is False and doc["packet"]["missing"] == packet["missing"]
+    assert doc["diagnosis_context"]["indexed_sources_complete"] is False
+    assert doc["diagnosis_context"]["known_missing_evidence"] == packet["missing"]
     assert doc["primary_sources"] == []
     assert "genuinely missing decisive contract" in body["messages"][0]["content"]
     proposal = {"decision": "NEEDS_EVIDENCE", "evidence_refs": [packet["findings"][0]["ref"]],
@@ -85,23 +88,43 @@ def test_genuine_missing_primary_evidence_stays_missing_and_proposal_rules_stay_
         S.parse(duplicate)
 
 
-def test_later_small_questions_keep_global_coverage_and_dependency_inventory(tmp_path, monkeypatch):
+def test_complete_index_does_not_force_repair_when_authority_is_unresolved(tmp_path, monkeypatch):
+    job, _, packet = case_job(tmp_path, monkeypatch)
+    body, _ = D.request_material(job)
+    doc = json.loads(body["messages"][1]["content"])
+    assert doc["packet"]["complete"] is True
+    assert doc["diagnosis_context"]["case_scope"]["authority"] == "NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED"
+    S.check({"decision": "NEEDS_EVIDENCE", "evidence_refs": [packet["findings"][0]["ref"]],
+             "missing_evidence": [{"evidence_kind": "AUTHORITATIVE_INPUT", "obligation_ref": "UNIT-DEVICE-7",
+                                   "reason": "The decisive source authority is unresolved."}]}, packet)
+
+
+@pytest.mark.parametrize("step", [2, 3, 4])
+def test_later_small_questions_keep_global_coverage_and_dependency_inventory(tmp_path, monkeypatch, step):
     job, _, _ = case_job(tmp_path, monkeypatch)
     prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Contract vs implementation."}}
-    body, _ = D.request_material(job, step=2, prior=prior)
+    if step >= 3:
+        prior["question_2_answer"] = {"technique_id": "repair-implementation"}
+    if step == 4:
+        prior["question_3_answer"] = {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}
+    body, _ = D.request_material(job, step=step, prior=prior)
     doc = json.loads(body["messages"][1]["content"])
     assert doc["diagnosis_context"]["required_requirement_ids"] == ["REQ-DEVICE-12", "UNIT-DEVICE-7"]
     assert doc["diagnosis_context"]["global_unit_dependencies"] == {"UNIT-DEVICE-7": []}
+    assert doc["diagnosis_context"]["known_missing_evidence"] == []
     assert "primary_sources" not in doc
+    assert "not repeated here" in body["messages"][0]["content"]
 
 
 @pytest.mark.parametrize("value", [None, [], {"source_kind": "SEEDED_PROTOCOL_NOT_PRODUCT", "evaluation_holdout": False},
                                    {"source_kind": "WORK_ORDER", "evaluation_holdout": True}])
 def test_unknown_or_unmatched_scope_does_not_establish_fixture_authority(value):
     packet = {"obligations": {"UNIT-A": {"dependencies": ["UNIT-B"]}, "UNIT-B": {"dependencies": []}},
-              "required_obligations": ["REQ-OTHER", "UNIT-A", "UNIT-B"]}
+              "required_obligations": ["REQ-OTHER", "UNIT-A", "UNIT-B"], "complete": False,
+              "missing": ["DEPENDENCY:REQ-OTHER"]}
     context = context_contract(packet, {"qualification_fixture": value}, ["UNIT-A"])
     assert context["case_scope"]["kind"] == "WORK_ORDER_EVIDENCE"
     assert context["global_unit_dependencies"] == {"UNIT-A": ["UNIT-B"], "UNIT-B": []}
     assert context["requirements_without_own_incident_unit"] == ["REQ-OTHER"]
+    assert context["known_missing_evidence"] == ["DEPENDENCY:REQ-OTHER"]
 
