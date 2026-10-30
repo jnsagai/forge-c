@@ -1,10 +1,10 @@
 {
-  "captured_utc": "2026-10-30T02:48:24.355532Z",
+  "captured_utc": "2026-10-30T02:53:26.329481Z",
   "deadline_epoch": 1793347916,
   "source_revision": "ab46545c1cfb7ffd90fb09715b6715b7d21ad242",
   "intent": {
-    "mode": "RUNNING",
-    "epoch": 54
+    "mode": "PAUSED",
+    "epoch": 55
   },
   "orders": [
     {
@@ -46,13 +46,13 @@
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": "afo-agent-61401956787984d8c097bc36",
-      "epoch": 51
+      "holder": null,
+      "epoch": 52
     },
     {
       "resource": "generation",
-      "holder": "native-request-b70feed6424b4ecdbdaf5ddbde7bfa54",
-      "epoch": 1145
+      "holder": null,
+      "epoch": 1146
     }
   ]
 }
