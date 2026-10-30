@@ -72,3 +72,19 @@ verifies remote SHA256 and archive inventory, then extracts into local loop10 pr
 inspection/feature014/2026-10-30-qwen/full-pipeline-context-fixed/. Smoke check PASS,
 no completed archive to copy yet. It submits zero jobs/model requests. HAL preparation
 and intake scripts are adapted but UNRUN; their guard requires independent verified LL.
+
+
+## 04:32 UTC: actual inspection passed the original admission blocker
+
+All seven author packets VALID on their first attempt. First inspector packet
+SWE1-01 also VALID on first attempt, verdict PASS, zero findings, five evidence items
+checked. Its complete serialized admission reserved **38861 input +34816 output =
+73677 tokens**, beyond the old24576 envelope and within the selected262144 context.
+It completed with14937reported total tokens. A subsequent inspector request is active.
+This is live evidence that the real Qwen-authored context repair removes the original
+admission failure, not just a synthetic test. It is one inspector criterion, not full
+SWE.1 or LL acceptance. Same-model author/inspector agreement is not independent correctness proof.
+
+The host observer's first native-status attempt wrongly selected the namespace endpoint
+and got401. The corrected host helper uses the authenticated existing relay and confirmed
+the same native run RUNNING; no execution was restarted because observation failed.

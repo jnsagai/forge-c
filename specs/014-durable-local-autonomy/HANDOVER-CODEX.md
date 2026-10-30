@@ -1,6 +1,6 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 04:20 UTC: full LL running; three clean author packets
+## Latest state — 04:32 UTC: all seven author packets and first inspector criterion pass
 
 Runtime **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
 Exact Qwen candidate **bc931bd9274b0e1361bcc3d2b5e0ad23110d8db1** cherry-picked
@@ -11,8 +11,12 @@ Initial error/fixture attempts retained. Prior full CRE seven gates PASS and ind
 original frozen-context/usage eight tests PASS. Static spec/design checks pass separately.
 
 Full LL **afo-6bde501adad6a2bf**, job **afo-product-4855f18721196dcca4107ca6**,
-native **01M65G3CG47YKS11GRQEATNB10**. At04:20:51 UTC RUNNING/LIVE/HELD; three author packets VALID on first attempt,
-zero packet errors,39907reported tokens; fourth request SENT.
+native **01M65G3CG47YKS11GRQEATNB10**. At04:32:15 UTC RUNNING/LIVE/HELD; seven author packets VALID on first attempt.
+First inspector SWE1-01 VALID/PASS, zero findings/five evidence checks; next inspection
+request SENT.103367reported tokens completed. Its admission38861input+34816output
+exceeded the old24576 envelope and completed under262144: live proof the original
+context admission blocker is removed. Full SWE.1/LL acceptance still pending; same-model
+inspector agreement alone is not independent correctness proof.
 Workspace `/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-6bde501adad6a2bf-a1/workspace`.
 Same RCC mission/lineage/counters/finite caps and **08:11:56 UTC** expiry. Single
 protocol CORRECTION already spent; no r3, rework allowance or mission reset.
