@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-30T05:32:49.626440Z",
+  "captured_utc": "2026-10-30T05:37:51.682731Z",
   "deadline_epoch": 1793347916,
   "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
   "intent": {
@@ -47,23 +47,23 @@
         {
           "attempt_id": "afo-6bde501adad6a2bf-a1",
           "seq": 1,
-          "state": "RUNNING"
+          "state": "SUCCEEDED"
         }
       ]
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 611,
+  "requests": 613,
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": "afo-product-4855f18721196dcca4107ca6",
-      "epoch": 55
+      "holder": "afo-agent-e2d3e5df3c5757358d0b1a6b",
+      "epoch": 57
     },
     {
       "resource": "generation",
-      "holder": "structured-request-2141e782d28b419aac45865f391c40e8",
-      "epoch": 1221
+      "holder": "request-ad5cdf792775fd55d38328a0",
+      "epoch": 1225
     }
   ]
 }
