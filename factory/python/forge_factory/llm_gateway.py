@@ -90,17 +90,25 @@ def reasoning_policy() -> dict[str, dict]:
     return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} if isinstance(pol, dict) else {}
 
 
-def sanitize_request(body: dict, *, policy=None) -> dict:
+def sanitize_request(body: dict, *, policy=None, role: str | None = None) -> dict:
     body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
     pol = (reasoning_policy() if policy is None else policy).get(out.get("model"))
-    out["reasoning_effort"] = pol["effort"] if pol else "none"
-    if pol and pol["effort"] == "none":
+    effort = pol["effort"] if pol else "none"
+    overrides = pol.get("role_efforts") if pol else None
+    if overrides is not None:
+        if (not isinstance(overrides, dict) or any(r not in role_tools() or e not in EFFORTS
+                                                   for r, e in overrides.items())):
+            raise ValueError("INVALID_ROLE_REASONING_POLICY")
+        selected = role if role is not None else detect_role(out.get("messages") or [])
+        effort = overrides.get(selected, effort)
+    out["reasoning_effort"] = effort
+    if pol and (effort == "none" or overrides is not None):
         # Explicit profile opt-in: close Qwen's thinking block, not merely hide
         # reasoning text. Preserve the legacy wire shape for models without it.
         kwargs = out.get("chat_template_kwargs")
         out["chat_template_kwargs"] = {
-            **(kwargs if isinstance(kwargs, dict) else {}), "enable_thinking": False,
+            **(kwargs if isinstance(kwargs, dict) else {}), "enable_thinking": effort != "none",
         }
     if pol and pol.get("extra_output_tokens"):  # the reasoning would otherwise use up the answer's reserve
         for key in ("max_tokens", "max_completion_tokens"):
@@ -358,7 +366,10 @@ def create_app(
                 binding = {**from_native(Store(), native_id), "request_id": "native-request-" + uuid.uuid4().hex}
             except Refused as exc:
                 return JSONResponse({"error": {"type": exc.code}}, status_code=429)
-        body = sanitize_request(body)
+        try:
+            body = sanitize_request(body, role=binding.get("role") if isinstance(binding, dict) else None)
+        except ValueError:
+            return JSONResponse({"error": {"type": "invalid_role_reasoning_policy"}}, status_code=400)
         if binding is not None:
             return await durable_request(request, binding, body, headers)
         # Legacy calls retain their existing behavior, but cannot bypass a held durable native execution.

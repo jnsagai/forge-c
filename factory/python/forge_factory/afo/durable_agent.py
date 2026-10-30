@@ -324,7 +324,7 @@ def request_material(job, step=None, prior=None):
         raise Refused("COMPLETE_REQUEST_PROFILE_REQUIRED")
     profile = load_profile(job["profile"])
     policy = (profile.get("gateway") or {}).get("reasoning") or {}
-    effective = sanitize_request(body, policy=policy)
+    effective = sanitize_request(body, policy=policy, role=job["role"])
     measured = {
         **measure_request(effective),
         "wire_request_sha256": digest(body),
@@ -345,7 +345,7 @@ def _finish(job, body, extra):
     if not job.get("profile"):
         raise Refused("COMPLETE_REQUEST_PROFILE_REQUIRED")
     profile = load_profile(job["profile"])
-    effective = sanitize_request(body, policy=(profile.get("gateway") or {}).get("reasoning") or {})
+    effective = sanitize_request(body, policy=(profile.get("gateway") or {}).get("reasoning") or {}, role=job["role"])
     return body, {
         **measure_request(effective),
         "wire_request_sha256": digest(body),

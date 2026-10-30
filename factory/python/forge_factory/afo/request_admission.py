@@ -24,8 +24,9 @@ def reserve(store, binding, body, *, eff=None):
         raise Refused("GENERATION_BINDING_REQUIRED")
     product = binding["job_id"].startswith("afo-product-")
     if product:
-        from .product_job import resolve
         from types import SimpleNamespace
+
+        from .product_job import resolve
 
         job = resolve(store, binding["job_id"])
         ctx = SimpleNamespace(
@@ -67,8 +68,8 @@ def reserve(store, binding, body, *, eff=None):
         raise Refused("PROVIDER_OUTPUT_CAP_REQUIRED")
     role = binding.get("role") or job.get("role")
     if product or job.get("durable_protocol") or job.get("durable_native"):
-        from ..lrtx.role_capability import admit_job
         from ..llm_gateway import detect_role
+        from ..lrtx.role_capability import admit_job
 
         role = role or detect_role(body.get("messages") or [])
         try:
@@ -125,6 +126,7 @@ def reserve(store, binding, body, *, eff=None):
             "model": job["model"],
             "role": role,
             "schema_mode": (body.get("response_format") or {}).get("type"),
+            "reasoning_effort": body.get("reasoning_effort", "none"),
             "policy_sha256": eff.sha256,
             "output_cap": cap,
         },
@@ -157,8 +159,8 @@ def reconcile(store, request_id, usage, *, completed=False):
 def start(store, rec, body):
     """Recheck authority after admission waiting, immediately before the ordered provider effect."""
     from . import local_agent
-    from .policy import load
     from .durable import digest
+    from .policy import load
 
     eff = load()
     with store.tx() as c:
@@ -170,7 +172,7 @@ def start(store, rec, body):
     order = store.order(job["order_id"]) if job else None
 
     def authorized():
-        from .operations import configured, Intent
+        from .operations import Intent, configured
 
         if configured() and Intent().read()["mode"] not in ("RUNNING", "PAUSED", "DRAINING"):
             return False

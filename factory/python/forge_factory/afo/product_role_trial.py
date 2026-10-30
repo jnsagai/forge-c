@@ -189,7 +189,7 @@ def preflight(workspace, job, requests):
             try:
                 if not isinstance(body, dict) or body.get("model") != job["model"]:
                     raise Refused("PRODUCT_PREFLIGHT_REQUEST_MODEL_CHANGED")
-                effective = sanitize_request(body, policy=prof.get("gateway", {}).get("reasoning", {}))
+                effective = sanitize_request(body, policy=prof.get("gateway", {}).get("reasoning", {}), role=role)
                 measured = measure_request(effective)
                 caps = [effective[k] for k in ("max_tokens", "max_completion_tokens") if effective.get(k) is not None]
                 if len(caps) != 1 or type(caps[0]) is not int or caps[0] < 1:
