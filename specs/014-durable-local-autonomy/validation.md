@@ -1,3 +1,17 @@
+# MTP experiment checkpoint — 30 October 2026, 10:28 UTC
+
+Exact sourcea9b2ddfccc326bdcf8287c95a4310c0408429ccb: local60PASS/30PASS (overlap),
+clean preparation CLI/no model/grant/job/mission; isolated native126PASS, no failure/
+error/skip,24.20s. Deployed only for finite signed MTP3/2/4/6 speed cohorts,
+Q8/f16/xhigh/262144 fixed, eight diagnosis cases each, one inference. Current RUNNING80,
+baseline underway, candidate measurements still NOT_RUN. Tool hashes bound by
+signed manifests; historical missions unchanged, expiry13:52:52UTC unchanged.
+No product retry, no new task completed; formal30/58. Input-presentation ambiguity
+is recorded from actual designated responses; previous catalogue failure is not a
+pure competence estimate. Fresh qualification is required after any context fix.
+[Exact source/commands/JUnit, scopes and limits](../../evidence/014-durable-local-autonomy/mtp-speed-20261030/README.md).
+Historical results below remain preserved and are superseded only where stated.
+
 # Final speed-pilot checkpoint — 30 October 2026, 10:00 UTC
 
 Exact native runtime/test source37c0c354629312a70eb6a199989477036bb674d9.

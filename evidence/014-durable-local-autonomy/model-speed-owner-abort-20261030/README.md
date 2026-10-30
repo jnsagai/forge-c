@@ -25,7 +25,12 @@ CONTRACT_INVALID. The two missing-primary cases correctly requested evidence.
 The two initial xhigh infrastructure refusals remain in the frozen denominator.
 This is not evidence of safe production selection, qualified repair, or clean product.
 Author/inspector and mixed-pipeline capability remain untested by this diagnosis pilot.
-MTP draft stayed3 throughout; a2/3/4/6 sweep is the next separate experiment, NOT_RUN.
+MTP draft stayed3 throughout; a2/3/4/6 sweep is the next separate experiment, NOT_RUN. These are failures against the frozen expected catalogue, not a pure
+model-competence estimate. Later inspection of designated proposals found real
+presentation ambiguity about required requirements versus repair units and the
+normative standing of the seeded contract. See the
+[packet-design finding and actual responses](../mtp-speed-20261030/README.md#finding-for-the-next-diagnosis-fix).
+The compiled toy oracle remains fixed; original verdicts and costs are preserved.
 
 [Post-campaign capture](post-campaign-supervision.json): controller active,
 RUNNING78, zero pending executions/nonquiescent requests/inference holders,

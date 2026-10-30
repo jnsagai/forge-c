@@ -1,6 +1,52 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 10:00UTC: owner abort saved; both speed cohorts complete
+## Latest state — 10:28UTC: controlled MTP sweep running, source a9b2ddf qualified
+
+Owner priority remains **model-speed benchmarks; product run remains aborted**.
+The previous reasoning pilot and all local835-member/263-file result copies remain.
+New exact source a9b2ddfccc326bdcf8287c95a4310c0408429ccb is now deployed for a
+separate finite MTP experiment, source already pushed to the feature branch.
+Local60PASS/30PASS (overlap), clean CLI zero model/job/mission/grant;
+native126PASS/no error/failure/skip,24.20s, no GPU/network/model/owner/SSHagent.
+
+Remote O=/mnt/data/forge-c/production-local-014/deployment/q38-mtp-speed-20261030-v1.
+Four signed fixed-source/profile/manifest/mission/tool scopes: draft3 fresh baseline,
+then2,4,6, eight frozen diagnosis cases each, Q8/f16/xhigh/262144 fixed, one inference.
+Source scope a1f3943b8a94767b2078a993c1f3306be42789984f1568a934722ae0e2a3c3fb.
+All grants expire13:52:52UTC unchanged. Prior missions are unchanged/spent, never reset.
+No production LL/HAL scope. MTP is not falsely inserted into role-capability identity;
+this is a descriptive speed pilot, not formal comparison/capability qualification.
+
+Finite continuation user unit forge-q38-mtp-speed-20261030-v1.service is LIVE.
+It uses activate-mtp-speed.py/run-mtp-speed.py/continue-mtp-speed.py under P/deployment,
+with tool hashes bound by signed manifests. Existing isolated Conductor owns all
+scheduling/dispatch/poll. It preserves newer intent, proves quiescence between
+variants, restores model-free supervision even on provider startup failure, and
+never repeats a spent identity. Do not launch a second driver or product job.
+Current RUNNING80, sourcea9b2ddf, baseline draft3. First two native generations:
+late-finding:0 native01M6659K8CPH3R2JH933Y184GW,66.18tok/s/46.54gatewayseconds;
+late-finding:1 native01M665CGAHF4X6M62T50YC36NM,62.39tok/s/94.18seconds;
+both NEEDS_EVIDENCE. Remaining cases/candidate variants still running/NOT_RUN.
+
+Private local automatic collector PID142046 (revalidate argv before signalling),
+A3/collect-mtp-speed-results.py, log mtp-speed-local-collector.log. Report and all
+frozen inputs/results/independent audits/designated proposals go to
+B/inspection/feature014/2026-10-30-qwen/mtp-speed-pilot/SPEED-REPORT.md and speed-summary.json.
+It verifies every member hash, no raw prompts/hidden reasoning, ends after all four
+cohorts or14:02:52UTC. Native operational scripts and qualification receipts are in A3.
+
+The earlier “incorrect NEEDS_EVIDENCE” interpretation needs a packet-design caveat:
+actual saved responses cite SWR-001 listed globally but missing from the repair-unit
+map, and unclear normative authority of the synthetic contract. Primary text does
+contain the contract; the transport does not clarify requirement coverage versus
+incident work units or source precedence. Preserve this finding for a separately
+tested generic clarification/fresh qualification; do not edit this running experiment
+or tune/promote lessons from held-out cases. The next full product run remains deferred.
+
+[Source, exact tests, scopes, reviewable tools and findings](../../evidence/014-durable-local-autonomy/mtp-speed-20261030/README.md).
+Formal30/58 unchanged; no new task ID closed, clean LL/HAL/learning/24/72/168h unproven.
+
+## Historical checkpoint — superseded 10:00UTC state — 10:00UTC: owner abort saved; both speed cohorts complete
 
 **Owner priority: product run aborted, all results saved, focus model speed.**
 No product retry/HAL submission. Runtime/tested source37c0c354629312a70eb6a199989477036bb674d9.
