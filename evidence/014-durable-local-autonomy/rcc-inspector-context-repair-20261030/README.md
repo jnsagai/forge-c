@@ -1,13 +1,22 @@
 # Qwen repairs the actual RCC structured-context failure
 
-**Source b713e354b5c50744c549b1a9cada491c3ca017bd, RUNNING epoch52.**
-Actual maintenance native **01M655FBXJ3WW9R29ZT9YK9SKA**, job
-**afo-agent-ebfdb7f98a3999fbaf747d8a**, order **afo-7ab1af2aa4e1d7b4**.
-At01:14:17UTC8requests QUIESCENT/one SENT, native RUNNING, no submitted candidate
-or changed source yet. Subsequent native events show11requests started/14tools,
-including source reads. Five advertised builtin grep/glob calls were correctly
-denied by the MCP-only policy; source reads continue through approved MCP.
-No code repair, deployment or self-healing success is claimed.
+**Original native01M655FBXJ3WW9R29ZT9YK9SKA ended**; job
+**afo-agent-ebfdb7f98a3999fbaf747d8a FAILED**, no valid maintenance receipt.
+16requests QUIESCENT,537639reported tokens; native SUCCEEDED is transport status,
+not task success. Native event137 wrote structured.py (25807bytes), SHA
+**f543f709245eb9d8458a1ecc9f291afece97816bca6c136a4dbf5e258825b3c9**.
+Event140 reports CAPABILITY_LIMIT before reproducer/submission; all original
+failure, native identity and expenditure retained. Frozen original context check:
+**3PASS**. Inherited HTTP429 refusal test: **FAIL**, an unrelated full-file
+transcription typo `time.monetic()` raises AttributeError. No candidate accepted
+or deployed, no fabricated receipt. Local exact raw source/diff/results:
+inspection/feature014/2026-10-30-qwen/rcc-context-unsubmitted/START-HERE.md.
+
+[Bounded edit tool qualification](../maintenance-source-edits-20261030/README.md)
+and [retained completion follow-up](../rcc-context-completion-20261030/README.md)
+continue from those exact Qwen bytes. The following original scope/launch details
+remain historical evidence; their earlier RUNNING/NOT_RUN statements are superseded
+by the terminal results above.
 
 ## Why the full product stopped
 

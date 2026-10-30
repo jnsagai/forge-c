@@ -1,0 +1,33 @@
+..............F....F.........................................            [100%]
+=================================== FAILURES ===================================
+____________ test_tool_schema_and_role_registration_are_consistent _____________
+
+    def test_tool_schema_and_role_registration_are_consistent():
+        schema = server.EditIn.model_json_schema()['properties']
+        assert schema['expected_sha256']['pattern'] == '^[0-9a-f]{64}$'
+        assert schema['old_text']['minLength'] == 1 and schema['new_text']['maxLength'] == 8192
+>       assert preflight(['afo-factory-maintainer'], include_afo=True)['status'] == 'PASS'
+E       AssertionError: assert 'BLOCKED' == 'PASS'
+E         
+E         - PASS
+E         + BLOCKED
+
+factory/python/tests/test_afo_source_edits.py:132: AssertionError
+_________ test_maintainer_role_grants_are_distinct_from_fabric_repair __________
+
+    def test_maintainer_role_grants_are_distinct_from_fabric_repair():
+        from forge_factory.registry.agents import load_agents, preflight
+        from forge_factory.registry.mcp_registry import load_registry
+    
+        r = preflight(["afo-factory-maintainer"], include_afo=True)
+>       assert r["status"] == "PASS", r["issues"]
+E       AssertionError: ['AGENT_SKILL_HASH_MISMATCH:afo-factory-maintainer:skills.lock']
+E       assert 'BLOCKED' == 'PASS'
+E         
+E         - PASS
+E         + BLOCKED
+
+factory/python/tests/test_afo_m5_maintainer.py:171: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_source_edits.py::test_tool_schema_and_role_registration_are_consistent
+FAILED factory/python/tests/test_afo_m5_maintainer.py::test_maintainer_role_grants_are_distinct_from_fabric_repair
