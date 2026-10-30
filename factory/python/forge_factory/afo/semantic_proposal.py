@@ -100,7 +100,9 @@ TWO_STEP = "two-step-diagnosis"
 
 
 def two_step(job) -> bool:
-    """Only a signed qualification identity (or measured role capability) selects the two-question mode."""
+    """A signed trial/qualification identity or measured capability selects stepwise diagnosis."""
+    if job.get("product_role_trial"):
+        return job.get("product_role_task_class") == TWO_STEP
     identity = job.get("qualification_identity") or ((job.get("role_capabilities") or {}).get(job.get("role")) or {}).get(
         "identity"
     )

@@ -1,0 +1,148 @@
+schema: forge-c/local-profile/1
+id: local-rtx-v2-omniverse2-q38-aspice-stepwise-medium
+version: 1
+work_order_purpose: ASPICE_ONLY
+status: EXPERIMENT_ONLY_NOT_QUALIFIED
+description: 'ASPICE-only product experiment: Qwen Q8/f16/MTP3/262144, medium, blocking
+  gates and enabled recovery; stepwise diagnosis only through separately signed task
+  class.'
+host_reference:
+  gpu: RTX 6000 Ada 48 GB
+  cpu: Core Ultra 9 285K
+  ram_gb: 125
+local_only: true
+provider: ollama
+models:
+  default: qwen3.8:27b-q8_0
+  allowed:
+    qwen3.8:27b-q8_0:
+      digest: 8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039
+      quantization: Q8_0
+      license: Apache-2.0
+      role_qualification: NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify
+        separately
+      license_source: https://huggingface.co/Qwen/Qwen3.8-27B
+runtime:
+  context_limit_tokens: 262144
+  fabro_context_tokens: 262144
+  fabro_max_output_tokens: 16384
+  ollama:
+    OLLAMA_NUM_PARALLEL: '1'
+    OLLAMA_MAX_LOADED_MODELS: '1'
+    OLLAMA_FLASH_ATTENTION: '1'
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: '262144'
+    OLLAMA_NOPRUNE: '1'
+  timeout_scale: 10
+  llama_server:
+    model: qwen3.8:27b-q8_0
+    slots: 1
+    mtp_draft: 3
+    reasoning: 'on'
+    reasoning_effort: medium
+    gpu_layers: all
+    batch_tokens: 1024
+    microbatch_tokens: 512
+structured:
+  coherent_scope_groups: true
+  phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  inspect_phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  semantic_phases: []
+  semantic_inspect_phases: []
+  swe2_named_functions: true
+  swe2_constrained_design: true
+  inspector_sampling:
+    default:
+      temperature: 0.2
+      seed: 1
+    qwen3.6:35b-a3b:
+      temperature: 0.6
+      top_p: 0.95
+  inspector_coverage: true
+  inspector_entries: true
+  inspector_stepwise: true
+  advisory_continue: false
+  brownfield_structured_phases:
+  - SWE.1
+  - SWE.2
+  reinspect_direct: true
+  timeout_s: 21600
+  visit_time_s: 21600
+  c_parameter_list_note: true
+gateway:
+  drop_retries: 0
+  request_timeout_s: 21600
+  reasoning:
+    qwen3.8:27b-q8_0:
+      effort: medium
+      extra_output_tokens: 32768
+afo:
+  role_job_tokens:
+    afo-recovery-planner: 1048576
+    afo-factory-maintainer: 131072
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 21600
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /mnt/data/forge-c/lrtx-v2-q38-aspice
+  ports:
+    ollama: 11455
+    gateway: 11456
+    fabro: 32391
+    llama: 11457
+  forbidden_ports:
+  - 8765
+  - 8787
+  - 11434
+  - 11435
+  - 11436
+  - 11437
+  - 11445
+  - 11446
+  - 32290
+  - 32291
+  - 32390
+  writable_env:
+  - FORGE_DATA_ROOT
+  - FORGE_STATE_DIR
+  - FORGE_ARCHIVE_DIR
+  - FORGE_FABRO_CONFIG
+  - FORGE_FABRO_STORAGE
+  - FORGE_FABRO_HOME
+  - FORGE_VENV
+  - UV_CACHE_DIR
+  - PIP_CACHE_DIR
+  shared_readonly:
+    toolchains: /mnt/data/forge-c/toolchains
+    standards: /mnt/data/forge-c/standards
+    inputs: /mnt/data/forge-c/inputs
+    ollama-0.34.0: /mnt/data/forge-c/ollama-0.34.0
+    ollama-models: /mnt/data/forge-c/ollama-models
+existing_deployment:
+  roots:
+  - /home/omniverse2/forge-c-remote/repos/forge-c
+  - /home/omniverse2/forge-c-remote/repos/safec
+network:
+  required: namespace_denied

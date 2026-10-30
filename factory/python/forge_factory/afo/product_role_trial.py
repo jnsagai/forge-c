@@ -102,7 +102,13 @@ def authorized(ref, job, eff):
 
 def bind(ref, job, eff):
     if ref:
-        authorized(ref, job, eff)
+        trial = authorized(ref, job, eff)
+        if job.get("role") == "afo-recovery-planner":
+            classes = {i["task_class"] for i in trial["roles"].get(job["role"], [])}
+            if len(classes) != 1:
+                raise Refused("PRODUCT_ROLE_TRIAL_TASK_CLASS_AMBIGUOUS")
+            # A signed adapter choice, not a measured capability or extra budget.
+            job["product_role_task_class"] = next(iter(classes))
         job["product_role_trial"] = ref
     return job
 
@@ -121,6 +127,9 @@ def identity(job, role, body, eff):
     ]
     if len(candidates) != 1:
         raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED")
+    selected = job.get("product_role_task_class")
+    if role == "afo-recovery-planner" and selected is not None and selected != candidates[0]["task_class"]:
+        raise Refused("PRODUCT_ROLE_TRIAL_TASK_CLASS_CHANGED")
     return candidates[0]
 
 

@@ -211,6 +211,14 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
         job["native_context"] = {key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)}
+        job["factory_revision"] = factory_revision()
+        from .product_role_trial import bind as bind_trial
+
+        launch_path = REPO_ROOT / order["input_manifest_ref"]
+        if launch_path.is_file():
+            if sha256_file(launch_path) != order["manifest_sha256"]:
+                raise QueueError("LAUNCH_MANIFEST_HASH_CHANGED")
+            bind_trial(json.loads(launch_path.read_text()).get("product_role_trial"), job, eff)
         if qualification_manifest is not None:
             from .qualification import initial_reservation
 
@@ -236,15 +244,8 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if intent["mode"] != "RUNNING":
             raise QueueError("OPERATIONS_ADMISSION_REFUSED", intent["mode"])
         job["operations_epoch"] = intent["epoch"]
-    job["factory_revision"] = factory_revision()
-    if job.get("durable_protocol") or job.get("durable_native"):
-        from .product_role_trial import bind as bind_trial
-
-        launch_path = REPO_ROOT / order["input_manifest_ref"]
-        if launch_path.is_file():
-            if sha256_file(launch_path) != order["manifest_sha256"]:
-                raise QueueError("LAUNCH_MANIFEST_HASH_CHANGED")
-            bind_trial(json.loads(launch_path.read_text()).get("product_role_trial"), job, eff)
+    if "factory_revision" not in job:
+        job["factory_revision"] = factory_revision()
     job["fabro_url"] = os.environ.get("FORGE_FABRO_URL")
     job["fabro_storage"] = os.environ.get("FORGE_FABRO_STORAGE")
     with store.tx() as c:

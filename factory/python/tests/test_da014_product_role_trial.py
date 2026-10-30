@@ -121,6 +121,59 @@ def test_no_experiment_keeps_ordinary_capability_requirement(trial):
         C.admit_job(trial.job, "swe1-author", input_tokens=1, output_tokens=1, body=body())
 
 
+def planner_trial(trial, task_class):
+    identity = copy.deepcopy(trial.doc["roles"]["swe1-author"][0])
+    identity.update(role="afo-recovery-planner", task_class=task_class)
+    trial.doc["roles"] = {"afo-recovery-planner": [identity]}
+    trial.job["role"] = "afo-recovery-planner"
+    return identity
+
+
+def test_signed_product_trial_selects_stepwise_without_claiming_capability(trial):
+    from forge_factory.afo.semantic_proposal import TWO_STEP, two_step
+
+    planner_trial(trial, TWO_STEP)
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    assert two_step(trial.job)
+    assert C.admit_job(trial.job, "afo-recovery-planner", input_tokens=100, output_tokens=50, body=body()) == {
+        "qualification_only": True, "qualified": False,
+    }
+    forged = {**trial.job, "product_role_task_class": "other"}
+    with pytest.raises(Refused, match="TASK_CLASS_CHANGED"):
+        C.admit_job(forged, "afo-recovery-planner", input_tokens=100, output_tokens=50, body=body())
+
+
+def test_signed_task_class_still_rechecks_revocation_at_each_request(trial, monkeypatch):
+    from forge_factory.afo.semantic_proposal import TWO_STEP, two_step
+
+    planner_trial(trial, TWO_STEP)
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    assert two_step(trial.job)
+    monkeypatch.setattr(authz, "find", lambda *a, **kw: SimpleNamespace(allow=False, code="AUTH_REVOKED"))
+    with pytest.raises(Refused, match="AUTH_REVOKED"):
+        C.admit_job(trial.job, "afo-recovery-planner", input_tokens=100, output_tokens=50, body=body())
+
+
+def test_ambiguous_adapter_class_is_refused_before_a_body_can_choose_it(trial):
+    from forge_factory.afo.semantic_proposal import TWO_STEP
+
+    identity = planner_trial(trial, TWO_STEP)
+    trial.doc["roles"]["afo-recovery-planner"].append({**identity, "task_class": "PRODUCT_DIAGNOSIS_EXPERIMENT",
+                                                     "schema_mode": "tool"})
+    with pytest.raises(Refused, match="TASK_CLASS_AMBIGUOUS"):
+        T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    assert "product_role_trial" not in trial.job
+
+
+def test_unbound_class_cannot_enable_stepwise_and_legacy_experiment_stays_single(trial):
+    from forge_factory.afo.semantic_proposal import TWO_STEP, two_step
+
+    assert not two_step({"product_role_task_class": TWO_STEP})
+    planner_trial(trial, "PRODUCT_DIAGNOSIS_EXPERIMENT")
+    T.bind(trial.publish(trial.doc), trial.job, trial.eff)
+    assert not two_step(trial.job)
+
+
 @pytest.mark.parametrize("context", [131072, 262144])
 def test_larger_context_requires_pinned_profile_and_actual_allocation_proof(trial, monkeypatch, context):
     from forge_factory.common import sha256_file

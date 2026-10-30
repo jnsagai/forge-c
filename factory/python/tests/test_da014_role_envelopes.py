@@ -18,6 +18,7 @@ MODEL = "qwen3.8:27b-q8_0"
 PROFILE = "local-rtx-v2-omniverse2-q38-quality"
 
 
+
 def select(p, profile):
     _, _, _, eff, ws, _ = p
     eff.policy["engineering"]["allowed_model_profiles"] = [MODEL]
@@ -76,6 +77,48 @@ def test_bound_profile_reservation_survives_restart_without_a_second_charge(loca
     assert same == job and ledger.snapshot("prospective") == before
     assert before["charged_tokens"] == 65536 and before["requests"] == 0
     assert not any(key in job for key in ["messages", "response_format", "capability_receipt"])
+
+
+def test_product_adapter_binding_precedes_initial_request_measurement_and_reservation(local, monkeypatch):
+    from forge_factory.afo import durable_agent as D
+    from forge_factory.afo import product_role_trial as T
+    from forge_factory.afo.semantic_proposal import TWO_STEP
+
+    select(local, P.load(PROFILE))
+    ledger, case = durable(local)
+    calls = []
+    from forge_factory.common import sha256_file
+
+    repo = local[4].parent / "launch-repository"
+    repo.mkdir()
+    launch = repo / "launch.json"
+    launch.write_text(json.dumps({"product_role_trial": {"path": "signed-fixture", "sha256": "f" * 64}}))
+    local[1].update(input_manifest_ref="launch.json", manifest_sha256=sha256_file(launch))
+    monkeypatch.setattr(L, "REPO_ROOT", repo)
+
+    def bind(ref, job, eff):
+        assert job["factory_revision"]["commit"]
+        assert ledger.snapshot("prospective")["charged_tokens"] == 0
+        job.update(product_role_trial={"path": "signed-fixture", "sha256": "f" * 64},
+                   product_role_task_class=TWO_STEP)
+        calls.append("bound")
+        return job
+
+    real_request = D.request_body
+
+    def measured(store, job, *, step=None, prior=None):
+        assert calls == ["bound"] and step == 1
+        calls.append("measured")
+        return real_request(store, job, step=step, prior=prior)
+
+    # Existing launch reference supplies the separately authenticated trial; this
+    # test isolates ordering, with authenticity/revocation tested in trial tests.
+    monkeypatch.setattr(T, "bind", bind)
+    monkeypatch.setattr(D, "request_body", measured)
+    job = prepare(local, case=case)
+    assert calls == ["bound", "measured"]
+    assert job["initial_request_measurement"]["two_step_question"] == 1
+    assert ledger.snapshot("prospective")["charged_tokens"] == 65536
 
 
 @pytest.mark.parametrize("field,value", [
@@ -224,3 +267,17 @@ def test_prepared_qualification_inputs_bind_profile_defaults_without_creating_au
         }
         assert trial["request_measurement"]["effective_reasoning_effort"] == "xhigh"
         assert trial["output_reserve"] == 34816
+
+
+def test_product_profile_enters_normal_recovery_with_a_bounded_multirequest_allowance(local):
+    p = P.load("local-rtx-v2-omniverse2-q38-aspice-stepwise-medium")
+    select(local, p)
+    local[3].policy["budgets"]["max_model_tokens_per_order"] = 2000000
+    ledger, case = durable(local, tokens=2000000)
+    job = prepare(local, case=case)
+    assert job["durable_protocol"] == "1.0" and job["work_class"] == "PRODUCT_DIAGNOSIS"
+    assert job["initial_request_measurement"]["effective_reasoning_effort"] == "medium"
+    assert job["reserved_tokens"] == 1048576
+    assert ledger.snapshot("prospective")["charged_tokens"] == 1048576
+    measured = job["initial_request_measurement"]
+    assert measured["input_tokens"] + measured["effective_output_cap"] <= 262144 < job["reserved_tokens"]
