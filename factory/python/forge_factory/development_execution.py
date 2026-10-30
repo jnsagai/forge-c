@@ -12,27 +12,36 @@ from .common import REPO_ROOT, pretty_json, sha256_file, utc_now
 NAME = "incremental-delivery-v1"
 HIGH = "incremental-delivery-high-allowance-v2"
 DEMO = "qm-pipeline-demonstration-v1"
+DEMO_REPAIR = "qm-pipeline-demonstration-repair-v2"
 DECISION = "specs/014-durable-local-autonomy/IMPLEMENTATION-INCREMENTAL-E2E.md"
+REPAIR_DECISION = "specs/014-durable-local-autonomy/IMPLEMENTATION-QM-BOUNDED-REPAIR.md"
+# Exact pre-extension validator used by already baselined jobs. All other
+# binding fields still compare exactly; this cannot import new v2 authority.
+LEGACY_VALIDATOR = "59531a9997e7c8b6c68ee69463ec0aa484510600107ec64efe96b5e75890c06c"
 
 
 def binding(name, purpose):
     if name is None:
         return None
-    if name not in (NAME, HIGH, DEMO) or purpose not in ("ASPICE_ONLY", "QM") or (name == DEMO and purpose != "QM"):
+    if (name not in (NAME, HIGH, DEMO, DEMO_REPAIR) or purpose not in ("ASPICE_ONLY", "QM")
+            or (name in (DEMO, DEMO_REPAIR) and purpose != "QM")):
         raise ValueError("DEVELOPMENT_EXECUTION_POLICY_INVALID")
     result = {"schema": "forge-c/development-execution/1", "name": name, "max_phase_repair_passes": 1,
-            "decision": {"path": DECISION, "sha256": sha256_file(REPO_ROOT / DECISION)},
+            "decision": {"path": REPAIR_DECISION if name == DEMO_REPAIR else DECISION,
+                         "sha256": sha256_file(REPO_ROOT / (REPAIR_DECISION if name == DEMO_REPAIR else DECISION))},
             "validator_sha256": sha256_file(Path(__file__)),
             "product_diagnosis": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "factory_maintenance": "DEFERRED_BY_DEVELOPMENT_POLICY",
             "advisory_relaunch": "DEFERRED_BY_DEVELOPMENT_POLICY"}
     if purpose == "QM":
         result["purpose"] = purpose
-    if name == DEMO:
+    if name in (DEMO, DEMO_REPAIR):
         result.update(demonstration_only=True, quality_gates_block_workflow=False,
                       max_phase_repair_passes=0, max_task_calls=1,
                       max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
                       max_upstream_loops=0)
+        if name == DEMO_REPAIR:
+            result.update(max_phase_repair_passes=2, max_task_calls=9)
     if name == HIGH:
         result.update(max_phase_repair_passes=1000, max_task_calls=1001,
                       max_failed_checks_per_operation=10000, max_tool_calls_per_visit=10000,
@@ -50,7 +59,9 @@ def selected(ws):
     record = m.get("development_execution")
     if record is None:
         return None
-    if record != binding(record.get("name"), m.get("purpose")):
+    expected = binding(record.get("name"), m.get("purpose"))
+    legacy = {**expected, "validator_sha256": LEGACY_VALIDATOR}
+    if record != expected and not (record.get("name") in (NAME, HIGH, DEMO) and record == legacy):
         raise ValueError("DEVELOPMENT_EXECUTION_BINDING_CHANGED")
     return record
 
@@ -92,7 +103,7 @@ def reserve_call(ws, packet):
     repair_hint = bool(packet.get("repair_of") or packet.get("findings") or packet["task"].startswith("triage:"))
     with phase_state(ws, packet["phase"]) as state:
         n = state["calls"].get(key, 0)
-        if policy["name"] == DEMO:
+        if policy["name"] in (DEMO, DEMO_REPAIR):
             if n >= policy["max_task_calls"]:
                 return False
             state["calls"][key] = n + 1
@@ -118,20 +129,25 @@ def reserve_call(ws, packet):
     return True
 
 
-def reserve_phase_rework(ws, phase):
+def reserve_phase_rework(ws, phase, *, evidence_key=None):
     policy = selected(ws)
     if not policy:
         raise ValueError("DEVELOPMENT_POLICY_REQUIRED")
     with phase_state(ws, phase) as state:
+        if (policy["name"] == DEMO_REPAIR and evidence_key is not None
+                and state.get("last_rework_evidence") == evidence_key):
+            return state["last_rework_allowed"]
         if policy["name"] == DEMO:
             return False
-        if policy["name"] == HIGH:
+        if policy["name"] in (HIGH, DEMO_REPAIR):
             count = state.get("phase_reworks", 0)
-            if count >= policy["max_phase_repair_passes"]:
-                return False
-            state["phase_reworks"] = count + 1
-            state["repair_pass"] = {"origin": "phase_gate", "at": utc_now(), "pass": count + 1}
-            return True
+            allowed = count < policy["max_phase_repair_passes"]
+            if allowed:
+                state["phase_reworks"] = count + 1
+                state["repair_pass"] = {"origin": "phase_gate", "at": utc_now(), "pass": count + 1}
+            if policy["name"] == DEMO_REPAIR and evidence_key is not None:
+                state.update(last_rework_evidence=evidence_key, last_rework_allowed=allowed)
+            return allowed
         if state["repair_pass"] is not None:
             return False
         state["repair_pass"] = {"origin": "phase_gate", "at": utc_now()}
@@ -180,7 +196,7 @@ def mutation_allowed(ws, phase, role, relative):
     with phase_state(ws, phase) as state:
         if not state.get("failed_checks") and state["repair_pass"] is None:
             return True
-        if state.get("verification_after_repair") and policy["name"] not in (HIGH, DEMO):
+        if state.get("verification_after_repair") and policy["name"] not in (HIGH, DEMO, DEMO_REPAIR):
             return False
         if state["repair_pass"] is None:
             state["repair_pass"] = {"origin": "native_check_failure", "at": utc_now()}

@@ -191,11 +191,11 @@ def packet(
         if record:
             p["assessment_scope"] = {"purpose": qm.PURPOSE, "binding_sha256": hashlib.sha256(canonical_json(record)).hexdigest(),
                                      "instruction": qm.prompt_scope(record)}
-        from ..development_demonstration import NOTE
+        from ..development_demonstration import note
         from ..development_demonstration import selected as demonstration
 
         if demonstration(scope_ws):
-            p["demonstration_scope"] = NOTE
+            p["demonstration_scope"] = note(scope_ws)
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64

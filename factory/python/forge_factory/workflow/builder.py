@@ -143,12 +143,12 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                 dot = re.sub(pattern, lambda m: m.group(1) + m.group(2) + extra + '"', dot, flags=re.S)
     if structured:
         dot = structured_authors(dot, structured)
-    from ..development_execution import DEMO
+    from ..development_execution import DEMO, DEMO_REPAIR
 
-    if execution_policy and execution_policy.get("name") == DEMO:
+    if execution_policy and execution_policy.get("name") in (DEMO, DEMO_REPAIR):
         from ..development_demonstration import workflow
 
-        dot, nodes = workflow(dot, nodes, gate_cmd)
+        dot, nodes = workflow(dot, nodes, gate_cmd, repair=execution_policy["name"] == DEMO_REPAIR)
     if code_model:
         for n in CODE_NODES:
             if n in nodes:

@@ -254,7 +254,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     if layer == "HAL":
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
-        data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
+        if execution and execution.get("demonstration_only") and purpose == "QM":
+            from .development_demonstration import provided_ll as demonstration_ll
+
+            data, rec = demonstration_ll(provided_from, spec.get("peripheral") or "rcc")
+        else:
+            data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
         inputs[rec["path"]] = data
         provided.append(rec)
     intake = None
@@ -644,9 +649,9 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "timeout_s": st.get("timeout_s", 3600),
         "visit_time_s": st.get("visit_time_s", 1200),
     }
-    from .development_execution import DEMO
+    from .development_execution import DEMO, DEMO_REPAIR
 
-    if (manifest.get("development_execution") or {}).get("name") == DEMO:
+    if (manifest.get("development_execution") or {}).get("name") in (DEMO, DEMO_REPAIR):
         return {**out, "demonstration": True, "reinspect": False}
     if st.get("advisory_continue"):  # only when enabled, so records of profiles without it stay byte-identical (v1)
         out["advisory"] = True
