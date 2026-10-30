@@ -19,6 +19,7 @@ import re
 from pathlib import Path
 
 from ..common import canonical_json, sha256_bytes, utc_now
+from ..inspection.ears import RESET_AFTER, STARTUP_NO_CALL
 from . import structured as S
 from . import visit as V
 
@@ -32,7 +33,7 @@ REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
 GAPS = "traceability/upstream_gaps.md"
 SAFETY = "safety/software_safety_requirements.md"
-STARTUP = re.compile(r"^\s*While no .*after reset", re.I)
+STARTUP = re.compile(r"^\s*" + STARTUP_NO_CALL, re.I)
 
 EFFECT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["case", "register", "field", "op", "value"],
                  "properties": {"case": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,47}$"},
@@ -301,7 +302,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] duplicate key")
         keys.add(k)
         st = r["statement"]
-        if g is not None and (STARTUP.match(st) or re.search(r"\bafter (?:a )?reset\b|\breset (?:value|state)\b", st,
+        if g is not None and (STARTUP.match(st) or re.search(RESET_AFTER + r"|\breset (?:value|state)\b", st,
                                                              re.I)):
             # lrtx6 (2026-10-21): a reset-state requirement with effects stayed in a register task over 3 repairs
             out.append(f"[{k}] is a reset/startup requirement: those belong to the cross-cutting task - remove "

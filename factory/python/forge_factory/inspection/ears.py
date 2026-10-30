@@ -23,6 +23,12 @@ REQ_ID = r"(SWR-[A-Z0-9][A-Z0-9_.-]*)"
 _BULLET = re.compile(rf"^\s*(?:[-*]\s*)?\*\*{REQ_ID}\*\*\s*[:\-–]?\s*(?:\(EARS:\s*[a-z]+\)\s*)?(.+?)\s*$")
 _TABLE = re.compile(rf"^\s*\|\s*{REQ_ID}\s*\|\s*([^|]+?)\s*\|")
 
+# Reset events may name their controller/domain or reset type. These are
+# language classifiers, not evidence that the physical reset behavior is correct.
+# Exclude reset-control/reset_code identifiers from the event noun.
+RESET_AFTER = r"\bafter\s+(?:(?:a|an|the)\s+)?(?:[A-Za-z_][\w-]*\s+){0,3}reset(?![\w-])"
+STARTUP_NO_CALL = r"While\s+no\b[^.\n]*" + RESET_AFTER
+
 _SYS = r"the\s+(?P<system>[A-Za-z0-9][\w ./-]{1,60}?)\s+shall\s+(?P<response>.+)"
 PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("COMPLEX", re.compile(

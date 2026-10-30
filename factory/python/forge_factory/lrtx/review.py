@@ -14,6 +14,7 @@ import re
 from pathlib import Path
 
 from ..common import sha256_bytes, utc_now
+from ..inspection.ears import STARTUP_NO_CALL
 from . import structured as S
 from . import visit as V
 
@@ -134,7 +135,7 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
     known = set(re.findall(r"\*\*(SWR-\d{3})\*\*", text))
     gaps_p = ws / "traceability/upstream_gaps.md"
     recorded_gap = gaps_p.is_file() and "NOT_PROVIDED" in gaps_p.read_text()
-    startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(While no .*?after reset.*?)\n", text, re.I)
+    startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(" + STARTUP_NO_CALL + r"[^\n]*)\n", text, re.I)
     for f in findings:
         # lrtx7 (2026-10-21): the Claude inspector passed SWE1-01..06 of rc1 with the same recorded gaps; the Qwen
         # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has

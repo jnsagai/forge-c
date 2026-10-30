@@ -29,6 +29,7 @@ import re
 from pathlib import Path
 
 from ..common import sha256_bytes, utc_now
+from ..inspection.ears import RESET_AFTER, STARTUP_NO_CALL
 from . import review as R
 from . import structured as S
 from . import visit as V
@@ -48,7 +49,7 @@ LESSONS = {"dir": None, "include_proposed": False}  # F011-T044: seeded harness 
 # otherwise the profile flag decides (VALIDATED lessons only)
 LESSON_SOURCE = "reference/inspection-lessons.md"
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
-STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+While no .*after reset", re.I)
+STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+" + STARTUP_NO_CALL, re.I)
 # run 2 (2026-10-26): "at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations" is a measurable count bound
 BOUND = re.compile(r"\b\d+(?:\.\d+)?\s*(?:bytes?|KiB|kB|MiB|%|ms|us|µs|ns|cycles|Hz|kHz|MHz|"
                    r"(?:polling\s+)?(?:iterations?|polls?|attempts?|retries|calls?))\b", re.I)
@@ -659,7 +660,7 @@ FIELD_TOKEN = re.compile(r"\b([A-Z][A-Z0-9]*_[A-Z0-9_]+)\.([A-Z][A-Z0-9_]*)\b")
 
 
 def startup_requirements(facts: dict) -> dict:
-    return {x: r["statement"] for x, r in facts["reqs"].items() if re.search(r"\bafter reset\b", r["statement"], re.I)}
+    return {x: r["statement"] for x, r in facts["reqs"].items() if re.search(RESET_AFTER, r["statement"], re.I)}
 
 
 def startup_fields(facts: dict) -> list[str]:
