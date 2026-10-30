@@ -854,6 +854,22 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
             fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
             tests_ref=f"local-agent:{job['job_id']}",
         )
+        binding = None
+        if result['outcome'] == 'REJECTED' and job.get('durable_native') == 'maintenance-1':
+            from .durable import Refused
+            from .maintenance_binding import prepare as bind_signature
+
+            try:
+                binding = bind_signature(store, job, eff, verification_fence=verification_fence)
+            except Refused as exc:
+                if exc.code not in ('MAINTENANCE_SIGNATURE_NOT_SINGLE_PREFIX_ENCODING',
+                                    'MAINTENANCE_BINDING_NOT_ADMINISTRATIVE_ONLY',
+                                    'MAINTENANCE_BINDING_BASELINE_EVIDENCE_REQUIRED',
+                                    'MAINTENANCE_BINDING_UNRELATED_REJECTION'):
+                    binding = {'state': 'BLOCKED', 'reason': exc.code}
+            else:
+                result = maintainer.process(store, case['proposal_id'], CREStore(), cre_policy(),
+                                            tests_ref=f"local-agent:{job['job_id']}", binding_ref=binding)
         result = _review_projection(store, case["proposal_id"], result)
         # Authority must still hold after the potentially long independent evaluation.
         from .policy import load
@@ -874,6 +890,8 @@ def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
                 result["publication"] = {"status": "BLOCKED", "code": _review_failure_code(exc)}
             else:
                 result = _review_projection(store, case["proposal_id"], published)
+        if binding is not None:
+            result['administrative_binding'] = binding
         return result
     finally:
         signal.alarm(0)
@@ -925,9 +943,13 @@ def main(argv=None) -> int:
                 if result.get("publication"):
                     job["review_publication"] = result["publication"]
                 if result["status"] == "REJECTED":
-                    followup = review_followup(
-                        store, job, load(), verification_fence=lambda: queue.current(args.job, args.epoch)
-                    )
+                    binding = result.get('administrative_binding') or {}
+                    if binding.get('state') == 'BLOCKED':
+                        followup = binding  # no engineering retry can refill a protocol allowance
+                    else:
+                        followup = review_followup(
+                            store, job, load(), verification_fence=lambda: queue.current(args.job, args.epoch)
+                        )
         except Exception as exc:  # noqa: BLE001 - preserve failures, never turn an evaluator failure into eligibility
             job["review_state"], job["review_error"] = "BLOCKED", type(exc).__name__
         finished = {"status": job["review_state"], "error": job.get("review_error")}

@@ -526,11 +526,18 @@ def triage(case: dict, sub: dict, cre_store, policy, *, capa_id: str | None = No
     if b["verdict"] != "SYMPTOM_PRESENT":
         return {"ok": False, "reason": f"REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:{b['verdict']}", "baseline_run": b}
     reg = CapaRegistry(cre_store, policy)
+    linked_cases = [c['capa_id'] for c in reg.all() if case['proposal_id'] in reg.links(c['capa_id'], 'AFO_PROPOSAL')]
+    if len(linked_cases) > 1:
+        raise MaintainerDenied("AMBIGUOUS_CAPA_LINK")
     if capa_id and reg.get(capa_id):
         linked = capa_id
+    elif linked_cases:
+        linked = linked_cases[0]  # recover independent verification without a duplicate CAPA
     else:
         linked = _next_capa(reg)
-        reg.open(linked, [case["incident"].get("incident_id") or linked], list(fingerprints),
+        observed = (case["incident"].get("incident_id") or case["incident"].get("source_order_id")
+                    or case["incident"].get("order_id") or "afo-proposal:" + case['proposal_id'])
+        reg.open(linked, [observed], list(fingerprints),
                  f"AFO maintainer {case['proposal_id']}: {sub['summary']}"[:1000])
         reg.triage(linked, f"maintainer hypothesis (unverified): {sub['summary']}"[:1500], None,
                    "AGENT (afo-factory-maintainer)")
@@ -548,10 +555,19 @@ def evaluate(case: dict, sub: dict, cre_store, policy, evaluator=None) -> dict:
 
 
 def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, fingerprints=(),
-            tests_ref: str = "NOT_RUN", evaluator=None) -> dict:
+            tests_ref: str = "NOT_RUN", evaluator=None, binding_ref: dict | None = None) -> dict:
     """Submission -> veto -> triage -> CRE evaluation -> append-only record. Never publishes or deploys."""
     case = load_case(pid)
     sub, _ = submission(case)
+    binding_evidence = []
+    if binding_ref is not None:
+        from .maintenance_binding import bound_submission
+
+        sub = bound_submission(store, case, sub, binding_ref)
+        binding_evidence = ["administrative-binding:" + binding_ref["binding_id"]]
+        previous = store.proposal(pid)
+        if previous and binding_evidence[0] in previous['record']['evidence_refs']:
+            return previous['record']  # historical independently evaluated binding, no repeat effect
     if sub["veto"]:
         rec = record(store, case, sub, "QUARANTINED", "QUARANTINED", tests_ref=tests_ref)
         quarantine(case)
@@ -559,7 +575,7 @@ def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, f
     t = triage(case, sub, cre_store, policy, capa_id=capa_id, fingerprints=fingerprints)
     if not t["ok"]:
         rec = record(store, case, sub, "REJECTED", "REJECTED", promotion_id="NOT_EVALUATED:" + t["reason"][:80],
-                     tests_ref=tests_ref, evidence=[f"triage:{t['reason']}"[:200]])
+                     tests_ref=tests_ref, evidence=[*binding_evidence, f"triage:{t['reason']}"[:200]])
         quarantine(case)
         return rec
     d = evaluate(case, sub, cre_store, policy, evaluator)
@@ -568,7 +584,7 @@ def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, f
     if d.get("allowed_auto_deployment") is not False:
         outcome = "QUARANTINED"  # an evaluator claiming deployment rights is itself a fault
     rec = record(store, case, sub, outcome, outcome, capa_id=t["capa_id"], promotion_id=d["decision_id"],
-                 tests_ref=tests_ref, evidence=[f"promotion-decision:{d['decision_id']}",
+                 tests_ref=tests_ref, evidence=[*binding_evidence, f"promotion-decision:{d['decision_id']}",
                                                 f"reproducer-run:{t['baseline_run']['run_id']}"])
     if outcome != "ELIGIBLE_FOR_OFFLINE_REVIEW":
         quarantine(case)
