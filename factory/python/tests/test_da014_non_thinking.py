@@ -109,6 +109,8 @@ def test_real_compiled_three_effort_preparation_is_new_identity_not_budget_reset
     for effort in result["efforts"]:
         inp = json.loads((tmp_path / "prepared" / effort / "inputs.json").read_text())
         assert inp["campaign_id"] == "q38-new-thinking-study-" + effort
+        envelope = json.loads((tmp_path / "prepared" / effort / "cases/late-finding-0/envelope.json").read_text())
+        assert envelope["authorization_ref"] == "AUTH-014-REASONING-Q38-NEW-THINKING-STUDY-" + effort.upper()
         assert inp["count"] == 8
         assert all(t["request_measurement"]["effective_reasoning_effort"] == effort
                    and t["output_reserve"] == 34816 for t in inp["trials"])

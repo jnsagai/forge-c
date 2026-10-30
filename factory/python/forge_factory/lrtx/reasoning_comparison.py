@@ -123,7 +123,9 @@ def prepare(root, *, compiler, capabilities_ref, non_thinking_ref=None, campaign
         for effort in efforts:
             prepared[effort] = inputs.prepare(
                 root / effort, compiler=compiler, campaign_id=campaign_prefix + "-" + effort,
-                authorization_ref="AUTH-014-REASONING-" + effort.upper() + "-DRAFT",
+                authorization_ref=("AUTH-014-REASONING-" + effort.upper() + "-DRAFT"
+                                   if campaign_prefix == "q38-reasoning" else
+                                   "AUTH-014-REASONING-" + campaign_prefix.upper() + "-" + effort.upper()),
                 model=MODEL, profile=selected_profile(effort),
                 qualification_job_tokens=262144, stage="targeted",
             )
