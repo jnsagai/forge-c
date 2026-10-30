@@ -53,6 +53,7 @@ def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
     keys = sorted(((run.get("run") or {}).get("agent") or {}).get("mcps", {}))
     env = {"PYTHONPATH": str(Path(__file__).resolve().parents[2]),
            "FORGE_STATE_DIR": os.environ.get("FORGE_STATE_DIR", str(data_root() / "state")),
+           "FORGE_DATA_ROOT": str(data_root()),
            "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
 
     def srv(server: str) -> dict:
