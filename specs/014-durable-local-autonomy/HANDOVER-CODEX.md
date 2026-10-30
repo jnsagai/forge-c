@@ -1,5 +1,110 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest state — mixed medium-author/xhigh-inspector run ACTIVE, 30 October
+
+**Actual Omniverse2 runtime/test source7fbefc40e0912e15aabeb70ca6b85932085b1b27**.
+Owner explicitly asked to try medium authors with xhigh inspection. Profile
+local-rtx-v2-omniverse2-q38-aspice-medium-author-xhigh-inspector, Q8/f16/MTP3,
+262144context/one inference. Medium authors/diagnosis/maintenance; all6SWE inspectors
+xhigh through per-request gateway policy, native server defaultmedium. Installed
+server template-only probe rendered distinct79/316character medium/xhigh templates,
+zero inference/no raw prompts. Actual inspector benefit remains unmeasured.
+
+New LL **afo-c9331219520d5237**, native **01M66MQ89VRBEJ538HDJ3CQFH4**,
+job **afo-product-ff72d4fd63fa0f77f125fe69**, workspace
+P/state/workorders/WO-AFO-c9331219520d5237-a1/workspace. Started14:51:40UTC,
+confirmedRUNNING/LIVE/HELD. At14:57 four completed author requests/oneSENT;
+durable metadata explicitly records swe1-author/medium, output cap36864 and exact
+serialized request hashes. **First xhigh inspection still pending** after complete
+SWE.1 authoring; configuration is active, not evidence it has already inspected.
+
+Normal blocking ASPICE gates and ordinary AFO recovery remain. Full literal owner
+scope now selects25RM sections/248fields/61small obligations; missing primary input
+refuses before inference. SWE.1 visit cap256 is pinned in this experimental profile,
+independent of physical context and cumulative mission limits. Old35calls cannot
+cover61initial tasks. No inference-capacity increase or quality/oracle waiver.
+
+Same mission F014-NIGHT-20261027-RCC/lineage and all old charges/unknown usage retained.
+Original13:52:52 window was explicitly amended to **19:40UTC** for the preceding
+stepwise product trial using existing signing delegation; its append-only receipt
+is preserved. This mixed-role trial has **no new time grant or extension**: same
+19:40UTC, fresh source/role signatures, scope
+7a3aa5041f60f51edd91a3458406fe463ff7b38a80de7c0a5550dfc028007533.
+Owned PAUSED103→RUNNING104; provider/Fabro/gateway/Conductor healthy. New work is a
+configuration experiment, not role qualification or production acceptance.
+
+**Real autonomous scoped repair observed on previousa32 runtime:** orderc7af7908207bca71
+attempt1/native01M66GG3ZWX5QFZ4K0VDEFA9W1 passedSWE.1 but sealedBLOCKED44gaps.
+At14:04:37 Conductor reserved diagnosisafo-agent-aeca160c59e838e12cd5d55f; signed
+four-question medium adapter succeeded, receipt934643afab10f2581c85fc38. Controller
+validated/executed REWORK_LOCAL planafo-plan-87c4e416ddec2a7b320c6165 and launched
+attempt2/native01M66J54FS076CEXNMVH2C43JV at14:06 without external intervention.
+At14:24:56 deterministic SWE.2 gatePASS/INS-SWE.2-001; previously missing static
+diagram exists and all3SWE.1 workproducts are byte-identical to the parent. No
+external source/artifact/policy/intent change occurred between failure and repair.
+This is scoped workflow/product recovery, not full correctness, generalized
+factory-code healing or availability proof. Same-model semantic review is not
+independent correctness evidence. Plan declared only the matrix while explanation
+requested the diagram; minimal changed-file scope enforcement remains an open review.
+
+Independent audit found21owner-referenced sections excluded by old4-section catalog,
+all present in inputs. Old green gates therefore do not prove full owner coverage.
+Generic correction090b5f0e: exactlocal76/native380PASS, included in7fb. A prior
+exploratory108test sweep passed while source evolved; not exact qualification.
+
+At14:40 owner-requested role trial superseded the old attempt2 after its scoped
+SWE.2 repair. **Not Qwen failure**. Actual native/request quiescence and RELEASED
+leases confirmed before provider/source replacement. The first attempted cancellation
+earlier refused before effects because parent already finished and child2 was live.
+An overly broad later filter also tagged the already-finished diagnosis lifecycle
+BLOCKED; immutable erratum preserves its unchanged SUCCEEDED job/PASS receipt and
+executed plan. Do not count a cancelled live diagnosis or model failure. Do not
+rewrite the operator event or terminal execution history to conceal it.
+
+Old parent ZIPBLOCKED44/integrityPASS SHAbc8b015a622ae43132deef89164188a02f0c2a3bc818e4d74662169d8e663979;
+old child ZIPBLOCKED32/integrityPASS SHA8ad9cab3e011651b958bb5656273ac6b49f19861c75325ba3d0a263879429741.
+Both copied/hash-verified/extracted privately to B/inspection/feature014/2026-10-30-qwen/full-pipeline-aspice-stepwise/.
+
+**New source verification:** exact7fb local133PASS/native443PASS, no failures/errors/
+skips, source clean before/after; native bounded4CPUs/8GiB/no swap/no network/GPU/
+model/owner/SSH, zero model calls/activation, unchangedRUNNING102 during tests.
+Earlier e4e93 native441PASS/1inherited continuity-fixture failure preserved. It
+inherited inaccessible host data root inside isolation. Corrected test has explicit
+simulated mount facts/private root/sentinel, real write probe and real child
+Conductor/control/ledger/stop. No production preflight bypass, no physical mount-fault
+qualification claim. Explicit diagnosis transport role prevents evidence role
+markers from switching effort. Complete post-gateway body/effort measured/admitted;
+inspector identities must separately declarexhigh, not a blanket capability receipt.
+Ruff/diff/spec/contracts/14design PASS separately; static validation is not runtime
+qualification. Source changes through7fb pushed to existing branch; no merge.
+
+[Mixed-role source, exact tests, native failure/correction, activation/scope and live metadata](../../evidence/014-durable-local-autonomy/role-reasoning-20261030/).
+[Real repair, broker plan/receipt facts, retention proof, explicit supersession/erratum](../../evidence/014-durable-local-autonomy/aspice-stepwise-product-20261030/).
+[Full literal scope selection and native380 proof](../../evidence/014-durable-local-autonomy/scope-inventory-20261030/).
+
+**Next:** continue the same confirmed live new native handle; do not restart on
+observation timeout or copy old scope outputs as full acceptance. Inspect current
+packets and eventual actualxhigh request metadata. New five-minute observer branch
+overnight/2026-10-30-aspice-role-split published0272582; existing recorder unit active,
+no new scheduler/intake. Local collector A3/collect-aspice-rcc-role-split-outcomes.py
+(execsession71041; revalidate live process) copies completed archives privately under
+B/inspection/feature014/2026-10-30-qwen/full-pipeline-aspice-role-split/.
+Old collector session37576 stopped via exact PID350163/pidfd after both ZIP hashes
+and inventories were verified; no remote/model effect. No other GPU campaign queued.
+
+HAL **afo-e955270b011a54b9 NOT_SUBMITTED**. The prepared native tool
+P/deployment/aspice-rcc-role-split-20261030-v1/prepare-enrol-aspice-rcc-role-split-hal.py
+defaults check-only; --enrol only after sixPASS gates, sealedREADY/no gaps/integrity,
+fresh generated LL header, successful native terminal and RELEASED resources, and
+literal owner-scope inventory coverage. It uses same mission/current authority,
+Conductor exclusively dispatches. Do not silently renew19:40 deadline or refill
+historical allowance. Preserve newer operator intent against activation/recovery.
+
+Formal Feature014 remains30/58; no new task IDs checked. Full clean LL/HAL, independent
+role qualification, learning benefit, RCC/30-product benchmark and24/72/168h operation
+remain UNPROVEN/NOT_RUN. Active owner goal is NOT complete. Historical checkpoints
+below are superseded only by the concrete evidence above.
+
 ## Latest state — 30 October: non-thinking comparison and stepwise diagnosis complete
 
 Owner requested `enable_thinking=false`; all24 same-source none/medium/xhigh trials
