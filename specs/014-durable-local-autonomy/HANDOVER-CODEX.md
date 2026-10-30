@@ -65,7 +65,12 @@ Source commits27f337e1/20dccfcb pushed to existing feature branch, PR42 remains 
 FormalFeature014 **30/58**, no task newly closed. Clean LL/HAL, independent role
 quality, learning benefit and24/72/168hour availability remain unproven; goal ACTIVE.
 
-**Next:** watch the same native handle and first600second continuation; no restart
+**Verified first continuation:** at16:03:37UTC native completed swe1_author→
+swe1_author_cont→swe1_author_more, CONTINUE, same original visit start time,
+continuations1 and calls7→8. No external restart or phase rework. See the latest
+evidence first-continuation.json. This proves this one continuation only.
+
+**Next:** watch the same native handle through authoring/xhigh inspection; no restart
 on observation timeout. Git observer branch overnight/2026-10-30-aspice-context,
 existing recorder unit rebound and journal confirms publication; observer-only,
 no intake/new scheduler. Local read-only collector

@@ -73,6 +73,9 @@ job **afo-product-130be492850d77ed19a1d919**, started15:53:05UTC. Saved
 [live metadata](live-request-metadata.json) and [status](live-status.json) show
 actual swe1-author/medium with the native measurement path and full body hashes.
 Q8/f16/MTP3/context262144/one inference; all six inspectors are configured xhigh.
+At16:03:37UTC the [first timed continuation](first-continuation.json) completed
+swe1_author→swe1_author_cont→swe1_author_more with CONTINUE, the same open visit
+start time and cumulative calls7→8. No external restart or phase rework was needed.
 **First xhigh inspection is still pending. Full LL/HAL success remains unproven.**
 Normal blocking ASPICE gates and existing AFO recovery remain; no SafeC semantic
 lane, safety-assurance claim or assessed ASPICE compliance claim.
