@@ -707,7 +707,9 @@ def run(
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
 
     local = None
-    if purpose in (ASPICE_PURPOSE, qm.PURPOSE) and not profile:
+    native_aspice = (purpose == ASPICE_PURPOSE and profile is None
+                     and acp_authors == "codex" and acp_inspectors == "claude")
+    if purpose in (ASPICE_PURPOSE, qm.PURPOSE) and not profile and not native_aspice:
         raise ValueError("ASPICE_SCOPE_PROFILE_MISMATCH")
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
@@ -915,17 +917,20 @@ def run(
         }
         manifest["acp_inspectors"] = ins_nodes
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
-    if suspended:  # CAPA-051: every agent node must have left the run model, multi-line prompts included
+    if suspended or native_aspice:  # Every agent in the explicit native ASPICE control must use the requested ACP pair.
         from . import acp
 
         native = acp.native_agent_nodes(graph)
         if native:
-            raise RuntimeError(
-                f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes left on the run model: {', '.join(native)}"
-            )
+            reason = f"MODEL_SUSPENDED:{provider} ({suspended['decision']})" if suspended else "NATIVE_ASPICE_ACP_INCOMPLETE"
+            raise RuntimeError(f"{reason}: agent nodes left on the run model: {', '.join(native)}")
         prof["run_model_note"] = (
-            f"{model} ({provider}) is suspended ({suspended['decision']}); it serves no agent node in this run"
+            f"{model} ({provider}) serves no agent node; every model stage uses the explicit ACP backend"
         )
+        if native_aspice:
+            manifest["native_aspice_backends"] = {"authors": "codex", "inspectors": "claude",
+                                                 "native_model_agent_nodes": [], "local_inference_requests": 0}
+            (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
