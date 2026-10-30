@@ -52,8 +52,9 @@ def _authored_scope(ws):
     declarations = [m for m in declaration_rx.finditer(code) if m["name"].startswith(prefix)]
     candidates = set(re.findall(r"\b(" + re.escape(prefix) + r"\w+)\s*\(", code))
     if kind == "LL":
-        names = [d.name for d in definitions if d.kind == "static_inline"]
-        valid = not declarations and all(d.kind == "static_inline" for d in definitions)
+        static = {m["name"] for m in FUNC_HEAD.finditer(code) if re.search(r"\bstatic\b", m["quals"])}
+        names = [d.name for d in definitions if d.kind == "static_inline" or d.kind == "function" and d.name in static]
+        valid = not declarations and len(names) == len(definitions)
     else:
         names = [m["name"] for m in declarations]
         source = layer.hal_c(ws)
@@ -64,6 +65,10 @@ def _authored_scope(ws):
                  and all(implemented.count(name) == 1 for name in names))
     if not valid or not names or len(names) != len(set(names)) or set(names) != candidates:
         raise ValueError("SIMULATION_PERFORMANCE_AUTHORED_SCOPE_UNSUPPORTED_OR_INCOMPLETE")
+    manifest = json.loads((ws / ".forge-run/manifest.json").read_text())
+    declared = (manifest.get("operation_scope") or {}).get("functions")
+    if declared is not None and set(names) != set(declared):
+        raise ValueError("SIMULATION_PERFORMANCE_DECLARED_SCOPE_MISMATCH")
     return kind, names, text
 
 
@@ -86,9 +91,21 @@ def symbols(ws):
 
 
 def source_files(ws):
-    return {p.relative_to(ws).as_posix(): sha256_file(p)
+    ws = Path(ws)
+    files = {p.relative_to(ws).as_posix(): sha256_file(p)
             for name in ("software/ll", "software/hal", "software/src", "software/include", "inputs/vendor/include")
             for p in sorted((Path(ws) / name).rglob("*")) if p.is_file() and p.suffix in (".c", ".h")}
+    manifest = json.loads((ws / ".forge-run/manifest.json").read_text())
+    if manifest.get("delivery_first"):
+        # Declared include/type/oracle inputs participate in compilation too.
+        # Keep the baseline identity, not merely the generated header's hash.
+        for item in manifest.get("inputs", []):
+            p = ws / item["path"]
+            if (p.is_symlink() or not p.resolve().is_relative_to(ws.resolve()) or not p.is_file()
+                    or sha256_file(p) != item["sha256"]):
+                raise ValueError("SIMULATION_PERFORMANCE_DECLARED_INPUT_CHANGED:" + item["path"])
+            files[item["path"]] = item["sha256"]
+    return files
 
 
 def inputs(ws):
