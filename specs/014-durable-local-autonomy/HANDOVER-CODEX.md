@@ -1,5 +1,51 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest state — 12:04UTC: explicit non-thinking model trials live
+
+Active runtime/test source **12e601e4f53ab71b6d184ae19379faa1dd8f6e97**, native279PASS
+(no failures/errors/skips), local73PASS overlapping. Actual gateway wire false,
+native reasoning off, Q8/f16/MTP3/262144/one inference/34816 output ceiling verified.
+Finite signed none→medium→xhigh experiment, eight exposed diagnosis cases each,
+unit forge-q38-nonthink-speed-20261030-v2.service/MainPID3371975 confirmed active,
+controllerRUNNING90/first none stage. Do not start LL/HAL or another GPU workload.
+First two none cases:134 output tokens each, gateway4.0389/3.6997seconds, first native
+decode51.86tok/s. Both NEEDS_EVIDENCE vs expected PROPOSE_REPAIR; no quality success.
+First total trial165.51seconds versus4.04gatewayseconds, second72.85vs3.70: substantial
+orchestration/admission/verification overhead remains; do not claim request latency
+as whole-pipeline throughput. New xhigh/medium controls are still pending.
+
+V1 activation failed externally after source installation: signer used raw YAML SHA
+instead of canonical parsed policy SHA. The actual gate rejected it before any new
+mission/job/model request (verified SQL counts0). Failed V1 grants/scope/logs remain.
+Model-free supervision was restored under own PAUSED89. V2 has distinct IDs, same
+source and unchanged13:52:52UTC expiry. Actual policy.load authenticated all three
+V2 candidate policies as PILOT before activation; signed scope
+9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043.
+This external runbook correction is not Qwen failure or autonomous self-healing.
+
+O=/mnt/data/forge-c/production-local-014/deployment/q38-nonthink-speed-20261030-v2.
+The three active *-non-thinking-speed-v2.py tools are hash-bound by signed scope;
+do not mutate them mid-experiment. Existing Conductor exclusively owns dispatch/poll.
+Read-only collectorPID225827 (check argv), A3/collect-non-thinking-speed-results-v2.py,
+private results/packets/proposals/report:
+B/inspection/feature014/2026-10-30-qwen/non-thinking-speed-pilot-v2/SPEED-REPORT.md.
+All copies per-member hash-verified, no raw prompts or hidden reasoning. Newer
+operator intent stops continuation, never reset missions or renew deadline silently.
+
+MTP sweep COMPLETE at frozena9b2ddf: all32 generated trials, medians draft363.44,
+draft256.94,draft465.91,draft664.70. All four protocolFAIL/2of8 expected decisions.
+558 final private artifact hashes verified, including sealed packet JSON. No formal
+winner or product/role/learning/availability proof. Scope/history/charge preserved.
+[Final MTP evidence](../../evidence/014-durable-local-autonomy/mtp-speed-20261030/README.md).
+[Native279 checks, preserved V1 failure, exact signed V2 scope/tools and live samples](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+
+Formal30/58 unchanged/no new tasks closed. Context fix has not established improved
+model decisions: first none response still calls the supplied synthetic SWR-001
+contract merely a fixture description. Keep this factual limitation; inspect the
+complete new same-source cohorts before choosing a remedy. Do not modify cases,
+oracles or prompts in the live comparison or call exposed cases fresh holdouts.
+Historical checkpoints below are superseded only where stated.
+
 ## Latest state — 11:45UTC: owner-requested non-thinking trial prepared
 
 Owner explicitly requested enable_thinking=false. Prospective source

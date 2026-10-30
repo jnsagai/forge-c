@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-30T11:52:34.222566+00:00",
+  "status": "ALL_HASHES_VERIFIED",
+  "files": 558,
+  "archive_sha256": "125e9ae1356baf3f42e2be47a1b43cce6d34d72a1273481e46697efa2163a275",
+  "complete": {
+    "draft3": true,
+    "draft2": true,
+    "draft4": true,
+    "draft6": true
+  },
+  "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/mtp-speed-pilot"
+}

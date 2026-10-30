@@ -11,14 +11,20 @@
     "hostname": "master"
   },
   "preparation": "PASS_24_COMPILED_REFERENCE_BACKED_INPUTS_ZERO_MODEL_AUTH_JOB_MISSION_EFFECTS",
-  "native_qualification": "QUEUED_AFTER_MTP_NOT_RUN",
-  "deployment": "NOT_ACTIVATED",
+  "native_qualification": "279PASS_NO_FAILURE_ERROR_SKIP_EXACT_SOURCE",
+  "deployment": "ACTIVE_BENCHMARK_ONLY_SOURCE_12e601e4",
   "model_requests": 0,
-  "model_speed_quality": "NOT_RUN",
+  "model_speed_quality": "IN_PROGRESS_NOT_QUALIFIED",
   "LL_HAL": "OWNER_ABORTED_DEFERRED",
   "feature_tasks_complete": "30/58_UNCHANGED",
   "native_qa_unit": "forge-non-thinking-qa-after-mtp-12e-v1.service",
   "native_qa_main_pid": 3358815,
   "native_preparation_unit": "forge-non-thinking-prepare-after-qa-12e-v1.service",
-  "native_preparation_main_pid": 3358820
+  "native_preparation_main_pid": 3358820,
+  "operator_epoch": 90,
+  "native_comparison_unit": "forge-q38-nonthink-speed-20261030-v2.service",
+  "native_comparison_main_pid": 3371975,
+  "private_result_collector_pid": 225827,
+  "failed_predecessor": "V1_POLICY_HASH_RUNBOOK_ERROR_ZERO_MISSIONS_JOBS_MODEL_REQUESTS_RETAINED",
+  "active_scope_sha256": "9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043"
 }

@@ -1,3 +1,27 @@
+# Final MTP speed measurements — complete30 October2026,11:52UTC
+
+Exact runtime/test sourcea9b2ddfccc326bdcf8287c95a4310c0408429ccb. All32 model
+requests completed across four8-case serial diagnosis cohorts; no setup failures.
+Median native decode tok/s: draft363.4386, draft256.9357, draft465.9097,
+draft664.7017. Draft4 is3.895% above draft3; order/thermal/cache/output-length
+variation prevents a formal qualified-winner claim. All four protocol reportsFAIL,
+2/8 expected decisions each. No product/author/inspector/learning/availability proof.
+
+[Full report](SPEED-REPORT.md), [numeric summary and input hashes](speed-summary.json),
+[complete metrics/designated proposals/native settings/independent protocol reports](final-results),
+[all cohorts complete; model-free factory continues](continuation-complete.json),
+[558 private local artifacts hash-verified on loop10](local-transfer-receipt.json).
+Every frozen packet JSON is included in the final private transfer; no raw prompts
+or hidden reasoning were exported. All historical missions/charges retained, no
+product retry, automatic selection or authority renewal. The baseline/candidates
+are descriptive protocol fixtures, not fresh held-out role qualification.
+
+After completion, a separately bounded CPU-only qualification of owner-requested
+non-thinking source12e601e4 ran under PAUSED87 and passed279 native tests, no
+errors/failures/skips, no model/network/GPU/owner/SSH exposure. This is separate
+from the MTP trial, and does not retroactively alter its frozen runtime/results.
+Historical preparation below is retained and superseded where stated.
+
 # MTP draft-speed pilot — source a9b2ddf, 30 October 2026
 
 The owner requested model-speed benchmarks after aborting the product run. LL/HAL

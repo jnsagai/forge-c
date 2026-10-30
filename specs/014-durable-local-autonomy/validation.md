@@ -1,3 +1,19 @@
+# Active explicit non-thinking trial — 30 October2026,12:04UTC
+
+Exact runtime/test source12e601e4f53ab71b6d184ae19379faa1dd8f6e97, native279PASS
+(no error/failure/skip), local73PASS overlapping. Explicit wire enable_thinking=false,
+native reasoning off/Q8/f16/MTP3/context262144/one slot/output ceiling34816 verified.
+Signed finite V2 scope9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043,
+none→medium→xhigh/eight each, source fixed. First two none requests134 tokens,
+gateway4.04/3.70seconds, both wrong NEEDS_EVIDENCE decisions. No quality qualification.
+V1 external signer raw-YAML-versus-canonical hash failure retained, zero missions/
+jobs/model requests before failure; new V2 IDs and actual authenticated policy.load
+checks corrected the runbook without changing tested runtime or renewing expiry.
+ControllerRUNNING90/one serial comparison; no LL/HAL retry. Final MTP all32generated,
+medians63.44/56.94/65.91/64.70 for3/2/4/6; allFAIL/2of8 decisions. Formal30/58 unchanged.
+[Exact native/tests, signatures, failures and numeric evidence](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+Historical checkpoints below remain preserved.
+
 # Non-thinking comparison preparation — 30 October2026,11:45UTC
 
 Prospective runtime12e601e4f53ab71b6d184ae19379faa1dd8f6e97, NOT_DEPLOYED.

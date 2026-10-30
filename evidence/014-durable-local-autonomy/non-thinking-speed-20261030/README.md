@@ -1,3 +1,40 @@
+# Active non-thinking comparison — 30 October2026,12:01UTC
+
+Exact runtime/test source **12e601e4f53ab71b6d184ae19379faa1dd8f6e97** now active
+for the finite owner-requested diagnosis comparison. **279 native tests PASS**, no
+failures/errors/skips, [JUnit](native-279-junit.xml), [exact native provenance](native-provenance.json),
+[quiescent verifier/own-pause-only resume](native-window.json). No model/network/GPU/
+owner/SSH access during these CPU tests. Local73PASS overlaps native coverage;
+spec/contracts and14 static design checks PASS separately, not runtime proof.
+
+Actual activated none settings: gateway enable_thinking=false/reasoning_effort none,
+native reasoning off/no effort flag, Q8/f16/MTP3/context262144/one slot. Render-only
+actual-wire probe confirms closed empty thinking/open thinking false. The first
+trial is admitted through existing Conductor; speed/quality still IN_PROGRESS.
+[Signed V2 scope and frozen execution tools](v2), source12e601e4, none→medium→xhigh,
+eight exposed cases each, shared context fix and34816-token output ceiling.
+V2 scope9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043.
+Unit forge-q38-nonthink-speed-20261030-v2.service/MainPID3371975 confirmed live;
+RUNNING90 at initial none activation. Existing expiry13:52:52UTC unchanged.
+
+**External activation failure retained:** V1 signer incorrectly hashed raw YAML
+instead of Forge-C's canonical parsed policy. Actual policy load rejected it before
+any mission, job or model request. The tested source had been installed; model-free
+supervision was restored under the existing PAUSED89. V1 grants, scope, activation
+exit and logs remain untouched. V2 uses new authorization/mission/job identities,
+same tested source and expiry; actual policy.load authenticated each candidate
+policy as PILOT before activation. No mission or allowance was reset. This is an
+external runbook correction, not a spontaneous Qwen failure or autonomous healing.
+
+Automatic private loop10 results/packets/designated proposals and numeric timings:
+B/inspection/feature014/2026-10-30-qwen/non-thinking-speed-pilot-v2/SPEED-REPORT.md,
+collectorPID225827 (verify argv before signalling). No raw prompts/hidden reasoning.
+No LL/HAL restart or production winner. Exposed fixtures are not fresh holdouts.
+Formal30/58 unchanged; product/role/learning/availability remain unproven.
+
+The original preparation/runbook below is retained as historical evidence and is
+superseded by V2 only where explicitly stated.
+
 # Explicit non-thinking comparison — prepared, not running
 
 Owner: “lets try also enable_thinking=false”. Standing delegated signing remains
